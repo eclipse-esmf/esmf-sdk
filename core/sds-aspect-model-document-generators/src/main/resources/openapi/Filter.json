@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "required": [
+    "filter"
+  ],
+  "properties": {
+    "filter": {
+      "type": "string",
+      "description": "The filter to use.",
+      "example": "filter={filter expression}"
+    },
+    "option": {
+      "type": "string",
+      "description": "The option for the filter.",
+      "example": "option=limit({start},{count})"
+    }
+  }
+}

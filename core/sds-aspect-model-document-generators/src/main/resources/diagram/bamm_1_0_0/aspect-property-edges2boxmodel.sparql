@@ -1,0 +1,138 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>
+prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:bamm:io.openmanufacturing:meta-model:1.0.0/boxmodel#>
+
+# Generates edges between Aspects or Entites and Properties
+construct {
+  ?edge a :Edge .
+  ?edge :title ?title .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  # Aspect/Entity -> Property Edges (properties); excludes Entities which are refined
+  {
+    ?aspectOrEntity bamm:refines?/rdf:type ?class .
+    filter( ?class in ( bamm:Aspect, bamm:Entity ) )
+    #exclude entities from our shared name-space
+    filter ( ! strstarts( str( ?aspectOrEntity ), str ( bamm-e: ) ) )
+
+    ?aspectOrEntity bamm:name ?aspectOrEntityName .
+
+    ?property bamm:refines?/rdf:type bamm:Property .
+    ?property bamm:name ?propertyName .
+    filter( exists { ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first/bamm:property? ?property } )
+    filter( not exists { [] bamm:refines ?aspectOrEntity } )
+
+    bind( if( ?class = bamm:Aspect, "Aspect", "Entity" ) as ?typeName )
+    bind( concat( ?aspectOrEntityName, ?typeName ) as ?aspectOrEntityBoxName )
+    bind( iri( concat( str( : ), ?aspectOrEntityBoxName ) ) as ?from )
+
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?to )
+
+    bind( iri( concat( str( : ), ?aspectOrEntityBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+
+    optional {
+      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode bamm:property ?property .
+      ?propertyNode bamm:optional "true"^^xsd:boolean .
+      ?propertyNode bamm:payloadName ?payloadName
+      bind( concat("property (optional) (", str(?payloadName), ")") as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode bamm:property ?property .
+      ?propertyNode bamm:optional "true"^^xsd:boolean .
+      bind( "property (optional)" as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode bamm:property ?property .
+      ?propertyNode bamm:notInPayload "true"^^xsd:boolean .
+      bind( "property (not in payload)" as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode bamm:property ?property .
+      ?propertyNode bamm:payloadName ?payloadName
+      bind( concat("property (", str(?payloadName), ")") as ?title )
+    }
+
+    optional {
+       ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+       bind( "property" as ?title )
+    }
+  }
+
+  union
+
+  # add Properties which are defined in an Entity A which is refined, but are themselves not refined,
+  # to the Entity B which refines Entity A
+  {
+    ?refiningEntity bamm:refines/rdf:type bamm:Entity .
+    ?refiningEntity bamm:refines ?refinedEntity .
+    ?property bamm:refines?/rdf:type bamm:Property .
+    filter( exists { ?refinedEntity bamm:properties/rdf:rest*/rdf:first/bamm:property? ?property } )
+    filter( not exists { [] bamm:refines ?property } )
+
+    ?refiningEntity bamm:name ?entityName .
+    ?property bamm:name ?propertyName .
+    bind( concat( ?entityName, "Entity" ) as ?entityBoxName )
+    bind( iri( concat( str( : ), ?entityBoxName ) ) as ?from )
+
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?to )
+
+    bind( iri( concat( str( : ), ?entityBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+
+    optional {
+      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode bamm:property ?property .
+      ?propertyNode bamm:optional "true"^^xsd:boolean .
+      ?propertyNode bamm:payloadName ?payloadName
+      bind( concat("property (optional) (", str(?payloadName), ")") as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode bamm:property ?property .
+      ?propertyNode bamm:optional "true"^^xsd:boolean .
+      bind( "property (optional)" as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode bamm:property ?property .
+      ?propertyNode bamm:notInPayload "true"^^xsd:boolean .
+      bind( "property (not in payload)" as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode bamm:property ?property .
+      ?propertyNode bamm:payloadName ?payloadName
+      bind( concat("property (", str(?payloadName), ")") as ?title )
+    }
+
+    optional {
+       ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+       bind( "property" as ?title )
+    }
+  }
+}

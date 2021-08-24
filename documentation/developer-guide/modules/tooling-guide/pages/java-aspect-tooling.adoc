@@ -1,0 +1,397 @@
+:page-partial:
+
+[[aspect-model-java-tooling]]
+= Java Tooling for Working with Aspect Models
+
+[[general-considerations]]
+== General Considerations
+
+In this section, the Java APIs for working with Aspect Models are described. All of the components described in the
+following subsections can either be included in your project using a dedicated dependency (as described in the
+respective subsection), _or_ you can use the `aspect-model-starter` artifact that aggregates all necessary dependencies:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-model-starter-artifact.adoc[]
+
+The error handling in many APIs is done using the
+`https://javadoc.io/doc/io.vavr/vavr/0.9.2/io/vavr/control/Try.html[Try]` type provided by the Java library _Vavr_. This
+is similar to a `java.lang.Optional` in that a successful result can be processed using `.map()` or `.flatMap()`, but if
+an error occurs, the object can also provide the original exception. Compared with throwing exceptions, using a `Try<T>`
+as a return type instead has the advantage of enabling composable and better readable code. Please see the
+https://www.vavr.io/vavr-docs/[Vavr User Guide] for more information.
+
+[[parsing-aspect-model-urns]]
+== Parsing Aspect Model URNs
+
+The `aspect-model-urn` artifact provides a way to parse and validate Aspect model element URNs as described in the
+xref:bamm-specification:ROOT:namespaces.adoc[specification].
+
+[source,java]
+----
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+
+final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:bamm:com.example:1.0.0#Example" );
+
+System.out.println( urn.getNamespace() ); // com.example
+System.out.println( urn.getName() );      // Example
+System.out.println( urn.getVersion() );   // 1.0.0
+System.out.println( urn.getUrnPrefix() ); // urn:bamm:com.example:1.0.0#
+----
+
+To include the artifact, use the following dependencies:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-model-urn-artifact.adoc[]
+
+[[loading-and-saving]]
+== Loading and Saving Aspect Models
+
+Aspect models are, like their Meta Model, described using the Resource Description Format (RDF,
+xref:bamm-specification:appendix:appendix.adoc#rdf11[[rdf11\]]) and the Terse RDF Triple Language syntax (TTL,
+xref:bamm-specification:appendix:appendix.adoc#turtle[[turtle\]]). There are two ways of working with Aspect models:
+Either the model is loaded as an RDF model where the abstraction level directly corresponds to the RDF/Turtle
+serialization, or the RDF is parsed into a native Java Aspect model representation where the abstraction level
+corresponds to the BAMM concepts. Both approaches have different use cases and advantages and both are supported by the
+Aspect model Java tooling:
+
+[width="100%", options="header", cols="50,50"]
+|===
+| Working on the RDF level | Using the Java Aspect model
+a|
+* Low level, focus on power and flexibility
+* Flexibly navigate and filter the model on the RDF statements level
+* Work with models that are valid RDF, but incomplete Aspect models, e.g. in Aspect model editors
+* Use SPARQL xref:bamm-specification:appendix:appendix.adoc#sparql[[sparql\]] to execute complex queries on Aspect models
+a|
+* High level, focus on convenience and type-safety
+* Use Aspect-model specific interfaces for type-safe code
+* Use Java-native data types (e.g. `java.math.BigInteger` for `xsd:integer`)
+* Easily traverse the model on the abstraction level of Aspect model elements
+|===
+
+As a rule of thumb, if your use case mostly consists of _consuming_ Aspect models, you should prefer the Java Aspect
+model, if you _create_ or _edit_ Aspect models, this is better done using the RDF API.
+
+[[understanding-model-resolution]]
+=== Understanding Model Resolution
+
+Loading an Aspect model in either the RDF-based or the Java Aspect model-based APIs does not only comprise parsing the
+Turtle file, but also the resolution of elements on the RDF level:
+
+* An Aspect model refers to meta model elements (everything that starts with `bamm:`), and can refer to namespaces of
+  shared elements (`bamm-c`, `bamm-e` and `unit`)
+* It can also refer to elements from other Aspect models or model elements defined in separate Turtle files
+
+You use the _model resolver_ to load an Aspect model, which takes care of the first point: The used meta model elements
+and elements from shared namespaces are automatically resolved and added to the loaded RDF model. For the second point,
+you need to provide the model resolver with the information on where to find other Aspect models: In memory, in a local
+file system, in a remote model repository etc. This is done using a _resolution strategy_, which is a function from some
+type `T` to a `Try` of a RDF model. Several commonly used resolution strategies are readily available:
+
+* The `FileSystemStrategy` resolves a `java.nio.file.Path` for a file relative
+  to the xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory]
+* The `UrnFileSystemStrategy` resolves a
+  <<parsing-aspect-model-urns,AspectModelUrn>> to a file in the xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory]
+* The `InMemoryStrategy` resolves a model against an already loaded Apache Jena RDF model
+* The `SequenceStrategy` can be used to chain two different strategies of the same type
+* The `EitherStrategy` can be used to chain two different strategies of different types
+
+To implement custom resolution strategies (e.g., to resolve models against a different blob storage API), you can base
+your implementation on the `AbstractResolutionStrategy`. Using the model resolver requires at least one resolution
+strategy that can resolve `AspectModelUrn`&#8203;s (because references in an Aspect model to external model elements use
+their respective URNs) and can use another resolution strategy, for example for file paths. The following sections show
+examples for the different variants.
+
+[[loading-an-aspect-model-rdf-level]]
+=== Loading an Aspect Model to work on the RDF Level
+
+Consider the following example:
+
+include::sds-developer-guide:ROOT:partial$sample-loading-aspect-model-rdf.adoc[]
+
+To include the model resolver artifact, use the following dependencies:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-model-resolver-artifact.adoc[]
+
+[[loading-an-aspect-model-java-model-level]]
+=== Loading an Aspect Model to work on the Java Aspect Model Level
+
+Consider the following example:
+
+include::sds-developer-guide:ROOT:partial$sample-loading-aspect-model-java.adoc[]
+
+To include the Java Aspect model artifact, use the following dependencies:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-meta-model-java-artifact.adoc[]
+
+[[serializing-an-aspect-model]]
+=== Serializing a Java Aspect Model into a RDF/Turtle Aspect Model
+
+There are two serialization components available: One to turn a Java Aspect model into a Jena RDF model (the reverse
+operation of what the `AspectModelLoader` does) and one to serialize the resulting Jena RDF model in Turtle syntax,
+formatted according to the guidelines described in the BAMM specification.
+
+include::sds-developer-guide:ROOT:partial$sample-serializing-aspect-model.adoc[]
+
+To include the serializer artifact, use the following dependencies:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-model-serializer-artifact.adoc[]
+
+[[validating-aspect-models]]
+== Validating Aspect Models
+
+Consider the following example:
+
+include::sds-developer-guide:ROOT:partial$sample-validating-aspect-model.adoc[]
+
+To include the model validator, use the following dependencies:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-model-validator-artifact.adoc[]
+
+[[generating-documentation]]
+== Generating Documentation for Aspect Models
+
+Different types of artifacts can be generated from an Aspect model. All corresponding generators are included in the
+following dependency:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-model-document-generators-artifact.adoc[]
+
+The documentation generation APIs provide methods that take as an argument a `Function<String, java.io.OutputStream>`.
+This is a mapping function that takes a file name as an input (which is determined by the respective generator) and
+returns a corresponding `OutputStream`, for example (but not necessarily) a `FileOutputStream`. By providing this
+function when calling the generator method, you can control where the output is written to, even when the generator
+creates multiple files. For the code examples in the following subsections, we assume that the following method is
+defined for calling the generators:
+
+[source,java]
+----
+OutputStream outputStreamForName( final String aspectFileName ) {
+   // Create an OutputStream for the file name, e.g. a FileOutputStream
+   ...
+}
+----
+
+[[generating-diagrams]]
+=== Generating SVG or PNG Diagrams
+
+Using the `AspectModelDiagramGenerator`, automatically layouted diagrams can be created for Aspect models in the formats
+PNG, SVG and https://www.graphviz.org/[Graphviz/DOT].
+
+include::sds-developer-guide:ROOT:partial$sample-diagram-generation.adoc[]
+
+[[generating-html-documentation]]
+=== Generating HTML Documentation
+
+A HTML reference documentation for an Aspect model can be generated as shown in the following code sample. The
+documentation contains an overview diagram and describes the model elements as specified in the Aspect model. Preferred
+names and descriptions in the respective language from the Aspect model are shown in the resulting document as part of
+each model element.
+
+include::sds-developer-guide:ROOT:partial$sample-html-generation.adoc[]
+
+[[generating-sample-json-payload]]
+=== Generating Sample JSON Payload
+
+The sample JSON payload generator is used to create a valid JSON payload for an Aspect model as it could be returned by
+an Aspect that implements that Aspect model. This follows the
+xref:bamm-specification:ROOT:payloads.adoc#mapping-to-json[mapping rules] as defined in the Meta Model specification.
+The generator uses `bamm:exampleValue`&#8203;s of Properties if present, otherwise random values corresponding to the
+respective data types are generated.
+
+include::sds-developer-guide:ROOT:partial$sample-json-payload-generation.adoc[]
+
+=== Generating JSON Schema
+
+The JSON schema generator creates a https://json-schema.org/[JSON Schema] that describes the payload for an Aspect model
+as it could be returned by an Aspect that implements that Aspect model. Currently, the generated schema corresponds to
+
+
+include::sds-developer-guide:ROOT:partial$sample-json-schema-generation.adoc[]
+
+=== Generating OpenAPI Specification
+
+The OpenAPI specification generator creates either a https://json-schema.org/[JSON Schema] or a https://yaml.org/[Yaml Spec]
+that specifies an Aspect regarding to the https://github.com/OAI/OpenAPI-Specification/[OpenApi specification].
+The currently used versions corresponds https://json-schema.org/specification-links.html#draft-4[Draft 4] of the JSON Schema specification,
+and https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md[3.0.1].
+
+include::sds-developer-guide:ROOT:partial$sample-openapi-generation.adoc[]
+
+NOTE: For Enumerations with complex data types, the values are modelled as instances of the Entity defined as the
+Enumeration's data type (see {bamm-documentation-url}/v{aspect-meta-model-version}/modeling-guidelines.html#declaring-enumerations[Declaring Enumerations]
+in the Modelling Guidelines for more information). In case the Entity instances contain Properties with a sorted collection
+as their data type, the order of the values of said collection in the Entity instances is not preserved in the generated
+OpenAPI specification. Preserving this order in OpenAPI is not possible at this point.
+
+[[generating-java-code]]
+== Generating Java Code for Aspect Models
+
+Java code can be generated from an Aspect model in two ways:
+
+. The generated code represents the Aspect payload. Aspects and Entities become Java classes; their Properties become
+fields in the classes. Characteristics are not first-class elements, but are implicitly represented by the usage of
+corresponding data types (e.g. using `java.util.Set` as the type for the `Set` Characteristic of a Property) or
+`javax.validation` annotations. The generated classes can be used in a straightforward fashion, but they do not contain
+information about the underlying Aspect model such as its version number. Parts of the Aspect model that have no
+representation in its corresponding JSON payload are not part of those classes either, in particular descriptions and
+preferred names. These classes are called POJOs (Plain Old Java Objects), as they do not contain logic but serve mainly as data containers.
+
+. The generated code represents the Aspect model itself: It is a type-safe variant of the model and includes every
+information that is also present in the model such as Characteristics, descriptions including language tags and original
+XSD data types. It is however not intended to store payload corresponding to an Aspect. Theses classes are called static
+meta classes, because they are created at compile time (_static_) and talk about the structure of the information, not
+the information itself (_meta_).
+
+Depending on the use case, you would either use one or both of the types simultaneously.
+
+To include the Java generator, use the following dependencies:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-model-java-generator-artifact.adoc[]
+
+[[type-mapping]]
+=== Type Mapping
+
+In the Java code generated from an Aspect model, the scalar Aspect model
+xref:bamm-specification:ROOT:datatypes.adoc#data-types[data types] are mapped to native Java types. The following table
+lists the correspondences.
+
+[width="100%", options="header", cols="50,50"]
+|===
+| Aspect model type | Java native type
+| `xsd:string`  | `java.lang.String`
+| `xsd:boolean` | `java.lang.Boolean`
+| `xsd:decimal` | `java.math.BigDecimal`
+| `xsd:integer` | `java.math.BigDecimal`
+| `xsd:double` | `java.lang.Double`
+| `xsd:float` | `java.lang.Float`
+| `xsd:date` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:time` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:dateTime` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:dateTimeStamp` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:gYear` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:gMonth` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:gDay` | `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:gYearMonth` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:gMonthDay` |  `javax.xml.datatype.XMLGregorianCalendar`
+| `xsd:duration` | `javax.xml.datatype.Duration`
+| `xsd:yearMonthDuration` | `javax.xml.datatype.Duration`
+| `xsd:dayTimeDuration` | `javax.xml.datatype.Duration`
+| `xsd:byte` | `java.lang.Byte`
+| `xsd:short` | `java.lang.Short`
+| `xsd:int` | `java.lang.Integer`
+| `xsd:long` | `java.lang.Long`
+| `xsd:unsignedByte` | `java.lang.Short`
+| `xsd:unsignedShort` | `java.lang.Integer`
+| `xsd:unsignedInt` | `java.lang.Long`
+| `xsd:unsignedLong` | `java.math.BigInteger`
+| `xsd:positiveInteger` | `java.math.BigInteger`
+| `xsd:nonNegativeInteger` | `java.math.BigInteger`
+| `xsd:negativeInteger` | `java.math.BigInteger`
+| `xsd:nonPositiveInteger` | `java.math.BigInteger`
+| `xsd:hexBinary` | `byte[]`
+| `xsd:base64Binary` | `byte[]`
+| `xsd:anyURI` | `java.net.URI`
+| `bamm:curie` | `io.openmanufacturing.metamodel.datatypes.Curie`
+|===
+
+[[generating-pojos]]
+=== Generating POJOs
+
+POJO generation is straightforward; there are two minor differences to the generation of documentation artifacts.
+Firstly, when instantiating the generator, you pass a flag indicating whether
+https://en.wikipedia.org/wiki/Jackson_(API)[Jackson] annotations should be generated in the class. Secondly, the name
+mapping function passed to the generation method takes a `QualifiedName` instead of a String, so that you can decide how
+to handle the package structure of the class.
+
+include::sds-developer-guide:ROOT:partial$sample-pojo-generation.adoc[]
+
+[[generating-static-meta-classes]]
+=== Generating Static Meta Classes
+
+For the generation of static meta classes, consider the following example:
+
+include::sds-developer-guide:ROOT:partial$sample-static-meta-class-generation.adoc[]
+
+To use the generated static meta classes, you need the following additional dependency:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-static-meta-model-java-artifact.adoc[]
+
+[[migrate-meta-model-version]]
+== Programmatically migrate the Meta Model Version
+
+The meta model version migrator provides functionality to automatically migrate an Aspect model that uses an older
+version of the Aspect Meta Model to an Aspect model that uses a newer (usually the latest) version of the meta model.
+
+This is shown in the following sample:
+
+include::sds-developer-guide:ROOT:partial$sample-meta-model-version-migration.adoc[]
+
+To use the meta model version migrator, you need the following dependency:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-meta-model-version-migrator-artifact.adoc[]
+
+[[accessing-bamm-programmatically]]
+== Accessing the BAMM programmatically
+
+In order to access the source RDF files that describe the BAMM vocabulary, shared Characteristics and Entities as well
+as Units, you can add a dependency to the `aspect-meta-model` artifact. Note that this artifact does not contain any
+Java classes.
+
+include::sds-developer-guide:ROOT:partial$aspect-meta-model-artifact.adoc[]
+
+In order to access the files via `java.lang.Class#getResourceAsStream`, you can refer to the following directory
+structure that is present in the artifact:
+
+[source,subs="attributes+,+quotes"]
+----
+.
+├── characteristic
+│   └── {aspect-meta-model-version}
+│       ├── characteristic-definitions.ttl
+│       ├── characteristic-instances.ttl
+│       ├── characteristic-shapes.ttl
+│       └── characteristic-validations.js
+├── entity
+│   └── {aspect-meta-model-version}
+│       ├── FileResource.ttl
+│       ├── ThreeDimensionalPosition.ttl
+│       └── TimeSeriesEntity.ttl
+├── meta-model
+│   └── {aspect-meta-model-version}
+│       ├── aspect-meta-model-definitions.ttl
+│       ├── aspect-meta-model-shapes.ttl
+│       ├── prefix-declarations.ttl
+│       └── type-conversions.ttl
+└── unit
+    └── {aspect-meta-model-version}
+        └── units.ttl
+----
+
+TIP: If you use the artifact `aspect-model-resolver` instead (see section <<loading-and-saving>> for infos on the
+dependency) you can directly refer to the RDF files using a resource URL:
+
+[source,java]
+----
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Optional;
+import io.openmanufacturing.sds.aspectmodel.resolver.services.AspectMetaModelResourceResolver;
+import io.openmanufacturing.sds.aspectmodel.resolver.services.MetaModelUrls;
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+
+final KnownVersion metaModelVersion = KnownVersion.BAMM_1_0_0;
+final AspectMetaModelResourceResolver resolver = new AspectMetaModelResourceResolver();
+final Optional<URL> characteristicDefinitionsUrl =
+      MetaModelUrls.url( "characteristic", metaModelVersion, "characteristic-instances.ttl" );
+characteristicDefinitionsUrl.ifPresent( url -> {
+   final InputStream inputStream = resolver.openUrl( url );
+   resolver.loadTurtle( inputStream ).forEach( model -> {
+      // Do something with the org.apache.jena.org.rdf.model.Model
+      final BAMM bamm = new BAMM( metaModelVersion );
+      final int numberOfCharacteristicInstances =
+            model.listStatements( null, RDF.type, bamm.Characteristic() ).toList().size();
+      System.out.println( "Meta Model Version " + metaModelVersion.toVersionString()
+            + " defines " + numberOfCharacteristicInstances + " Characteristic instances" );
+   } );
+} );
+----
+

@@ -1,0 +1,6 @@
+= SDS SDK Developer Guide
+
+The SDS SDK Developer Guide helps you to get up-and-running with the SDS SDK developed within the OMP SDS WG (Open Manufacturing Platform - Semantic Data Structuring Working Group).
+It covers all possible scenarios, no matter whether you are planning to build a solution with the SDK,
+model your Aspect data, implement your own customized Aspect or want to integrate existing assets
+and systems.

@@ -1,0 +1,14 @@
+#parse( "java-static-class-body-lib.vm" )
+#set( $classBody = $util.applyImports( "#javaStaticClassBody()", $importTracker ) )
+#copyrightHeader
+package $packageName;
+
+#foreach( $import in $importTracker.usedImportsWithoutJavaLang )
+import $import;
+#end
+#foreach( $import in $importTracker.usedStaticImports )
+import $import;
+#end
+
+$classBody
+

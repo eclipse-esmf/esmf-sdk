@@ -1,0 +1,55 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
+
+:AspectWithTimeSeries a bamm:Aspect ;
+   bamm:name "AspectWithTimeSeries" ;
+   bamm:preferredName "Test Aspect"@en ;
+   bamm:description "This is a test description"@en ;
+   bamm:see <http://example.com/omp> ;
+   bamm:properties ( :testProperty ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:preferredName "Test Property"@en ;
+   bamm:description "This is a test property."@en ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
+   bamm:exampleValue "Example Value" ;
+   bamm:characteristic :TestTimeSeries .
+
+:TestTimeSeries a bamm-c:TimeSeries ;
+   bamm:name "TestTimeSeries" ;
+   bamm:preferredName "Test Time Series"@en ;
+   bamm:description "This is a test time series."@en ;
+   bamm:see <http://example.com/omp> ;
+   bamm:dataType :TestTimeSeriesEntity .
+
+:TestTimeSeriesEntity bamm:refines bamm-e:TimeSeriesEntity ;
+   bamm:name "TestTimeSeriesEntity" ;
+   bamm:preferredName "Test Time Series Entity"@en ;
+   bamm:description "This is a test time series entity."@en ;
+   bamm:see <http://example.com/omp> ;
+   bamm:properties ( :testValue ) .
+
+:testValue bamm:refines bamm-e:value ;
+   bamm:name "testValue" ;
+   bamm:preferredName "Test Value"@en ;
+   bamm:description "This is a test value."@en ;
+   bamm:see <http://example.com/omp> ;
+   bamm:characteristic bamm-c:Text .

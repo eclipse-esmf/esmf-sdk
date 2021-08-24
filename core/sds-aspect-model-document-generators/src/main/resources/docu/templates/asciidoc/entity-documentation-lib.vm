@@ -1,0 +1,13 @@
+#macro( entity $entity $aspectModelUtil $i18n $titleWeight $hideTitle $characteristicList)
+#if($hideTitle == false)
+    #title( $entity.getPreferredName($i18n.getLocale()) $aspectModelUtil.increment( $titleWeight ) )
+    $!entity.getDescription($i18n.getLocale())
+#end
+
+#foreach( $property in $entity.getProperties() )
+#property( $property $aspectModelUtil $i18n $aspectModelUtil.increment( $titleWeight ) true $characteristicList)
+#end
+#if(!$property.getSee().isEmpty())
+$i18n.getText("docu.label.see") #list($property.getSee( $property.getSee() ))
+#end
+#end
