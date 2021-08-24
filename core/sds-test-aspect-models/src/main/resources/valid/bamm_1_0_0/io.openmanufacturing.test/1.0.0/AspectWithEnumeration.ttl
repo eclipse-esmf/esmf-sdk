@@ -1,0 +1,41 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
+
+:AspectWithEnumeration a bamm:Aspect ;
+   bamm:name "AspectWithEnumeration" ;
+   bamm:preferredName "Test Aspect"@en ;
+   bamm:description "This is a test description"@en ;
+   bamm:see <http://example.com/omp> ;
+   bamm:properties ( :testProperty ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:preferredName "Test Property"@en ;
+   bamm:description "This is a test property."@en ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
+   bamm:exampleValue "Example Value" ;
+   bamm:characteristic :TestEnumeration .
+
+:TestEnumeration a bamm-c:Enumeration ;
+   bamm:name "TestEnumeration" ;
+   bamm:preferredName "Test Enumeration"@en ;
+   bamm:description "This is a test for enumeration."@en ;
+   bamm:see <http://example.com/omp> ;
+   bamm:dataType xsd:int ;
+   bamm-c:values ( 1 2 3 ) .

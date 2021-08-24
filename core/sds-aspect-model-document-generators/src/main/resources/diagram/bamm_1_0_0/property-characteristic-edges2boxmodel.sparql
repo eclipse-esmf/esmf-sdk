@@ -1,0 +1,65 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>
+prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix : <urn:bamm:io.openmanufacturing:meta-model:1.0.0/boxmodel#>
+
+# Generates edges between Properties and Characteristics (characteristic)
+construct {
+  ?edge a :Edge .
+  ?edge :title "characteristic" .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  #process Properties defined in the Aspect Model being processed
+  {
+    ?property bamm:refines?/rdf:type bamm:Property .
+    #exclude properties from our shared name-space
+    filter ( ! strstarts( str( ?property ), str ( bamm-e: ) ) )
+
+    ?property bamm:name ?propertyName .
+    ?property bamm:characteristic ?characteristic .
+    ?characteristic bamm:name ?characteristicName .
+
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?from )
+    bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+    bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?to )
+
+    bind( iri( concat( str( : ), ?propertyBoxName, "_To_", ?characteristicBoxName ) ) as ?edge )
+  }
+
+  union
+
+  #process Properties which are defined in an Entity which is refined, but are themselves not refined
+  {
+    ?refiningEntity bamm:refines/rdf:type bamm:Entity .
+    ?refiningEntity bamm:refines ?refinedEntity .
+
+    ?property bamm:refines?/rdf:type bamm:Property .
+    filter( exists { ?refinedEntity bamm:properties/rdf:rest*/rdf:first ?property } )
+    filter( not exists { [] bamm:refines ?property } )
+
+    ?property bamm:name ?propertyName .
+    ?property bamm:characteristic ?characteristic .
+    ?characteristic bamm:name ?characteristicName .
+
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?from )
+    bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+    bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?to )
+
+    bind( iri( concat( str( : ), ?propertyBoxName, "_To_", ?characteristicBoxName ) ) as ?edge )
+  }
+}
+

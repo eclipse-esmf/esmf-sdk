@@ -1,0 +1,26 @@
+#macro( javaPojoProperty $property )
+#set( $propertyType = $util.getPropertyType( $property, true, $importTracker ) )
+#if( !$property.isOptional() )
+    $importTracker.importExplicit( $NotNull )
+@NotNull
+#end
+#if( $propertyType == 'byte[]' )
+    $importTracker.importExplicit( $JsonSerialize )
+    $importTracker.importExplicit( $JsonDeserialize )
+    #if( $property.dataType.get().urn == $XSD.hexBinary.URI )
+        $importTracker.importExplicit( $HexBinarySerializer  )
+        $importTracker.importExplicit( $HexBinaryDeserializer )
+        @JsonSerialize( using = HexBinarySerializer.class )
+        @JsonDeserialize( using = HexBinaryDeserializer.class )
+    #else
+        $importTracker.importExplicit( $Base64BinarySerializer  )
+        $importTracker.importExplicit( $Base64BinaryDeserializer )
+        @JsonSerialize( using = Base64BinarySerializer.class )
+        @JsonDeserialize( using = Base64BinaryDeserializer.class )
+    #end
+#end
+#if( $Trait.isAssignableFrom( $property.characteristic.class ) )
+    $util.buildConstraintsForCharacteristic( $Trait.cast( $property.characteristic ), $importTracker )
+#end
+private $propertyType $property.getPayloadName();
+#end

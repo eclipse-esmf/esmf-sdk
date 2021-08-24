@@ -1,0 +1,192 @@
+#macro( characteristic $characteristic $aspectModelUtil $i18n $titleWeight $characteristicList)
+#if(!($characteristicList.contains($characteristic)))
+#set($s = $characteristicList.add($characteristic))
+#set( $characteristicClass = $aspectModelUtil.getClassForObject($characteristic).getSimpleName())
+#set( $macroToCall = '#' + $characteristicClass + '($characteristic $aspectModelUtil $i18n $titleWeight $characteristicList)')
+#evaluate($!macroToCall)
+#set($s = $characteristicList.remove($characteristic))
+#end
+#end
+
+#*
+-------------------------------------------------------------------------------------
+Characteristic specific macros will be joined together in the main macro (see above)
+-------------------------------------------------------------------------------------
+*#
+
+#* -- for Scalar ----------------------------------------------------------------- *#
+#macro( Scalar $scalar $aspectModelUtil $i18n $titleWeight $characteristicList)
+|*$i18n.getText("docu.label.urn")* | $scalar.getUrn()
+#end
+
+#* -- for Entity ----------------------------------------------------------------- *#
+#macro( Entity $entity $aspectModelUtil $i18n $titleWeight $characteristicList)
+#entity( $entity $aspectModelUtil $i18n $titleWeight true $characteristicList)
+#end
+
+
+#* -- for Characteristic ---------------------------------------------------------- *#
+#macro( Characteristic $characteristic $aspectModelUtil $i18n $titleWeight $characteristicList)
+#if($characteristic.getDataType().get().isComplex() == true)
+#set($entity = $!aspectModelUtil.getComplexTypeOfCharacteristic($characteristic))
+#Entity( $entity $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+#end
+
+#* -- for SingleEntity ----------------------------------------------------------- *#
+#macro( SingleEntity $singleEntity $aspectModelUtil $i18n $titleWeight $characteristicList)
+#set( $entities = $aspectModelUtil.sortEntitiesByPreferredName( $aspectModelUtil.getEntities( $aspectModel ), $i18n.getLocale()))
+#set( $entity = $aspectModelUtil.resolveEntity( $singleEntity, $entities ))
+#if($entity)
+#Entity( $entity $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+#end
+
+#* -- for Text ------------------------------------------------------------------- *#
+#macro( Text $text $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+
+#* -- for List ------------------------------------------------------------------- *#
+#macro( List $list $aspectModelUtil $i18n $titleWeight $characteristicList)
+#Collection( $list $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+
+#* -- for Set ------------------------------------------------------------------- *#
+#macro( Set $list $aspectModelUtil $i18n $titleWeight $characteristicList)
+#Collection( $list $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+
+#* -- for SortedSet ------------------------------------------------------------------- *#
+#macro( SortedSet $list $aspectModelUtil $i18n $titleWeight $characteristicList)
+#Collection( $list $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+
+#* -- for Collection ------------------------------------------------------------- *#
+#macro( Collection $collection $aspectModelUtil $i18n $titleWeight $characteristicList)
+|*$i18n.getText("docu.label.order")* | $collection.isOrdered() +
+|*$i18n.getText("docu.label.duplicates")* | $collection.isAllowDuplicates()
+#if($collection.getElementCharacteristic().isPresent())
+|*$i18n.getText("docu.label.element-type")* | $collection.getElementCharacteristic().get()
+#end
+#if($collection.getDataType().isPresent())
+#characteristic( $collection.getDataType().get() $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+#end
+
+#* -- for Enummeration ----------------------------------------------------------- *#
+#macro( Enumeration $enumeration $aspectModelUtil $i18n $titleWeight $characteristicList)
+|*$i18n.getText("docu.label.values")* | #foreach( $value in $enumeration.getValues() )
+#if($aspectModelUtil.isMap( $value ))
+#Map( $value $aspectModelUtil $i18n $characteristicList)
+#else
+$value
+#end
+#end
+#end
+
+#macro( Map $map $aspectModelUtil $i18n $characteristicList)
+
+[cols="30,70 a"]
+!===
+#foreach( $entrySet in $map.entrySet() )
+#if($entrySet.getKey().startsWith("urn:bamm:") && $map.size() > 1)
+## skip value
+#else
+! *$aspectModelUtil.capitalize( $entrySet.getKey() )*
+#end
+#end
+#foreach( $entrySet in $map.entrySet() )
+#if($entrySet.getKey().startsWith("urn:bamm:") && $map.size() > 1)
+## skip value
+#else
+! $entrySet.getValue()
+#end
+#end
+!===
+#end
+
+#* -- for StructuredValue -------------------------------------------------------- *#
+#macro( StructuredValue $structuredValue $aspectModelUtil $i18n $titleWeight $characteristicList)
+|*$i18n.getText("docu.label.deconstruction-rule")* | $structuredValue.getDeconstructionRule()
+|*$i18n.getText("docu.label.elements")* |
+#foreach($element in $structuredValue.getElements())
+* $element
+#end
+#end
+
+#* -- for Either ----------------------------------------------------------------- *#
+#macro( Either $either $aspectModelUtil $i18n $titleWeight $characteristicList)
+|*$i18n.getText("docu.label.values")* | $either.getLeft().getDescription($i18n.getLocale()) icon:arrows-h[] $either.getRight().getDescription($i18n.getLocale())
+#end
+
+#* -- for State ------------------------------------------------------------------- *#
+#macro( State $state $aspectModelUtil $i18n $titleWeight $characteristicList)
+|*$i18n.getText("docu.label.values")* | #foreach($value in $state.getValues())
+#if($value.equals($state.getDefaultValue()))
+* *$value*
+#else
+* $value
+#end
+#end
+#end
+
+#* -- for Code -------------------------------------------------------------------- *#
+#macro( Code $code $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+
+#* -- for Duration ---------------------------------------------------------------- *#
+#macro( Duration $duration $aspectModelUtil $i18n $titleWeight $characteristicList)
+#if($duration.getUnit().isPresent())
+|*$i18n.getText("docu.label.unit")* | $!duration.getDescription($i18n.getLocale())
+#Unit($!duration.getUnit().get() $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+#end
+
+#* -- for Quantifiable ------------------------------------------------------------- *#
+#macro( Quantifiable $quantifiable $aspectModelUtil $i18n $titleWeight $characteristicList)
+#Duration( $quantifiable $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+
+#* -- for TimeSeries --------------------------------------------------------------- *#
+#macro( TimeSeries $timeSeries $aspectModelUtil $i18n $titleWeight $characteristicList)
+|*$i18n.getText("docu.label.characteristic-type")* | $!aspectModelUtil.getClassForObject($characteristic).getSimpleName()
+#end
+
+#* -- for Measurement -------------------------------------------------------------- *#
+#macro( Measurement $measurement $aspectModelUtil $i18n $titleWeight $characteristicList)
+|*$i18n.getText("docu.label.unit")* | $!measurement.getDescription($i18n.getLocale())
+#Unit($!measurement.getUnit().get() $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+
+#* -- for Unit --------------------------------------------------------------------- *#
+#macro( Unit $unit $aspectModelUtil $i18n $titleWeight $characteristicList)
+
+[cols="25,25,25,25 a",options="header"]
+!===
+! *$i18n.getText("docu.label.symbol")* !*$i18n.getText("docu.label.code")* !*$i18n.getText("docu.label.conversion-factor")* !*$i18n.getText(
+    "docu.label.quantity-kinds")*
+
+#if($unit.getSymbol().isPresent())
+! $!unit.getSymbol().get()
+#else
+! n.a.
+#end
+#if($unit.getCode().isPresent())
+! $!unit.getCode().get()
+#else
+! n.a.
+#end
+#if($unit.getConversionFactor().isPresent())
+! $!unit.getConversionFactor().get()
+#else
+! n.a.
+#end
+#if($unit.getQuantityKinds().isEmpty() == false)
+! #foreach($quantityKind in $unit.getQuantityKinds())
+* $quantityKind.getLabel() #if($foreach.hasNext) + #end
+#end
+#else
+! n.a.
+#end
+!===
+#end

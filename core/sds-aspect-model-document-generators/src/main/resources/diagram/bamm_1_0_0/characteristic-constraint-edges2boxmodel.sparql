@@ -1,0 +1,66 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>
+prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#>
+prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:bamm:io.openmanufacturing:meta-model:1.0.0/boxmodel#>
+
+# Generates edges between Trait and Constraints (constraint)
+construct {
+  ?edge a :Edge .
+  ?edge :title "constraint" .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  ?characteristic bamm-c:constraint ?constraint .
+  ?characteristic bamm:name ?characteristicName .
+
+  bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+  bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
+
+  optional {
+    ?constraint bamm:name ?givenConstraintName .
+  }
+
+  # Calculate logical hash for constraint in case it does not have a bamm:name
+  # The constraint might also be defined as an anonymous node
+  {
+    select * where {
+      ?constraint rdf:type/rdfs:subClassOf* bamm:Constraint .
+      filter( sameTerm( ?propertySubQueryConstraint, ?constraint ) )
+      {
+        select ?propertySubQueryConstraint ( group_concat( ?serializedProperty; separator=":" ) as ?constraintPropertyValues )
+        where {
+          select *
+          where {
+            ?propertySubQueryConstraint rdf:type/rdfs:subClassOf* bamm:Constraint .
+            ?propertySubQueryConstraint ?anyProperty ?constraintPropertyValue .
+            bind( concat( str( ?anyProperty ), "=", str( ?constraintPropertyValue ) ) as ?serializedProperty )
+          }
+          order by str( ?serializedProperty )
+        }
+        group by ?propertySubQueryConstraint
+      }
+    }
+  }
+
+  bind( coalesce( concat( ?givenConstraintName, "Constraint" ),
+                 concat( "Constraint", substr( md5( ?constraintPropertyValues ), 0, 11 ) ) ) as ?constraintBoxName )
+
+  bind( iri( concat( str( : ), ?constraintBoxName ) ) as ?to )
+
+  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?constraintBoxName ) ) as ?edge )
+}
+

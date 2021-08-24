@@ -1,0 +1,99 @@
+{
+  "request": [
+    {
+      "name": "previous",
+      "in": "query",
+      "description": "URL to request the previous items. An empty value indicates there are no previous items.",
+      "required": false,
+      "schema": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    {
+      "name": "next",
+      "in": "query",
+      "description": "URL to request the the next items. An empty value indicates there are no other items.",
+      "required": false,
+      "schema": {
+        "type": "string",
+        "format": "uri"
+      }
+    },
+    {
+      "name": "before",
+      "in": "query",
+      "description": "The cursor that points to the start of the page of items that has been returned.",
+      "required": false,
+      "schema": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "description": "The cursor that points to the end of items that has been returned.",
+      "required": false,
+      "schema": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    {
+      "name": "count",
+      "in": "query",
+      "description": "Number of items to return per call.",
+      "required": false,
+      "schema": {
+        "type": "number"
+      }
+    },
+    {
+      "name": "totalItemCount",
+      "in": "query",
+      "description": "Flag that indicates that the total counts should be returned.",
+      "required": false,
+      "schema": {
+        "type": "boolean"
+      }
+    }
+  ],
+  "response": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array"
+      },
+      "totalItems": {
+        "type": "number"
+      },
+      "cursor": {
+        "type": "object",
+        "properties": {
+          "before": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "after": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "_links": {
+        "type": "object",
+        "properties": {
+          "previous": {
+            "type": "string",
+            "format": "uri"
+          },
+          "next": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    }
+  }
+}

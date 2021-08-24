@@ -1,0 +1,17 @@
+#macro( operation $operation $aspectModelUtil $i18n $titleWeight $closeTableBefore)
+#title( $operation.getPreferredName($i18n.getLocale()) $titleWeight $closeTableBefore)
+
+$!operation.getDescription($i18n.getLocale())
+
+#title($i18n.getText("docu.label.input") 3 false)
+#foreach( $property in $operation.getInput() )
+    #property( $property $aspectModelUtil $i18n 5)
+#end
+
+#if( $operation.getOutput().isPresent())
+#title($i18n.getText("docu.label.output") 3)
+#set($characteristicList = [])
+#property( $operation.getOutput().get() $aspectModelUtil $i18n 5 $characteristicList)
+#end
+
+#end

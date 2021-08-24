@@ -1,0 +1,34 @@
+#parse( "java-pojo-property-lib.vm" )
+#parse( "java-pojo-constructor-lib.vm" )
+#parse( "java-pojo-getter-lib.vm" )
+#parse( "java-pojo-equals-method-lib.vm" )
+
+#macro( javaPojoClassBody )
+/**
+* Generated class for $element.getPreferredName( $localeEn ).
+*#if ( $element.getDescription( $localeEn ) ) $element.getDescription( $localeEn )#end
+*/
+#if ( $element.isCollectionAspect() )
+${util.determineCollectionAspectClassDefinition( $element, $importTracker )} {
+#else
+public class $element.getName() {
+#end
+#foreach( $property in $element.properties )
+    #javaPojoProperty( $property )
+#end
+#foreach( $property in $deconstructor.allProperties )
+   #javaPojoProperty( $property )
+#end
+
+#javaPojoConstructor()
+
+#foreach( $property in $element.properties )
+    #javaPojoGetter( $property )
+#end
+#foreach( $property in $deconstructor.allProperties )
+    #javaPojoGetter( $property )
+#end
+
+    #javaPojoEqualsMethod()
+}
+#end

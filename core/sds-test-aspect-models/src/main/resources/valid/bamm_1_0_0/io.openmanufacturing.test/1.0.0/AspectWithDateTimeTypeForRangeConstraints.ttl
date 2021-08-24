@@ -1,0 +1,68 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix :       <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm:   <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit:   <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
+
+:AspectWithDateTimeTypeForRangeConstraints
+    a               bamm:Aspect ;
+    bamm:name       "AspectWithDateTimeTypeForRangeConstraints" ;
+    bamm:properties ( :testPropertyWithDateTime :testPropertyWithDateTimeStamp ) ;
+    bamm:operations ( ) .
+
+:testPropertyWithDateTime
+    a                   bamm:Property ;
+    bamm:name           "TestPropertyWithDateTime" ;
+    bamm:characteristic :testWithGregorianCalenderMinGregorianCalenderMaxDateTime .
+
+:testWithGregorianCalenderMinGregorianCalenderMaxDateTime
+    a                       bamm-c:Trait ;
+    bamm:name               "TestWithGregorianCalenderMinGregorianCalenderMaxDateTime" ;
+    bamm:preferredName      "Test Range"@en ;
+    bamm:description        "Test Range"@en ;
+    bamm-c:constraint [
+       a bamm-c:RangeConstraint ;
+       bamm-c:minValue "2000-01-01T14:23:00"^^xsd:dateTime ;
+       bamm-c:maxValue "2000-01-02T15:23:00"^^xsd:dateTime ;
+    ] ;
+    bamm-c:baseCharacteristic :MeasurementDateTime .
+
+:MeasurementDateTime
+    a             bamm-c:Measurement ;
+    bamm:name     "Measurement" ;
+    bamm:dataType xsd:dateTime ;
+    bamm-c:unit   unit:time .
+
+:testPropertyWithDateTimeStamp
+    a                   bamm:Property ;
+    bamm:name           "TestPropertyWithDateTimeStamp" ;
+    bamm:characteristic :testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp .
+
+:testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp
+    a                       bamm-c:Trait;
+    bamm:name               "TestWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp" ;
+    bamm:preferredName      "Test Range"@en ;
+    bamm:description        "Test Range"@en ;
+    bamm-c:constraint [
+       a bamm-c:RangeConstraint ;
+       bamm-c:minValue "2000-01-01T14:23:00.66372+14:00"^^xsd:dateTimeStamp ;
+       bamm-c:maxValue "2000-01-01T15:23:00.66372+14:00"^^xsd:dateTimeStamp ;
+    ] ;
+    bamm-c:baseCharacteristic :MeasurementDateTimeStamp .
+
+:MeasurementDateTimeStamp
+    a             bamm-c:Measurement ;
+    bamm:name     "Measurement" ;
+    bamm:dataType xsd:dateTimeStamp ;
+    bamm-c:unit   unit:time .

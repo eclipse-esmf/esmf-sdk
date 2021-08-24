@@ -1,0 +1,11 @@
+{
+  "test-Id": {
+    "name": "test-Id",
+    "in": "path",
+    "description": "The ID of the unit.",
+    "required": true,
+    "schema": {
+      "type": "string"
+    }
+  }
+}

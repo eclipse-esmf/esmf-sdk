@@ -1,0 +1,68 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>
+prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#>
+prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:bamm:io.openmanufacturing:meta-model:1.0.0/boxmodel#>
+
+# Generates boxes for Entity instances
+construct {
+  ?entityBox a :Box .
+  ?entityBox :prototype ?prototype .
+  ?entityBox :title ?instanceName .
+  ?entityBox :entry [
+    a :Entry ;
+    :title ?entryTitle ;
+    :text ?entryText
+  ] .
+} where {
+  ?instance a ?entity .
+  ?entity a bamm:Entity .
+
+  filter( exists {
+    ?aspect a bamm:Aspect .
+    ?aspect (<>|!<>)* ?instance .
+  } && exists {
+    ?aspect a bamm:Aspect .
+    ?aspect (<>|!<>)* ?entity .
+  } )
+
+  ?entity bamm:name ?prototype .
+  bind( strafter( str( ?instance ), "#" ) as ?instanceName )
+
+  bind( concat( ?instanceName, "EntityInstance" ) as ?boxName )
+  bind( iri( concat( str( : ), ?boxName ) ) as ?entityBox )
+
+  ?entity bamm:properties/rdf:rest*/rdf:first*/bamm:property* ?property .
+  ?property bamm:characteristic/bamm-c:baseCharacteristc*/bamm:dataType ?dataType .
+  filter ( not exists { ?dataType rdf:type/rdfs:subclassOf* bamm:Entity } ) .
+
+  ?property bamm:name ?propertyName .
+  bind( ?propertyName as ?entryTitle )
+
+  ?instance ?property ?propertyValue .
+  bind( str( ?propertyValue ) as ?value )
+
+  optional {
+    select ?property ( group_concat( distinct ?listValue;separator=";" ) as ?value ) {
+      ?instance ?property ?propertyValue
+      filter ( isBlank(?propertyValue) )
+      ?propertyValue rdf:rest*/rdf:first ?listValue
+    }
+    group by ?property
+  }
+
+  bind( str( ?value ) as ?entryText )
+}

@@ -1,0 +1,5 @@
+<!--
+  ~ Copyright (c) 2019 Robert Bosch Manufacturing Solutions GmbH, Germany. All rights reserved.
+ -->
+
+ Empty zip is not possible

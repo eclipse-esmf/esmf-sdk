@@ -1,0 +1,175 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>
+prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:bamm:io.openmanufacturing:meta-model:1.0.0/boxmodel#>
+
+# Generates boxes for Enumeration and State Characteristics
+construct {
+  ?characteristicBox a :Box .
+  ?characteristicBox :prototype "Characteristic + Enumeration" .
+  ?characteristicBox :title ?characteristicName .
+  ?characteristicBox :entries (
+     [
+       a :Entry ;
+       :title "preferredName" ;
+       :text ?preferredName
+     ]
+     [
+       a :Entry ;
+       :title "description" ;
+       :text ?description
+     ]
+     [
+       a :Entry ;
+       :title "dataType" ;
+       :text ?dataType
+     ]
+     [
+       a :Entry ;
+       :title "values" ;
+       :text ?values
+     ]
+     [
+       a :Entry ;
+       :title "defaultValue" ;
+       :text ?defaultValue
+     ]
+     [
+       a :Entry ;
+       :title "see" ;
+       :text ?seeValues
+     ]
+  )
+} where {
+  ?characteristic rdf:type/rdfs:subClassOf* bamm:Characteristic .
+
+  # Apply only to those Characteristics which are used in the Aspect model,
+  # i.e. where a directed link from an Aspect to the Characteristic exists.
+  # (<>|!<>) matches any RDF property.
+  filter( exists {
+    ?aspect a bamm:Aspect .
+    ?aspect (<>|!<>)* ?characteristic .
+  } )
+
+  # Apply only to Enumerations
+  filter( exists { ?characteristic a bamm-c:Enumeration } || exists { ?characteristic a bamm-c:State } )
+
+  ?characteristic bamm:name ?characteristicName .
+  bind( concat( ?characteristicName, "Characteristic" ) as ?boxName )
+  bind( iri( concat( str( : ), ?boxName ) ) as ?characteristicBox )
+
+  optional {
+    ?characteristic bamm:preferredName ?preferredNameValue .
+    filter( lang( ?preferredNameValue ) = "en" )
+    bind( xsd:string( ?preferredNameValue ) as ?preferredName )
+  }
+
+  optional {
+    ?characteristic bamm:description ?descriptionValue .
+    filter( lang( ?descriptionValue ) = "en" )
+    bind( xsd:string( ?descriptionValue ) as ?description )
+  }
+
+  #subquery which concatenates all values for the bamm:see attributes
+  optional {
+    {
+      select * where {
+        ?characteristic rdf:type/rdfs:subClassOf* bamm:Characteristic .
+        filter( str( ?subQueryCharacteristic ) = str( ?characteristic ) )
+        {
+          select ?subQueryCharacteristic ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
+          where {
+            select *
+            where {
+              ?subQueryCharacteristic rdf:type/rdfs:subClassOf* bamm:Characteristic .
+              ?subQueryCharacteristic bamm:see ?seeValue .
+            }
+            order by str( ?seeValue )
+          }
+          group by ?subQueryCharacteristic
+        }
+      }
+    }
+  }
+
+  optional {
+    {
+      select ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
+      where {
+        ?characteristic rdf:type/rdfs:subClassOf* bamm:Characteristic .
+        filter( exists {
+          ?aspect a bamm:Aspect .
+          ?aspect (<>|!<>)* ?characteristic .
+        } )
+        filter( !exists { ?characteristic bamm-c:baseCharacteristic [] } )
+        filter( !exists { ?characteristic rdf:type/rdfs:subClassOf* bamm-c:Collection } )
+        filter( exists { ?characteristic a bamm-c:Enumeration } || exists { ?characteristic a bamm-c:State } )
+        ?characteristic bamm:see ?seeValue .
+      }
+      group by ?characteristic
+    }
+  }
+
+  # The datatype is optional, because only for literal types (i.e. strings) they
+  # should be shown as attributes in the box. For types that are shown as other
+  # boxes in the diagram (e.g. Meta Model Properties), an edge should be
+  # generated instead.
+  optional {
+    ?characteristic bamm:dataType ?dataTypeValue .
+    filter( strstarts( str( ?dataTypeValue ), str( xsd: ) )
+         || strstarts( str( ?dataTypeValue ), str( rdf: ) )
+         || str( ?dataTypeValue) = str( bamm:curie ) )
+    bind(
+      replace(
+        replace(
+          replace( str( ?dataTypeValue ), str( xsd: ), "xsd:" ),
+          str( rdf: ), "rdf:" ),
+        str( bamm: ), "bamm:" )
+      as ?dataType )
+  }
+
+  # Attributes specific to Enumeration and State
+   ?characteristic a ?characteristicType .
+  filter( ?characteristicType in ( bamm-c:Enumeration, bamm-c:State ) )
+
+  # values (Enumeration and State)
+  optional {
+    # Process here only basic types, i.e. lists of scalars
+    ?characteristic bamm-c:values/rdf:first ?firstValue .
+    filter( strstarts( coalesce( str( datatype( ?firstValue ) ), str( ?firstValue ) ), str( xsd: ) ) )
+
+    {
+      select ?characteristic ( group_concat( ?serializedValue; separator=", " ) as ?values )
+      where {
+        ?characteristic bamm-c:values/rdf:rest*/rdf:first ?value .
+        bind(
+          replace(
+             replace(
+                replace( str( ?value ), str( xsd: ), "xsd:" ),
+                str( rdf: ), "rdf:" ),
+             str( bamm: ), "bamm:" )
+          as ?serializedValue )
+      }
+      group by ?characteristic
+    }
+  }
+
+  # defaultValue (State)
+  optional {
+    filter( ?characteristicType in ( bamm-c:State ) )
+    ?characteristic bamm-c:defaultValue ?defaultValue .
+  }
+}

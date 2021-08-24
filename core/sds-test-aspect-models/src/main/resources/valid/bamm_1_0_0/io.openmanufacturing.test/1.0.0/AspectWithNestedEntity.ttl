@@ -1,0 +1,49 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithNestedEntity a bamm:Aspect ;
+   bamm:name "AspectWithNestedEntity" ;
+   bamm:properties ( :entity ) ;
+   bamm:operations ( ) .
+
+:entity a bamm:Property ;
+   bamm:name "entity" ;
+   bamm:characteristic :EntityCharacteristic .
+
+:Entity a bamm:Entity ;
+   bamm:name "Entity" ;
+   bamm:properties ( :nestedEntity :testString ) .
+
+:nestedEntity a bamm:Property ;
+   bamm:name "nestedEntity" ;
+   bamm:characteristic :NestedEntityCharacteristic .
+
+:NestedTestEntity a bamm:Entity ;
+   bamm:name "NestedTestEntity" ;
+   bamm:properties ( :testString ) .
+
+:testString a bamm:Property ;
+   bamm:name "testString" ;
+   bamm:exampleValue "Example Value Test" ;
+   bamm:characteristic bamm-c:Text .
+
+:EntityCharacteristic a bamm:Characteristic ;
+   bamm:name "EntityCharacteristic" ;
+   bamm:dataType :Entity .
+
+:NestedEntityCharacteristic a bamm:Characteristic ;
+   bamm:name "NestedEntityCharacteristic" ;
+   bamm:dataType :NestedTestEntity .

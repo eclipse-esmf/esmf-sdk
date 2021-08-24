@@ -1,0 +1,53 @@
+{
+  "request": [
+    {
+      "name": "since",
+      "in": "query",
+      "description": "A timestamp that points to the start of the time-based data.",
+      "required": false,
+      "schema": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    {
+      "name": "until",
+      "in": "query",
+      "description": "A timestamp that points to the end of the time-based data.",
+      "required": false,
+      "schema": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "description": "Number of items to return per call.",
+      "required": false,
+      "schema": {
+        "type": "number"
+      }
+    }
+  ],
+  "response": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array"
+      },
+      "totalItems": {
+        "type": "number"
+      },
+      "totalPages": {
+        "type": "number"
+      },
+      "pageSize": {
+        "type": "number"
+      },
+      "currentPage": {
+        "type": "number"
+      }
+    }
+  }
+}
