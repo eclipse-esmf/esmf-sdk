@@ -27,17 +27,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.openmanufacturing.sds.metamodel.*;
 import org.apache.commons.lang3.StringUtils;
-
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Constraint;
-import io.openmanufacturing.sds.metamodel.Entity;
-import io.openmanufacturing.sds.metamodel.HasProperties;
-import io.openmanufacturing.sds.metamodel.Operation;
-import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.SingleEntity;
-import io.openmanufacturing.sds.metamodel.Type;
 
 public class AspectModelUtil {
 
@@ -93,14 +84,14 @@ public class AspectModelUtil {
 
    public static Set<Constraint> getConstraints( final Property property ) {
       final Set<Constraint> constraints = new HashSet<>();
-      if ( property.getCharacteristic() instanceof Constraint ) {
-         constraints.add( (Constraint) property.getCharacteristic() );
+      if ( property.getCharacteristic() instanceof Trait) {
+         constraints.addAll( ((Trait) property.getCharacteristic()).getConstraints() );
       }
       return constraints;
    }
 
    @SuppressWarnings( "squid:S2250" )
-   //Amount of elements in list is regarding to amount of properties in aspect model. Even in bigger aspects this should not lead to performance issues
+   //Amount of elements in list is regarding the amount of properties in aspect model. Even in bigger aspects this should not lead to performance issues
    public static Set<Property> getProperties( final Characteristic characteristic ) {
       if ( characteristicList.contains( characteristic ) ) {
          return Set.of();
@@ -135,7 +126,7 @@ public class AspectModelUtil {
    }
 
    @SuppressWarnings( "squid:S3655" )
-   //There won't be much issues in calling without isPresent as everything will be underneath the velocity template and there is no alternative in case it
+   //There won't be many issues in calling without isPresent as everything will be underneath the velocity template and there is no alternative in case it
    // isn't present.
    public static Entity getComplexTypeOfCharacteristic( final Characteristic characteristic ) {
       return (Entity) characteristic.getDataType().get();
