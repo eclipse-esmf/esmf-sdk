@@ -1,0 +1,44 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing:meta-model:1.0.0/boxmodel#> .
+
+:Node1
+   a :Box ;
+   :prototype "Node1Prototype" ;
+   :title "Node1Title" ;
+   :entries ( [
+                 a :Entry ;
+                 :title "entry1title" ;
+                 :text "entry1text"
+              ]
+              [
+                 a :Entry ;
+                 :title "entry2title" ;
+                 :text "entry2text"
+              ] ) .
+
+:Node2
+   a :Box ;
+   :prototype "Node2Prototype" ;
+   :title "Node2Title" .
+
+:Node3WithFillColor
+   a :Box ;
+   :prototype "Node3Prototype" ;
+   :title "Node3Title" ;
+   :fillcolor "orange" .
+
+:Edge1
+   a :Edge ;
+   :from :Node1 ;
+   :to :Node2 ;
+   :title "edge" .

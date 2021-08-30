@@ -1,0 +1,131 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#TestAspect> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithConstraint a bamm:Aspect ;
+   bamm:name "AspectWithConstraint" ;
+   bamm:properties ( :stringLcProperty :doubleRcProperty :intRcProperty :bigIntRcProperty :floatRcProperty :stringRegexcProperty ) ;
+   bamm:operations ( ) .
+
+:stringLcProperty a bamm:Property ;
+   bamm:name "stringLcProperty" ;
+   bamm:characteristic :StringLengthConstraint .
+
+:stringRegexcProperty a bamm:Property ;
+   bamm:name "stringRegexcProperty" ;
+   bamm:characteristic :RegularExpressionConstraint .
+
+:doubleRcProperty a bamm:Property ;
+   bamm:name "doubleRcProperty" ;
+   bamm:characteristic :DoubleRangeConstraint .
+
+:intRcProperty a bamm:Property ;
+   bamm:name "intRcProperty" ;
+   bamm:characteristic :IntegerRangeConstraint .
+
+:bigIntRcProperty a bamm:Property ;
+   bamm:name "bigIntRcProperty" ;
+   bamm:characteristic :BigIntegerRangeConstraint .
+
+:floatRcProperty a bamm:Property ;
+   bamm:name "floatRcProperty" ;
+   bamm:characteristic :FloatRangeConstraint .
+
+:StringLengthConstraint a bamm-c:Trait ;
+   bamm:name "StringLengthConstraint" ;
+   bamm:preferredName "Used Test Constraint"@en ;
+   bamm:description "Used Test Constraint"@en ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
+   bamm-c:constraint [
+      a bamm-c:LengthConstraint ;
+      bamm-c:minValue "20"^^xsd:nonNegativeInteger ;
+      bamm-c:maxValue "22"^^xsd:nonNegativeInteger ;
+   ] ;
+   bamm-c:baseCharacteristic bamm-c:Text .
+
+:DoubleRangeConstraint a bamm-c:Trait ;
+   bamm:name "TestConstraint" ;
+   bamm:preferredName "Test Constraint"@en ;
+   bamm:description "Test Constraint"@en ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue "-0.1"^^xsd:double ;
+      bamm-c:maxValue "0.2"^^xsd:double ;
+   ] ;
+   bamm-c:baseCharacteristic :DoubleMeasurement .
+
+:IntegerRangeConstraint a bamm-c:Trait ;
+   bamm:name "TestConstraint" ;
+   bamm:preferredName "Test Constraint"@en ;
+   bamm:description "Test Constraint"@en ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue "-1"^^xsd:int ;
+      bamm-c:maxValue "-1"^^xsd:int ;
+   ] ;
+   bamm-c:baseCharacteristic :IntegerMeasurement .
+
+:BigIntegerRangeConstraint a bamm-c:Trait ;
+   bamm:name "TestConstraint" ;
+   bamm:preferredName "Test Constraint"@en ;
+   bamm:description "Test Constraint"@en ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue "10"^^xsd:int ;
+      bamm-c:maxValue "15"^^xsd:int ;
+   ] ;
+   bamm-c:baseCharacteristic :BigIntegerMeasurement .
+
+:FloatRangeConstraint a bamm-c:Trait ;
+   bamm:name "TestConstraint" ;
+   bamm:preferredName "Test Constraint"@en ;
+   bamm:description "Test Constraint"@en ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue "100"^^xsd:int ;
+      bamm-c:maxValue "112"^^xsd:int ;
+   ] ;
+   bamm-c:baseCharacteristic :FloatMeasurement .
+
+:RegularExpressionConstraint a bamm-c:Trait ;
+   bamm:name "TestRegularExpressionConstraint" ;
+   bamm:preferredName "Test Regular Expression Constraint"@en ;
+   bamm:description "Test Regular Expression Constraint"@en ;
+   bamm-c:constraint [
+      a bamm-c:RegularExpressionConstraint ;
+      bamm:value "[a-zA-Z]" ;
+   ] ;
+   bamm-c:baseCharacteristic bamm-c:Text .
+
+:DoubleMeasurement a bamm-c:Measurement ;
+   bamm:name "AccelerationMeasurement" ;
+   bamm:description "The acceleration"@en ;
+   bamm:dataType xsd:double .
+
+:IntegerMeasurement a bamm-c:Measurement ;
+   bamm:name "AccelerationMeasurement" ;
+   bamm:description "The acceleration"@en ;
+   bamm:dataType xsd:int .
+
+:BigIntegerMeasurement a bamm-c:Measurement ;
+   bamm:name "AccelerationMeasurement" ;
+   bamm:description "The acceleration"@en ;
+   bamm:dataType xsd:integer .
+
+:FloatMeasurement a bamm-c:Measurement ;
+   bamm:name "AccelerationMeasurement" ;
+   bamm:description "The acceleration"@en ;
+   bamm:dataType xsd:float .

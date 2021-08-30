@@ -1,0 +1,18 @@
+[source,java]
+----
+import java.io.OutputStream;
+import io.openmanufacturing.sds.aspectmodel.java.QualifiedName;
+import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
+import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+
+OutputStream outputStreamForName( final QualifiedName qualifiedName ) {
+   // Return an OutputStream for the qualified class name
+}
+
+// Versioned model as returned by the AspectModelResolver
+final VersionedModel versionedModel = ...
+
+// The boolean flag determines whether the generator should generate Jackson annotations
+final AspectModelJavaGenerator generator = new AspectModelJavaGenerator( versionedModel, true );
+generator.generate( this::outputStreamForName );
+----

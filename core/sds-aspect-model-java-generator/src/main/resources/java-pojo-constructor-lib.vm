@@ -1,0 +1,54 @@
+#macro( constructorContent $deconstructionSets $needInitializer $propertiesList $enableJacksonAnnotations )
+    #if( $enableJacksonAnnotations )
+        $importTracker.importExplicit( $JsonProperty )
+        $importTracker.importExplicit( $JsonCreator )
+        @JsonCreator
+    #end
+    public ${element.name}(
+    #foreach( $property in $propertiesList )
+		#if( $enableJacksonAnnotations ) @JsonProperty( value = "$property.getPayloadName()" ) #end
+        $util.getPropertyType( $property, false, $importTracker ) $property.getPayloadName()
+        #if( $foreach.hasNext ), #end
+    #end
+    ) #if( $needInitializer ) throws DatatypeConfigurationException #end {
+    #foreach( $property in $propertiesList )
+        this.$property.getPayloadName() = $property.getPayloadName();
+    #end
+    #if( $needInitializer )
+        final DatatypeFactory _datatypeFactory = DatatypeFactory.newInstance();
+    #end
+    #foreach( $deconstructionSet in $deconstructionSets )
+    {
+        final Pattern pattern = Pattern.compile( "${deconstructionSet.deconstructionRule.replaceAll("\\", "\\\\")}" );
+        final Matcher matcher = pattern.matcher( ${deconstructionSet.originalProperty.name}.toString() );
+        if ( matcher.find() ) {
+        #foreach( $property in $deconstructionSet.elementProperties )
+            #set( $value = "matcher.group( ${foreach.count} )" )
+            this.${property.name} = $util.generateInitializer( $property, $value, $importTracker, $valueInitializer );
+        #end
+        }
+    }
+    #end
+    }
+#end
+
+#macro( javaPojoConstructor )
+#if ( $deconstructor.isApplicable() )
+    $importTracker.importExplicit( $Matcher )
+    $importTracker.importExplicit( $Pattern )
+#end
+#set( $deconstructionSets = $deconstructor.deconstructionSets )
+#set( $needInitializer = $valueInitializer.needInitializationToConstructor( $deconstructionSets ) )
+#if ( $needInitializer )
+    $importTracker.importExplicit( $DatatypeConfigurationException )
+    $importTracker.importExplicit( $DatatypeConstants )
+    $importTracker.importExplicit( $DatatypeFactory )
+#end
+#if ( $util.anyPropertyNotInPayload( $element ) )
+    #set( $propertiesInPayload = $util.getPropertiesInPayload( $element ) )
+    #constructorContent( $deconstructionSets $needInitializer $element.properties false )
+    #constructorContent( $deconstructionSets $needInitializer $propertiesInPayload $enableJacksonAnnotations )
+#else
+    #constructorContent( $deconstructionSets $needInitializer $element.properties $enableJacksonAnnotations )
+#end
+#end

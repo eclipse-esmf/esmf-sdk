@@ -1,0 +1,122 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithExtendedEnums a bamm:Aspect ;
+   bamm:name "AspectWithExtendedEnums" ;
+   bamm:properties ( :result :simpleResult ) ;
+   bamm:operations ( ) .
+
+:EvaluationResult a bamm:Entity ;
+   bamm:name "EvaluationResult" ;
+   bamm:preferredName "Evaluation Result"@en ;
+   bamm:description "Possible values for the evaluation of a process"@en ;
+   bamm:properties ( [ bamm:property :average ; bamm:optional "true"^^xsd:boolean ]
+                     :numericCode
+                     :description
+                     :nestedResult ) .
+
+:NestedResult a bamm:Entity ;
+   bamm:name "NestedResult" ;
+   bamm:preferredName "Nested Result"@en ;
+   bamm:description "A nested result for testing"@en ;
+   bamm:properties ( :average :description ) .
+
+:ShortCode a bamm:Characteristic ;
+   bamm:name "ShortCode" ;
+   bamm:preferredName "Short Code"@en ;
+   bamm:description "A numeric code with dataType short"@en ;
+   bamm:dataType xsd:short .
+
+:BigIntegerValue a bamm:Characteristic ;
+   bamm:name "BigIntegerValue" ;
+   bamm:preferredName "BigInteger Value"@en ;
+   bamm:description "Some big integer value"@en ;
+   bamm:dataType xsd:integer .
+
+:numericCode a bamm:Property ;
+   bamm:name "numericCode" ;
+   bamm:preferredName "Numeric Code"@en ;
+   bamm:description "Numeric code for the evaluation result"@en ;
+   bamm:characteristic :ShortCode .
+
+:description a bamm:Property ;
+   bamm:name "description" ;
+   bamm:preferredName "Description"@en ;
+   bamm:description "Human-readable description of the process result code"@en ;
+   bamm:characteristic bamm-c:Text .
+
+:average a bamm:Property ;
+   bamm:name "average" ;
+   bamm:preferredName "Average"@en ;
+   bamm:description "Some artifical average value"@en ;
+   bamm:characteristic :BigIntegerValue .
+
+:ResultNoStatus a :EvaluationResult ;
+   :average "3"^^xsd:integer ;
+   :numericCode "-1"^^xsd:short ;
+   :description "No status" ;
+   :nestedResult :NestedResultGood .
+
+:ResultGood a :EvaluationResult ;
+   :average "4"^^xsd:integer ;
+   :numericCode "1"^^xsd:short ;
+   :description "Good" ;
+   :nestedResult :NestedResultGood .
+
+:ResultBad a :EvaluationResult ;
+   :average "13"^^xsd:integer ;
+   :numericCode "2"^^xsd:short ;
+   :description "Bad" ;
+   :nestedResult :NestedResultGood .
+
+:NestedResultGood a :NestedResult ;
+   :average "1"^^xsd:integer ;
+   :description "GOOD" .
+
+:EvaluationResults a bamm-c:Enumeration ;
+   bamm:name "EvaluationResults" ;
+   bamm:preferredName "Evaluation Results"@en ;
+   bamm:description "Possible values for the evaluation of a process"@en ;
+   bamm:dataType :EvaluationResult ;
+   bamm-c:values ( :ResultNoStatus
+                   :ResultGood
+                   :ResultBad ) .
+
+:result a bamm:Property ;
+   bamm:name "result" ;
+   bamm:preferredName "result"@en ;
+   bamm:characteristic :EvaluationResults .
+
+:nestedResult a bamm:Property ;
+   bamm:name "nestedResult" ;
+   bamm:preferredName "nested result"@en ;
+   bamm:characteristic :NestedResultCharacteristic .
+
+:NestedResultCharacteristic a bamm:Characteristic ;
+   bamm:name "NestedResultCharacteristic" ;
+   bamm:dataType :NestedResult .
+
+:YesNo a bamm-c:Enumeration ;
+   bamm:name "YesNo" ;
+   bamm:preferredName "YesNo Result"@en ;
+   bamm:dataType xsd:string ;
+   bamm-c:values ( "Yes"
+                   "No" ) .
+
+:simpleResult a bamm-c:Property ;
+   bamm:name "simpleResult" ;
+   bamm:preferredName "simpleResult"@en ;
+   bamm:characteristic :YesNo .

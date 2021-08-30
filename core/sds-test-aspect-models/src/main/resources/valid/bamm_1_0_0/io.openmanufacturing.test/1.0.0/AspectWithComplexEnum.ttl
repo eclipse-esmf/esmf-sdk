@@ -1,0 +1,79 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithComplexEnum a bamm:Aspect ;
+   bamm:name "AspectWithComplexEnum" ;
+   bamm:properties ( :result :simpleResult ) ;
+   bamm:operations ( ) .
+
+:EvaluationResult a bamm:Entity ;
+   bamm:name "EvaluationResult" ;
+   bamm:preferredName "Evalution Result"@en ;
+   bamm:description "Possible values for the evaluation of a process"@en ;
+   bamm:properties ( :numericCode :description ) .
+
+:ShortCode a bamm:Characteristic ;
+   bamm:name "ShortCode" ;
+   bamm:preferredName "Short Code"@en ;
+   bamm:description "A numeric code with dataType short"@en ;
+   bamm:dataType xsd:short .
+
+:numericCode a bamm:Property ;
+   bamm:name "numericCode" ;
+   bamm:preferredName "Numeric Code"@en ;
+   bamm:description "Numeric code for the evaluation result"@en ;
+   bamm:characteristic :ShortCode .
+
+:description a bamm:Property ;
+   bamm:name "description" ;
+   bamm:preferredName "Description"@en ;
+   bamm:description "Human-readable description of the process result code"@en ;
+   bamm:characteristic bamm-c:Text .
+
+:ResultNoStatus a :EvaluationResult ;
+   :numericCode "-1"^^xsd:short ;
+   :description "No status" .
+
+:ResultGood a :EvaluationResult ;
+   :numericCode "1"^^xsd:short ;
+   :description "Good" .
+
+:ResultBad a :EvaluationResult ;
+   :numericCode "2"^^xsd:short ;
+   :description "Bad" .
+
+:EvaluationResults a bamm-c:Enumeration ;
+   bamm:name "EvaluationResults" ;
+   bamm:preferredName "Evaluation Results"@en ;
+   bamm:description "Possible values for the evaluation of a process"@en ;
+   bamm:dataType :EvaluationResult ;
+   bamm-c:values ( :ResultNoStatus :ResultGood :ResultBad ) .
+
+:result a bamm:Property ;
+   bamm:name "result" ;
+   bamm:preferredName "result"@en ;
+   bamm:characteristic :EvaluationResults .
+
+:YesNo a bamm-c:Enumeration ;
+   bamm:name "YesNo" ;
+   bamm:preferredName "YesNo Result"@en ;
+   bamm:dataType xsd:string ;
+   bamm-c:values ( "Yes" "No" ) .
+
+:simpleResult a bamm-c:Property ;
+   bamm:name "simpleResult" ;
+   bamm:preferredName "simpleResult"@en ;
+   bamm:characteristic :YesNo .

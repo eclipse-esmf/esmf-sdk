@@ -1,0 +1,68 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
+
+:AspectWithErrorCollection a bamm:Aspect ;
+   bamm:name "AspectWithErrorCollection" ;
+   bamm:preferredName "Errors Aspect"@en ;
+   bamm:description "The Errors Aspect delivers a list of the currently active errors for a specific machine."@en ;
+   bamm:properties ( :items ) ;
+   bamm:operations ( ) .
+
+:items a bamm:Property ;
+   bamm:name "items" ;
+   bamm:preferredName "Items"@en ;
+   bamm:description "A list of current active errors."@en ;
+   bamm:characteristic [
+                          a bamm-c:Collection ;
+                          bamm:name "Errors" ;
+                          bamm:preferredName "Errors"@en ;
+                          bamm:description "A collection of Error Entities."@en ;
+                          bamm:dataType :Error
+                       ] .
+
+:Error a bamm:Entity ;
+   bamm:name "Error" ;
+   bamm:preferredName "Error Entity"@en ;
+   bamm:description "The Entity describing an Error."@en ;
+   bamm:properties ( :errorNo :errorText :startTimestamp ) .
+
+:errorNo a bamm:Property ;
+   bamm:name "errorNo" ;
+   bamm:preferredName "Error Number"@en ;
+   bamm:description "The number that represents the type of error which has occurred."@en ;
+   bamm:exampleValue "123"^^xsd:int ;
+   bamm:characteristic :ErrorNumber .
+
+:errorText a bamm:Property ;
+   bamm:name "errorText" ;
+   bamm:preferredName "Error Text"@en ;
+   bamm:description "The error text provided by the machine."@en ;
+   bamm:exampleValue "120.6 °C" ;
+   bamm:characteristic bamm-c:Text .
+
+:startTimestamp a bamm:Property ;
+   bamm:name "startTimestamp" ;
+   bamm:preferredName "Start Timestamp"@en ;
+   bamm:description "The timestamp denoting when the error occurred."@en ;
+   bamm:exampleValue "2018-08-08T12:00:00.0000"^^xsd:dateTime ;
+   bamm:characteristic bamm-c:Timestamp .
+
+:ErrorNumber a bamm-c:Code ;
+   bamm:name "ErrorNumber" ;
+   bamm:preferredName "Error Number"@en ;
+   bamm:description "The numeric representation of an Error."@en ;
+   bamm:dataType xsd:int .

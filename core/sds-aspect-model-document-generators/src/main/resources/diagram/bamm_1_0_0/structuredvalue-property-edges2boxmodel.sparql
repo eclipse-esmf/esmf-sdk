@@ -1,0 +1,39 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>
+prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix : <urn:bamm:io.openmanufacturing:meta-model:1.0.0/boxmodel#>
+
+# Generates edges between StructuredValues its elements Properties
+construct {
+  ?edge a :Edge .
+  ?edge :title ?propertyName .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  ?characteristic rdf:type/rdfs:subClassOf* bamm-c:StructuredValue .
+  ?characteristic bamm:name ?characteristicName .
+
+  bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+  bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
+
+  ?characteristic bamm-c:elements/rdf:rest*/rdf:first ?element .
+  filter( exists { ?element a bamm:Property } )
+  ?element bamm:name ?propertyName .
+  bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+  bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?to )
+
+  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+}
+
