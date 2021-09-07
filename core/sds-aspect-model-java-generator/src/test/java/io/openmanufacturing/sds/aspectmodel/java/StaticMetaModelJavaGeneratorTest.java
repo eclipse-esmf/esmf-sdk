@@ -540,7 +540,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertConstructorArgumentForProperties( "MetaAspectWithPropertyWithPayloadName",
             ImmutableMap.<String, String> builder()
                   .put( "TEST_PROPERTY", expectedPayloadNameArgument )
-                  .build(), 6 );
+                  .build(), 5 );
    }
 
    @ParameterizedTest
@@ -611,5 +611,62 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
             ImmutableMap.<String, String> builder()
                   .put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall )
                   .build(), 1 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testGenerateStaticMetaModelForAspectModelWithAbstractEntity( final KnownVersion metaModelVersion )
+         throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ABSTRACT_ENTITY;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
+                                                            .apply( getGenerators( aspect, metaModelVersion,
+                                                                  Optional.empty() ) );
+      result.assertNumberOfFiles( 6 );
+
+      final String expectedTestPropertyCharacteristicConstructorCall =
+            "new DefaultSingleEntity(MetaModelBaseAttributes.builderFor(\"EntityCharacteristic\")"
+                  + ".withMetaModelVersion(KnownVersion.BAMM_2_0_0)"
+                  + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCharacteristic\"))"
+                  + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Entity Characteristic\")"
+                  + ".withDescription(Locale.forLanguageTag(\"en\"), \"This is a test Entity Characteristic\")"
+                  + ".withSee(\"http://example.com/omp\").build(), "
+                  + "Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.BAMM_2_0_0,"
+                  + " AspectModelUrn.fromUrn(NAMESPACE + \"ExtendingTestEntity\"), \"ExtendingTestEntity\"), "
+                  + "MetaExtendingTestEntity.INSTANCE.getProperties(), Optional.of(DefaultAbstractEntity"
+                  + ".createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.BAMM_2_0_0, "
+                  + "AspectModelUrn.fromUrn(NAMESPACE + \"AbstractTestEntity\"), \"AbstractTestEntity\"), "
+                  + "MetaAbstractTestEntity.INSTANCE.getProperties(), Optional.empty(), List.of(AspectModelUrn"
+                  + ".fromUrn(\"urn:bamm:io.openmanufacturing.test:1.0.0#ExtendingTestEntity\")))))))";
+
+      result.assertConstructorArgumentForProperties( "MetaAspectWithAbstractEntity",
+            ImmutableMap.<String, String> builder()
+                        .put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall )
+                        .build(), 1 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testGenerateStaticMetaModelForAspectModelWithCollectionWithAbstractEntity(
+         final KnownVersion metaModelVersion )
+         throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
+                                                            .apply( getGenerators( aspect, metaModelVersion,
+                                                                  Optional.empty() ) );
+      result.assertNumberOfFiles( 6 );
+
+      final String expectedTestPropertyCharacteristicConstructorCall =
+            "new DefaultCollection(MetaModelBaseAttributes.from(KnownVersion.BAMM_2_0_0, AspectModelUrn"
+                  + ".fromUrn(NAMESPACE + \"testProperty\"), \"EntityCollectionCharacteristic\"), Optional"
+                  + ".of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes"
+                  + ".from(KnownVersion.BAMM_2_0_0, AspectModelUrn.fromUrn(NAMESPACE + \"AbstractTestEntity\"),"
+                  + " \"AbstractTestEntity\"), MetaAbstractTestEntity.INSTANCE.getProperties(), Optional.empty(), "
+                  + "List.of(AspectModelUrn.fromUrn(\"urn:bamm:io.openmanufacturing.test:1.0.0#ExtendingTestEntity\")))), "
+                  + "Optional.empty())";
+
+      result.assertConstructorArgumentForProperties( "MetaAspectWithCollectionWithAbstractEntity",
+            ImmutableMap.<String, String> builder()
+                        .put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall )
+                        .build(), 1 );
    }
 }

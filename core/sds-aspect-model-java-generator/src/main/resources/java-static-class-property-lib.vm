@@ -9,12 +9,36 @@
     $property.getEffectiveCharacteristic().class.simpleName
 #end
 
-#macro( optionalRefinesUrn $property )
-  #if( $property.getRefines().isPresent() )
-     Optional.of(AspectModelUrn.fromUrn("$property.aspectModelUrn.get.toString()"))
-  #else
-     Optional.empty()
-  #end
+#macro( extendsComplexType $complexType )
+    #if( $complexType.getExtends().isPresent() )
+        #set( $extendedComplexType = $complexType.getExtends().get() )
+        #if ( $Entity.isAssignableFrom( $extendedComplexType.class ) )
+            #set( $entityType = $Entity.cast( $extendedComplexType ) )
+            $importTracker.importExplicit( $DefaultEntity )
+            Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.metaModelVersion,
+                #elementUrn( $entityType ), "$entityType.name" ),
+            Meta${entityType.name}.INSTANCE.getProperties(),
+            #extendsComplexType( $entityType )
+            )
+        )
+        #else
+            #set( $abstractEntityType = $AbstractEntity.cast( $extendedComplexType ) )
+            $importTracker.importExplicit( $DefaultAbstractEntity )
+            Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.metaModelVersion,
+                #elementUrn( $abstractEntityType ), "$abstractEntityType.name" ),
+            Meta${abstractEntityType.name}.INSTANCE.getProperties(),
+            #extendsComplexType( $abstractEntityType ),
+            List.of(
+            #foreach( $extendingComplexType in $abstractEntityType.getExtendingElements() )
+                AspectModelUrn.fromUrn( "$extendingComplexType.getUrn()" )
+                #if( $foreach.hasNext ), #end
+            #end
+            ))
+            )
+        #end
+    #else
+        Optional.empty()
+    #end
 #end
 
 #* @vtlvariable name="characteristic" type="io.openmanufacturing.sds.metamodel.Characteristic" *#
@@ -34,12 +58,26 @@
             #elseif( $Entity.isAssignableFrom( $type.class ) )
                 #set( $entityType = $Entity.cast( $type ) )
                 $importTracker.importExplicit( $DefaultEntity )
-                Optional.of(new DefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.metaModelVersion,
-                     #elementUrn( $type ), "$entityType.name" ),
-                   Meta${entityType.name}.INSTANCE.getProperties(),
-                   #optionalRefinesUrn( $property )
-                  )
+                Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.metaModelVersion,
+                    #elementUrn( $entityType ), "$entityType.name" ),
+                Meta${entityType.name}.INSTANCE.getProperties(),
+                #extendsComplexType( $entityType )
                 )
+              )
+            #elseif( $AbstractEntity.isAssignableFrom( $type.class ) )
+                #set( $abstractEntityType = $AbstractEntity.cast( $type ) )
+                $importTracker.importExplicit( $DefaultAbstractEntity )
+                Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.metaModelVersion,
+                    #elementUrn( $abstractEntityType ), "$abstractEntityType.name" ),
+                Meta${abstractEntityType.name}.INSTANCE.getProperties(),
+                #extendsComplexType( $abstractEntityType ),
+                List.of(
+                #foreach( $extendingComplexType in $abstractEntityType.getExtendingElements() )
+                    AspectModelUrn.fromUrn( "$extendingComplexType.getUrn()" )
+                    #if( $foreach.hasNext ), #end
+                #end
+                ))
+              )
             #else
                 "Unknown characteristic data type $type"
             #end
@@ -308,7 +346,6 @@
 #getMetaModelBaseAttributes( $property ),
 #propertyCharacteristic( $property.characteristic, $propertyType ),
 Optional.empty(),
-#optionalRefinesUrn( $property ),
 $property.isOptional(),
 $property.isNotInPayload(),
 Optional.of("$property.getPayloadName()")
