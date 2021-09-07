@@ -191,14 +191,14 @@ public interface AspectVisitor<T, C> {
       if ( element instanceof Aspect ) {
          return visitAspect( (Aspect) element, context );
       }
-      return visitEntity( (Entity) element, context );
+      return visitComplexType( (ComplexType) element, context );
    }
 
    default T visitType( final Type type, final C context ) {
       if ( type instanceof Scalar ) {
          return visitScalar( (Scalar) type, context );
       }
-      return visitEntity( (Entity) type, context );
+      return visitComplexType( (ComplexType) type, context );
    }
 
    default T visitScalar( final Scalar scalar, final C context ) {

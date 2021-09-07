@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel.generator.jsonschema;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +38,12 @@ import io.openmanufacturing.sds.aspectmodel.generator.DocumentGenerationExceptio
 import io.openmanufacturing.sds.aspectmodel.resolver.services.BammDataType;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
@@ -50,6 +53,7 @@ import io.openmanufacturing.sds.metamodel.LengthConstraint;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.RangeConstraint;
 import io.openmanufacturing.sds.metamodel.RegularExpressionConstraint;
+import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.Set;
 import io.openmanufacturing.sds.metamodel.SingleEntity;
 import io.openmanufacturing.sds.metamodel.SortedSet;
@@ -192,6 +196,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
                                                                        .build();
 
    private final ObjectNode rootNode = factory.objectNode();
+   private final Map<Base, JsonNode> hasVisited = new HashMap<>();
 
    public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes ) {
       if ( useExtendedTypes ) {
@@ -302,7 +307,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
          return collectionNode;
       }
 
-      collection.getDataType().ifPresent( type -> collectionNode.set( "items", visitType( type, collectionNode ) ) );
+      collection.getDataType().ifPresent( type -> collectionNode.set( "items", type.accept( this, collectionNode ) ) );
       return collectionNode;
    }
 
@@ -360,18 +365,14 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       return context;
    }
 
-   @Override
-   public JsonNode visitType( final Type type, final ObjectNode context ) {
-      if ( type.isScalar() ) {
-         final ObjectNode propertyNode = factory.objectNode();
-         final AspectModelJsonSchemaVisitor.JsonType value = getSchemaTypeForAspectType(
-               ResourceFactory.createResource( type.getUrn() ) );
-         propertyNode.set( "type", value.toJsonNode() );
-         getAdditionalFieldsForType( ResourceFactory.createResource( type.getUrn() ), type.getMetaModelVersion() )
-               .forEach( propertyNode::set );
-         return propertyNode;
-      }
-      return visitEntity( (Entity) type, context );
+   public JsonNode visitScalar( final Scalar scalar, final ObjectNode context ) {
+      final ObjectNode propertyNode = factory.objectNode();
+      final AspectModelJsonSchemaVisitor.JsonType value = getSchemaTypeForAspectType(
+            ResourceFactory.createResource( scalar.getUrn() ) );
+      propertyNode.set( "type", value.toJsonNode() );
+      getAdditionalFieldsForType( ResourceFactory.createResource( scalar.getUrn() ), scalar.getMetaModelVersion() )
+            .forEach( propertyNode::set );
+      return propertyNode;
    }
 
    @Override
@@ -391,7 +392,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    @Override
    public JsonNode visitCharacteristic( final Characteristic characteristic, final ObjectNode context ) {
-      return characteristic.getDataType().map( type -> visitType( type, context ) ).orElseThrow( () ->
+      return characteristic.getDataType().map( type -> type.accept( this, context ) ).orElseThrow( () ->
             new DocumentGenerationException( "Characteristic " + characteristic + " is missing a dataType" ) );
    }
 
@@ -407,9 +408,32 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    @Override
-   public JsonNode visitEntity( final Entity entity, final ObjectNode context ) {
-      final ObjectNode entityNode = factory.objectNode();
-      return visitHasProperties( entity, entityNode );
+   public JsonNode visitComplexType( final ComplexType complexType, final ObjectNode context ) {
+      if ( hasVisited.containsKey( complexType ) ) {
+         return hasVisited.get( complexType );
+      }
+      final ObjectNode complexTypeNode = factory.objectNode();
+      hasVisited.put( complexType, complexTypeNode );
+      if ( complexType.getExtends().isPresent() ) {
+         final ComplexType extendedComplexType = complexType.getExtends().get();
+         final JsonNode extendedComplexTypeNode = extendedComplexType.accept( this, context );
+         final String referenceNodeName = extendedComplexType.getUrn().replace( "#", "_" ).replace( ":", "_" );
+         setNodeInRootSchema( extendedComplexTypeNode, referenceNodeName );
+         complexTypeNode.set( "allOf", factory.arrayNode().add( factory.objectNode().put( "$ref",
+               "#/components/schemas/" + referenceNodeName ) ) );
+      }
+      return visitHasProperties( complexType, complexTypeNode );
+   }
+
+   @Override
+   public JsonNode visitAbstractEntity( final AbstractEntity abstractEntity, final ObjectNode context ) {
+      final JsonNode abstractEntityNode = visitComplexType( abstractEntity, factory.objectNode() );
+      abstractEntity.getExtendingElements().forEach( extendingComplexType -> {
+         final JsonNode extendedComplexTypeNode = extendingComplexType.accept( this, context );
+         final String referenceNodeName = extendingComplexType.getUrn().replace( "#", "_" ).replace( ":", "_" );
+         setNodeInRootSchema( extendedComplexTypeNode, referenceNodeName );
+      } );
+      return abstractEntityNode;
    }
 
    @SuppressWarnings( "unchecked" )
@@ -463,7 +487,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final ArrayNode valuesNode = factory.arrayNode();
       final ObjectNode enumNode = type.getUrn().equals( RDF.langString.getURI() ) ?
             factory.objectNode().put( "type", "object" ) :
-            (ObjectNode) visitType( type, context );
+            (ObjectNode) type.accept( this, context );
       enumeration.getValues().stream()
                  .map( value -> valueToJsonNode( value, type, bamm ) )
                  .forEach( valuesNode::add );
@@ -475,7 +499,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    private JsonNode createEnumNodeWithComplexValues( final Enumeration enumeration, final Type type, final BAMM bamm ) {
       final ObjectNode enumNode = factory.objectNode();
       enumNode.put( "type", "object" );
-      ArrayNode enumValueReferences = factory.arrayNode();
+      final ArrayNode enumValueReferences = factory.arrayNode();
       enumeration.getValues().stream()
                  .map( value -> (Map<String, Object>) value )
                  //Should the enum value entity be declared with only optional properties, enum values may be declared
@@ -483,9 +507,10 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
                  //to validate
                  .filter( value -> value.size() > 1 )
                  .forEach( values -> {
-                    Object instanceName = values.get( bamm.name().toString() );
-                    enumValueReferences.add( factory.objectNode().put( "$ref", "#/components/schemas/" + instanceName ) );
-                    JsonNode enumValueNode = createNodeForEnumEntityInstance( values, (Entity) type, bamm );
+                    final Object instanceName = values.get( bamm.name().toString() );
+                    enumValueReferences.add(
+                          factory.objectNode().put( "$ref", "#/components/schemas/" + instanceName ) );
+                    final JsonNode enumValueNode = createNodeForEnumEntityInstance( values, (Entity) type, bamm );
                     setNodeInRootSchema( enumValueNode, instanceName.toString() );
                  } );
       if ( enumValueReferences.size() > 0 ) {
@@ -532,9 +557,9 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       if ( characteristic instanceof Collection ) {
          final ObjectNode propertyInstanceNode = factory.objectNode();
          propertyInstanceNode.put( "type", "array" );
-         ObjectNode arrayPropertyInstanceNode = factory.objectNode();
+         final ObjectNode arrayPropertyInstanceNode = factory.objectNode();
          arrayPropertyInstanceNode.set( "type", schemaType.toJsonNode() );
-         ArrayNode arrayValues = (ArrayNode) valueToJsonNode( valueForProperty, type, bamm );
+         final ArrayNode arrayValues = (ArrayNode) valueToJsonNode( valueForProperty, type, bamm );
          propertyInstanceNode.put( "minItems", arrayValues.size() );
          propertyInstanceNode.put( "maxItems", arrayValues.size() );
          arrayPropertyInstanceNode.set( "enum", arrayValues );
