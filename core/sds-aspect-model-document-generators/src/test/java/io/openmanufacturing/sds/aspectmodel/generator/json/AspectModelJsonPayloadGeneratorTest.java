@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -52,7 +53,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmodel.generator.NumericTypeTraits;
+import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AbstractTestEntity;
+import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWithAbstractEntity;
+import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWithAbstractSingleEntity;
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWithCollectionOfSimpleType;
+import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWithCollectionWithAbstractEntity;
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWithComplexEntityCollectionEnum;
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWithConstraintProperties;
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWithConstraints;
@@ -80,6 +85,7 @@ import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWit
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWithSimpleTypesAndState;
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWithStructuredValue;
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.Entity;
+import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.ExtendingTestEntity;
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.NestedEntity;
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.TestEntityWithSimpleTypes;
 import io.openmanufacturing.sds.aspectmodel.jackson.AspectModelJacksonModule;
@@ -604,6 +610,50 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final AspectWithPropertyWithPayloadName aspectWithPropertyWithPayloadName = parseJson( generatedJson,
             AspectWithPropertyWithPayloadName.class );
       assertThat( aspectWithPropertyWithPayloadName.getTest() ).isNotEmpty();
+   }
+
+   @ParameterizedTest
+   @MethodSource( "versionsStartingWith2_0_0" )
+   public void testGenerateJsonForAspectWithAbstractEntity( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY,
+            metaModelVersion );
+
+      final AspectWithAbstractEntity aspectWithAbstractEntity = parseJson( generatedJson,
+            AspectWithAbstractEntity.class );
+      final ExtendingTestEntity testProperty = aspectWithAbstractEntity.getTestProperty();
+      assertThat( testProperty ).isNotNull();
+      assertThat( testProperty.getAbstractTestProperty() ).isNotNull();
+      assertThat( testProperty.getEntityProperty() ).isNotBlank();
+   }
+
+   @ParameterizedTest
+   @MethodSource( "versionsStartingWith2_0_0" )
+   public void testGenerateJsonForAspectWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion )
+         throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY,
+            metaModelVersion );
+
+      final AspectWithCollectionWithAbstractEntity aspectWithCollectionWithAbstractEntity = parseJson( generatedJson,
+            AspectWithCollectionWithAbstractEntity.class );
+      final Collection<AbstractTestEntity> testProperty = aspectWithCollectionWithAbstractEntity.getTestProperty();
+      assertThat( testProperty ).isNotEmpty();
+      final ExtendingTestEntity extendingTestEntity = (ExtendingTestEntity) testProperty.iterator().next();
+      assertThat( extendingTestEntity.getAbstractTestProperty() ).isNotNull();
+      assertThat( extendingTestEntity.getEntityProperty() ).isNotBlank();
+   }
+
+   @ParameterizedTest
+   @MethodSource( "versionsStartingWith2_0_0" )
+   public void testGenerateJsonForAspectWithAbstractSingleEntity( final KnownVersion metaModelVersion )
+         throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY,
+            metaModelVersion );
+
+      final AspectWithAbstractSingleEntity aspectWithAbstractSingleEntity = parseJson( generatedJson,
+            AspectWithAbstractSingleEntity.class );
+      final ExtendingTestEntity extendingTestEntity = (ExtendingTestEntity) aspectWithAbstractSingleEntity.getTestProperty();
+      assertThat( extendingTestEntity.getAbstractTestProperty() ).isNotNull();
+      assertThat( extendingTestEntity.getEntityProperty() ).isNotBlank();
    }
 
    private String generateJsonForModel( final TestAspect model, final KnownVersion testedVersion ) {

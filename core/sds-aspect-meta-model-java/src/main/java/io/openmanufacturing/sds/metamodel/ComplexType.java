@@ -18,7 +18,7 @@ public interface ComplexType extends Type, StructureElement {
    /**
     * @return all {@link Property}s defined in the context of this Complex Type as well as all extended Complex Types
     */
-   default java.util.List<Property> getAllProperties() {
+   default List<Property> getAllProperties() {
       if ( getExtends().isPresent() ) {
          return Stream.of( getProperties(), getExtends().get().getProperties() ).flatMap( Collection::stream )
                       .collect( Collectors.toList() );

@@ -62,9 +62,11 @@ import io.openmanufacturing.sds.aspectmodel.jackson.AspectModelJacksonModule;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
@@ -117,7 +119,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       objectMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
       transformers = Arrays
          .asList( this::transformCollectionProperty, this::transformEnumeration, this::transformEntityProperty,
-            this::transformEitherProperty, this::transformSimpleProperty );
+               this::transformAbstractEntityProperty, this::transformEitherProperty, this::transformSimpleProperty );
       recursiveProperty = new LinkedList<>();
    }
 
@@ -229,12 +231,30 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       return ImmutableMap.of();
    }
 
+   private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property ) {
+      final Optional<AbstractEntity> dataType = getForCharacteristic( property.getCharacteristic(),
+            AbstractEntity.class );
+      if ( dataType.isPresent() ) {
+         final AbstractEntity abstractEntity = dataType.get();
+         final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
+         final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties() );
+         generatedProperties.put( "@type", extendingComplexType.getName() );
+         return toMap( property.getName(), generatedProperties );
+      }
+      return ImmutableMap.of();
+   }
+
    private Map<String, Object> transformEntityProperty( final BasicProperty property ) {
-      return getForCharacteristic( property.getCharacteristic(), Entity.class )
-         .map( Entity::getProperties )
-         .map( this::transformProperties )
-         .map( generatedProperties -> toMap( property.getName(), generatedProperties ) )
-         .orElseGet( ImmutableMap::of );
+      final Optional<Entity> dataType = getForCharacteristic( property.getCharacteristic(), Entity.class );
+      if ( dataType.isPresent() ) {
+         final Entity entity = dataType.get();
+         final Map<String, Object> generatedProperties = transformProperties( entity.getAllProperties() );
+         if ( entity.getExtends().isPresent() ) {
+            generatedProperties.put( "@type", entity.getName() );
+         }
+         return toMap( property.getName(), generatedProperties );
+      }
+      return ImmutableMap.of();
    }
 
    private Map<String, Object> transformEnumeration( final BasicProperty property ) {
@@ -341,11 +361,18 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
    private List<Object> getCollectionValues( final BasicProperty property, final Collection collection ) {
       final Type dataType = collection.getDataType()
-         .orElseThrow( () -> new IllegalArgumentException(
-            "DataType for collection is required." ) );
+                                      .orElseThrow( () -> new IllegalArgumentException(
+                                            "DataType for collection is required." ) );
+      if ( dataType instanceof AbstractEntity ) {
+         final AbstractEntity abstractEntity = (AbstractEntity) dataType;
+         final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
+         final Map<String, Object> propertyValueMap = transformProperties( extendingComplexType.getAllProperties() );
+         propertyValueMap.put( "@type", extendingComplexType.getName() );
+         return ImmutableList.of( propertyValueMap );
+      }
       if ( dataType instanceof Entity ) {
          final Entity entity = (Entity) dataType;
-         return ImmutableList.of( transformProperties( entity.getProperties() ) );
+         return ImmutableList.of( transformProperties( entity.getAllProperties() ) );
       }
       if ( dataType instanceof Scalar ) {
          return ImmutableList.of( getExampleValueOrElseRandom( property ) );
