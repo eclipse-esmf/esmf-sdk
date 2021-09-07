@@ -1,0 +1,538 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:PartProcessed a bamm:Aspect ;
+   bamm:name "PartProcessed" ;
+   bamm:preferredName "Part processed"@en ;
+   bamm:description "Part processed"@en ;
+   bamm:properties ( :location
+                     :resultHeader
+                     :identifier
+                     [
+                        bamm:property :errorDescription ;
+                        bamm:optional true
+                     ] ) ;
+   bamm:operations ( ) .
+
+:identifier a bamm:Property ;
+   bamm:name "identifier" ;
+   bamm:preferredName "Identifier"@en ;
+   bamm:description "The identifier of the processed part"@en ;
+   bamm:characteristic :TypeNumber .
+
+:resultHeader a bamm:Property ;
+   bamm:name "resultHeader" ;
+   bamm:preferredName "Result Header"@en ;
+   bamm:description "Includes the general statements about the end of processing."@en ;
+   bamm:characteristic [
+      a bamm-c:SingleEntity ;
+      bamm:name "ResultHeader" ;
+      bamm:dataType :ResultHeader ;
+   ] .
+
+:location a bamm:Property ;
+   bamm:name "location" ;
+   bamm:preferredName "Location"@en ;
+   bamm:description "The location of the event"@en ;
+   bamm:characteristic [
+      a bamm-c:SingleEntity ;
+      bamm:name "Location" ;
+      bamm:preferredName "Location"@en ;
+      bamm:dataType :Location
+   ] .
+
+:errorDescription a bamm:Property ;
+   bamm:name "errorDescription" ;
+   bamm:preferredName "Error Description"@en ;
+   bamm:description "Detailed description of the error in case of a process failure."@en ;
+   bamm:characteristic [
+      a bamm-c:SingleEntity ;
+      bamm:name "ErrorDescription" ;
+      bamm:dataType :ErrorDescription ;
+   ] .
+
+:TypeNumber a bamm-c:Trait ;
+   bamm:name "TypeNumber" ;
+   bamm:preferredName "Type Number"@en ;
+   bamm:description "The type number of a material. This is also known as TTNR (Typ-Teile-Nummer)."@en ;
+   bamm-c:baseCharacteristic [
+      a bamm-c:Code ;
+      bamm:name "TypeNumberCode" ;
+      bamm:dataType xsd:string ;
+   ] ;
+   bamm-c:constraint [
+      a bamm-c:LengthConstraint ;
+      bamm:name "TypeNumberLength" ;
+      bamm:description "Limits the length to 10 characters"@en ;
+      bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+   ] ;
+   bamm-c:constraint [
+      a bamm-c:EncodingConstraint ;
+      bamm:name "TypeNumberEncoding" ;
+      bamm:value bamm:US-ASCII ;
+      bamm:description "Limits the character encoding to US-ASCII"@en ;
+   ] .
+
+:LimitedText a bamm-c:Trait ;
+   bamm:name "LimitedText" ;
+   bamm-c:baseCharacteristic bamm-c:Text ;
+   bamm-c:constraint [
+      a bamm-c:LengthConstraint ;
+      bamm:name "TextLength" ;
+      bamm:description "Limits the length to 80 characters"@en ;
+      bamm-c:maxValue "80"^^xsd:nonNegativeInteger ;
+   ] ;
+   bamm-c:constraint [
+      a bamm-c:EncodingConstraint ;
+      bamm:name "TextEncoding" ;
+      bamm:description "Limits the character encoding to US-ASCII"@en ;
+      bamm:value bamm:US-ASCII ;
+   ] .
+
+:LimitedStringCode a bamm-c:Trait ;
+   bamm:name "StringCode" ;
+   bamm-c:baseCharacteristic [
+      a bamm-c:Code ;
+      bamm:name "StringCode" ;
+      bamm:description "Denotes some kind of code with a string datatype"@en ;
+      bamm:dataType xsd:string ;
+   ];
+   bamm-c:constraint [
+      a bamm-c:LengthConstraint ;
+      bamm:name "TextLength" ;
+      bamm:description "Limits the length to 80 characters"@en ;
+      bamm-c:maxValue "80"^^xsd:nonNegativeInteger ;
+   ] ;
+   bamm-c:constraint [
+      a bamm-c:EncodingConstraint ;
+      bamm:name "TextEncoding" ;
+      bamm:description "Limits the character encoding to US-ASCII"@en ;
+      bamm:value bamm:US-ASCII ;
+   ] .
+
+:ResultHeader a bamm:Entity ;
+   bamm:name "ResultHeader" ;
+   bamm:preferredName "Result Header"@en ;
+   bamm:description "The most important basic data about the workpiece being processed. The information it contains gives a brief overview of the result of the processe and the basic data for the workpiece. See OpCon XML Specification v2.2, section 3.2."@en ;
+   bamm:properties ( :result
+                     :typeNumber
+                     :nioBits
+                     [
+                        bamm:property :typeVariant ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :typeVersion ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :workingCode ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :workCycleCount ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :cycleTimeForPreviousPart ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :orderId ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :batch ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :machineId ;
+                        bamm:optional true
+                     ] ) .
+
+:ErrorDescription a bamm:Entity ;
+   bamm:name "ErrorDescription" ;
+   bamm:preferredName "Error Description"@en ;
+   bamm:description "A workpiece was not processed successfully; this describes the cause of the error."@en ;
+   bamm:properties ( :errorDetails :errorNumber :name ) .
+
+:name a bamm:Property ;
+   bamm:name "name" ;
+   bamm:preferredName "Name"@en ;
+   bamm:description "Name of the cause of error"@en ;
+   bamm:characteristic :LimitedText .
+
+:errorNumber a bamm:Property ;
+   bamm:name "errorNumber" ;
+   bamm:preferredName "Error Number"@en ;
+   bamm:description "Alphanumeric error code"@en ;
+   bamm:characteristic :LimitedErrorCode .
+
+:LimitedErrorCode a bamm-c:Trait ;
+   bamm:name "StringCode" ;
+   bamm-c:baseCharacteristic [
+      a bamm-c:Code ;
+      bamm:name "ErrorCode" ;
+      bamm:description "Denotes some kind of code with a string datatype"@en ;
+      bamm:dataType xsd:string ;
+   ];
+   bamm-c:constraint [
+      a bamm-c:LengthConstraint ;
+      bamm:name "TextLength" ;
+      bamm:description "Limits the length to 20 characters"@en ;
+      bamm-c:maxValue "20"^^xsd:nonNegativeInteger ;
+   ] ;
+   bamm-c:constraint [
+      a bamm-c:EncodingConstraint ;
+      bamm:name "TextEncoding" ;
+      bamm:description "Limits the character encoding to US-ASCII"@en ;
+      bamm:value bamm:US-ASCII ;
+   ] .
+
+:errorDetails a bamm:Property ;
+   bamm:name "errorDetails" ;
+   bamm:preferredName "Error Details"@en ;
+   bamm:description "More detailed description of the error, or environment in which the error occurred."@en ;
+   bamm:characteristic :LimitedText .
+
+:result a bamm:Property ;
+   bamm:name "result" ;
+   bamm:preferredName "result"@en ;
+   bamm:description "The overall result of the process relative to the workpiece"@en ;
+   bamm:characteristic :EvaluationResults .
+
+:EvaluationResult a bamm:Entity ;
+   bamm:name "EvaluationResult" ;
+   bamm:preferredName "Evalution Result"@en ;
+   bamm:description "Possible values for the evaluation of a process"@en ;
+   bamm:properties ( :numericCode :description ) .
+
+:ShortCode a bamm:Characteristic ;
+   bamm:name "ShortCode" ;
+   bamm:preferredName "Short Code"@en ;
+   bamm:description "A numeric code with dataType short"@en ;
+   bamm:dataType xsd:short .
+
+:numericCode a bamm:Property ;
+   bamm:name "numericCode" ;
+   bamm:preferredName "Numeric Code"@en ;
+   bamm:description "Numeric code for the evaluation result, See OpCon Xml Specification V2.2, Appendix A"@en ;
+   bamm:characteristic :ShortCode .
+
+:description a bamm:Property ;
+   bamm:name "description" ;
+   bamm:preferredName "Description"@en ;
+   bamm:description "Human-readable description of the process result code"@en ;
+   bamm:characteristic bamm-c:Text .
+
+:ResultNoStatus a :EvaluationResult ;
+   :numericCode "-1"^^xsd:short ;
+   :description "No status" .
+
+:ResultNotMeasured a :EvaluationResult ;
+   :numericCode "0"^^xsd:short ;
+   :description "Not measured" .
+
+:ResultGood a :EvaluationResult ;
+   :numericCode "1"^^xsd:short ;
+   :description "Good" .
+
+:ResultBad a :EvaluationResult ;
+   :numericCode "2"^^xsd:short ;
+   :description "Bad" .
+
+:ResultInterrupt a :EvaluationResult ;
+   :numericCode "3"^^xsd:short ;
+   :description "Interrupt" .
+
+:ResultTooSmall a :EvaluationResult ;
+   :numericCode "4"^^xsd:short ;
+   :description "Result too small" .
+
+:ResultTooLarge a :EvaluationResult ;
+   :numericCode "5"^^xsd:short ;
+   :description "Result too large" .
+
+:ResultRangeTooLarge a :EvaluationResult ;
+   :numericCode "6"^^xsd:short ;
+   :description "Range too large" .
+
+:ResultTimeExpired a :EvaluationResult ;
+   :numericCode "7"^^xsd:short ;
+   :description "Time expired" .
+
+:ResultStringComparisonIncorrect a :EvaluationResult ;
+   :numericCode "8"^^xsd:short ;
+   :description "String comparison incorrect" .
+
+:ResultMeasured a :EvaluationResult ;
+   :numericCode "9"^^xsd:short ;
+   :description "Measured" .
+
+:ResultOutlier a :EvaluationResult ;
+   :numericCode "10"^^xsd:short ;
+   :description "Outlier" .
+
+:ResultInformationNotUsed a :EvaluationResult ;
+   :numericCode "11"^^xsd:short ;
+   :description "Information not used" .
+
+:ResultScrapped a :EvaluationResult ;
+   :numericCode "12"^^xsd:short ;
+   :description "Scrapped" .
+
+:ResultIncompleteTransmission a :EvaluationResult ;
+   :numericCode "255"^^xsd:short ;
+   :description "Incomplete Transmission" .
+
+:EvaluationResults a bamm-c:Enumeration ;
+   bamm:name "EvaluationResults" ;
+   bamm:preferredName "Evaluation Results"@en ;
+   bamm:description "Possible values for the evaluation of a process"@en ;
+   bamm:dataType :EvaluationResult ;
+   bamm-c:values ( :ResultNoStatus
+                   :ResultNotMeasured
+                   :ResultGood
+                   :ResultBad
+                   :ResultInterrupt
+                   :ResultTooSmall
+                   :ResultTooLarge
+                   :ResultRangeTooLarge
+                   :ResultTimeExpired
+                   :ResultStringComparisonIncorrect
+                   :ResultMeasured
+                   :ResultOutlier
+                   :ResultInformationNotUsed
+                   :ResultScrapped
+                   :ResultIncompleteTransmission ) .
+
+# Original header field name: typeNo
+
+:typeNumber a bamm:Property ;
+   bamm:name "typeNumber" ;
+   bamm:preferredName "Type number"@en ;
+   bamm:description "Type number of the workpiece"@en ;
+   bamm:characteristic :TypeNumber .
+
+# Original header field name: typeVar
+
+:typeVariant a bamm:Property ;
+   bamm:name "typeVariant" ;
+   bamm:preferredName "Type variant"@en ;
+   bamm:description "Type variant of the workpiece"@en ;
+   bamm:characteristic :TypeNumber .
+
+:typeVersion a bamm:Property ;
+   bamm:name "typeVersion" ;
+   bamm:preferredName "Type version"@en ;
+   bamm:description "Type version of the workpiece"@en ;
+   bamm:characteristic :LimitedText .
+
+:workingCode a bamm:Property ;
+   bamm:name "workingCode" ;
+   bamm:preferredName "Working code"@en ;
+   bamm:description "Processing code (series part, test part, master part, etc.)"@en ;
+   bamm:characteristic :ShortCode .
+
+:nioBits a bamm:Property ;
+   bamm:name "nioBits" ;
+   bamm:preferredName "NIO Bits"@en ;
+   bamm:description "Bit-coded information if an error occurs. These can be used to control the introductory measures at a rework station."@en ;
+   bamm:characteristic [
+                          a bamm-c:Code ;
+                          bamm:name "BitEncodedState" ;
+                          bamm:dataType xsd:int ;
+                       ] .
+
+:Counter a bamm:Characteristic ;
+   bamm:name "Counter" ;
+   bamm:preferredName "Counter"@en ;
+   bamm:description "A counter"@en ;
+   bamm:dataType xsd:int .
+
+:workCycleCount a bamm:Property ;
+   bamm:name "workCycleCount" ;
+   bamm:preferredName "Work Cycle Count"@en ;
+   bamm:description "Processing counter (rework counter)"@en ;
+   bamm:characteristic :Counter .
+
+:CycleTime a bamm-c:Measurement ;
+   bamm:name "CycleTime" ;
+   bamm:preferredName "Cycle Time"@en ;
+   bamm:description "Cycle time for a part"@en ;
+   bamm:dataType xsd:int ;
+   bamm-c:unit unit:millisecond .
+
+# Original header field name: cycleTimePrev
+
+:cycleTimeForPreviousPart a bamm:Property ;
+   bamm:name "cycleTimeForPreviousPart" ;
+   bamm:preferredName "Cycle time for previous part"@en ;
+   bamm:description "Cycle time for previous part in milliseconds."@en ;
+   bamm:characteristic :CycleTime .
+
+# Original header field name: orderID
+
+:orderId a bamm:Property ;
+   bamm:name "orderId" ;
+   bamm:preferredName "Order ID"@en ;
+   bamm:description "Production order number"@en ;
+   bamm:characteristic :LimitedStringCode .
+
+:batch a bamm:Property ;
+   bamm:name "batch" ;
+   bamm:preferredName "Batch"@en ;
+   bamm:description "Lot number of the workpiece"@en ;
+   bamm:characteristic :LimitedStringCode .
+
+# Original header field name: machineID
+
+:machineId a bamm:Property ;
+   bamm:name "machineId" ;
+   bamm:preferredName "Machine ID"@en ;
+   bamm:description "Unique ID of the machine. This ID is assigned to the machine itself and not to the location of the machine like the station number."@en ;
+   bamm:characteristic :LimitedStringCode .
+
+:Location a bamm:Entity ;
+   bamm:name "Location" ;
+   bamm:preferredName "Location"@en ;
+   bamm:description "The Location element is used to specify the event location for the message. The event location is composed of the logical application and the triggering application."@en ;
+   bamm:properties ( :lineNumber
+                     :stationNumber
+                     :stationIndex
+                     [
+                        bamm:property :functionalUnitIndex ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :workingPosition ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :toolPosition ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :processNumber ;
+                        bamm:optional true
+                     ]
+                     [
+                        bamm:property :processName ;
+                        bamm:optional true
+                     ]
+                     :application ) .
+
+:NumericCode a bamm:Characteristic ;
+   bamm:name "NumericCode" ;
+   bamm:preferredName "Numeric Code"@en ;
+   bamm:description "A numeric code"@en ;
+   bamm:dataType xsd:unsignedInt .
+
+:OneToTenThousand a bamm-c:Trait;
+   bamm:name "OneToTenThousand" ;
+   bamm:preferredName "Numeric Range"@en ;
+   bamm:description "A number between 1 and 9999"@en ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue 1 ;
+      bamm-c:maxValue 9999 ;
+   ] ;
+   bamm-c:baseCharacteristic :NumericCode .
+
+:ZeroToTenThousand a bamm-c:Trait ;
+   bamm:name "ZeroToTenThousand" ;
+   bamm:preferredName "Numeric Range"@en ;
+   bamm:description "A number between 0 and 9999"@en ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue 0 ;
+      bamm-c:maxValue 9999 ;
+   ] ;
+   bamm-c:baseCharacteristic :NumericCode .
+
+:FunctionalUnitIndexRange a bamm-c:Trait ;
+   bamm:name "FunctionUnitIndexRange" ;
+   bamm:preferredName "Functional Unit Index Range"@en ;
+   bamm:description "A number between 0 and 8"@en ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue 0 ;
+      bamm-c:maxValue 8 ;
+   ] ;
+   bamm-c:baseCharacteristic :NumericCode .
+
+# Original header field name: lineNo
+
+:lineNumber a bamm:Property ;
+   bamm:name "lineNumber" ;
+   bamm:preferredName "Line Number"@en ;
+   bamm:description "Line Number"@en ;
+   bamm:characteristic :OneToTenThousand .
+
+# Original header field name: statNo
+
+:stationNumber a bamm:Property ;
+   bamm:name "stationNumber" ;
+   bamm:preferredName "Station Number"@en ;
+   bamm:description "Station number"@en ;
+   bamm:characteristic :OneToTenThousand .
+
+# Original header field name: statIdx
+
+:stationIndex a bamm:Property ;
+   bamm:name "stationIndex" ;
+   bamm:preferredName "Station Index"@en ;
+   bamm:description "Station index"@en ;
+   bamm:characteristic :OneToTenThousand .
+
+# Original header field name: fuNo
+
+:functionalUnitIndex a bamm:Property ;
+   bamm:name "functionalUnitIndex" ;
+   bamm:preferredName "Functional Unit Index"@en ;
+   bamm:description "Functional unit index"@en ;
+   bamm:characteristic :FunctionalUnitIndexRange .
+
+# Original header field name: workPos
+
+:workingPosition a bamm:Property ;
+   bamm:name "workingPosition" ;
+   bamm:preferredName "Working Position"@en ;
+   bamm:description "Working position"@en ;
+   bamm:characteristic :ZeroToTenThousand .
+
+# Original header field name: toolPos
+
+:toolPosition a bamm:Property ;
+   bamm:name "toolPosition" ;
+   bamm:preferredName "Tool Position"@en ;
+   bamm:description "Tool position"@en ;
+   bamm:characteristic :ZeroToTenThousand .
+
+# Original header field name: processNo
+
+:processNumber a bamm:Property ;
+   bamm:name "processNumber" ;
+   bamm:preferredName "Process Number"@en ;
+   bamm:description "Process number"@en ;
+   bamm:characteristic [
+                          a bamm-c:Code ;
+                          bamm:name "ProcessNumber" ;
+                          bamm:dataType xsd:unsignedInt ;
+                       ] .
+
+:processName a bamm:Property ;
+   bamm:name "processName" ;
+   bamm:preferredName "Process Name"@en ;
+   bamm:description "Process Name"@en ;
+   bamm:characteristic bamm-c:Text .
+
+:application a bamm:Property ;
+   bamm:name "application" ;
+   bamm:preferredName "Application"@en ;
+   bamm:description "Application"@en ;
+   bamm:characteristic bamm-c:Text .

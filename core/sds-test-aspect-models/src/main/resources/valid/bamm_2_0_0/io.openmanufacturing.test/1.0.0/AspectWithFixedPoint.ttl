@@ -1,0 +1,34 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithFixedPoint a bamm:Aspect ;
+   bamm:name "AspectWithFixedPoint" ;
+   bamm:preferredName "Test Aspect"@en ;
+   bamm:description "This is a test description"@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:properties ( :testProperty ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:characteristic :TestFixedPoint .
+
+:TestFixedPoint a bamm-c:Trait ;
+   bamm:name "TestFixedPoint" ;
+   bamm-c:constraint [
+      a bamm-c:FixedPointConstraint ;
+      bamm:preferredName "Test Fixed Point"@en ;
+      bamm:description "This is a test fixed point constraint."@en ;
+      bamm:see <http://bosch.com/opcon> ;
+      bamm-c:scale "5"^^xsd:int ;
+      bamm-c:integer "3"^^xsd:int ;
+   ] ;
+   bamm-c:baseCharacteristic :Measurement .
+
+:Measurement a bamm-c:Measurement ;
+   bamm:name "Measurement" ;
+   bamm:dataType xsd:decimal ;
+   bamm-c:unit unit:metrePerSecond .

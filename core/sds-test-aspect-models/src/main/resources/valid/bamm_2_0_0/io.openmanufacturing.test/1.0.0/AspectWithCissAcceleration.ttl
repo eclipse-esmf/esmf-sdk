@@ -1,0 +1,195 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithCissAcceleration a bamm:Aspect ;
+   bamm:name "AspectWithCissAcceleration" ;
+   bamm:preferredName "CISS Acceleration Aspect"@en ;
+   bamm:preferredName "CISS Beschleunigungsaspekt"@de ;
+   bamm:properties ( :acceleration_x :acceleration_y :acceleration_z ) ;
+   bamm:operations ( :SetConfig :FFT ) .
+
+:acceleration_x a bamm:Property ;
+   bamm:name "acceleration_x" ;
+   bamm:characteristic :AccelerationTimeSeries .
+
+:acceleration_y a bamm:Property ;
+   bamm:name "acceleration_y" ;
+   bamm:characteristic :AccelerationTimeSeries .
+
+:acceleration_z a bamm:Property ;
+   bamm:name "acceleration_z" ;
+   bamm:characteristic :AccelerationTimeSeries .
+
+:AccelerationTimeSeries a bamm-c:TimeSeries ;
+   bamm:name "AccelerationTimeSeries" ;
+   bamm:preferredName "Acceleration Time Series"@en ;
+   bamm:description "Represents the acceleration over time as key/value pair with the timestamp being the key and the recorded value being the value."@en ;
+   bamm:dataType :AccelerationTimeSeriesEntity .
+
+:AccelerationTimeSeriesEntity bamm:refines bamm-e:TimeSeriesEntity ;
+   bamm:name "AccelerationTimeSeriesEntity" ;
+   bamm:preferredName "Acceleration Time Series Entity"@en ;
+   bamm:preferredName "Acceleration Time Series Entität"@de ;
+   bamm:description "Defines the Acceleration as a Time Series value."@en ;
+   bamm:properties ( :acceleration_value ) .
+
+:acceleration_value bamm:refines bamm-e:value ;
+   bamm:name "acceleration_value" ;
+   bamm:preferredName "Acceleration Value"@en ;
+   bamm:preferredName "Beschleunigungswert"@de ;
+   bamm:description "The acceleration at a certain point in time."@en ;
+   bamm:description "Die Beschleunigung zu einem bestimmten Zeitpunkt."@de ;
+   bamm:characteristic :AccelerationRange .
+
+:AccelerationRange a bamm-c:Trait ;
+   bamm:name "AccelerationRange" ;
+   bamm:description "The acceleration range"@en ;
+   bamm-c:baseCharacteristic :AccelerationMeasurement ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue "-2000"^^xsd:float ;
+      bamm-c:maxValue "2000"^^xsd:float ;
+   ] .
+
+:AccelerationMeasurement a bamm-c:Measurement ;
+   bamm:name "AccelerationMeasurement" ;
+   bamm:description "The acceleration"@en ;
+   bamm:dataType xsd:float ;
+   bamm-c:unit unit:gal .
+
+:SetConfig a bamm:Operation ;
+   bamm:name "SetConfig" ;
+   bamm:preferredName "Set Configuration"@en ;
+   bamm:description "Operation which updates the device configuration."@en ;
+   bamm:input ( :minValue :maxValue :sampleRate :enabled ) ;
+   bamm:output :operationStatus .
+
+:minValue a bamm:Property ;
+   bamm:name "minValue" ;
+   bamm:preferredName "Minimum Value"@en ;
+   bamm:preferredName "Minimalwert"@de ;
+   bamm:characteristic :ValueRange .
+
+:maxValue a bamm:Property ;
+   bamm:name "maxValue" ;
+   bamm:preferredName "Maximum Value"@en ;
+   bamm:preferredName "Maximalwert"@de ;
+   bamm:characteristic :ValueRange .
+
+:sampleRate a bamm:Property ;
+   bamm:name "sampleRate" ;
+   bamm:preferredName "Sample Rate"@en ;
+   bamm:preferredName "Messrate"@de ;
+   bamm:characteristic :FrequencyRange .
+
+:enabled a bamm:Property ;
+   bamm:name "enabled" ;
+   bamm:preferredName "Enabled/Disabled"@en ;
+   bamm:preferredName "Aktiviert/Deaktiviert"@de ;
+   bamm:characteristic bamm-c:Boolean .
+
+:operationStatus a bamm:Property ;
+   bamm:name "operationStatus" ;
+   bamm:preferredName "Status of Set Config Operation"@en ;
+   bamm:preferredName "Status der Konfigurations-Operation"@de ;
+   bamm:characteristic :OperationState .
+
+:FrequencyRange a bamm-c:Trait ;
+   bamm:name "FrequencyRange" ;
+   bamm:description "The range of the Sample Rate Frequency"@en ;
+   bamm-c:baseCharacteristic :Frequency ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue "0"^^xsd:float ;
+      bamm-c:maxValue "100"^^xsd:float ;
+   ] .
+
+:Frequency a bamm-c:Measurement ;
+   bamm:name "Frequency" ;
+   bamm:description "Rate at which measurements are taken by the sensor"@en ;
+   bamm:dataType xsd:float ;
+   bamm-c:unit unit:hertz .
+
+:ValueRange a bamm-c:Trait ;
+   bamm:name "ValueRange" ;
+   bamm:description "The range of the input parameters for the SetConfig Operation"@en ;
+   bamm-c:baseCharacteristic :Numeric ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint  ;
+      bamm-c:minValue "-2000"^^xsd:float ;
+      bamm-c:maxValue "2000"^^xsd:float ;
+   ] .
+
+:Numeric a bamm:Characteristic ;
+   bamm:name "Numeric" ;
+   bamm:description "Positive Integers"@en ;
+   bamm:dataType xsd:float .
+
+:OperationState a bamm-c:State ;
+   bamm:name "OperationState" ;
+   bamm:description "Return status for the Set Configuration Operation"@en ;
+   bamm:dataType xsd:string ;
+   bamm-c:defaultValue "OK" ;
+   bamm-c:values ( "OK" "ERR" ) .
+
+:FFT a bamm:Operation ;
+   bamm:name "FFT" ;
+   bamm:preferredName "Fourier Transformation"@en ;
+   bamm:description "Operation which performs a Fourier Transformation for a specific axis."@en ;
+   bamm:input ( :axis :nfft :nmean ) ;
+   bamm:output :fftResult .
+
+:axis a bamm:Property ;
+   bamm:name "axis" ;
+   bamm:preferredName "Axis"@en ;
+   bamm:preferredName "Achse"@de ;
+   bamm:characteristic :AccelerationProperties .
+
+:nfft a bamm:Property ;
+   bamm:name "nfft" ;
+   bamm:preferredName "Nfft"@en ;
+   bamm:preferredName "Nfft"@de ;
+   bamm:characteristic :PositiveNumeric .
+
+:nmean a bamm:Property ;
+   bamm:name "nmean" ;
+   bamm:preferredName "Nmean"@en ;
+   bamm:preferredName "Nmean"@de ;
+   bamm:characteristic :PositiveNumeric .
+
+:AccelerationProperties a bamm-c:Enumeration ;
+   bamm:name "AccelerationProperties" ;
+   bamm:description "The properties from the Acceleration Aspect which may be used in the FFT Operation."@en ;
+   bamm:dataType bamm:Property ;
+   bamm-c:values ( :acceleration_x :acceleration_y :acceleration_z ) .
+
+:PositiveNumeric a bamm:Characteristic ;
+   bamm:name "PositiveNumeric" ;
+   bamm:description "Positive Integers"@en ;
+   bamm:dataType xsd:positiveInteger .
+
+:fftResult a bamm:Property ;
+   bamm:name "fftResult" ;
+   bamm:preferredName "FFT Result"@en ;
+   bamm:preferredName "FFT Ergebnis"@de ;
+   bamm:characteristic [
+                          a bamm-c:Set ;
+                          bamm:name "FFTResultSet" ;
+                          bamm:dataType :FFTResult
+                       ] .
+
+:FFTResult a bamm:Entity ;
+   bamm:name "FFTResult" ;
+   bamm:preferredName "FFT Result Domain Entity"@en ;
+   bamm:properties ( :frequency :acceleration_value ) .
+
+:frequency a bamm:Property ;
+   bamm:name "frequency" ;
+   bamm:preferredName "Frequency"@en ;
+   bamm:preferredName "Frequenz"@de ;
+   bamm:description "Amount of occurrences of value"@en ;
+   bamm:characteristic :PositiveNumeric .

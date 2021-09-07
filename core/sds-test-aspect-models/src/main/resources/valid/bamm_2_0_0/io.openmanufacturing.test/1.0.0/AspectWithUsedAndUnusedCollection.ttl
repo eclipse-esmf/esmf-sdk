@@ -1,0 +1,29 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithUsedAndUnusedCollection a bamm:Aspect ;
+   bamm:name "AspectWithUsedAndUnusedCollection" ;
+   bamm:properties ( :testProperty ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:characteristic :UsedTestCollection .
+
+:UsedTestCollection a bamm-c:Collection ;
+   bamm:name "UsedTestCollection" ;
+   bamm:preferredName "Used Test Collection"@en ;
+   bamm:description "Used Test Collection"@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://bosch.com/me> ;
+   bamm:dataType xsd:string .
+
+:UnusedTestCollection a bamm-c:Collection ;
+   bamm:name "UnusedTestCollection" ;
+   bamm:preferredName "Unused Test Collection"@en ;
+   bamm:description "Unused Test Collection"@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://bosch.com/me> ;
+   bamm:dataType xsd:string .

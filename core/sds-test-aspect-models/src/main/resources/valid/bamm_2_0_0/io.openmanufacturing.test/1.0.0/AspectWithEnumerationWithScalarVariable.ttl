@@ -1,0 +1,22 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithEnumerationWithScalarVariable a bamm:Aspect ;
+   bamm:name "AspectWithEnumerationWithScalarVariable" ;
+   bamm:properties ( :testProperty ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:preferredName "testProperty"@en ;
+   bamm:characteristic :TestScalarEnumeration .
+
+:TestScalarEnumeration a bamm-c:Enumeration ;
+   bamm:name "TestScalarEnumeration" ;
+   bamm:preferredName "TestScalarEnumeration Result"@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:dataType xsd:string ;
+   bamm-c:values ( "Yes"
+                   "No" ) .

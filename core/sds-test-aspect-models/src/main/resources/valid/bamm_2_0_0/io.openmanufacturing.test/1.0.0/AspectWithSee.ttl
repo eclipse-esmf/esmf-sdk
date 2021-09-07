@@ -1,0 +1,13 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithSee a bamm:Aspect ;
+   bamm:name "AspectWithSee" ;
+   bamm:preferredName "Test Aspect With See"@en ;
+   bamm:description "This is a test description"@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:properties ( ) ;
+   bamm:operations ( ) .

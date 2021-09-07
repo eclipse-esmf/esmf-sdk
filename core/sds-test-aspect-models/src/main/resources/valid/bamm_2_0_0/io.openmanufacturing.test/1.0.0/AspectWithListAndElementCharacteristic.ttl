@@ -1,0 +1,29 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithListAndElementCharacteristic a bamm:Aspect ;
+   bamm:name "AspectWithListAndElementCharacteristic" ;
+   bamm:preferredName "Test Aspect"@en ;
+   bamm:description "This is a test description"@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:properties ( :testProperty ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:preferredName "Test Property"@en ;
+   bamm:description "This is a test property."@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://bosch.com/me> ;
+   bamm:exampleValue "Example Value" ;
+   bamm:characteristic :TestList .
+
+:TestList a bamm-c:List ;
+   bamm:name "TestList" ;
+   bamm:preferredName "Test List"@en ;
+   bamm:description "This is a test list."@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm-c:elementCharacteristic bamm-c:Text .

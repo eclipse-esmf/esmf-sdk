@@ -1,0 +1,9 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+
+:propertyWithoutSeeAttribute a bamm:Property ;
+   bamm:name "propertyWithoutSeeAttribute" ;
+   bamm:preferredName "Test Property"@en ;
+   bamm:exampleValue "foo" ;
+   bamm:characteristic bamm-c:Text .

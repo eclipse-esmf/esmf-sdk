@@ -1,0 +1,34 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithEnumerationWithSeeAttribute a bamm:Aspect ;
+   bamm:name "AspectWithEnumerationWithSeeAttribute" ;
+   bamm:properties ( :testProperty :testPropertyTwo ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:characteristic :TestEnumeration .
+
+:testPropertyTwo a bamm:Property ;
+   bamm:name "testPropertyTwo" ;
+   bamm:characteristic :TestEnumerationTwo .
+
+:TestEnumeration a bamm-c:Enumeration ;
+   bamm:name "TestEnumeration" ;
+   bamm:preferredName "Test Enumeration"@en ;
+   bamm:description "Test Enumeration"@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm-c:values ( "foo" "bar" ) ;
+   bamm:dataType xsd:string .
+
+:TestEnumerationTwo a bamm-c:Enumeration ;
+   bamm:name "TestEnumerationTwo" ;
+   bamm:preferredName "Test Enumeration Two"@en ;
+   bamm:description "Test Enumeration Two"@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://bosch.com/me> ;
+   bamm-c:values ( "foo" "bar" ) ;
+   bamm:dataType xsd:string .

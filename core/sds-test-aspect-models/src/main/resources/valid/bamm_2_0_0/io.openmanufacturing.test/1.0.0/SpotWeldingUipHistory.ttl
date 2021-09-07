@@ -1,0 +1,109 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:SpotWeldingUipHistory a bamm:Aspect ;
+   bamm:name "SpotWeldingUipHistory" ;
+   bamm:preferredName "Spot-Welding UIP History"@en ;
+   bamm:description "Aspect that represents the history of spot-welding UIP (quality index) measurements"@en ;
+   bamm:properties ( :items ) ;
+   bamm:operations ( ) .
+
+:items a bamm:Property ;
+   bamm:name "items" ;
+   bamm:preferredName "Items"@en ;
+   bamm:description "The time series of weld spots"@en ;
+   bamm:characteristic [
+      a bamm-c:TimeSeries ;
+      bamm:name "WeldSpotTimeSeries" ;
+      bamm:preferredName "Weld Spot Time Series"@en ;
+      bamm:dataType :WeldSpotTimeSeriesEntity
+   ] .
+
+:WeldSpotTimeSeriesEntity bamm:refines bamm-e:TimeSeriesEntity ;
+   bamm:name "WeldSpotTimeSeriesEntity" ;
+   bamm:preferredName "Weld Spot Time Series Entity"@en ;
+   bamm:description "Encapsulates a timestamp and a UIP measurement"@en ;
+   bamm:properties ( :uipTimeSeriesValue ) .
+
+:uipTimeSeriesValue bamm:refines bamm-e:value;
+   bamm:name "uipTimeSeriesValue" ;
+   bamm:preferredName "UIP Time Series Value"@en ;
+   bamm:description "The UIP measurement for the timestamp"@en ;
+   bamm:characteristic [
+      a bamm-c:SingleEntity ;
+      bamm:name "SingleEntity" ;
+      bamm:preferredName "Single Entity"@en ;
+      bamm:dataType :WeldSpot
+   ] .
+
+:WeldSpot a bamm:Entity ;
+   bamm:name "WeldSpot" ;
+   bamm:preferredName "Weld Spot"@en ;
+   bamm:description "Represents the weld spot UIP measurement with its absolute and conditional lower and upper limits"@en ;
+   bamm:properties (
+     :value
+     :absoluteLowerLimit
+     :absoluteUpperLimit
+     :conditionalLowerLimit
+     :conditionalUpperLimit
+     :referenceValue
+   ) .
+
+:value a bamm:Property;
+   bamm:name "value";
+   bamm:preferredName "value"@en;
+   bamm:description "The UIP measurement value"@en;
+   bamm:characteristic :UIPMeasurement .
+
+:UIPMeasurement a bamm-c:Measurement ;
+   bamm:name "UIPMeasurement" ;
+   bamm:preferredName "UIP Measurement"@en ;
+   bamm:description "A measurement of a dimensionless UIP value"@en ;
+   bamm:dataType xsd:float ;
+   bamm-c:unit :uipValue .
+
+:uipValue a unit:Unit ;
+   bamm:name "uipValue" ;
+   bamm:preferredName "UIP Value"@en ;
+   unit:quantityKind unit:dimensionless .
+
+:Parameter a bamm:Characteristic ;
+   bamm:name "Parameter" ;
+   bamm:preferredName "Parameter"@en ;
+   bamm:description "A parameter that is configured in the original data source"@en ;
+   bamm:dataType xsd:float .
+
+:absoluteLowerLimit a bamm:Property ;
+   bamm:name "absoluteLowerLimit";
+   bamm:preferredName "absolute lower limit"@en;
+   bamm:description "The absolute lower limit. This value is relative to the referenceValue of the weld spot UIP measurement"@en;
+   bamm:characteristic :Parameter .
+
+:absoluteUpperLimit a bamm:Property ;
+   bamm:name "absoluteUpperLimit";
+   bamm:preferredName "absolute upper limit"@en;
+   bamm:description "The absolute upper limit. This value is relative to the referenceValue of the weld spot UIP measurement"@en;
+   bamm:characteristic :Parameter .
+
+:conditionalLowerLimit a bamm:Property ;
+   bamm:name "conditionalLowerLimit";
+   bamm:preferredName "conditional lower limit"@en;
+   bamm:description "The conditional lower limit. This value is relative to the referenceValue of the weld spot UIP measurement"@en;
+   bamm:characteristic :Parameter .
+
+:conditionalUpperLimit a bamm:Property ;
+   bamm:name "conditionalUpperLimit";
+   bamm:preferredName "conditional upper limit"@en;
+   bamm:description "The conditional upper limit. This value is relative to the referenceValue of the weld spot UIP measurement"@en;
+   bamm:characteristic :Parameter .
+
+:referenceValue a bamm:Property ;
+   bamm:name "referenceValue";
+   bamm:preferredName "reference value"@en;
+   bamm:description "The reference value for the absolute and conditional limits of the weld spot UIP measurement"@en;
+   bamm:characteristic :Parameter .

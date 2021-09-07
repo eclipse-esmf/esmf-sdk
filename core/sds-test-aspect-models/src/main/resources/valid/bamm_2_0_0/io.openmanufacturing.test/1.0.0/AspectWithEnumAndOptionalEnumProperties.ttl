@@ -1,0 +1,23 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithEnumAndOptionalEnumProperties a bamm:Aspect ;
+   bamm:name "AspectWithEnumAndOptionalEnumProperties" ;
+   bamm:properties ( :testProperty [ bamm:property :optionalTestProperty ; bamm:optional "true"^^xsd:boolean ] ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:characteristic :TestEnumeration .
+
+:optionalTestProperty a bamm:Property ;
+   bamm:name "optionalTestProperty" ;
+   bamm:characteristic :TestEnumeration .
+
+:TestEnumeration a bamm-c:Enumeration ;
+   bamm:name "TestEnumeration" ;
+   bamm:dataType xsd:int ;
+   bamm-c:values ( 1 2 3 ) .

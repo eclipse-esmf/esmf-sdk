@@ -1,0 +1,26 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithConstrainedCollection a bamm:Aspect ;
+   bamm:name "AspectWithConstrainedCollection" ;
+   bamm:properties ( :testCollection ) ;
+   bamm:operations ( ) .
+
+:testCollection a bamm:Property ;
+   bamm:name "testCollection" ;
+   bamm:characteristic :IntegerRange .
+
+:IntegerRange a bamm-c:Trait ;
+   bamm:name "IntegerRange" ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue "2"^^xsd:integer ;
+      bamm-c:maxValue "10"^^xsd:integer ;
+   ] ;
+   bamm-c:baseCharacteristic [
+      a bamm-c:List ;
+      bamm:name "IntList" ;
+      bamm:dataType xsd:integer ;
+   ] .

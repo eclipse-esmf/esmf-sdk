@@ -165,7 +165,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    }
 
    @ParameterizedTest
-   @MethodSource( value = "versionsStartingWith1_0_0" )
+   @MethodSource( value = "allVersions" )
    public void testGeneratedMetaModelContainsOptionalMethods( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ALL_BASE_ATTRIBUTES;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )

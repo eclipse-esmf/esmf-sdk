@@ -1,0 +1,29 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithCollection a bamm:Aspect ;
+   bamm:name "AspectWithCollection" ;
+   bamm:properties ( :setProperty :listProperty ) ;
+   bamm:operations ( ) .
+
+:listProperty a bamm:Property ;
+   bamm:name "listProperty" ;
+   bamm:characteristic [
+      a bamm-c:List ;
+      bamm:name "NumberList" ;
+      bamm:dataType xsd:int
+   ] .
+
+:setProperty a bamm:Property ;
+   bamm:name "setProperty" ;
+   bamm:characteristic [
+      a bamm-c:Set ;
+      bamm:name "StringSet" ;
+      bamm:dataType xsd:string
+   ] .
+
+

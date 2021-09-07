@@ -1,0 +1,30 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithCollectionAndElementCharacteristic a bamm:Aspect ;
+   bamm:name "AspectWithCollectionAndElementCharacteristic" ;
+   bamm:properties ( :items ) ;
+   bamm:operations ( ) .
+
+:items a bamm:Property ;
+   bamm:name "items" ;
+   bamm:characteristic [
+      a bamm-c:Collection ;
+      bamm:name "TestCollection" ;
+      bamm-c:elementCharacteristic :TestEntityCharacteristic
+   ] .
+
+:TestEntityCharacteristic a bamm-c:SingleEntity ;
+   bamm:name "TestEntityCharacteristic" ;
+   bamm:dataType :TestEntity .
+
+:TestEntity a bamm:Entity ;
+   bamm:name "TestEntity" ;
+   bamm:properties ( :testProperty ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:characteristic bamm-c:Text .

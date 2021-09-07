@@ -1,0 +1,38 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithNestedEntity a bamm:Aspect ;
+   bamm:name "AspectWithNestedEntity" ;
+   bamm:properties ( :entity ) ;
+   bamm:operations ( ) .
+
+:entity a bamm:Property ;
+   bamm:name "entity" ;
+   bamm:characteristic :EntityCharacteristic .
+
+:Entity a bamm:Entity ;
+   bamm:name "Entity" ;
+   bamm:properties ( :nestedEntity :testString ) .
+
+:nestedEntity a bamm:Property ;
+   bamm:name "nestedEntity" ;
+   bamm:characteristic :NestedEntityCharacteristic .
+
+:NestedTestEntity a bamm:Entity ;
+   bamm:name "NestedTestEntity" ;
+   bamm:properties ( :testString ) .
+
+:testString a bamm:Property ;
+   bamm:name "testString" ;
+   bamm:exampleValue "Example Value Test" ;
+   bamm:characteristic bamm-c:Text .
+
+:EntityCharacteristic a bamm:Characteristic ;
+   bamm:name "EntityCharacteristic" ;
+   bamm:dataType :Entity .
+
+:NestedEntityCharacteristic a bamm:Characteristic ;
+   bamm:name "NestedEntityCharacteristic" ;
+   bamm:dataType :NestedTestEntity .

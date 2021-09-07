@@ -1,0 +1,66 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithEntityEnumerationAndNotInPayloadProperties a bamm:Aspect ;
+	bamm:name "AspectWithEntityEnumerationAndNotInPayloadProperties" ;
+	bamm:preferredName "Aspect with entity enumeration and not in payload properties"@en ;
+	bamm:description "This is a test description"@en ;
+	bamm:see <http://bosch.com/opcon> ;
+	bamm:properties ( :systemState ) ;
+	bamm:operations ( ) .
+
+:systemState a bamm:Property ;
+	bamm:name "systemState" ;
+	bamm:preferredName "System State"@en ;
+	bamm:description "The state the system is currently in, e.g. heat-up."@en ;
+	bamm:characteristic [
+			a bamm-c:Enumeration ;
+			bamm:name "SystemStates" ;
+			bamm:preferredName "System States"@en ;
+			bamm:description "Defines which states the system may have."@en ;
+	     	bamm:dataType :SystemState ;
+	  		bamm-c:values ( :On :CoolDown :Off :HeatUp )
+	] .
+
+:SystemState a bamm:Entity ;
+	bamm:name "SystemState" ;
+	bamm:preferredName "System State"@en ;
+	bamm:description "Represents a specific state the system may have."@en ;
+	bamm:properties ( :state
+                      [ bamm:property :description ; bamm:notInPayload "true"^^xsd:boolean ] ) .
+
+:Off a :SystemState ;
+	 :state "0"^^xsd:short ;
+	 :description "Off" .
+
+:On a :SystemState ;
+	:state "1"^^xsd:short ;
+	:description "On" .
+
+:CoolDown a :SystemState ;
+	:state "3"^^xsd:short ;
+	:description "CoolDown" .
+
+:HeatUp a :SystemState ;
+	:state "4"^^xsd:short ;
+	:description "HeatUp" .
+
+:state a bamm:Property ;
+	bamm:name "state" ;
+	bamm:characteristic :Measurement .
+
+:description a bamm:Property ;
+	bamm:name "description" ;
+	bamm:preferredName "Test Property"@en ;
+    bamm:description "This is a test property."@en ;
+    bamm:see <http://bosch.com/opcon> ;
+    bamm:see <http://bosch.com/me> ;
+	bamm:characteristic bamm-c:Text .
+
+:Measurement a bamm-c:Measurement ;
+	bamm:name "Measurement" ;
+	bamm:dataType xsd:short ;
+	bamm-c:unit unit:metrePerSecond .

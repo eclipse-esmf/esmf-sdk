@@ -1,0 +1,37 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithRangeConstraintOnConstrainedNumericType a bamm:Aspect ;
+   bamm:name "AspectWithRangeConstraintOnConstrainedNumericType" ;
+   bamm:preferredName "Test Aspect"@en ;
+   bamm:description "This is a test description"@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:properties ( :testProperty ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:preferredName "Test Property"@en ;
+   bamm:description "This is a test property."@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://bosch.com/me> ;
+   bamm:characteristic :TestRangeConstraint .
+
+:TestRangeConstraint a bamm-c:Trait ;
+   bamm:name "TestRangeConstraint" ;
+   bamm:preferredName "Test Range Constraint"@en ;
+   bamm:description "This is a test range constraint."@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm-c:constraint [
+      a bamm-c:RangeConstraint ;
+      bamm-c:minValue "5"^^xsd:short ;
+   ] ;
+   bamm-c:baseCharacteristic :Measurement .
+
+:Measurement a bamm-c:Measurement ;
+   bamm:name "Measurement" ;
+   bamm:dataType xsd:short ;
+   bamm-c:unit unit:metrePerSecond .

@@ -1,0 +1,50 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithNestedEntityListEnumerationWithNotInPayload a bamm:Aspect ;
+   bamm:name "AspectWithNestedEntityListEnumerationWithNotInPayload" ;
+   bamm:properties ( :testProperty ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:characteristic :TestEnumeration .
+
+:TestEnumeration a bamm-c:Enumeration ;
+   bamm:name "TestEnumeration" ;
+   bamm:dataType :TestEntity ;
+   bamm-c:values ( :entityInstance ) .
+
+:TestEntity a bamm:Entity ;
+   bamm:name "TestEntity" ;
+   bamm:properties ( :entityProperty
+                     [ bamm:property :nestedEntityListProperty ; bamm:notInPayload "true"^^xsd:boolean ] ) .
+
+:entityProperty a bamm:Property ;
+   bamm:name "entityProperty" ;
+   bamm:characteristic bamm-c:Text .
+
+:nestedEntityListProperty a bamm:Property ;
+   bamm:name "nestedEntityListProperty" ;
+   bamm:characteristic [
+      a bamm-c:Set ;
+      bamm:name "NestedEntityList" ;
+      bamm:dataType :NestedEntity
+   ] .
+
+:NestedEntity a bamm:Entity ;
+   bamm:name "NestedEntity" ;
+   bamm:properties ( :notInPayloadProperty ) .
+
+:notInPayloadProperty a bamm:Property ;
+   bamm:name "notInPayloadProperty" ;
+   bamm:characteristic bamm-c:Text .
+
+:entityInstance a :TestEntity ;
+   :entityProperty "This is a test." ;
+   :nestedEntityListProperty ( :NestedEntityInstance ) .
+
+:NestedEntityInstance a :NestedEntity ;
+   :notInPayloadProperty "foo" .

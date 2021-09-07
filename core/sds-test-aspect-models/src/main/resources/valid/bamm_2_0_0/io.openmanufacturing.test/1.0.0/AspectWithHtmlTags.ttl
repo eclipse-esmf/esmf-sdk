@@ -1,0 +1,24 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithHTMLTags a bamm:Aspect ;
+   bamm:name "AspectWithHTMLTags" ;
+   bamm:preferredName "Aspect With <img src=xss.png onerror=alert('Boom!')> Entity"@en ;
+   bamm:description "Aspect With <p>inside html tag</p> Entity"@en ;
+   bamm:properties ( :testEntity ) ;
+   bamm:operations ( ) .
+
+:testEntity a bamm:Property ;
+   bamm:name "testEntity" ;
+   bamm:preferredName "Preferred Name <input value=''/><script>alert('Boom!')</script>'/>"@en ;
+   bamm:characteristic :TestEntityCharacteristic .
+
+:TestEntityCharacteristic a bamm:Characteristic ;
+   bamm:name "TestEntityCharacteristic" ;
+   bamm:dataType :TestEntity .
+
+:TestEntity a bamm:Entity ;
+   bamm:name "TestEntity" ;
+   bamm:properties ( ) .

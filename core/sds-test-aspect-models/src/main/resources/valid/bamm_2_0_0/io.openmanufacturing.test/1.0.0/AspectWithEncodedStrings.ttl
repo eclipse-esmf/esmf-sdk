@@ -1,0 +1,11 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithEncodedStrings a bamm:Aspect ;
+   bamm:name "AspectWithEncodedStrings" ;
+   bamm:preferredName "VGhpcyBpcyBhbiBBc3BlY3Qgd2l0aCBlbmNvZGVkIHRleHQu"@en ;
+   bamm:description "Aspect With encoded text"@en ;
+   bamm:properties ( ) ;
+   bamm:operations ( ) .

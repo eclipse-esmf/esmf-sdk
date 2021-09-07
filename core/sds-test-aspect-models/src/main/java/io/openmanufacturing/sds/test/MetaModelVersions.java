@@ -44,7 +44,7 @@ public abstract class MetaModelVersions {
    }
 
    @SuppressWarnings( "squid:S00100" ) // Underscores are required to make version unambiguous
-   protected static Stream<KnownVersion> versionsStartingWith1_0_0() {
-      return versionsStartingWith( KnownVersion.BAMM_1_0_0 );
+   protected static Stream<KnownVersion> versionsStartingWith2_0_0() {
+      return versionsStartingWith( KnownVersion.BAMM_2_0_0 );
    }
 }

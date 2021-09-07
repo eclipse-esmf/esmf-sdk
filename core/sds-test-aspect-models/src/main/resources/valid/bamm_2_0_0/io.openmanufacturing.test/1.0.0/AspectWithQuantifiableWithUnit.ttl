@@ -1,0 +1,19 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithQuantifiableWithUnit a bamm:Aspect ;
+   bamm:name "AspectWithQuantifiableWithUnit" ;
+   bamm:properties ( :testProperty ) ;
+   bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+   bamm:name "testProperty" ;
+   bamm:characteristic :TestQuantifiable .
+
+:TestQuantifiable a bamm-c:Quantifiable ;
+   bamm:name "TestQuantifiable" ;
+   bamm-c:unit unit:percent ;
+   bamm:dataType xsd:float .

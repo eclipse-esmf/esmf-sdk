@@ -1,0 +1,19 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithDescriptions a bamm:Aspect ;
+   bamm:name "AspectWithDescriptions" ;
+   bamm:description "Test Description"@en ;
+   bamm:description "Test Beschreibung"@de ;
+   bamm:properties ( :testBoolean ) ;
+   bamm:operations ( ) .
+
+:testBoolean a bamm:Property ;
+   bamm:name "testBoolean" ;
+   bamm:characteristic :BooleanTestCharacteristic .
+
+:BooleanTestCharacteristic a bamm:Characteristic ;
+   bamm:name "BooleanTestCharacteristic" ;
+   bamm:dataType xsd:boolean .

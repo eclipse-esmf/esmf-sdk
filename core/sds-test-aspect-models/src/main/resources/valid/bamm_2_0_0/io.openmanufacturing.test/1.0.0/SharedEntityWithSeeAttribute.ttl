@@ -1,0 +1,18 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#> .
+
+:SharedEntityWithSeeAttribute a bamm:Entity ;
+   bamm:name "SharedEntityWithSeeAttribute" ;
+   bamm:preferredName "Test Entity"@en ;
+   bamm:description "This is a test entity."@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:properties ( ) .
+
+bamm-e:SharedEntity a bamm:Entity ;
+   bamm:name "SharedEntity" ;
+   bamm:preferredName "Shared Entity"@en ;
+   bamm:description "This is a shared entity."@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:properties ( ) .

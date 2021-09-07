@@ -1,0 +1,21 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithBlankNode a bamm:Aspect ;
+   bamm:name "AspectWithBlankNode" ;
+   bamm:preferredName "Aspect With Blank Node"@en ;
+   bamm:preferredName "Aspekt mit anonymen Knoten"@de ;
+   bamm:properties ( :list ) ;
+   bamm:operations ( ) .
+
+:list a bamm:Property ;
+   bamm:name "list" ;
+   bamm:characteristic [
+      a bamm-c:Collection ;
+      bamm:name "BlankNodeCollection" ;
+      bamm:preferredName "Blank Node Collection"@en ;
+      bamm:preferredName "Blank Node Liste"@de ;
+      bamm:dataType xsd:string ;
+   ] .

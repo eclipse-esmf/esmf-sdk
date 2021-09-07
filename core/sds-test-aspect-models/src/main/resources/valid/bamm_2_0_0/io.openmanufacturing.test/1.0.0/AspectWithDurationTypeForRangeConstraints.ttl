@@ -1,0 +1,81 @@
+@prefix :       <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm:   <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit:   <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithDurationTypeForRangeConstraints
+    a               bamm:Aspect ;
+    bamm:name       "AspectWithDurationTypeForRangeConstraints" ;
+    bamm:properties ( :testPropertyWithDayTimeDuration :testPropertyWithDuration
+                      :testPropertyWithYearMonthDuration ) ;
+    bamm:operations ( ) .
+
+:testPropertyWithDayTimeDuration
+    a                   bamm:Property ;
+    bamm:name           "TestPropertyWithDayTimeDuration" ;
+    bamm:characteristic :testWithDurationMinDurationMaxDayTimeDuration .
+
+:testWithDurationMinDurationMaxDayTimeDuration
+    a                       bamm-c:Trait ;
+    bamm:name               "TestWithDurationMinDurationMaxDayTimeDuration" ;
+    bamm:preferredName      "Test Range"@en ;
+    bamm:description        "Test Range"@en ;
+    bamm-c:constraint [
+       a bamm-c:RangeConstraint ;
+       bamm-c:minValue "P1DT5H"^^xsd:dayTimeDuration ;
+       bamm-c:maxValue "P1DT8H"^^xsd:dayTimeDuration ;
+    ] ;
+    bamm-c:baseCharacteristic :MeasurementDayTimeDuration .
+
+:MeasurementDayTimeDuration
+    a             bamm-c:Measurement ;
+    bamm:name     "Measurement" ;
+    bamm:dataType xsd:dayTimeDuration ;
+    bamm-c:unit   unit:hour .
+
+:testPropertyWithDuration
+    a                   bamm:Property ;
+    bamm:name           "TestPropertyWithDuration" ;
+    bamm:characteristic :testWithDurationMinDurationMaxDuration .
+
+:testWithDurationMinDurationMaxDuration
+    a                       bamm-c:Trait ;
+    bamm:name               "TestWithDurationMinDurationMaxDuration" ;
+    bamm:preferredName      "Test Range"@en ;
+    bamm:description        "Test Range"@en ;
+    bamm-c:constraint [
+       a bamm-c:RangeConstraint ;
+       bamm-c:minValue "PT1H5M0S"^^xsd:duration ;
+       bamm-c:maxValue "PT1H5M3S"^^xsd:duration ;
+    ] ;
+    bamm-c:baseCharacteristic :MeasurementDuration .
+
+:MeasurementDuration
+    a             bamm-c:Measurement ;
+    bamm:name     "Measurement" ;
+    bamm:dataType xsd:duration ;
+    bamm-c:unit   unit:hour .
+
+:testPropertyWithYearMonthDuration
+    a                   bamm:Property ;
+    bamm:name           "TestPropertyWithYearMonthDuration" ;
+    bamm:characteristic :testWithDurationMinDurationMaxYearMonthDuration .
+
+:testWithDurationMinDurationMaxYearMonthDuration
+    a                       bamm-c:Trait ;
+    bamm:name               "testWithDurationMinDurationMaxYearMonthDuration" ;
+    bamm:preferredName      "Test Range"@en ;
+    bamm:description        "Test Range"@en ;
+    bamm-c:constraint [
+       a bamm-c:RangeConstraint ;
+       bamm-c:minValue         "P5Y2M"^^xsd:yearMonthDuration ;
+       bamm-c:maxValue         "P5Y3M"^^xsd:yearMonthDuration ;
+    ] ;
+    bamm-c:baseCharacteristic :MeasurementYearMonthDuration .
+
+:MeasurementYearMonthDuration
+    a             bamm-c:Measurement ;
+    bamm:name     "Measurement" ;
+    bamm:dataType xsd:yearMonthDuration ;
+    bamm-c:unit   unit:hour .

@@ -1,0 +1,20 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#> .
+
+:sharedPropertyWithSeeAttribute a bamm:Property ;
+   bamm:name "sharedPropertyWithSeeAttribute" ;
+   bamm:preferredName "Test Property"@en ;
+   bamm:description "This is a test property."@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:exampleValue "foo" ;
+   bamm:characteristic bamm-c:Text .
+
+bamm-e:sharedProperty a bamm:Property ;
+   bamm:name "sharedProperty" ;
+   bamm:preferredName "Shared Property"@en ;
+   bamm:description "This is a shared property."@en ;
+   bamm:see <http://bosch.com/opcon> ;
+   bamm:exampleValue "foo" ;
+   bamm:characteristic bamm-c:Text .

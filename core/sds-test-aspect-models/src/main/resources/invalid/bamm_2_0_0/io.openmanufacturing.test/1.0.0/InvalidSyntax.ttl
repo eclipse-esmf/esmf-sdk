@@ -1,0 +1,8 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+
+:InvalidSyntax a bamm:Aspect;
+	bamm:name "TestAspect"
+	bamm:preferredName "Test Aspect"@en;
+	bamm:properties () ;
+	bamm:operations () .

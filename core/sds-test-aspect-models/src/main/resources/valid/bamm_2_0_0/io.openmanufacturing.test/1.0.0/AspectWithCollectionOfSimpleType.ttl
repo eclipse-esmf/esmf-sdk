@@ -1,0 +1,18 @@
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithCollectionOfSimpleType a bamm:Aspect ;
+   bamm:name "AspectWithCollectionOfSimpleType" ;
+   bamm:properties ( :testList ) ;
+   bamm:operations ( ) .
+
+:testList a bamm:Property ;
+   bamm:name "testList" ;
+   bamm:exampleValue "35"^^xsd:int ;
+   bamm:characteristic :IntegerList .
+
+:IntegerList a bamm-c:List ;
+   bamm:name "IntegerList" ;
+   bamm:dataType xsd:int .
