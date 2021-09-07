@@ -144,7 +144,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
    }
 
    @ParameterizedTest
-   @MethodSource( value = "allVersions" )
+   @MethodSource( value = "versionsStartingWith2_0_0" )
    public void testTimeSeriesInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
             .fromUrn( TestModel.TEST_NAMESPACE + "TestTimeSeries" );
