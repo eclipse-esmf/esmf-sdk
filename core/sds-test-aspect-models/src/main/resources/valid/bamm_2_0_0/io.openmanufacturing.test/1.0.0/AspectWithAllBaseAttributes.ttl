@@ -9,7 +9,7 @@
    bamm:preferredName "Aspekt Mit Boolean"@de ;
    bamm:description "Test Description"@en ;
    bamm:description "Test Beschreibung"@de ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:properties ( :testBoolean ) ;
    bamm:operations ( ) .
 

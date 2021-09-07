@@ -36,8 +36,8 @@
    bamm:name "StringLengthConstraint" ;
    bamm:preferredName "Used Test Constraint"@en ;
    bamm:description "Used Test Constraint"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm-c:constraint [
       a bamm-c:LengthConstraint ;
       bamm-c:minValue "20"^^xsd:nonNegativeInteger ;

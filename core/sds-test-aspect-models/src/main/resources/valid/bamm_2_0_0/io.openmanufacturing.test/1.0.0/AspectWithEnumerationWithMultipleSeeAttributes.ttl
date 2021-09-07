@@ -16,7 +16,7 @@
    bamm:name "TestEnumeration" ;
    bamm:preferredName "Test Enumeration"@en ;
    bamm:description "Test Enumeration"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm-c:values ( "foo" "bar" ) ;
    bamm:dataType xsd:string .

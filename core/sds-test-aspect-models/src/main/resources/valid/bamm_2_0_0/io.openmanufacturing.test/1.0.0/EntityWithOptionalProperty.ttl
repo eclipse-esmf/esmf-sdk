@@ -7,7 +7,7 @@
    bamm:name "EntityWithOptionalProperty" ;
    bamm:preferredName "Test Entity"@en ;
    bamm:description "This is a test entity."@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:properties ( [ bamm:property :testProperty ; bamm:optional "true"^^xsd:boolean ] ) .
 
 :testProperty a bamm:Property ;

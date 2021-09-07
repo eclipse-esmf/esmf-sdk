@@ -8,7 +8,7 @@
    bamm:name "AspectWithRegularExpressionConstraint" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
@@ -16,8 +16,8 @@
    bamm:name "testProperty" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:exampleValue "3" ;
    bamm:characteristic :TestRegularExpressionConstraint .
 
@@ -27,7 +27,7 @@
       a bamm-c:RegularExpressionConstraint ;
       bamm:preferredName "Test Regular Expression Constraint"@en ;
       bamm:description "This is a test regular expression constraint."@en ;
-      bamm:see <http://bosch.com/opcon> ;
+      bamm:see <http://example.com/omp> ;
       bamm:value "^[0-9]*$" ;
    ] ;
    bamm-c:baseCharacteristic bamm-c:Text .

@@ -19,7 +19,7 @@
       bamm:name "TestConstraint" ;
       bamm:preferredName "Test Constraint"@en ;
       bamm:description "Test Constraint"@en ;
-      bamm:see <http://bosch.com/opcon> ;
+      bamm:see <http://example.com/omp> ;
       bamm-c:minValue "5"^^xsd:nonNegativeInteger ;
       bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
       bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;

@@ -16,7 +16,7 @@
 :TestScalarEnumeration a bamm-c:Enumeration ;
    bamm:name "TestScalarEnumeration" ;
    bamm:preferredName "TestScalarEnumeration Result"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:dataType xsd:string ;
    bamm-c:values ( "Yes"
                    "No" ) .

@@ -8,7 +8,7 @@
    bamm:name "AspectWithRangeConstraint" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
@@ -16,8 +16,8 @@
    bamm:name "testProperty" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:exampleValue "5.7"^^xsd:float ;
    bamm:characteristic :TestRangeConstraint .
 
@@ -27,7 +27,7 @@
       a bamm-c:RangeConstraint ;
       bamm:preferredName "Test Range Constraint"@en ;
       bamm:description "This is a test range constraint."@en ;
-      bamm:see <http://bosch.com/opcon> ;
+      bamm:see <http://example.com/omp> ;
       bamm-c:minValue "2.3"^^xsd:float ;
       bamm-c:maxValue "10.5"^^xsd:float ;
    ] ;

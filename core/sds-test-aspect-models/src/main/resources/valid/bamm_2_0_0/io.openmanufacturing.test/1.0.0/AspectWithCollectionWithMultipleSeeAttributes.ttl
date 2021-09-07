@@ -16,6 +16,6 @@
    bamm:name "TestCollection" ;
    bamm:preferredName "Test Collection"@en ;
    bamm:description "Test Collection"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:string .

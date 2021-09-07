@@ -19,8 +19,8 @@
       bamm:name "UsedTestConstraint" ;
       bamm:preferredName "Used Test Constraint"@en ;
       bamm:description "Used Test Constraint"@en ;
-      bamm:see <http://bosch.com/opcon> ;
-      bamm:see <http://bosch.com/me> ;
+      bamm:see <http://example.com/omp> ;
+      bamm:see <http://example.com/me> ;
       bamm-c:minValue "5"^^xsd:nonNegativeInteger ;
       bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
    ] ;
@@ -30,7 +30,7 @@
    bamm:name "UnusedTestConstraint" ;
    bamm:preferredName "Unused Test Constraint"@en ;
    bamm:description "Unused Test Constraint"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm-c:minValue "5"^^xsd:nonNegativeInteger ;
    bamm-c:maxValue "10"^^xsd:nonNegativeInteger .

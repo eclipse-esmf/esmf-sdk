@@ -8,7 +8,7 @@
     bamm:name "AspectWithEntityEnumeration" ;
     bamm:preferredName "Aspect with entity enumeration"@en ;
     bamm:description "This is a test description"@en ;
-    bamm:see <http://bosch.com/opcon> ;
+    bamm:see <http://example.com/omp> ;
     bamm:properties ( :systemState ) ;
     bamm:operations ( ) .
 

@@ -16,14 +16,14 @@
    bamm:name "UsedTestCollection" ;
    bamm:preferredName "Used Test Collection"@en ;
    bamm:description "Used Test Collection"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:string .
 
 :UnusedTestCollection a bamm-c:Collection ;
    bamm:name "UnusedTestCollection" ;
    bamm:preferredName "Unused Test Collection"@en ;
    bamm:description "Unused Test Collection"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:string .

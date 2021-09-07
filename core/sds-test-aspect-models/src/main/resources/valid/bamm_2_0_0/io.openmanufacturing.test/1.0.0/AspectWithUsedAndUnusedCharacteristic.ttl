@@ -16,14 +16,14 @@
    bamm:name "UsedTestCharacteristic" ;
    bamm:preferredName "Used Test Characteristic"@en ;
    bamm:description "Used Test Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:string .
 
 :UnusedTestCharacteristic a bamm:Characteristic ;
    bamm:name "UnusedTestCharacteristic" ;
    bamm:preferredName "Unused Test Characteristic"@en ;
    bamm:description "Unused Test Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:string .

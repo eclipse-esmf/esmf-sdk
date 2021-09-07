@@ -7,12 +7,12 @@
    bamm:name "SharedEntityWithSeeAttribute" ;
    bamm:preferredName "Test Entity"@en ;
    bamm:description "This is a test entity."@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:properties ( ) .
 
 bamm-e:SharedEntity a bamm:Entity ;
    bamm:name "SharedEntity" ;
    bamm:preferredName "Shared Entity"@en ;
    bamm:description "This is a shared entity."@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:properties ( ) .

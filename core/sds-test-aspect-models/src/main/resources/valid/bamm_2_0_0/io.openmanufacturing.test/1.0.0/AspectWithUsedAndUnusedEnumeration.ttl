@@ -16,8 +16,8 @@
    bamm:name "UsedTestEnumeration" ;
    bamm:preferredName "Used Test Enumeration"@en ;
    bamm:description "Used Test Enumeration"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm-c:values ( "foo" "bar" ) ;
    bamm:dataType xsd:string .
 
@@ -25,7 +25,7 @@
    bamm:name "UnusedTestEnumeration" ;
    bamm:preferredName "Unused Test Enumeration"@en ;
    bamm:description "Unused Test Enumeration"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm-c:values ( "foo" "bar" ) ;
    bamm:dataType xsd:string .

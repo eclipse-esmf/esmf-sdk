@@ -21,7 +21,7 @@
    bamm:name "TestEither" ;
    bamm:preferredName "Test Either"@en ;
    bamm:description "Test Either Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm-c:left :LeftType ;
    bamm-c:right :RightType .
 
@@ -29,22 +29,22 @@
    bamm:name "LeftType" ;
    bamm:preferredName "Left Type"@en ;
    bamm:description "Left Type Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:dataType xsd:float .
 
 :RightType a bamm:Characteristic ;
    bamm:name "RightType" ;
    bamm:preferredName "Right Type"@en ;
    bamm:description "Right Type Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:dataType xsd:string .
 
 :TestEitherTwo a bamm-c:Either ;
    bamm:name "TestEitherTwo" ;
    bamm:preferredName "Test Either"@en ;
    bamm:description "Test Either Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm-c:left :LeftTypeTwo ;
    bamm-c:right :RightTypeTwo .
 
@@ -52,14 +52,14 @@
    bamm:name "LeftTypeTwo" ;
    bamm:preferredName "Left Type"@en ;
    bamm:description "Left Type Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:float .
 
 :RightTypeTwo a bamm:Characteristic ;
    bamm:name "RightTypeTwo" ;
    bamm:preferredName "Right Type"@en ;
    bamm:description "Right Type Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:string .

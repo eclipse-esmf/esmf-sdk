@@ -8,7 +8,7 @@
 	bamm:name "AspectWithEntityEnumerationAndNotInPayloadProperties" ;
 	bamm:preferredName "Aspect with entity enumeration and not in payload properties"@en ;
 	bamm:description "This is a test description"@en ;
-	bamm:see <http://bosch.com/opcon> ;
+	bamm:see <http://example.com/omp> ;
 	bamm:properties ( :systemState ) ;
 	bamm:operations ( ) .
 
@@ -56,8 +56,8 @@
 	bamm:name "description" ;
 	bamm:preferredName "Test Property"@en ;
     bamm:description "This is a test property."@en ;
-    bamm:see <http://bosch.com/opcon> ;
-    bamm:see <http://bosch.com/me> ;
+    bamm:see <http://example.com/omp> ;
+    bamm:see <http://example.com/me> ;
 	bamm:characteristic bamm-c:Text .
 
 :Measurement a bamm-c:Measurement ;

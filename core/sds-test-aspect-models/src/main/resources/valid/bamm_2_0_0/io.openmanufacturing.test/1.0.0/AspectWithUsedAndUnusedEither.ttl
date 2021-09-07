@@ -16,8 +16,8 @@
    bamm:name "UsedTestEither" ;
    bamm:preferredName "Test Either"@en ;
    bamm:description "Test Either Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm-c:left :UsedLeftType ;
    bamm-c:right :UsedRightType .
 
@@ -25,24 +25,24 @@
    bamm:name "UsedLeftType" ;
    bamm:preferredName "Left Type"@en ;
    bamm:description "Left Type Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:float .
 
 :UsedRightType a bamm:Characteristic ;
    bamm:name "UsedRightType" ;
    bamm:preferredName "Right Type"@en ;
    bamm:description "Right Type Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:string .
 
 :NonUsedTestEither a bamm-c:Either ;
    bamm:name "NonUsedTestEither" ;
    bamm:preferredName "Test Either"@en ;
    bamm:description "Test Either Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm-c:left :NonUsedLeftType ;
    bamm-c:right :NonUsedRightType .
 
@@ -50,14 +50,14 @@
    bamm:name "NonUsedLeftType" ;
    bamm:preferredName "Left Type"@en ;
    bamm:description "Left Type Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:float .
 
 :UnusedRightType a bamm:Characteristic ;
    bamm:name "UnusedRightType" ;
    bamm:preferredName "Right Type"@en ;
    bamm:description "Right Type Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:string .

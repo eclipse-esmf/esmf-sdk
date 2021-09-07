@@ -17,5 +17,5 @@
    bamm:name "TestCode" ;
    bamm:preferredName "Test Code"@en ;
    bamm:description "This is a test code."@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:dataType xsd:int .

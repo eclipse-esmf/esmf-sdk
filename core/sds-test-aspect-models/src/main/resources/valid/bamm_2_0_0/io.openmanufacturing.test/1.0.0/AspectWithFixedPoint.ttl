@@ -8,7 +8,7 @@
    bamm:name "AspectWithFixedPoint" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
@@ -22,7 +22,7 @@
       a bamm-c:FixedPointConstraint ;
       bamm:preferredName "Test Fixed Point"@en ;
       bamm:description "This is a test fixed point constraint."@en ;
-      bamm:see <http://bosch.com/opcon> ;
+      bamm:see <http://example.com/omp> ;
       bamm-c:scale "5"^^xsd:int ;
       bamm-c:integer "3"^^xsd:int ;
    ] ;

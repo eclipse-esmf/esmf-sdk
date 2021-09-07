@@ -17,6 +17,6 @@
    bamm:name "TestDuration" ;
    bamm:preferredName "Test Duration"@en ;
    bamm:description "This is a test Duration"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:dataType xsd:int ;
    bamm-c:unit unit:kilosecond .

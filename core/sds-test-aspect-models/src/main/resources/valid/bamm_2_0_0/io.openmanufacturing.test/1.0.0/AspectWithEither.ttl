@@ -17,6 +17,6 @@
    bamm:name "TestEither" ;
    bamm:preferredName "Test Either"@en ;
    bamm:description "This is a test Either."@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm-c:left bamm-c:Text ;
    bamm-c:right bamm-c:Boolean .

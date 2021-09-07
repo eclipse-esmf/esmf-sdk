@@ -11,8 +11,8 @@
 :testBoolean a bamm:Property ;
    bamm:name "testBoolean" ;
    bamm:characteristic :BooleanTestCharacteristic ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> .
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> .
 
 :BooleanTestCharacteristic a bamm:Characteristic ;
    bamm:name "BooleanTestCharacteristic" ;

@@ -11,7 +11,7 @@
    bamm:name "testOperation" ;
    bamm:preferredName "Test Operation"@en ;
    bamm:description "Test Operation"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:input ( ) ;
    bamm:output :output .
 
@@ -19,8 +19,8 @@
    bamm:name "testOperationTwo" ;
    bamm:preferredName "Test Operation Two"@en ;
    bamm:description "Test Operation Two"@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:input ( ) ;
    bamm:output :output .
 

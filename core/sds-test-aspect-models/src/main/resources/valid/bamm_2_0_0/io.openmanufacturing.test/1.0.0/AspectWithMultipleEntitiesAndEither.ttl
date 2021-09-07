@@ -68,7 +68,7 @@
    bamm:name "TestEither" ;
    bamm:preferredName "Test Either"@en ;
    bamm:description "This is a test Either."@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm-c:right :RightEitherType ;
    bamm-c:left :LeftEitherType .
 
@@ -76,13 +76,13 @@
    bamm:name "Right either type" ;
    bamm:preferredName "Right either type"@en ;
    bamm:description "Right type Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:dataType :TestEntity .
 
 :LeftEitherType a bamm:Characteristic ;
    bamm:name "Left either type" ;
    bamm:preferredName "Left either type"@en ;
    bamm:description "Left type Characteristic"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:dataType :TestEntity .
 

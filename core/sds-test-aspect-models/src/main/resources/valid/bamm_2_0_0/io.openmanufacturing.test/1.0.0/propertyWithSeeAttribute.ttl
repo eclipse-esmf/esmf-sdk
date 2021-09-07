@@ -6,7 +6,7 @@
    bamm:name "propertyWithSeeAttribute" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:exampleValue "foo" ;
    bamm:characteristic bamm-c:Text .
 

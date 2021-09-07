@@ -6,6 +6,6 @@
    bamm:name "AspectWithSeeAttribute" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test Aspect."@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:properties ( ) ;
    bamm:operations ( ) .

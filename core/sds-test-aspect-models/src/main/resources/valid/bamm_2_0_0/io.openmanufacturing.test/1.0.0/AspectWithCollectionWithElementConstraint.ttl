@@ -8,7 +8,7 @@
    bamm:name "AspectWithCollectionWithElementConstraint" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
@@ -16,8 +16,8 @@
    bamm:name "testProperty" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:exampleValue "5.0"^^xsd:float ;
    bamm:characteristic :TestCollection .
 
@@ -25,7 +25,7 @@
    bamm:name "TestCollection" ;
    bamm:preferredName "Test Collection"@en ;
    bamm:description "This is a test collection."@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm-c:elementCharacteristic [
       a bamm-c:Trait ;
       bamm:name "ElementRangeConstraint" ;

@@ -8,7 +8,7 @@
    bamm:name "AspectWithTwoLists" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:properties ( :testProperty :testPropertyTwo ) ;
    bamm:operations ( ) .
 
@@ -16,8 +16,8 @@
    bamm:name "testProperty" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:exampleValue "Example Value" ;
    bamm:characteristic :TestList .
 
@@ -25,8 +25,8 @@
    bamm:name "testPropertyTwo" ;
    bamm:preferredName "Test Property Two"@en ;
    bamm:description "This is a test property."@en ;
-   bamm:see <http://bosch.com/opcon> ;
-   bamm:see <http://bosch.com/me> ;
+   bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
    bamm:exampleValue "Example Value" ;
    bamm:characteristic :TestList .
 
@@ -34,5 +34,5 @@
    bamm:name "TestList" ;
    bamm:preferredName "Test List"@en ;
    bamm:description "This is a test list."@en ;
-   bamm:see <http://bosch.com/opcon> ;
+   bamm:see <http://example.com/omp> ;
    bamm:dataType xsd:string .
