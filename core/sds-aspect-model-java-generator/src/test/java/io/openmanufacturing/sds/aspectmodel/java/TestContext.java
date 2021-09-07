@@ -41,39 +41,27 @@ import io.openmanufacturing.sds.test.TestResources;
 import io.openmanufacturing.sds.test.shared.compiler.JavaCompiler;
 
 public class TestContext {
-   public static ThrowingFunction<Collection<JavaGenerator>, GenerationResult, IOException> generateAspectCode(
-         final TestAspect aspect, final KnownVersion version ) {
+   public static ThrowingFunction<Collection<JavaGenerator>, GenerationResult, IOException> generateAspectCode() {
       return generators -> {
          final File tempDirectory = Files.createTempDirectory( "junit" ).toFile();
-         final Map<QualifiedName, Class<?>> generatedClassess = generateJavaCode( tempDirectory, generators,
-               aspect, version );
-         return new GenerationResult( tempDirectory, generatedClassess );
+         final Map<QualifiedName, Class<?>> generatedClasses = generateJavaCode( tempDirectory, generators );
+         return new GenerationResult( tempDirectory, generatedClasses );
       };
    }
 
-   public static ThrowingFunction<Collection<JavaGenerator>, StaticClassGenerationResult, IOException> generateStaticAspectCode(
-         final TestAspect aspect, final KnownVersion version ) {
+   public static ThrowingFunction<Collection<JavaGenerator>, StaticClassGenerationResult, IOException> generateStaticAspectCode() {
       return generators -> {
          final File tempDirectory = Files.createTempDirectory( "junit" ).toFile();
-         final Map<QualifiedName, Class<?>> generatedClasses = generateJavaCode( tempDirectory, generators,
-               aspect, version );
+         final Map<QualifiedName, Class<?>> generatedClasses = generateJavaCode( tempDirectory, generators );
          return new StaticClassGenerationResult( tempDirectory, generatedClasses );
       };
    }
 
    private static Map<QualifiedName, Class<?>> generateJavaCode( final File tempDirectory,
-         final Collection<JavaGenerator> generators,
-         final TestAspect aspect,
-         final KnownVersion version ) throws IOException {
-      final Optional<String> customJavaPackageName = Optional.empty();
-      final VersionedModel model = TestResources.getModel( aspect, version ).get();
-      final Aspect aspectMetaModel = AspectModelLoader.fromVersionedModelUnchecked( model );
-      final String javaPackage = customJavaPackageName.filter( javaPackageName -> !javaPackageName.isEmpty() )
-                                                      .orElse(
-                                                            aspectMetaModel.getAspectModelUrn().get().getNamespace() );
-
+         final Collection<JavaGenerator> generators ) throws IOException {
       final File subFolder = new File(
-            tempDirectory.getAbsolutePath() + File.separator + javaPackage.replace( '.', File.separatorChar ) );
+            tempDirectory.getAbsolutePath() + File.separator + generators.iterator().next().getConfig().getPackageName()
+                                                                         .replace( '.', File.separatorChar ) );
       if ( !subFolder.mkdirs() ) {
          throw new IOException( "Could not create directory: " + subFolder );
       }

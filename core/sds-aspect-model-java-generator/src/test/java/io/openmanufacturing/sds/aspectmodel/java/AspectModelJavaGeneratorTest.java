@@ -90,7 +90,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_ON_MULTIPLE_LEVELS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 4 );
@@ -123,7 +123,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_MULTIPLE_ENUMERATIONS_ON_MULTIPLE_LEVELS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 5 );
@@ -147,7 +147,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 2 );
@@ -166,7 +166,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -184,7 +184,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_CURIE;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -219,7 +219,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                      .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENUMS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 5 );
@@ -267,7 +267,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
 
@@ -318,7 +318,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -356,7 +356,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                           } ).build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINED_COLLECTION;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -380,7 +380,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXCLUSIVE_RANGE_CONSTRAINT;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -414,7 +414,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 3 );
@@ -430,7 +430,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                           .getSimpleName() ).build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -449,7 +449,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -466,7 +466,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
          final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
       final String customJavaPackageName = "test.test.test";
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion,
                                                        Optional.of( customJavaPackageName ), true ) );
       result.assertNumberOfFiles( 1 );
@@ -478,7 +478,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    public void testGenerateAspectWithEmptyJavaPackageNameExpectDefaultPackageDeclaration(
          final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -504,7 +504,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                          .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 4 );
@@ -538,7 +538,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_STATE;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 2 );
@@ -573,7 +573,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_ON_MULTIPLE_LEVELS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        false ) );
       result.assertNumberOfFiles( 4 );
@@ -602,7 +602,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_NUMERIC_STRUCTURED_VALUE;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -615,7 +615,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    public void testGenerateAspectModelWithComplexEnumerationInclOptional( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM_INCL_OPTIONAL;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 4 );
@@ -636,7 +636,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    public void testGenerateAspectModelWithComplexEnumerations( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_COLLECTION_ENUM;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 9 );
@@ -670,7 +670,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    public void testGenerateAspectModelWithComplexEntityCollectionEnumeration( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 4 );
@@ -696,7 +696,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_FIXED_POINT;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -715,7 +715,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_LIST;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -736,7 +736,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_LIST_AND_ELEMENT_CHARACTERISTIC;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -758,7 +758,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_LIST_AND_ELEMENT_CONSTRAINT;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -782,7 +782,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_SET;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -802,7 +802,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -840,7 +840,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_DURATION_TYPE_FOR_RANGE_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -872,7 +872,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_DATE_TIME_TYPE_FOR_RANGE_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -907,7 +907,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -942,7 +942,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -960,7 +960,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                     .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_BLANK_NODE;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 1 );
@@ -993,7 +993,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_ABSTRACT_ENTITY;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 3 );
@@ -1041,7 +1041,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                                                             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+      final GenerationResult result = TestContext.generateAspectCode()
                                                  .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
                                                        true ) );
       result.assertNumberOfFiles( 3 );

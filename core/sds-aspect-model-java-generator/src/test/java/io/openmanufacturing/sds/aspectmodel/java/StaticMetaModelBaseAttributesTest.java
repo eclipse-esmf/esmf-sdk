@@ -33,7 +33,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    public void testMetaModelBaseAttributesOfGeneratedProperty( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
                                                             .apply( getGenerators( aspect, metaModelVersion,
                                                                   Optional.empty() ) );
       result.assertNumberOfFiles( 2 );
@@ -55,7 +55,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    public void testMetaModelBaseAttributesOfGeneratedPropertyWithAllAttributes( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_ALL_BASE_ATTRIBUTES;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
                                                             .apply( getGenerators( aspect, metaModelVersion,
                                                                   Optional.empty() ) );
       result.assertNumberOfFiles( 2 );
@@ -81,7 +81,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    public void testMetaModelBaseAttributesOfGeneratedPropertyWithPreferredNames( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_PREFERRED_NAMES;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
                                                             .apply( getGenerators( aspect, metaModelVersion,
                                                                   Optional.empty() ) );
       result.assertNumberOfFiles( 2 );
@@ -103,7 +103,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    public void testMetaModelBaseAttributesOfGeneratedPropertyWithDescriptions( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_DESCRIPTIONS;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
                                                             .apply( getGenerators( aspect, metaModelVersion,
                                                                   Optional.empty() ) );
       result.assertNumberOfFiles( 2 );
@@ -125,7 +125,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    public void testMetaModelBaseAttributesOfGeneratedPropertyWithSee( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_SEE;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
                                                             .apply( getGenerators( aspect, metaModelVersion,
                                                                   Optional.empty() ) );
       result.assertNumberOfFiles( 2 );
@@ -146,7 +146,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    @MethodSource( value = "allVersions" )
    public void testGeneratedMetaModelContainsRequiredMethods( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
                                                             .apply( getGenerators( aspect, metaModelVersion,
                                                                   Optional.empty() ) );
       result.assertNumberOfFiles( 2 );
@@ -168,7 +168,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    @MethodSource( value = "allVersions" )
    public void testGeneratedMetaModelContainsOptionalMethods( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ALL_BASE_ATTRIBUTES;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
                                                             .apply( getGenerators( aspect, metaModelVersion,
                                                                   Optional.empty() ) );
       result.assertNumberOfFiles( 2 );
@@ -203,7 +203,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    public void testGeneratedMetaModelContainsGetPreferredNamesMethod( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PREFERRED_NAMES;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
                                                             .apply( getGenerators( aspect, metaModelVersion,
                                                                   Optional.empty() ) );
       result.assertNumberOfFiles( 2 );
@@ -231,7 +231,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    public void testGeneratedMetaModelContainsGetDescriptionsMethod( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_DESCRIPTIONS;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
                                                             .apply( getGenerators( aspect, metaModelVersion,
                                                                   Optional.empty() ) );
       result.assertNumberOfFiles( 2 );
@@ -258,7 +258,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
    @MethodSource( value = "allVersions" )
    public void testGeneratedMetaModelContainsGetSeeMethod( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_SEE;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode( aspect, metaModelVersion )
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
                                                             .apply( getGenerators( aspect, metaModelVersion,
                                                                   Optional.empty() ) );
       result.assertNumberOfFiles( 2 );
