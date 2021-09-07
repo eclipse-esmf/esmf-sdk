@@ -72,7 +72,9 @@ public class MigratorTest extends MetaModelVersions {
          return;
       }
 
-      assertThat( getAllUris( model ) ).noneMatch( uri -> uri.contains( metaModelVersion.toVersionString() ) );
+      final String metaModelNameSpace = String.format( "urn:bamm:io.openmanufacturing:meta-model:%s",
+            metaModelVersion.toVersionString() );
+      assertThat( getAllUris( model ) ).noneMatch( uri -> uri.contains( metaModelNameSpace ) );
    }
 
    @ParameterizedTest

@@ -15,9 +15,11 @@ package io.openmanufacturing.sds.aspectmodel.versionupdate;
 import java.util.Collections;
 import java.util.List;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.AspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.Migrator;
+import io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.SdsMetaModelVersionUriRewriter;
 
 /**
  * Includes all DSDS migrators
@@ -25,7 +27,8 @@ import io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.Migrator;
 public class SdsMigratorFactory {
 
    private final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
-   private final List<Migrator> migrators = Collections.emptyList();
+   private final List<Migrator> migrators = Collections.
+         singletonList( new SdsMetaModelVersionUriRewriter( KnownVersion.BAMM_1_0_0, KnownVersion.BAMM_2_0_0 ) );
 
    public List<Migrator> createMigrators() {
       return migrators;
