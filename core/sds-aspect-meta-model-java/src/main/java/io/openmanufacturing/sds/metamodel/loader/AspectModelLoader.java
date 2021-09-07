@@ -100,9 +100,9 @@ public class AspectModelLoader {
             .updateMetaModelVersion( versionedModel )
             .flatMap( migratedModel -> {
                final Optional<KnownVersion> metaModelVersion = KnownVersion
-                     .fromVersionString( versionedModel.getVersion().toString() );
+                     .fromVersionString( migratedModel.getVersion().toString() );
                if ( metaModelVersion.isEmpty() ) {
-                  return Try.failure( new UnsupportedVersionException( versionedModel.getVersion() ) );
+                  return Try.failure( new UnsupportedVersionException( migratedModel.getVersion() ) );
                }
 
                final KnownVersion version = metaModelVersion.get();

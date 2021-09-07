@@ -31,12 +31,15 @@ import com.github.javaparser.ParseResult;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.Problem;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
@@ -268,12 +271,27 @@ class GenerationResult {
       }
    }
 
-   void assertClassDeclaration( final String className, final List<String> expectedImplementedTypes ) {
+   void assertClassDeclaration( final String className, final List<Modifier> expectedModifiers,
+         final List<String> expectedExtendedTypes, final List<String> expectedImplementedTypes,
+         final List<String> expectedAnnotations ) {
       assertThat( compilationUnits.get( className ).getPrimaryType() ).hasValueSatisfying( typeDeclaration -> {
-         assertThat( typeDeclaration.isClassOrInterfaceDeclaration() );
+         assertThat( typeDeclaration.isClassOrInterfaceDeclaration() ).isTrue();
+         assertThat( typeDeclaration.getModifiers() ).containsAll( expectedModifiers );
 
-         final NodeList<ClassOrInterfaceType> implementedTypes = typeDeclaration.asClassOrInterfaceDeclaration()
-                                                                                .getImplementedTypes();
+         final NodeList<AnnotationExpr> annotations = typeDeclaration.getAnnotations();
+         assertThat( annotations ).hasSize( expectedAnnotations.size() );
+         annotations.forEach( annotationExpr -> {
+            assertThat( expectedAnnotations ).contains( annotationExpr.toString() );
+         } );
+
+         final ClassOrInterfaceDeclaration classOrInterfaceDeclaration = typeDeclaration.asClassOrInterfaceDeclaration();
+
+         assertThat( classOrInterfaceDeclaration.getExtendedTypes() ).hasSize( expectedExtendedTypes.size() );
+         classOrInterfaceDeclaration.getExtendedTypes().stream().map( ClassOrInterfaceType::getName ).forEach(
+               extendedClassSimpleName -> assertThat( expectedExtendedTypes ).contains(
+                     extendedClassSimpleName.asString() ) );
+
+         final NodeList<ClassOrInterfaceType> implementedTypes = classOrInterfaceDeclaration.getImplementedTypes();
          assertThat( implementedTypes ).hasSize( expectedImplementedTypes.size() );
       } );
    }

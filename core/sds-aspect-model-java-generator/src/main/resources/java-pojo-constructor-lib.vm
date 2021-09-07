@@ -1,17 +1,24 @@
-#macro( constructorContent $deconstructionSets $needInitializer $propertiesList $enableJacksonAnnotations )
+#macro( constructorContent $deconstructionSets $needInitializer $allProperties $enableJacksonAnnotations $elementProperties )
     #if( $enableJacksonAnnotations )
         $importTracker.importExplicit( $JsonProperty )
         $importTracker.importExplicit( $JsonCreator )
         @JsonCreator
     #end
     public ${element.name}(
-    #foreach( $property in $propertiesList )
+    #foreach( $property in $allProperties )
 		#if( $enableJacksonAnnotations ) @JsonProperty( value = "$property.getPayloadName()" ) #end
         $util.getPropertyType( $property, false, $importTracker ) $property.getPayloadName()
         #if( $foreach.hasNext ), #end
     #end
     ) #if( $needInitializer ) throws DatatypeConfigurationException #end {
-    #foreach( $property in $propertiesList )
+    super(
+	#foreach( $property in $allProperties )
+    	#if( !$elementProperties.contains( $property ) )
+			$property.getPayloadName()
+		#end
+	#end
+	);
+    #foreach( $property in $elementProperties )
         this.$property.getPayloadName() = $property.getPayloadName();
     #end
     #if( $needInitializer )
@@ -44,11 +51,21 @@
     $importTracker.importExplicit( $DatatypeConstants )
     $importTracker.importExplicit( $DatatypeFactory )
 #end
-#if ( $util.anyPropertyNotInPayload( $element ) )
-    #set( $propertiesInPayload = $util.getPropertiesInPayload( $element ) )
-    #constructorContent( $deconstructionSets $needInitializer $element.properties false )
-    #constructorContent( $deconstructionSets $needInitializer $propertiesInPayload $enableJacksonAnnotations )
+#if ( $element.isComplex() && $element.getExtends().isPresent() )
+	#set( $allPropertiesInPayload = $util.getAllPropertiesInPayload( $element ) )
+	#set( $allProperties = $util.getAllProperties( $element ) )
+	#set( $elementPropertiesInPayload = $util.getPropertiesInPayload( $element ) )
+	#set( $elementProperties = $element.properties )
 #else
-    #constructorContent( $deconstructionSets $needInitializer $element.properties $enableJacksonAnnotations )
+	#set( $allPropertiesInPayload = $util.getPropertiesInPayload( $element ) )
+	#set( $allProperties = $element.properties )
+	#set( $elementPropertiesInPayload = $allPropertiesInPayload )
+	#set( $elementProperties = $allProperties )
+#end
+#if ( $util.anyPropertyNotInPayload( $element ) )
+    #constructorContent( $deconstructionSets $needInitializer $allProperties false $elementProperties )
+    #constructorContent( $deconstructionSets $needInitializer $allPropertiesInPayload $enableJacksonAnnotations $elementPropertiesInPayload )
+#else
+    #constructorContent( $deconstructionSets $needInitializer $allProperties $enableJacksonAnnotations $elementProperties )
 #end
 #end

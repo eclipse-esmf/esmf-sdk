@@ -16,6 +16,7 @@
     import java.math.BigDecimal;
     import java.math.BigInteger;
     import java.util.ArrayList;
+    import java.util.Iterator;
     import java.util.LinkedHashSet;
     import java.util.List;
     import java.util.Map;
@@ -33,9 +34,11 @@
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
-import io.openmanufacturing.sds.metamodel.Characteristic;
+    import io.openmanufacturing.sds.metamodel.AbstractEntity;
+    import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Collection;
-import io.openmanufacturing.sds.metamodel.Either;
+    import io.openmanufacturing.sds.metamodel.ComplexType;
+    import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Enumeration;
 import io.openmanufacturing.sds.metamodel.HasProperties;
@@ -47,7 +50,9 @@ import io.openmanufacturing.sds.metamodel.StructureElement;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 
-import com.google.common.base.CaseFormat;
+    import com.fasterxml.jackson.annotation.JsonSubTypes;
+    import com.fasterxml.jackson.annotation.JsonTypeInfo;
+    import com.google.common.base.CaseFormat;
     import com.google.common.base.Converter;
 
     import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
@@ -156,6 +161,48 @@ import com.google.common.base.CaseFormat;
                 + "Property has a Collection Characteristic in " + element.getName() );
        }
 
+       public static String determineComplexTypeClassDefinition( final ComplexType element ) {
+          final StringBuilder classDefinitionBuilder = new StringBuilder( "public " );
+          if ( element.isAbstractEntity() ) {
+            classDefinitionBuilder.append( "abstract " );
+          }
+          classDefinitionBuilder.append( "class " ).append( element.getName() );
+          if ( element.getExtends().isPresent() ) {
+            final ComplexType extendedComplexType = element.getExtends().get();
+            classDefinitionBuilder.append( " extends " ).append( extendedComplexType.getName() );
+          }
+          classDefinitionBuilder.append( " {" );
+          return classDefinitionBuilder.toString();
+       }
+
+      public static String generateAbstractEntityClassAnnotations( final ComplexType element,
+         final ImportTracker importTracker ) {
+         final StringBuilder classAnnotationBuilder = new StringBuilder();
+         if ( element.isAbstractEntity() ) {
+            importTracker.importExplicit( JsonTypeInfo.class );
+            importTracker.importExplicit( JsonSubTypes.class );
+
+            final AbstractEntity abstractEntity = ( AbstractEntity ) element;
+            classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)" );
+            classAnnotationBuilder.append( "@JsonSubTypes({" );
+            final Iterator<ComplexType> extendingComplexTypeIterator = abstractEntity.getExtendingElements()
+                                                                                     .iterator();
+            while ( extendingComplexTypeIterator.hasNext() ) {
+               final ComplexType extendingComplexType = extendingComplexTypeIterator.next();
+               classAnnotationBuilder.append( "@JsonSubTypes.Type(value = " );
+               classAnnotationBuilder.append( extendingComplexType.getName() );
+               classAnnotationBuilder.append( ".class, name = \"" );
+               classAnnotationBuilder.append( extendingComplexType.getName() );
+               classAnnotationBuilder.append( "\")" );
+               if ( extendingComplexTypeIterator.hasNext() ) {
+                  classAnnotationBuilder.append( "," );
+               }
+            }
+            classAnnotationBuilder.append( "})" );
+         }
+         return classAnnotationBuilder.toString();
+      }
+
        private static String determineCollectionType( final Collection collection, final boolean inclValidation,
              final ImportTracker importTracker ) {
           final Optional<Type> dataType = collection.getDataType();
@@ -222,8 +269,8 @@ import com.google.common.base.CaseFormat;
        public static String getDataType( final Optional<Type> dataType, final ImportTracker importTracker ) {
           return dataType.map( type -> {
              final Type actualDataType = dataType.get();
-             if ( actualDataType instanceof Entity ) {
-                return ((Entity) actualDataType).getName();
+             if ( actualDataType instanceof ComplexType ) {
+                return ((ComplexType) actualDataType).getName();
              }
 
              if ( actualDataType instanceof Scalar ) {
@@ -327,6 +374,26 @@ import com.google.common.base.CaseFormat;
 
        public static boolean anyPropertyNotInPayload( final HasProperties element ) {
           return element.getProperties().stream().anyMatch( Property::isNotInPayload );
+       }
+
+       public static List<Property> getAllProperties( final ComplexType element ) {
+          final List<Property> allProperties = new ArrayList<>( element.getProperties() );
+          if ( element.getExtends().isPresent() ) {
+             final ComplexType extendedComplexType = element.getExtends().get();
+             final List<Property> allPropertiesFromExtendedComplexType = getAllProperties( extendedComplexType );
+             allProperties.addAll( allPropertiesFromExtendedComplexType );
+          }
+          return allProperties;
+       }
+
+       public static List<Property> getAllPropertiesInPayload( final ComplexType element ) {
+          final List<Property> allPropertiesInPayload = getPropertiesInPayload( element );
+          if ( element.getExtends().isPresent() ) {
+             final ComplexType extendedComplexType = element.getExtends().get();
+             final List<Property> allPropertiesFromExtendedComplexType = getPropertiesInPayload( extendedComplexType );
+             allPropertiesInPayload.addAll( allPropertiesFromExtendedComplexType );
+          }
+          return allPropertiesInPayload;
        }
 
        public static List<Property> getPropertiesInPayload( final HasProperties element ) {

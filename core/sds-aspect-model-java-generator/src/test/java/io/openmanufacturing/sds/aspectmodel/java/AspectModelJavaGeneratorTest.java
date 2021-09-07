@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -98,8 +99,10 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       assertConstructor( result, "AspectWithMultipleEntitiesOnMultipleLevels", expectedFieldsForAspectClass );
       result.assertFields( "TestEntity", expectedFieldsForEntityClass, new HashMap<>() );
       assertConstructor( result, "TestEntity", expectedFieldsForEntityClass );
-      result.assertClassDeclaration( "AspectWithMultipleEntitiesOnMultipleLevels", Collections.emptyList() );
-      result.assertClassDeclaration( "TestEntity", Collections.emptyList() );
+      result.assertClassDeclaration( "AspectWithMultipleEntitiesOnMultipleLevels", Collections.emptyList(),
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList() );
+      result.assertClassDeclaration( "TestEntity", Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList(), Collections.emptyList() );
    }
 
    /**
@@ -718,8 +721,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithList", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithList", expectedFieldsForAspectClass );
-      result.assertClassDeclaration( "AspectWithList",
-            Collections.singletonList( "CollectionAspect<List<String>,String>" ) );
+      result.assertClassDeclaration( "AspectWithList", Collections.emptyList(), Collections.emptyList(),
+            Collections.singletonList( "CollectionAspect<List<String>,String>" ), Collections.emptyList() );
    }
 
    @ParameterizedTest
@@ -739,8 +742,9 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithListAndElementCharacteristic", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithListAndElementCharacteristic", expectedFieldsForAspectClass );
-      result.assertClassDeclaration( "AspectWithListAndElementCharacteristic",
-            Collections.singletonList( "CollectionAspect<List<String>,String>" ) );
+      result.assertClassDeclaration( "AspectWithListAndElementCharacteristic", Collections.emptyList(),
+            Collections.emptyList(), Collections.singletonList( "CollectionAspect<List<String>,String>" ),
+            Collections.emptyList() );
    }
 
    @ParameterizedTest
@@ -760,8 +764,9 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithListAndElementConstraint", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithListAndElementConstraint", expectedFieldsForAspectClass );
-      result.assertClassDeclaration( "AspectWithListAndElementConstraint",
-            Collections.singletonList( "CollectionAspect<List<Float>,Float>" ) );
+      result.assertClassDeclaration( "AspectWithListAndElementConstraint", Collections.emptyList(),
+            Collections.emptyList(), Collections.singletonList( "CollectionAspect<List<Float>,Float>" ),
+            Collections.emptyList() );
       result.assertCollectionElementValidationAnnotations( "AspectWithListAndElementConstraint", "testProperty",
             "@NotNull private List<@FloatMin(value = \"2.3\", boundDefinition = BoundDefinition.AT_LEAST) "
                   + "@FloatMax(value = \"10.5\", boundDefinition = BoundDefinition.AT_MOST) Float>testProperty;" );
@@ -783,8 +788,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithSet", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithSet", expectedFieldsForAspectClass );
-      result.assertClassDeclaration( "AspectWithSet",
-            Collections.singletonList( "CollectionAspect<Set<String>,String>" ) );
+      result.assertClassDeclaration( "AspectWithSet", Collections.emptyList(), Collections.emptyList(),
+            Collections.singletonList( "CollectionAspect<Set<String>,String>" ), Collections.emptyList() );
    }
 
    @ParameterizedTest
@@ -960,5 +965,103 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                                                        true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithBlankNode", expectedFieldsForAspectClass, new HashMap<>() );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testGenerateAspectModelWithAbstractEntity( final KnownVersion metaModelVersion ) throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+                                                                                    .put( "testProperty",
+                                                                                          "ExtendingTestEntity" )
+                                                                                    .build();
+
+      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
+                                                                                    .put( "entityProperty",
+                                                                                          String.class )
+                                                                                    .build();
+
+      final ImmutableMap<String, Object> expectedConstructorArgumentsForEntityClass = ImmutableMap.<String, Object> builder()
+                                                                                                  .put( "entityProperty",
+                                                                                                        String.class )
+                                                                                                  .put( "abstractTestProperty",
+                                                                                                        BigInteger.class )
+                                                                                                  .build();
+
+      final ImmutableMap<String, Object> expectedFieldsForAbstractEntityClass = ImmutableMap.<String, Object> builder()
+                                                                                            .put( "abstractTestProperty",
+                                                                                                  BigInteger.class )
+                                                                                            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ABSTRACT_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
+                                                       true ) );
+      result.assertNumberOfFiles( 3 );
+      result.assertFields( "AspectWithAbstractEntity", expectedFieldsForAspectClass,
+            new HashMap<>() );
+      assertConstructor( result, "AspectWithAbstractEntity", expectedFieldsForAspectClass );
+      result.assertFields( "ExtendingTestEntity", expectedFieldsForEntityClass, new HashMap<>() );
+      assertConstructor( result, "ExtendingTestEntity", expectedConstructorArgumentsForEntityClass );
+      result.assertFields( "AbstractTestEntity", expectedFieldsForAbstractEntityClass, new HashMap<>() );
+      assertConstructor( result, "AbstractTestEntity", expectedFieldsForAbstractEntityClass );
+
+      result.assertClassDeclaration( "AspectWithAbstractEntity", Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList(), Collections.emptyList() );
+      result.assertClassDeclaration( "AbstractTestEntity", Collections.singletonList( Modifier.abstractModifier() ),
+            Collections.emptyList(), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+                  "@JsonSubTypes({ @JsonSubTypes.Type(value = ExtendingTestEntity.class, name = \"ExtendingTestEntity\") })" ) );
+      result.assertClassDeclaration( "ExtendingTestEntity", Collections.emptyList(),
+            Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(), Collections.emptyList() );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testGenerateAspectModelWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion )
+         throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+                                                                                    .put( "testProperty",
+                                                                                          "Collection<AbstractTestEntity>" )
+                                                                                    .build();
+
+      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
+                                                                                    .put( "entityProperty",
+                                                                                          String.class )
+                                                                                    .build();
+
+      final ImmutableMap<String, Object> expectedConstructorArgumentsForEntityClass = ImmutableMap.<String, Object> builder()
+                                                                                                  .put( "entityProperty",
+                                                                                                        String.class )
+                                                                                                  .put( "abstractTestProperty",
+                                                                                                        BigInteger.class )
+                                                                                                  .build();
+
+      final ImmutableMap<String, Object> expectedFieldsForAbstractEntityClass = ImmutableMap.<String, Object> builder()
+                                                                                            .put( "abstractTestProperty",
+                                                                                                  BigInteger.class )
+                                                                                            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
+                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
+                                                       true ) );
+      result.assertNumberOfFiles( 3 );
+      result.assertFields( "AspectWithCollectionWithAbstractEntity", expectedFieldsForAspectClass,
+            new HashMap<>() );
+      assertConstructor( result, "AspectWithCollectionWithAbstractEntity", expectedFieldsForAspectClass );
+      result.assertFields( "ExtendingTestEntity", expectedFieldsForEntityClass, new HashMap<>() );
+      assertConstructor( result, "ExtendingTestEntity", expectedConstructorArgumentsForEntityClass );
+      result.assertFields( "AbstractTestEntity", expectedFieldsForAbstractEntityClass, new HashMap<>() );
+      assertConstructor( result, "AbstractTestEntity", expectedFieldsForAbstractEntityClass );
+
+      result.assertClassDeclaration( "AspectWithCollectionWithAbstractEntity", Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.singletonList( "CollectionAspect<Collection<AbstractTestEntity>,AbstractTestEntity>" ),
+            Collections.emptyList() );
+      result.assertClassDeclaration( "AbstractTestEntity", Collections.singletonList( Modifier.abstractModifier() ),
+            Collections.emptyList(), Collections.emptyList(),
+            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+                  "@JsonSubTypes({ @JsonSubTypes.Type(value = ExtendingTestEntity.class, name = \"ExtendingTestEntity\") })" ) );
+      result.assertClassDeclaration( "ExtendingTestEntity", Collections.emptyList(),
+            Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(), Collections.emptyList() );
    }
 }

@@ -23,6 +23,7 @@ import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationExcepti
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Enumeration;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
@@ -55,7 +56,7 @@ public class AspectModelJavaGenerator extends JavaGenerator {
    @Override
    protected Stream<Artifact<QualifiedName, String>> generateArtifacts() {
       return Stream.of( applyTemplate( Aspect.class, new StructureElementJavaArtifactGenerator<>(), config ),
-            applyTemplate( Entity.class, new StructureElementJavaArtifactGenerator<>(), config ),
+            applyTemplate( ComplexType.class, new StructureElementJavaArtifactGenerator<>(), config ),
             applyTemplate( Enumeration.class, new EnumerationJavaArtifactGenerator<>(), config ) )
                    .flatMap( Function.identity() );
    }

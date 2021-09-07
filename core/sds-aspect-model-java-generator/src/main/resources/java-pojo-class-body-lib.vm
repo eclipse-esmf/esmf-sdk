@@ -10,6 +10,9 @@
 */
 #if ( $element.isCollectionAspect() )
 ${util.determineCollectionAspectClassDefinition( $element, $importTracker )} {
+#elseif ( $element.isComplex() )
+${util.generateAbstractEntityClassAnnotations( $element, $importTracker )}
+${util.determineComplexTypeClassDefinition( $element )}
 #else
 public class $element.getName() {
 #end

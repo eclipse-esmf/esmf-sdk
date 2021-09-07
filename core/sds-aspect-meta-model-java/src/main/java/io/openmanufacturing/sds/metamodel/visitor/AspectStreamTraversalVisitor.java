@@ -17,9 +17,11 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Operation;
@@ -34,7 +36,7 @@ import io.openmanufacturing.sds.metamodel.Unit;
  */
 public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>, Void> {
 
-   private final List<Property> hasVisited = new LinkedList<>();
+   private final List<Base> hasVisited = new LinkedList<>();
 
    @Override
    public Stream<Base> visitBase( final Base base, final Void context ) {
@@ -109,14 +111,40 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
       return Stream.concat( Stream.of( characteristic ),
             characteristic.getDataType()
                           .stream()
-                          .filter( Entity.class::isInstance )
-                          .map( Entity.class::cast )
-                          .flatMap( entity -> entity.accept( this, null ) ) );
+                          .filter( ComplexType.class::isInstance )
+                          .map( ComplexType.class::cast )
+                          .flatMap( complexType -> complexType.accept( this, null ) ) );
    }
 
    @Override
    public Stream<Base> visitEntity( final Entity entity, final Void context ) {
-      return Stream.concat( Stream.of( entity ),
-            entity.getProperties().stream().flatMap( property -> property.accept( this, null ) ) );
+      if ( hasVisited.contains( entity ) ) {
+         return Stream.<Base> of( entity );
+      }
+      hasVisited.add( entity );
+      return visitComplexType( entity, context );
+   }
+
+   @Override
+   public Stream<Base> visitAbstractEntity( final AbstractEntity abstractEntity, final Void context ) {
+      if ( hasVisited.contains( abstractEntity ) ) {
+         return Stream.<Base> of( abstractEntity );
+      }
+      hasVisited.add( abstractEntity );
+      return Stream.concat(
+            abstractEntity.getExtendingElements().stream().flatMap( complexType -> complexType.accept( this, null ) ),
+            visitComplexType( abstractEntity, context )
+      );
+   }
+
+   @Override
+   public Stream<Base> visitComplexType( final ComplexType complexType, final Void context ) {
+      final Stream<Base> complexTypeWithPropertiesStream = Stream.concat( Stream.of( complexType ),
+            complexType.getProperties().stream().flatMap( property -> property.accept( this, null ) ) );
+
+      if ( complexType.getExtends().isPresent() ) {
+         return Stream.concat( complexTypeWithPropertiesStream, complexType.getExtends().get().accept( this, null ) );
+      }
+      return complexTypeWithPropertiesStream;
    }
 }
