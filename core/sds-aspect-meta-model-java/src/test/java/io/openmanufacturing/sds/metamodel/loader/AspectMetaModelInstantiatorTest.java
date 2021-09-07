@@ -15,6 +15,7 @@ package io.openmanufacturing.sds.metamodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -25,9 +26,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Code;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Property;
@@ -163,6 +166,42 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
             "Test Entity Characteristic", "This is a test Entity Characteristic", "http://example.com/omp" );
 
       assertThat( singleEntity.getDataType().get() ).isInstanceOf( Entity.class );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAbstractEntityInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
+      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
+            .fromUrn( TestModel.TEST_NAMESPACE + "AbstractTestEntity" );
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
+
+      assertThat( aspect.getProperties() ).hasSize( 1 );
+
+      final Entity entity = (Entity) aspect.getProperties().get( 0 ).getCharacteristic().getDataType().get();
+      final AbstractEntity abstractEntity = (AbstractEntity) entity.getExtends().get();
+      assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity",
+            "Abstract Test Entity", "This is a abstract test entity" );
+      final List<ComplexType> extendingElements = abstractEntity.getExtendingElements();
+      assertThat( extendingElements ).hasSize( 1 );
+      assertThat( extendingElements.get( 0 ) ).isEqualTo( entity );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testCollectionWithAbstractEntityInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
+      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
+            .fromUrn( TestModel.TEST_NAMESPACE + "AbstractTestEntity" );
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
+
+      assertThat( aspect.getProperties() ).hasSize( 1 );
+
+      final AbstractEntity abstractEntity = (AbstractEntity) aspect.getProperties().get( 0 ).getCharacteristic()
+                                                                   .getDataType().get();
+      assertThat( abstractEntity.getExtends() ).isEmpty();
+      assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity",
+            "AbstractTestEntity", null );
+      final List<ComplexType> extendingElements = abstractEntity.getExtendingElements();
+      assertThat( extendingElements ).hasSize( 1 );
    }
 
    @ParameterizedTest
