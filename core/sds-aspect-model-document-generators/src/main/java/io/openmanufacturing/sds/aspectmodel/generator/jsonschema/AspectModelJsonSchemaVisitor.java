@@ -256,12 +256,16 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    //Amount of elements in list is regarding to amount of properties in aspect model. Even in bigger aspects this should not lead to performance issues
    public JsonNode visitProperty( final Property property, final ObjectNode context ) {
       final Characteristic characteristic = property.getCharacteristic();
-      final Optional<AspectModelUrn> characteristicUrn = characteristic.getAspectModelUrn();
-      //Use Aspect Model URN as node name in schema to ensure unique references
-      final String referenceNodeName = characteristicUrn
-            .map( aspectModelUrn -> aspectModelUrn.toString().replace( "#", "_" ) )
-            .map( aspectModelUrn -> aspectModelUrn.replace( ":", "_" ) )
-            .orElseGet( characteristic::getName );
+      String referenceNodeName;
+      if( characteristic instanceof SingleEntity ) {
+         referenceNodeName = characteristic.getDataType().get().getUrn().replace( "#", "_" ).replace( ":", "_" );
+      } else {
+         referenceNodeName = characteristic.getAspectModelUrn()
+                                                 .map( aspectModelUrn -> aspectModelUrn.toString().replace( "#", "_" ) )
+                                                 .map( aspectModelUrn -> aspectModelUrn.replace( ":", "_" ) )
+                                                 .orElseGet( characteristic::getName );
+      }
+
       if ( processedProperties.contains( property ) ) {
          return factory.objectNode().put( "$ref", "#/components/schemas/" + referenceNodeName );
       }
@@ -307,7 +311,18 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
          return collectionNode;
       }
 
-      collection.getDataType().ifPresent( type -> collectionNode.set( "items", type.accept( this, collectionNode ) ) );
+      collection.getDataType().ifPresent( type -> {
+         final JsonNode typeNode = type.accept( this, collectionNode );
+         if ( type.isComplex() ) {
+               final String referenceNodeName = type.getUrn().replace( "#", "_" ).replace( ":", "_" );
+               final ObjectNode referenceNode = factory.objectNode()
+                                                             .put( "$ref", "#/components/schemas/" + referenceNodeName );
+               setNodeInRootSchema( typeNode, referenceNodeName );
+               collectionNode.set( "items", referenceNode );
+               return;
+            }
+         collectionNode.set( "items", typeNode );
+      } );
       return collectionNode;
    }
 
