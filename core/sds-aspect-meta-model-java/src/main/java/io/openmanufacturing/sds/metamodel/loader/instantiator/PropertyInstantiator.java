@@ -70,12 +70,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
       final Optional<Object> exampleValue = optionalPropertyValue( propertyResource, bamm.exampleValue() )
             .map( statement -> statement.getLiteral().getValue() );
 
-      final Optional<AspectModelUrn> refines = optionalPropertyValue( propertyResource, bamm.refines() )
-            .map( statement -> statement.getObject().asResource().getURI() )
-            .map( AspectModelUrn::fromUrn );
-
       defaultProperty.setExampleValue( exampleValue );
-      defaultProperty.setRefines( refines );
       defaultProperty.setOptional( isOptional );
       defaultProperty.setPayloadName( payloadName );
       defaultProperty.setNotInPayload( isNotInPayload );

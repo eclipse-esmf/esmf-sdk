@@ -25,7 +25,6 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 public class DefaultProperty extends BaseImpl implements Property {
    private final Characteristic characteristic;
    private final Optional<Object> exampleValue;
-   private final Optional<AspectModelUrn> refines;
    private final boolean optional;
    private final boolean notInPayload;
    private final Optional<String> payloadName;
@@ -33,14 +32,12 @@ public class DefaultProperty extends BaseImpl implements Property {
    public DefaultProperty( final MetaModelBaseAttributes metaModelBaseAttributes,
          final Characteristic characteristic,
          final Optional<Object> exampleValue,
-         final Optional<AspectModelUrn> refines,
          final boolean optional,
          final boolean notInPayload,
          final Optional<String> payloadName ) {
       super( metaModelBaseAttributes );
       this.characteristic = characteristic;
       this.exampleValue = exampleValue;
-      this.refines = refines;
       this.optional = optional;
       this.notInPayload = notInPayload;
       this.payloadName = payloadName;
@@ -90,11 +87,6 @@ public class DefaultProperty extends BaseImpl implements Property {
       return payloadName.orElseGet( this::getName );
    }
 
-   @Override
-   public Optional<AspectModelUrn> getRefines() {
-      return refines;
-   }
-
    /**
     * Accepts an Aspect visitor
     *
@@ -112,7 +104,6 @@ public class DefaultProperty extends BaseImpl implements Property {
       return new StringJoiner( ", ", DefaultProperty.class.getSimpleName() + "[", "]" )
             .add( "characteristic=" + characteristic )
             .add( "exampleValue=" + exampleValue )
-            .add( "refines=" + refines )
             .add( "optional=" + optional )
             .add( "notInPayload=" + notInPayload )
             .toString();
@@ -134,12 +125,11 @@ public class DefaultProperty extends BaseImpl implements Property {
       return optional == that.optional &&
             notInPayload == that.notInPayload &&
             Objects.equals( characteristic, that.characteristic ) &&
-            Objects.equals( exampleValue, that.exampleValue ) &&
-            Objects.equals( refines, that.refines );
+            Objects.equals( exampleValue, that.exampleValue );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( super.hashCode(), characteristic, exampleValue, refines, optional, notInPayload );
+      return Objects.hash( super.hashCode(), characteristic, exampleValue, optional, notInPayload );
    }
 }

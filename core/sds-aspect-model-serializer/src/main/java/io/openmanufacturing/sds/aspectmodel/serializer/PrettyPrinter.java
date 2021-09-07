@@ -191,7 +191,7 @@ public class PrettyPrinter {
    }
 
    private Optional<Statement> elementDefinition( final Resource element ) {
-      return statement( element, RDF.type, null ).or( () -> statement( element, bamm.refines(), null ) );
+      return statement( element, RDF.type, null ).or( () -> statement( element, bamm._extends(), null ) );
    }
 
    private String serializeList( final Resource list, final int indentationLevel ) {
@@ -350,7 +350,7 @@ public class PrettyPrinter {
       final String body = statements( element, null, null )
             .stream()
             .map( Statement::getPredicate )
-            .filter( property -> !property.equals( RDF.type ) && !property.equals( bamm.refines() ) )
+            .filter( property -> !property.equals( RDF.type ) && !property.equals( bamm._extends() ) )
             .sorted( propertyOrder )
             .flatMap( property -> statements( element, property, null ).stream() )
             .distinct()

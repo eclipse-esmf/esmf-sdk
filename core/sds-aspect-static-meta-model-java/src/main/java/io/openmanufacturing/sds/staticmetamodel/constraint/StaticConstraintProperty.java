@@ -32,10 +32,9 @@ public abstract class StaticConstraintProperty<T, C extends Constraint, C2 exten
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final Characteristic characteristic,
          final Optional<Object> exampleValue,
-         final Optional<AspectModelUrn> refines,
          final boolean optional,
          final boolean notInPayload,
          final Optional<String> payloadName ) {
-      super( metaModelBaseAttributes, characteristic, exampleValue, refines, optional, notInPayload, payloadName );
+      super( metaModelBaseAttributes, characteristic, exampleValue, optional, notInPayload, payloadName );
    }
 }

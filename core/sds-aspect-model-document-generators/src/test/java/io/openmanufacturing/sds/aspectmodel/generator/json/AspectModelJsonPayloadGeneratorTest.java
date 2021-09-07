@@ -678,7 +678,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final MetaModelBaseAttributes propertyAttributes =
             MetaModelBaseAttributes
                   .from( modelVersion, AspectModelUrn.fromUrn( bamm.Property().getURI() ), propertyName );
-      return new DefaultProperty( propertyAttributes, characteristic, Optional.empty(), Optional.empty(), false, false,
+      return new DefaultProperty( propertyAttributes, characteristic, Optional.empty(), false, false,
             Optional.empty() );
    }
 

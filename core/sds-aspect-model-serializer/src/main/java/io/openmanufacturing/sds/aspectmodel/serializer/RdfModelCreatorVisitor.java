@@ -606,9 +606,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       if ( !property.hasSyntheticName() ) {
          model.add( resource, bamm.name(), serializePlainString( property.getName() ) );
       }
-      model.add( property.getRefines().map( urn ->
-            createStatement( resource, bamm.refines(), ResourceFactory.createResource( urn.toString() ) ) )
-                         .orElse( createStatement( resource, RDF.type, bamm.Property() ) ) );
 
       model.add( serializeDescriptions( resource, property ) );
 
@@ -663,8 +660,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       if ( !entity.hasSyntheticName() ) {
          model.add( resource, bamm.name(), serializePlainString( entity.getName() ) );
       }
-      model.add( entity.getRefines().map( urn ->
-            createStatement( resource, bamm.refines(), ResourceFactory.createResource( urn.toString() ) ) )
+      model.add( entity.getExtends().map( urn ->
+            createStatement( resource, bamm._extends(), ResourceFactory.createResource( urn.toString() ) ) )
                        .orElse( createStatement( resource, RDF.type, bamm.Entity() ) ) );
       model.add( serializeProperties( resource, entity ) );
       model.add( serializeDescriptions( resource, entity ) );

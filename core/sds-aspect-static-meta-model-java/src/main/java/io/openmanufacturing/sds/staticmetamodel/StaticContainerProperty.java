@@ -29,10 +29,9 @@ public abstract class StaticContainerProperty<C, T> extends StaticProperty<T> im
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final Characteristic characteristic,
          final Optional<Object> exampleValue,
-         final Optional<AspectModelUrn> refines,
          final boolean optional,
          final boolean notInPayload,
          final Optional<String> payloadName ) {
-      super( metaModelBaseAttributes, characteristic, exampleValue, refines, optional, notInPayload, payloadName );
+      super( metaModelBaseAttributes, characteristic, exampleValue, optional, notInPayload, payloadName );
    }
 }

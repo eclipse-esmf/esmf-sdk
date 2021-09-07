@@ -152,8 +152,13 @@ public class BAMM implements Namespace {
       return resource( "Entity" );
    }
 
-   public Property refines() {
-      return property( "refines" );
+   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   public Resource AbstractEntity() {
+      return resource( "AbstractEntity" );
+   }
+
+   public Property _extends() {
+      return property( "extends" );
    }
 
    public Property value() {

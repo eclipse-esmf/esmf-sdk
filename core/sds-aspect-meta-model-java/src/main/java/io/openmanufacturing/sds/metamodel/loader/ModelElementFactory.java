@@ -86,10 +86,10 @@ public class ModelElementFactory {
             propertyValue( resource, bamm.property() ).map( statement -> resourceType( statement.getResource() ) );
       final Supplier<Optional<Resource>> subClassType = () ->
             propertyValue( resource, RDFS.subClassOf ).map( Statement::getResource ).map( this::resourceType );
-      final Supplier<Optional<Resource>> refinesType = () ->
-            propertyValue( resource, bamm.refines() ).map( Statement::getResource ).map( this::resourceType );
+      final Supplier<Optional<Resource>> extendsType = () ->
+            propertyValue( resource, bamm._extends() ).map( Statement::getResource ).map( this::resourceType );
 
-      return Stream.of( directType, propertyUsageType, subClassType, refinesType )
+      return Stream.of( directType, propertyUsageType, subClassType, extendsType )
                    .map( Supplier::get )
                    .filter( Optional::isPresent )
                    .map( Optional::get )

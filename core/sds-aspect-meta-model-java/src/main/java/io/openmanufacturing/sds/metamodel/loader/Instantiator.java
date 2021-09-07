@@ -39,6 +39,7 @@ import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Entity;
@@ -97,23 +98,9 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
     */
    protected List<Property> getPropertiesModels( final Resource elementWithProperties,
       final org.apache.jena.rdf.model.Property rootProperty ) {
-      final Stream<Resource> properties = getResourcesFromList( elementWithProperties, rootProperty );
-      final Stream<Resource> refinedProperties = elementWithProperties.hasProperty( bamm.refines() ) ?
-         getRefinedProperties( elementWithProperties, rootProperty ) : Stream.empty();
-      return Stream.concat( properties, refinedProperties )
+      return getResourcesFromList( elementWithProperties, rootProperty )
          .map( propertyResource -> modelElementFactory.create( Property.class, propertyResource ) )
          .collect( Collectors.toList() );
-   }
-
-   private Stream<Resource> getRefinedProperties( final Resource elementWithProperties,
-      final org.apache.jena.rdf.model.Property rootProperty ) {
-      final List<Resource> refinedProperties =
-         getResourcesFromList( elementWithProperties, rootProperty ).map( property ->
-            property.getProperty( bamm.refines() ).getObject().asResource() ).collect( Collectors.toList() );
-
-      final Resource refinedEntity = elementWithProperties.getProperty( bamm.refines() ).getObject().asResource();
-      return getResourcesFromList( refinedEntity, rootProperty )
-         .filter( property -> !refinedProperties.contains( property ) );
    }
 
    protected Stream<RDFNode> getNodesFromList( final Resource element,
@@ -131,14 +118,13 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
       final Resource dataTypeResource = dataType.getObject().asResource();
 
       final Optional<Statement> entityStatement = optionalPropertyValue( dataTypeResource, RDF.type );
-      final Optional<Statement> refinedEntityStatement = optionalPropertyValue( dataTypeResource, bamm.refines() );
 
-      if ( entityStatement.isPresent() && isEntity( entityStatement.get().getObject().asResource() ) ) {
+      if ( entityStatement.isPresent() && bamm.Entity().equals( entityStatement.get().getObject().asResource() ) ) {
          return modelElementFactory.create( Entity.class, entityStatement.get().getSubject() );
       }
 
-      if ( entityStatement.isEmpty() && refinedEntityStatement.isPresent() ) {
-         return modelElementFactory.create( Entity.class, refinedEntityStatement.get().getSubject() );
+      if ( entityStatement.isPresent() && bamm.AbstractEntity().equals( entityStatement.get().getObject().asResource() ) ) {
+         return modelElementFactory.create( AbstractEntity.class, entityStatement.get().getSubject() );
       }
 
       return new DefaultScalar( dataTypeResource.getURI(), metaModelVersion );
@@ -154,29 +140,6 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
       return Optional.ofNullable( resource.getPropertyResourceValue( bamm.baseCharacteristic() ) )
          .map( this::getDataType )
          .orElseGet( () -> resource.getProperty( bamm.dataType() ) );
-   }
-
-   /**
-    * Determines whether a {@link Resource} is a {@link BAMM#Entity()}.
-    * This is done recursively in order to include Entities which refine another Entity and hence are not a
-    * {@link BAMM#Entity()} themselves.
-    *
-    * @param modelElement the {@link Resource} to be checked
-    * @return a boolean value indicating whether the #modelElement is an Entity or not
-    */
-   private boolean isEntity( Resource modelElement ) {
-      if ( bamm.Entity().equals( modelElement ) ) {
-         return true;
-      }
-
-      while ( modelElement.hasProperty( RDF.type ) ) {
-         modelElement = modelElement.getProperty( RDF.type ).getObject().asResource();
-         if ( bamm.Entity().equals( modelElement ) ) {
-            return true;
-         }
-      }
-
-      return false;
    }
 
    protected Optional<Unit> findOrCreateUnit( final Resource unitResource ) {

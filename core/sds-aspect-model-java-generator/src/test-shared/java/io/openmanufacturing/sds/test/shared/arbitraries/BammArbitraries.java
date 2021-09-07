@@ -298,8 +298,8 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
             .as( ( metaModelVersion, propertyUrn, preferredNames, descriptions, see, characteristic, payloadName ) -> {
                final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
                      metaModelVersion, propertyUrn, propertyUrn.getName(), preferredNames, descriptions, see );
-               return new DefaultProperty( baseAttributes, characteristic, Optional.empty(), Optional.empty(), false,
-                     false, Optional.of( payloadName ) );
+               return new DefaultProperty( baseAttributes, characteristic, Optional.empty(), false, false,
+                     Optional.of( payloadName ) );
             } );
    }
 
@@ -311,7 +311,7 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
             .as( ( metaModelVersion, entityUrn, preferredNames, descriptions, see, properties ) -> {
                final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
                      metaModelVersion, entityUrn, entityUrn.getName(), preferredNames, descriptions, see );
-               return new DefaultEntity( baseAttributes, properties, Optional.empty() );
+               return DefaultEntity.createDefaultEntity( baseAttributes, properties, Optional.empty() );
             } );
    }
 

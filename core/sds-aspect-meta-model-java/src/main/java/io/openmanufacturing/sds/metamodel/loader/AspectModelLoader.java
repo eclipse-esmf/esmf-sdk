@@ -48,7 +48,8 @@ public class AspectModelLoader {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
 
    private static final Set<KnownVersion> supportedVersions = ImmutableSet.of(
-         KnownVersion.BAMM_1_0_0
+         KnownVersion.BAMM_1_0_0,
+         KnownVersion.BAMM_2_0_0
    );
 
    private static final MigratorService migratorService = new MigratorService();

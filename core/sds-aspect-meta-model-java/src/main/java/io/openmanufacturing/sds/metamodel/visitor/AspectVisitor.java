@@ -12,11 +12,13 @@
  */
 package io.openmanufacturing.sds.metamodel.visitor;
 
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Code;
 import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Duration;
 import io.openmanufacturing.sds.metamodel.Either;
@@ -73,7 +75,15 @@ public interface AspectVisitor<T, C> {
    }
 
    default T visitEntity( final Entity entity, final C context ) {
-      return visitBase( entity, context );
+      return visitComplexType( entity, context );
+   }
+
+   default T visitAbstractEntity( final AbstractEntity abstractEntity, final C context ) {
+      return visitComplexType( abstractEntity, context );
+   }
+
+   default T visitComplexType( final ComplexType complexType, final C context ) {
+      return visitBase( complexType, context );
    }
 
    default T visitUnit( final Unit unit, final C context ) {

@@ -21,7 +21,7 @@ import java.util.Optional;
  *
  * @since BAMM 1.0.0
  */
-public interface Property extends Base, IsDescribed, CanRefine {
+public interface Property extends Base, IsDescribed {
 
    /**
     * @return the {@link Characteristic} describing this Property.
