@@ -1,0 +1,44 @@
+prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>
+prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
+
+# Generates edges between Enumerations and Entity instances
+construct {
+  ?edge a :Edge .
+  ?edge :title ?title .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  ?characteristic rdf:type/rdfs:subClassOf* bamm:Characteristic .
+
+  filter( exists {
+    ?aspect a bamm:Aspect .
+    ?aspect (<>|!<>)* ?characteristic .
+  } )
+
+  # Don't apply to Constraints
+  filter( !exists { ?characteristic bamm-c:baseCharacteristic [] } )
+  # Don't apply to Collections
+  filter( !exists { ?characteristic rdf:type/rdfs:subClassOf* bamm-c:Collection } )
+  # Apply only to Enumerations
+  filter( exists { ?characteristic a bamm-c:Enumeration }
+       || exists { ?characteristic a bamm-c:State } )
+
+  # Apply to Enumerations with Complex values
+  ?characteristic bamm-c:values/rdf:rest*/rdf:first ?instance .
+  ?instance rdf:type/rdfs:subClassOf* ?instanceClass
+  filter( exists { ?instanceClass  rdf:type/rdfs:subClassOf* bamm:Entity} )
+
+  ?characteristic bamm:name ?characteristicName .
+  bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+  bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
+  ?characteristic bamm-c:values/rdf:rest*/rdf:first ?instance .
+  bind( strafter( str( ?instance ), "#" ) as ?instanceName )
+  bind( concat( ?instanceName, "EntityInstance" ) as ?instanceBoxName )
+
+  bind( iri( concat( str( : ), ?instanceBoxName ) ) as ?to )
+  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?instanceBoxName ) ) as ?edge )
+  bind( "value" as ?title )
+}

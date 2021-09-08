@@ -39,5 +39,6 @@ public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions 
    public static void setup() {
       totalNumberOfExpectedEntriesPerBammVersion = new HashMap<>();
       totalNumberOfExpectedEntriesPerBammVersion.put(KnownVersion.BAMM_1_0_0, 10);
+      totalNumberOfExpectedEntriesPerBammVersion.put(KnownVersion.BAMM_2_0_0, 10);
    }
 }

@@ -119,6 +119,10 @@ public class AspectModelDiagramGenerator {
             ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
                          .build() );
 
+      aspectToBoxmodelQueryFiles.put( KnownVersion.BAMM_2_0_0,
+            ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
+                         .build() );
+
       ARQ.init();
       model = versionedModel.getModel();
       bammVersion = KnownVersion.fromVersionString( versionedModel.getVersion().toString() )

@@ -1,0 +1,145 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>
+prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
+
+# Generates boxes for Properties; excludes Properties which are refined
+construct {
+  ?propertyBox a :Box .
+  ?propertyBox :prototype "Property" .
+  ?propertyBox :title ?propertyName .
+  ?propertyBox :entries (
+     [
+       a :Entry ;
+       :title "preferredName" ;
+       :text ?preferredName
+     ]
+     [
+       a :Entry ;
+       :title "description" ;
+       :text ?description
+     ]
+     [
+       a :Entry ;
+       :title "see" ;
+       :text ?seeValues
+     ]
+     [
+       a :Entry ;
+       :title "exampleValue" ;
+       :text ?exampleValue
+     ]
+  )
+} where {
+  #process Properties defined in the Aspect Model being processed
+  {
+    ?property bamm:refines?/rdf:type bamm:Property .
+    #exclude properties from our shared name-space
+    filter ( ! strstarts( str( ?property ), str ( bamm-e: ) ) )
+    ?property bamm:name ?propertyName .
+
+    bind( concat( ?propertyName, "Property" ) as ?boxName )
+    bind( iri( concat( str( : ), ?boxName ) ) as ?propertyBox )
+
+    optional {
+      ?property bamm:preferredName ?preferredNameValue .
+      filter( lang( ?preferredNameValue ) = "en" )
+      bind( xsd:string( ?preferredNameValue ) as ?preferredName )
+    }
+
+    optional {
+      ?property bamm:description ?descriptionValue .
+      filter( lang( ?descriptionValue ) = "en" )
+      bind( xsd:string( ?descriptionValue ) as ?description )
+    }
+
+    optional {
+      ?property bamm:exampleValue ?exampleValue .
+    }
+
+    #subquery which concatenates all values for the bamm:see attributes
+    optional {
+      select * where {
+        ?property bamm:refines?/rdf:type bamm:Property .
+        filter( str( ?subQueryProperty ) = str( ?property ) )
+        {
+          select ?subQueryProperty ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
+          where {
+            select *
+            where {
+              ?subQueryProperty bamm:refines?/rdf:type bamm:Property .
+              ?subQueryProperty bamm:see ?seeValue .
+            }
+            order by str( ?seeValue )
+          }
+          group by ?subQueryProperty
+        }
+      }
+    }
+  }
+
+  union
+
+  #process Properties which are defined in an Entity which is refined, but are themselves not refined
+  {
+    ?refiningEntity bamm:refines/rdf:type bamm:Entity .
+    ?refiningEntity bamm:refines ?refinedEntity .
+
+    ?property bamm:refines?/rdf:type bamm:Property .
+    filter( exists { ?refinedEntity bamm:properties/rdf:rest*/rdf:first ?property } )
+    filter( not exists { [] bamm:refines ?property } )
+
+    ?property bamm:name ?propertyName .
+
+    bind( concat( ?propertyName, "Property" ) as ?boxName )
+    bind( iri( concat( str( : ), ?boxName ) ) as ?propertyBox )
+
+    optional {
+      ?property bamm:preferredName ?preferredNameValue .
+      filter( lang( ?preferredNameValue ) = "en" )
+      bind( xsd:string( ?preferredNameValue ) as ?preferredName )
+    }
+
+    optional {
+      ?property bamm:description ?descriptionValue .
+      filter( lang( ?descriptionValue ) = "en" )
+      bind( xsd:string( ?descriptionValue ) as ?description )
+    }
+
+    optional {
+      ?property bamm:exampleValue ?exampleValue .
+    }
+
+    #subquery which concatenates all values for the bamm:see attributes
+    optional {
+      select * where {
+        ?property bamm:refines?/rdf:type bamm:Property .
+        filter (str( ?subQueryProperty ) = str( ?property ) )
+        {
+          select ?subQueryProperty ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
+          where {
+            select *
+            where {
+              ?subQueryProperty bamm:refines?/rdf:type bamm:Property .
+              ?subQueryProperty bamm:see ?seeValue .
+            }
+            order by str( ?seeValue )
+          }
+          group by ?subQueryProperty
+        }
+      }
+    }
+  }
+}
