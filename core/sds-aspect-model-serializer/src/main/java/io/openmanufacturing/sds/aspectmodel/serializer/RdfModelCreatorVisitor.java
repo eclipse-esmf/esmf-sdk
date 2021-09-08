@@ -47,11 +47,13 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.Namespace;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Code;
 import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Duration;
 import io.openmanufacturing.sds.metamodel.Either;
@@ -100,6 +102,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
    private final Namespace namespace;
    private final Map<IsDescribed, Resource> anonymousResources = new HashMap<>();
    private final List<Resource> resourceList = new LinkedList<>();
+   private final List<ComplexType> hasVisited = new LinkedList<>();
 
    /**
     * Constructor.
@@ -603,6 +606,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       }
 
       final Resource resource = getElementResource( property );
+      model.add( resource, RDF.type, bamm.Property() );
       if ( !property.hasSyntheticName() ) {
          model.add( resource, bamm.name(), serializePlainString( property.getName() ) );
       }
@@ -653,18 +657,38 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
    }
 
    @Override
-   public Model visitEntity( final Entity entity, final Base context ) {
+   public Model visitComplexType( final ComplexType complexType, final Base context ) {
       final Model model = ModelFactory.createDefaultModel();
-      final Resource resource = getElementResource( entity );
-
-      if ( !entity.hasSyntheticName() ) {
-         model.add( resource, bamm.name(), serializePlainString( entity.getName() ) );
+      if ( hasVisited.contains( complexType ) ) {
+         return model;
       }
-      model.add( entity.getExtends().map( urn ->
-            createStatement( resource, bamm._extends(), ResourceFactory.createResource( urn.toString() ) ) )
-                       .orElse( createStatement( resource, RDF.type, bamm.Entity() ) ) );
-      model.add( serializeProperties( resource, entity ) );
-      model.add( serializeDescriptions( resource, entity ) );
+      hasVisited.add( complexType );
+
+      final Resource resource = getElementResource( complexType );
+      if ( !complexType.hasSyntheticName() ) {
+         model.add( resource, bamm.name(), serializePlainString( complexType.getName() ) );
+      }
+      if ( complexType.getExtends().isPresent() ) {
+         final ComplexType extendedComplexType = complexType.getExtends().get();
+         model.add( extendedComplexType.accept( this, extendedComplexType ) );
+
+         final Resource extendedTypeResource = createResource( extendedComplexType.getUrn() );
+         model.add( createStatement( resource, bamm._extends(), extendedTypeResource ) );
+      }
+      model.add( serializeProperties( resource, complexType ) );
+      model.add( serializeDescriptions( resource, complexType ) );
+
+      if ( complexType.isAbstractEntity() ) {
+         return model.add( createStatement( resource, RDF.type, bamm.AbstractEntity() ) );
+      }
+      return model.add( createStatement( resource, RDF.type, bamm.Entity() ) );
+   }
+
+   @Override
+   public Model visitAbstractEntity( final AbstractEntity abstractEntity, final Base context ) {
+      final Model model = visitComplexType( abstractEntity, context );
+      abstractEntity.getExtendingElements()
+                    .forEach( complexType -> model.add( complexType.accept( this, complexType ) ) );
       return model;
    }
 

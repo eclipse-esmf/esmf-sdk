@@ -102,6 +102,7 @@ public class PrettyPrinter {
    private Comparator<Property> createPredefinedPropertyOrder( final BAMMC bammc ) {
       final List<Property> predefinedPropertyOrder = new ArrayList<>();
       predefinedPropertyOrder.add( bamm.name() );
+      predefinedPropertyOrder.add( bamm._extends() );
       predefinedPropertyOrder.add( bamm.preferredName() );
       predefinedPropertyOrder.add( bamm.description() );
       predefinedPropertyOrder.add( bamm.see() );
@@ -350,7 +351,7 @@ public class PrettyPrinter {
       final String body = statements( element, null, null )
             .stream()
             .map( Statement::getPredicate )
-            .filter( property -> !property.equals( RDF.type ) && !property.equals( bamm._extends() ) )
+            .filter( property -> !property.equals( RDF.type ) )
             .sorted( propertyOrder )
             .flatMap( property -> statements( element, property, null ).stream() )
             .distinct()
