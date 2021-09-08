@@ -114,11 +114,8 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testAspectModelUrnIsDisplayed( final KnownVersion metaModelVersion ) throws IOException {
-      final String expectedString = String
-            .format( "Aspect Model URN: urn:bamm:io.openmanufacturing.test:%s#AspectWithHTMLTags",
-                metaModelVersion.toVersionString());
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_HTML_TAGS, metaModelVersion ) )
-            .contains( expectedString );
+            .contains( "Aspect Model URN: urn:bamm:io.openmanufacturing.test:1.0.0#AspectWithHTMLTags" );
    }
 
    @ParameterizedTest
@@ -138,6 +135,39 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       final String aspectWithoutLanguageTags = generateHtmlDocumentation( TestAspect.ASPECT_WITHOUT_LANGUAGE_TAGS,
             metaModelVersion );
       assertThat( aspectWithoutLanguageTags ).isNotEmpty();
+   }
+
+   @ParameterizedTest
+   @MethodSource( "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion )
+         throws IOException {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY,
+            metaModelVersion );
+      assertThat( documentation ).contains( "<h3 id=\"_testproperty\">testProperty</h3>" );
+      assertThat( documentation ).contains( "<h4 id=\"_abstracttestproperty\">abstractTestProperty</h4>" );
+      assertThat( documentation ).contains( "<h4 id=\"_entityproperty\">entityProperty</h4>" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion )
+         throws IOException {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY,
+            metaModelVersion );
+      assertThat( documentation ).contains( "<h3 id=\"_test_property\">Test Property</h3>" );
+      assertThat( documentation ).contains( "<h4 id=\"_abstracttestproperty\">abstractTestProperty</h4>" );
+      assertThat( documentation ).contains( "<h4 id=\"_entity_property\">Entity Property</h4>" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "versionsStartingWith2_0_0" )
+   public void testAspectWithCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion )
+         throws IOException {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY,
+            metaModelVersion );
+      assertThat( documentation ).contains( "<h3 id=\"_testproperty\">testProperty</h3>" );
+      assertThat( documentation ).contains( "<h4 id=\"_abstracttestproperty\">abstractTestProperty</h4>" );
+      assertThat( documentation ).contains( "<h4 id=\"_entityproperty\">entityProperty</h4>" );
    }
 
    private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion )

@@ -35,9 +35,8 @@ Characteristic specific macros will be joined together in the main macro (see ab
 
 #* -- for SingleEntity ----------------------------------------------------------- *#
 #macro( SingleEntity $singleEntity $aspectModelUtil $i18n $titleWeight $characteristicList)
-#set( $entities = $aspectModelUtil.sortEntitiesByPreferredName( $aspectModelUtil.getEntities( $aspectModel ), $i18n.getLocale()))
-#set( $entity = $aspectModelUtil.resolveEntity( $singleEntity, $entities ))
-#if($entity)
+#set( $entities = $aspectModelUtil.resolveEntitiesSortedByPreferredName( $singleEntity, $i18n.getLocale() ) )
+#foreach( $entity in $entities )
 #Entity( $entity $aspectModelUtil $i18n $titleWeight $characteristicList)
 #end
 #end
@@ -69,7 +68,15 @@ Characteristic specific macros will be joined together in the main macro (see ab
 |*$i18n.getText("docu.label.element-type")* | $collection.getElementCharacteristic().get()
 #end
 #if($collection.getDataType().isPresent())
-#characteristic( $collection.getDataType().get() $aspectModelUtil $i18n $titleWeight $characteristicList)
+#set($dataType = $collection.getDataType().get())
+#if($dataType.isScalar())
+#Scalar( $dataType $aspectModelUtil $i18n $titleWeight $characteristicList )
+#else
+#set( $entities = $aspectModelUtil.resolveEntitiesSortedByPreferredName( $collection, $i18n.getLocale() ) )
+#foreach( $entity in $entities )
+#Entity( $entity $aspectModelUtil $i18n $titleWeight $characteristicList)
+#end
+#end
 #end
 #end
 
