@@ -13,9 +13,6 @@ $!property.getDescription($i18n.getLocale())
 #if($property.getExampleValue())
 |*$i18n.getText("docu.label.example")* |$property.getExampleValue()
 #end
-#if($property.getRefines())
-|*$i18n.getText("docu.label.refines")* |$property.getRefines()
-#end
 |*$i18n.getText("docu.label.optional")* |#if($property.isOptional()) icon:check[role="green"] #else icon:times[role="red"] #end
 |*$i18n.getText("docu.label.in-payload")* |#if($property.isNotInPayload()) icon:times[role="red"] #else icon:check[role="green"] #end
 |*$i18n.getText("docu.label.payload-name")* |$property.getPayloadName()

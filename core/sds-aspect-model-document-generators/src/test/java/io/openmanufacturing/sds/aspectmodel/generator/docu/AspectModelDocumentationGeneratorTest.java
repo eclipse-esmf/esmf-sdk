@@ -114,9 +114,11 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testAspectModelUrnIsDisplayed( final KnownVersion metaModelVersion ) throws IOException {
+      final String expectedString = String
+            .format( "Aspect Model URN: urn:bamm:io.openmanufacturing.test:%s#AspectWithHTMLTags",
+                metaModelVersion.toVersionString());
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_HTML_TAGS, metaModelVersion ) )
-            .contains(
-                  "Aspect Model URN: urn:bamm:io.openmanufacturing.test:1.0.0#AspectWithHTMLTags" );
+            .contains( expectedString );
    }
 
    @ParameterizedTest
