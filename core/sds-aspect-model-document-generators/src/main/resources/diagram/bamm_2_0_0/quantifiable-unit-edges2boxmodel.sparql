@@ -23,7 +23,7 @@ construct {
   ?edge :to ?to .
 } where {
   ?quantifiable bamm-c:unit ?unit .
-  ?property bamm:refines?/rdf:type bamm:Property .
+  ?property rdf:type bamm:Property .
   filter( exists { ?property bamm:characteristic/( bamm-c:baseCharacteristic* | rdfs:subClassOf* ) ?quantifiable } )
   ?quantifiable bamm:name ?quantifiableName .
   bind( replace( str( ?unit ), "[^#]*#(.*)", "$1") as ?unitName )
