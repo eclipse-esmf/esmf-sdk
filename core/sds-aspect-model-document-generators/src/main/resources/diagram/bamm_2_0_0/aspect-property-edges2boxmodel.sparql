@@ -15,67 +15,66 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
 
-# Generates edges between Aspects or Entites and Properties
+# Generates edges between Aspects or Entities or Abstract Entities and Properties
 construct {
   ?edge a :Edge .
   ?edge :title ?title .
   ?edge :from ?from .
   ?edge :to ?to .
 } where {
-  # Aspect/Entity -> Property Edges (properties)
-  {
-    ?aspectOrEntity rdf:type ?class .
-    filter( ?class in ( bamm:Aspect, bamm:Entity ) )
-    #exclude entities from our shared name-space
-    filter ( ! strstarts( str( ?aspectOrEntity ), str ( bamm-e: ) ) )
+  # Aspect/Entity/Abstract Entity -> Property Edges (properties)
+  ?aspectOrEntityOrAbstractEntity rdf:type ?class .
+  filter( ?class in ( bamm:Aspect, bamm:Entity, bamm:AbstractEntity ) )
+  #exclude entities from our shared name-space
+  filter ( ! strstarts( str( ?aspectOrEntityOrAbstractEntity ), str ( bamm-e: ) ) )
 
-    ?aspectOrEntity bamm:name ?aspectOrEntityName .
+  ?aspectOrEntityOrAbstractEntity bamm:name ?aspectOrEntityOrAbstractEntityName .
 
-    ?property bamm:refines?/rdf:type bamm:Property .
-    ?property bamm:name ?propertyName .
-    filter( exists { ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first/bamm:property? ?property } )
+  ?property rdf:type bamm:Property .
+  ?property bamm:name ?propertyName .
+  filter( exists { ?aspectOrEntityOrAbstractEntity bamm:properties/rdf:rest*/rdf:first/bamm:property? ?property } )
 
-    bind( if( ?class = bamm:Aspect, "Aspect", "Entity" ) as ?typeName )
-    bind( concat( ?aspectOrEntityName, ?typeName ) as ?aspectOrEntityBoxName )
-    bind( iri( concat( str( : ), ?aspectOrEntityBoxName ) ) as ?from )
+  bind( str(?class) as ?fullClassName )
+  bind( strafter(?fullClassName, "#") as ?typeName )
+  bind( concat( ?aspectOrEntityOrAbstractEntityName, ?typeName ) as ?aspectOrEntityOrAbstractEntityBoxName )
+  bind( iri( concat( str( : ), ?aspectOrEntityOrAbstractEntityBoxName ) ) as ?from )
 
-    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
-    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?to )
+  bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+  bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?to )
 
-    bind( iri( concat( str( : ), ?aspectOrEntityBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+  bind( iri( concat( str( : ), ?aspectOrEntityOrAbstractEntityBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
 
-    optional {
-      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-      ?propertyNode bamm:property ?property .
-      ?propertyNode bamm:optional "true"^^xsd:boolean .
-      ?propertyNode bamm:payloadName ?payloadName
-      bind( concat("property (optional) (", str(?payloadName), ")") as ?title )
-    }
+  optional {
+    ?aspectOrEntityOrAbstractEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+    ?propertyNode bamm:property ?property .
+    ?propertyNode bamm:optional "true"^^xsd:boolean .
+    ?propertyNode bamm:payloadName ?payloadName
+    bind( concat("property (optional) (", str(?payloadName), ")") as ?title )
+  }
 
-    optional {
-      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-      ?propertyNode bamm:property ?property .
-      ?propertyNode bamm:optional "true"^^xsd:boolean .
-      bind( "property (optional)" as ?title )
-    }
+  optional {
+    ?aspectOrEntityOrAbstractEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+    ?propertyNode bamm:property ?property .
+    ?propertyNode bamm:optional "true"^^xsd:boolean .
+    bind( "property (optional)" as ?title )
+  }
 
-    optional {
-      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-      ?propertyNode bamm:property ?property .
-      ?propertyNode bamm:notInPayload "true"^^xsd:boolean .
-      bind( "property (not in payload)" as ?title )
-    }
+  optional {
+    ?aspectOrEntityOrAbstractEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+    ?propertyNode bamm:property ?property .
+    ?propertyNode bamm:notInPayload "true"^^xsd:boolean .
+    bind( "property (not in payload)" as ?title )
+  }
 
-    optional {
-      ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-      ?propertyNode bamm:property ?property .
-      ?propertyNode bamm:payloadName ?payloadName
-      bind( concat("property (", str(?payloadName), ")") as ?title )
-    }
+  optional {
+    ?aspectOrEntityOrAbstractEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+    ?propertyNode bamm:property ?property .
+    ?propertyNode bamm:payloadName ?payloadName
+    bind( concat("property (", str(?payloadName), ")") as ?title )
+  }
 
-    optional {
-       ?aspectOrEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-       bind( "property" as ?title )
-    }
+  optional {
+     ?aspectOrEntityOrAbstractEntity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
+     bind( "property" as ?title )
   }
 }

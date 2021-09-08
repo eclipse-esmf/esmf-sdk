@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.test.MetaModelVersions;
+import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestEntity;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
@@ -193,5 +194,62 @@ public class Entity2BoxModelTest extends MetaModelVersions {
             context.selector(
                   ":EntityWithPropertyWithPayloadNameEntity_To_testPropertyProperty :title property (test)" ) )
                              .toList() ).hasSize( 1 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      testExtendingEntity( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
+      testExtendingEntityEdges( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      testExtendingEntity( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
+      testExtendingEntityEdges( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      testExtendingEntity( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
+      testExtendingEntityEdges( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
+   }
+
+   private void testExtendingEntity( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( testAspect, metaModelVersion );
+      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
+
+      final Model queryResult = ModelFactory.createDefaultModel();
+      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
+         qexec.execConstruct( queryResult );
+      }
+
+      assertThat( queryResult.listStatements( context.selector( ":ExtendingTestEntityEntity a :Box" ) ).toList() )
+            .hasSize( 1 );
+   }
+
+   private void testExtendingEntityEdges( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( testAspect, metaModelVersion );
+      final Query query = QueryFactory.create( context.getInputStreamAsString( "entity-abstractentity-edges2boxmodel.sparql" ) );
+
+      final Model queryResult = ModelFactory.createDefaultModel();
+      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
+         qexec.execConstruct( queryResult );
+      }
+
+      assertThat( queryResult.listStatements(
+            context.selector( ":ExtendingTestEntityEntity_To_AbstractTestEntityAbstractEntity a :Edge" )
+      ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements(
+            context.selector( ":ExtendingTestEntityEntity_To_AbstractTestEntityAbstractEntity :from :ExtendingTestEntityEntity" )
+      ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements(
+            context.selector( ":ExtendingTestEntityEntity_To_AbstractTestEntityAbstractEntity :to :AbstractTestEntityAbstractEntity" )
+      ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements(
+            context.selector( ":ExtendingTestEntityEntity_To_AbstractTestEntityAbstractEntity :title extends" )
+      ).toList() ).hasSize( 1 );
    }
 }

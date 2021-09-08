@@ -15,25 +15,27 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
 
-# Generates edges between Characteristic and Entities (dataType)
+# Generates edges between Characteristic and Entities or Abstract Entities (dataType)
 construct {
   ?edge a :Edge .
   ?edge :title "dataType" .
   ?edge :from ?from .
   ?edge :to ?to .
 } where {
-  ?characteristic bamm:dataType ?entity .
-  filter( ! strstarts( str( ?entity ), str( xsd: ) )
-         && ! strstarts( str( ?entity ), str( rdf: ) )
-         && ! strstarts( str( ?entity ), str ( bamm-e: ) ) )
+  ?characteristic bamm:dataType ?entityOrAbstractEntity .
+  filter( ! strstarts( str( ?entityOrAbstractEntity ), str( xsd: ) )
+         && ! strstarts( str( ?entityOrAbstractEntity ), str( rdf: ) )
+         && ! strstarts( str( ?entityOrAbstractEntity ), str ( bamm-e: ) ) )
   ?characteristic bamm:name ?characteristicName .
-  ?entity bamm:name ?entityName .
+  ?entityOrAbstractEntity bamm:name ?entityOrAbstractEntityName .
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
   bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
 
-  bind( concat( ?entityName, "Entity" ) as ?entityBoxName )
-  bind( iri( concat( str( : ), ?entityBoxName ) ) as ?to )
+  ?entityOrAbstractEntity rdf:type ?entityOrAbstractEntityClass
+  bind( str(?entityOrAbstractEntityClass) as ?entityOrAbstractEntityFullClassName ) .
+  bind( strafter(?entityOrAbstractEntityFullClassName, "#") as ?entityOrAbstractEntityTypeName ) .
+  bind( concat( ?entityOrAbstractEntityName, ?entityOrAbstractEntityTypeName ) as ?entityOrAbstractEntityBoxName )
+  bind( iri( concat( str( : ), ?entityOrAbstractEntityBoxName ) ) as ?to )
 
-  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?entityBoxName ) ) as ?edge )
+  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?entityOrAbstractEntityBoxName ) ) as ?edge )
 }
-

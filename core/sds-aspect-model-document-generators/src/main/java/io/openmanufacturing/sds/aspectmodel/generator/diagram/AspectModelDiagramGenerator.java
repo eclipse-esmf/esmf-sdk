@@ -115,12 +115,16 @@ public class AspectModelDiagramGenerator {
             "characteristic-constraint-edges"
       );
 
+      final ImmutableList<String> queryFilesForBammVersionsAsOf2_0_0 = ImmutableList.of( "abstractentity",
+            "entity-abstractentity-edges" );
+
       aspectToBoxmodelQueryFiles.put( KnownVersion.BAMM_1_0_0,
             ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
                          .build() );
 
       aspectToBoxmodelQueryFiles.put( KnownVersion.BAMM_2_0_0,
             ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
+                         .addAll( queryFilesForBammVersionsAsOf2_0_0 )
                          .build() );
 
       ARQ.init();

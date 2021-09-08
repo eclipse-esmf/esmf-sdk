@@ -121,4 +121,29 @@ public class Collection2BoxModelTest extends MetaModelVersions {
                              .toList() )
             .hasSize( 1 );
    }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext(
+            TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
+
+      final Query query = QueryFactory
+            .create( context.getInputStreamAsString( "characteristic-entity-edges2boxmodel.sparql" ) );
+
+      final Model queryResult = ModelFactory.createDefaultModel();
+      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
+         qexec.execConstruct( queryResult );
+      }
+
+      assertThat( queryResult
+            .listStatements( context.selector( ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity a :Edge" ) )
+            .toList() ).hasSize( 1 );
+      assertThat( queryResult
+            .listStatements( context.selector( ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :from :EntityCollectionCharacteristicCharacteristic" ) )
+            .toList() ).hasSize( 1 );
+      assertThat( queryResult
+            .listStatements( context.selector( ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :to :AbstractTestEntityAbstractEntity" ) )
+            .toList() ).hasSize( 1 );
+   }
 }
