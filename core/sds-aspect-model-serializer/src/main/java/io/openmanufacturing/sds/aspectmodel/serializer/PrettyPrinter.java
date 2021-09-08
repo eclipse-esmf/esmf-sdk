@@ -192,7 +192,7 @@ public class PrettyPrinter {
    }
 
    private Optional<Statement> elementDefinition( final Resource element ) {
-      return statement( element, RDF.type, null ).or( () -> statement( element, bamm._extends(), null ) );
+      return statement( element, RDF.type, null );
    }
 
    private String serializeList( final Resource list, final int indentationLevel ) {
