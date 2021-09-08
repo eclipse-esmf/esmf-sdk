@@ -84,6 +84,8 @@
         <maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
         <maven-surefire-plugin-version>2.22.2</maven-surefire-plugin-version>
         <maven-surefire-report-plugin-version>2.22.2</maven-surefire-report-plugin-version>
+        <maven-site-plugin-version>3.9.1</maven-site-plugin-version>
+        <groovy-maven-plugin-version>2.1.1</groovy-maven-plugin-version>
         <cyclonedx-maven-plugin-version>1.4.1</cyclonedx-maven-plugin-version>
         <maven-scm-plugin-version>1.11.2</maven-scm-plugin-version>
 
@@ -325,6 +327,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
+                <version>${maven-scm-plugin-version}</version>
                 <configuration>
                     <tag>${project.version}</tag>
                 </configuration>
