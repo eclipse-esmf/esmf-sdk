@@ -1,0 +1,83 @@
+name: Release SDS SDK
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Version number of the release'
+        required: true
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.1
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+          server-id: ossrh
+          server-username: OSSRH_USERNAME
+          server-password: OSSRH_TOKEN
+          gpg-private-key: ${{ secrets.PGP_KEY }}
+          gpg-passphrase: PGP_KEY_PASSWORD
+      - name: Setup Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      - name: Sanity check version
+        run: |
+          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          release_version=${{ github.event.inputs.release_version }}
+
+          if [[ $release_version =~ ^[0-9]+.[0-9]+.[0-9]+$ ]]
+          then
+            echo version is valid
+          else
+            echo release version $release_version is invalid
+            exit 1
+          fi
+      - name: Create release branch if not exists
+        continue-on-error: true
+        run: |
+          release_version=${{ github.event.inputs.release_version }}
+          release_branch_name=${release_version%.*}.x
+          echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
+
+          git fetch
+          git checkout -b $release_branch_name --track origin/$release_branch_name || true
+          git checkout -b $release_branch_name
+      - name: Set version
+        run: |
+          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn versions:commit
+      - name: Run tests and build
+        run: mvn clean package
+      - name: Publish to OSSRH
+        run: mvn deploy -DskipTests
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
+      - name: Push changes to upstream repository
+        run: |
+          git add .
+          git commit -m "Add version ${{ github.event.inputs.release_version }}"
+          git push origin ${{ env.release_branch_name }}
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        id: sds_sdk_release
+        with: 
+          body: "Release of the BAMM SDK in version v${{ github.event.inputs.release_version  }}."
+          tag_name: v${{ github.event.inputs.release_version }}
+          target_commitish: ${{ env.release_branch_name }}
+          draft: false
+          prerelease: false
+          files: |
+            **/target/*-${{ github.event.inputs.release_version }}.jar
+            **/target/*-${{ github.event.inputs.release_version }}.jar.asc
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
