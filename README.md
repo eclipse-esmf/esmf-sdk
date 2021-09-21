@@ -20,6 +20,7 @@
     - [Static Meta Model Generator](#static-meta-model-generator)
     - [Aspect Model Diagram Generator](#aspect-model-diagram-generator)
     - [Aspect Model Documentation Generator](#aspect-model-documentation-generator)
+- [License](#license)
 
 ## Introduction
 
@@ -208,3 +209,12 @@ automated build or any project at all. Provided functions are:
 * Static meta model generation
 
 New SDK functionality based on the Aspect Meta Model will always be also provided through the BAMM CLI.
+
+## License
+
+SPDX-License-Identifier: MPL-2.0
+
+This program and the accompanying materials are made available under the terms of the 
+[Mozilla Public License, v. 2.0](LICENSE).
+
+The [Notice file](NOTICE.md) details contained third party materials.
