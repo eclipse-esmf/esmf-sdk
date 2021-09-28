@@ -16,4 +16,4 @@ jobs:
         distribution: 'adopt'
         java-version: '11'
     - name: Run tests
-      run: mvn clean test
+      run: mvn clean install
