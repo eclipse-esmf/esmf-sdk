@@ -13,33 +13,19 @@
 
 package io.openmanufacturing.sds.aspectmodel.generator.docu;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import io.openmanufacturing.sds.aspectmodel.generator.AspectModelUtil;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
@@ -145,7 +131,7 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
             versionedModel );
 
       try ( final ByteArrayOutputStream result = new ByteArrayOutputStream() ) {
-         aspectModelDocumentationGenerator.generateHtml( name -> result );
+         aspectModelDocumentationGenerator.generate( name -> result, Collections.EMPTY_MAP);
          return result.toString( StandardCharsets.UTF_8.name() );
       }
    }

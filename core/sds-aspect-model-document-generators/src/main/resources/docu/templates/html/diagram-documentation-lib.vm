@@ -11,10 +11,13 @@
   ~ SPDX-License-Identifier: MPL-2.0
   -->
 
-<script>panzoom_js_placeholder</script>
-<script>
-    window.onload = function () {
-        var element = document.getElementById('aspect_model_diagram_img');
-        new ImageViewer(element);
-    }
-</script>
+#macro( diagram $i18n)
+    #title( $i18n.getText("docu.label.overview") "overview" "2" )
+    <div class="flex py-10">
+        <div class="w-full h-full shadow-lg overflow-hidden p-4">
+            <div id="aspect-model-diagram">
+                <img src="diagram_svg_placeholder" alt="Aspect Model Diagram">
+            </div>
+        </div>
+    </div>
+#end

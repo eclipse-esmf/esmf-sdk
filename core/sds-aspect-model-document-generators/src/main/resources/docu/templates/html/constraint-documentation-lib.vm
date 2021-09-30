@@ -1,0 +1,129 @@
+<!--
+  ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
+#macro( constraint $constraint $aspectModelHelper $i18n)
+#set( $constraintClass = $aspectModelHelper.getClassForObject($constraint).getSimpleName())
+#set( $macroToCall = '#' + $constraintClass + '($constraint $aspectModelHelper $i18n)')
+
+<div class="flex flex-col pb-5">
+
+    <div class="font-bold">
+        $constraint.getPreferredName($i18n.getLocale())
+    </div>
+
+    #if($constraint.getDescription($i18n.getLocale()))
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">$i18n.getText("docu.label.description")</div>
+            <div class="w-full">$constraint.getDescription($i18n.getLocale())</div>
+        </div>
+    #end
+
+    #if(!$constraint.getSee().isEmpty())
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">$i18n.getText("docu.label.see")</div>
+            <div class="w-full">
+                #list( $constraint.getSee() )
+            </div>
+        </div>
+    #end
+
+    #evaluate($!macroToCall)
+
+#end
+
+#*
+-------------------------------------------------------------------------------------
+Constraints specific macros will be joined together in the main macro (see above)
+-------------------------------------------------------------------------------------
+*#
+
+#* -- for RangeConstraint -------------------------------------------------------- *#
+#macro( RangeConstraint $rangeConstraint $aspectModelHelper $i18n)
+#if($rangeConstraint.getMinValue().isPresent())
+<div class="flex border-b pb-1 py-4">
+    <div class="flex mb-4">
+>#if($rangeConstraint.getLowerBoundDefinition().name().equals("AT_LEAST") || $rangeConstraint.getLowerBoundDefinition().name().equals("AT_MOST") )=#end
+        <div class="w-80">
+ $rangeConstraint.getMinValue().get()
+        </div>
+#if($rangeConstraint.getMaxValue().isPresent() )
+        <div class="w-80">...</div>
+#end
+#end
+#if($rangeConstraint.getMaxValue().isPresent())
+<div class="w-80">
+<#if($rangeConstraint.getUpperBoundDefinition().name().equals("LESS_THAN") || $rangeConstraint.getUpperBoundDefinition().name().equals("GREATER_THAN") )=#end
+ $rangeConstraint.getMaxValue().get()
+#end
+</div>
+#end
+
+#* -- for FixedPointConstraint ----------------------------------------------------- *#
+#macro( FixedPointConstraint $fixedPointConstraint $aspectModelHelper $i18n)
+    <div class="flex border-b pb-1 py-4">
+        <div class="w-80">$i18n.getText("docu.label.scale")</div>
+        <div class="w-full">$fixedPointConstraint.getScale()</div>
+    </div>
+    <div class="flex border-b pb-1 py-4">
+        <div class="w-80">$i18n.getText("docu.label.integer")</div>
+        <div class="w-full">$fixedPointConstraint.getInteger()</div>
+    </div>
+#end
+
+#* -- for LengthConstraint --------------------------------------------------------- *#
+#macro( LengthConstraint $lengthConstraint $aspectModelHelper $i18n)
+    #if($lengthConstraint.getMinValue().isPresent())
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">$i18n.getText("docu.label.min-length")</div>
+            <div class="w-full">$lengthConstraint.getMinValue().get()</div>
+        </div>
+    #end
+    #if($lengthConstraint.getMaxValue().isPresent())
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">$i18n.getText("docu.label.max-length")</div>
+            <div class="w-full">$lengthConstraint.getMaxValue().get()</div>
+        </div>
+    #end
+#end
+
+#* -- for RegularExpressionConstraint ---------------------------------------------- *#
+#macro( RegularExpressionConstraint $regularExpressionConstraint $aspectModelHelper $i18n)
+    <div class="flex border-b pb-1 py-4">
+        <div class="w-80">$i18n.getText("docu.label.regex")</div>
+        <div class="w-full">$regularExpressionConstraint.getValue()</div>
+    </div>
+#end
+
+#* -- for EncodingConstraint ------------------------------------------------------- *#
+#macro( EncodingConstraint $encodingConstraint $aspectModelHelper $i18n)
+    <div class="flex border-b pb-1 py-4">
+        <div class="w-80">$i18n.getText("docu.label.encoding")</div>
+        <div class="w-full">$encodingConstraint.getValue()</div>
+    </div>
+#end
+
+#* -- for LocaleConstraint --------------------------------------------------------- *#
+#macro( LocaleConstraint $localeConstraint $aspectModelHelper $i18n)
+    <div class="flex border-b pb-1 py-4">
+        <div class="w-80">$i18n.getText("docu.label.locale")</div>
+        <div class="w-full">$localeConstraint.getLocaleCode()</div>
+    </div>
+#end
+
+#* -- for LanguageConstraint ------------------------------------------------------- *#
+#macro( LanguageConstraint $languageConstraint $aspectModelHelper $i18n)
+    <div class="flex border-b pb-1 py-4">
+        <div class="w-80">$i18n.getText("docu.label.lang-code")</div>
+        <div class="w-full">$languageConstraint.getLanguageCode()</div>
+    </div>
+#end

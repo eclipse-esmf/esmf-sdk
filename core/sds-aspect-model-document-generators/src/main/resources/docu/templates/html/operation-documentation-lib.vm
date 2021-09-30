@@ -1,0 +1,37 @@
+<!--
+  ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
+#macro( operation $operation $aspectModelHelper $i18n $weight)
+    <div class="p-4 text-gray">
+        #paragraph( $operation.getPreferredName($i18n.getLocale()) "$operation.getName()-operation" $weight )
+
+        #description( $operation.getDescription($i18n.getLocale()) )
+
+        #if(!$operation.getInput().isEmpty())
+
+            #paragraph($i18n.getText("docu.label.input") "$operation.getName()-operation-in-prop" $aspectModelHelper.increment($weight))
+
+            #foreach( $property in $operation.getInput() )
+                #property( $property $aspectModelHelper $i18n )
+            #end
+
+        #end
+
+
+        #if( $operation.getOutput().isPresent())
+            #paragraph($i18n.getText("docu.label.output") "$operation.getName()-operation-out-prop" $aspectModelHelper.increment($weight))
+            #property( $operation.getOutput().get() $aspectModelHelper $i18n)
+        #end
+    </div>
+
+#end

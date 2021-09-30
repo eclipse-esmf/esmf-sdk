@@ -55,7 +55,6 @@
     <properties>
         <!-- Versions of third party dependencies -->
         <aspect-meta-model-version>1.0.0</aspect-meta-model-version>
-        <asciidoctor-version>1.6.2</asciidoctor-version>
         <assertj-vavr-version>0.1.0</assertj-vavr-version>
         <classgraph-version>4.8.29</classgraph-version>
         <commons-text-version>1.6</commons-text-version>
@@ -84,10 +83,9 @@
         <maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
         <maven-surefire-plugin-version>2.22.2</maven-surefire-plugin-version>
         <maven-surefire-report-plugin-version>2.22.2</maven-surefire-report-plugin-version>
-        <maven-site-plugin-version>3.9.1</maven-site-plugin-version>
-        <groovy-maven-plugin-version>2.1.1</groovy-maven-plugin-version>
         <cyclonedx-maven-plugin-version>1.4.1</cyclonedx-maven-plugin-version>
         <maven-scm-plugin-version>1.11.2</maven-scm-plugin-version>
+        <groovy-maven-plugin-version>2.1.1</groovy-maven-plugin-version>
 
         <!-- General settings -->
         <testreports.directory>test-reports</testreports.directory>
@@ -274,11 +272,6 @@
                 <groupId>guru.nidi</groupId>
                 <artifactId>graphviz-java</artifactId>
                 <version>${graphviz-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.asciidoctor</groupId>
-                <artifactId>asciidoctorj</artifactId>
-                <version>${asciidoctor-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.curious-odd-man</groupId>

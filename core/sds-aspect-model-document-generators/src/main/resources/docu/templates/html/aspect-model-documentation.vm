@@ -1,0 +1,123 @@
+<!--
+  ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; chartset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+        .reset-all-styles {
+            all: revert;
+        }
+    </style>
+    <style>tailwind_css_placeholder</style>
+    <style>/* MIT License | https://github.com/tscanlin/tocbot/blob/master/LICENSE */ tocbot_css_placeholder</style>
+    <style>custom_css_placeholder</style>
+    <script>/* MIT License | https://github.com/anvaka/panzoom/blob/master/LICENSE */ panzoom_js_placeholder</script>
+    <script>/* MIT License | https://github.com/tscanlin/tocbot/blob/master/LICENSE */ tocbot_js_placeholder</script>
+    <script>
+        window.onload = function () {
+            const diagram = document.getElementById('aspect-model-diagram');
+            panzoom(diagram, {
+                bounds: true,
+                boundsPadding: 0.3,
+                minZoom: 1
+            });
+        }
+    </script>
+    <title>$i18n.getText("docu.label.documentation") $aspectModel.getPreferredName($i18n.getLocale())</title>
+</head>
+<body class="flex">
+    <header class="fixed w-full flex flex-col z-10 top-0 bg-white">
+        <div class="page-top w-full"></div>
+        <div class="border-b flex flex-row pt-2 w-full px-4">
+            <div class="left-0">
+                <h1 id="$aspectModel.getName()">Aspect Model $aspectModel.getPreferredName($i18n.getLocale())</h1>
+                <div class='pb-4'>$aspectModel.getAspectModelUrn().get()</div>
+            </div>
+            <div class="right-0">
+                <div class="logo-header absolute top-1/2 transform -translate-y-2/4"></div>
+            </div>
+        </div>
+    </header>
+    <main class="w-full overflow-auto flex flex-row body relative top-28" >
+            <!-- Aspect Model Content -->
+            <div class="left-0 px-2 mx-8 py-4 z-9 top-28" id="documentation" style="min-width:200px; width: calc(100% - 30em);">
+
+                <!-- Aspect Model Description -->
+                #if($aspectModel.getDescription($i18n.getLocale()) && $aspectModel.getDescription($i18n.getLocale()).trim().length() > 0)
+                    <div class="pb-5">
+                        $aspectModel.getDescription($i18n.getLocale())
+                    </div>
+                #end
+
+                <!-- Aspect Model Diagram -->
+                #diagram( $i18n )
+
+                <!-- Aspect Model Properties and related Types -->
+                #if( !$aspectModel.getProperties().isEmpty() )
+                    <div class="heading" id=properties">
+                        #title( $i18n.getText("docu.label.properties") "properties" "2" )
+
+                        #foreach( $property in $aspectModelHelper.sortPropertiesByPreferredName( $aspectModel.getProperties(), $i18n.getLocale() ) )
+                            #property( $property $aspectModelHelper $i18n "3" $foreach.count )
+                        #end
+                    </div>
+                #end
+
+                <!-- Aspect Model Operations and related Types -->
+                #if( !$aspectModel.operations.isEmpty() )
+                    <div class="heading" id="operations">
+                        #title( $i18n.getText("docu.label.operations") "operations" "2" )
+
+                        #foreach( $operation in $aspectModelHelper.sortOperationsByPreferredName( $aspectModel.getOperations(), $i18n.getLocale() ) )
+                            #operation( $operation $aspectModelHelper $i18n "3" )
+                        #end
+                    </div>
+                #end
+
+                #if( !$aspectModelHelper.getEntities($aspectModel).isEmpty())
+                    <div class="heading" id="entities">
+                        #title( $i18n.getText("docu.label.entities") "entities" "2" )
+
+                        #foreach( $entity in $aspectModelHelper.sortEntitiesByPreferredName( $aspectModelHelper.getEntities($aspectModel), $i18n.getLocale() ) )
+                            #entity( $entity $aspectModelHelper $i18n "3" )
+                        #end
+                    </div>
+                #end
+
+            </div>
+            <!-- TOC -->
+            <aside class="toc-aside py-2 px-4 z-0 fixed top-28 block right-0" role="navigation" style="min-width:20em">
+                <h4 id="content-title">$i18n.getText("docu.label.table-of-contents")</h4>
+                <div id="documentation-toc" class="is-position-fixed">
+                    <ol class="toc-list"></ol>
+                </div>
+            </aside>
+    </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        tocbot.init({
+            tocSelector: '#documentation-toc',
+            contentSelector: '#documentation',
+            headingSelector: 'h2, h3, h4, h5',
+            collapseDepth: 0,
+            positionFixedSelector: '#documentation-toc',
+            scrollSmooth: true,
+            headingsOffset: 125,
+            scrollSmoothOffset: -125,
+        });
+    });
+</script>
+</body>
+</html>

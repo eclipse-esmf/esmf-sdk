@@ -1,12 +1,13 @@
 #* @implicitly included *#
 #* @vtlvariable name="aspectModel" type="io.openmanufacturing.sds.metamodel.Aspect" *#
+#* @vtlvariable name="versionModel" type="io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel" *#
 #* @vtlvariable name="property" type="io.openmanufacturing.sds.metamodel.Property" *#
 #* @vtlvariable name="characteristic" type="io.openmanufacturing.sds.metamodel.Characteristic" *#
 #* @vtlvariable name="constraint" type="io.openmanufacturing.sds.metamodel.Constraint" *#
 #* @vtlvariable name="entity" type="io.openmanufacturing.sds.metamodel.Entity" *#
 #* @vtlvariable name="i18n" type="io.openmanufacturing.sds.aspectmodel.generator.I18nLanguageBundle" *#
 #* @vtlvariable name="operation" type="io.openmanufacturing.sds.metamodel.Operation" *#
-#* @vtlvariable name="aspectModelUtil" type="io.openmanufacturing.sds.aspectmodel.generator.AspectModelUtil" *#
+#* @vtlvariable name="aspectModelHelper" type="io.openmanufacturing.sds.aspectmodel.generator.AspectModelHelper" *#
 #* @vtlvariable name="Class" type="java.lang.Class" *#
 #* @vtlvariable name="measurement" type="io.openmanufacturing.sds.metamodel.Measurement" *#
 #* @vtlvariable name="unit" type="io.openmanufacturing.sds.metamodel.Unit" *#

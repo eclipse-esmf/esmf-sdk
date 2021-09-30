@@ -12,9 +12,9 @@
  */
 package io.openmanufacturing.sds;
 
-import java.io.File;
-
 import com.beust.jcommander.Parameter;
+
+import java.io.File;
 
 public class Args {
 
@@ -24,6 +24,10 @@ public class Args {
    @Parameter( names = { "--generate-documentation", "-html" },
                description = "Generate HTML documentation for an Aspect Model" )
    public boolean generateHtml = false;
+
+   @Parameter( names = { "--html-custom-css-file", "-hccf" },
+           description = "CSS file with custom styles to be included in the generated HTML documentation" )
+   public String htmlCustomCSSFile;
 
    @Parameter( names = { "--generate-svg-diagram", "-svg" },
                description = "Generate SVG diagram for an Aspect Model" )
