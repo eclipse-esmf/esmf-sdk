@@ -1,15 +1,15 @@
-<!--
-  ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
-  ~
-  ~ See the AUTHORS file(s) distributed with this work for additional
-  ~ information regarding authorship.
-  ~
-  ~ This Source Code Form is subject to the terms of the Mozilla Public
-  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
-  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
-  ~
-  ~ SPDX-License-Identifier: MPL-2.0
-  -->
+#**
+ ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
 
 #macro( property $property $aspectModelHelper $i18n $weight )
 <div class="flex flex-col pb-10">
@@ -79,7 +79,7 @@
         <div class="flex border-b pb-1 py-4">
             <div class="w-80">$i18n.getText("docu.label.constraints")</div>
             <div class="w-full">
-               <ul class="reset-all-styles m-0">
+               <ul class="reset-all-styles m-0 property-constraints">
                    #foreach( $constraint in $constraints )
                        <li>#constraint( $constraint $aspectModelHelper $i18n)</li>
                    #end

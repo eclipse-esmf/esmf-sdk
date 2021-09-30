@@ -86,6 +86,7 @@
         <cyclonedx-maven-plugin-version>1.4.1</cyclonedx-maven-plugin-version>
         <maven-scm-plugin-version>1.11.2</maven-scm-plugin-version>
         <groovy-maven-plugin-version>2.1.1</groovy-maven-plugin-version>
+        <maven-site-plugin-version>3.9.1</maven-site-plugin-version>
 
         <!-- General settings -->
         <testreports.directory>test-reports</testreports.directory>

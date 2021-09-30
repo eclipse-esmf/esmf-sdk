@@ -40,9 +40,9 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
          writer.flush();
       }
       assertThat( htmlResult ).isNotEmpty();
-      assertThat( htmlResult ).contains( "<h1>Aspect Model Test Aspect</h1>" );
-      assertThat( htmlResult ).contains( "<h3 id=\"_test_property\">Test Property</h3>" );
-      assertThat( htmlResult ).contains( "<h4 id=\"_entity_property\">Entity Property</h4>" );
+      assertThat( htmlResult ).contains( "<h1 id=\"AspectWithEntityCollection\">Aspect Model Test Aspect</h1>" );
+      assertThat( htmlResult ).contains( "<h3 id=\"testProperty-property\">Test Property</h3>" );
+      assertThat( htmlResult ).contains( "<h5 id=\"entityProperty-property\">Entity Property</h5>" );
    }
 
    @ParameterizedTest
@@ -57,8 +57,8 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
          writer.flush();
       }
       assertThat( htmlResult ).isNotEmpty();
-      assertThat( htmlResult ).contains( "<h1>Aspect Model AspectWithCollectionOfSimpleType</h1>" );
-      assertThat( htmlResult ).contains( "<h3 id=\"_testlist\">testList</h3>" );
+      assertThat( htmlResult ).contains( "<h1 id=\"AspectWithCollectionOfSimpleType\">Aspect Model AspectWithCollectionOfSimpleType</h1>" );
+      assertThat( htmlResult ).contains( "<h3 id=\"testList-property\">testList</h3>" );
    }
 
    @ParameterizedTest
@@ -102,7 +102,7 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    public void testAspectModelUrnIsDisplayed( final KnownVersion metaModelVersion ) throws IOException {
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_HTML_TAGS, metaModelVersion ) )
             .contains(
-                  "Aspect Model URN: urn:bamm:io.openmanufacturing.test:1.0.0#AspectWithHTMLTags" );
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#AspectWithHTMLTags" );
    }
 
    @ParameterizedTest
@@ -110,8 +110,11 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    public void testDocInfosAreDisplayed( final KnownVersion metaModelVersion ) throws IOException {
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_HTML_TAGS, metaModelVersion ) )
             .contains( ".iv-fullscreen" )
-            .contains( "aspect_model_diagram_img" )
+            .contains( "aspect-model-diagram" )
             .contains( "<script>!function(e,t)" )
+            .contains( "MIT License | https://github.com/anvaka/panzoom/blob/master/LICENSE" )
+            .contains( "MIT License | https://github.com/tscanlin/tocbot/blob/master/LICENSE" )
+            .contains( "tailwindcss v2.2.7 | MIT License | https://tailwindcss.com" )
             .contains( "normalize.css v2.1.2" );
    }
 

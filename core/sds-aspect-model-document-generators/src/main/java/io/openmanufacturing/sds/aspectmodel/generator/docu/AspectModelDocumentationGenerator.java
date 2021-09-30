@@ -119,6 +119,7 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
 
         final Properties engineConfiguration = new Properties();
         engineConfiguration.put("file.resource.loader.path", ".," + DOCU_TEMPLATE_ROOT_DIR + "/html");
+        engineConfiguration.put("event_handler.reference_insertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference");
         engineConfiguration.put("velocimacro.library",
                 DOCU_TEMPLATE_ROOT_DIR + "/html/characteristic-documentation-lib.vm," +
                         DOCU_TEMPLATE_ROOT_DIR + "/html/constraint-documentation-lib.vm," +
