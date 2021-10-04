@@ -31,7 +31,7 @@ For more information on SPARQL construct queries, Graphviz and Mustache see:
 ## Document Generator
 
 The document generator creates an HTML page for an Aspect Model. The page includes the diagram for the Aspect Model.
-The HTML page embedding all required styles, fonts and images for making the html page to run standalone without 
+The HTML page embedding all required styles, fonts and images for making the HTML page to run standalone without 
 dependencies to the internet.
 
 ### How it works
@@ -40,7 +40,7 @@ For the generation the aspect java meta model is used.
 
 1. The Aspect Model definition file (.ttl) is loaded
 2. The aspect meta model is instantiated with the contents of the loaded aspect meta model definition
-3. The instantiated aspect meta model is used to generate the HTMl page using Velocity templates
+3. The instantiated aspect meta model is used to generate the HTML page using Velocity templates
 4. The diagram for the Aspect Model is generated in SVG format and embedded into the HTML as a Base64 encoded String
 5. The required JavaScript, styles and font will be embedded into the HTML as a String
 6. The HTML is written to the specified location

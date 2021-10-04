@@ -106,8 +106,6 @@ public class AspectModelHelper {
         return constraints;
     }
 
-    @SuppressWarnings("squid:S2250")
-    //Amount of elements in list is regarding the amount of properties in aspect model. Even in bigger aspects this should not lead to performance issues
     public static Set<Property> getProperties(final Characteristic characteristic) {
         if (characteristicList.contains(characteristic)) {
             return Set.of();
@@ -146,10 +144,10 @@ public class AspectModelHelper {
         return parts.length == 2 ? parts[1] : urn;
     }
 
-    @SuppressWarnings("squid:S3655")
-    //There won't be many issues in calling without isPresent as everything will be underneath the velocity template
-    // and there is no alternative in case it isn't present.
     public static Entity getComplexTypeOfCharacteristic(final Characteristic characteristic) {
+        if (characteristic == null || !characteristic.getDataType().isPresent()) {
+            return null;
+        }
         return (Entity) characteristic.getDataType().get();
     }
 

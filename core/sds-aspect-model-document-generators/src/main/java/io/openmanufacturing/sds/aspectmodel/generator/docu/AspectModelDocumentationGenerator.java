@@ -176,14 +176,13 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
         }
     }
 
-    @SuppressWarnings("squid:S1166")
     private String byteArrayOutputStreamToString(final ByteArrayOutputStream outputStream) throws IOException {
         try (final ByteArrayOutputStream stream = outputStream) {
             return stream.toString(StandardCharsets.UTF_8.name());
         } catch (final UnsupportedEncodingException e) {
             // Will not happen, because encoding is hardcoded
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     private String insertAspectModelDiagram(final String html, final Locale language) throws IOException {
