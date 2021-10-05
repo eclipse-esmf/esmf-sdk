@@ -13,22 +13,38 @@
 
 package io.openmanufacturing.sds.aspectmodel.generator.docu;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.io.CharStreams;
-import io.openmanufacturing.sds.aspectmodel.generator.*;
+
+import io.openmanufacturing.sds.aspectmodel.generator.AbstractGenerator;
+import io.openmanufacturing.sds.aspectmodel.generator.AspectModelHelper;
+import io.openmanufacturing.sds.aspectmodel.generator.I18nLanguageBundle;
+import io.openmanufacturing.sds.aspectmodel.generator.LanguageCollector;
+import io.openmanufacturing.sds.aspectmodel.generator.TemplateEngine;
 import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.IsDescribed;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * Asciidoc generator for a aspect model.
@@ -94,11 +110,14 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
             final Locale artifactLanguage = bufferingMapper.artifactLanguages.get(artifactName);
             String html = byteArrayOutputStreamToString(entry.getValue());
             html = insertAspectModelDiagram(html, artifactLanguage);
-            html = insertPanZoomJs(html);
-            html = insertTocbotCSS(html);
-            html = insertTocbotJs(html);
-            html = insertTailwindCSS(html);
-            html = insertCustomCSS(html, generationOptions.get(HtmlGenerationOption.STYLESHEET));
+            html = insertPanZoomJs( html );
+            html = insertPanZoomLicense( html );
+            html = insertTocbotCSS( html );
+            html = insertTocbotLicense( html );
+            html = insertTocbotJs( html );
+            html = insertTailwindCSS( html );
+            html = insertTailwindLicense( html );
+            html = insertCustomCSS( html, generationOptions.get( HtmlGenerationOption.STYLESHEET ) );
 
             try (final OutputStream outputStreamForArtifactName = nameMapper
                     .apply(Format.HTML.getArtifactFilename(artifactName))) {
@@ -204,43 +223,71 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
         }
     }
 
-    private String insertPanZoomJs(final String html) throws IOException {
-        try (final InputStream panZoomJs = getClass().getResourceAsStream(DOCU_ROOT_DIR + "/static/panzoom.min.js")) {
-            final String javaScript = CharStreams.toString(new InputStreamReader(panZoomJs));
-            return html.replace("panzoom_js_placeholder", javaScript);
+    private String insertPanZoomJs( final String html ) throws IOException {
+        try ( final InputStream panZoomJs = getClass().getResourceAsStream(
+              DOCU_ROOT_DIR + "/static/panzoom-9-4-2.min.js" ) ) {
+            final String javaScript = CharStreams.toString( new InputStreamReader( panZoomJs ) );
+            return html.replace( "panzoom_js_placeholder", javaScript );
         }
     }
 
-    private String insertTocbotJs(final String html) throws IOException {
-        try (final InputStream tocbot = getClass().getResourceAsStream(DOCU_ROOT_DIR + "/static/tocbot-4-11-1.min.js")) {
-            final String javaScript = CharStreams.toString(new InputStreamReader(tocbot));
-            return html.replace("tocbot_js_placeholder", javaScript);
+    private String insertPanZoomLicense( final String html ) throws IOException {
+        try ( final InputStream panZoomJs = getClass().getResourceAsStream(
+              DOCU_ROOT_DIR + "/static/panzoom-license.txt" ) ) {
+            final String javaScript = CharStreams.toString( new InputStreamReader( panZoomJs ) );
+            return html.replace( "panzoom_license_placeholder", javaScript );
         }
     }
 
-    private String insertTocbotCSS(final String html) throws IOException {
-        try (final InputStream tailwindCss = getClass().getResourceAsStream(DOCU_ROOT_DIR + "/styles/tocbot-4-11-1.css")) {
-            final String css = CharStreams.toString(new InputStreamReader(tailwindCss));
-            return html.replace("tocbot_css_placeholder", css);
+    private String insertTocbotJs( final String html ) throws IOException {
+        try ( final InputStream tocbot = getClass().getResourceAsStream(
+              DOCU_ROOT_DIR + "/static/tocbot-4-11-1.min.js" ) ) {
+            final String javaScript = CharStreams.toString( new InputStreamReader( tocbot ) );
+            return html.replace( "tocbot_js_placeholder", javaScript );
         }
     }
 
-    private String insertTailwindCSS(final String html) throws IOException {
-        try (final InputStream tailwindCss = getClass().getResourceAsStream(DOCU_ROOT_DIR + "/styles/tailwind.purged.css")) {
-            final String css = CharStreams.toString(new InputStreamReader(tailwindCss));
-            return html.replace("tailwind_css_placeholder", css);
+    private String insertTocbotLicense( final String html ) throws IOException {
+        try ( final InputStream panZoomJs = getClass().getResourceAsStream(
+              DOCU_ROOT_DIR + "/static/tocbot-license.txt" ) ) {
+            final String javaScript = CharStreams.toString( new InputStreamReader( panZoomJs ) );
+            return html.replace( "tocbot_license_placeholder", javaScript );
         }
     }
 
-    private void logMissingTranslations(final Aspect aspectMetaModel, final Locale locale) {
-        aspectMetaModel.accept(new AspectStreamTraversalVisitor(), null)
-                .filter(element -> element instanceof IsDescribed)
-                .map(element -> (IsDescribed) element)
-                .forEach(metaModelElement -> {
-                    final Map<Locale, String> preferredNames = metaModelElement.getPreferredNames();
-                    if (!preferredNames.isEmpty() && !preferredNames.containsKey(locale)) {
-                        LOG.warn("Missing preferred names for {} with locale {}", metaModelElement.getName(),
-                                locale);
+    private String insertTocbotCSS( final String html ) throws IOException {
+        try ( final InputStream tailwindCss = getClass().getResourceAsStream(
+              DOCU_ROOT_DIR + "/styles/tocbot-4-11-1.css" ) ) {
+            final String css = CharStreams.toString( new InputStreamReader( tailwindCss ) );
+            return html.replace( "tocbot_css_placeholder", css );
+        }
+    }
+
+    private String insertTailwindCSS( final String html ) throws IOException {
+        try ( final InputStream tailwindCss = getClass().getResourceAsStream(
+              DOCU_ROOT_DIR + "/styles/tailwind.purged.css" ) ) {
+            final String css = CharStreams.toString( new InputStreamReader( tailwindCss ) );
+            return html.replace( "tailwind_css_placeholder", css );
+        }
+    }
+
+    private String insertTailwindLicense( final String html ) throws IOException {
+        try ( final InputStream panZoomJs = getClass().getResourceAsStream(
+              DOCU_ROOT_DIR + "/static/tailwind-license.txt" ) ) {
+            final String javaScript = CharStreams.toString( new InputStreamReader( panZoomJs ) );
+            return html.replace( "tailwind_license_placeholder", javaScript );
+        }
+    }
+
+    private void logMissingTranslations( final Aspect aspectMetaModel, final Locale locale ) {
+        aspectMetaModel.accept( new AspectStreamTraversalVisitor(), null )
+                       .filter( element -> element instanceof IsDescribed )
+                       .map( element -> (IsDescribed) element )
+                       .forEach( metaModelElement -> {
+                           final Map<Locale, String> preferredNames = metaModelElement.getPreferredNames();
+                           if ( !preferredNames.isEmpty() && !preferredNames.containsKey( locale ) ) {
+                               LOG.warn( "Missing preferred names for {} with locale {}", metaModelElement.getName(),
+                                     locale );
                     }
 
                     final Map<Locale, String> descriptions = metaModelElement.getDescriptions();
