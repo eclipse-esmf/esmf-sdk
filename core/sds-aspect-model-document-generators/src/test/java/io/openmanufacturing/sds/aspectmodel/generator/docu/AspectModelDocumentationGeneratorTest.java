@@ -109,13 +109,13 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testDocInfosAreDisplayed( final KnownVersion metaModelVersion ) throws IOException {
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_HTML_TAGS, metaModelVersion ) )
-            .contains( ".iv-fullscreen" )
+            .contains( ".toc-list" )
             .contains( "aspect-model-diagram" )
-            .contains( "<script>!function(e,t)" )
+            .contains( "function toggleLicenseDetails()" )
             .contains( "MIT License | https://github.com/anvaka/panzoom/blob/master/LICENSE" )
             .contains( "MIT License | https://github.com/tscanlin/tocbot/blob/master/LICENSE" )
             .contains( "tailwindcss v2.2.7 | MIT License | https://tailwindcss.com" )
-            .contains( "normalize.css v2.1.2" );
+            .contains( "enumerable" );
    }
 
    @ParameterizedTest
