@@ -90,18 +90,6 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       createValidArgsExecution( metaModelVersion, outputDir, "-h" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testHtml( final KnownVersion metaModelVersion ) throws Throwable {
-      final File outputDir = outputDirectory.toFile();
-
-      createValidArgsExecution( metaModelVersion, outputDir, "-html" );
-
-      assertThat( outputDir.toPath().resolve( "static" ).resolve( "panzoom-license.txt" ) ).exists();
-      assertThat( outputDir.toPath().resolve( "static" ).resolve( "docinfo.html" ) ).exists();
-      assertThat( outputDir.toPath().resolve( "static" ).resolve( "docinfo-footer.html" ) ).exists();
-   }
-
    @Test
    public void testDocFilePathWithoutGenerateHtml() throws Exception {
       assertThat( catchSystemExit( () -> bammCli.run( "-dp", "/test" ) ) ).isEqualTo( 1 );

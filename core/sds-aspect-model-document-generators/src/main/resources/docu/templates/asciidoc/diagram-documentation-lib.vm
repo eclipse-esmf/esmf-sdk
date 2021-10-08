@@ -1,3 +1,0 @@
-#macro( diagram $i18n)
-image::diagram.svg[Aspect Model Diagram]
-#end
