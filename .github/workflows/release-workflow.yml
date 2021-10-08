@@ -67,7 +67,6 @@ jobs:
           prerelease: false
           files: |
             **/target/*-${{ github.event.inputs.release_version }}.jar
-            **/target/*-${{ github.event.inputs.release_version }}.jar.asc
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to OSSRH
