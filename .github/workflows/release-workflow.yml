@@ -56,17 +56,6 @@ jobs:
           mvn versions:commit
       - name: Run tests and build
         run: mvn clean package
-      - name: Publish to OSSRH
-        run: mvn deploy -DskipTests
-        env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-          PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
-      - name: Push changes to upstream repository
-        run: |
-          git add .
-          git commit -m "Add version ${{ github.event.inputs.release_version }}"
-          git push origin ${{ env.release_branch_name }}
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         id: sds_sdk_release
@@ -81,3 +70,14 @@ jobs:
             **/target/*-${{ github.event.inputs.release_version }}.jar.asc
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      - name: Publish to OSSRH
+        run: mvn clean -pl '!core/sds-test-resources,!core/sds-test-aspect-models,!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
+      - name: Push changes to upstream repository
+        run: |
+          git add .
+          git commit -m "Add version ${{ github.event.inputs.release_version }}"
+          git push origin ${{ env.release_branch_name }}
