@@ -24,6 +24,26 @@
     <version>DEV-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <description>OMP SDS SDK</description>
+    <url>https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/dev-snapshot/index.html</url>
+    <licenses>
+        <license>
+            <name>MPL-2.0</name>
+            <url>https://www.mozilla.org/en-US/MPL/2.0/</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Semantic Data Structuring Working Group</name>
+            <email>artifacts@open-manufacturing.org</email>
+            <organization>Open Manufacturing Platform</organization>
+            <organizationUrl>https://open-manufacturing.org</organizationUrl>
+        </developer>
+    </developers>
+    <scm>
+        <url>https://github.com/OpenManufacturingPlatform/sds-sdk</url>
+    </scm>
+
     <modules>
         <module>core/sds-aspect-model-urn</module>
         <module>core/sds-aspect-meta-model-types</module>
