@@ -132,7 +132,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
                   .put( "MODEL_ELEMENT_URN", String.class )
                   .put( "CHARACTERISTIC_NAMESPACE", String.class )
                   .put( "INSTANCE", "MetaAspectWithEitherWithComplexTypes" )
-                  .put( "TEST_PROPERTY", "StaticProperty<Either>" )
+                  .put( "TEST_PROPERTY", "StaticProperty<Either<LeftEntity,RightEntity>>" )
                   .build(), new HashMap<>() );
 
       result.assertFields( "MetaLeftEntity",

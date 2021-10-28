@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -27,6 +27,14 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
 import org.apache.velocity.app.FieldMethodizer;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.ImmutableMap;
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
+
 import io.openmanufacturing.sds.aspectmodel.generator.TemplateEngine;
 import io.openmanufacturing.sds.aspectmodel.java.AspectModelJavaUtil;
 import io.openmanufacturing.sds.aspectmodel.java.ImportTracker;
@@ -39,14 +47,6 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.StructureElement;
 import io.openmanufacturing.sds.metamodel.Trait;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.ImmutableMap;
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
 
 /**
  * A {@link io.openmanufacturing.sds.aspectmodel.generator.ArtifactGenerator} that generates Java Pojo code
@@ -87,10 +87,8 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .put( "HexBinaryDeserializer", "io.openmanufacturing.sds.aspectmodel.jackson.HexBinaryDeserializer" )
             .put( "Base64BinarySerializer", "io.openmanufacturing.sds.aspectmodel.jackson.Base64BinarySerializer" )
             .put( "Base64BinaryDeserializer", "io.openmanufacturing.sds.aspectmodel.jackson.Base64BinaryDeserializer" )
-            .put( "enableJacksonAnnotations", config.doEnableJacksonAnnotations() )
+            .put( "codeGenerationConfig", config )
             .put( "element", element )
-            .put( "packageName", config.getPackageName() )
-            .put( "importTracker", importTracker )
             .put( "deconstructor", new StructuredValuePropertiesDeconstructor( element ) )
             .put( "valueInitializer", new ValueInitializer() )
             .put( "StringUtils", StringUtils.class )
@@ -99,8 +97,8 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
       final String generatedSource = new TemplateEngine( context ).apply( "java-pojo" );
       try {
          final Formatter formatter = new Formatter();
-         return new JavaArtifact( formatter.formatSource( generatedSource ), element.getName(),
-               config.getPackageName() );
+         String source = formatter.formatSource( generatedSource );
+         return new JavaArtifact( source, element.getName(), config.getPackageName() );
       } catch ( final FormatterException exception ) {
          throw new CodeGenerationException( generatedSource, exception );
       }

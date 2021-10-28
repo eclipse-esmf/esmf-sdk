@@ -9,9 +9,9 @@
 *#if ( $element.getDescription( $localeEn ) ) $element.getDescription( $localeEn )#end
 */
 #if ( $element.isCollectionAspect() )
-${util.determineCollectionAspectClassDefinition( $element, $importTracker )} {
+${util.determineCollectionAspectClassDefinition( $element, $codeGenerationConfig )} {
 #elseif ( $element.isComplex() )
-${util.generateAbstractEntityClassAnnotations( $element, $importTracker )}
+${util.generateAbstractEntityClassAnnotations( $element, $codeGenerationConfig )}
 ${util.determineComplexTypeClassDefinition( $element )}
 #else
 public class $element.getName() {

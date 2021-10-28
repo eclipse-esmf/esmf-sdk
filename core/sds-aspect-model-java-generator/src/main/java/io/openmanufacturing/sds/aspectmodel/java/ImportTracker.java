@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,22 +37,6 @@ public class ImportTracker {
    private final Set<String> usedStaticImports = new HashSet<>();
 
    /**
-    * Resolves and tracks data type of the given meta model property.
-    *
-    * @param metaProperty the meta model property to resolve the data type for
-    * @return the fully qualified class name (potentially including type parameters) of the resolved data type
-    */
-   public String getPropertyType( final Property metaProperty ) {
-      final String propertyType = AspectModelJavaUtil
-            .determinePropertyType( metaProperty.getCharacteristic(), false, this );
-      trackPotentiallyParameterizedType( propertyType );
-      if ( metaProperty.isOptional() ) {
-         return AspectModelJavaUtil.containerType( Optional.class, propertyType, Optional.empty() );
-      }
-      return propertyType;
-   }
-
-   /**
     * Extracts and tracks the container type without any type parameters.
     *
     * @param parameterizedContainerType the fully qualified class name including type parameters
@@ -63,7 +47,7 @@ public class ImportTracker {
       return parameterizedContainerType.substring( 0, parameterizedContainerType.indexOf( GENERICS_START ) );
    }
 
-   private void trackPotentiallyParameterizedType( final String potentiallyParameterizedType ) {
+   public void trackPotentiallyParameterizedType( final String potentiallyParameterizedType ) {
       if ( potentiallyParameterizedType.contains( GENERICS_START ) ) {
          final String rawContainerType = potentiallyParameterizedType.substring( 0,
                potentiallyParameterizedType.indexOf( GENERICS_START ) );
@@ -125,7 +109,7 @@ public class ImportTracker {
     */
    public List<String> getUsedImportsWithoutJavaLang() {
       return getUsedImports().stream().filter( usedImport -> !usedImport.startsWith( "java.lang." ) ).sorted()
-                             .collect( Collectors.toList() );
+            .collect( Collectors.toList() );
    }
 
    /**

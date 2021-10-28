@@ -1,27 +1,27 @@
 #parse( "java-static-class-property-lib.vm" )
 
 #macro( javaStaticClassBody )
-$importTracker.importExplicit( "${packageName}.${element.name}" )
+$codeGenerationConfig.getImportTracker().importExplicit( "${codeGenerationConfig.getPackageName()}.${element.getName()}" )
 /**
-* Generated class {@link Meta${element.name}}.
+* Generated class {@link Meta${element.getName()}}.
 */
-public class Meta${element.name} implements StaticMetaClass<${element.name}>, PropertyContainer {
+public class Meta${element.getName()} implements StaticMetaClass<${element.getName()}>, PropertyContainer {
 public static final String NAMESPACE = "${modelUrnPrefix}";
-public static final String MODEL_ELEMENT_URN = NAMESPACE + "${element.name}";
+public static final String MODEL_ELEMENT_URN = NAMESPACE + "${element.getName()}";
 
 private static String CHARACTERISTIC_NAMESPACE = "${characteristicBaseUrn}";
 
-#propertyDeclaration() Meta${element.name} INSTANCE = new Meta${element.name}();
+#propertyDeclaration() Meta${element.name} INSTANCE = new Meta${element.getName()}();
 
-#foreach( $property in $deconstructor.allProperties )
-    #javaStaticClassProperty( $property )
+#foreach( $property in $deconstructor.getAllProperties() )
+    #javaStaticClassProperty( $property $codeGenerationConfig )
 #end
-#foreach( $property in $element.properties )
-    #javaStaticClassProperty( $property )
+#foreach( $property in $element.getProperties() )
+    #javaStaticClassProperty( $property $codeGenerationConfig )
 #end
 
-    public Class<${element.name}> getModelClass() {
-        return ${element.name}.class;
+    public Class<${element.getName()}> getModelClass() {
+        return ${element.getName()}.class;
     }
 
     @Override
@@ -31,56 +31,56 @@ private static String CHARACTERISTIC_NAMESPACE = "${characteristicBaseUrn}";
 
     @Override
     public KnownVersion getMetaModelVersion() {
-        return KnownVersion.${element.metaModelVersion.toString()};
+        return KnownVersion.${element.getMetaModelVersion().toString()};
     }
 
     @Override
     public String getName() {
-        return "${element.name}";
+        return "${element.getName()}";
     }
 
     @Override
     public List<StaticProperty<?>> getProperties() {
        return Arrays.asList(
-        #foreach( $property in $element.properties )
-            $util.toConstant( $property.name )
+        #foreach( $property in $element.getProperties() )
+            $util.toConstant( $property.getName() )
             #if( $foreach.hasNext ), #end
         #end );
     }
 
-#if( !$element.preferredNames.isEmpty() )
-    $importTracker.importExplicit( $Map )
-    $importTracker.importExplicit( $Collections )
-    $importTracker.importExplicit( $Locale )
+#if( !$element.getPreferredNames().isEmpty() )
+    $codeGenerationConfig.getImportTracker().importExplicit( $Map )
+    $codeGenerationConfig.getImportTracker().importExplicit( $Collections )
+    $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
     @Override
     public Map<Locale, String> getPreferredNames() {
        Map<Locale, String> preferredNames = Collections.emptyMap();
-       #foreach( $locale in $element.preferredNames.keySet() )
-       preferredNames.put( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.preferredNames.get( $locale ) )" );
+       #foreach( $locale in $element.getPreferredNames().keySet() )
+       preferredNames.put( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.getPreferredNames().get( $locale ) )" );
        #end
        return preferredNames;
     }
 #end
 
 #if( !$element.descriptions.isEmpty() )
-   $importTracker.importExplicit( $Map )
-   $importTracker.importExplicit( $Collections )
-   $importTracker.importExplicit( $Locale )
+   $codeGenerationConfig.getImportTracker().importExplicit( $Map )
+   $codeGenerationConfig.getImportTracker().importExplicit( $Collections )
+   $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
    @Override
    public Map<Locale, String> getDescriptions() {
       Map<Locale, String> descriptions = Collections.emptyMap();
-       #foreach( $locale in $element.descriptions.keySet() )
-       descriptions.put( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.descriptions.get( $locale ) )" );
+       #foreach( $locale in $element.getDescriptions().keySet() )
+       descriptions.put( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.getDescriptions().get( $locale ) )" );
        #end
       return descriptions;
    }
 #end
 
-#if( !$element.see.isEmpty() )
+#if( !$element.getSee().isEmpty() )
     @Override
     public List<String> getSee() {
        return Arrays.asList(
-        #foreach( $see in $element.see )
+        #foreach( $see in $element.getSee() )
             $util.createLiteral( $see )
             #if( $foreach.hasNext ), #end
         #end

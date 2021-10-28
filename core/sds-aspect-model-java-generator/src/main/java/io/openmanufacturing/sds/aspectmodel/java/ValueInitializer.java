@@ -24,10 +24,9 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
-
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 
 /**
  * Provides the code needed in code generation to create an instance of the Java type corresponding to
@@ -93,15 +92,11 @@ public class ValueInitializer {
 
    public boolean needInitializationToConstructor( final List<DeconstructionSet> deconstructionSets ) {
       return deconstructionSets.stream().flatMap( deconstructionSet ->
-            deconstructionSet.getElementProperties().stream()
-                             .map( property ->
-                                   property.getDataType().map( type ->
-                                         DataType.getJavaTypeForMetaModelType(
-                                               ResourceFactory.createResource( type.getUrn() ),
-                                               property.getMetaModelVersion() ) ) ) )
-                               .anyMatch( dataType ->
-                                     dataType.map( type ->
-                                           type == XMLGregorianCalendar.class ).orElse( false ) );
+                  deconstructionSet.getElementProperties().stream().map( property ->
+                        property.getDataType().map( type ->
+                              DataType.getJavaTypeForMetaModelType( ResourceFactory.createResource( type.getUrn() ), property.getMetaModelVersion() ) ) ) )
+            .anyMatch( dataType ->
+                  dataType.map( type -> type == XMLGregorianCalendar.class ).orElse( false ) );
    }
 
    /**
@@ -117,7 +112,6 @@ public class ValueInitializer {
       if ( type.equals( bamm.curie() ) ) {
          return String.format( "new Curie( %s )", valueExpression );
       }
-      return INITIALIZERS.get( type )
-                         .apply( DataType.getJavaTypeForMetaModelType( type, metaModelVersion ), valueExpression );
+      return INITIALIZERS.get( type ).apply( DataType.getJavaTypeForMetaModelType( type, metaModelVersion ), valueExpression );
    }
 }

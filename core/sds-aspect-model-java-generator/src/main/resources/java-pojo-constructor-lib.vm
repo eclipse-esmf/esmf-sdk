@@ -1,13 +1,15 @@
-#macro( constructorContent $deconstructionSets $needInitializer $allProperties $enableJacksonAnnotations $elementProperties )
+#* @vtlvariable name="deconstructionSets" type="java.util.List<io.openmanufacturing.sds.aspectmodel.java.DeconstructionSet>" *#
+# Note that in this macro $enableJacksonAnnotations overrides the value given in $codeGenerationConfig
+#macro( constructorContent $deconstructionSets $needInitializer $allProperties $codeGenerationConfig $enableJacksonAnnotations $elementProperties )
     #if( $enableJacksonAnnotations )
-        $importTracker.importExplicit( $JsonProperty )
-        $importTracker.importExplicit( $JsonCreator )
+        $codeGenerationConfig.getImportTracker().importExplicit( $JsonProperty )
+        $codeGenerationConfig.getImportTracker().importExplicit( $JsonCreator )
         @JsonCreator
     #end
     public ${element.name}(
     #foreach( $property in $allProperties )
 		#if( $enableJacksonAnnotations ) @JsonProperty( value = "$property.getPayloadName()" ) #end
-        $util.getPropertyType( $property, false, $importTracker ) $property.getPayloadName()
+        $util.getPropertyType( $property, false, $codeGenerationConfig ) $property.getPayloadName()
         #if( $foreach.hasNext ), #end
     #end
     ) #if( $needInitializer ) throws DatatypeConfigurationException #end {
@@ -26,12 +28,12 @@
     #end
     #foreach( $deconstructionSet in $deconstructionSets )
     {
-        final Pattern pattern = Pattern.compile( "${deconstructionSet.deconstructionRule.replaceAll("\\", "\\\\")}" );
-        final Matcher matcher = pattern.matcher( ${deconstructionSet.originalProperty.name}.toString() );
+        final Pattern pattern = Pattern.compile( "${deconstructionSet.getDeconstructionRule().replaceAll("\\", "\\\\")}" );
+        final Matcher matcher = pattern.matcher( ${deconstructionSet.getOriginalProperty().getName()}.toString() );
         if ( matcher.find() ) {
-        #foreach( $property in $deconstructionSet.elementProperties )
+        #foreach( $property in $deconstructionSet.getElementProperties() )
             #set( $value = "matcher.group( ${foreach.count} )" )
-            this.${property.name} = $util.generateInitializer( $property, $value, $importTracker, $valueInitializer );
+            this.${property.name} = $util.generateInitializer( $property, $value, $codeGenerationConfig, $valueInitializer );
         #end
         }
     }
@@ -41,15 +43,15 @@
 
 #macro( javaPojoConstructor )
 #if ( $deconstructor.isApplicable() )
-    $importTracker.importExplicit( $Matcher )
-    $importTracker.importExplicit( $Pattern )
+    $codeGenerationConfig.getImportTracker().importExplicit( $Matcher )
+    $codeGenerationConfig.getImportTracker().importExplicit( $Pattern )
 #end
-#set( $deconstructionSets = $deconstructor.deconstructionSets )
+#set( $deconstructionSets = $deconstructor.getDeconstructionSets() )
 #set( $needInitializer = $valueInitializer.needInitializationToConstructor( $deconstructionSets ) )
 #if ( $needInitializer )
-    $importTracker.importExplicit( $DatatypeConfigurationException )
-    $importTracker.importExplicit( $DatatypeConstants )
-    $importTracker.importExplicit( $DatatypeFactory )
+    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeConfigurationException )
+    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeConstants )
+    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeFactory )
 #end
 #if ( $element.isComplex() && $element.getExtends().isPresent() )
 	#set( $allPropertiesInPayload = $util.getAllPropertiesInPayload( $element ) )
@@ -63,9 +65,9 @@
 	#set( $elementProperties = $allProperties )
 #end
 #if ( $util.anyPropertyNotInPayload( $element ) )
-    #constructorContent( $deconstructionSets $needInitializer $allProperties false $elementProperties )
-    #constructorContent( $deconstructionSets $needInitializer $allPropertiesInPayload $enableJacksonAnnotations $elementPropertiesInPayload )
+    #constructorContent( $deconstructionSets $needInitializer $allProperties $codeGenerationConfig false $elementProperties )
+    #constructorContent( $deconstructionSets $needInitializer $allPropertiesInPayload $codeGenerationConfig $codeGenerationConfig.doEnableJacksonAnnotations() $elementPropertiesInPayload )
 #else
-    #constructorContent( $deconstructionSets $needInitializer $allProperties $enableJacksonAnnotations $elementProperties )
+    #constructorContent( $deconstructionSets $needInitializer $allProperties $codeGenerationConfig $codeGenerationConfig.doEnableJacksonAnnotations() $elementProperties )
 #end
 #end
