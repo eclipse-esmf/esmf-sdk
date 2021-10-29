@@ -27,13 +27,12 @@ For more information on SPARQL construct queries, Graphviz and Mustache see:
 - [SPARQL Construct](https://www.w3.org/TR/rdf-sparql-query/#construct)
 - [Graphviz](https://www.graphviz.org/)
 - [Mustache](https://mustache.github.io/)
- 
+
 ## Document Generator
 
 The document generator creates an HTML page for an Aspect Model. The page includes the diagram for the Aspect Model.
-
-Embedding font and images for making the html page to run standalone without dependencies to the internet 
-the following online service was used: https://www.font-converter.net/en/css-embedded-font-base64
+The HTML page embedding all required styles, fonts and images for making the HTML page to run standalone without
+dependencies to the internet.
 
 ### How it works
 
@@ -41,21 +40,39 @@ For the generation the aspect java meta model is used.
 
 1. The Aspect Model definition file (.ttl) is loaded
 2. The aspect meta model is instantiated with the contents of the loaded aspect meta model definition
-3. The instantiated aspect meta model is used to generate Asciidoc using the `AspectModelAsciidoc.xtend` XTend template
-4. The resulting Asciidoc is converted into an HTML file using AsciidoctorJ
-5. The diagram for the Aspect Model is generated in SVG format and embedded into the HTML as a Base64 encoded String
+3. The instantiated aspect meta model is used to generate the HTML page using Velocity templates
+4. The diagram for the Aspect Model is generated in SVG format and embedded into the HTML as a Base64 encoded String
+5. The required JavaScript, styles and font will be embedded into the HTML as a String
 6. The HTML is written to the specified location
 
 The HTML page is generated for each language which is present in the Aspect Model.
- 
+
+### Minimize Tailwind for production
+
+The HTML page layout is based on Tailwind CSS. To minimize the general CSS provided via [CDN](https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css)
+using PurgeCSS (see [Build for production](https://tailwindcss.com/docs/installation#building-for-production)).
+
+#### How it works
+
+Precondition: PurgeCSS is installed following the [documentation](https://purgecss.com/CLI.html#installation).
+
+1. Generate with the CLI an HTML page first
+2. Update the purgecss.config.js and enter the path to the generated HTML page
+3. Run PurgeCSS 'purgecss -c purgecss.config.js'
+
+For more information on Velocity see:
+- [Velocity](https://velocity.apache.org/engine/1.7/user-guide.html)
+- [PurgeCSS](https://purgecss.com)
+- [Tailwind](https://tailwindcss.com/docs)
+
  ## JSON Generator
- 
+
  The JSON generator creates a sample JSON payload for an Aspect Model.
- 
+
  ### How it works
- 
+
  For the generation the aspect java meta model is used.
- 
+
  1. The Aspect Model definition file (.ttl) is loaded
  2. The aspect meta model is instantiated with the contents of the loaded aspect meta model definition
  3. The instantiated aspect meta model is used to generate the JSON payload by iterating the elements of the aspect meta model and extracting the given example values for the properties. If no example value is given a random value is generated

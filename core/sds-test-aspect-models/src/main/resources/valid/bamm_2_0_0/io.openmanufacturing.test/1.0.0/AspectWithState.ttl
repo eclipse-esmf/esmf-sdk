@@ -27,4 +27,4 @@
    bamm:name "TestState" ;
    bamm:dataType xsd:string ;
    bamm-c:values ( "Success" "Error" "In Progress" ) ;
-   bamm-c:defaultValue "In Progress" ;
+   bamm-c:defaultValue "In Progress" .

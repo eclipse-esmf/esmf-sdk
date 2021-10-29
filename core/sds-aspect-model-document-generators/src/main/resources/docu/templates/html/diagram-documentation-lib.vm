@@ -1,0 +1,23 @@
+#**
+ ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
+
+#macro( diagram $i18n)
+    #title( $i18n.getText("docu.label.overview") "overview" "2" )
+    <div class="flex py-10">
+        <div class="w-full h-full shadow-lg overflow-hidden p-4">
+            <div id="aspect-model-diagram">
+                <img src="diagram_svg_placeholder" alt="Aspect Model Diagram">
+            </div>
+        </div>
+    </div>
+#end

@@ -13,7 +13,7 @@
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#>
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithOperation a bamm:Aspect ;
    bamm:name "AspectWithOperation" ;
@@ -32,12 +32,11 @@
 :output a bamm:Property ;
    bamm:name "output" ;
    bamm:characteristic bamm-c:Text .
-   
-   
+
 :input a bamm:Property ;
    bamm:name "input" ;
    bamm:characteristic bamm-c:Text .
-   
+
 :testOperationTwo a bamm:Operation ;
    bamm:name "testOperationTwo" ;
    bamm:preferredName "Test Operation"@en ;

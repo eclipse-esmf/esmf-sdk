@@ -16,6 +16,9 @@ where options are:
 --generate-documentation, -html
   Generate HTML documentation for an Aspect Model
   Default: false
+--html-custom-css-file, -hccf
+  CSS file with custom styles to be included in the generated HTML documentation
+  Default: OMP Style
 --generate-dot-diagram, -dot
   Generate DOT (graphviz) diagram for an Aspect Model
   Default: false

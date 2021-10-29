@@ -74,10 +74,6 @@
             <artifactId>graphviz-java</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.asciidoctor</groupId>
-            <artifactId>asciidoctorj</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.github.curious-odd-man</groupId>
             <artifactId>rgxgen</artifactId>
         </dependency>

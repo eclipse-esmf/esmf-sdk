@@ -13,33 +13,19 @@
 
 package io.openmanufacturing.sds.aspectmodel.generator.docu;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import io.openmanufacturing.sds.aspectmodel.generator.AspectModelUtil;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
@@ -54,9 +40,9 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
          writer.flush();
       }
       assertThat( htmlResult ).isNotEmpty();
-      assertThat( htmlResult ).contains( "<h1>Aspect Model Test Aspect</h1>" );
-      assertThat( htmlResult ).contains( "<h3 id=\"_test_property\">Test Property</h3>" );
-      assertThat( htmlResult ).contains( "<h4 id=\"_entity_property\">Entity Property</h4>" );
+      assertThat( htmlResult ).contains( "<h1 id=\"AspectWithEntityCollection\">Aspect Model Test Aspect</h1>" );
+      assertThat( htmlResult ).contains( "<h3 id=\"testProperty-property\">Test Property</h3>" );
+      assertThat( htmlResult ).contains( "<h5 id=\"entityProperty-property\">Entity Property</h5>" );
    }
 
    @ParameterizedTest
@@ -71,8 +57,8 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
          writer.flush();
       }
       assertThat( htmlResult ).isNotEmpty();
-      assertThat( htmlResult ).contains( "<h1>Aspect Model AspectWithCollectionOfSimpleType</h1>" );
-      assertThat( htmlResult ).contains( "<h3 id=\"_testlist\">testList</h3>" );
+      assertThat( htmlResult ).contains( "<h1 id=\"AspectWithCollectionOfSimpleType\">Aspect Model AspectWithCollectionOfSimpleType</h1>" );
+      assertThat( htmlResult ).contains( "<h3 id=\"testList-property\">testList</h3>" );
    }
 
    @ParameterizedTest
@@ -122,10 +108,13 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testDocInfosAreDisplayed( final KnownVersion metaModelVersion ) throws IOException {
       assertThat( generateHtmlDocumentation( TestAspect.ASPECT_WITH_HTML_TAGS, metaModelVersion ) )
-            .contains( ".iv-fullscreen" )
-            .contains( "aspect_model_diagram_img" )
-            .contains( "<script>!function(e,t)" )
-            .contains( "normalize.css v2.1.2" );
+            .contains( ".toc-list" )
+            .contains( "aspect-model-diagram" )
+            .contains( "function toggleLicenseDetails()" )
+            .contains( "MIT License | https://github.com/anvaka/panzoom/blob/master/LICENSE" )
+            .contains( "MIT License | https://github.com/tscanlin/tocbot/blob/master/LICENSE" )
+            .contains( "tailwindcss v2.2.7 | MIT License | https://tailwindcss.com" )
+            .contains( "enumerable" );
    }
 
    @ParameterizedTest
@@ -177,7 +166,7 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
             versionedModel );
 
       try ( final ByteArrayOutputStream result = new ByteArrayOutputStream() ) {
-         aspectModelDocumentationGenerator.generateHtml( name -> result );
+         aspectModelDocumentationGenerator.generate( name -> result, Collections.EMPTY_MAP);
          return result.toString( StandardCharsets.UTF_8.name() );
       }
    }

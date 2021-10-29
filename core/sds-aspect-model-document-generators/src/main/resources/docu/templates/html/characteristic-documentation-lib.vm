@@ -1,0 +1,378 @@
+#**
+ ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
+#macro( characteristic $characteristic $aspectModelHelper $i18n $weight)
+    #set( $characteristicClass = $aspectModelHelper.getClassForObject($characteristic).getSimpleName())
+    #set( $macroToCall = '#' + $characteristicClass + '($characteristic $aspectModelHelper $i18n $weight)')
+    <div class="table w-full">
+        #evaluate($!macroToCall)
+        #if(!$characteristic.getSee().isEmpty())
+            <div class="table-row-group">
+                <div class="table-cell pb-3 col-span-2">
+                    $i18n.getText("docu.label.see")
+                    #list( $characteristic.getSee() )
+                </div>
+            </div>
+        #end
+        #if($characteristic.getDataType().isPresent() && !$characteristicClass.equals("Either") )
+            <div class="table-row-group">
+                <div class="table-cell pb-3 col-span-2">
+                    $i18n.getText("docu.label.type") #AnkerLinkToType( $characteristic )
+                </div>
+            </div>
+        #end
+    </div>
+#end
+
+#macro( AnkerLinkToType $characteristic)
+    #if($characteristic.getDataType().isPresent() )
+        #if($characteristic.getDataType().get().isComplex())
+            <a href="#$aspectModelHelper.getNameFromURN($characteristic.getDataType().get().getUrn())-entity"
+        #else
+            <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/v$aspectModelHelper.getModelVersion().getVersion().toString()/datatypes.html" target="_blank"
+        #end
+        class="break-all underline">$characteristic.getDataType().get().getUrn()</a>
+    #end
+#end
+
+#*
+-------------------------------------------------------------------------------------
+Characteristic specific macros will be joined together in the main macro (see above)
+-------------------------------------------------------------------------------------
+*#
+
+#* -- for Scalar ----------------------------------------------------------------- *#
+#macro( Scalar $scalar $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3">$i18n.getText("docu.label.urn")</div>
+        <div class="table-cell pb-3">$scalar.getUrn()</div>
+    </div>
+#end
+
+#* -- for Entity ----------------------------------------------------------------- *#
+#macro( Entity $entity $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">SingleEntity</div>
+    </div>
+#end
+
+#* -- for Characteristic ---------------------------------------------------------- *#
+#macro( Characteristic $characteristic $aspectModelHelper $i18n $weight)
+    #if($characteristic.getDataType().get().isComplex() == true)
+        #set($entity = $!aspectModelUtil.getComplexTypeOfCharacteristic($characteristic))
+        #Entity( $entity $aspectModelHelper $i18n $weight)
+    #end
+#end
+
+#* -- for SingleEntity ----------------------------------------------------------- *#
+#macro( SingleEntity $singleEntity $aspectModelHelper $i18n $weight)
+    #set( $entities = $aspectModelHelper.sortEntitiesByPreferredName( $aspectModelHelper.getEntities( $aspectModel ), $i18n.getLocale()))
+    #set( $entity = $aspectModelHelper.resolveEntity( $singleEntity, $entities ))
+    #if($entity)
+        #Entity( $entity $aspectModelHelper $i18n $weight)
+    #end
+#end
+
+#* -- for Text ------------------------------------------------------------------- *#
+#macro( Text $text $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3">Text</div>
+    </div>
+#end
+
+#* -- for List ------------------------------------------------------------------- *#
+#macro( List $list $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">List</div>
+    </div>
+    #RenderCollectionDetails( $list $aspectModelHelper $i18n)
+#end
+
+#* -- for Set ------------------------------------------------------------------- *#
+#macro( Set $list $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">Set</div>
+    </div>
+    #RenderCollectionDetails( $list $aspectModelHelper $i18n)
+#end
+
+#* -- for SortedSet ------------------------------------------------------------------- *#
+#macro( SortedSet $list $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3">SortedSet</div>
+    </div>
+    #RenderCollectionDetails( $list $aspectModelHelper $i18n)
+#end
+
+#* -- for Collection ------------------------------------------------------------- *#
+#macro( Collection $list $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">Collection</div>
+    </div>
+    #RenderCollectionDetails( $list $aspectModelHelper $i18n)
+#end
+
+#macro( RenderCollectionDetails $collection $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        #if($collection.isOrdered())
+            <div class="table-cell pb-3 col-span-2">$i18n.getText("docu.label.order")</div>
+        #else
+            <div class="table-cell pb-3 col-span-2">$i18n.getText("docu.label.no-order")</div>
+        #end
+    </div>
+    <div class="table-row-group">
+        #if($collection.isAllowDuplicates())
+            <div class="table-cell pb-3 col-span-2">$i18n.getText("docu.label.duplicates")</div>
+        #else
+            <div class="table-cell pb-3 col-span-2">$i18n.getText("docu.label.no-duplicates")</div>
+        #end
+    </div>
+#end
+
+#* -- for Enummeration ----------------------------------------------------------- *#
+#macro( Enumeration $enumeration $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">Enumeration</div>
+    </div>
+    <div class="table-row-group">
+        <div class="table-cellcol-span-2">$i18n.getText("docu.label.values")</div>
+    </div>
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">
+            <ul class="reset-all-styles enum-values">
+                #foreach( $value in $enumeration.getValues() )
+                    <li>$value</li>
+                #end
+            </ul>
+        </div>
+    </div>
+#end
+
+#* -- for StructuredValue -------------------------------------------------------- *#
+#macro( StructuredValue $structuredValue $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">StructuredValue</div>
+    </div>
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">
+            $i18n.getText("docu.label.deconstruction-rule") $structuredValue.getDeconstructionRule()
+        </div>
+    </div>
+    <div class="table-row-group">
+        <div class="table-cell col-span-2">$i18n.getText("docu.label.elements")</div>
+    </div>
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">
+            <ul class="reset-all-styles m-0 structured-value-elements">
+                #foreach($element in $structuredValue.getElements())
+                    #if($element)
+                        #if($aspectModelHelper.isProperty($element))
+                            <li>#property($element $aspectModelHelper $i18n $aspectModelHelper.increment($aspectModelHelper.increment($weight)))</li>
+                        #else
+                            <li>$element</li>
+                        #end
+                    #end
+                #end
+            </ul>
+        </div>
+    </div>
+#end
+
+#* -- for Either ----------------------------------------------------------------- *#
+#macro( Either $either $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">Either</div>
+    </div>
+    <div class="table-row-group">
+        <div class="table-row-group">
+            <ul class="reset-all-styles m-0 either-left-right">
+                <li>
+                    <div class="table w-full">
+                        <div class="table-row-group">
+                            <div class="table-cell pb-3 col-span-2">$i18n.getText("docu.label.left")</div>
+                        </div>
+                        <div class="table-row-group">
+                            <div class="table-cell pb-3 col-span-2">
+                                <div class="table w-full">
+                                    <div class="table-row-group">
+                                        <div class="table-cell pb-3">#characteristic($either.getLeft() $aspectModelHelper $i18n $weight)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="table w-full">
+                        <div class="table-row-group">
+                            <div class="table-cell pb-3 col-span-2">$i18n.getText("docu.label.right")</div>
+                        </div>
+                        <div class="table-row-group ">
+                            <div class="table-cell pb-3 col-span-2">
+                                <div class="table w-full">
+                                    <div class="table-row-group">
+                                        <div class="table-cell pb-3">#characteristic($either.getRight() $aspectModelHelper $i18n $weight)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+#end
+
+#* -- for State ------------------------------------------------------------------- *#
+#macro( State $state $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">State</div>
+    </div>
+    <div class="table-row-group">
+        <div class="table-row-grouP">
+            <div class="table-cell col-span-2">$i18n.getText("docu.label.values")</div>
+        </div>
+        <div class="table-row-group">
+            <div class="table-cell pb-3 col-span-2">
+                <ul class="reset-all-styles m-0 state-values">
+                    #foreach($value in $state.getValues())
+                        #if($value.equals($state.getDefaultValue()))
+                            <li><span class="font-bold">$value</span></li>
+                        #else
+                            <li>$value</li>
+                        #end
+                    #end
+                </ul>
+            </div>
+        </div>
+    </div>
+#end
+
+#* -- for Code -------------------------------------------------------------------- *#
+#macro( Code $code $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">Code</div>
+    </div>
+#end
+
+#* -- for Duration ---------------------------------------------------------------- *#
+#macro( Duration $duration $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">Duration</div>
+    </div>
+    #if($duration.getDescription($i18n.getLocale()))
+        <div class="table-row-group">
+            <div class="table-cell pb-3 col-span-2">$duration.getDescription($i18n.getLocale())</div>
+        </div>
+    #end
+    #Unit($!duration.getUnit().get() $aspectModelHelper $i18n)
+#end
+
+#* -- for Quantifiable ------------------------------------------------------------- *#
+#macro( Quantifiable $quantifiable $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">Quantifiable</div>
+    </div>
+    #Duration( $quantifiable $aspectModelHelper $i18n)
+#end
+
+#* -- for Trait ------------------------------------------------------------- *#
+#macro( Trait $trait $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">Trait</div>
+    </div>
+#end
+
+#* -- for TimeSeries --------------------------------------------------------------- *#
+#macro( TimeSeries $timeSeries $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">TimeSeries</div>
+    </div>
+    <div class="table-row-group">
+        <div class="table-cell pb-3">$i18n.getText("docu.label.characteristic-type")</div>
+        <div class="table-cell pb-3">$!aspectModelUtil.getClassForObject($characteristic).getSimpleName()</div>
+    </div>
+#end
+
+#* -- for Measurement -------------------------------------------------------------- *#
+#macro(Measurement $measurement $aspectModelHelper $i18n $weight)
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">Measurement</div>
+    </div>
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">$!measurement.getDescription($i18n.getLocale())</div>
+    </div>
+    #Unit($!measurement.getUnit().get() $aspectModelHelper $i18n)
+#end
+
+#* -- for Unit --------------------------------------------------------------------- *#
+#macro(Unit $unit $aspectModelHelper $i18n)
+    <div class="table-row-group">
+        <div class="table-cell col-span-2">$i18n.getText("docu.label.unit")</div>
+    </div>
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2">
+            <ul class="reset-all-styles m-0 unit-details">
+                <li>
+                    $unit.getPreferredName($i18n.getLocale())
+                </li>
+                #if($unit.getSymbol().isPresent())
+                    <li>
+                        $i18n.getText("docu.label.symbol") $!unit.getSymbol().get()
+                    </li>
+                #end
+                #if($unit.getCode().isPresent())
+                    <li>
+                        $i18n.getText("docu.label.code") $!unit.getCode().get()
+                    </li>
+                #end
+                #if($unit.getConversionFactor().isPresent())
+                    <li>
+                        $i18n.getText("docu.label.conversion-factor") $!unit.getConversionFactor().get()
+                    </li>
+                #end
+                #if($unit.getQuantityKinds().isPresent())
+                    <li>
+                        <div class="table w-full">
+                            <div class="table-row-group">
+                                <div class="table-cell col-span-2">
+                                    $i18n.getText("docu.label.quantity-kinds")
+                                </div>
+                            </div>
+                            <div class="table-row-group">
+                                <div class="table-cell pb-3 col-span-2">
+                                    <ul class="reset-all-styles unit-quantity-kinds">
+                                        #foreach($quantityKind in $unit.getQuantityKinds())
+                                            <li>$quantityKind.getLabel()</li>
+                                        #end
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                #end
+                #if(!$unit.getSee().isEmpty())
+                    <li>
+                        <div class="table w-full">
+                            <div class="table-row-group">
+                                <div class="table-cell pb-3 col-span-2">
+                                    $i18n.getText("docu.label.see")
+                                    #list( $unit.getSee() )
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                #end
+            </ul>
+        </div>
+    </div>
+#end
