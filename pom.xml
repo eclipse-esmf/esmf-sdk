@@ -298,7 +298,7 @@
             </dependency>
             <dependency>
                 <groupId>guru.nidi</groupId>
-                <artifactId>graphviz-java</artifactId>
+                <artifactId>graphviz-java-all-j2v8</artifactId>
                 <version>${graphviz-version}</version>
             </dependency>
             <dependency>
