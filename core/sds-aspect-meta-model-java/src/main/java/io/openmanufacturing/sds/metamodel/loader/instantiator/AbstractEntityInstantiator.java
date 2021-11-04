@@ -42,7 +42,7 @@ public class AbstractEntityInstantiator extends Instantiator<AbstractEntity> {
    }
 
    /**
-    * Initializes an {@link DefaultAbstractEntity}.
+    * Initializes a {@link DefaultAbstractEntity}.
     * Since {@link ComplexType}s have a reference to the element which is extended by a particular {@link ComplexType},
     * and the {@link AbstractEntity} has a list of references to all elements which extend the {@link AbstractEntity},
     * a circular dependency exists between the {@link ComplexType} and the {@link AbstractEntity}.

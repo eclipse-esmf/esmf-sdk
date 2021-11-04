@@ -134,8 +134,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
             .put( "Arrays", java.util.Arrays.class )
             .put( "BoundDefinition", BoundDefinition.class )
-            .put( "characteristicBaseUrn",
-                  matchHash.trimTrailingFrom( new BAMMC( element.getMetaModelVersion() ).getNamespace() ) )
+            .put( "characteristicBaseUrn", matchHash.trimTrailingFrom( new BAMMC( element.getMetaModelVersion() ).getNamespace() ) )
             .put( "Code", Code.class )
             .put( "Collection", Collection.class )
             .put( "Collections", Collections.class )
@@ -184,8 +183,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "Map", Map.class )
             .put( "Measurement", Measurement.class )
             .put( "modelUrnPrefix", modelUrnPrefix )
-            .put( "nonNegativeInteger",
-                  new DefaultScalar( XSD.nonNegativeInteger.getURI(), element.getMetaModelVersion() ) )
+            .put( "nonNegativeInteger", new DefaultScalar( XSD.nonNegativeInteger.getURI(), element.getMetaModelVersion() ) )
             .put( "packageName", config.getPackageName() )
             .put( "Quantifiable", Quantifiable.class )
             .put( "RangeConstraint", RangeConstraint.class )

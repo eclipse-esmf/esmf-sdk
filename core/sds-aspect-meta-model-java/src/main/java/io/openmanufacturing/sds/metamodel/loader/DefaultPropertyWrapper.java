@@ -16,7 +16,6 @@ package io.openmanufacturing.sds.metamodel.loader;
 import java.util.Objects;
 import java.util.Optional;
 
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;

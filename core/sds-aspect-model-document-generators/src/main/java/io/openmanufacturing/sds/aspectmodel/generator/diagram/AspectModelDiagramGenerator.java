@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -115,23 +115,21 @@ public class AspectModelDiagramGenerator {
             "characteristic-constraint-edges"
       );
 
-      final ImmutableList<String> queryFilesForBammVersionsAsOf2_0_0 = ImmutableList.of( "abstractentity",
-            "entity-abstractentity-edges" );
+      final ImmutableList<String> queryFilesForBammVersionsAsOf2_0_0 = ImmutableList.of( "abstractentity", "entity-abstractentity-edges" );
 
       aspectToBoxmodelQueryFiles.put( KnownVersion.BAMM_1_0_0,
             ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
-                         .build() );
+                  .build() );
 
       aspectToBoxmodelQueryFiles.put( KnownVersion.BAMM_2_0_0,
             ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
-                         .addAll( queryFilesForBammVersionsAsOf2_0_0 )
-                         .build() );
+                  .addAll( queryFilesForBammVersionsAsOf2_0_0 )
+                  .build() );
 
       ARQ.init();
       model = versionedModel.getModel();
       bammVersion = KnownVersion.fromVersionString( versionedModel.getVersion().toString() )
-                                .orElseThrow( () -> new UnsupportedVersionException(
-                                      versionedModel.getVersion() ) );
+            .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getVersion() ) );
       boxmodelToDotQuery = QueryFactory.create( getInputStreamAsString( "boxmodel2dot.sparql" ) );
       boxModelNamespace = new BoxModel( bammVersion );
    }
@@ -161,9 +159,9 @@ public class AspectModelDiagramGenerator {
    String executeQuery( final Model model, final Query query ) {
       try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model ) ) {
          return StreamSupport.stream( ((Iterable<QuerySolution>) (qexec::execSelect)).spliterator(), false )
-                             .map( solution -> solution.getLiteral( "dotStatement" ) )
-                             .map( Literal::toString )
-                             .collect( Collectors.joining( "\n" ) );
+               .map( solution -> solution.getLiteral( "dotStatement" ) )
+               .map( Literal::toString )
+               .collect( Collectors.joining( "\n" ) );
       }
    }
 
@@ -213,7 +211,7 @@ public class AspectModelDiagramGenerator {
                + "}\n"
                + "</style>";
          final String result = svgOutput.toString( StandardCharsets.UTF_8.name() )
-                                        .replaceFirst( ">", ">" + css );
+               .replaceFirst( ">", ">" + css );
          output.write( result.getBytes( StandardCharsets.UTF_8.name() ) );
       }
    }
@@ -222,16 +220,14 @@ public class AspectModelDiagramGenerator {
       final Property text = boxModelNamespace.text();
       final Iterable<Statement> statementIterable = () -> model.listStatements( null, text, (RDFNode) null );
       StreamSupport.stream( statementIterable.spliterator(), false ).collect( Collectors.toList() )
-                   .forEach( oldStatement -> {
-                      final String newValue = WordUtils
-                            .wrap( oldStatement.getLiteral().getString(), 60, "\\l   ", false );
-                      final String escapedValue = StringEscapeUtils.escapeHtml4( newValue );
-                      final Statement newStatement = ResourceFactory
-                            .createStatement( oldStatement.getSubject(), oldStatement.getPredicate(),
-                                  ResourceFactory.createPlainLiteral( escapedValue ) );
-                      model.remove( oldStatement );
-                      model.add( newStatement );
-                   } );
+            .forEach( oldStatement -> {
+               final String newValue = WordUtils.wrap( oldStatement.getLiteral().getString(), 60, "\\l   ", false );
+               final String escapedValue = StringEscapeUtils.escapeHtml4( newValue );
+               final Statement newStatement = ResourceFactory.createStatement( oldStatement.getSubject(), oldStatement.getPredicate(),
+                     ResourceFactory.createPlainLiteral( escapedValue ) );
+               model.remove( oldStatement );
+               model.add( newStatement );
+            } );
    }
 
    /**
@@ -242,31 +238,31 @@ public class AspectModelDiagramGenerator {
    private String generateDot( final Locale language ) {
       final Model targetModel = ModelFactory.createDefaultModel();
       aspectToBoxmodelQueryFiles.get( bammVersion )
-                                .stream()
-                                .map( queryName -> getInputStreamAsString( queryName + "2boxmodel.sparql" ) )
-                                .map( queryString -> queryString
-                                      .replace( "\"en\"", "\"" + language.toLanguageTag() + "\"" ) )
-                                .map( QueryFactory::create )
-                                .forEach( query -> {
-                                   try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model ) ) {
-                                      qexec.execConstruct( targetModel );
-                                   }
-                                } );
+            .stream()
+            .map( queryName -> getInputStreamAsString( queryName + "2boxmodel.sparql" ) )
+            .map( queryString -> queryString
+                  .replace( "\"en\"", "\"" + language.toLanguageTag() + "\"" ) )
+            .map( QueryFactory::create )
+            .forEach( query -> {
+               try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model ) ) {
+                  qexec.execConstruct( targetModel );
+               }
+            } );
 
       breakLongLinesAndEscapeTexts( targetModel );
 
       final String queryResult = executeQuery( targetModel, boxmodelToDotQuery );
       final String template = getInputStreamAsString( "aspect2dot.mustache" );
       return template.replace( "{{&statements}}", queryResult )
-                     .replace( "{{&fontname}}", FONT_NAME )
-                     .replace( "\\\"", "\"" );
+            .replace( "{{&fontname}}", FONT_NAME )
+            .replace( "\\\"", "\"" );
    }
 
    private String getAspectName() {
       final BAMM bamm = new BAMM( bammVersion );
       final Resource aspect = model.listStatements( null, RDF.type, bamm.Aspect() ).nextStatement().getSubject();
       return model.listStatements( aspect, bamm.name(), (RDFNode) null ).nextStatement().getObject().asLiteral()
-                  .getString();
+            .getString();
    }
 
    /**
@@ -282,15 +278,15 @@ public class AspectModelDiagramGenerator {
       final String dotResult = generateDot( language );
 
       switch ( outputFormat ) {
-         case DOT:
-            out.write( dotResult.getBytes( StandardCharsets.UTF_8 ) );
-            break;
-         case PNG:
-            generatePng( dotResult, out );
-            break;
-         case SVG:
-            generateSvg( dotResult, out );
-            break;
+      case DOT:
+         out.write( dotResult.getBytes( StandardCharsets.UTF_8 ) );
+         break;
+      case PNG:
+         generatePng( dotResult, out );
+         break;
+      case SVG:
+         generateSvg( dotResult, out );
+         break;
       }
    }
 
@@ -334,15 +330,15 @@ public class AspectModelDiagramGenerator {
          try ( final OutputStream outputStream = nameMapper
                .apply( format.getArtifactFilename( aspectName, language ) ) ) {
             switch ( format ) {
-               case DOT:
-                  outputStream.write( dotResult.getBytes( StandardCharsets.UTF_8.name() ) );
-                  break;
-               case PNG:
-                  generatePng( dotResult, outputStream );
-                  break;
-               case SVG:
-                  generateSvg( dotResult, outputStream );
-                  break;
+            case DOT:
+               outputStream.write( dotResult.getBytes( StandardCharsets.UTF_8.name() ) );
+               break;
+            case PNG:
+               generatePng( dotResult, outputStream );
+               break;
+            case SVG:
+               generateSvg( dotResult, outputStream );
+               break;
             }
          }
       }
@@ -358,8 +354,7 @@ public class AspectModelDiagramGenerator {
     * @param nameMapper The callback function that maps diagram artifact names to OutputStreams
     * @throws IOException if a write error occurs
     */
-   public void generateDiagrams( final Set<Format> targetFormats, final Function<String, OutputStream> nameMapper )
-         throws IOException {
+   public void generateDiagrams( final Set<Format> targetFormats, final Function<String, OutputStream> nameMapper ) throws IOException {
       for ( final Locale language : LanguageCollector.collectUsedLanguages( model ) ) {
          generateDiagrams( targetFormats, language, nameMapper );
       }

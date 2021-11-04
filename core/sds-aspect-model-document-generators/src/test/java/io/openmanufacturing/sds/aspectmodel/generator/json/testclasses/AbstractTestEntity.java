@@ -33,8 +33,7 @@ public abstract class AbstractTestEntity {
    private final BigInteger abstractTestProperty;
 
    @JsonCreator
-   public AbstractTestEntity(
-         @JsonProperty( value = "abstractTestProperty" ) final BigInteger abstractTestProperty ) {
+   public AbstractTestEntity( @JsonProperty( value = "abstractTestProperty" ) final BigInteger abstractTestProperty ) {
       super();
       this.abstractTestProperty = abstractTestProperty;
    }

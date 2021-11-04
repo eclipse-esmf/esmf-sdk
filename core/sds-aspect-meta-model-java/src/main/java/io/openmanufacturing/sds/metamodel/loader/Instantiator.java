@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -35,7 +35,6 @@ import org.apache.jena.vocabulary.RDF;
 import com.google.common.collect.ImmutableList;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
@@ -76,15 +75,13 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
       return MetaModelBaseAttributes.fromMetaModelElement( metaModelVersion, resource, model, bamm );
    }
 
-   protected Optional<Statement> optionalPropertyValue( final Resource subject,
-      final org.apache.jena.rdf.model.Property type ) {
+   protected Optional<Statement> optionalPropertyValue( final Resource subject, final org.apache.jena.rdf.model.Property type ) {
       return modelElementFactory.propertyValue( subject, type );
    }
 
    protected Statement propertyValue( final Resource subject,
-      final org.apache.jena.rdf.model.Property type ) {
-      return optionalPropertyValue( subject, type )
-         .orElseThrow( () -> new AspectLoadingException( "Missing Property " + type + " on " + subject ) );
+         final org.apache.jena.rdf.model.Property type ) {
+      return optionalPropertyValue( subject, type ).orElseThrow( () -> new AspectLoadingException( "Missing Property " + type + " on " + subject ) );
    }
 
    /**
@@ -97,19 +94,17 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
     * @return a {@link List} containing the {@link Property} instances
     */
    protected List<Property> getPropertiesModels( final Resource elementWithProperties,
-      final org.apache.jena.rdf.model.Property rootProperty ) {
+         final org.apache.jena.rdf.model.Property rootProperty ) {
       return getResourcesFromList( elementWithProperties, rootProperty )
-         .map( propertyResource -> modelElementFactory.create( Property.class, propertyResource ) )
-         .collect( Collectors.toList() );
+            .map( propertyResource -> modelElementFactory.create( Property.class, propertyResource ) )
+            .collect( Collectors.toList() );
    }
 
-   protected Stream<RDFNode> getNodesFromList( final Resource element,
-      final org.apache.jena.rdf.model.Property property ) {
+   protected Stream<RDFNode> getNodesFromList( final Resource element, final org.apache.jena.rdf.model.Property property ) {
       return element.getProperty( property ).getObject().as( RDFList.class ).asJavaList().stream();
    }
 
-   protected Stream<Resource> getResourcesFromList( final Resource element,
-      final org.apache.jena.rdf.model.Property property ) {
+   protected Stream<Resource> getResourcesFromList( final Resource element, final org.apache.jena.rdf.model.Property property ) {
       return getNodesFromList( element, property ).map( RDFNode::asResource );
    }
 
@@ -138,8 +133,8 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
     */
    private Statement getDataType( final Resource resource ) {
       return Optional.ofNullable( resource.getPropertyResourceValue( bamm.baseCharacteristic() ) )
-         .map( this::getDataType )
-         .orElseGet( () -> resource.getProperty( bamm.dataType() ) );
+            .map( this::getDataType )
+            .orElseGet( () -> resource.getProperty( bamm.dataType() ) );
    }
 
    protected Optional<Unit> findOrCreateUnit( final Resource unitResource ) {
@@ -148,23 +143,21 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
       }
 
       return Optional.of( new DefaultUnit(
-         MetaModelBaseAttributes.fromMetaModelElement( metaModelVersion, unitResource, model, bamm ),
-         optionalPropertyValue( unitResource, unit.symbol() ).map( Statement::getString ),
-         optionalPropertyValue( unitResource, unit.commonCode() ).map( Statement::getString ),
-         optionalPropertyValue( unitResource, unit.referenceUnit() ).map( Statement::getResource )
-            .map( Resource::getLocalName ),
-         optionalPropertyValue( unitResource, unit.conversionFactor() ).map( Statement::getString ),
-         ImmutableList.copyOf( model.listStatements( unitResource, unit.quantityKind(), (RDFNode) null ) ).stream()
-            .flatMap( quantityKindStatement -> QuantityKinds
-               .fromName( quantityKindStatement.getObject().asResource().getLocalName() ).stream() )
-            .collect( Collectors.toSet() ) ) );
+            MetaModelBaseAttributes.fromMetaModelElement( metaModelVersion, unitResource, model, bamm ),
+            optionalPropertyValue( unitResource, unit.symbol() ).map( Statement::getString ),
+            optionalPropertyValue( unitResource, unit.commonCode() ).map( Statement::getString ),
+            optionalPropertyValue( unitResource, unit.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
+            optionalPropertyValue( unitResource, unit.conversionFactor() ).map( Statement::getString ),
+            ImmutableList.copyOf( model.listStatements( unitResource, unit.quantityKind(), (RDFNode) null ) ).stream()
+                  .flatMap( quantityKindStatement -> QuantityKinds.fromName( quantityKindStatement.getObject().asResource().getLocalName() ).stream() )
+                  .collect( Collectors.toSet() ) ) );
    }
 
    protected Optional<Characteristic> getElementCharacteristic( final Resource collection ) {
       return optionalPropertyValue( collection, bammc.elementCharacteristic() )
-         .map( Statement::getResource )
-         .map( elementCharacteristicResource ->
-            modelElementFactory.create( Characteristic.class, elementCharacteristicResource ) );
+            .map( Statement::getResource )
+            .map( elementCharacteristicResource ->
+                  modelElementFactory.create( Characteristic.class, elementCharacteristicResource ) );
    }
 
    /**
@@ -189,40 +182,33 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
 
    private Map<String, Object> toComplexNodeValue( final RDFNode node, final BAMMC bammc ) {
       return node.asResource()
-         .listProperties()
-         .toList()
-         .stream()
-         .filter( statement -> !RDF.type.equals( statement.getPredicate() ) )
-         .map( statement -> getPropertyNameAndObject( statement, bammc ) )
-         .collect( Collectors.groupingBy( PropertyNameAndObject::getName, Collectors.flatMapping(
-            propertyNameAndObject -> Stream.of( propertyNameAndObject.getObject() ),
-            Collectors.toList() ) ) )
-         .entrySet().stream()
-         .map( entry -> Tuple.of( entry.getKey(), unwrapList( entry.getValue() ) ) )
-         .collect( Collectors.toMap( Tuple2::_1, Tuple2::_2 ) );
+            .listProperties()
+            .toList()
+            .stream()
+            .filter( statement -> !RDF.type.equals( statement.getPredicate() ) )
+            .map( statement -> getPropertyNameAndObject( statement, bammc ) )
+            .collect( Collectors.groupingBy( PropertyNameAndObject::getName, Collectors.flatMapping(
+                  propertyNameAndObject -> Stream.of( propertyNameAndObject.getObject() ),
+                  Collectors.toList() ) ) )
+            .entrySet().stream()
+            .map( entry -> Tuple.of( entry.getKey(), unwrapList( entry.getValue() ) ) )
+            .collect( Collectors.toMap( Tuple2::_1, Tuple2::_2 ) );
    }
 
    private PropertyNameAndObject getPropertyNameAndObject( final Statement valueStatement, final BAMMC bammc ) {
       if ( valueStatement.getObject().isLiteral() ) {
          final Literal literal = valueStatement.getObject().asLiteral();
          if ( literal.getDatatypeURI().equals( RDF.langString.getURI() ) ) {
-            return new PropertyNameAndObject(
-               valueStatement.getPredicate().getLocalName(),
-               Map.of( literal.getLanguage(), literal.getLexicalForm() ) );
+            return new PropertyNameAndObject( valueStatement.getPredicate().getLocalName(), Map.of( literal.getLanguage(), literal.getLexicalForm() ) );
          }
       }
       if ( isEnumValue( valueStatement.getPredicate() ) ) {
-         return new PropertyNameAndObject(
-            valueStatement.getPredicate().getLocalName(),
-            toEnumNodeValue( valueStatement.getObject() ) );
+         return new PropertyNameAndObject( valueStatement.getPredicate().getLocalName(), toEnumNodeValue( valueStatement.getObject() ) );
       } else if ( isCollectionValue( valueStatement.getPredicate(), bammc ) ) {
          final String propertyName = valueStatement.getPredicate().getLocalName();
-         return new PropertyNameAndObject(
-            propertyName, instantiateCollection( valueStatement ) );
+         return new PropertyNameAndObject( propertyName, instantiateCollection( valueStatement ) );
       }
-      return new PropertyNameAndObject(
-         valueStatement.getPredicate().getLocalName(),
-         toEnumNodeValue( valueStatement.getObject() ) );
+      return new PropertyNameAndObject( valueStatement.getPredicate().getLocalName(), toEnumNodeValue( valueStatement.getObject() ) );
    }
 
    private Object unwrapList( final List<Object> list ) {
@@ -251,17 +237,16 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
 
    private Collection<?> instantiateCollection( final Statement statement ) {
       final Resource collectionResource = statement.getPredicate()
-         .asResource()
-         .getProperty( bamm.characteristic() )
-         .getObject()
-         .asResource()
-         .getProperty( RDF.type )
-         .getObject()
-         .asResource();
+            .asResource()
+            .getProperty( bamm.characteristic() )
+            .getObject()
+            .asResource()
+            .getProperty( RDF.type )
+            .getObject()
+            .asResource();
 
       final Collection<Object> collection = createEmptyCollectionForType( collectionResource );
-      statement.getObject().as( RDFList.class ).asJavaList().stream().map( this::toEnumNodeValue )
-         .forEach( collection::add );
+      statement.getObject().as( RDFList.class ).asJavaList().stream().map( this::toEnumNodeValue ).forEach( collection::add );
       return collection;
    }
 
@@ -273,8 +258,7 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
     */
    private boolean isEnumValue( final RDFNode node ) {
       return node.asResource().getProperty( bamm.characteristic() )
-         .getObject().asResource().getProperty( RDF.type ).getObject().asResource()
-         .equals( bammc.Enumeration() );
+            .getObject().asResource().getProperty( RDF.type ).getObject().asResource().equals( bammc.Enumeration() );
    }
 
    /**
@@ -286,8 +270,8 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
     */
    private boolean isCollectionValue( final RDFNode node, final BAMMC bammc ) {
       return bammc.allCollections().anyMatch( collection ->
-         collection.equals( node.asResource().getProperty( bamm.characteristic() ).getObject().asResource()
-            .getProperty( RDF.type ).getObject().asResource() ) );
+            collection.equals( node.asResource().getProperty( bamm.characteristic() ).getObject().asResource()
+                  .getProperty( RDF.type ).getObject().asResource() ) );
    }
 
    private static class PropertyNameAndObject {

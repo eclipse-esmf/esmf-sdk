@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,16 +26,15 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
+import com.google.common.collect.ImmutableList;
+
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.loader.instantiator.AspectInstantiator;
-
-import com.google.common.collect.ImmutableList;
-
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 
 public class ModelElementFactory {
    private final KnownVersion metaModelVersion;
@@ -56,8 +55,7 @@ public class ModelElementFactory {
    @SuppressWarnings( "unchecked" )
    public <T extends Base> T create( final Class<T> clazz, final Resource modelElement ) {
       final Resource targetType = resourceType( modelElement );
-      final Instantiator<T> instantiator = (Instantiator<T>) instantiators
-            .computeIfAbsent( targetType, resource -> createInstantiator( clazz, resource ) );
+      final Instantiator<T> instantiator = (Instantiator<T>) instantiators.computeIfAbsent( targetType, resource -> createInstantiator( clazz, resource ) );
       return instantiator.apply( modelElement );
    }
 
@@ -65,17 +63,14 @@ public class ModelElementFactory {
    private <T extends Base> Instantiator<T> createInstantiator( final Class<T> clazz, final Resource targetType ) {
       try {
          final AspectModelUrn urn = AspectModelUrn.fromUrn( targetType.getURI() );
-         final String className = String
-               .format( "%s.%sInstantiator", AspectInstantiator.class.getPackageName(), urn.getName() );
-         return (Instantiator<T>) Class.forName( className ).getDeclaredConstructor( getClass() )
-                                       .newInstance( this );
+         final String className = String.format( "%s.%sInstantiator", AspectInstantiator.class.getPackageName(), urn.getName() );
+         return (Instantiator<T>) Class.forName( className ).getDeclaredConstructor( getClass() ).newInstance( this );
       } catch ( final Exception exception ) {
          throw new AspectLoadingException( "Aspect loading does not know type " + targetType, exception );
       }
    }
 
-   protected Optional<Statement> propertyValue( final Resource subject,
-         final org.apache.jena.rdf.model.Property type ) {
+   protected Optional<Statement> propertyValue( final Resource subject, final org.apache.jena.rdf.model.Property type ) {
       return ImmutableList.copyOf( model.listStatements( subject, type, (RDFNode) null ) ).stream().findAny();
    }
 

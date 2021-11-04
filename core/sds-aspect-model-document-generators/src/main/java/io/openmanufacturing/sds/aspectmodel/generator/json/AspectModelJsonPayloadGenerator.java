@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -118,8 +118,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       objectMapper = AspectModelJsonPayloadGenerator.createObjectMapper();
       objectMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
       transformers = Arrays
-         .asList( this::transformCollectionProperty, this::transformEnumeration, this::transformEntityProperty,
-               this::transformAbstractEntityProperty, this::transformEitherProperty, this::transformSimpleProperty );
+            .asList( this::transformCollectionProperty, this::transformEnumeration, this::transformEntityProperty,
+                  this::transformAbstractEntityProperty, this::transformEitherProperty, this::transformSimpleProperty );
       recursiveProperty = new LinkedList<>();
    }
 
@@ -174,28 +174,25 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
     * @return a map representing the given properties
     */
    @SuppressWarnings( "squid:S2250" )
-   //Amount of elements in list is regarding to amount of properties in aspect model. Even in bigger aspects this
+   //Amount of elements in list is in regard to amount of properties in aspect model. Even in bigger aspects this
    // should not lead to performance issues
    private Map<String, Object> transformProperties( final List<Property> properties ) {
       return Stream.concat(
-         properties.stream().filter( recursiveProperty::contains )
-            .map( this::recursiveProperty ),
-         properties.stream().filter( property -> !recursiveProperty.contains( property ) )
-            .map( property -> {
-               recursiveProperty.add( property );
-               final Map<String, Object> result = transformProperty( new BasicProperty( property ) );
-               recursiveProperty.remove( property );
-               return result;
-            } )
+            properties.stream().filter( recursiveProperty::contains ).map( this::recursiveProperty ),
+            properties.stream().filter( property -> !recursiveProperty.contains( property ) )
+                  .map( property -> {
+                     recursiveProperty.add( property );
+                     final Map<String, Object> result = transformProperty( new BasicProperty( property ) );
+                     recursiveProperty.remove( property );
+                     return result;
+                  } )
       ).collect( HashMap::new, HashMap::putAll, HashMap::putAll );
    }
 
    private Map<String, Object> recursiveProperty( final Property property ) {
       if ( !property.isNotInPayload() && !property.isOptional() ) {
          throw new IllegalArgumentException(
-            String.format(
-               "Having a recursive Property: %s which is not Optional nor marked as NotInPayload is not valid.",
-               property ) );
+               String.format( "Having a recursive Property: %s which is not Optional nor marked as NotInPayload is not valid.", property ) );
       }
       return Map.of();
    }
@@ -215,11 +212,10 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
     */
    private Map<String, Object> transformProperty( final BasicProperty property ) {
       return transformers.stream()
-         .map( transformer -> transformer.apply( property ) )
-         .filter( propertiesMap -> !propertiesMap.isEmpty() )
-         .findFirst()
-         .orElseThrow( () -> new IllegalArgumentException(
-            "No transformer for " + property.getName() + " available." ) );
+            .map( transformer -> transformer.apply( property ) )
+            .filter( propertiesMap -> !propertiesMap.isEmpty() )
+            .findFirst()
+            .orElseThrow( () -> new IllegalArgumentException( "No transformer for " + property.getName() + " available." ) );
    }
 
    private Map<String, Object> transformCollectionProperty( final BasicProperty property ) {
@@ -232,8 +228,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    }
 
    private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property ) {
-      final Optional<AbstractEntity> dataType = getForCharacteristic( property.getCharacteristic(),
-            AbstractEntity.class );
+      final Optional<AbstractEntity> dataType = getForCharacteristic( property.getCharacteristic(), AbstractEntity.class );
       if ( dataType.isPresent() ) {
          final AbstractEntity abstractEntity = dataType.get();
          final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
@@ -259,8 +254,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
    private Map<String, Object> transformEnumeration( final BasicProperty property ) {
       return getForCharacteristic( property.getCharacteristic(), Enumeration.class )
-         .map( enumeration -> extractEnumerationValues( property, enumeration ) )
-         .orElseGet( ImmutableMap::of );
+            .map( enumeration -> extractEnumerationValues( property, enumeration ) )
+            .orElseGet( ImmutableMap::of );
    }
 
    private Map<String, Object> extractEnumerationValues( final BasicProperty property, final Enumeration enumeration ) {
@@ -268,14 +263,13 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       if ( o instanceof Map ) {
          final Entity entity = (Entity) enumeration.getDataType().orElseThrow();
          @SuppressWarnings( "unchecked" ) final Map<String, Object> enumAttributes = removeNotInPayloadProperties(
-            entity.getProperties(), (Map<String, Object>) o );
+               entity.getProperties(), (Map<String, Object>) o );
          return toMap( property.getName(), replaceNameFields( enumAttributes ) );
       }
       return toMap( property.getName(), o );
    }
 
-   private Map<String, Object> removeNotInPayloadProperties( final List<Property> properties,
-      final Map<String, Object> o ) {
+   private Map<String, Object> removeNotInPayloadProperties( final List<Property> properties, final Map<String, Object> o ) {
       properties.stream().filter( Property::isNotInPayload ).forEach( property -> o.remove( property.getName() ) );
       return o;
    }
@@ -290,18 +284,17 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    @SuppressWarnings( "unchecked" )
    private Map<String, Object> replaceNameFields( final Map<String, Object> fields ) {
       return fields.entrySet()
-         .stream()
-         .filter( entry -> !entry.getKey().equals( bamm.name().getURI() ) )
-         .map( this::mapEntries )
-         .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+            .stream()
+            .filter( entry -> !entry.getKey().equals( bamm.name().getURI() ) )
+            .map( this::mapEntries )
+            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
    }
 
    private AbstractMap.SimpleEntry<String, Object> mapEntries( final Map.Entry<String, Object> entry ) {
       final Object value = entry.getValue();
       // Entity
       if ( value instanceof Map ) {
-         return new AbstractMap.SimpleEntry<>( entry.getKey(),
-            replaceNameFields( (Map<String, Object>) value ) );
+         return new AbstractMap.SimpleEntry<>( entry.getKey(), replaceNameFields( (Map<String, Object>) value ) );
       }
       if ( value instanceof List ) {
          final List<?> list = (List<?>) value;
@@ -309,14 +302,12 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          if ( !list.isEmpty() && list.get( 0 ) instanceof Tuple2 ) {
             final List<Tuple2<String, String>> languageStrings = (List<Tuple2<String, String>>) value;
             final Map<String, String> entries = languageStrings.stream().collect(
-               Collectors.toMap( Tuple2::_1, Tuple2::_2 ) );
+                  Collectors.toMap( Tuple2::_1, Tuple2::_2 ) );
             return new AbstractMap.SimpleEntry<>( entry.getKey(), entries );
          }
          // complex nested entity
          if ( list.get( 0 ) instanceof Map ) {
-            final List<Map<String, Object>> entries = list.stream()
-               .map( e -> replaceNameFields( (Map<String, Object>) e ) )
-               .collect( Collectors.toList() );
+            final List<Map<String, Object>> entries = list.stream().map( e -> replaceNameFields( (Map<String, Object>) e ) ).collect( Collectors.toList() );
             return new AbstractMap.SimpleEntry<>( entry.getKey(), entries );
          }
       }
@@ -326,11 +317,10 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private Map<String, Object> transformEitherProperty( final BasicProperty property ) {
       final Characteristic characteristic = property.getCharacteristic();
       return getForCharacteristic( characteristic, Either.class )
-         .map( value -> transformProperty(
-            new BasicProperty( AspectModelJsonPayloadGenerator.EITHER_LEFT, value.getLeft(),
-               Optional.empty() ) ) )
-         .map( value -> toMap( property.getName(), value ) )
-         .orElseGet( ImmutableMap::of );
+            .map( value -> transformProperty(
+                  new BasicProperty( AspectModelJsonPayloadGenerator.EITHER_LEFT, value.getLeft(), Optional.empty() ) ) )
+            .map( value -> toMap( property.getName(), value ) )
+            .orElseGet( ImmutableMap::of );
    }
 
    private Map<String, Object> transformSimpleProperty( final BasicProperty basicProperty ) {
@@ -350,9 +340,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return ((Enumeration) characteristic).getValues().get( 0 );
       }
 
-      return property
-         .getExampleValue()
-         .orElseGet( () -> generateExampleValue( characteristic ) );
+      return property.getExampleValue().orElseGet( () -> generateExampleValue( characteristic ) );
    }
 
    private Map<String, Object> toMap( final String key, final Object value ) {
@@ -360,9 +348,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    }
 
    private List<Object> getCollectionValues( final BasicProperty property, final Collection collection ) {
-      final Type dataType = collection.getDataType()
-                                      .orElseThrow( () -> new IllegalArgumentException(
-                                            "DataType for collection is required." ) );
+      final Type dataType = collection.getDataType().orElseThrow( () -> new IllegalArgumentException( "DataType for collection is required." ) );
       if ( dataType instanceof AbstractEntity ) {
          final AbstractEntity abstractEntity = (AbstractEntity) dataType;
          final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
@@ -385,8 +371,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return Optional.of( type.cast( characteristic ) );
       }
       return characteristic.getDataType()
-         .filter( dataType -> type.isAssignableFrom( dataType.getClass() ) )
-         .map( type::cast );
+            .filter( dataType -> type.isAssignableFrom( dataType.getClass() ) )
+            .map( type::cast );
    }
 
    private Object generateExampleValue( final Characteristic characteristic ) {
@@ -435,16 +421,13 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       private static final List<String> CURIE_VALUES = ImmutableList.of( "unit:hectopascal" );
 
       private final Map<Class<?>, BiFunction<Number, Number, Number>> generators = Map.of(
-         Byte.class, ( min, max ) -> getRandomInteger( min.intValue(), max.intValue() ),
-         Short.class, ( min, max ) -> getRandomInteger( min.intValue(), max.intValue() ),
-         Integer.class, ( min, max ) -> getRandomInteger( min.intValue(), max.intValue() ),
-         Long.class, ( min, max ) -> getRandomLong( min.longValue(), max.longValue() ),
-         Float.class, ( min, max ) -> getRandomDouble( min.floatValue(), max.floatValue() ).floatValue(),
-         BigInteger.class,
-         ( min, max ) -> BigDecimal.valueOf( getRandomDouble( safelyNarrowDown( min ), safelyNarrowDown( max ) ) )
-            .toBigInteger(),
-         BigDecimal.class,
-         ( min, max ) -> BigDecimal.valueOf( getRandomDouble( safelyNarrowDown( min ), safelyNarrowDown( max ) ) )
+            Byte.class, ( min, max ) -> getRandomInteger( min.intValue(), max.intValue() ),
+            Short.class, ( min, max ) -> getRandomInteger( min.intValue(), max.intValue() ),
+            Integer.class, ( min, max ) -> getRandomInteger( min.intValue(), max.intValue() ),
+            Long.class, ( min, max ) -> getRandomLong( min.longValue(), max.longValue() ),
+            Float.class, ( min, max ) -> getRandomDouble( min.floatValue(), max.floatValue() ).floatValue(),
+            BigInteger.class, ( min, max ) -> BigDecimal.valueOf( getRandomDouble( safelyNarrowDown( min ), safelyNarrowDown( max ) ) ).toBigInteger(),
+            BigDecimal.class, ( min, max ) -> BigDecimal.valueOf( getRandomDouble( safelyNarrowDown( min ), safelyNarrowDown( max ) ) )
       );
 
       private ExampleValueGenerator( final Random random ) {
@@ -453,8 +436,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
       private Type getDataType( final Characteristic characteristic ) {
          return characteristic.getDataType()
-            .orElseThrow( () -> new IllegalArgumentException(
-               "DataType for characteristic " + characteristic.getName() + " is required." ) );
+               .orElseThrow( () -> new IllegalArgumentException(
+                     "DataType for characteristic " + characteristic.getName() + " is required." ) );
       }
 
       private Object generateExampleValue( final Characteristic characteristic ) {
@@ -470,8 +453,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
          final Scalar scalar = (Scalar) dataType;
          final Resource dataTypeResource = ResourceFactory.createResource( scalar.getUrn() );
-         final Class<?> exampleValueType = DataType
-            .getJavaTypeForMetaModelType( dataTypeResource, characteristic.getMetaModelVersion() );
+         final Class<?> exampleValueType = DataType.getJavaTypeForMetaModelType( dataTypeResource, characteristic.getMetaModelVersion() );
          if ( Curie.class.equals( exampleValueType ) ) {
             return getRandomEntry( ExampleValueGenerator.CURIE_VALUES );
          }
@@ -483,8 +465,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          }
 
          if ( characteristic instanceof Trait ) {
-            final Optional<Object> traitExampleValue = generateExampleValueForTrait( (Trait) characteristic,
-               exampleValueType, dataTypeResource );
+            final Optional<Object> traitExampleValue = generateExampleValueForTrait( (Trait) characteristic, exampleValueType, dataTypeResource );
             if ( traitExampleValue.isPresent() ) {
                return traitExampleValue.get();
             }
@@ -500,11 +481,10 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       }
 
       private Optional<Object> generateExampleValueForTrait( final Trait trait, final Class<?> exampleValueType,
-         final Resource dataTypeResource ) {
+            final Resource dataTypeResource ) {
          for ( final Constraint constraint : trait.getConstraints() ) {
             if ( constraint instanceof LengthConstraint ) {
-               return Optional.of( getRandomValue( (LengthConstraint) constraint, exampleValueType,
-                  trait.getBaseCharacteristic() ) );
+               return Optional.of( getRandomValue( (LengthConstraint) constraint, exampleValueType, trait.getBaseCharacteristic() ) );
             }
             if ( constraint instanceof RangeConstraint ) {
                return Optional.of( getRandomValue( (RangeConstraint) constraint, exampleValueType, dataTypeResource ) );
@@ -517,8 +497,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       }
 
       private Object getGregorianRandomValue( final Type dataType ) {
-         final XMLGregorianCalendar randomCalendar = DatatypeFactory.newDefaultInstance()
-            .newXMLGregorianCalendar( new GregorianCalendar() );
+         final XMLGregorianCalendar randomCalendar = DatatypeFactory.newDefaultInstance().newXMLGregorianCalendar( new GregorianCalendar() );
          final Optional<DateFormat> dateFormat = getDateFormat( dataType.getUrn() );
          if ( dateFormat.isPresent() ) {
             final Date date = randomCalendar.toGregorianCalendar().getTime();
@@ -551,12 +530,12 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
       @SuppressWarnings( "unchecked" )
       private Object getRandomValue( final LengthConstraint lengthConstraint,
-         final java.lang.reflect.Type exampleValueType, final Characteristic traitBaseCharacteristic ) {
+            final java.lang.reflect.Type exampleValueType, final Characteristic traitBaseCharacteristic ) {
          final BigInteger maxLength = lengthConstraint.getMaxValue().orElse( BigInteger.valueOf( Integer.MAX_VALUE ) );
          final BigInteger minLength = lengthConstraint.getMinValue().orElse( BigInteger.ZERO );
 
          final EasyRandomParameters easyRandomParameters = new EasyRandomParameters()
-            .stringLengthRange( minLength.intValue(), maxLength.intValue() );
+               .stringLengthRange( minLength.intValue(), maxLength.intValue() );
          final EasyRandom easyRandom = new EasyRandom( easyRandomParameters );
          if ( traitBaseCharacteristic instanceof Collection ) {
             final int amount = getRandomInteger( minLength.intValue(), maxLength.intValue() );
@@ -569,18 +548,16 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return easyRandom.nextObject( (Class<?>) exampleValueType );
       }
 
-      private Number getRandomValue( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType,
-         final Resource dataTypeResource ) {
+      private Number getRandomValue( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType, final Resource dataTypeResource ) {
          final Number min = calculateLowerBound( rangeConstraint, valueType, dataTypeResource );
          final Number max = calculateUpperBound( rangeConstraint, valueType, dataTypeResource );
          return generateForNumericTypeInRange( valueType, min, max );
       }
 
-      private Number generateForNumericTypeInRange( final java.lang.reflect.Type valueType, final Number min,
-         final Number max ) {
+      private Number generateForNumericTypeInRange( final java.lang.reflect.Type valueType, final Number min, final Number max ) {
          return generators
-            .getOrDefault( valueType, ( low, high ) -> getRandomDouble( low.doubleValue(), high.doubleValue() ) )
-            .apply( min, max );
+               .getOrDefault( valueType, ( low, high ) -> getRandomDouble( low.doubleValue(), high.doubleValue() ) )
+               .apply( min, max );
       }
 
       // narrowing conversion from BigDecimal to double
@@ -598,28 +575,26 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return narrowed.doubleValue();
       }
 
-      private Number calculateLowerBound( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType,
-         final Resource dataTypeResource ) {
+      private Number calculateLowerBound( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType, final Resource dataTypeResource ) {
          return rangeConstraint.getMinValue()
-            .map( value -> (Number) value )
-            // exclusive lower bound?
-            .map( value -> BoundDefinition.GREATER_THAN
-               .equals( rangeConstraint.getLowerBoundDefinition() )
-               ? NumericTypeTraits.polymorphicAdd( value, exclusiveBoundDelta( valueType ) )
-               : value )
-            .orElse( NumericTypeTraits.getModelMinValue( dataTypeResource, valueType ) );
+               .map( value -> (Number) value )
+               // exclusive lower bound?
+               .map( value -> BoundDefinition.GREATER_THAN
+                     .equals( rangeConstraint.getLowerBoundDefinition() )
+                     ? NumericTypeTraits.polymorphicAdd( value, exclusiveBoundDelta( valueType ) )
+                     : value )
+               .orElse( NumericTypeTraits.getModelMinValue( dataTypeResource, valueType ) );
       }
 
-      private Number calculateUpperBound( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType,
-         final Resource dataTypeResource ) {
+      private Number calculateUpperBound( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType, final Resource dataTypeResource ) {
          return rangeConstraint.getMaxValue()
-            .map( value -> (Number) value )
-            // exclusive upper bound?
-            .map( value -> BoundDefinition.LESS_THAN
-               .equals( rangeConstraint.getUpperBoundDefinition() )
-               ? NumericTypeTraits.polymorphicAdd( value, -exclusiveBoundDelta( valueType ) )
-               : value )
-            .orElse( NumericTypeTraits.getModelMaxValue( dataTypeResource, valueType ) );
+               .map( value -> (Number) value )
+               // exclusive upper bound?
+               .map( value -> BoundDefinition.LESS_THAN
+                     .equals( rangeConstraint.getUpperBoundDefinition() )
+                     ? NumericTypeTraits.polymorphicAdd( value, -exclusiveBoundDelta( valueType ) )
+                     : value )
+               .orElse( NumericTypeTraits.getModelMaxValue( dataTypeResource, valueType ) );
       }
 
       // with floating point values we cannot simply use 1 (the range could be defined as 2.4 - 2.9, both exclusive)

@@ -28,8 +28,7 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 public class DefaultEntity extends DefaultComplexType implements Entity {
 
    public static DefaultEntity createDefaultEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final List<? extends Property> properties,
-         final Optional<ComplexType> _extends ) {
+         final List<? extends Property> properties, final Optional<ComplexType> _extends ) {
       final DefaultEntity defaultEntity = new DefaultEntity( metaModelBaseAttributes, properties, _extends );
       instances.put( metaModelBaseAttributes.getUrn().get(), defaultEntity );
       return defaultEntity;

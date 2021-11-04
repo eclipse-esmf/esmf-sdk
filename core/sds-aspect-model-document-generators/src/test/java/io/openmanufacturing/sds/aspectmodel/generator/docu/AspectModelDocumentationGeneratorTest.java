@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,19 +13,25 @@
 
 package io.openmanufacturing.sds.aspectmodel.generator.docu;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
@@ -49,8 +55,7 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testAspectWithCollectionOfSimpleType( final KnownVersion metaModelVersion ) throws Throwable {
       final File target = new File( "target", "AspectWithCollectionOfSimpleType.html" );
-      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE,
-            metaModelVersion );
+      final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE, metaModelVersion );
 
       try ( final BufferedWriter writer = new BufferedWriter( new FileWriter( target ) ) ) {
          writer.write( htmlResult );
@@ -119,19 +124,15 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testDocumentationIsNotEmptyForModelWithoutLanguageTags( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String aspectWithoutLanguageTags = generateHtmlDocumentation( TestAspect.ASPECT_WITHOUT_LANGUAGE_TAGS,
-            metaModelVersion );
+   public void testDocumentationIsNotEmptyForModelWithoutLanguageTags( final KnownVersion metaModelVersion ) throws IOException {
+      final String aspectWithoutLanguageTags = generateHtmlDocumentation( TestAspect.ASPECT_WITHOUT_LANGUAGE_TAGS, metaModelVersion );
       assertThat( aspectWithoutLanguageTags ).isNotEmpty();
    }
 
    @ParameterizedTest
    @MethodSource( "versionsStartingWith2_0_0" )
-   public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY,
-            metaModelVersion );
+   public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
       assertThat( documentation ).contains( "<h3 id=\"_testproperty\">testProperty</h3>" );
       assertThat( documentation ).contains( "<h4 id=\"_abstracttestproperty\">abstractTestProperty</h4>" );
       assertThat( documentation ).contains( "<h4 id=\"_entityproperty\">entityProperty</h4>" );
@@ -139,10 +140,8 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "versionsStartingWith2_0_0" )
-   public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY,
-            metaModelVersion );
+   public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
       assertThat( documentation ).contains( "<h3 id=\"_test_property\">Test Property</h3>" );
       assertThat( documentation ).contains( "<h4 id=\"_abstracttestproperty\">abstractTestProperty</h4>" );
       assertThat( documentation ).contains( "<h4 id=\"_entity_property\">Entity Property</h4>" );
@@ -150,23 +149,19 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "versionsStartingWith2_0_0" )
-   public void testAspectWithCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY,
-            metaModelVersion );
+   public void testAspectWithCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
       assertThat( documentation ).contains( "<h3 id=\"_testproperty\">testProperty</h3>" );
       assertThat( documentation ).contains( "<h4 id=\"_abstracttestproperty\">abstractTestProperty</h4>" );
       assertThat( documentation ).contains( "<h4 id=\"_entityproperty\">entityProperty</h4>" );
    }
 
-   private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion )
-         throws IOException {
+   private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion ) throws IOException {
       final VersionedModel versionedModel = TestResources.getModel( model, testedVersion ).get();
-      final AspectModelDocumentationGenerator aspectModelDocumentationGenerator = new AspectModelDocumentationGenerator(
-            versionedModel );
+      final AspectModelDocumentationGenerator aspectModelDocumentationGenerator = new AspectModelDocumentationGenerator( versionedModel );
 
       try ( final ByteArrayOutputStream result = new ByteArrayOutputStream() ) {
-         aspectModelDocumentationGenerator.generate( name -> result, Collections.EMPTY_MAP);
+         aspectModelDocumentationGenerator.generate( name -> result, Collections.EMPTY_MAP );
          return result.toString( StandardCharsets.UTF_8.name() );
       }
    }

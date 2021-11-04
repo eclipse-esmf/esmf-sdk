@@ -33,9 +33,7 @@ public class DefaultAbstractEntity extends DefaultComplexType implements Abstrac
          final List<? extends Property> properties,
          final Optional<ComplexType> _extends,
          final List<AspectModelUrn> extendingElements ) {
-      final DefaultAbstractEntity defaultAbstractEntity = new DefaultAbstractEntity( metaModelBaseAttributes,
-            properties,
-            _extends, extendingElements );
+      final DefaultAbstractEntity defaultAbstractEntity = new DefaultAbstractEntity( metaModelBaseAttributes, properties, _extends, extendingElements );
       instances.put( metaModelBaseAttributes.getUrn().get(), defaultAbstractEntity );
       return defaultAbstractEntity;
    }
@@ -54,8 +52,7 @@ public class DefaultAbstractEntity extends DefaultComplexType implements Abstrac
     */
    @Override
    public List<ComplexType> getExtendingElements() {
-      return extendingElements.stream().map( instances::get )
-                              .collect( Collectors.toList() );
+      return extendingElements.stream().map( instances::get ).collect( Collectors.toList() );
    }
 
    /**

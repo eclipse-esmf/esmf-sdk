@@ -25,19 +25,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
 import org.apache.commons.io.IOUtils;
 
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestResources;
 import io.openmanufacturing.sds.test.shared.compiler.JavaCompiler;
 
 public class TestContext {
@@ -61,7 +53,7 @@ public class TestContext {
          final Collection<JavaGenerator> generators ) throws IOException {
       final File subFolder = new File(
             tempDirectory.getAbsolutePath() + File.separator + generators.iterator().next().getConfig().getPackageName()
-                                                                         .replace( '.', File.separatorChar ) );
+                  .replace( '.', File.separatorChar ) );
       if ( !subFolder.mkdirs() ) {
          throw new IOException( "Could not create directory: " + subFolder );
       }
@@ -81,10 +73,10 @@ public class TestContext {
          writeFile( className.getClassName(), classContent, subFolder );
       }
 
-      final List<String> referencedClasses = generators.stream().flatMap(
-            generator -> Stream.concat( generator.getConfig().getImportTracker().getUsedImports().stream(),
-                  generator.getConfig().getImportTracker().getUsedStaticImports().stream() ) )
-                                                       .collect( Collectors.toList() );
+      final List<String> referencedClasses = generators.stream().flatMap( generator ->
+                  Stream.concat( generator.getConfig().getImportTracker().getUsedImports().stream(),
+                        generator.getConfig().getImportTracker().getUsedStaticImports().stream() ) )
+            .collect( Collectors.toList() );
 
       return JavaCompiler.compile( loadOrder, sources, referencedClasses );
    }

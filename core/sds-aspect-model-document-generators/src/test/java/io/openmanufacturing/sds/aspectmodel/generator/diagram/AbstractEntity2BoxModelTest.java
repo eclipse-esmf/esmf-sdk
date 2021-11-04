@@ -52,18 +52,14 @@ public class AbstractEntity2BoxModelTest extends MetaModelVersions {
    private void testAbstractEntity( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( testAspect, metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( sparqlQueryFileName ) );
+      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
 
       final Model queryResult = ModelFactory.createDefaultModel();
       try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
          qexec.execConstruct( queryResult );
       }
 
-      assertThat( queryResult.listStatements( context.selector( ":AbstractTestEntityAbstractEntity a :Box" ) )
-                             .toList() ).hasSize( 1 );
-      assertThat( queryResult
-            .listStatements( context.selector( ":AbstractTestEntityAbstractEntity :title AbstractTestEntity" ) )
-            .toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( ":AbstractTestEntityAbstractEntity a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( ":AbstractTestEntityAbstractEntity :title AbstractTestEntity" ) ).toList() ).hasSize( 1 );
    }
 }

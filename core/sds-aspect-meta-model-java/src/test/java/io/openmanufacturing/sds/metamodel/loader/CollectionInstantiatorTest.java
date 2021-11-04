@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,6 +19,7 @@ import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Characteristic;
@@ -34,15 +35,12 @@ import io.openmanufacturing.sds.metamodel.impl.DefaultTrait;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestModel;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
 public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testCollectionCharacteristicInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
-            .fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
+      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
@@ -63,8 +61,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testCollectionCharacteristicWithEntityDataTypeExpectSuccess( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
-            .fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
+      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION, metaModelVersion );
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
@@ -83,8 +80,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testListCharacteristicInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
-            .fromUrn( TestModel.TEST_NAMESPACE + "TestList" );
+      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestList" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_LIST, metaModelVersion );
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
@@ -104,8 +100,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSetCharacteristicInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
-            .fromUrn( TestModel.TEST_NAMESPACE + "TestSet" );
+      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestSet" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SET, metaModelVersion );
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
@@ -125,8 +120,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSortedSetCharacteristicInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
-            .fromUrn( TestModel.TEST_NAMESPACE + "TestSortedSet" );
+      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestSortedSet" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SORTED_SET, metaModelVersion );
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
@@ -146,8 +140,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
    public void testTimeSeriesInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
-            .fromUrn( TestModel.TEST_NAMESPACE + "TestTimeSeries" );
+      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestTimeSeries" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_TIME_SERIES, metaModelVersion );
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
@@ -165,12 +158,9 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testCollectionInstantiationWithElementCharacteristicExpectSuccess(
-         final KnownVersion metaModelVersion ) {
-      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
-            .fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ELEMENT_CHARACTERISTIC,
-            metaModelVersion );
+   public void testCollectionInstantiationWithElementCharacteristicExpectSuccess( final KnownVersion metaModelVersion ) {
+      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ELEMENT_CHARACTERISTIC, metaModelVersion );
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic();
@@ -191,8 +181,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testCollectionInstantiationWithElementConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn
-            .fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
+      final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ELEMENT_CONSTRAINT, metaModelVersion );
       assertThat( aspect.getProperties() ).hasSize( 1 );
 

@@ -26,8 +26,7 @@ public class AspectWithAbstractSingleEntity {
    private final AbstractTestEntity testProperty;
 
    @JsonCreator
-   public AspectWithAbstractSingleEntity(
-         @JsonProperty( value = "testProperty" ) final AbstractTestEntity testProperty ) {
+   public AspectWithAbstractSingleEntity( @JsonProperty( value = "testProperty" ) final AbstractTestEntity testProperty ) {
       super();
       this.testProperty = testProperty;
    }

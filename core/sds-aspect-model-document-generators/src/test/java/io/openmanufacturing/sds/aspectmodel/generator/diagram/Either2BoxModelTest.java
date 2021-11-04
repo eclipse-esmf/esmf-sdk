@@ -49,10 +49,8 @@ public class Either2BoxModelTest extends MetaModelVersions {
          qexec.execConstruct( queryResult );
       }
 
-      assertThat( queryResult.listStatements( context.selector( ":UsedTestEitherCharacteristic a :Box" ) ).toList() )
-            .hasSize( 1 );
-      assertThat(
-            queryResult.listStatements( context.selector( ":UnusedTestEitherCharacteristic a :Box" ) ).toList() )
+      assertThat( queryResult.listStatements( context.selector( ":UsedTestEitherCharacteristic a :Box" ) ).toList() ) .hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( ":UnusedTestEitherCharacteristic a :Box" ) ).toList() )
             .hasSize( 0 );
       assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() )
             .hasSize( totalNumberOfExpectedEntries );

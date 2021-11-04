@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,6 +24,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Resource;
 
+import com.google.common.collect.ImmutableMap;
+
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.BammDataType;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.ExtendedXsdDataType;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
@@ -45,10 +48,6 @@ import io.openmanufacturing.sds.metamodel.impl.DefaultOperation;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
-
-import com.google.common.collect.ImmutableMap;
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
@@ -83,7 +82,7 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
       final Arbitrary<Integer> minor = Arbitraries.integers().greaterOrEqual( 0 );
       final Arbitrary<Integer> maintenance = Arbitraries.integers().greaterOrEqual( 0 );
       return Combinators.combine( major, minor, maintenance )
-                        .as( ( i1, i2, i3 ) -> String.format( "%d.%d.%d", i1, i2, i3 ) );
+            .as( ( i1, i2, i3 ) -> String.format( "%d.%d.%d", i1, i2, i3 ) );
    }
 
    @Provide
@@ -91,9 +90,9 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
       return anyHostname().map( hostname -> {
          final String[] parts = hostname.split( "\\." );
          return IntStream.range( 0, parts.length )
-                         .mapToObj( index -> parts[parts.length - index - 1] )
-                         .map( part -> part.replace( "-", "_" ) )
-                         .collect( Collectors.joining( "." ) );
+               .mapToObj( index -> parts[parts.length - index - 1] )
+               .map( part -> part.replace( "-", "_" ) )
+               .collect( Collectors.joining( "." ) );
       } );
    }
 
@@ -114,18 +113,18 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
    default Arbitrary<AspectModelUrn> anyEntityUrnInMetaModelScope() {
       return anyMetaModelVersion().flatMap( metaModelVersion ->
             Arbitraries.of( bamme( metaModelVersion ).allEntities()
-                                                     .map( Resource::getURI )
-                                                     .map( AspectModelUrn::fromUrn )
-                                                     .collect( Collectors.toList() ) ) );
+                  .map( Resource::getURI )
+                  .map( AspectModelUrn::fromUrn )
+                  .collect( Collectors.toList() ) ) );
    }
 
    @Provide
    default Arbitrary<AspectModelUrn> anyCharacteristicUrnInMetaModelScope() {
       return anyMetaModelVersion().flatMap( metaModelVersion ->
             Arbitraries.of( bammc( metaModelVersion ).allCharacteristics()
-                                                     .map( Resource::getURI )
-                                                     .map( AspectModelUrn::fromUrn )
-                                                     .collect( Collectors.toList() ) ) );
+                  .map( Resource::getURI )
+                  .map( AspectModelUrn::fromUrn )
+                  .collect( Collectors.toList() ) ) );
    }
 
    @Provide
@@ -158,10 +157,9 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
    @Provide
    default Arbitrary<AspectModelUrn> anyTopLevelElementUrnInItsOwnScope( final TopLevelElementType type ) {
       return Combinators.combine( anyNamespace(), anyTopLevelElementName(), anyModelElementVersion() )
-                        .as( ( namespace, entityName, version ) ->
-                              String.format( "urn:bamm:%s:%s:%s:%s", namespace, type.elementType.getValue(),
-                                    entityName, version ) )
-                        .map( AspectModelUrn::fromUrn );
+            .as( ( namespace, entityName, version ) ->
+                  String.format( "urn:bamm:%s:%s:%s:%s", namespace, type.elementType.getValue(), entityName, version ) )
+            .map( AspectModelUrn::fromUrn );
    }
 
    @Provide
@@ -212,8 +210,7 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
             .combine( anyNamespace(), anyTopLevelElementType(), anyTopLevelElementName(),
                   anyModelElementVersion(), anyElementName )
             .as( ( namespace, containingElementType, containingElementName, version, elementName ) ->
-                  String.format( "urn:bamm:%s:%s:%s:%s#%s", namespace, containingElementType.getValue(),
-                        containingElementName, version, elementName ) )
+                  String.format( "urn:bamm:%s:%s:%s:%s#%s", namespace, containingElementType.getValue(), containingElementName, version, elementName ) )
             .map( AspectModelUrn::fromUrn );
    }
 
@@ -260,8 +257,7 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
                   anyScalar() )
             .as( ( metaModelVersion, characteristicUrn, preferredNames, descriptions, see, dataType ) -> {
                final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, characteristicUrn, characteristicUrn.getName(), preferredNames, descriptions,
-                     see );
+                     metaModelVersion, characteristicUrn, characteristicUrn.getName(), preferredNames, descriptions, see );
                return new DefaultCharacteristic( baseAttributes, Optional.of( dataType ) );
             } );
    }
@@ -269,25 +265,23 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
    @Provide
    default Arbitrary<Aspect> anyAspect() {
       return Combinators.combine( anyMetaModelVersion(), anyAspectUrn(), anyPreferredNames(), anyDescriptions(),
-            anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyOperation().list().ofMaxSize( 3 ) )
-                        .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, properties, operations ) -> {
-                           final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                                 metaModelVersion, aspectUrn, aspectUrn.getName(), preferredNames, descriptions,
-                                 see );
-                           return new DefaultAspect( baseAttributes, properties, operations, false );
-                        } );
+                  anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyOperation().list().ofMaxSize( 3 ) )
+            .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, properties, operations ) -> {
+               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
+                     metaModelVersion, aspectUrn, aspectUrn.getName(), preferredNames, descriptions, see );
+               return new DefaultAspect( baseAttributes, properties, operations, false );
+            } );
    }
 
    @Provide
    default Arbitrary<Operation> anyOperation() {
       return Combinators.combine( anyMetaModelVersion(), anyOperationUrn(), anyPreferredNames(), anyDescriptions(),
-            anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyProperty().optional() )
-                        .as( ( metaModelVersion, operationUrn, preferredNames, descriptions, see, inputs, output ) -> {
-                           final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                                 metaModelVersion, operationUrn, operationUrn.getName(), preferredNames, descriptions,
-                                 see );
-                           return new DefaultOperation( baseAttributes, inputs, output );
-                        } );
+                  anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyProperty().optional() )
+            .as( ( metaModelVersion, operationUrn, preferredNames, descriptions, see, inputs, output ) -> {
+               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
+                     metaModelVersion, operationUrn, operationUrn.getName(), preferredNames, descriptions, see );
+               return new DefaultOperation( baseAttributes, inputs, output );
+            } );
    }
 
    @Provide
@@ -298,8 +292,7 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
             .as( ( metaModelVersion, propertyUrn, preferredNames, descriptions, see, characteristic, payloadName ) -> {
                final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
                      metaModelVersion, propertyUrn, propertyUrn.getName(), preferredNames, descriptions, see );
-               return new DefaultProperty( baseAttributes, characteristic, Optional.empty(), false, false,
-                     Optional.of( payloadName ) );
+               return new DefaultProperty( baseAttributes, characteristic, Optional.empty(), false, false, Optional.of( payloadName ) );
             } );
    }
 
@@ -325,69 +318,69 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
       final Arbitrary<String> anyString = Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 25 );
 
       switch ( rdfDatatype.getURI().split( "#" )[1] ) {
-         case "boolean":
-            return anyBoolean().map( x -> x );
-         case "decimal":
-         case "integer":
-            return Arbitraries.bigIntegers().map( x -> x );
-         case "double":
-            return Arbitraries.doubles().map( x -> x );
-         case "float":
-            return Arbitraries.floats().map( x -> x );
-         case "date":
-            return anyDate().map( x -> x );
-         case "time":
-            return anyTime().map( x -> x );
-         case "anyDateTime":
-            return anyDateTime().map( x -> x );
-         case "anyDateTimeStamp":
-            return anyDateTimeStamp().map( x -> x );
-         case "gYear":
-            return anyGYear().map( x -> x );
-         case "gMonth":
-            return anyGMonth().map( x -> x );
-         case "gDay":
-            return anyGDay().map( x -> x );
-         case "gYearMonth":
-            return anyGYearMonth().map( x -> x );
-         case "gMonthDay":
-            return anyGMonthDay().map( x -> x );
-         case "duration":
-            return anyDuration().map( x -> x );
-         case "yearMonthDuation":
-            return anyYearMonthDuration().map( x -> x );
-         case "dayTimeDuration":
-            return anyDayTimeDuration().map( x -> x );
-         case "byte":
-            return Arbitraries.bytes().map( x -> x );
-         case "short":
-            return Arbitraries.shorts().map( x -> x );
-         case "unsignedByte":
-            return anyUnsignedByte().map( x -> x );
-         case "int":
-            return Arbitraries.integers().map( x -> x );
-         case "unsignedShort":
-            return anyUnsignedShort().map( x -> x );
-         case "long":
-            return Arbitraries.longs().map( x -> x );
-         case "unsignedLong":
-            return anyUnsignedLong().map( x -> x );
-         case "positiveInteger":
-            return anyPositiveInteger().map( x -> x );
-         case "nonNegativeInteger":
-            return anyNonNegativeInteger().map( x -> x );
-         case "hexBinary":
-            return anyHexBinary().map( x -> x );
-         case "base64Binary":
-            return anyBase64Binary().map( x -> x );
-         case "anyURI":
-            return anyUri().map( x -> x );
-         case "curie":
-            return anyMetaModelVersion().map( BammDataType::curie ).map( x -> x );
-         case "langString":
-            return Combinators.combine( anyString, anyLocale() )
-                              .as( ( string, locale ) -> Map.of( locale, string ) )
-                              .map( x -> x );
+      case "boolean":
+         return anyBoolean().map( x -> x );
+      case "decimal":
+      case "integer":
+         return Arbitraries.bigIntegers().map( x -> x );
+      case "double":
+         return Arbitraries.doubles().map( x -> x );
+      case "float":
+         return Arbitraries.floats().map( x -> x );
+      case "date":
+         return anyDate().map( x -> x );
+      case "time":
+         return anyTime().map( x -> x );
+      case "anyDateTime":
+         return anyDateTime().map( x -> x );
+      case "anyDateTimeStamp":
+         return anyDateTimeStamp().map( x -> x );
+      case "gYear":
+         return anyGYear().map( x -> x );
+      case "gMonth":
+         return anyGMonth().map( x -> x );
+      case "gDay":
+         return anyGDay().map( x -> x );
+      case "gYearMonth":
+         return anyGYearMonth().map( x -> x );
+      case "gMonthDay":
+         return anyGMonthDay().map( x -> x );
+      case "duration":
+         return anyDuration().map( x -> x );
+      case "yearMonthDuation":
+         return anyYearMonthDuration().map( x -> x );
+      case "dayTimeDuration":
+         return anyDayTimeDuration().map( x -> x );
+      case "byte":
+         return Arbitraries.bytes().map( x -> x );
+      case "short":
+         return Arbitraries.shorts().map( x -> x );
+      case "unsignedByte":
+         return anyUnsignedByte().map( x -> x );
+      case "int":
+         return Arbitraries.integers().map( x -> x );
+      case "unsignedShort":
+         return anyUnsignedShort().map( x -> x );
+      case "long":
+         return Arbitraries.longs().map( x -> x );
+      case "unsignedLong":
+         return anyUnsignedLong().map( x -> x );
+      case "positiveInteger":
+         return anyPositiveInteger().map( x -> x );
+      case "nonNegativeInteger":
+         return anyNonNegativeInteger().map( x -> x );
+      case "hexBinary":
+         return anyHexBinary().map( x -> x );
+      case "base64Binary":
+         return anyBase64Binary().map( x -> x );
+      case "anyURI":
+         return anyUri().map( x -> x );
+      case "curie":
+         return anyMetaModelVersion().map( BammDataType::curie ).map( x -> x );
+      case "langString":
+         return Combinators.combine( anyString, anyLocale() )
+               .as( ( string, locale ) -> Map.of( locale, string ) )
+               .map( x -> x );
       }
       return anyString.map( x -> x );
    }
@@ -397,8 +390,8 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
       final Arbitrary<Map<String, Object>> anyEntityInstanceIdentifier =
             anyMetaModelVersion().flatMap( metaModelVersion -> {
                final Arbitrary<String> key = Arbitraries.constant( bamm( metaModelVersion ) )
-                                                        .map( BAMM::name )
-                                                        .map( Object::toString );
+                     .map( BAMM::name )
+                     .map( Object::toString );
                final Arbitrary<Object> values = anyLowerCaseElementName().map( x -> x );
                return Arbitraries.maps( key, values ).ofSize( 1 );
             } );
@@ -407,15 +400,15 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
             Arbitraries.of( entity.getProperties() ).flatMap( property -> {
                final Arbitrary<String> key = Arbitraries.constant( property.getName() );
                final Arbitrary<Object> values = property.getDataType().map( this::anyValueForType )
-                                                        .orElse( Arbitraries.of( (Object) null ) );
+                     .orElse( Arbitraries.of( (Object) null ) );
                return Arbitraries.maps( key, values );
             } );
 
       return Combinators.combine( anyEntityInstanceIdentifier, anyEntityInstanceKeyValues )
-                        .as( ( identifierMap, propertiesMap ) ->
-                              ImmutableMap.<String, Object> builder().putAll( identifierMap )
-                                                                     .putAll( propertiesMap )
-                                                                     .build() );
+            .as( ( identifierMap, propertiesMap ) ->
+                  ImmutableMap.<String, Object> builder().putAll( identifierMap )
+                        .putAll( propertiesMap )
+                        .build() );
    }
 
    @Provide
@@ -430,11 +423,10 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
    default Arbitrary<Object> anyValueForScalarType( final Scalar type ) {
       return ExtendedXsdDataType
             .supportedXsdTypes.stream()
-                              .filter( dataType -> dataType.getURI().equals( type.getUrn() ) )
-                              .map( this::anyValueForRdfType )
-                              .findFirst()
-                              .orElseThrow(
-                                    () -> new RuntimeException( "Could not generate values for type " + type ) );
+            .filter( dataType -> dataType.getURI().equals( type.getUrn() ) )
+            .map( this::anyValueForRdfType )
+            .findFirst()
+            .orElseThrow( () -> new RuntimeException( "Could not generate values for type " + type ) );
    }
 
    @Provide

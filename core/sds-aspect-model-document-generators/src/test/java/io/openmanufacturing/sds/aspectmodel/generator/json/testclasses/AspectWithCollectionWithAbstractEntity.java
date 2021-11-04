@@ -23,15 +23,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.openmanufacturing.sds.aspectmodel.java.CollectionAspect;
 
-public class AspectWithCollectionWithAbstractEntity
-      implements CollectionAspect<Collection<AbstractTestEntity>, AbstractTestEntity> {
+public class AspectWithCollectionWithAbstractEntity implements CollectionAspect<Collection<AbstractTestEntity>, AbstractTestEntity> {
 
    @NotNull
    private final Collection<AbstractTestEntity> testProperty;
 
    @JsonCreator
-   public AspectWithCollectionWithAbstractEntity(
-         @JsonProperty( value = "testProperty" ) final Collection<AbstractTestEntity> testProperty ) {
+   public AspectWithCollectionWithAbstractEntity( @JsonProperty( value = "testProperty" ) final Collection<AbstractTestEntity> testProperty ) {
       super();
       this.testProperty = testProperty;
    }

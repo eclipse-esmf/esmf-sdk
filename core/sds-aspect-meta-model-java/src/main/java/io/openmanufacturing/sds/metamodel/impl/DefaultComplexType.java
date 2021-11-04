@@ -25,16 +25,13 @@ public class DefaultComplexType extends BaseImpl implements ComplexType {
    private final Optional<ComplexType> _extends;
 
    protected static DefaultComplexType createDefaultComplexType( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final List<? extends Property> properties,
-         final Optional<ComplexType> _extends ) {
-      final DefaultComplexType defaultComplexType = new DefaultComplexType( metaModelBaseAttributes, properties,
-            _extends );
+         final List<? extends Property> properties, final Optional<ComplexType> _extends ) {
+      final DefaultComplexType defaultComplexType = new DefaultComplexType( metaModelBaseAttributes, properties, _extends );
       instances.put( metaModelBaseAttributes.getUrn().get(), defaultComplexType );
       return defaultComplexType;
    }
 
-   protected DefaultComplexType( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final List<? extends Property> properties,
+   protected DefaultComplexType( final MetaModelBaseAttributes metaModelBaseAttributes, final List<? extends Property> properties,
          final Optional<ComplexType> _extends ) {
       super( metaModelBaseAttributes );
       this.properties = new ArrayList<>( properties );

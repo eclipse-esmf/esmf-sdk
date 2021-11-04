@@ -24,10 +24,9 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
-
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 
 public class Collection2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "collection2boxmodel.sparql";
@@ -40,8 +39,7 @@ public class Collection2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testOnlyUsedCollectionsAreProcessedExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_USED_AND_UNUSED_COLLECTION,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_USED_AND_UNUSED_COLLECTION, metaModelVersion );
 
       final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
 
@@ -50,21 +48,15 @@ public class Collection2BoxModelTest extends MetaModelVersions {
          qexec.execConstruct( queryResult );
       }
 
-      assertThat(
-            queryResult.listStatements( context.selector( ":UsedTestCollectionCharacteristic a :Box" ) ).toList() )
-            .hasSize( 1 );
-      assertThat(
-            queryResult.listStatements( context.selector( ":UnusedTestCollectionCharacteristic a :Box" ) ).toList() )
-            .hasSize( 0 );
-      assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() )
-            .hasSize( totalNumberOfExpectedEntries );
+      assertThat( queryResult.listStatements( context.selector( ":UsedTestCollectionCharacteristic a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( ":UnusedTestCollectionCharacteristic a :Box" ) ).toList() ).hasSize( 0 );
+      assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() ).hasSize( totalNumberOfExpectedEntries );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_COLLECTION_WITH_SEE_ATTRIBUTE,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_COLLECTION_WITH_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement, totalNumberOfExpectedEntries,
             indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/omp" );
@@ -73,8 +65,7 @@ public class Collection2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_COLLECTION_WITH_MULTIPLE_SEE_ATTRIBUTES,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_COLLECTION_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement, totalNumberOfExpectedEntries,
             indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/me, http://example.com/omp" );
@@ -83,8 +74,7 @@ public class Collection2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_COLLECTION_WITHOUT_SEE_ATTRIBUTE,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_COLLECTION_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsNotPresentTest(
             sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement, totalNumberOfExpectedEntries,
             indexOfSeeValueEntry );
@@ -93,43 +83,31 @@ public class Collection2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testCollectionWithElementCharacteristicExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext(
-            TestAspect.ASPECT_WITH_COLLECTIONS_WITH_ELEMENT_CHARACTERISTIC_AND_SIMPLE_DATA_TYPE, metaModelVersion );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_COLLECTIONS_WITH_ELEMENT_CHARACTERISTIC_AND_SIMPLE_DATA_TYPE, metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( "collection-elementcharacteristic-edges2boxmodel.sparql" ) );
+      final Query query = QueryFactory.create( context.getInputStreamAsString( "collection-elementcharacteristic-edges2boxmodel.sparql" ) );
 
       final Model queryResult = ModelFactory.createDefaultModel();
       try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
          qexec.execConstruct( queryResult );
       }
 
-      assertThat( queryResult
-            .listStatements( context.selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic a :Edge" ) )
+      assertThat( queryResult.listStatements( context.selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic a :Edge" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic :to :TextCharacteristic" ) )
             .toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements(
-            context.selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic :to :TextCharacteristic" ) )
-                             .toList() )
-            .hasSize( 1 );
-      assertThat( queryResult.listStatements( context
-            .selector(
-                  ":TestCollectionTwoCharacteristic_To_TextCharacteristic :from :TestCollectionTwoCharacteristic" ) )
-                             .toList() )
-            .hasSize( 1 );
-      assertThat( queryResult.listStatements( context
-            .selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic :title element Characteristic" ) )
-                             .toList() )
-            .hasSize( 1 );
+      assertThat(
+            queryResult.listStatements( context.selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic :from :TestCollectionTwoCharacteristic" ) )
+                  .toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic :title element Characteristic" ) )
+            .toList() ).hasSize( 1 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
    public void testCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext(
-            TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( "characteristic-entity-edges2boxmodel.sparql" ) );
+      final Query query = QueryFactory .create( context.getInputStreamAsString( "characteristic-entity-edges2boxmodel.sparql" ) );
 
       final Model queryResult = ModelFactory.createDefaultModel();
       try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
@@ -140,10 +118,12 @@ public class Collection2BoxModelTest extends MetaModelVersions {
             .listStatements( context.selector( ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity a :Edge" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult
-            .listStatements( context.selector( ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :from :EntityCollectionCharacteristicCharacteristic" ) )
+            .listStatements( context.selector(
+                  ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :from :EntityCollectionCharacteristicCharacteristic" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult
-            .listStatements( context.selector( ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :to :AbstractTestEntityAbstractEntity" ) )
+            .listStatements( context.selector(
+                  ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :to :AbstractTestEntityAbstractEntity" ) )
             .toList() ).hasSize( 1 );
    }
 }

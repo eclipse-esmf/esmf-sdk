@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,7 +22,7 @@ import io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.Migrator;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.SdsMetaModelVersionUriRewriter;
 
 /**
- * Includes all DSDS migrators
+ * Includes all SDS migrators
  */
 public class SdsMigratorFactory {
 

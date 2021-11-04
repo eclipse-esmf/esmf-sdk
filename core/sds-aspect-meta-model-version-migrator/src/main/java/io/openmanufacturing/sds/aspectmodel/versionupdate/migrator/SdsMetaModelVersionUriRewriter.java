@@ -23,10 +23,10 @@ public class SdsMetaModelVersionUriRewriter extends AbstractUriRewriter {
          return Optional.empty();
       }
       return oldToNewNamespaces.keySet()
-                               .stream()
-                               .filter( key -> key.equals( uriParts[0] + "#" ) )
-                               .findAny()
-                               .map( key -> oldToNewNamespaces.get( key ) + uriParts[1] );
+            .stream()
+            .filter( key -> key.equals( uriParts[0] + "#" ) )
+            .findAny()
+            .map( key -> oldToNewNamespaces.get( key ) + uriParts[1] );
    }
 
    @Override

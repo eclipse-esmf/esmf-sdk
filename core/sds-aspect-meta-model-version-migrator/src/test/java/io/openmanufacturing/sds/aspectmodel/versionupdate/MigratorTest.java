@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -42,10 +42,8 @@ public class MigratorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testRawModelIsMigrated( final KnownVersion metaModelVersion ) {
-      final VersionedModel versionedModel = TestResources
-            .getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
-      final VersionedModel rewrittenModel = migratorService
-            .updateMetaModelVersion( versionedModel ).get();
+      final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
+      final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
       assertThat( versionedModel.getRawModel().size() ).isEqualTo( rewrittenModel.getRawModel().size() );
       if ( metaModelVersion.equals( KnownVersion.getLatest() ) ) {
          return;
@@ -59,12 +57,10 @@ public class MigratorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testUriRewriting( final KnownVersion metaModelVersion ) {
-      final VersionedModel versionedModel = TestResources
-            .getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
+      final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
 
-      assertThat( rewrittenModel.getVersion() )
-            .isEqualTo( VersionNumber.parse( KnownVersion.getLatest().toVersionString() ) );
+      assertThat( rewrittenModel.getVersion() ).isEqualTo( VersionNumber.parse( KnownVersion.getLatest().toVersionString() ) );
       final Model model = rewrittenModel.getRawModel();
       assertThat( model.getNsPrefixURI( "bamm" ) ).contains( KnownVersion.getLatest().toVersionString() );
 
@@ -72,16 +68,14 @@ public class MigratorTest extends MetaModelVersions {
          return;
       }
 
-      final String metaModelNameSpace = String.format( "urn:bamm:io.openmanufacturing:meta-model:%s",
-            metaModelVersion.toVersionString() );
+      final String metaModelNameSpace = String.format( "urn:bamm:io.openmanufacturing:meta-model:%s", metaModelVersion.toVersionString() );
       assertThat( getAllUris( model ) ).noneMatch( uri -> uri.contains( metaModelNameSpace ) );
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testUriRewritingDoesNotChangeCustomNamespaces( final KnownVersion metaModelVersion ) {
-      final VersionedModel versionedModel = TestResources
-            .getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_NAMESPACE, metaModelVersion );
+      final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_NAMESPACE, metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
 
       assertThat( rewrittenModel.getRawModel().getNsPrefixMap() ).containsKey( "custom" );

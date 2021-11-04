@@ -35,13 +35,6 @@ import java.util.stream.LongStream;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.common.collect.Lists;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Resource;
@@ -52,6 +45,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.common.collect.Lists;
+
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.generator.NumericTypeTraits;
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AbstractTestEntity;
 import io.openmanufacturing.sds.aspectmodel.generator.json.testclasses.AspectWithAbstractEntity;
@@ -128,12 +128,10 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithCollectionOfEntities( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateJsonForAspectWithCollectionOfEntities( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENTITY_LIST, metaModelVersion );
 
-      final AspectWithEntityCollection aspectWithEntityCollection = parseJson( generatedJson,
-            AspectWithEntityCollection.class );
+      final AspectWithEntityCollection aspectWithEntityCollection = parseJson( generatedJson, AspectWithEntityCollection.class );
 
       assertThat( aspectWithEntityCollection.getTestList() ).hasSize( 1 );
 
@@ -146,14 +144,12 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    public void testGenerateJsonForAspectWithSimpleProperties( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES, metaModelVersion );
 
-      final AspectWithSimpleProperties aspectWithSimpleProperties = parseJson( generatedJson,
-            AspectWithSimpleProperties.class );
+      final AspectWithSimpleProperties aspectWithSimpleProperties = parseJson( generatedJson, AspectWithSimpleProperties.class );
 
       assertThat( aspectWithSimpleProperties.getRandomValue() ).isNotBlank();
       assertThat( aspectWithSimpleProperties.getRandomValue() ).isNotNull();
       assertThat( aspectWithSimpleProperties.getTestFloat() ).isEqualTo( 2.25f );
-      assertThat( aspectWithSimpleProperties.getTestLocalDateTime() )
-            .isEqualTo( datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918" ) );
+      assertThat( aspectWithSimpleProperties.getTestLocalDateTime() ).isEqualTo( datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918" ) );
       assertThat( aspectWithSimpleProperties.getTestInt() ).isEqualTo( 3 );
       assertThat( aspectWithSimpleProperties.getTestString() ).isEqualTo( "Example Value Test" );
 
@@ -164,15 +160,12 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testGenerateJsonForAspectWithStateType( final KnownVersion metaModelVersion ) throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES_AND_STATE,
-            metaModelVersion );
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_SIMPLE_PROPERTIES_AND_STATE, metaModelVersion );
 
-      final AspectWithSimpleTypesAndState aspectWithSimpleTypes = parseJson( generatedJson,
-            AspectWithSimpleTypesAndState.class );
+      final AspectWithSimpleTypesAndState aspectWithSimpleTypes = parseJson( generatedJson, AspectWithSimpleTypesAndState.class );
       assertThat( aspectWithSimpleTypes.getRandomValue() ).isNotBlank();
       assertThat( aspectWithSimpleTypes.getTestFloat() ).isEqualTo( 2.25f );
-      assertThat( aspectWithSimpleTypes.getTestLocalDateTime() )
-            .isEqualTo( datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918" ) );
+      assertThat( aspectWithSimpleTypes.getTestLocalDateTime() ).isEqualTo( datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918" ) );
       assertThat( aspectWithSimpleTypes.getTestInt() ).isEqualTo( 3 );
       assertThat( aspectWithSimpleTypes.getTestString() ).isEqualTo( "Example Value Test" );
       assertThat( aspectWithSimpleTypes.getAutomationProperty() ).isEqualTo( "Automation Default Prop" );
@@ -181,8 +174,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testGenerateJsonForAspectWithEntity( final KnownVersion metaModelVersion ) throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENTITY_WITH_MULTIPLE_PROPERTIES,
-            metaModelVersion );
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENTITY_WITH_MULTIPLE_PROPERTIES, metaModelVersion );
 
       final AspectWithEntity aspectWithEntity = parseJson( generatedJson, AspectWithEntity.class );
       assertTestEntityWithSimpleTypes( aspectWithEntity.getTestEntity() );
@@ -190,15 +182,11 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithRecursivePropertyWithOptional( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL,
-            metaModelVersion );
-      final AspectWithRecursivePropertyWithOptional aspectWithRecursivePropertyWithOptional = parseJson(
-            generatedJson, AspectWithRecursivePropertyWithOptional.class );
-      assertThat(
-            aspectWithRecursivePropertyWithOptional.getTestProperty().getTestProperty().get().getTestProperty() )
-            .isNotPresent();
+   public void testGenerateJsonForAspectWithRecursivePropertyWithOptional( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL, metaModelVersion );
+      final AspectWithRecursivePropertyWithOptional aspectWithRecursivePropertyWithOptional = parseJson( generatedJson,
+            AspectWithRecursivePropertyWithOptional.class );
+      assertThat( aspectWithRecursivePropertyWithOptional.getTestProperty().getTestProperty().get().getTestProperty() ).isNotPresent();
    }
 
    @ParameterizedTest
@@ -206,8 +194,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    public void testGenerateJsonForAspectWithMultipleEntities( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES, metaModelVersion );
 
-      final AspectWithMultipleEntities aspectWithMultipleEntities = parseJson( generatedJson,
-            AspectWithMultipleEntities.class );
+      final AspectWithMultipleEntities aspectWithMultipleEntities = parseJson( generatedJson, AspectWithMultipleEntities.class );
       assertTestEntityWithSimpleTypes( aspectWithMultipleEntities.getTestEntityOne() );
       assertTestEntityWithSimpleTypes( aspectWithMultipleEntities.getTestEntityTwo() );
    }
@@ -228,10 +215,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithMultipleCollectionsOfSimpleType( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTIPLE_COLLECTIONS_OF_SIMPLE_TYPE,
-            metaModelVersion );
+   public void testGenerateJsonForAspectWithMultipleCollectionsOfSimpleType( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTIPLE_COLLECTIONS_OF_SIMPLE_TYPE, metaModelVersion );
 
       final AspectWithMultipleCollectionsOfSimpleType aspectWithCollectionOfSimpleType = parseJson( generatedJson,
             AspectWithMultipleCollectionsOfSimpleType.class );
@@ -242,13 +227,10 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithCollectionOfSimpleType( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE,
-            metaModelVersion );
+   public void testGenerateJsonForAspectWithCollectionOfSimpleType( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE, metaModelVersion );
 
-      final AspectWithCollectionOfSimpleType aspectWithCollectionOfSimpleType = parseJson( generatedJson,
-            AspectWithCollectionOfSimpleType.class );
+      final AspectWithCollectionOfSimpleType aspectWithCollectionOfSimpleType = parseJson( generatedJson, AspectWithCollectionOfSimpleType.class );
 
       assertThat( aspectWithCollectionOfSimpleType.getTestList() ).containsExactly( 35 );
    }
@@ -257,27 +239,22 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testGenerateJsonForAspectWithEitherType( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_EITHER, metaModelVersion );
-      final AspectWithEither aspectWithEither = parseJson( generatedJson,
-            AspectWithEither.class );
+      final AspectWithEither aspectWithEither = parseJson( generatedJson, AspectWithEither.class );
       assertThat( aspectWithEither.getEither().getLeft() ).isNotBlank();
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithEnumHavingNestedEntities( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES,
-            metaModelVersion );
+   public void testGenerateJsonForAspectWithEnumHavingNestedEntities( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES, metaModelVersion );
 
       final BAMM bamm = new BAMM( metaModelVersion );
       assertThat( generatedJson ).doesNotContain( bamm.name().toString() );
 
-      final AspectWithEnumHavingNestedEntities aspectWithEnum = parseJson( generatedJson,
-            AspectWithEnumHavingNestedEntities.class );
+      final AspectWithEnumHavingNestedEntities aspectWithEnum = parseJson( generatedJson, AspectWithEnumHavingNestedEntities.class );
 
       assertThat( aspectWithEnum.getSimpleResult().getValue() ).isEqualTo( "Yes" );
-      final AspectWithEnumHavingNestedEntities.DetailEntity details = aspectWithEnum.getResult().getValue()
-                                                                                    .getDetails();
+      final AspectWithEnumHavingNestedEntities.DetailEntity details = aspectWithEnum.getResult().getValue().getDetails();
       assertThat( details.getDescription() ).isEqualTo( "Result succeeded" );
       assertThat( details.getMessage() ).isEqualTo( "Evaluation succeeded." );
       assertThat( details.getNumericCode() ).isEqualTo( Short.valueOf( "10" ) );
@@ -285,18 +262,13 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithEntityEnumerationAndLangString( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING,
-            metaModelVersion );
+   public void testGenerateJsonForAspectWithEntityEnumerationAndLangString( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING, metaModelVersion );
 
-      final AspectWithEntityEnumerationAndLangString aspectWithEnum = parseJson( generatedJson,
-            AspectWithEntityEnumerationAndLangString.class );
+      final AspectWithEntityEnumerationAndLangString aspectWithEnum = parseJson( generatedJson, AspectWithEntityEnumerationAndLangString.class );
 
-      assertThat( aspectWithEnum.getTestProperty().getValue().getEntityProperty().get( "de" ) )
-            .isEqualTo( "Dies ist ein Test." );
-      assertThat( aspectWithEnum.getTestProperty().getValue().getEntityProperty().get( "en" ) )
-            .isEqualTo( "This is a test." );
+      assertThat( aspectWithEnum.getTestProperty().getValue().getEntityProperty().get( "de" ) ).isEqualTo( "Dies ist ein Test." );
+      assertThat( aspectWithEnum.getTestProperty().getValue().getEntityProperty().get( "en" ) ).isEqualTo( "This is a test." );
    }
 
    @ParameterizedTest
@@ -313,10 +285,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithComplextEntityCollectionEnum( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM,
-            metaModelVersion );
+   public void testGenerateJsonForAspectWithComplextEntityCollectionEnum( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM, metaModelVersion );
 
       final AspectWithComplexEntityCollectionEnum aspectWithComplexEntityCollectionEnum = parseJson( generatedJson,
             AspectWithComplexEntityCollectionEnum.class );
@@ -329,12 +299,9 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithMultipleEntitiesComplexEitherType( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_AND_EITHER,
-            metaModelVersion );
-      final AspectWithMultipleEntitiesAndEither aspectWithCollectionOfSimpleType = parseJson( generatedJson,
-            AspectWithMultipleEntitiesAndEither.class );
+   public void testGenerateJsonForAspectWithMultipleEntitiesComplexEitherType( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_AND_EITHER, metaModelVersion );
+      final AspectWithMultipleEntitiesAndEither aspectWithCollectionOfSimpleType = parseJson( generatedJson, AspectWithMultipleEntitiesAndEither.class );
       assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEntityOne() );
       assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEntityTwo() );
       assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEither().getLeft() );
@@ -342,13 +309,10 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithMultipleCollectionsOfEntities( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTIPLE_ENTITY_COLLECTIONS,
-            metaModelVersion );
+   public void testGenerateJsonForAspectWithMultipleCollectionsOfEntities( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTIPLE_ENTITY_COLLECTIONS, metaModelVersion );
 
-      final AspectWithMultipleEntityCollections aspectWithEntityCollection = parseJson( generatedJson,
-            AspectWithMultipleEntityCollections.class );
+      final AspectWithMultipleEntityCollections aspectWithEntityCollection = parseJson( generatedJson, AspectWithMultipleEntityCollections.class );
 
       assertThat( aspectWithEntityCollection.getTestListOne() ).hasSize( 1 );
       assertThat( aspectWithEntityCollection.getTestListTwo() ).hasSize( 1 );
@@ -373,8 +337,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testGenerateAspectWithMultiLanguageText( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT, metaModelVersion );
-      final AspectWithMultiLanguageText aspectWithMultiLanguageText = parseJson( generatedJson,
-            AspectWithMultiLanguageText.class );
+      final AspectWithMultiLanguageText aspectWithMultiLanguageText = parseJson( generatedJson, AspectWithMultiLanguageText.class );
       assertThat( aspectWithMultiLanguageText.getProp() ).containsKey( Locale.ENGLISH );
    }
 
@@ -382,8 +345,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testGenerateAspectWithConstraint( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_CONSTRAINT, metaModelVersion );
-      final AspectWithConstraintProperties aspectWithConstraint = parseJson( generatedJson,
-            AspectWithConstraintProperties.class );
+      final AspectWithConstraintProperties aspectWithConstraint = parseJson( generatedJson, AspectWithConstraintProperties.class );
       assertThat( aspectWithConstraint.getStringLcProperty().length() ).isBetween( 20, 22 );
       assertThat( aspectWithConstraint.getBigIntRcProperty().intValue() ).isBetween( 10, 15 );
       assertThat( aspectWithConstraint.getDoubleRcProperty() ).isBetween( -0.1, 0.2 );
@@ -396,20 +358,17 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testGenerateAspectWithConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_CONSTRAINTS, metaModelVersion );
-      final AspectWithConstraints aspectWithConstraints = parseJson( generatedJson,
-            AspectWithConstraints.class );
+      final AspectWithConstraints aspectWithConstraints = parseJson( generatedJson, AspectWithConstraints.class );
       assertThat( aspectWithConstraints.getTestPropertyCollectionLengthConstraint().size() ).isBetween( 1, 10 );
-      assertThat( aspectWithConstraints.getTestPropertyWithMinLengthConstraint() )
-            .isGreaterThanOrEqualTo( BigInteger.ONE );
+      assertThat( aspectWithConstraints.getTestPropertyWithMinLengthConstraint() ).isGreaterThanOrEqualTo( BigInteger.ONE );
       assertThat( aspectWithConstraints.getTestPropertyWithMinMaxLengthConstraint().length() ).isBetween( 1, 10 );
       assertThat( aspectWithConstraints.getTestPropertyRangeConstraintWithDoubleType() ).isBetween( 1.0, 10.0 );
       assertThat( aspectWithConstraints.getTestPropertyRangeConstraintWithFloatType() ).isBetween( 1.0f, 10.0f );
       assertThat( aspectWithConstraints.getTestPropertyWithMinRangeConstraint() ).isGreaterThanOrEqualTo( 1 );
       assertThat( aspectWithConstraints.getTestPropertyWithMinMaxRangeConstraint() ).isBetween( 1, 10 );
-      assertThat( aspectWithConstraints.getTestPropertyWithDecimalMaxRangeConstraint() )
-            .isLessThanOrEqualTo( BigDecimal.valueOf( 10.5 ) );
-      assertThat( aspectWithConstraints.getTestPropertyWithDecimalMinDecimalMaxRangeConstraint() )
-            .isBetween( BigDecimal.valueOf( 2.3 ), BigDecimal.valueOf( 10.5 ) );
+      assertThat( aspectWithConstraints.getTestPropertyWithDecimalMaxRangeConstraint() ).isLessThanOrEqualTo( BigDecimal.valueOf( 10.5 ) );
+      assertThat( aspectWithConstraints.getTestPropertyWithDecimalMinDecimalMaxRangeConstraint() ).isBetween( BigDecimal.valueOf( 2.3 ),
+            BigDecimal.valueOf( 10.5 ) );
       assertThat( aspectWithConstraints.getTestPropertyWithRegularExpression() ).matches( "^[a-zA-Z]" );
    }
 
@@ -417,35 +376,25 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testGenerateAspectWithStructuredValue( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_STRUCTURED_VALUE, metaModelVersion );
-      final AspectWithStructuredValue aspectWithStructuredValue = parseJson( generatedJson,
-            AspectWithStructuredValue.class );
+      final AspectWithStructuredValue aspectWithStructuredValue = parseJson( generatedJson, AspectWithStructuredValue.class );
       assertThat( aspectWithStructuredValue.getDate().toString() ).isEqualTo( "2019-09-27" );
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateAspectWithDateTimeTypeForRangeConstraints( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS,
-            metaModelVersion );
-      final AspectWithGTypeForRangeConstraints aspectWithGTypeForRangeConstraints = parseJson( generatedJson,
-            AspectWithGTypeForRangeConstraints.class );
-      final Pattern dayPattern = Pattern
-            .compile( "---(0[1-9]|[12][0-9]|3[01])(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
-      final Pattern monthPattern = Pattern
-            .compile( "--(0[1-9]|1[0-2])(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
-      assertTrue( dayPattern.matcher( aspectWithGTypeForRangeConstraints.getTestPropertyWithGDay().toString() )
-                            .matches() );
-      assertTrue( monthPattern.matcher( aspectWithGTypeForRangeConstraints.getTestPropertyWithGMonth().toString() )
-                              .matches() );
+   public void testGenerateAspectWithDateTimeTypeForRangeConstraints( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS, metaModelVersion );
+      final AspectWithGTypeForRangeConstraints aspectWithGTypeForRangeConstraints = parseJson( generatedJson, AspectWithGTypeForRangeConstraints.class );
+      final Pattern dayPattern = Pattern.compile( "---(0[1-9]|[12][0-9]|3[01])(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
+      final Pattern monthPattern = Pattern.compile( "--(0[1-9]|1[0-2])(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
+      assertTrue( dayPattern.matcher( aspectWithGTypeForRangeConstraints.getTestPropertyWithGDay().toString() ).matches() );
+      assertTrue( monthPattern.matcher( aspectWithGTypeForRangeConstraints.getTestPropertyWithGMonth().toString() ).matches() );
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithoutMinMaxIntegerValueOnRangeConstraint(
-         final KnownVersion metaModelVersion ) throws IOException {
-      final String generatedJson = generateJsonForModel(
-            TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_INTEGER_VALUE, metaModelVersion );
+   public void testGenerateJsonForAspectWithoutMinMaxIntegerValueOnRangeConstraint( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_INTEGER_VALUE, metaModelVersion );
 
       final AspectWithRangeConstraintWithoutMinMaxIntegerValue aspectWithSimpleProperties = parseJson( generatedJson,
             AspectWithRangeConstraintWithoutMinMaxIntegerValue.class );
@@ -455,10 +404,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithoutMinMaxDoubleValueOnRangeConstraint(
-         final KnownVersion metaModelVersion ) throws IOException {
-      final String generatedJson = generateJsonForModel(
-            TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_DOUBLE_VALUE, metaModelVersion );
+   public void testGenerateJsonForAspectWithoutMinMaxDoubleValueOnRangeConstraint( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_DOUBLE_VALUE, metaModelVersion );
 
       final AspectWithRangeConstraintWithoutMinMaxDoubleValue aspectWithRangeConstraintWithoutMinMaxDoubleValue =
             parseJson( generatedJson, AspectWithRangeConstraintWithoutMinMaxDoubleValue.class );
@@ -468,34 +415,27 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithEntityEnumerationAndNotInPayloadProperties(
-         final KnownVersion metaModelVersion ) throws IOException {
-      final String generatedJson = generateJsonForModel(
-            TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES, metaModelVersion );
+   public void testGenerateJsonForAspectWithEntityEnumerationAndNotInPayloadProperties( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES, metaModelVersion );
 
       final AspectWithEntityEnumerationAndNotInPayloadProperties aspectWithEntityAndNoInPayloadProperty =
             parseJson( generatedJson, AspectWithEntityEnumerationAndNotInPayloadProperties.class );
-      assertThat( aspectWithEntityAndNoInPayloadProperty.getSystemState().getValue().getState() )
-            .isEqualTo( (short) 1 );
+      assertThat( aspectWithEntityAndNoInPayloadProperty.getSystemState().getValue().getState() ).isEqualTo( (short) 1 );
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithExtendedEnumsWithNotInPayloadProperty( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel(
-            TestAspect.ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY, metaModelVersion );
+   public void testGenerateJsonForAspectWithExtendedEnumsWithNotInPayloadProperty( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY, metaModelVersion );
 
       final AspectWithExtendedEnumsWithNotInPayloadProperty aspectWithExtendedEnumsWithNotInPayloadProperty =
             parseJson( generatedJson, AspectWithExtendedEnumsWithNotInPayloadProperty.class );
-      assertThat( aspectWithExtendedEnumsWithNotInPayloadProperty.getResult().getValue().getDescription() )
-            .isEqualTo( "No status" );
+      assertThat( aspectWithExtendedEnumsWithNotInPayloadProperty.getResult().getValue().getDescription() ).isEqualTo( "No status" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "rangeTestSource" )
-   void testGeneratedNumbersAreWithinRange( final RDFDatatype numericModelType,
-         final Optional<BoundDefinition> boundKind ) {
+   void testGeneratedNumbersAreWithinRange( final RDFDatatype numericModelType, final Optional<BoundDefinition> boundKind ) {
       // number types are the same in all versions of the meta model, so we do not need to iterate over all of them,
       // just take the latest one
       final KnownVersion modelVersion = KnownVersion.BAMM_1_0_0;
@@ -503,29 +443,21 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final Type numericType = new DefaultScalar( numericModelType.getURI(), modelVersion );
       final Resource dataTypeResource = ResourceFactory.createResource( numericType.getUrn() );
       final Class<?> nativeType = DataType.getJavaTypeForMetaModelType( dataTypeResource, modelVersion );
-      final Pair<Number, Number> randomRange = generateRandomRangeForType( numericType, nativeType,
-            boundKind.orElse( null ) );
+      final Pair<Number, Number> randomRange = generateRandomRangeForType( numericType, nativeType, boundKind.orElse( null ) );
 
-      final Aspect dynamicAspect = createAspectWithDynamicNumericProperty( modelVersion, numericType,
-            boundKind.orElse( null ), randomRange );
-      final AspectModelJsonPayloadGenerator randomGenereator = new AspectModelJsonPayloadGenerator( dynamicAspect );
-      final AspectModelJsonPayloadGenerator minGenereator = new AspectModelJsonPayloadGenerator( dynamicAspect,
-            new MinValueRandomStrategy() );
-      final AspectModelJsonPayloadGenerator maxGenereator = new AspectModelJsonPayloadGenerator( dynamicAspect,
-            new MaxValueRandomStrategy() );
+      final Aspect dynamicAspect = createAspectWithDynamicNumericProperty( modelVersion, numericType, boundKind.orElse( null ), randomRange );
+      final AspectModelJsonPayloadGenerator randomGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect );
+      final AspectModelJsonPayloadGenerator minGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect, new MinValueRandomStrategy() );
+      final AspectModelJsonPayloadGenerator maxGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect, new MaxValueRandomStrategy() );
       try {
-         final String generatedJson = randomGenereator.generateJson();
-         final String minValue = minGenereator.generateJson();
-         final String maxValue = maxGenereator.generateJson();
-         System.out.printf( "%s: %s, min: %s, max: %s, random: %s%n",
-               READABLE_RANGE_TYPE.get( boundKind.orElse( null ) ).get(),
+         final String generatedJson = randomGenerator.generateJson();
+         final String minValue = minGenerator.generateJson();
+         final String maxValue = maxGenerator.generateJson();
+         System.out.printf( "%s: %s, min: %s, max: %s, random: %s%n", READABLE_RANGE_TYPE.get( boundKind.orElse( null ) ).get(),
                randomRange, minValue, maxValue, generatedJson );
-         final AspectWithGenericNumericProperty validator = parseJson( generatedJson,
-               AspectWithGenericNumericProperty.class );
-         final AspectWithGenericNumericProperty minValidator = parseJson( minValue,
-               AspectWithGenericNumericProperty.class );
-         final AspectWithGenericNumericProperty maxValidator = parseJson( maxValue,
-               AspectWithGenericNumericProperty.class );
+         final AspectWithGenericNumericProperty validator = parseJson( generatedJson, AspectWithGenericNumericProperty.class );
+         final AspectWithGenericNumericProperty minValidator = parseJson( minValue, AspectWithGenericNumericProperty.class );
+         final AspectWithGenericNumericProperty maxValidator = parseJson( maxValue, AspectWithGenericNumericProperty.class );
 
          assertNumberInRange( validator.getTestNumber(), randomRange, boundKind.orElse( null ) );
          assertMinValue( minValidator.getTestNumber(), randomRange.getLeft(), boundKind.orElse( null ) );
@@ -535,8 +467,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       }
    }
 
-   private void assertNumberInRange( final Number value, final Pair<Number, Number> range,
-         final BoundDefinition boundKind ) {
+   private void assertNumberInRange( final Number value, final Pair<Number, Number> range, final BoundDefinition boundKind ) {
       assertThat( value ).isNotNull();
       final BigDecimal numberValue = NumericTypeTraits.convertToBigDecimal( value );
       final BigDecimal lowerBound = NumericTypeTraits.convertToBigDecimal( range.getLeft() );
@@ -602,24 +533,19 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGenerateJsonForAspectWithPropertyWithPayloadName( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME,
-            metaModelVersion );
+   public void testGenerateJsonForAspectWithPropertyWithPayloadName( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME, metaModelVersion );
 
-      final AspectWithPropertyWithPayloadName aspectWithPropertyWithPayloadName = parseJson( generatedJson,
-            AspectWithPropertyWithPayloadName.class );
+      final AspectWithPropertyWithPayloadName aspectWithPropertyWithPayloadName = parseJson( generatedJson, AspectWithPropertyWithPayloadName.class );
       assertThat( aspectWithPropertyWithPayloadName.getTest() ).isNotEmpty();
    }
 
    @ParameterizedTest
    @MethodSource( "versionsStartingWith2_0_0" )
    public void testGenerateJsonForAspectWithAbstractEntity( final KnownVersion metaModelVersion ) throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY,
-            metaModelVersion );
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
 
-      final AspectWithAbstractEntity aspectWithAbstractEntity = parseJson( generatedJson,
-            AspectWithAbstractEntity.class );
+      final AspectWithAbstractEntity aspectWithAbstractEntity = parseJson( generatedJson, AspectWithAbstractEntity.class );
       final ExtendingTestEntity testProperty = aspectWithAbstractEntity.getTestProperty();
       assertThat( testProperty ).isNotNull();
       assertThat( testProperty.getAbstractTestProperty() ).isNotNull();
@@ -628,10 +554,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "versionsStartingWith2_0_0" )
-   public void testGenerateJsonForAspectWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY,
-            metaModelVersion );
+   public void testGenerateJsonForAspectWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
 
       final AspectWithCollectionWithAbstractEntity aspectWithCollectionWithAbstractEntity = parseJson( generatedJson,
             AspectWithCollectionWithAbstractEntity.class );
@@ -644,13 +568,10 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "versionsStartingWith2_0_0" )
-   public void testGenerateJsonForAspectWithAbstractSingleEntity( final KnownVersion metaModelVersion )
-         throws IOException {
-      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY,
-            metaModelVersion );
+   public void testGenerateJsonForAspectWithAbstractSingleEntity( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
 
-      final AspectWithAbstractSingleEntity aspectWithAbstractSingleEntity = parseJson( generatedJson,
-            AspectWithAbstractSingleEntity.class );
+      final AspectWithAbstractSingleEntity aspectWithAbstractSingleEntity = parseJson( generatedJson, AspectWithAbstractSingleEntity.class );
       final ExtendingTestEntity extendingTestEntity = (ExtendingTestEntity) aspectWithAbstractSingleEntity.getTestProperty();
       assertThat( extendingTestEntity.getAbstractTestProperty() ).isNotNull();
       assertThat( extendingTestEntity.getEntityProperty() ).isNotBlank();
@@ -670,8 +591,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       assertThat( testEntityWithSimpleTypes.getRandomValue() ).isNotBlank();
       assertThat( testEntityWithSimpleTypes.getRandomValue() ).isNotNull();
       assertThat( testEntityWithSimpleTypes.getTestFloat() ).isEqualTo( 2.25f );
-      assertThat( testEntityWithSimpleTypes.getTestLocalDateTime() )
-            .isEqualTo( datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918Z" ) );
+      assertThat( testEntityWithSimpleTypes.getTestLocalDateTime() ).isEqualTo( datatypeFactory.newXMLGregorianCalendar( "2018-02-28T14:23:32.918Z" ) );
       assertThat( testEntityWithSimpleTypes.getTestInt() ).isEqualTo( 3 );
       assertThat( testEntityWithSimpleTypes.getTestString() ).isEqualTo( "Example Value Test" );
    }
@@ -690,16 +610,16 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    private static List<Arguments> rangeTestSource() {
       final List<Arguments> result = new ArrayList<>();
       Lists.cartesianProduct( getMetaModelNumericTypes(), RANGE_CONSTRAINTS_TO_TEST )
-           .forEach( list -> result.add( Arguments.of( list.get( 0 ), list.get( 1 ) ) ) );
+            .forEach( list -> result.add( Arguments.of( list.get( 0 ), list.get( 1 ) ) ) );
       return result;
    }
 
    private static List<RDFDatatype> getMetaModelNumericTypes() {
       return DataType.getAllSupportedTypes()
-                     .stream()
-                     .filter( dataType -> dataType.getJavaClass() != null )
-                     .filter( dataType -> Number.class.isAssignableFrom( dataType.getJavaClass() ) )
-                     .collect( Collectors.toList() );
+            .stream()
+            .filter( dataType -> dataType.getJavaClass() != null )
+            .filter( dataType -> Number.class.isAssignableFrom( dataType.getJavaClass() ) )
+            .collect( Collectors.toList() );
    }
 
    private static final List<Optional<BoundDefinition>> RANGE_CONSTRAINTS_TO_TEST = Arrays.asList(
@@ -710,48 +630,33 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    );
 
    private Aspect createAspectWithDynamicNumericProperty( final KnownVersion modelVersion, final Type dataType,
-         final BoundDefinition boundKind,
-         final Pair<Number, Number> randomRange ) {
+         final BoundDefinition boundKind, final Pair<Number, Number> randomRange ) {
       final BAMM bamm = new BAMM( modelVersion );
       final Characteristic constraint = boundKind == null ? createBasicCharacteristic( modelVersion, dataType, bamm )
             : createTraitWithRangeConstraint( modelVersion, dataType, boundKind, bamm, randomRange );
       final List<Property> properties = List.of( createProperty( modelVersion, "testNumber", constraint, bamm ) );
       final MetaModelBaseAttributes aspectAttributes =
-            MetaModelBaseAttributes
-                  .from( modelVersion, AspectModelUrn.fromUrn( bamm.Aspect().getURI() ), "AspectWithNumericProperty" );
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( bamm.Aspect().getURI() ), "AspectWithNumericProperty" );
       return new DefaultAspect( aspectAttributes, properties, List.of(), false );
    }
 
-   private Property createProperty( final KnownVersion modelVersion, final String propertyName,
-         final Characteristic characteristic,
-         final BAMM bamm ) {
+   private Property createProperty( final KnownVersion modelVersion, final String propertyName, final Characteristic characteristic, final BAMM bamm ) {
       final MetaModelBaseAttributes propertyAttributes =
-            MetaModelBaseAttributes
-                  .from( modelVersion, AspectModelUrn.fromUrn( bamm.Property().getURI() ), propertyName );
-      return new DefaultProperty( propertyAttributes, characteristic, Optional.empty(), false, false,
-            Optional.empty() );
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( bamm.Property().getURI() ), propertyName );
+      return new DefaultProperty( propertyAttributes, characteristic, Optional.empty(), false, false, Optional.empty() );
    }
 
-   Trait createTraitWithRangeConstraint( final KnownVersion modelVersion, final Type dataType,
-         final BoundDefinition boundKind,
+   Trait createTraitWithRangeConstraint( final KnownVersion modelVersion, final Type dataType, final BoundDefinition boundKind,
          final BAMM bamm, final Pair<Number, Number> randomRange ) {
       final MetaModelBaseAttributes constraintAttibutes =
-            MetaModelBaseAttributes
-                  .from( modelVersion, AspectModelUrn.fromUrn( bamm.characteristic().getURI() ), "TestConstraint" );
-      final Optional<Object> minValue = BoundDefinition.OPEN.equals( boundKind ) ?
-            Optional.empty() :
-            Optional.of( randomRange.getLeft() );
-      final Optional<Object> maxValue = BoundDefinition.OPEN.equals( boundKind ) ?
-            Optional.empty() :
-            Optional.of( randomRange.getRight() );
-      final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttibutes, minValue, maxValue,
-            boundKind,
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( bamm.characteristic().getURI() ), "TestConstraint" );
+      final Optional<Object> minValue = BoundDefinition.OPEN.equals( boundKind ) ? Optional.empty() : Optional.of( randomRange.getLeft() );
+      final Optional<Object> maxValue = BoundDefinition.OPEN.equals( boundKind ) ? Optional.empty() : Optional.of( randomRange.getRight() );
+      final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttibutes, minValue, maxValue, boundKind,
             getMatchingUpperBound( boundKind ) );
-      final MetaModelBaseAttributes traitAttributes =
-            MetaModelBaseAttributes
-                  .from( modelVersion, AspectModelUrn.fromUrn( bamm.characteristic().getURI() ), "TestTrait" );
-      return new DefaultTrait( traitAttributes, createBasicCharacteristic( modelVersion, dataType, bamm ),
-            List.of( rangeConstraint ) );
+      final MetaModelBaseAttributes traitAttributes = MetaModelBaseAttributes
+            .from( modelVersion, AspectModelUrn.fromUrn( bamm.characteristic().getURI() ), "TestTrait" );
+      return new DefaultTrait( traitAttributes, createBasicCharacteristic( modelVersion, dataType, bamm ), List.of( rangeConstraint ) );
    }
 
    private BoundDefinition getMatchingUpperBound( final BoundDefinition boundKind ) {
@@ -762,20 +667,16 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    Characteristic createBasicCharacteristic( final KnownVersion modelVersion, final Type dataType, final BAMM bamm ) {
       return new DefaultCharacteristic( MetaModelBaseAttributes.builderFor( "NumberCharacteristic" )
-                                                               .withMetaModelVersion( modelVersion )
-                                                               .withUrn( AspectModelUrn
-                                                                     .fromUrn( bamm.baseCharacteristic().getURI() ) )
-                                                               .withPreferredName( Locale.forLanguageTag( "en" ),
-                                                                     "NumberCharacteristic" )
-                                                               .withDescription( Locale.forLanguageTag( "en" ),
-                                                                     "A simple numeric property." )
-                                                               .build(),
+            .withMetaModelVersion( modelVersion )
+            .withUrn( AspectModelUrn.fromUrn( bamm.baseCharacteristic().getURI() ) )
+            .withPreferredName( Locale.forLanguageTag( "en" ), "NumberCharacteristic" )
+            .withDescription( Locale.forLanguageTag( "en" ), "A simple numeric property." )
+            .build(),
             Optional.of( dataType ) );
    }
 
    // generate a "human" test range
-   private Pair<Number, Number> generateRandomRangeForType( final Type dataType, final Class<?> nativeType,
-         final BoundDefinition boundKind ) {
+   private Pair<Number, Number> generateRandomRangeForType( final Type dataType, final Class<?> nativeType, final BoundDefinition boundKind ) {
       final Resource dataTypeResource = ResourceFactory.createResource( dataType.getUrn() );
       final Number min = NumericTypeTraits.getModelMinValue( dataTypeResource, nativeType );
       final Number max = NumericTypeTraits.getModelMaxValue( dataTypeResource, nativeType );
@@ -821,21 +722,17 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    private static class MinValueRandomStrategy extends Random {
       @Override
       public IntStream ints( final long streamSize, final int randomNumberOrigin, final int randomNumberBound ) {
-         return IntStream.concat( IntStream.of( randomNumberOrigin ),
-               super.ints( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
+         return IntStream.concat( IntStream.of( randomNumberOrigin ), super.ints( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
       }
 
       @Override
       public LongStream longs( final long streamSize, final long randomNumberOrigin, final long randomNumberBound ) {
-         return LongStream.concat( LongStream.of( randomNumberOrigin ),
-               super.longs( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
+         return LongStream.concat( LongStream.of( randomNumberOrigin ), super.longs( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
       }
 
       @Override
-      public DoubleStream doubles( final long streamSize, final double randomNumberOrigin,
-            final double randomNumberBound ) {
-         return DoubleStream.concat( DoubleStream.of( randomNumberOrigin ),
-               super.doubles( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
+      public DoubleStream doubles( final long streamSize, final double randomNumberOrigin, final double randomNumberBound ) {
+         return DoubleStream.concat( DoubleStream.of( randomNumberOrigin ), super.doubles( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
       }
 
       private static final long serialVersionUID = 4032598470646521142L;
@@ -848,21 +745,17 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    private static class MaxValueRandomStrategy extends Random {
       @Override
       public IntStream ints( final long streamSize, final int randomNumberOrigin, final int randomNumberBound ) {
-         return IntStream.concat( IntStream.of( randomNumberBound ),
-               super.ints( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
+         return IntStream.concat( IntStream.of( randomNumberBound ), super.ints( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
       }
 
       @Override
       public LongStream longs( final long streamSize, final long randomNumberOrigin, final long randomNumberBound ) {
-         return LongStream.concat( LongStream.of( randomNumberBound ),
-               super.longs( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
+         return LongStream.concat( LongStream.of( randomNumberBound ), super.longs( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
       }
 
       @Override
-      public DoubleStream doubles( final long streamSize, final double randomNumberOrigin,
-            final double randomNumberBound ) {
-         return DoubleStream.concat( DoubleStream.of( randomNumberBound ),
-               super.doubles( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
+      public DoubleStream doubles( final long streamSize, final double randomNumberOrigin, final double randomNumberBound ) {
+         return DoubleStream.concat( DoubleStream.of( randomNumberBound ), super.doubles( streamSize, randomNumberOrigin, randomNumberBound ).skip( 1 ) );
       }
 
       private static final long serialVersionUID = -4713706160081659886L;
