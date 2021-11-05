@@ -138,7 +138,7 @@ Characteristic specific macros will be joined together in the main macro (see ab
     </div>
 #end
 
-#* -- for Enummeration ----------------------------------------------------------- *#
+#* -- for Enumeration ----------------------------------------------------------- *#
 #macro( Enumeration $enumeration $aspectModelHelper $i18n $weight)
     <div class="table-row-group">
         <div class="table-cell pb-3 col-span-2">Enumeration</div>
