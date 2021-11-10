@@ -10,6 +10,7 @@
 #* @vtlvariable name="codeGenerationConfig" type="io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig" *#
 #* @vtlvariable name="Collections" type="java.lang.Class<java.util.Collections>" *#
 #* @vtlvariable name="Collection" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Collection>" *#
+#* @vtlvariable name="ComplexType" type="java.lang.Class<io.openmanufacturing.sds.metamodel.ComplexType>" *#
 #* @vtlvariable name="Constraint" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Constraint>" *#
 #* @vtlvariable name="currentYear" type="java.time.Year" *#
 #* @vtlvariable name="DatatypeConfigurationException" type="java.lang.Class<javax.xml.datatype.DatatypeConfigurationException>" *#

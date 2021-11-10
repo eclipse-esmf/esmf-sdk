@@ -190,11 +190,11 @@ public class AspectModelJavaUtil {
       return classDefinitionBuilder.toString();
    }
 
-   public static String generateAbstractEntityClassAnnotations( final ComplexType element, final ImportTracker importTracker ) {
+   public static String generateAbstractEntityClassAnnotations( final ComplexType element, final JavaCodeGenerationConfig codeGenerationConfig ) {
       final StringBuilder classAnnotationBuilder = new StringBuilder();
       if ( element.isAbstractEntity() ) {
-         importTracker.importExplicit( JsonTypeInfo.class );
-         importTracker.importExplicit( JsonSubTypes.class );
+         codeGenerationConfig.getImportTracker().importExplicit( JsonTypeInfo.class );
+         codeGenerationConfig.getImportTracker().importExplicit( JsonSubTypes.class );
 
          final AbstractEntity abstractEntity = (AbstractEntity) element;
          classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)" );

@@ -44,6 +44,7 @@ import io.openmanufacturing.sds.aspectmodel.java.StructuredValuePropertiesDecons
 import io.openmanufacturing.sds.aspectmodel.java.ValueInitializer;
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.StructureElement;
 import io.openmanufacturing.sds.metamodel.Trait;
@@ -73,6 +74,7 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .put( "currentYear", Year.now() )
             .put( "ArrayList", ArrayList.class )
             .put( "Constraint", Constraint.class )
+            .put( "ComplexType", ComplexType.class )
             .put( "Trait", Trait.class )
             .put( "NotNull", NotNull.class )
             .put( "JsonProperty", JsonProperty.class )

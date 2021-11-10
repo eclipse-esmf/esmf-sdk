@@ -64,13 +64,12 @@
                    #extendsComplexType( $entityType )
                   )
                 )
-              )
-            #elseif( $AbstractEntity.isAssignableFrom( $type.class ) )
+            #elseif( $AbstractEntity.isAssignableFrom( $type.getClass() ) )
                 #set( $abstractEntityType = $AbstractEntity.cast( $type ) )
-                $importTracker.importExplicit( $DefaultAbstractEntity )
-                Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.metaModelVersion,
-                    #elementUrn( $abstractEntityType ), "$abstractEntityType.name" ),
-                Meta${abstractEntityType.name}.INSTANCE.getProperties(),
+                $codeGenerationConfig.getImportTracker().importExplicit( $DefaultAbstractEntity )
+                Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
+                    #elementUrn( $abstractEntityType ), "$abstractEntityType.getName()" ),
+                Meta${abstractEntityType.getName()}.INSTANCE.getProperties(),
                 #extendsComplexType( $abstractEntityType ),
                 List.of(
                 #foreach( $extendingComplexType in $abstractEntityType.getExtendingElements() )
