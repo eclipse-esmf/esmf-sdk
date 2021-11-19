@@ -16,4 +16,4 @@ jobs:
         distribution: 'temurin'
         java-version: '11'
     - name: Run tests
-      run: mvn clean install
+      run: mvn -B clean install
