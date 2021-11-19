@@ -71,7 +71,7 @@
         </dependency>
         <dependency>
             <groupId>guru.nidi</groupId>
-            <artifactId>graphviz-java</artifactId>
+            <artifactId>graphviz-java-all-j2v8</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.curious-odd-man</groupId>

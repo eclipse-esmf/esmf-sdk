@@ -75,7 +75,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to OSSRH
-        run: mvn clean -pl '!core/sds-test-resources,!core/sds-test-aspect-models,!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests
+        run: mvn clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
