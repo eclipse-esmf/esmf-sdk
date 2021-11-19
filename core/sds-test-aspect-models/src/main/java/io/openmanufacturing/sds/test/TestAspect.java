@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,6 +19,9 @@ public enum TestAspect implements TestModel {
    ASPECT,
    ASPECT_WITHOUT_LANGUAGE_TAGS,
    ASPECT_WITHOUT_SEE_ATTRIBUTE,
+   ASPECT_WITH_ABSTRACT_ENTITY,
+   ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY,
+   ASPECT_WITH_ABSTRACT_SINGLE_ENTITY,
    ASPECT_WITH_ALL_BASE_ATTRIBUTES,
    ASPECT_WITH_BINARY,
    ASPECT_WITH_BLANK_NODE,

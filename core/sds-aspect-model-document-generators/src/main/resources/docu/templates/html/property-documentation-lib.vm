@@ -41,13 +41,6 @@
         </div>
     #end
 
-    #if($property.getRefines().isPresent())
-        <div class="flex border-b pb-1 py-4">
-            <div class="w-80">$i18n.getText("docu.label.refines")</div>
-            <div class="w-full">$property.getRefines().get().getUrn()</div>
-        </div>
-    #end
-
     <div class="flex border-b pb-1 py-4">
         <div class="w-80">$i18n.getText("docu.label.optional")</div>
         <div class="w-full">

@@ -19,36 +19,25 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultEntity extends BaseImpl implements Entity {
-   private final List<Property> properties;
-   private final Optional<AspectModelUrn> refines;
+public class DefaultEntity extends DefaultComplexType implements Entity {
 
-   public DefaultEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
+   public static DefaultEntity createDefaultEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
+         final List<? extends Property> properties, final Optional<ComplexType> _extends ) {
+      final DefaultEntity defaultEntity = new DefaultEntity( metaModelBaseAttributes, properties, _extends );
+      instances.put( metaModelBaseAttributes.getUrn().get(), defaultEntity );
+      return defaultEntity;
+   }
+
+   private DefaultEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
-         final Optional<AspectModelUrn> refines ) {
-      super( metaModelBaseAttributes );
-      this.properties = new ArrayList<>( properties );
-      this.refines = refines;
-   }
-
-   /**
-    * A list of properties defined in the scope of the Entity.
-    *
-    * @return the properties.
-    */
-   @Override
-   public List<Property> getProperties() {
-      return properties;
-   }
-
-   @Override
-   public Optional<AspectModelUrn> getRefines() {
-      return refines;
+         final Optional<ComplexType> _extends ) {
+      super( metaModelBaseAttributes, properties, _extends );
    }
 
    /**
@@ -61,34 +50,5 @@ public class DefaultEntity extends BaseImpl implements Entity {
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
       return visitor.visitEntity( this, context );
-   }
-
-   @Override
-   public String toString() {
-      return new StringJoiner( ", ", DefaultEntity.class.getSimpleName() + "[", "]" )
-            .add( "properties=" + properties )
-            .add( "refines=" + refines )
-            .toString();
-   }
-
-   @Override
-   public boolean equals( final Object o ) {
-      if ( this == o ) {
-         return true;
-      }
-      if ( o == null || getClass() != o.getClass() ) {
-         return false;
-      }
-      if ( !super.equals( o ) ) {
-         return false;
-      }
-      final DefaultEntity that = (DefaultEntity) o;
-      return Objects.equals( properties, that.properties ) &&
-            Objects.equals( refines, that.refines );
-   }
-
-   @Override
-   public int hashCode() {
-      return Objects.hash( super.hashCode(), properties, refines );
    }
 }

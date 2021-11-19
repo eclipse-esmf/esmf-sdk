@@ -24,10 +24,10 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.openmanufacturing.sds.test.MetaModelVersions;
-import io.openmanufacturing.sds.test.TestEntity;
-
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import io.openmanufacturing.sds.test.MetaModelVersions;
+import io.openmanufacturing.sds.test.TestAspect;
+import io.openmanufacturing.sds.test.TestEntity;
 
 public class Entity2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "entity2boxmodel.sparql";
@@ -75,21 +75,16 @@ public class Entity2BoxModelTest extends MetaModelVersions {
          qexec.execConstruct( queryResult );
       }
 
-      assertThat(
-            queryResult.listStatements( context.selector( ":SharedEntityWithSeeAttributeEntity a :Box" ) ).toList() )
-            .hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( "bamm-e:SharedEntityEntity a :Box" ) ).toList() )
-            .hasSize( 0 );
+      assertThat( queryResult.listStatements( context.selector( ":SharedEntityWithSeeAttributeEntity a :Box" ) ).toList() ) .hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "bamm-e:SharedEntityEntity a :Box" ) ).toList() ) .hasSize( 0 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testEntityWithOptionalAndNotInPayloadProperty( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestEntity.ENTITY_WITH_OPTIONAL_AND_NOT_IN_PAYLOAD_PROPERTY,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestEntity.ENTITY_WITH_OPTIONAL_AND_NOT_IN_PAYLOAD_PROPERTY, metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
+      final Query query = QueryFactory .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
 
       final Model queryResult = ModelFactory.createDefaultModel();
       try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
@@ -98,8 +93,8 @@ public class Entity2BoxModelTest extends MetaModelVersions {
 
       assertThat(
             queryResult.listStatements( context.selector(
-                  ":EntityWithOptionalAndNotInPayloadPropertyEntity_To_testPropertyOneProperty a :Edge" ) )
-                       .toList() ).hasSize( 1 );
+                        ":EntityWithOptionalAndNotInPayloadPropertyEntity_To_testPropertyOneProperty a :Edge" ) )
+                  .toList() ).hasSize( 1 );
       assertThat( queryResult
             .listStatements( context.selector(
                   ":EntityWithOptionalAndNotInPayloadPropertyEntity_To_testPropertyOneProperty :title property" ) )
@@ -107,21 +102,21 @@ public class Entity2BoxModelTest extends MetaModelVersions {
 
       assertThat(
             queryResult.listStatements( context.selector(
-                  ":EntityWithOptionalAndNotInPayloadPropertyEntity_To_testPropertyTwoProperty a :Edge" ) )
-                       .toList() ).hasSize( 1 );
+                        ":EntityWithOptionalAndNotInPayloadPropertyEntity_To_testPropertyTwoProperty a :Edge" ) )
+                  .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-            context.selector(
-                  ":EntityWithOptionalAndNotInPayloadPropertyEntity_To_testPropertyTwoProperty :title property (optional)" ) )
-                             .toList() ).hasSize( 1 );
+                  context.selector(
+                        ":EntityWithOptionalAndNotInPayloadPropertyEntity_To_testPropertyTwoProperty :title property (optional)" ) )
+            .toList() ).hasSize( 1 );
 
       assertThat( queryResult
             .listStatements( context.selector(
                   ":EntityWithOptionalAndNotInPayloadPropertyEntity_To_testPropertyThreeProperty a :Edge" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-            context.selector(
-                  ":EntityWithOptionalAndNotInPayloadPropertyEntity_To_testPropertyThreeProperty :title property (not in payload)" ) )
-                             .toList() ).hasSize( 1 );
+                  context.selector(
+                        ":EntityWithOptionalAndNotInPayloadPropertyEntity_To_testPropertyThreeProperty :title property (not in payload)" ) )
+            .toList() ).hasSize( 1 );
    }
 
    @ParameterizedTest
@@ -129,8 +124,7 @@ public class Entity2BoxModelTest extends MetaModelVersions {
    public void testEntityWithOptionalProperty( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestEntity.ENTITY_WITH_OPTIONAL_PROPERTY, metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
+      final Query query = QueryFactory .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
 
       final Model queryResult = ModelFactory.createDefaultModel();
       try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
@@ -139,22 +133,20 @@ public class Entity2BoxModelTest extends MetaModelVersions {
 
       assertThat(
             queryResult.listStatements( context.selector(
-                  ":EntityWithOptionalPropertyEntity_To_testPropertyProperty a :Edge" ) )
-                       .toList() ).hasSize( 1 );
+                        ":EntityWithOptionalPropertyEntity_To_testPropertyProperty a :Edge" ) )
+                  .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-            context.selector(
-                  ":EntityWithOptionalPropertyEntity_To_testPropertyProperty :title property (optional)" ) )
-                             .toList() ).hasSize( 1 );
+                  context.selector(
+                        ":EntityWithOptionalPropertyEntity_To_testPropertyProperty :title property (optional)" ) )
+            .toList() ).hasSize( 1 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testEntityWithOptionalPropertyWithPayloadName( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestEntity.ENTITY_WITH_OPTIONAL_PROPERTY_WITH_PAYLOAD_NAME,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestEntity.ENTITY_WITH_OPTIONAL_PROPERTY_WITH_PAYLOAD_NAME, metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
+      final Query query = QueryFactory .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
 
       final Model queryResult = ModelFactory.createDefaultModel();
       try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
@@ -163,22 +155,20 @@ public class Entity2BoxModelTest extends MetaModelVersions {
 
       assertThat(
             queryResult.listStatements( context.selector(
-                  ":EntityWithOptionalPropertyWithPayloadNameEntity_To_testPropertyProperty a :Edge" ) )
-                       .toList() ).hasSize( 1 );
+                        ":EntityWithOptionalPropertyWithPayloadNameEntity_To_testPropertyProperty a :Edge" ) )
+                  .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-            context.selector(
-                  ":EntityWithOptionalPropertyWithPayloadNameEntity_To_testPropertyProperty :title property (optional) (test)" ) )
-                             .toList() ).hasSize( 1 );
+                  context.selector(
+                        ":EntityWithOptionalPropertyWithPayloadNameEntity_To_testPropertyProperty :title property (optional) (test)" ) )
+            .toList() ).hasSize( 1 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testEntityWithPropertyWithPayloadName( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestEntity.ENTITY_WITH_PROPERTY_WITH_PAYLOAD_NAME,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestEntity.ENTITY_WITH_PROPERTY_WITH_PAYLOAD_NAME, metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
+      final Query query = QueryFactory .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
 
       final Model queryResult = ModelFactory.createDefaultModel();
       try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
@@ -187,11 +177,67 @@ public class Entity2BoxModelTest extends MetaModelVersions {
 
       assertThat(
             queryResult.listStatements( context.selector(
-                  ":EntityWithPropertyWithPayloadNameEntity_To_testPropertyProperty a :Edge" ) )
-                       .toList() ).hasSize( 1 );
+                        ":EntityWithPropertyWithPayloadNameEntity_To_testPropertyProperty a :Edge" ) )
+                  .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-            context.selector(
-                  ":EntityWithPropertyWithPayloadNameEntity_To_testPropertyProperty :title property (test)" ) )
-                             .toList() ).hasSize( 1 );
+                  context.selector(
+                        ":EntityWithPropertyWithPayloadNameEntity_To_testPropertyProperty :title property (test)" ) )
+            .toList() ).hasSize( 1 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      testExtendingEntity( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
+      testExtendingEntityEdges( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      testExtendingEntity( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
+      testExtendingEntityEdges( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      testExtendingEntity( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
+      testExtendingEntityEdges( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
+   }
+
+   private void testExtendingEntity( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( testAspect, metaModelVersion );
+      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
+
+      final Model queryResult = ModelFactory.createDefaultModel();
+      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
+         qexec.execConstruct( queryResult );
+      }
+
+      assertThat( queryResult.listStatements( context.selector( ":ExtendingTestEntityEntity a :Box" ) ).toList() ) .hasSize( 1 );
+   }
+
+   private void testExtendingEntityEdges( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( testAspect, metaModelVersion );
+      final Query query = QueryFactory.create( context.getInputStreamAsString( "entity-abstractentity-edges2boxmodel.sparql" ) );
+
+      final Model queryResult = ModelFactory.createDefaultModel();
+      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
+         qexec.execConstruct( queryResult );
+      }
+
+      assertThat( queryResult.listStatements(
+            context.selector( ":ExtendingTestEntityEntity_To_AbstractTestEntityAbstractEntity a :Edge" )
+      ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements(
+            context.selector( ":ExtendingTestEntityEntity_To_AbstractTestEntityAbstractEntity :from :ExtendingTestEntityEntity" )
+      ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements(
+            context.selector( ":ExtendingTestEntityEntity_To_AbstractTestEntityAbstractEntity :to :AbstractTestEntityAbstractEntity" )
+      ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements(
+            context.selector( ":ExtendingTestEntityEntity_To_AbstractTestEntityAbstractEntity :title extends" )
+      ).toList() ).hasSize( 1 );
    }
 }

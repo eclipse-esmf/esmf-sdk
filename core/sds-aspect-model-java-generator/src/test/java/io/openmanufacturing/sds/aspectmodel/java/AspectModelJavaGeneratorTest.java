@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -68,38 +69,32 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
     */
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelMultipleEntitiesOnMultipleLevels( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelMultipleEntitiesOnMultipleLevels( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testEntityOne",
-                                                                                          "TestEntity" )
-                                                                                    .put( "testEntityTwo",
-                                                                                          "TestEntity" )
-                                                                                    .put( "testString", String.class )
-                                                                                    .put( "testSecondEntity",
-                                                                                          "SecondTestEntity" )
-                                                                                    .build();
+            .put( "testEntityOne", "TestEntity" )
+            .put( "testEntityTwo", "TestEntity" )
+            .put( "testString", String.class )
+            .put( "testSecondEntity", "SecondTestEntity" )
+            .build();
 
       final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testLocalDateTime",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .put( "randomValue", String.class )
-                                                                                    .put( "testThirdEntity",
-                                                                                          "ThirdTestEntity" )
-                                                                                    .build();
+            .put( "testLocalDateTime", XMLGregorianCalendar.class )
+            .put( "randomValue", String.class )
+            .put( "testThirdEntity", "ThirdTestEntity" )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_ON_MULTIPLE_LEVELS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 4 );
-      result.assertFields( "AspectWithMultipleEntitiesOnMultipleLevels", expectedFieldsForAspectClass,
-            new HashMap<>() );
+      result.assertFields( "AspectWithMultipleEntitiesOnMultipleLevels", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithMultipleEntitiesOnMultipleLevels", expectedFieldsForAspectClass );
       result.assertFields( "TestEntity", expectedFieldsForEntityClass, new HashMap<>() );
       assertConstructor( result, "TestEntity", expectedFieldsForEntityClass );
-      result.assertClassDeclaration( "AspectWithMultipleEntitiesOnMultipleLevels", Collections.emptyList() );
-      result.assertClassDeclaration( "TestEntity", Collections.emptyList() );
+      result.assertClassDeclaration( "AspectWithMultipleEntitiesOnMultipleLevels", Collections.emptyList(),
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList() );
+      result.assertClassDeclaration( "TestEntity", Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList(), Collections.emptyList() );
    }
 
    /**
@@ -108,45 +103,32 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
     */
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelMultipleEnumerationsOnMultipleLevels( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelMultipleEnumerationsOnMultipleLevels( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testPropertyWithEnumOne",
-                                                                                          "TestEnumOneCharacteristic" )
-                                                                                    .put( "testPropertyWithEnumTwo",
-                                                                                          "TestEnumTwoCharacteristic" )
-                                                                                    .put( "testEntityWithEnumOne",
-                                                                                          "TestEntityWithEnumOne" )
-                                                                                    .build();
+            .put( "testPropertyWithEnumOne", "TestEnumOneCharacteristic" )
+            .put( "testPropertyWithEnumTwo", "TestEnumTwoCharacteristic" )
+            .put( "testEntityWithEnumOne", "TestEntityWithEnumOne" )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_MULTIPLE_ENUMERATIONS_ON_MULTIPLE_LEVELS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 5 );
-      result.assertFields( "AspectWithMultipleEnumerationsOnMultipleLevels", expectedFieldsForAspectClass,
-            new HashMap<>() );
-      assertConstructor( result, "AspectWithMultipleEnumerationsOnMultipleLevels", expectedFieldsForAspectClass
-      );
-      result.assertFields( "TestEnumOneCharacteristic",
-            ImmutableMap.<String, Object> builder().put( "value", Integer.class )
-                        .build(), new HashMap<>() );
-      result.assertEnumConstants( "TestEnumOneCharacteristic",
-            ImmutableSet.of( "NUMBER_1", "NUMBER_2", "NUMBER_3" ), Collections.emptyMap() );
+      result.assertFields( "AspectWithMultipleEnumerationsOnMultipleLevels", expectedFieldsForAspectClass, new HashMap<>() );
+      assertConstructor( result, "AspectWithMultipleEnumerationsOnMultipleLevels", expectedFieldsForAspectClass );
+      result.assertFields( "TestEnumOneCharacteristic", ImmutableMap.<String, Object> builder().put( "value", Integer.class ).build(), new HashMap<>() );
+      result.assertEnumConstants( "TestEnumOneCharacteristic", ImmutableSet.of( "NUMBER_1", "NUMBER_2", "NUMBER_3" ), Collections.emptyMap() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testGenerateRecursiveAspectModel( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testProperty",
-                                                                                          "Optional<TestEntity>" )
-                                                                                    .build();
+            .put( "testProperty", "Optional<TestEntity>" )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 2 );
       result.assertFields( "TestEntity", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "TestEntity", expectedFieldsForAspectClass );
@@ -156,16 +138,12 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithOptionalProperties( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "numberProperty",
-                                                                                          "Optional<BigInteger>" )
-                                                                                    .put( "timestampProperty",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .build();
+            .put( "numberProperty", "Optional<BigInteger>" )
+            .put( "timestampProperty", XMLGregorianCalendar.class )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithOptionalProperties", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithOptionalProperties", expectedFieldsForAspectClass );
@@ -175,15 +153,12 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithCurie( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testCurie", "Curie" )
-                                                                                    .put( "testCurieWithoutExampleValue",
-                                                                                          "Curie" )
-                                                                                    .build();
+            .put( "testCurie", "Curie" )
+            .put( "testCurieWithoutExampleValue", "Curie" )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_CURIE;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithCurie", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithCurie", expectedFieldsForAspectClass );
@@ -193,45 +168,34 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithExtendedEnums( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "result",
-                                                                                          "EvaluationResults" )
-                                                                                    .put( "simpleResult", "YesNo" )
-                                                                                    .build();
+            .put( "result", "EvaluationResults" )
+            .put( "simpleResult", "YesNo" )
+            .build();
 
       final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object> builder()
-                                                                                          .put( "average",
-                                                                                                new TypeToken<Optional<BigInteger>>() {
-                                                                                                } )
-                                                                                          .put( "numericCode",
-                                                                                                Short.class )
-                                                                                          .put( "description",
-                                                                                                String.class )
-                                                                                          .put( "nestedResult",
-                                                                                                "NestedResult" )
-                                                                                          .build();
+            .put( "average", new TypeToken<Optional<BigInteger>>() {
+            } )
+            .put( "numericCode", Short.class )
+            .put( "description", String.class )
+            .put( "nestedResult", "NestedResult" )
+            .build();
 
       final ImmutableMap<String, Object> expectedFieldsForNestedResult = ImmutableMap.<String, Object> builder()
-                                                                                     .put( "average", BigInteger.class )
-                                                                                     .put( "description", String.class )
-                                                                                     .build();
+            .put( "average", BigInteger.class )
+            .put( "description", String.class )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENUMS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 5 );
       result.assertFields( "AspectWithExtendedEnums", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithExtendedEnums", expectedFieldsForAspectClass );
       result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResults, new HashMap<>() );
       assertConstructor( result, "EvaluationResult", expectedFieldsForEvaluationResults );
-      result.assertFields( "EvaluationResults",
-            ImmutableMap.<String, Object> builder().put( "value", "EvaluationResult" )
-                        .build(), new HashMap<>() );
-      result.assertEnumConstants( "EvaluationResults",
-            ImmutableSet.of( "RESULT_GOOD", "RESULT_BAD", "RESULT_NO_STATUS" ), Collections.emptyMap() );
-      result.assertFields( "YesNo",
-            ImmutableMap.<String, Object> builder().put( "value", String.class )
-                        .build(), new HashMap<>() );
+      result.assertFields( "EvaluationResults", ImmutableMap.<String, Object> builder().put( "value", "EvaluationResult" ).build(), new HashMap<>() );
+      result.assertEnumConstants( "EvaluationResults", ImmutableSet.of( "RESULT_GOOD", "RESULT_BAD", "RESULT_NO_STATUS" ), Collections.emptyMap() );
+      result.assertFields( "YesNo", ImmutableMap.<String, Object> builder().put( "value", String.class ).build(), new HashMap<>() );
       result.assertEnumConstants( "YesNo", ImmutableSet.of( "YES", "NO" ), Collections.emptyMap() );
       result.assertFields( "NestedResult", expectedFieldsForNestedResult, new HashMap<>() );
       assertConstructor( result, "NestedResult", expectedFieldsForNestedResult );
@@ -239,38 +203,28 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithExtendedEnumsWithNotInPayloadProperty( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelWithExtendedEnumsWithNotInPayloadProperty( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForEvaluationResults = ImmutableMap.<String, Object> builder()
-                                                                                          .put( "average",
-                                                                                                new TypeToken<Optional<BigInteger>>() {
-                                                                                                } )
-                                                                                          .put( "numericCode",
-                                                                                                Short.class )
-                                                                                          .put( "description",
-                                                                                                String.class )
-                                                                                          .put( "nestedResult",
-                                                                                                "NestedResult" )
-                                                                                          .build();
+            .put( "average", new TypeToken<Optional<BigInteger>>() {
+            } )
+            .put( "numericCode", Short.class )
+            .put( "description", String.class )
+            .put( "nestedResult", "NestedResult" )
+            .build();
 
       final ImmutableMap<String, Object> expectedFieldsForJacksonConstructor = ImmutableMap.<String, Object> builder()
-                                                                                           .put( "average",
-                                                                                                 new TypeToken<Optional<BigInteger>>() {
-                                                                                                 } )
-                                                                                           .put( "numericCode",
-                                                                                                 Short.class )
-                                                                                           .put( "nestedResult",
-                                                                                                 "NestedResult" )
-                                                                                           .build();
+            .put( "average", new TypeToken<Optional<BigInteger>>() {
+            } )
+            .put( "numericCode", Short.class )
+            .put( "nestedResult", "NestedResult" )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
+            true ) );
 
       final List<ConstructorDeclaration> constructorDeclarations = result.compilationUnits.get( "EvaluationResult" )
-                                                                                          .findAll(
-                                                                                                ConstructorDeclaration.class );
+            .findAll( ConstructorDeclaration.class );
       assertThat( constructorDeclarations ).hasSize( 2 );
 
       result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResults, new HashMap<>() );
@@ -291,56 +245,45 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testPropertyWithRegularExpression",
-                                                                                          String.class )
-                                                                                    .put( "testPropertyWithDecimalMinDecimalMaxRangeConstraint",
-                                                                                          BigDecimal.class )
-                                                                                    .put( "testPropertyWithDecimalMaxRangeConstraint",
-                                                                                          BigDecimal.class )
-                                                                                    .put( "testPropertyWithMinMaxRangeConstraint",
-                                                                                          Integer.class )
-                                                                                    .put( "testPropertyWithMinRangeConstraint",
-                                                                                          Integer.class )
-                                                                                    .put( "testPropertyRangeConstraintWithFloatType",
-                                                                                          Float.class )
-                                                                                    .put( "testPropertyRangeConstraintWithDoubleType",
-                                                                                          Double.class )
-                                                                                    .put( "testPropertyWithMinMaxLengthConstraint",
-                                                                                          String.class )
-                                                                                    .put( "testPropertyWithMinLengthConstraint",
-                                                                                          BigInteger.class )
-                                                                                    .put( "testPropertyCollectionLengthConstraint",
-                                                                                          new TypeToken<List<BigInteger>>() {
-                                                                                          } )
-                                                                                    .build();
+            .put( "testPropertyWithRegularExpression", String.class )
+            .put( "testPropertyWithDecimalMinDecimalMaxRangeConstraint", BigDecimal.class )
+            .put( "testPropertyWithDecimalMaxRangeConstraint", BigDecimal.class )
+            .put( "testPropertyWithMinMaxRangeConstraint", Integer.class )
+            .put( "testPropertyWithMinRangeConstraint", Integer.class )
+            .put( "testPropertyRangeConstraintWithFloatType", Float.class )
+            .put( "testPropertyRangeConstraintWithDoubleType", Double.class )
+            .put( "testPropertyWithMinMaxLengthConstraint", String.class )
+            .put( "testPropertyWithMinLengthConstraint", BigInteger.class )
+            .put( "testPropertyCollectionLengthConstraint", new TypeToken<List<BigInteger>>() {
+            } )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
+            true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
-                        .put( "testPropertyWithRegularExpression", "@NotNull" + "@Pattern(regexp = \"^[a-zA-Z]\")" )
-                        .put( "testPropertyWithDecimalMinDecimalMaxRangeConstraint",
-                              "@NotNull" + "@DecimalMin(value = \"2.3\")" + "@DecimalMax(value = \"10.5\")" )
-                        .put( "testPropertyWithDecimalMaxRangeConstraint",
-                              "@NotNull" + "@DecimalMax(value = \"10.5\")" )
-                        .put( "testPropertyWithMinMaxRangeConstraint", "@NotNull"
-                              + "@Min(value = 1, boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@Max(value = 10, boundDefinition = BoundDefinition.AT_MOST)" )
-                        .put( "testPropertyWithMinRangeConstraint", "@NotNull"
-                              + "@Min(value = 1, boundDefinition = BoundDefinition.AT_LEAST)" )
-                        .put( "testPropertyRangeConstraintWithFloatType", "@NotNull"
-                              + "@FloatMin(value = \"1.0\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@FloatMax(value = \"10.0\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .put( "testPropertyRangeConstraintWithDoubleType", "@NotNull"
-                              + "@DoubleMin(value = \"1.0\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@DoubleMax(value = \"10.0\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .put( "testPropertyWithMinMaxLengthConstraint", "@NotNull" + "@Size(min = 1, max = 10)" )
-                        .put( "testPropertyWithMinLengthConstraint", "@NotNull" + "@Size(min = 1)" )
-                        .put( "testPropertyCollectionLengthConstraint", "@NotNull" + "@Size(min = 1, max = 10)" )
-                        .build() );
+                  .put( "testPropertyWithRegularExpression", "@NotNull" + "@Pattern(regexp = \"^[a-zA-Z]\")" )
+                  .put( "testPropertyWithDecimalMinDecimalMaxRangeConstraint",
+                        "@NotNull" + "@DecimalMin(value = \"2.3\")" + "@DecimalMax(value = \"10.5\")" )
+                  .put( "testPropertyWithDecimalMaxRangeConstraint",
+                        "@NotNull" + "@DecimalMax(value = \"10.5\")" )
+                  .put( "testPropertyWithMinMaxRangeConstraint", "@NotNull"
+                        + "@Min(value = 1, boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@Max(value = 10, boundDefinition = BoundDefinition.AT_MOST)" )
+                  .put( "testPropertyWithMinRangeConstraint", "@NotNull"
+                        + "@Min(value = 1, boundDefinition = BoundDefinition.AT_LEAST)" )
+                  .put( "testPropertyRangeConstraintWithFloatType", "@NotNull"
+                        + "@FloatMin(value = \"1.0\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@FloatMax(value = \"10.0\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .put( "testPropertyRangeConstraintWithDoubleType", "@NotNull"
+                        + "@DoubleMin(value = \"1.0\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@DoubleMax(value = \"10.0\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .put( "testPropertyWithMinMaxLengthConstraint", "@NotNull" + "@Size(min = 1, max = 10)" )
+                  .put( "testPropertyWithMinLengthConstraint", "@NotNull" + "@Size(min = 1)" )
+                  .put( "testPropertyCollectionLengthConstraint", "@NotNull" + "@Size(min = 1, max = 10)" )
+                  .build() );
       assertConstructor( result, "AspectWithConstraints", expectedFieldsForAspectClass );
    }
 
@@ -348,14 +291,11 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithConstrainedCollection( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testCollection",
-                                                                                          new TypeToken<List<BigInteger>>() {
-                                                                                          } ).build();
+            .put( "testCollection", new TypeToken<List<BigInteger>>() {
+            } ).build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINED_COLLECTION;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithConstrainedCollection", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithConstrainedCollection", expectedFieldsForAspectClass
@@ -364,41 +304,36 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectWithExclusiveRangeConstraint( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectWithExclusiveRangeConstraint( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "floatProp", Float.class )
-                                                                                    .put( "doubleProp", Double.class )
-                                                                                    .put( "decimalProp",
-                                                                                          BigDecimal.class )
-                                                                                    .put( "integerProp",
-                                                                                          BigInteger.class )
-                                                                                    .put( "intProp", Integer.class )
-                                                                                    .build();
+            .put( "floatProp", Float.class )
+            .put( "doubleProp", Double.class )
+            .put( "decimalProp", BigDecimal.class )
+            .put( "integerProp", BigInteger.class )
+            .put( "intProp", Integer.class )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXCLUSIVE_RANGE_CONSTRAINT;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithExclusiveRangeConstraint", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
-                        .put( "floatProp", "@NotNull"
-                              + "@FloatMin(value = \"12.3\", boundDefinition = BoundDefinition.GREATER_THAN)"
-                              + "@FloatMax(value = \"23.45\", boundDefinition = BoundDefinition.LESS_THAN)" )
-                        .put( "doubleProp", "@NotNull"
-                              + "@DoubleMin(value = \"12.3\", boundDefinition = BoundDefinition.GREATER_THAN)"
-                              + "@DoubleMax(value = \"23.45\", boundDefinition = BoundDefinition.LESS_THAN)" )
-                        .put( "decimalProp", "@NotNull"
-                              + "@DecimalMin(value = \"12.3\", inclusive = false)"
-                              + "@DecimalMax(value = \"23.45\", inclusive = false)" )
-                        .put( "intProp", "@NotNull"
-                              + "@Min(value = 12, boundDefinition = BoundDefinition.GREATER_THAN)"
-                              + "@Max(value = 23, boundDefinition = BoundDefinition.LESS_THAN)" )
-                        .put( "integerProp", "@NotNull"
-                              + "@DecimalMin(value = \"12\", inclusive = false)"
-                              + "@DecimalMax(value = \"23\", inclusive = false)" )
-                        .build() );
+                  .put( "floatProp", "@NotNull"
+                        + "@FloatMin(value = \"12.3\", boundDefinition = BoundDefinition.GREATER_THAN)"
+                        + "@FloatMax(value = \"23.45\", boundDefinition = BoundDefinition.LESS_THAN)" )
+                  .put( "doubleProp", "@NotNull"
+                        + "@DoubleMin(value = \"12.3\", boundDefinition = BoundDefinition.GREATER_THAN)"
+                        + "@DoubleMax(value = \"23.45\", boundDefinition = BoundDefinition.LESS_THAN)" )
+                  .put( "decimalProp", "@NotNull"
+                        + "@DecimalMin(value = \"12.3\", inclusive = false)"
+                        + "@DecimalMax(value = \"23.45\", inclusive = false)" )
+                  .put( "intProp", "@NotNull"
+                        + "@Min(value = 12, boundDefinition = BoundDefinition.GREATER_THAN)"
+                        + "@Max(value = 23, boundDefinition = BoundDefinition.LESS_THAN)" )
+                  .put( "integerProp", "@NotNull"
+                        + "@DecimalMin(value = \"12\", inclusive = false)"
+                        + "@DecimalMax(value = \"23\", inclusive = false)" )
+                  .build() );
       assertConstructor( result, "AspectWithExclusiveRangeConstraint", expectedFieldsForAspectClass
       );
    }
@@ -407,13 +342,11 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithEither( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testProperty", "Either" )
-                                                                                    .build();
+            .put( "testProperty", "Either" )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 3 );
       result.assertFields( "AspectWithEitherWithComplexTypes", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithEitherWithComplexTypes", expectedFieldsForAspectClass );
@@ -423,13 +356,10 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithBoolean( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testBoolean", Boolean.class
-                                                                                          .getSimpleName() ).build();
+            .put( "testBoolean", Boolean.class.getSimpleName() ).build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithBoolean", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder().put( "testBoolean", "@NotNull" ).build() );
@@ -440,44 +370,35 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithBinary( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testBinary",
-                                                                                          new ResolvedArrayType(
-                                                                                                ResolvedPrimitiveType.BYTE ) )
-                                                                                    .build();
+            .put( "testBinary", new ResolvedArrayType( ResolvedPrimitiveType.BYTE ) )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithBinary", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder().put( "testBinary",
-                  "@NotNull@JsonSerialize(using = HexBinarySerializer.class)@JsonDeserialize(using = HexBinaryDeserializer.class)" )
-                        .build() );
+                        "@NotNull@JsonSerialize(using = HexBinarySerializer.class)@JsonDeserialize(using = HexBinaryDeserializer.class)" )
+                  .build() );
       assertConstructor( result, "AspectWithBinary", expectedFieldsForAspectClass );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectWithCustomJavaPackageNameExpectCustomPackageDeclaration(
-         final KnownVersion metaModelVersion ) throws IOException {
+   public void testGenerateAspectWithCustomJavaPackageNameExpectCustomPackageDeclaration( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
       final String customJavaPackageName = "test.test.test";
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion,
-                                                       Optional.of( customJavaPackageName ), true ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, Optional.of( customJavaPackageName ), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertNamespace( "AspectWithBinary", customJavaPackageName );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectWithEmptyJavaPackageNameExpectDefaultPackageDeclaration(
-         final KnownVersion metaModelVersion ) throws IOException {
+   public void testGenerateAspectWithEmptyJavaPackageNameExpectDefaultPackageDeclaration( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertNamespace( "AspectWithBinary", "io.openmanufacturing.test" );
    }
@@ -486,65 +407,50 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithComplexEnumeration( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "result",
-                                                                                          "EvaluationResults" )
-                                                                                    .put( "simpleResult", "YesNo" )
-                                                                                    .build();
+            .put( "result", "EvaluationResults" )
+            .put( "simpleResult", "YesNo" )
+            .build();
 
       final ImmutableMap<String, Object> expectedFieldsForEvaluationResult = ImmutableMap.<String, Object> builder()
-                                                                                         .put( "numericCode",
-                                                                                               Short.class
-                                                                                                     .getSimpleName() )
-                                                                                         .put( "description",
-                                                                                               String.class
-                                                                                                     .getSimpleName() )
-                                                                                         .build();
+            .put( "numericCode", Short.class.getSimpleName() )
+            .put( "description", String.class.getSimpleName() )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 4 );
       result.assertFields( "AspectWithComplexEnum", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithComplexEnum", expectedFieldsForAspectClass );
       result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResult, new HashMap<>() );
       assertConstructor( result, "EvaluationResult", expectedFieldsForEvaluationResult );
-      result.assertFields( "EvaluationResults",
-            ImmutableMap.<String, Object> builder().put( "value", "EvaluationResult" )
-                        .build(), new HashMap<>() );
+      result.assertFields( "EvaluationResults", ImmutableMap.<String, Object> builder().put( "value", "EvaluationResult" ).build(), new HashMap<>() );
       result.assertEnumConstants( "EvaluationResults",
             ImmutableSet.of( "RESULT_NO_STATUS", "RESULT_GOOD", "RESULT_BAD" ),
             ImmutableMap.<String, String> builder()
-                        .put( "RESULT_NO_STATUS", "new EvaluationResult(Short.valueOf(\"-1\"), \"No status\")" )
-                        .put( "RESULT_GOOD", "new EvaluationResult(Short.valueOf(\"1\"), \"Good\")" )
-                        .put( "RESULT_BAD", "new EvaluationResult(Short.valueOf(\"2\"), \"Bad\")" )
-                        .build() );
+                  .put( "RESULT_NO_STATUS", "new EvaluationResult(Short.valueOf(\"-1\"), \"No status\")" )
+                  .put( "RESULT_GOOD", "new EvaluationResult(Short.valueOf(\"1\"), \"Good\")" )
+                  .put( "RESULT_BAD", "new EvaluationResult(Short.valueOf(\"2\"), \"Bad\")" )
+                  .build() );
 
-      result.assertFields( "YesNo",
-            ImmutableMap.<String, Object> builder().put( "value", String.class )
-                        .build(), new HashMap<>() );
-      result.assertEnumConstants( "YesNo",
-            ImmutableSet.of( "YES", "NO" ), Collections.emptyMap() );
+      result.assertFields( "YesNo", ImmutableMap.<String, Object> builder().put( "value", String.class ).build(), new HashMap<>() );
+      result.assertEnumConstants( "YesNo", ImmutableSet.of( "YES", "NO" ), Collections.emptyMap() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithState( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "status", "TestState" )
-                                                                                    .build();
+            .put( "status", "TestState" )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_STATE;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 2 );
 
       result.assertFields( "AspectWithState", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithState", expectedFieldsForAspectClass );
 
-      result.assertEnumConstants( "TestState", ImmutableSet.of( "SUCCESS", "ERROR", "IN_PROGRESS" ),
-            Collections.emptyMap() );
+      result.assertEnumConstants( "TestState", ImmutableSet.of( "SUCCESS", "ERROR", "IN_PROGRESS" ), Collections.emptyMap() );
    }
 
    @ParameterizedTest
@@ -552,32 +458,23 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    public void testGenerateAspectModelMultipleEntitiesOnMultipleLevelsWithoutJacksonAnnotations(
          final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testEntityOne",
-                                                                                          "TestEntity" )
-                                                                                    .put( "testEntityTwo",
-                                                                                          "TestEntity" )
-                                                                                    .put( "testString", String.class )
-                                                                                    .put( "testSecondEntity",
-                                                                                          "SecondTestEntity" )
-                                                                                    .build();
+            .put( "testEntityOne", "TestEntity" )
+            .put( "testEntityTwo", "TestEntity" )
+            .put( "testString", String.class )
+            .put( "testSecondEntity", "SecondTestEntity" )
+            .build();
 
       final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testLocalDateTime",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .put( "randomValue", String.class )
-                                                                                    .put( "testThirdEntity",
-                                                                                          "ThirdTestEntity" )
-                                                                                    .build();
+            .put( "testLocalDateTime", XMLGregorianCalendar.class )
+            .put( "randomValue", String.class )
+            .put( "testThirdEntity", "ThirdTestEntity" )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_ON_MULTIPLE_LEVELS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       false ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), false ) );
       result.assertNumberOfFiles( 4 );
-      result.assertFields( "AspectWithMultipleEntitiesOnMultipleLevels", expectedFieldsForAspectClass,
-            new HashMap<>() );
-      result.assertConstructor( "AspectWithMultipleEntitiesOnMultipleLevels", expectedFieldsForAspectClass,
-            new HashMap<>() );
+      result.assertFields( "AspectWithMultipleEntitiesOnMultipleLevels", expectedFieldsForAspectClass, new HashMap<>() );
+      result.assertConstructor( "AspectWithMultipleEntitiesOnMultipleLevels", expectedFieldsForAspectClass, new HashMap<>() );
       result.assertFields( "TestEntity", expectedFieldsForEntityClass, new HashMap<>() );
       result.assertConstructor( "TestEntity", expectedFieldsForEntityClass, new HashMap<>() );
    }
@@ -586,22 +483,18 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithStructuredValue( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "date",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .put( "year", Long.class )
-                                                                                    .put( "month", Long.class )
-                                                                                    .put( "day", Long.class )
-                                                                                    .build();
+            .put( "date", XMLGregorianCalendar.class )
+            .put( "year", Long.class )
+            .put( "month", Long.class )
+            .put( "day", Long.class )
+            .build();
 
       final ImmutableMap<String, Object> expectedConstructorArguments = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "date",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .build();
+            .put( "date", XMLGregorianCalendar.class )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_NUMERIC_STRUCTURED_VALUE;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithNumericStructuredValue", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithNumericStructuredValue", expectedConstructorArguments );
@@ -609,93 +502,74 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithComplexEnumerationInclOptional( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelWithComplexEnumerationInclOptional( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM_INCL_OPTIONAL;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 4 );
       result.assertEnumConstants( "EvaluationResults",
             ImmutableSet.of( "RESULT_NO_STATUS", "RESULT_GOOD", "RESULT_BAD" ),
             ImmutableMap.<String, String> builder()
-                        .put( "RESULT_NO_STATUS",
-                              "new EvaluationResult(Optional.of(Short.valueOf(\"-1\")), Optional.of(\"No status\"))" )
-                        .put( "RESULT_GOOD",
-                              "new EvaluationResult(Optional.of(Short.valueOf(\"1\")), Optional.of(\"Good\"))" )
-                        .put( "RESULT_BAD",
-                              "new EvaluationResult(Optional.of(Short.valueOf(\"2\")), Optional.of(\"Bad\"))" )
-                        .build() );
+                  .put( "RESULT_NO_STATUS", "new EvaluationResult(Optional.of(Short.valueOf(\"-1\")), Optional.of(\"No status\"))" )
+                  .put( "RESULT_GOOD", "new EvaluationResult(Optional.of(Short.valueOf(\"1\")), Optional.of(\"Good\"))" )
+                  .put( "RESULT_BAD", "new EvaluationResult(Optional.of(Short.valueOf(\"2\")), Optional.of(\"Bad\"))" )
+                  .build() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithComplexEnumerations( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelWithComplexEnumerations( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_COLLECTION_ENUM;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 9 );
       result.assertEnumConstants( "MyEnumerationOne", ImmutableSet.of( "ENTITY_INSTANCE_ONE" ),
             ImmutableMap.<String, String> builder()
-                        .put( "ENTITY_INSTANCE_ONE", "new MyEntityOne(List.of(\"fooOne\", \"barOne\", \"bazOne\"))" )
-                        .build() );
+                  .put( "ENTITY_INSTANCE_ONE", "new MyEntityOne(List.of(\"fooOne\", \"barOne\", \"bazOne\"))" )
+                  .build() );
 
       result.assertEnumConstants( "MyEnumerationThree", ImmutableSet.of( "ENTITY_INSTANCE_THREE" ),
             ImmutableMap.<String, String> builder()
-                        .put( "ENTITY_INSTANCE_THREE",
-                              "new MyEntityThree(new LinkedHashSet<String>() {\n"
-                                    + "\n"
-                                    + "    {\n"
-                                    + "        add(\"fooThree\");\n"
-                                    + "        add(\"barThree\");\n"
-                                    + "        add(\"bazThree\");\n"
-                                    + "    }\n"
-                                    + "})" )
-                        .build() );
+                  .put( "ENTITY_INSTANCE_THREE",
+                        "new MyEntityThree(new LinkedHashSet<String>() {\n"
+                              + "\n"
+                              + "    {\n"
+                              + "        add(\"fooThree\");\n"
+                              + "        add(\"barThree\");\n"
+                              + "        add(\"bazThree\");\n"
+                              + "    }\n"
+                              + "})" )
+                  .build() );
 
       result.assertEnumConstants( "MyEnumerationFour", ImmutableSet.of( "ENTITY_INSTANCE_FOUR" ),
             ImmutableMap.<String, String> builder()
-                        .put( "ENTITY_INSTANCE_FOUR",
-                              "new MyEntityFour(List.of(\"fooFour\", \"barFour\", \"bazFour\"))" )
-                        .build() );
+                  .put( "ENTITY_INSTANCE_FOUR", "new MyEntityFour(List.of(\"fooFour\", \"barFour\", \"bazFour\"))" )
+                  .build() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithComplexEntityCollectionEnumeration( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelWithComplexEntityCollectionEnumeration( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 4 );
       result.assertEnumConstants( "MyEnumerationOne", ImmutableSet.of( "ENTITY_INSTANCE_ONE" ),
             ImmutableMap.<String, String> builder()
-                        .put( "ENTITY_INSTANCE_ONE", "new MyEntityOne(List.of( new MyEntityTwo(\"foo\") ))" )
-                        .build() );
+                  .put( "ENTITY_INSTANCE_ONE", "new MyEntityOne(List.of( new MyEntityTwo(\"foo\") ))" )
+                  .build() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithFixedPointConstraint( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelWithFixedPointConstraint( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testProperty",
-                                                                                          BigDecimal.class
-                                                                                                .getSimpleName() )
-                                                                                    .build();
+            .put( "testProperty", BigDecimal.class.getSimpleName() )
+            .build();
 
       final ImmutableMap<String, String> expectedAnnotations = ImmutableMap.<String, String> builder()
-                                                                           .put( "testProperty",
-                                                                                 "@NotNull@Digits(fraction = 5, integer = 3)" )
-                                                                           .build();
+            .put( "testProperty", "@NotNull@Digits(fraction = 5, integer = 3)" )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_FIXED_POINT;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
 
       result.assertFields( "AspectWithFixedPoint", expectedFieldsForAspectClass, expectedAnnotations );
@@ -706,62 +580,52 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithList( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testProperty",
-                                                                                          new TypeToken<List<String>>() {
-                                                                                          } )
-                                                                                    .build();
+            .put( "testProperty", new TypeToken<List<String>>() {
+            } )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_LIST;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithList", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithList", expectedFieldsForAspectClass );
-      result.assertClassDeclaration( "AspectWithList",
-            Collections.singletonList( "CollectionAspect<List<String>,String>" ) );
+      result.assertClassDeclaration( "AspectWithList", Collections.emptyList(), Collections.emptyList(),
+            Collections.singletonList( "CollectionAspect<List<String>,String>" ), Collections.emptyList() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithListAndElementCharacteristic( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelWithListAndElementCharacteristic( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testProperty",
-                                                                                          new TypeToken<List<String>>() {
-                                                                                          } )
-                                                                                    .build();
+            .put( "testProperty", new TypeToken<List<String>>() {
+            } )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_LIST_AND_ELEMENT_CHARACTERISTIC;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithListAndElementCharacteristic", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithListAndElementCharacteristic", expectedFieldsForAspectClass );
-      result.assertClassDeclaration( "AspectWithListAndElementCharacteristic",
-            Collections.singletonList( "CollectionAspect<List<String>,String>" ) );
+      result.assertClassDeclaration( "AspectWithListAndElementCharacteristic", Collections.emptyList(),
+            Collections.emptyList(), Collections.singletonList( "CollectionAspect<List<String>,String>" ), Collections.emptyList() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithListAndElementConstraint( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelWithListAndElementConstraint( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testProperty",
-                                                                                          new TypeToken<List<Float>>() {
-                                                                                          } )
-                                                                                    .build();
+            .put( "testProperty", new TypeToken<List<Float>>() {
+            } )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_LIST_AND_ELEMENT_CONSTRAINT;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithListAndElementConstraint", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithListAndElementConstraint", expectedFieldsForAspectClass );
-      result.assertClassDeclaration( "AspectWithListAndElementConstraint",
-            Collections.singletonList( "CollectionAspect<List<Float>,Float>" ) );
+      result.assertClassDeclaration( "AspectWithListAndElementConstraint", Collections.emptyList(),
+            Collections.emptyList(), Collections.singletonList( "CollectionAspect<List<Float>,Float>" ),
+            Collections.emptyList() );
       result.assertCollectionElementValidationAnnotations( "AspectWithListAndElementConstraint", "testProperty",
             "@NotNull private List<@FloatMin(value = \"2.3\", boundDefinition = BoundDefinition.AT_LEAST) "
                   + "@FloatMax(value = \"10.5\", boundDefinition = BoundDefinition.AT_MOST) Float>testProperty;" );
@@ -771,42 +635,35 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithSet( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "testProperty",
-                                                                                          new TypeToken<Set<String>>() {
-                                                                                          } )
-                                                                                    .build();
+            .put( "testProperty", new TypeToken<Set<String>>() {
+            } )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_SET;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithSet", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithSet", expectedFieldsForAspectClass );
-      result.assertClassDeclaration( "AspectWithSet",
-            Collections.singletonList( "CollectionAspect<Set<String>,String>" ) );
+      result.assertClassDeclaration( "AspectWithSet", Collections.emptyList(), Collections.emptyList(),
+            Collections.singletonList( "CollectionAspect<Set<String>,String>" ), Collections.emptyList() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithRdfLangString( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "prop",
-                                                                                          new TypeToken<Map<Locale, String>>() {
-                                                                                          } )
-                                                                                    .build();
+            .put( "prop", new TypeToken<Map<Locale, String>>() {
+            } )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithMultiLanguageText", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithMultiLanguageText", expectedFieldsForAspectClass );
    }
 
-   private void assertConstructor( final GenerationResult result, final String className,
-         final ImmutableMap<String, Object> expectedFields ) {
+   private void assertConstructor( final GenerationResult result, final String className, final ImmutableMap<String, Object> expectedFields ) {
       final ImmutableMap<String, String> expectedAnnotationBuilder = buildExpectedAnnotations( expectedFields );
       result.assertConstructor( className, expectedFields, expectedAnnotationBuilder );
    }
@@ -823,123 +680,101 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithDurationTypeForRangeConstraints( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelWithDurationTypeForRangeConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "TestPropertyWithDayTimeDuration",
-                                                                                          Duration.class )
-                                                                                    .put( "TestPropertyWithDuration",
-                                                                                          Duration.class )
-                                                                                    .put( "TestPropertyWithYearMonthDuration",
-                                                                                          Duration.class )
-                                                                                    .build();
+            .put( "TestPropertyWithDayTimeDuration", Duration.class )
+            .put( "TestPropertyWithDuration", Duration.class )
+            .put( "TestPropertyWithYearMonthDuration", Duration.class )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_DURATION_TYPE_FOR_RANGE_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithDurationTypeForRangeConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
-                        .put( "TestPropertyWithDayTimeDuration", "@NotNull"
-                              + "@DurationMin(value = \"P1DT5H\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@DurationMax(value = \"P1DT8H\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .put( "TestPropertyWithDuration", "@NotNull"
-                              + "@DurationMin(value = \"PT1H5M0S\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@DurationMax(value = \"PT1H5M3S\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .put( "TestPropertyWithYearMonthDuration", "@NotNull"
-                              + "@DurationMin(value = \"P5Y2M\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@DurationMax(value = \"P5Y3M\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .build() );
+                  .put( "TestPropertyWithDayTimeDuration", "@NotNull"
+                        + "@DurationMin(value = \"P1DT5H\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@DurationMax(value = \"P1DT8H\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .put( "TestPropertyWithDuration", "@NotNull"
+                        + "@DurationMin(value = \"PT1H5M0S\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@DurationMax(value = \"PT1H5M3S\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .put( "TestPropertyWithYearMonthDuration", "@NotNull"
+                        + "@DurationMin(value = \"P5Y2M\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@DurationMax(value = \"P5Y3M\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .build() );
       assertConstructor( result, "AspectWithDurationTypeForRangeConstraints", expectedFieldsForAspectClass
       );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithDateTimeTypeForRangeConstraints( final KnownVersion metaModelVersion )
-         throws IOException {
+   public void testGenerateAspectModelWithDateTimeTypeForRangeConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "TestPropertyWithDateTime",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .put( "TestPropertyWithDateTimeStamp",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .build();
+            .put( "TestPropertyWithDateTime", XMLGregorianCalendar.class )
+            .put( "TestPropertyWithDateTimeStamp", XMLGregorianCalendar.class )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_DATE_TIME_TYPE_FOR_RANGE_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithDateTimeTypeForRangeConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
-                        .put( "TestPropertyWithDateTime", "@NotNull"
-                              + "@GregorianCalendarMin(value = \"2000-01-01T14:23:00\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@GregorianCalendarMax(value = \"2000-01-02T15:23:00\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .put( "TestPropertyWithDateTimeStamp", "@NotNull"
-                              + "@GregorianCalendarMin(value = \"2000-01-01T14:23:00.66372+14:00\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@GregorianCalendarMax(value = \"2000-01-01T15:23:00.66372+14:00\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .build() );
+                  .put( "TestPropertyWithDateTime", "@NotNull"
+                        + "@GregorianCalendarMin(value = \"2000-01-01T14:23:00\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@GregorianCalendarMax(value = \"2000-01-02T15:23:00\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .put( "TestPropertyWithDateTimeStamp", "@NotNull"
+                        + "@GregorianCalendarMin(value = \"2000-01-01T14:23:00.66372+14:00\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@GregorianCalendarMax(value = \"2000-01-01T15:23:00.66372+14:00\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .build() );
       assertConstructor( result, "AspectWithDateTimeTypeForRangeConstraints", expectedFieldsForAspectClass
       );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithGTypeForRangeConstraints( final KnownVersion metaModelVersion ) throws
-         IOException {
+   public void testGenerateAspectModelWithGTypeForRangeConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "TestPropertyWithGYear",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .put( "TestPropertyWithGMonth",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .put( "TestPropertyWithGDay",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .put( "TestPropertyWithGYearMonth",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .put( "TestPropertyWithGMonthYear",
-                                                                                          XMLGregorianCalendar.class )
-                                                                                    .build();
+            .put( "TestPropertyWithGYear", XMLGregorianCalendar.class )
+            .put( "TestPropertyWithGMonth", XMLGregorianCalendar.class )
+            .put( "TestPropertyWithGDay", XMLGregorianCalendar.class )
+            .put( "TestPropertyWithGYearMonth", XMLGregorianCalendar.class )
+            .put( "TestPropertyWithGMonthYear", XMLGregorianCalendar.class )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithGTypeForRangeConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
-                        .put( "TestPropertyWithGYear", "@NotNull"
-                              + "@GregorianCalendarMin(value = \"2000\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@GregorianCalendarMax(value = \"2001\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .put( "TestPropertyWithGMonth", "@NotNull"
-                              + "@GregorianCalendarMin(value = \"--04\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@GregorianCalendarMax(value = \"--05\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .put( "TestPropertyWithGDay", "@NotNull"
-                              + "@GregorianCalendarMin(value = \"---04\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@GregorianCalendarMax(value = \"---05\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .put( "TestPropertyWithGYearMonth", "@NotNull"
-                              + "@GregorianCalendarMin(value = \"2000-01\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@GregorianCalendarMax(value = \"2000-02\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .put( "TestPropertyWithGMonthYear", "@NotNull"
-                              + "@GregorianCalendarMin(value = \"--01-01\", boundDefinition = BoundDefinition.AT_LEAST)"
-                              + "@GregorianCalendarMax(value = \"--01-02\", boundDefinition = BoundDefinition.AT_MOST)" )
-                        .build() );
+                  .put( "TestPropertyWithGYear", "@NotNull"
+                        + "@GregorianCalendarMin(value = \"2000\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@GregorianCalendarMax(value = \"2001\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .put( "TestPropertyWithGMonth", "@NotNull"
+                        + "@GregorianCalendarMin(value = \"--04\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@GregorianCalendarMax(value = \"--05\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .put( "TestPropertyWithGDay", "@NotNull"
+                        + "@GregorianCalendarMin(value = \"---04\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@GregorianCalendarMax(value = \"---05\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .put( "TestPropertyWithGYearMonth", "@NotNull"
+                        + "@GregorianCalendarMin(value = \"2000-01\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@GregorianCalendarMax(value = \"2000-02\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .put( "TestPropertyWithGMonthYear", "@NotNull"
+                        + "@GregorianCalendarMin(value = \"--01-01\", boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@GregorianCalendarMax(value = \"--01-02\", boundDefinition = BoundDefinition.AT_MOST)" )
+                  .build() );
       assertConstructor( result, "AspectWithGTypeForRangeConstraints", expectedFieldsForAspectClass
       );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithPropertyWithPayloadName( final KnownVersion metaModelVersion ) throws
-         IOException {
+   public void testGenerateAspectModelWithPropertyWithPayloadName( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "test", "String" )
-                                                                                    .build();
+            .put( "test", "String" )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithPropertyWithPayloadName", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithPropertyWithPayloadName", expectedFieldsForAspectClass );
@@ -949,16 +784,94 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithBlankNode( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-                                                                                    .put( "list",
-                                                                                          new TypeToken<Collection<String>>() {
-                                                                                          } )
-                                                                                    .build();
+            .put( "list", new TypeToken<Collection<String>>() {
+            } )
+            .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_BLANK_NODE;
-      final GenerationResult result = TestContext.generateAspectCode( aspect, metaModelVersion )
-                                                 .apply( getGenerators( aspect, metaModelVersion, Optional.empty(),
-                                                       true ) );
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithBlankNode", expectedFieldsForAspectClass, new HashMap<>() );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testGenerateAspectModelWithAbstractEntity( final KnownVersion metaModelVersion ) throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+            .put( "testProperty", "ExtendingTestEntity" )
+            .build();
+
+      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
+            .put( "entityProperty", String.class )
+            .build();
+
+      final ImmutableMap<String, Object> expectedConstructorArgumentsForEntityClass = ImmutableMap.<String, Object> builder()
+            .put( "entityProperty", String.class )
+            .put( "abstractTestProperty", BigInteger.class )
+            .build();
+
+      final ImmutableMap<String, Object> expectedFieldsForAbstractEntityClass = ImmutableMap.<String, Object> builder()
+            .put( "abstractTestProperty", BigInteger.class )
+            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ABSTRACT_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
+      result.assertNumberOfFiles( 3 );
+      result.assertFields( "AspectWithAbstractEntity", expectedFieldsForAspectClass, new HashMap<>() );
+      assertConstructor( result, "AspectWithAbstractEntity", expectedFieldsForAspectClass );
+      result.assertFields( "ExtendingTestEntity", expectedFieldsForEntityClass, new HashMap<>() );
+      assertConstructor( result, "ExtendingTestEntity", expectedConstructorArgumentsForEntityClass );
+      result.assertFields( "AbstractTestEntity", expectedFieldsForAbstractEntityClass, new HashMap<>() );
+      assertConstructor( result, "AbstractTestEntity", expectedFieldsForAbstractEntityClass );
+
+      result.assertClassDeclaration( "AspectWithAbstractEntity", Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList(), Collections.emptyList() );
+      result.assertClassDeclaration( "AbstractTestEntity", Collections.singletonList( Modifier.abstractModifier() ),
+            Collections.emptyList(), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+                  "@JsonSubTypes({ @JsonSubTypes.Type(value = ExtendingTestEntity.class, name = \"ExtendingTestEntity\") })" ) );
+      result.assertClassDeclaration( "ExtendingTestEntity", Collections.emptyList(),
+            Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(), Collections.emptyList() );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testGenerateAspectModelWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion ) throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+            .put( "testProperty", "Collection<AbstractTestEntity>" )
+            .build();
+
+      final ImmutableMap<String, Object> expectedFieldsForEntityClass = ImmutableMap.<String, Object> builder()
+            .put( "entityProperty", String.class )
+            .build();
+
+      final ImmutableMap<String, Object> expectedConstructorArgumentsForEntityClass = ImmutableMap.<String, Object> builder()
+            .put( "entityProperty", String.class )
+            .put( "abstractTestProperty", BigInteger.class )
+            .build();
+
+      final ImmutableMap<String, Object> expectedFieldsForAbstractEntityClass = ImmutableMap.<String, Object> builder()
+            .put( "abstractTestProperty", BigInteger.class )
+            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
+      result.assertNumberOfFiles( 3 );
+      result.assertFields( "AspectWithCollectionWithAbstractEntity", expectedFieldsForAspectClass, new HashMap<>() );
+      assertConstructor( result, "AspectWithCollectionWithAbstractEntity", expectedFieldsForAspectClass );
+      result.assertFields( "ExtendingTestEntity", expectedFieldsForEntityClass, new HashMap<>() );
+      assertConstructor( result, "ExtendingTestEntity", expectedConstructorArgumentsForEntityClass );
+      result.assertFields( "AbstractTestEntity", expectedFieldsForAbstractEntityClass, new HashMap<>() );
+      assertConstructor( result, "AbstractTestEntity", expectedFieldsForAbstractEntityClass );
+
+      result.assertClassDeclaration( "AspectWithCollectionWithAbstractEntity", Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.singletonList( "CollectionAspect<Collection<AbstractTestEntity>,AbstractTestEntity>" ),
+            Collections.emptyList() );
+      result.assertClassDeclaration( "AbstractTestEntity", Collections.singletonList( Modifier.abstractModifier() ),
+            Collections.emptyList(), Collections.emptyList(),
+            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+                  "@JsonSubTypes({ @JsonSubTypes.Type(value = ExtendingTestEntity.class, name = \"ExtendingTestEntity\") })" ) );
+      result.assertClassDeclaration( "ExtendingTestEntity", Collections.emptyList(),
+            Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(), Collections.emptyList() );
    }
 }

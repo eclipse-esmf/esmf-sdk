@@ -1,21 +1,22 @@
     /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
- *
- * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship.
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * SPDX-License-Identifier: MPL-2.0
- */
+     * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+     *
+     * See the AUTHORS file(s) distributed with this work for additional
+     * information regarding authorship.
+     *
+     * This Source Code Form is subject to the terms of the Mozilla Public
+     * License, v. 2.0. If a copy of the MPL was not distributed with this
+     * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+     *
+     * SPDX-License-Identifier: MPL-2.0
+     */
 
     package io.openmanufacturing.sds.aspectmodel.java;
 
     import java.math.BigDecimal;
     import java.math.BigInteger;
     import java.util.ArrayList;
+    import java.util.Iterator;
     import java.util.LinkedHashSet;
     import java.util.List;
     import java.util.Map;
@@ -30,32 +31,34 @@
     import org.apache.jena.rdf.model.ResourceFactory;
     import org.apache.jena.vocabulary.RDF;
 
-import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
-import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Collection;
-import io.openmanufacturing.sds.metamodel.Either;
-import io.openmanufacturing.sds.metamodel.Entity;
-import io.openmanufacturing.sds.metamodel.Enumeration;
-import io.openmanufacturing.sds.metamodel.HasProperties;
-import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.Quantifiable;
-import io.openmanufacturing.sds.metamodel.Scalar;
-import io.openmanufacturing.sds.metamodel.SortedSet;
-import io.openmanufacturing.sds.metamodel.StructureElement;
-import io.openmanufacturing.sds.metamodel.Trait;
-import io.openmanufacturing.sds.metamodel.Type;
-
-import com.google.common.base.CaseFormat;
+    import com.fasterxml.jackson.annotation.JsonSubTypes;
+    import com.fasterxml.jackson.annotation.JsonTypeInfo;
+    import com.google.common.base.CaseFormat;
     import com.google.common.base.Converter;
 
     import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+    import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
+    import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
+    import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+    import io.openmanufacturing.sds.metamodel.AbstractEntity;
+    import io.openmanufacturing.sds.metamodel.Characteristic;
+    import io.openmanufacturing.sds.metamodel.Collection;
+    import io.openmanufacturing.sds.metamodel.ComplexType;
+    import io.openmanufacturing.sds.metamodel.Either;
+    import io.openmanufacturing.sds.metamodel.Entity;
+    import io.openmanufacturing.sds.metamodel.Enumeration;
+    import io.openmanufacturing.sds.metamodel.HasProperties;
+    import io.openmanufacturing.sds.metamodel.Property;
+    import io.openmanufacturing.sds.metamodel.Quantifiable;
+    import io.openmanufacturing.sds.metamodel.Scalar;
+    import io.openmanufacturing.sds.metamodel.SortedSet;
+    import io.openmanufacturing.sds.metamodel.StructureElement;
+    import io.openmanufacturing.sds.metamodel.Trait;
+    import io.openmanufacturing.sds.metamodel.Type;
 
     public class AspectModelJavaUtil {
 
-       public static final Converter<String, String> TO_CONSTANT = CaseFormat.UPPER_CAMEL
-             .converterTo( CaseFormat.UPPER_UNDERSCORE );
+       public static final Converter<String, String> TO_CONSTANT = CaseFormat.UPPER_CAMEL.converterTo( CaseFormat.UPPER_UNDERSCORE );
 
        private AspectModelJavaUtil() {
        }
@@ -67,10 +70,8 @@ import com.google.common.base.CaseFormat;
         * @param importTracker the import tracker for the current context
         * @return the final type of the property
         */
-       public static String getPropertyType( final Property metaProperty, final boolean inclValidation,
-             final ImportTracker importTracker ) {
-          final String propertyType = determinePropertyType( metaProperty.getCharacteristic(), inclValidation,
-                importTracker );
+       public static String getPropertyType( final Property metaProperty, final boolean inclValidation, final ImportTracker importTracker ) {
+          final String propertyType = determinePropertyType( metaProperty.getCharacteristic(), inclValidation, importTracker );
           if ( metaProperty.isOptional() ) {
              return containerType( Optional.class, propertyType, Optional.empty() );
           }
@@ -86,8 +87,7 @@ import com.google.common.base.CaseFormat;
         */
        public static boolean hasContainerType( final Property metaProperty ) {
           return metaProperty.isOptional() || (metaProperty.getEffectiveCharacteristic() instanceof Collection)
-                || metaProperty.getDataType().map( dataType -> dataType.getUrn().equals( RDF.langString.getURI() ) )
-                               .orElse( false );
+                || metaProperty.getDataType().map( dataType -> dataType.getUrn().equals( RDF.langString.getURI() ) ).orElse( false );
        }
 
        /**
@@ -112,8 +112,7 @@ import com.google.common.base.CaseFormat;
         *       the Collection declarations
         * @return {@link String} containing the definition of the Java Data Type for the property
         */
-       public static String determinePropertyType( final Characteristic characteristic,
-             final boolean inclValidation, final ImportTracker importTracker ) {
+       public static String determinePropertyType( final Characteristic characteristic, final boolean inclValidation, final ImportTracker importTracker ) {
           final Optional<Type> dataType = characteristic.getDataType();
 
           if ( characteristic instanceof Collection ) {
@@ -139,25 +138,61 @@ import com.google.common.base.CaseFormat;
           return getDataType( dataType, importTracker );
        }
 
-       public static String determineCollectionAspectClassDefinition( final StructureElement element,
-             final ImportTracker importTracker ) {
+       public static String determineCollectionAspectClassDefinition( final StructureElement element, final ImportTracker importTracker ) {
           importTracker.importExplicit( CollectionAspect.class );
           for ( final Property property : element.getProperties() ) {
              final Characteristic characteristic = property.getEffectiveCharacteristic();
              if ( characteristic instanceof Collection ) {
-                final String collectionType = determineCollectionType( (Collection) characteristic, false,
-                      importTracker );
+                final String collectionType = determineCollectionType( (Collection) characteristic, false, importTracker );
                 final String dataType = getDataType( characteristic.getDataType(), importTracker );
-                return String.format( "public class %s implements CollectionAspect<%s,%s>",
-                      element.getName(), collectionType, dataType );
+                return String.format( "public class %s implements CollectionAspect<%s,%s>", element.getName(), collectionType, dataType );
              }
           }
           throw new CodeGenerationException( "Tried to generate a Collection Aspect class definition, but no "
                 + "Property has a Collection Characteristic in " + element.getName() );
        }
 
-       private static String determineCollectionType( final Collection collection, final boolean inclValidation,
-             final ImportTracker importTracker ) {
+       public static String determineComplexTypeClassDefinition( final ComplexType element ) {
+          final StringBuilder classDefinitionBuilder = new StringBuilder( "public " );
+          if ( element.isAbstractEntity() ) {
+             classDefinitionBuilder.append( "abstract " );
+          }
+          classDefinitionBuilder.append( "class " ).append( element.getName() );
+          if ( element.getExtends().isPresent() ) {
+             final ComplexType extendedComplexType = element.getExtends().get();
+             classDefinitionBuilder.append( " extends " ).append( extendedComplexType.getName() );
+          }
+          classDefinitionBuilder.append( " {" );
+          return classDefinitionBuilder.toString();
+       }
+
+       public static String generateAbstractEntityClassAnnotations( final ComplexType element, final ImportTracker importTracker ) {
+          final StringBuilder classAnnotationBuilder = new StringBuilder();
+          if ( element.isAbstractEntity() ) {
+             importTracker.importExplicit( JsonTypeInfo.class );
+             importTracker.importExplicit( JsonSubTypes.class );
+
+             final AbstractEntity abstractEntity = (AbstractEntity) element;
+             classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)" );
+             classAnnotationBuilder.append( "@JsonSubTypes({" );
+             final Iterator<ComplexType> extendingComplexTypeIterator = abstractEntity.getExtendingElements().iterator();
+             while ( extendingComplexTypeIterator.hasNext() ) {
+                final ComplexType extendingComplexType = extendingComplexTypeIterator.next();
+                classAnnotationBuilder.append( "@JsonSubTypes.Type(value = " );
+                classAnnotationBuilder.append( extendingComplexType.getName() );
+                classAnnotationBuilder.append( ".class, name = \"" );
+                classAnnotationBuilder.append( extendingComplexType.getName() );
+                classAnnotationBuilder.append( "\")" );
+                if ( extendingComplexTypeIterator.hasNext() ) {
+                   classAnnotationBuilder.append( "," );
+                }
+             }
+             classAnnotationBuilder.append( "})" );
+          }
+          return classAnnotationBuilder.toString();
+       }
+
+       private static String determineCollectionType( final Collection collection, final boolean inclValidation, final ImportTracker importTracker ) {
           final Optional<Type> dataType = collection.getDataType();
 
           final Optional<String> elementConstraint = inclValidation ?
@@ -184,19 +219,16 @@ import com.google.common.base.CaseFormat;
           throw new CodeGenerationException( "Could not determine Java collection type for " + collection.getName() );
        }
 
-       private static Optional<String> buildConstraintForCollectionElements( final Collection collection,
-             final ImportTracker importTracker ) {
+       private static Optional<String> buildConstraintForCollectionElements( final Collection collection, final ImportTracker importTracker ) {
           return collection.getElementCharacteristic()
-                           .filter( elementCharacteristic -> Trait.class
-                                 .isAssignableFrom( elementCharacteristic.getClass() ) )
-                           .map( elementCharacteristic -> buildConstraintsForCharacteristic(
-                                 (Trait) elementCharacteristic, importTracker ) );
+                .filter( elementCharacteristic -> Trait.class
+                      .isAssignableFrom( elementCharacteristic.getClass() ) )
+                .map( elementCharacteristic -> buildConstraintsForCharacteristic(
+                      (Trait) elementCharacteristic, importTracker ) );
        }
 
-       public static String containerType( final Class<?> containerClass, final String elementType,
-             final Optional<String> elementConstraint ) {
-          final StringBuilder containerTypeBuilder = new StringBuilder().append( containerClass.getName() )
-                                                                        .append( "<" );
+       public static String containerType( final Class<?> containerClass, final String elementType, final Optional<String> elementConstraint ) {
+          final StringBuilder containerTypeBuilder = new StringBuilder().append( containerClass.getName() ).append( "<" );
           elementConstraint.ifPresent( containerTypeBuilder::append );
           containerTypeBuilder.append( elementType ).append( ">" );
           return containerTypeBuilder.toString();
@@ -222,8 +254,8 @@ import com.google.common.base.CaseFormat;
        public static String getDataType( final Optional<Type> dataType, final ImportTracker importTracker ) {
           return dataType.map( type -> {
              final Type actualDataType = dataType.get();
-             if ( actualDataType instanceof Entity ) {
-                return ((Entity) actualDataType).getName();
+             if ( actualDataType instanceof ComplexType ) {
+                return ((ComplexType) actualDataType).getName();
              }
 
              if ( actualDataType instanceof Scalar ) {
@@ -233,16 +265,13 @@ import com.google.common.base.CaseFormat;
                    importTracker.importExplicit( java.util.Locale.class );
                    return "Map<Locale, String>";
                 }
-                final Class<?> result = DataType
-                      .getJavaTypeForMetaModelType( typeResource, actualDataType.getMetaModelVersion() );
+                final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource, actualDataType.getMetaModelVersion() );
                 importTracker.importExplicit( result );
                 return result.getTypeName();
              }
 
-             throw new CodeGenerationException( "Could not determine Java type for model type that is "
-                   + "neither Scalar nor Entity: " + type.getUrn() );
-          } ).orElseThrow(
-                () -> new CodeGenerationException( "Failed to determine Java data type for empty model type" ) );
+             throw new CodeGenerationException( "Could not determine Java type for model type that is neither Scalar nor Entity: " + type.getUrn() );
+          } ).orElseThrow( () -> new CodeGenerationException( "Failed to determine Java data type for empty model type" ) );
        }
 
        /**
@@ -269,8 +298,7 @@ import com.google.common.base.CaseFormat;
         * @param importTracker the import tracker for the current context
         * @return a string representing the enum key
         */
-       public static String generateEnumKey( final Optional<Type> optionalType, final Object value,
-             final ImportTracker importTracker ) {
+       public static String generateEnumKey( final Optional<Type> optionalType, final Object value, final ImportTracker importTracker ) {
           final String dataType = getDataType( optionalType, importTracker );
           if ( isNumberType( dataType ) ) {
              return "NUMBER_" + value.toString().replaceAll( "[^\\p{Alnum}]", "_" );
@@ -287,7 +315,7 @@ import com.google.common.base.CaseFormat;
 
        private static String generateDefaultEnumKey( final Object value ) {
           return value.toString().replaceAll( "([^\\p{Alnum}_])", "_" ).replaceAll( "^[^\\p{Alpha}_]", "_" )
-                      .toUpperCase();
+                .toUpperCase();
        }
 
        public static boolean isNumberType( final String dataTypeName ) {
@@ -321,12 +349,32 @@ import com.google.common.base.CaseFormat;
        public static String buildConstraintsForCharacteristic( final Trait trait, final ImportTracker importTracker ) {
           return trait.getConstraints().stream().map( constraint ->
                 new ConstraintAnnotationBuilder().setConstraintClass( constraint )
-                                                 .setImportTracker( importTracker )
-                                                 .build() ).collect( Collectors.joining() );
+                      .setImportTracker( importTracker )
+                      .build() ).collect( Collectors.joining() );
        }
 
        public static boolean anyPropertyNotInPayload( final HasProperties element ) {
           return element.getProperties().stream().anyMatch( Property::isNotInPayload );
+       }
+
+       public static List<Property> getAllProperties( final ComplexType element ) {
+          final List<Property> allProperties = new ArrayList<>( element.getProperties() );
+          if ( element.getExtends().isPresent() ) {
+             final ComplexType extendedComplexType = element.getExtends().get();
+             final List<Property> allPropertiesFromExtendedComplexType = getAllProperties( extendedComplexType );
+             allProperties.addAll( allPropertiesFromExtendedComplexType );
+          }
+          return allProperties;
+       }
+
+       public static List<Property> getAllPropertiesInPayload( final ComplexType element ) {
+          final List<Property> allPropertiesInPayload = getPropertiesInPayload( element );
+          if ( element.getExtends().isPresent() ) {
+             final ComplexType extendedComplexType = element.getExtends().get();
+             final List<Property> allPropertiesFromExtendedComplexType = getPropertiesInPayload( extendedComplexType );
+             allPropertiesInPayload.addAll( allPropertiesFromExtendedComplexType );
+          }
+          return allPropertiesInPayload;
        }
 
        public static List<Property> getPropertiesInPayload( final HasProperties element ) {
@@ -335,8 +383,8 @@ import com.google.common.base.CaseFormat;
           return element.getProperties().stream().filter( inPayload ).collect( Collectors.toList() );
        }
 
-       public static String generateInitializer( final Property property, final String value,
-             final ImportTracker importTracker, final ValueInitializer valueInitializer ) {
+       public static String generateInitializer( final Property property, final String value, final ImportTracker importTracker,
+             final ValueInitializer valueInitializer ) {
           return property.getDataType().map( type -> {
              final Resource typeResource = ResourceFactory.createResource( type.getUrn() );
              final KnownVersion metaModelVersion = property.getMetaModelVersion();
@@ -347,8 +395,8 @@ import com.google.common.base.CaseFormat;
                 "The Either Characteristic is not allowed for Properties used as elements in a StructuredValue" ) );
        }
 
-       public static String generateEnumValue( final Optional<Type> valueDataType, final Object value,
-             final boolean isOptional, final ImportTracker importTracker ) {
+       public static String generateEnumValue( final Optional<Type> valueDataType, final Object value, final boolean isOptional,
+             final ImportTracker importTracker ) {
           final String dataTypeName = getDataType( valueDataType, importTracker );
           if ( dataTypeName.contains( "String" ) ) {
              final String escapedValue = StringEscapeUtils.escapeJava( (String) value );
@@ -370,18 +418,17 @@ import com.google.common.base.CaseFormat;
           return value.toString();
        }
 
-       private static String generateEntityEnumValue( final Optional<Type> valueDataType, final Object value,
-             final ImportTracker importTracker, final String dataTypeName ) {
+       private static String generateEntityEnumValue( final Optional<Type> valueDataType, final Object value, final ImportTracker importTracker,
+             final String dataTypeName ) {
           return valueDataType.map( type -> {
              final Entity entity = (Entity) type;
              return String.format( "new %s(%s)", dataTypeName, entity.getProperties().stream().map( property ->
-                   generateComplexValue( property, value, importTracker ) )
-                                                                     .collect( Collectors.joining( "," ) ) );
+                         generateComplexValue( property, value, importTracker ) )
+                   .collect( Collectors.joining( "," ) ) );
           } ).orElseThrow( () -> new CodeGenerationException( "Can not generate enum value for empty type" ) );
        }
 
-       private static String generateNumericEnumValue( final Object value, final boolean isOptional,
-             final String dataTypeName ) {
+       private static String generateNumericEnumValue( final Object value, final boolean isOptional, final String dataTypeName ) {
           if ( needsValueOf( dataTypeName ) ) {
              return isOptional ? String.format( "Optional.of(%s.valueOf(%s))", dataTypeName, value ) :
                    String.format( "%s.valueOf(%s)", dataTypeName, value );
@@ -393,15 +440,13 @@ import com.google.common.base.CaseFormat;
           return isOptional ? String.format( "Optional.of(%s)", value ) : value.toString();
        }
 
-       private static String generateComplexValue( final Property property, final Object valueMap,
-             final ImportTracker importTracker ) {
-
+       private static String generateComplexValue( final Property property, final Object valueMap, final ImportTracker importTracker ) {
           if ( property.getCharacteristic() instanceof io.openmanufacturing.sds.metamodel.Set ) {
              @SuppressWarnings( "unchecked" ) final Set<Object> objects = (((Map<String, Set<Object>>) valueMap)
                    .get( property.getName() ));
              final String values = objects.stream().map( value ->
-                   generateEnumValue( property.getCharacteristic().getDataType(), value, false, importTracker ) )
-                                          .collect( Collectors.joining( "," ) );
+                         generateEnumValue( property.getCharacteristic().getDataType(), value, false, importTracker ) )
+                   .collect( Collectors.joining( "," ) );
              return String.format( "Set.of(%s)", values );
           }
 
@@ -410,9 +455,9 @@ import com.google.common.base.CaseFormat;
              @SuppressWarnings( "unchecked" ) final Set<Object> objects = (((Map<String, Set<Object>>) valueMap)
                    .get( property.getName() ));
              final String values = objects.stream().map( value ->
-                   generateEnumValue( property.getCharacteristic().getDataType(), value, false, importTracker ) )
-                                          .map( value -> String.format( "add(%s);", value ) )
-                                          .collect( Collectors.joining() );
+                         generateEnumValue( property.getCharacteristic().getDataType(), value, false, importTracker ) )
+                   .map( value -> String.format( "add(%s);", value ) )
+                   .collect( Collectors.joining() );
 
              final Optional<Class<?>> setType = objects.stream().findAny().map( Object::getClass );
              setType.ifPresent( importTracker::importExplicit );
@@ -425,8 +470,8 @@ import com.google.common.base.CaseFormat;
              @SuppressWarnings( "unchecked" ) final List<Object> objects = (((Map<String, ArrayList<Object>>) valueMap)
                    .get( property.getName() ));
              final String values = objects.stream().map( value ->
-                   generateEnumValue( property.getCharacteristic().getDataType(), value, false, importTracker ) )
-                                          .collect( Collectors.joining( "," ) );
+                         generateEnumValue( property.getCharacteristic().getDataType(), value, false, importTracker ) )
+                   .collect( Collectors.joining( "," ) );
              return String.format( "List.of(%s)", values );
           }
           //noinspection unchecked

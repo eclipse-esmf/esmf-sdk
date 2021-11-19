@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -48,7 +48,8 @@ public class AspectModelLoader {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
 
    private static final Set<KnownVersion> supportedVersions = ImmutableSet.of(
-         KnownVersion.BAMM_1_0_0
+         KnownVersion.BAMM_1_0_0,
+         KnownVersion.BAMM_2_0_0
    );
 
    private static final MigratorService migratorService = new MigratorService();
@@ -65,11 +66,9 @@ public class AspectModelLoader {
     */
    private static Try<Aspect> load( final VersionedModel versionedModel ) {
       final Model model = versionedModel.getModel();
-      final Optional<KnownVersion> metaModelVersion = KnownVersion
-            .fromVersionString( versionedModel.getVersion().toString() );
+      final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getVersion().toString() );
       if ( metaModelVersion.isEmpty() ) {
-         return Try.failure( new UnsupportedVersionException(
-               versionedModel.getVersion() ) );
+         return Try.failure( new UnsupportedVersionException( versionedModel.getVersion() ) );
       }
       final BAMM bamm = new BAMM( metaModelVersion.get() );
       final StmtIterator iterator = model.listStatements( null, RDF.type, bamm.Aspect() );
@@ -78,9 +77,7 @@ public class AspectModelLoader {
          final Aspect aspect = modelElementFactory.create( Aspect.class, iterator.nextStatement().getSubject() );
          return Try.success( aspect );
       } catch ( final RuntimeException exception ) {
-         return Try.failure(
-               new InvalidModelException( "Could not load Aspect model, please make sure the model is valid.",
-                     exception ) );
+         return Try.failure( new InvalidModelException( "Could not load Aspect model, please make sure the model is valid.", exception ) );
       }
    }
 
@@ -98,23 +95,19 @@ public class AspectModelLoader {
       return migratorService
             .updateMetaModelVersion( versionedModel )
             .flatMap( migratedModel -> {
-               final Optional<KnownVersion> metaModelVersion = KnownVersion
-                     .fromVersionString( versionedModel.getVersion().toString() );
+               final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( migratedModel.getVersion().toString() );
                if ( metaModelVersion.isEmpty() ) {
-                  return Try.failure( new UnsupportedVersionException( versionedModel.getVersion() ) );
+                  return Try.failure( new UnsupportedVersionException( migratedModel.getVersion() ) );
                }
 
                final KnownVersion version = metaModelVersion.get();
                if ( !supportedVersions.contains( version ) ) {
-                  return Try.failure( new InvalidVersionException(
-                        "No Aspect loader is known to support BAMM version " + version
-                              .toVersionString() ) );
+                  return Try.failure( new InvalidVersionException( "No Aspect loader is known to support BAMM version " + version.toVersionString() ) );
                }
 
                final List<Try<AspectModelUrn>> list = getUrns( migratedModel, version );
                if ( list.size() != 1 ) {
-                  return Try.failure( new InvalidRootElementCountException(
-                        "Aspect model does not contain exactly one Aspect" ) );
+                  return Try.failure( new InvalidRootElementCountException( "Aspect model does not contain exactly one Aspect" ) );
                }
 
                return load( migratedModel );
@@ -123,13 +116,8 @@ public class AspectModelLoader {
 
    private static List<Try<AspectModelUrn>> getUrns( final VersionedModel migratedModel, final KnownVersion version ) {
       final BAMM bamm = new BAMM( version );
-      final List<Try<AspectModelUrn>> list =
-            migratedModel.getModel().listStatements( null, RDF.type, bamm.Aspect() )
-                         .mapWith( statement -> migratorService.getSdsMigratorFactory()
-                                                               .createAspectMetaModelResourceResolver()
-                                                               .getAspectModelUrn( statement.getSubject().getURI() ) )
-                         .toList();
-      return list;
+      return migratedModel.getModel().listStatements( null, RDF.type, bamm.Aspect() ).mapWith( statement ->
+            migratorService.getSdsMigratorFactory().createAspectMetaModelResourceResolver().getAspectModelUrn( statement.getSubject().getURI() ) ).toList();
    }
 
    /**

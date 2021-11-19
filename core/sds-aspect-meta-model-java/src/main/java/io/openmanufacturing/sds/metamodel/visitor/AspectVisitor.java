@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,11 +12,13 @@
  */
 package io.openmanufacturing.sds.metamodel.visitor;
 
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Code;
 import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Duration;
 import io.openmanufacturing.sds.metamodel.Either;
@@ -73,7 +75,15 @@ public interface AspectVisitor<T, C> {
    }
 
    default T visitEntity( final Entity entity, final C context ) {
-      return visitBase( entity, context );
+      return visitComplexType( entity, context );
+   }
+
+   default T visitAbstractEntity( final AbstractEntity abstractEntity, final C context ) {
+      return visitComplexType( abstractEntity, context );
+   }
+
+   default T visitComplexType( final ComplexType complexType, final C context ) {
+      return visitBase( complexType, context );
    }
 
    default T visitUnit( final Unit unit, final C context ) {
@@ -181,14 +191,14 @@ public interface AspectVisitor<T, C> {
       if ( element instanceof Aspect ) {
          return visitAspect( (Aspect) element, context );
       }
-      return visitEntity( (Entity) element, context );
+      return visitComplexType( (ComplexType) element, context );
    }
 
    default T visitType( final Type type, final C context ) {
       if ( type instanceof Scalar ) {
          return visitScalar( (Scalar) type, context );
       }
-      return visitEntity( (Entity) type, context );
+      return visitComplexType( (ComplexType) type, context );
    }
 
    default T visitScalar( final Scalar scalar, final C context ) {

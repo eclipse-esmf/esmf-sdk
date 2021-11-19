@@ -34,6 +34,7 @@ import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationExcepti
 import io.openmanufacturing.sds.aspectmodel.java.pojo.JavaArtifactGenerator;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Code;
 import io.openmanufacturing.sds.metamodel.Collection;
 import io.openmanufacturing.sds.metamodel.Constraint;
@@ -61,9 +62,11 @@ import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.Units;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
+import io.openmanufacturing.sds.metamodel.impl.DefaultAbstractEntity;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCode;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCollection;
+import io.openmanufacturing.sds.metamodel.impl.DefaultComplexType;
 import io.openmanufacturing.sds.metamodel.impl.DefaultDuration;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEncodingConstraint;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEntity;
@@ -131,8 +134,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
             .put( "Arrays", java.util.Arrays.class )
             .put( "BoundDefinition", BoundDefinition.class )
-            .put( "characteristicBaseUrn",
-                  matchHash.trimTrailingFrom( new BAMMC( element.getMetaModelVersion() ).getNamespace() ) )
+            .put( "characteristicBaseUrn", matchHash.trimTrailingFrom( new BAMMC( element.getMetaModelVersion() ).getNamespace() ) )
             .put( "Code", Code.class )
             .put( "Collection", Collection.class )
             .put( "Collections", Collections.class )
@@ -145,6 +147,8 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "DefaultDuration", DefaultDuration.class )
             .put( "DefaultEncodingConstraint", DefaultEncodingConstraint.class )
             .put( "DefaultEntity", DefaultEntity.class )
+            .put( "DefaultAbstractEntity", DefaultAbstractEntity.class )
+            .put( "DefaultComplexType", DefaultComplexType.class )
             .put( "DefaultEnumeration", DefaultEnumeration.class )
             .put( "DefaultFixedPointConstraint", DefaultFixedPointConstraint.class )
             .put( "DefaultLanguageConstraint", DefaultLanguageConstraint.class )
@@ -167,6 +171,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "Either", Either.class )
             .put( "EncodingConstraint", EncodingConstraint.class )
             .put( "Entity", Entity.class )
+            .put( "AbstractEntity", AbstractEntity.class )
             .put( "Enumeration", Enumeration.class )
             .put( "FixedPointConstraint", FixedPointConstraint.class )
             .put( "importTracker", importTracker )
@@ -178,8 +183,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "Map", Map.class )
             .put( "Measurement", Measurement.class )
             .put( "modelUrnPrefix", modelUrnPrefix )
-            .put( "nonNegativeInteger",
-                  new DefaultScalar( XSD.nonNegativeInteger.getURI(), element.getMetaModelVersion() ) )
+            .put( "nonNegativeInteger", new DefaultScalar( XSD.nonNegativeInteger.getURI(), element.getMetaModelVersion() ) )
             .put( "packageName", config.getPackageName() )
             .put( "Quantifiable", Quantifiable.class )
             .put( "RangeConstraint", RangeConstraint.class )

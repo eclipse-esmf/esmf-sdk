@@ -76,12 +76,10 @@ public class PrettyPrinter {
     * @param rootElementUrn The URN of the root model element
     * @param writer The writer to write to.
     */
-   public PrettyPrinter( final VersionedModel versionedModel, final AspectModelUrn rootElementUrn,
-         final PrintWriter writer ) {
+   public PrettyPrinter( final VersionedModel versionedModel, final AspectModelUrn rootElementUrn, final PrintWriter writer ) {
       model = versionedModel.getRawModel();
       final KnownVersion metaModelVersion = KnownVersion.fromVersionString( versionedModel.getVersion().toString() )
-                                                        .orElseThrow( () -> new UnsupportedVersionException(
-                                                              versionedModel.getVersion() ) );
+            .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getVersion() ) );
       this.writer = writer;
       this.rootElementUrn = rootElementUrn;
 
@@ -102,6 +100,7 @@ public class PrettyPrinter {
    private Comparator<Property> createPredefinedPropertyOrder( final BAMMC bammc ) {
       final List<Property> predefinedPropertyOrder = new ArrayList<>();
       predefinedPropertyOrder.add( bamm.name() );
+      predefinedPropertyOrder.add( bamm._extends() );
       predefinedPropertyOrder.add( bamm.preferredName() );
       predefinedPropertyOrder.add( bamm.description() );
       predefinedPropertyOrder.add( bamm.see() );
@@ -135,11 +134,11 @@ public class PrettyPrinter {
       predefinedPropertyOrder.add( bammc.integer() );
       predefinedPropertyOrder.add( bammc.scale() );
 
-      return Comparator.<Property> comparingInt(
-            property -> predefinedPropertyOrder.contains( property ) ?
-                  predefinedPropertyOrder.indexOf( property ) :
-                  Integer.MAX_VALUE )
-                       .thenComparing( Property::getLocalName );
+      return Comparator.<Property> comparingInt( property ->
+                  predefinedPropertyOrder.contains( property ) ?
+                        predefinedPropertyOrder.indexOf( property ) :
+                        Integer.MAX_VALUE )
+            .thenComparing( Property::getLocalName );
    }
 
    private Comparator<Map.Entry<String, String>> createPredefinedPrefixOrder() {
@@ -153,19 +152,18 @@ public class PrettyPrinter {
       predefinedPrefixOrder.add( "xsd" );
       predefinedPrefixOrder.add( "" );
 
-      return Comparator.<Map.Entry<String, String>> comparingInt(
-            entry -> predefinedPrefixOrder.contains( entry.getKey() ) ?
-                  predefinedPrefixOrder.indexOf( entry.getKey() ) :
-                  Integer.MAX_VALUE )
-                       .thenComparing( Map.Entry::getKey );
+      return Comparator.<Map.Entry<String, String>> comparingInt( entry ->
+                  predefinedPrefixOrder.contains( entry.getKey() ) ?
+                        predefinedPrefixOrder.indexOf( entry.getKey() ) :
+                        Integer.MAX_VALUE )
+            .thenComparing( Map.Entry::getKey );
    }
 
    /**
     * Print to the PrintWriter given in the constructor. This method does not close the PrintWriter.
     */
    public void print() {
-      prefixMap.entrySet().stream().sorted( prefixOrder )
-               .forEach( entry -> writer.format( "@prefix %s: <%s> .%n", entry.getKey(), entry.getValue() ) );
+      prefixMap.entrySet().stream().sorted( prefixOrder ).forEach( entry -> writer.format( "@prefix %s: <%s> .%n", entry.getKey(), entry.getValue() ) );
       writer.println();
 
       final Resource rootElementResource = ResourceFactory.createResource( rootElementUrn.toString() );
@@ -176,10 +174,10 @@ public class PrettyPrinter {
       }
 
       model.listSubjects().toSet().stream()
-           .filter( RDFNode::isURIResource )
-           .filter( resource -> !processedResources.contains( resource ) )
-           .map( resource -> processElement( resource, 0 ) )
-           .forEach( writer::print );
+            .filter( RDFNode::isURIResource )
+            .filter( resource -> !processedResources.contains( resource ) )
+            .map( resource -> processElement( resource, 0 ) )
+            .forEach( writer::print );
    }
 
    private List<Statement> statements( final Resource subject, final Property predicate, final RDFNode object ) {
@@ -191,7 +189,7 @@ public class PrettyPrinter {
    }
 
    private Optional<Statement> elementDefinition( final Resource element ) {
-      return statement( element, RDF.type, null ).or( () -> statement( element, bamm.refines(), null ) );
+      return statement( element, RDF.type, null );
    }
 
    private String serializeList( final Resource list, final int indentationLevel ) {
@@ -200,7 +198,7 @@ public class PrettyPrinter {
       }
 
       return list.as( RDFList.class ).asJavaList().stream().map( listNode -> serialize( listNode, indentationLevel ) )
-                 .collect( Collectors.joining( " ", "( ", " )" ) );
+            .collect( Collectors.joining( " ", "( ", " )" ) );
    }
 
    private String serialize( final RDFNode rdfNode, final int indentationLevel ) {
@@ -284,8 +282,7 @@ public class PrettyPrinter {
          return quoteValue( value ) + "@" + literal.getLanguage();
       }
 
-      return quoteValue( value ) + "^^" + serialize( model.getResource( rdfNode.asNode().getLiteralDatatypeURI() ),
-            indentationLevel );
+      return quoteValue( value ) + "^^" + serialize( model.getResource( rdfNode.asNode().getLiteralDatatypeURI() ), indentationLevel );
    }
 
    private String serializeAnonymousNodeWithoutRdfType( final Resource resource, final int indentationLevel ) {
@@ -294,14 +291,14 @@ public class PrettyPrinter {
          return "";
       }
       return statements.stream()
-                       .map( Statement::getPredicate )
-                       .sorted( propertyOrder )
-                       .flatMap( property -> statements( resource, property, null ).stream() )
-                       .distinct()
-                       .map( statement -> String
-                             .format( "%s %s", serialize( statement.getPredicate(), indentationLevel ),
-                                   serialize( statement.getObject(), indentationLevel ) ) )
-                       .collect( Collectors.joining( "; ", "[ ", " ]" ) );
+            .map( Statement::getPredicate )
+            .sorted( propertyOrder )
+            .flatMap( property -> statements( resource, property, null ).stream() )
+            .distinct()
+            .map( statement ->
+                  String.format( "%s %s", serialize( statement.getPredicate(), indentationLevel ),
+                        serialize( statement.getObject(), indentationLevel ) ) )
+            .collect( Collectors.joining( "; ", "[ ", " ]" ) );
    }
 
    private String serializeResource( final RDFNode rdfNode, final int indentationLevel ) {
@@ -341,16 +338,14 @@ public class PrettyPrinter {
       final String serializedObject = serialize( elementDefinition.get().getObject().asResource(), indentationLevel );
 
       final String firstLine = element.isAnon() ?
-            String.format( "[%n%s%s %s", INDENT.repeat( indentationLevel + 1 ),
-                  serializedProperty, serializedObject ) :
-            String.format( "%s %s %s", serialize( element, indentationLevel ),
-                  serializedProperty, serializedObject );
+            String.format( "[%n%s%s %s", INDENT.repeat( indentationLevel + 1 ), serializedProperty, serializedObject ) :
+            String.format( "%s %s %s", serialize( element, indentationLevel ), serializedProperty, serializedObject );
 
       processedResources.add( element );
       final String body = statements( element, null, null )
             .stream()
             .map( Statement::getPredicate )
-            .filter( property -> !property.equals( RDF.type ) && !property.equals( bamm.refines() ) )
+            .filter( property -> !property.equals( RDF.type ) )
             .sorted( propertyOrder )
             .flatMap( property -> statements( element, property, null ).stream() )
             .distinct()

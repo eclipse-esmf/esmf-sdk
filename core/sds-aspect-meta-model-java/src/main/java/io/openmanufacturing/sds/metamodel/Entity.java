@@ -19,14 +19,5 @@ package io.openmanufacturing.sds.metamodel;
  * @since BAMM 1.0.0
  */
 @SuppressWarnings( "squid:S3655" ) // Entity should always have a URN
-public interface Entity extends Type, StructureElement, CanRefine {
-   @Override
-   default String getUrn() {
-      return getAspectModelUrn().get().toString();
-   }
-
-   @Override
-   default boolean isScalar() {
-      return false;
-   }
+public interface Entity extends ComplexType {
 }

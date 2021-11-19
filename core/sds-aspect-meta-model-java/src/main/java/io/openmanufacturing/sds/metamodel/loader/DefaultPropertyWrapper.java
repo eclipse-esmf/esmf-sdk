@@ -16,7 +16,6 @@ package io.openmanufacturing.sds.metamodel.loader;
 import java.util.Objects;
 import java.util.Optional;
 
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
@@ -25,14 +24,13 @@ public class DefaultPropertyWrapper extends DefaultProperty {
 
    private Characteristic characteristic;
    private Optional<Object> exampleValue;
-   private Optional<AspectModelUrn> refines;
    private boolean optional;
    private boolean notInPayload;
    private Optional<String> payloadName;
 
    public DefaultPropertyWrapper( final MetaModelBaseAttributes metaModelBaseAttributes ) {
       super( metaModelBaseAttributes, new DefaultCharacteristic( metaModelBaseAttributes, Optional.empty() ),
-            Optional.empty(), Optional.empty(), false, false, Optional.empty() );
+            Optional.empty(), false, false, Optional.empty() );
    }
 
    @Override
@@ -72,15 +70,6 @@ public class DefaultPropertyWrapper extends DefaultProperty {
    }
 
    @Override
-   public Optional<AspectModelUrn> getRefines() {
-      return refines;
-   }
-
-   public void setRefines( final Optional<AspectModelUrn> refines ) {
-      this.refines = refines;
-   }
-
-   @Override
    public Characteristic getCharacteristic() {
       return characteristic;
    }
@@ -103,12 +92,11 @@ public class DefaultPropertyWrapper extends DefaultProperty {
       return optional == that.optional &&
             notInPayload == that.notInPayload &&
             Objects.equals( characteristic, that.characteristic ) &&
-            Objects.equals( exampleValue, that.exampleValue ) &&
-            Objects.equals( refines, that.refines );
+            Objects.equals( exampleValue, that.exampleValue );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( super.hashCode(), exampleValue, refines, optional, notInPayload );
+      return Objects.hash( super.hashCode(), exampleValue, optional, notInPayload );
    }
 }

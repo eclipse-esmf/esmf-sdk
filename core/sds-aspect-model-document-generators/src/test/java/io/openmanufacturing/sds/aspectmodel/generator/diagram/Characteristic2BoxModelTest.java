@@ -24,10 +24,9 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
-
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 
 public class Characteristic2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "characteristic2boxmodel.sparql";
@@ -40,8 +39,7 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testOnlyUsedCharacteristicsAreProcessedExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC, metaModelVersion );
       final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
 
       final Model queryResult = ModelFactory.createDefaultModel();
@@ -49,19 +47,15 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
          qexec.execConstruct( queryResult );
       }
 
-      assertThat( queryResult.listStatements( context.selector( ":UsedTestCharacteristicCharacteristic a :Box" ) )
-                             .toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":UnusedTestCharacteristicCharacteristic a :Box" ) )
-                             .toList() ).hasSize( 0 );
-      assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() )
-            .hasSize( totalNumberOfExpectedEntries );
+      assertThat( queryResult.listStatements( context.selector( ":UsedTestCharacteristicCharacteristic a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( ":UnusedTestCharacteristicCharacteristic a :Box" ) ).toList() ).hasSize( 0 );
+      assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() ).hasSize( totalNumberOfExpectedEntries );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CHARACTERISTIC_WITH_SEE_ATTRIBUTE,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CHARACTERISTIC_WITH_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement, totalNumberOfExpectedEntries,
             indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/omp" );
@@ -70,8 +64,7 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CHARACTERISTIC_WITH_MULTIPLE_SEE_ATTRIBUTES,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CHARACTERISTIC_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle,
             "http://example.com/me, http://example.com/omp" );
@@ -80,10 +73,54 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CHARACTERISTIC_WITHOUT_SEE_ATTRIBUTE,
-            metaModelVersion );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CHARACTERISTIC_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsNotPresentTest(
             sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement, totalNumberOfExpectedEntries,
             indexOfSeeValueEntry );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
+
+      final Query query = QueryFactory.create( context.getInputStreamAsString( "characteristic-entity-edges2boxmodel.sparql" ) );
+
+      final Model queryResult = ModelFactory.createDefaultModel();
+      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
+         qexec.execConstruct( queryResult );
+      }
+
+      assertThat( queryResult
+            .listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity a :Edge" ) )
+            .toList() ).hasSize( 1 );
+      assertThat( queryResult
+            .listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :from :EntityCharacteristicCharacteristic" ) )
+            .toList() ).hasSize( 1 );
+      assertThat( queryResult
+            .listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :to :ExtendingTestEntityEntity" ) )
+            .toList() ).hasSize( 1 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
+
+      final Query query = QueryFactory.create( context.getInputStreamAsString( "characteristic-entity-edges2boxmodel.sparql" ) );
+
+      final Model queryResult = ModelFactory.createDefaultModel();
+      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
+         qexec.execConstruct( queryResult );
+      }
+
+      assertThat( queryResult.listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity a :Edge" ) )
+            .toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements(
+                  context.selector( ":EntityCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :from :EntityCharacteristicCharacteristic" ) )
+            .toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements(
+                  context.selector( ":EntityCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :to :AbstractTestEntityAbstractEntity" ) )
+            .toList() ).hasSize( 1 );
    }
 }

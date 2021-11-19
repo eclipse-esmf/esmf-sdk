@@ -27,11 +27,11 @@ For more information on SPARQL construct queries, Graphviz and Mustache see:
 - [SPARQL Construct](https://www.w3.org/TR/rdf-sparql-query/#construct)
 - [Graphviz](https://www.graphviz.org/)
 - [Mustache](https://mustache.github.io/)
- 
+
 ## Document Generator
 
 The document generator creates an HTML page for an Aspect Model. The page includes the diagram for the Aspect Model.
-The HTML page embedding all required styles, fonts and images for making the HTML page to run standalone without 
+The HTML page embedding all required styles, fonts and images for making the HTML page to run standalone without
 dependencies to the internet.
 
 ### How it works
@@ -66,13 +66,13 @@ For more information on Velocity see:
 - [Tailwind](https://tailwindcss.com/docs)
 
  ## JSON Generator
- 
+
  The JSON generator creates a sample JSON payload for an Aspect Model.
- 
+
  ### How it works
- 
+
  For the generation the aspect java meta model is used.
- 
+
  1. The Aspect Model definition file (.ttl) is loaded
  2. The aspect meta model is instantiated with the contents of the loaded aspect meta model definition
  3. The instantiated aspect meta model is used to generate the JSON payload by iterating the elements of the aspect meta model and extracting the given example values for the properties. If no example value is given a random value is generated

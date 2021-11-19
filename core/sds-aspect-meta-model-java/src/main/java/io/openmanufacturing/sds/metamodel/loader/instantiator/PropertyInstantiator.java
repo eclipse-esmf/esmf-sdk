@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.loader.DefaultPropertyWrapper;
@@ -70,12 +69,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
       final Optional<Object> exampleValue = optionalPropertyValue( propertyResource, bamm.exampleValue() )
             .map( statement -> statement.getLiteral().getValue() );
 
-      final Optional<AspectModelUrn> refines = optionalPropertyValue( propertyResource, bamm.refines() )
-            .map( statement -> statement.getObject().asResource().getURI() )
-            .map( AspectModelUrn::fromUrn );
-
       defaultProperty.setExampleValue( exampleValue );
-      defaultProperty.setRefines( refines );
       defaultProperty.setOptional( isOptional );
       defaultProperty.setPayloadName( payloadName );
       defaultProperty.setNotInPayload( isNotInPayload );

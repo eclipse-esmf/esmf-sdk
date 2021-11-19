@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -152,8 +152,13 @@ public class BAMM implements Namespace {
       return resource( "Entity" );
    }
 
-   public Property refines() {
-      return property( "refines" );
+   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   public Resource AbstractEntity() {
+      return resource( "AbstractEntity" );
+   }
+
+   public Property _extends() {
+      return property( "extends" );
    }
 
    public Property value() {

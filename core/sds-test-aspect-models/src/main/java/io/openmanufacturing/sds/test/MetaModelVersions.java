@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -44,7 +44,7 @@ public abstract class MetaModelVersions {
    }
 
    @SuppressWarnings( "squid:S00100" ) // Underscores are required to make version unambiguous
-   protected static Stream<KnownVersion> versionsStartingWith1_0_0() {
-      return versionsStartingWith( KnownVersion.BAMM_1_0_0 );
+   protected static Stream<KnownVersion> versionsStartingWith2_0_0() {
+      return versionsStartingWith( KnownVersion.BAMM_2_0_0 );
    }
 }

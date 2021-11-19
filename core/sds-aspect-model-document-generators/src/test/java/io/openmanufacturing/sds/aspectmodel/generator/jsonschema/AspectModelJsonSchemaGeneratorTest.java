@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel.generator.jsonschema;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -37,6 +38,7 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.PathNotFoundException;
 
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
@@ -344,11 +346,11 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    public void testAspectWithRecursivePropertyWithOptional( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL, metaModelVersion );
       final JsonNode schema = buildJsonSchema( aspect );
+      showJson( schema );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
       assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_testItemCharacteristic']['properties']['testProperty']"
-            + "['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_testItemCharacteristic" );
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestEntity']['properties']['testProperty']['$ref']" ) )
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_TestEntity" );
       assertThat( context.<List<String>> read( "$['components']['schemas']"
             + "['urn_bamm_io.openmanufacturing.test_1.0.0_testItemCharacteristic']['required']" ) ).isNull();
       assertThat( context.<List<String>> read( "$['required']" ).stream().findFirst().get() ).isEqualTo( "testProperty" );
@@ -392,21 +394,22 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    public void testEntityMapping( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY, metaModelVersion );
       final JsonNode schema = buildJsonSchema( aspect );
+      showJson( schema );
       final DocumentContext context = JsonPath.parse( schema.toString() );
       final String textUrn = String.format( "urn_bamm_io.openmanufacturing_characteristic_%s_Text",
             KnownVersion.getLatest().toVersionString() );
 
       assertThat( context.<String> read( "$['type']" ) ).isEqualTo( "object" );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_EntityCharacteristic" );
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_TestEntity" );
       assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_EntityCharacteristic']['type']" ) ).isEqualTo( "object" );
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestEntity']['type']" ) ).isEqualTo( "object" );
       assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_EntityCharacteristic']['properties']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestEntity']['properties']"
             + "['entityProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + textUrn );
       assertThat( context.<List<String>> read( "$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_EntityCharacteristic']['required']" ) )
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestEntity']['required']" ) )
             .isEqualTo( List.of( "entityProperty" ) );
       assertThat( context.<List<String>> read( "$['required']" ) ).isEqualTo( List.of( "testProperty" ) );
    }
@@ -804,5 +807,75 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             + "['entityPropertyOne']['items']['type']" ) ).isEqualTo( "object" );
       assertThat( context.<String> read( "$['components']['schemas']['entityInstanceOne']['properties']"
             + "['entityPropertyOne']['items']['enum'][0]['entityPropertyTwo']" ) ).isEqualTo( "foo" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractSingleEntity( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
+      final JsonNode schema = buildJsonSchema( aspect );
+      final DocumentContext context = JsonPath.parse( schema.toString() );
+      showJson( schema );
+
+      assertThatExceptionOfType( PathNotFoundException.class )
+            .isThrownBy( () -> context.<String>read("$['components']['schemas']['ExtendingTestEntity']") );
+      assertThatExceptionOfType( PathNotFoundException.class )
+            .isThrownBy( () -> context.<String>read("$['components']['schemas']['AbstractTestEntity']") );
+      assertThat( context.<String>read("$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']") )
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
+      assertThat( context.<String>read("$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']") )
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" );
+      assertThat(context.<String>read("$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']"))
+            .isEqualTo( "#/components/schemas/Integer" );
+      assertThat(context.<String>read("$['properties']['testProperty']['$ref']"))
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractEntity( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
+      final JsonNode schema = buildJsonSchema( aspect );
+      final DocumentContext context = JsonPath.parse( schema.toString() );
+      showJson( schema );
+
+      assertThat( context.<String>read("$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']") )
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
+      assertThat( context.<String>read("$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']") )
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" );
+      assertThat(context.<String>read("$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']"))
+            .isEqualTo( "#/components/schemas/Integer" );
+      assertThat(context.<String>read("$['properties']['testProperty']['$ref']"))
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
+      final JsonNode schema = buildJsonSchema( aspect );
+      final DocumentContext context = JsonPath.parse( schema.toString() );
+      showJson( schema );
+
+      assertThat( context.<String>read("$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']") )
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
+      assertThat( context.<String>read("$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']") )
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" );
+      assertThat(context.<String>read("$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']"))
+            .isEqualTo( "#/components/schemas/Integer" );
+      assertThat(context.<String>read("$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_EntityCollectionCharacteristic']['items']['$ref']"))
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
+      assertThat(context.<String>read("$['properties']['testProperty']['$ref']"))
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_EntityCollectionCharacteristic" );
    }
 }

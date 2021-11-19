@@ -13,8 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.serializer;
 
-import static org.apache.jena.rdf.model.ResourceFactory.createResource;
-import static org.apache.jena.rdf.model.ResourceFactory.createStatement;
+import static org.apache.jena.rdf.model.ResourceFactory.*;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -39,6 +38,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidModelException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.ExtendedXsdDataType;
@@ -47,11 +47,13 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.Namespace;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Code;
 import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Duration;
 import io.openmanufacturing.sds.metamodel.Either;
@@ -82,8 +84,6 @@ import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
 /**
  * AspectVisitor that translates an {@link Aspect} into the corresponding {@link Model}.
  *
@@ -100,6 +100,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
    private final Namespace namespace;
    private final Map<IsDescribed, Resource> anonymousResources = new HashMap<>();
    private final List<Resource> resourceList = new LinkedList<>();
+   private final List<ComplexType> hasVisited = new LinkedList<>();
 
    /**
     * Constructor.
@@ -121,9 +122,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       return ResourceFactory.createLangLiteral( value, languageTag.toLanguageTag() );
    }
 
-   private Map.Entry<Resource, Model> serializeEntityInstance( final Entity entity,
-         final Map<String, Object> entityInstance ) {
-
+   private Map.Entry<Resource, Model> serializeEntityInstance( final Entity entity, final Map<String, Object> entityInstance ) {
       final Model model = ModelFactory.createDefaultModel();
       final String nameKey = bamm.name().toString();
       final Resource resource = namespace.resource( entityInstance.get( nameKey ).toString() );
@@ -143,8 +142,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
                      propertyModel.add( resource, instanceProperty, nestedInstance.getKey() );
                   } else {
                      if ( instanceValue != null ) {
-                        propertyModel
-                              .add( resource, instanceProperty, serializeTypedValue( instanceValue, propertyType ) );
+                        propertyModel.add( resource, instanceProperty, serializeTypedValue( instanceValue, propertyType ) );
                      }
                   }
                } );
@@ -167,11 +165,11 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
    }
 
    private Literal serializeTypedValue( final Object value, final Optional<Type> optionalType ) {
-      final Optional<RDFDatatype> targetType = optionalType
-            .flatMap( type -> DataType.getAllSupportedTypesForMetaModelVersion( metaModelVersion ).stream()
-                                      .filter( dataType -> dataType.getURI().equals( type.getUrn() ) ).findAny() );
+      final Optional<RDFDatatype> targetType = optionalType.flatMap( type ->
+            DataType.getAllSupportedTypesForMetaModelVersion( metaModelVersion ).stream()
+                  .filter( dataType -> dataType.getURI().equals( type.getUrn() ) ).findAny() );
       if ( targetType.isEmpty() || optionalType.map( type -> type.getUrn().equals( XSD.xstring.getURI() ) )
-                                               .orElse( false ) ) {
+            .orElse( false ) ) {
          return ResourceFactory.createStringLiteral( value.toString() );
       }
       return ResourceFactory.createTypedLiteral( targetType.get().unparse( value ), targetType.get() );
@@ -200,9 +198,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
 
    private Model serializeDescriptions( final Resource elementResource, final IsDescribed element ) {
       final Model model = ModelFactory.createDefaultModel();
-      element.getSee()
-             .forEach( seeValue -> model
-                   .add( elementResource, bamm.see(), ResourceFactory.createResource( seeValue ) ) );
+      element.getSee().forEach( seeValue -> model.add( elementResource, bamm.see(), ResourceFactory.createResource( seeValue ) ) );
       element.getPreferredNames().entrySet().stream().map( this::serializeLocalizedString ).forEach( preferredName ->
             model.add( elementResource, bamm.preferredName(), preferredName ) );
       element.getDescriptions().entrySet().stream().map( this::serializeLocalizedString ).forEach( description ->
@@ -220,23 +216,21 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       }
       resourceList.add( elementResource );
       element.getProperties().stream()
-             .filter( this::isLocalElement )
-             .map( property -> {
-                final Model propertyModel = ModelFactory.createDefaultModel();
-                final Resource propertyResource = getElementResource( property );
-                propertyModel.add( property.accept( this, element ) );
+            .filter( this::isLocalElement )
+            .map( property -> {
+               final Model propertyModel = ModelFactory.createDefaultModel();
+               final Resource propertyResource = getElementResource( property );
+               propertyModel.add( property.accept( this, element ) );
 
-                if ( property.isOptional() || property.isNotInPayload() || !property.getName().equals(
-                      property.getPayloadName() ) ) {
-                   final Resource anonymousPropertyNode = serializeAnonymousPropertyNodes( property, propertyModel,
-                         propertyResource );
-                   propertiesList.add( anonymousPropertyNode );
-                   return propertyModel;
-                }
+               if ( property.isOptional() || property.isNotInPayload() || !property.getName().equals( property.getPayloadName() ) ) {
+                  final Resource anonymousPropertyNode = serializeAnonymousPropertyNodes( property, propertyModel, propertyResource );
+                  propertiesList.add( anonymousPropertyNode );
+                  return propertyModel;
+               }
 
-                propertiesList.add( propertyResource );
-                return propertyModel;
-             } ).forEach( model::add );
+               propertiesList.add( propertyResource );
+               return propertyModel;
+            } ).forEach( model::add );
 
       model.add( elementResource, bamm.properties(), model.createList( propertiesList.iterator() ) );
       return model;
@@ -255,8 +249,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       }
       if ( !property.getName().equals( property.getPayloadName() ) ) {
          propertyModel.add( anonymousPropertyNode, bamm.property(), propertyResource );
-         propertyModel
-               .add( anonymousPropertyNode, bamm.payloadName(), serializePlainString( property.getPayloadName() ) );
+         propertyModel.add( anonymousPropertyNode, bamm.payloadName(), serializePlainString( property.getPayloadName() ) );
       }
       return anonymousPropertyNode;
    }
@@ -357,8 +350,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       final Model model = visitConstraint( languageConstraint, null );
       final Resource resource = getElementResource( languageConstraint );
       model.add( resource, RDF.type, bammc.LanguageConstraint() );
-      model.add( resource, bammc.languageCode(),
-            serializePlainString( languageConstraint.getLanguageCode().toLanguageTag() ) );
+      model.add( resource, bammc.languageCode(), serializePlainString( languageConstraint.getLanguageCode().toLanguageTag() ) );
       return model;
    }
 
@@ -367,8 +359,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       final Model model = visitConstraint( localeConstraint, null );
       final Resource resource = getElementResource( localeConstraint );
       model.add( resource, RDF.type, bammc.LocaleConstraint() );
-      model.add( resource, bammc.localeCode(),
-            serializePlainString( localeConstraint.getLocaleCode().toLanguageTag() ) );
+      model.add( resource, bammc.localeCode(), serializePlainString( localeConstraint.getLocaleCode().toLanguageTag() ) );
       return model;
    }
 
@@ -377,13 +368,11 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       final Model model = visitConstraint( lengthConstraint, null );
       final Resource resource = getElementResource( lengthConstraint );
       lengthConstraint.getMinValue().stream().map( minValue ->
-            createStatement( resource, bammc.minValue(),
-                  serializeTypedValue( minValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
-                      .forEach( model::add );
+                  createStatement( resource, bammc.minValue(), serializeTypedValue( minValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
+            .forEach( model::add );
       lengthConstraint.getMinValue().stream().map( maxValue ->
-            createStatement( resource, bammc.maxValue(),
-                  serializeTypedValue( maxValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
-                      .forEach( model::add );
+                  createStatement( resource, bammc.maxValue(), serializeTypedValue( maxValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
+            .forEach( model::add );
       model.add( resource, RDF.type, bammc.LengthConstraint() );
       return model;
    }
@@ -396,13 +385,13 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       final Type type = getEffectiveDatatype( parentTrait );
       model.add( resource, RDF.type, bammc.RangeConstraint() );
       rangeConstraint.getMinValue().stream()
-                     .map( minValue -> serializeTypedValue( minValue, type ) )
-                     .map( literal -> createStatement( resource, bammc.minValue(), literal ) )
-                     .forEach( model::add );
+            .map( minValue -> serializeTypedValue( minValue, type ) )
+            .map( literal -> createStatement( resource, bammc.minValue(), literal ) )
+            .forEach( model::add );
       rangeConstraint.getMinValue().stream()
-                     .map( maxValue -> serializeTypedValue( maxValue, type ) )
-                     .map( literal -> createStatement( resource, bammc.maxValue(), literal ) )
-                     .forEach( model::add );
+            .map( maxValue -> serializeTypedValue( maxValue, type ) )
+            .map( literal -> createStatement( resource, bammc.maxValue(), literal ) )
+            .forEach( model::add );
       model.add( resource, bammc.lowerBoundDefinition(),
             bammc.resource( rangeConstraint.getLowerBoundDefinition().toString().replace( " ", "_" ).toUpperCase() ) );
       model.add( resource, bammc.upperBoundDefinition(),
@@ -411,8 +400,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
    }
 
    @Override
-   public Model visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint,
-         final Base context ) {
+   public Model visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint, final Base context ) {
       final Model model = visitConstraint( regularExpressionConstraint, null );
       final Resource resource = getElementResource( regularExpressionConstraint );
       model.add( resource, RDF.type, bammc.RegularExpressionConstraint() );
@@ -425,12 +413,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       final Model model = visitConstraint( fixedPointConstraint, null );
       final Resource resource = getElementResource( fixedPointConstraint );
       model.add( resource, RDF.type, bammc.FixedPointConstraint() );
-      model.add( resource, bammc.integer(),
-            serializeTypedValue( fixedPointConstraint.getInteger().toString(),
-                  ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) );
-      model.add( resource, bammc.scale(),
-            serializeTypedValue( fixedPointConstraint.getScale().toString(),
-                  ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) );
+      model.add( resource, bammc.integer(), serializeTypedValue( fixedPointConstraint.getInteger().toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) );
+      model.add( resource, bammc.scale(), serializeTypedValue( fixedPointConstraint.getScale().toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) );
       return model;
    }
 
@@ -473,17 +457,15 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       final Type type = getEffectiveDatatype( enumeration );
 
       if ( type.isScalar() ) {
-         model.add( resource, bammc.values(),
-               model.createList(
-                     enumeration.getValues().stream().map( value -> serializeTypedValue( value, type ) ).iterator() ) );
+         model.add( resource, bammc.values(), model.createList(
+               enumeration.getValues().stream().map( value -> serializeTypedValue( value, type ) ).iterator() ) );
          return model;
       }
 
       final Entity entity = (Entity) type;
       @SuppressWarnings( "unchecked" ) final Map<Resource, Model> instances =
-            enumeration.getValues().stream().map( instanceValue -> serializeEntityInstance( entity,
-                  (Map<String, Object>) instanceValue ) )
-                       .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+            enumeration.getValues().stream().map( instanceValue -> serializeEntityInstance( entity, (Map<String, Object>) instanceValue ) )
+                  .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
 
       instances.values().forEach( model::add );
       model.add( resource, bammc.values(), model.createList( instances.keySet().stream().iterator() ) );
@@ -502,10 +484,10 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
 
    private Optional<Statement> getUnitStatement( final Quantifiable elementWithUnit, final Resource targetResource ) {
       return elementWithUnit.getUnit()
-                            .flatMap( IsDescribed::getAspectModelUrn )
-                            .map( AspectModelUrn::toString )
-                            .map( unitUrn -> createStatement( targetResource, bammc.unit(),
-                                  createResource( unitUrn ) ) );
+            .flatMap( IsDescribed::getAspectModelUrn )
+            .map( AspectModelUrn::toString )
+            .map( unitUrn -> createStatement( targetResource, bammc.unit(),
+                  createResource( unitUrn ) ) );
    }
 
    @Override
@@ -553,10 +535,10 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       model.add( resource, bammc.elements(), elementsList );
 
       structuredValue.getElements().stream()
-                     .filter( Property.class::isInstance )
-                     .map( Property.class::cast )
-                     .map( property -> property.accept( this, structuredValue ) )
-                     .forEach( model::add );
+            .filter( Property.class::isInstance )
+            .map( Property.class::cast )
+            .map( property -> property.accept( this, structuredValue ) )
+            .forEach( model::add );
       return model;
    }
 
@@ -603,18 +585,15 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       }
 
       final Resource resource = getElementResource( property );
+      model.add( resource, RDF.type, bamm.Property() );
       if ( !property.hasSyntheticName() ) {
          model.add( resource, bamm.name(), serializePlainString( property.getName() ) );
       }
-      model.add( property.getRefines().map( urn ->
-            createStatement( resource, bamm.refines(), ResourceFactory.createResource( urn.toString() ) ) )
-                         .orElse( createStatement( resource, RDF.type, bamm.Property() ) ) );
 
       model.add( serializeDescriptions( resource, property ) );
 
       if ( property.getExampleValue().isPresent() ) {
-         model.add( resource, bamm.exampleValue(),
-               serializeTypedValue( property.getExampleValue().get(), property.getDataType() ) );
+         model.add( resource, bamm.exampleValue(), serializeTypedValue( property.getExampleValue().get(), property.getDataType() ) );
       }
 
       final Characteristic characteristic = property.getCharacteristic();
@@ -634,12 +613,10 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
          model.add( resource, bamm.name(), serializePlainString( operation.getName() ) );
       }
       model.add( serializeDescriptions( resource, operation ) );
-      final List<Resource> inputProperties = operation.getInput().stream().map( this::getElementResource )
-                                                      .collect( Collectors.toList() );
+      final List<Resource> inputProperties = operation.getInput().stream().map( this::getElementResource ).collect( Collectors.toList() );
       model.add( resource, bamm.input(), model.createList( inputProperties.iterator() ) );
       operation.getInput().stream().map( property -> property.accept( this, operation ) ).forEach( model::add );
-      operation.getOutput().ifPresent(
-            outputProperty -> model.add( resource, bamm.output(), getElementResource( outputProperty ) ) );
+      operation.getOutput().ifPresent( outputProperty -> model.add( resource, bamm.output(), getElementResource( outputProperty ) ) );
       operation.getOutput().map( outputProperty -> outputProperty.accept( this, operation ) ).ifPresent( model::add );
       return model;
    }
@@ -656,18 +633,37 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
    }
 
    @Override
-   public Model visitEntity( final Entity entity, final Base context ) {
+   public Model visitComplexType( final ComplexType complexType, final Base context ) {
       final Model model = ModelFactory.createDefaultModel();
-      final Resource resource = getElementResource( entity );
-
-      if ( !entity.hasSyntheticName() ) {
-         model.add( resource, bamm.name(), serializePlainString( entity.getName() ) );
+      if ( hasVisited.contains( complexType ) ) {
+         return model;
       }
-      model.add( entity.getRefines().map( urn ->
-            createStatement( resource, bamm.refines(), ResourceFactory.createResource( urn.toString() ) ) )
-                       .orElse( createStatement( resource, RDF.type, bamm.Entity() ) ) );
-      model.add( serializeProperties( resource, entity ) );
-      model.add( serializeDescriptions( resource, entity ) );
+      hasVisited.add( complexType );
+
+      final Resource resource = getElementResource( complexType );
+      if ( !complexType.hasSyntheticName() ) {
+         model.add( resource, bamm.name(), serializePlainString( complexType.getName() ) );
+      }
+      if ( complexType.getExtends().isPresent() ) {
+         final ComplexType extendedComplexType = complexType.getExtends().get();
+         model.add( extendedComplexType.accept( this, extendedComplexType ) );
+
+         final Resource extendedTypeResource = createResource( extendedComplexType.getUrn() );
+         model.add( createStatement( resource, bamm._extends(), extendedTypeResource ) );
+      }
+      model.add( serializeProperties( resource, complexType ) );
+      model.add( serializeDescriptions( resource, complexType ) );
+
+      if ( complexType.isAbstractEntity() ) {
+         return model.add( createStatement( resource, RDF.type, bamm.AbstractEntity() ) );
+      }
+      return model.add( createStatement( resource, RDF.type, bamm.Entity() ) );
+   }
+
+   @Override
+   public Model visitAbstractEntity( final AbstractEntity abstractEntity, final Base context ) {
+      final Model model = visitComplexType( abstractEntity, context );
+      abstractEntity.getExtendingElements().forEach( complexType -> model.add( complexType.accept( this, complexType ) ) );
       return model;
    }
 
@@ -675,7 +671,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
    public Model visitUnit( final Unit unit, final Base context ) {
       final Model model = ModelFactory.createDefaultModel();
       final String unitUrn = unit.getAspectModelUrn().map( AspectModelUrn::toString )
-                                 .orElseThrow( () -> new InvalidModelException( "Invalid unit without URN." ) );
+            .orElseThrow( () -> new InvalidModelException( "Invalid unit without URN." ) );
       if ( !createResource( unitUrn ).getNameSpace().equals( unitNamespace.getNamespace() ) ) {
          // This is a unit defined in the scope of the Aspect model
          final Resource unitResource = getElementResource( unit );
@@ -683,8 +679,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
          if ( !unit.hasSyntheticName() ) {
             model.add( unitResource, bamm.name(), serializePlainString( unit.getName() ) );
          }
-         unit.getQuantityKinds().forEach( quantityKind -> model
-               .add( unitResource, unitNamespace.quantityKind(), unitNamespace.resource( quantityKind.getName() ) ) );
+         unit.getQuantityKinds().forEach( quantityKind ->
+               model.add( unitResource, unitNamespace.quantityKind(), unitNamespace.resource( quantityKind.getName() ) ) );
          model.add( serializeDescriptions( unitResource, unit ) );
       }
       return model;

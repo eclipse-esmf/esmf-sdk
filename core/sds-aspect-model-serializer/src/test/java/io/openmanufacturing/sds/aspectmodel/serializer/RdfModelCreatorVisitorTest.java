@@ -43,7 +43,10 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
       "ENTITY_INSTANCE_TEST1",
       "ENTITY_INSTANCE_TEST2",
       "ENTITY_INSTANCE_TEST3",
-      "ENTITY_INSTANCE_TEST4"
+      "ENTITY_INSTANCE_TEST4",
+      "ASPECT_WITH_ABSTRACT_ENTITY",
+      "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
+      "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY"
    } )
    public void testRdfModelCreatorVisitor( final TestAspect aspect ) {
       testRdfCreation( aspect, KnownVersion.getLatest() );
@@ -81,10 +84,12 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
       assertThat(
          Arrays.stream( TestModel.modelToString( serializedModel ).split( "\\n" ) )
             .filter( line -> !line.contains( "bamm-c:values" ) )
+            .filter( line -> !line.contains( "bamm:see" ) )
             .collect( Collectors.toSet() ) )
          .containsExactlyInAnyOrderElementsOf(
             Arrays.stream( TestModel.modelToString( originalModel ).split( "\\n" ) )
                .filter( line -> !line.contains( "bamm-c:values" ) )
+               .filter( line -> !line.contains( "bamm:see" ) )
                .collect( Collectors.toSet() ) );
    }
 }
