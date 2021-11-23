@@ -216,10 +216,10 @@ and https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md[3.
 include::sds-developer-guide:ROOT:partial$sample-openapi-generation.adoc[]
 
 NOTE: For Enumerations with complex data types, the values are modelled as instances of the Entity defined as the
-Enumeration's data type (see {bamm-documentation-url}/v{aspect-meta-model-version}/modeling-guidelines.html#declaring-enumerations[Declaring Enumerations]
-in the Modelling Guidelines for more information). In case the Entity instances contain Properties with a sorted collection
-as their data type, the order of the values of said collection in the Entity instances is not preserved in the generated
-OpenAPI specification. Preserving this order in OpenAPI is not possible at this point.
+Enumeration's data type (see xref:bamm-specification:ROOT:modeling-guidelines.adoc#declaring-enumerations[Declaring
+Enumerations] for more information). In case the Entity instances contain Properties with a sorted collection as their
+data type, the order of the values of said collection in the Entity instances is not preserved in the generated OpenAPI
+specification. Preserving this order in OpenAPI is not possible at this point.
 
 [[generating-java-code]]
 == Generating Java Code for Aspect Models
