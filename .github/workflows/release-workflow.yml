@@ -60,7 +60,7 @@ jobs:
           git commit -m "Add version ${{ github.event.inputs.release_version }}"
           git push origin ${{ env.release_branch_name }}
       - name: Run tests and build
-        run: mvn clean install
+        run: mvn -B clean install
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         id: sds_sdk_release
@@ -75,7 +75,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to OSSRH
-        run: mvn clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests
+        run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
