@@ -263,36 +263,36 @@
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultLengthConstraint )
         new DefaultLengthConstraint( #getMetaModelBaseAttributes( $characteristic ),
             #getOptionalStaticDeclarationValue( $nonNegativeInteger, $constraint.getMinValue(), $property.getMetaModelVersion() ),
-            #getOptionalStaticDeclarationValue( $nonNegativeInteger, $constraint.maxValue, $property.getMetaModelVersion() ) )
+            #getOptionalStaticDeclarationValue( $nonNegativeInteger, $constraint.getMaxValue(), $property.getMetaModelVersion() ) )
     #elseif( $RangeConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $RangeConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultRangeConstraint  )
         $codeGenerationConfig.getImportTracker().importExplicit( $BoundDefinition )
         new DefaultRangeConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            #getOptionalStaticDeclarationValue( $property.dataType.get(), $constraint.minValue, $property.getMetaModelVersion() ),
-            #getOptionalStaticDeclarationValue( $property.dataType.get(), $constraint.maxValue, $property.getMetaModelVersion() ),
+            #getOptionalStaticDeclarationValue( $property.dataType.get(), $constraint.getMinValue(), $property.getMetaModelVersion() ),
+            #getOptionalStaticDeclarationValue( $property.dataType.get(), $constraint.getMaxValue(), $property.getMetaModelVersion() ),
             BoundDefinition.${constraint.getLowerBoundDefinition().name()},
             BoundDefinition.${constraint.getUpperBoundDefinition().name()} )
     #elseif( $RegularExpressionConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $RegularExpressionConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultRegularExpressionConstraint )
         new DefaultRegularExpressionConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            "$constraint.value" )
+            "$constraint.getValue()" )
     #elseif( $EncodingConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $EncodingConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultEncodingConstraint )
         new DefaultEncodingConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            "$constraint.value" )
+            "$constraint.getValue()" )
     #elseif( $LanguageConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $LanguageConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultLanguageConstraint )
         new DefaultLanguageConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            $constraint.languageCode )
+            $constraint.getLanguageCode() )
     #elseif( $LocaleConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $LocaleConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultLocaleConstraint )
         new DefaultLocaleConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            $constraint.localeCode )
+            $constraint.getLocaleCode() )
     #elseif( $FixedPointConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $FixedPointConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultFixedPointConstraint )
