@@ -608,7 +608,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       }
 
       private Double getRandomDouble( final double min, final double max ) {
-         if ( Math.abs( min - max ) < THRESHOLD ) {
+         if ( Math.abs( min - max ) < THRESHOLD || Math.abs( min - max ) == Double.POSITIVE_INFINITY) {
             return min;
          }
          //noinspection OptionalGetWithoutIsPresent
