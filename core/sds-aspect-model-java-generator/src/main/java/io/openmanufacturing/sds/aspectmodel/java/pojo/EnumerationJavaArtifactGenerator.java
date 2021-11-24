@@ -18,12 +18,12 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
+import org.jboss.forge.roaster.Roaster;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.collect.ImmutableMap;
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
 
 import io.openmanufacturing.sds.aspectmodel.generator.TemplateEngine;
 import io.openmanufacturing.sds.aspectmodel.java.AspectModelJavaUtil;
@@ -68,10 +68,9 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
 
       try {
          final String generatedSource = new TemplateEngine( context ).apply( "java-enumeration" );
-         final Formatter formatter = new Formatter();
-         return new JavaArtifact( formatter.formatSource( generatedSource ), element.getName(),
+         return new JavaArtifact( Roaster.format( generatedSource ), element.getName(),
                config.getPackageName() );
-      } catch ( final FormatterException e ) {
+      } catch ( final Exception e ) {
          throw new CodeGenerationException( e );
       }
    }

@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
 import org.apache.velocity.app.FieldMethodizer;
+import org.jboss.forge.roaster.Roaster;
 
 import io.openmanufacturing.sds.aspectmodel.generator.TemplateEngine;
 import io.openmanufacturing.sds.aspectmodel.java.AspectModelJavaUtil;
@@ -45,8 +46,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableMap;
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
 
 /**
  * A {@link io.openmanufacturing.sds.aspectmodel.generator.ArtifactGenerator} that generates Java Pojo code
@@ -98,10 +97,9 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
 
       final String generatedSource = new TemplateEngine( context ).apply( "java-pojo" );
       try {
-         final Formatter formatter = new Formatter();
-         return new JavaArtifact( formatter.formatSource( generatedSource ), element.getName(),
+         return new JavaArtifact( Roaster.format( generatedSource ), element.getName(),
                config.getPackageName() );
-      } catch ( final FormatterException exception ) {
+      } catch ( final Exception exception ) {
          throw new CodeGenerationException( generatedSource, exception );
       }
    }

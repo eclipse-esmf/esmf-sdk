@@ -36,8 +36,12 @@
             <artifactId>velocity-engine-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.googlejavaformat</groupId>
-            <artifactId>google-java-format</artifactId>
+            <groupId>org.jboss.forge.roaster</groupId>
+            <artifactId>roaster-jdt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.forge.roaster</groupId>
+            <artifactId>roaster-api</artifactId>
         </dependency>
     </dependencies>
 
