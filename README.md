@@ -27,14 +27,14 @@
 The SDS SDK contains artifacts and resources for all parties that intent to use, extend or integrate with the BAMM
 Aspect Meta Model, e.g., Solution Developers, Domain Experts or OEMs.
 
-At its core are components, which help to work with the BAMM Aspect Meta Model (BAMM). The SDK comprises components to
-load and validate models generate artifacts such as static classes, documentation, DTO (data transfer object) and so on.
+At its core are components which help to work with the BAMM Aspect Meta Model (BAMM). The SDK comprises components to
+load and validate models generate artifacts such as static classes, documentation, DTOs (data transfer objects) and so on.
 
 To fully leverage BAMM, provided components include language-specific meta model implementations, code generators,
 validators etc.
 
 This document provides an overall overview of the SDK, and the concepts applied throughout it. Detailed documentation and
-concepts for each component can be found in the respective subfolder.
+concepts for each component can be found in the respective subfolders.
 
 This repository contains a detailed developer documentation written in AsciiDoc. The source files (AsciiDoc) are
 located [here](documentation/developer-guide) and are built using
