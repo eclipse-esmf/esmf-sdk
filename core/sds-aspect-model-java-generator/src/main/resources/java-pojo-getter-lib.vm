@@ -1,17 +1,17 @@
 #macro( methodName )
-    #if( $property.dataType.isPresent() )
+    #if( $property.getDataType().isPresent() )
         #set( $type = $property.dataType.get() )
-        #if( $type.isScalar() && $type.urn.equals( $XSD.xboolean.getURI() ) )is#{else}get#{end}
+        #if( $type.isScalar() && $type.getUrn().equals( $XSD.xboolean.getURI() ) )is#{else}get#{end}
     #{else}get#{end}${StringUtils.capitalize( $property.getPayloadName() )}#{end}
 
 #macro( javaPojoGetter $property )
-#set( $propertyType = $util.getPropertyType( $property, false, $importTracker ) )
+#set( $propertyType = $util.getPropertyType( $property, false, $codeGenerationConfig ) )
 /**
 * Returns $property.getPreferredName( $localeEn )
 *
 * @return {@link #$property.getPayloadName()}
 */
-#if( $util.isPropertyNotInPayload( $property, $importTracker ) )@JsonIgnore #end
+#if( $util.isPropertyNotInPayload( $property, $codeGenerationConfig ) )@JsonIgnore #end
 public $propertyType #methodName()() {
    return this.$property.getPayloadName();
 }

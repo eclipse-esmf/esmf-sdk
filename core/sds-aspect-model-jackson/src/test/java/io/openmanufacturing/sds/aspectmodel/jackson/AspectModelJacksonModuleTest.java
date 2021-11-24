@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,8 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.jackson;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,7 +34,9 @@ import java.util.stream.Stream;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -44,9 +45,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.io.Resources;
 import com.google.common.reflect.TypeToken;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.java.QualifiedName;
 import io.openmanufacturing.sds.aspectmodel.java.exception.EnumAttributeNotFoundException;
 import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
@@ -70,9 +69,8 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT, metaModelVersion );
       final Class<?> clazz = instance.getClass();
 
-      final Map<Locale, String> prop = getValue( clazz, instance, "prop",
-            new TypeToken<Map<Locale, String>>() {
-            }.getType() );
+      final Map<Locale, String> prop = getValue( clazz, instance, "prop", new TypeToken<Map<Locale, String>>() {
+      }.getType() );
       assertThat( prop ).hasSize( 2 );
       assertThat( prop.get( Locale.forLanguageTag( "en" ) ) ).isEqualTo( "Value in English" );
       assertThat( prop.get( Locale.forLanguageTag( "de" ) ) ).isEqualTo( "Wert auf Deutsch" );
@@ -84,8 +82,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_SIMPLE_TYPES, metaModelVersion );
       final Class<?> clazz = instance.getClass();
 
-      final XMLGregorianCalendar timestamp = getValue( clazz, instance, "dateTimeProperty",
-            XMLGregorianCalendar.class );
+      final XMLGregorianCalendar timestamp = getValue( clazz, instance, "dateTimeProperty", XMLGregorianCalendar.class );
       assertThat( timestamp.toXMLFormat() ).isEqualTo( "2018-08-08T12:00:00.0000+01:00" );
 
       final XMLGregorianCalendar date = getValue( clazz, instance, "dateProperty", XMLGregorianCalendar.class );
@@ -141,8 +138,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES, metaModelVersion );
       final Class<?> clazz = instance.getClass();
 
-      final XMLGregorianCalendar timestamp = getValue( clazz, instance, "timestampProperty",
-            XMLGregorianCalendar.class );
+      final XMLGregorianCalendar timestamp = getValue( clazz, instance, "timestampProperty", XMLGregorianCalendar.class );
       assertThat( timestamp.toXMLFormat() ).isEqualTo( "2018-08-08T12:00:00.0000+01:00" );
 
       final Optional<BigInteger> number = getValue( clazz, instance, "numberProperty",
@@ -192,9 +188,8 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testAspectWithEntityEnumeration( final KnownVersion metaModelVersion ) throws Exception {
-      final Object instance = generateInstance(
-            Tuple.of( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM,
-                  "AspectWithEntityEnumeration" ), metaModelVersion );
+      final Object instance = generateInstance( Tuple.of( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM, "AspectWithEntityEnumeration" ),
+            metaModelVersion );
       final Class<?> clazz = instance.getClass();
       final Field enumerationField = clazz.getDeclaredField( "systemState" );
       enumerationField.setAccessible( true );
@@ -215,20 +210,14 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testAspectWithEntityEnumerationWithNotExistingEnum( final KnownVersion metaModelVersion ) {
       assertThatExceptionOfType( EnumAttributeNotFoundException.class ).isThrownBy( () ->
-            generateInstance( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM, metaModelVersion ) )
-                                                                       .withMessageContainingAll(
-                                                                             "Tried to parse value",
-                                                                             "but there is no enum field like that" )
-
-      ;
+                  generateInstance( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM, metaModelVersion ) )
+            .withMessageContainingAll( "Tried to parse value", "but there is no enum field like that" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectWithEntityEnumerationAndNotInPayloadProperties( final KnownVersion metaModelVersion )
-         throws Exception {
-      final Object instance = generateInstance( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES,
-            metaModelVersion );
+   public void testAspectWithEntityEnumerationAndNotInPayloadProperties( final KnownVersion metaModelVersion ) throws Exception {
+      final Object instance = generateInstance( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES, metaModelVersion );
       final Class<?> clazz = instance.getClass();
       final Field enumerationField = clazz.getDeclaredField( "systemState" );
       enumerationField.setAccessible( true );
@@ -243,6 +232,28 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
 
       assertThat( propertyField.getType().getSimpleName() ).isEqualTo( "SystemState" );
       assertThat( enumerationValue.toString() ).isEqualTo( "COOL_DOWN" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testAspectWithEitherWithComplexTypes( KnownVersion metaModelVersion ) throws Exception {
+      final Object instance = generateInstance( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES, metaModelVersion );
+      final Class<?> clazz = instance.getClass();
+      final Field testProperty = clazz.getDeclaredField( "testProperty" );
+      testProperty.setAccessible( true );
+      final Class<?> testPropertyType = testProperty.getType();
+      assertThat( testPropertyType ).isEqualTo( Either.class );
+
+      // It's an Either<LeftEntity, RightEntity> with LeftEntity and RightEntity being classes that are
+      // generated from the Entities in the Aspect Model, and compiled in-memory, so we can only refer to them
+      // as ? here
+      final Either<?, ?> eitherValue = (Either<?, ?>) testProperty.get( instance );
+      assertThat( eitherValue.getRight() ).isEmpty();
+      final Object leftEntity = eitherValue.getLeft().get();
+      final Field resultField = leftEntity.getClass().getDeclaredField( "result" );
+      resultField.setAccessible( true );
+      final Object value = resultField.get( leftEntity );
+      assertThat( value ).isEqualTo( "eOMtThyhVNLWUZNRcBaQKxI" );
    }
 
    private Object generateInstance( final TestAspect model, final KnownVersion knownVersion ) throws IOException {

@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,6 +23,12 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.collect.ImmutableMap;
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
+
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.generator.TemplateEngine;
 import io.openmanufacturing.sds.aspectmodel.java.AspectModelJavaUtil;
 import io.openmanufacturing.sds.aspectmodel.java.ImportTracker;
@@ -96,13 +102,6 @@ import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintConta
 import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintProperty;
 import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintUnitProperty;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.collect.ImmutableMap;
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
-
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
 /**
  * A {@link io.openmanufacturing.sds.aspectmodel.generator.ArtifactGenerator} that generates static meta classes
  * for {@link StructureElement}s in Aspect models
@@ -136,6 +135,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "BoundDefinition", BoundDefinition.class )
             .put( "characteristicBaseUrn", matchHash.trimTrailingFrom( new BAMMC( element.getMetaModelVersion() ).getNamespace() ) )
             .put( "Code", Code.class )
+            .put( "codeGenerationConfig", config )
             .put( "Collection", Collection.class )
             .put( "Collections", Collections.class )
             .put( "Constraint", Constraint.class )
@@ -167,14 +167,12 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "DefaultTrait", DefaultTrait.class )
             .put( "Duration", Duration.class )
             .put( "element", element )
-            .put( "enableJacksonAnnotations", config.doEnableJacksonAnnotations() )
             .put( "Either", Either.class )
             .put( "EncodingConstraint", EncodingConstraint.class )
             .put( "Entity", Entity.class )
             .put( "AbstractEntity", AbstractEntity.class )
             .put( "Enumeration", Enumeration.class )
             .put( "FixedPointConstraint", FixedPointConstraint.class )
-            .put( "importTracker", importTracker )
             .put( "LanguageConstraint", LanguageConstraint.class )
             .put( "LengthConstraint", LengthConstraint.class )
             .put( "List", List.class )
@@ -184,7 +182,6 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "Measurement", Measurement.class )
             .put( "modelUrnPrefix", modelUrnPrefix )
             .put( "nonNegativeInteger", new DefaultScalar( XSD.nonNegativeInteger.getURI(), element.getMetaModelVersion() ) )
-            .put( "packageName", config.getPackageName() )
             .put( "Quantifiable", Quantifiable.class )
             .put( "RangeConstraint", RangeConstraint.class )
             .put( "RegularExpressionConstraint", RegularExpressionConstraint.class )
@@ -211,8 +208,8 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
       final String generatedSource = new TemplateEngine( context ).apply( "java-static-class" );
       try {
          final Formatter formatter = new Formatter();
-         return new JavaArtifact( formatter.formatSource( generatedSource ), "Meta" + element.getName(),
-               config.getPackageName() );
+         final String source = formatter.formatSource( generatedSource );
+         return new JavaArtifact( source, "Meta" + element.getName(), config.getPackageName() );
       } catch ( final FormatterException exception ) {
          throw new CodeGenerationException( generatedSource, exception );
       }

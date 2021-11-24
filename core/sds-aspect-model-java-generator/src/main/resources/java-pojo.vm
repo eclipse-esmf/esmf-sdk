@@ -1,12 +1,12 @@
 #parse( "java-pojo-class-body-lib.vm" )
-#set( $classBody = $util.applyImports( "#javaPojoClassBody()", $importTracker ) )
+#set( $classBody = $util.applyImports( "#javaPojoClassBody()", $codeGenerationConfig ) )
 #copyrightHeader
-package $packageName;
+package $codeGenerationConfig.getPackageName();
 
-#foreach( $import in $importTracker.usedImportsWithoutJavaLang )
+#foreach( $import in $codeGenerationConfig.getImportTracker().getUsedImportsWithoutJavaLang() )
 import $import;
 #end
-#foreach( $import in $importTracker.usedStaticImports )
+#foreach( $import in $codeGenerationConfig.getImportTracker().getUsedStaticImports() )
 import $import;
 #end
 

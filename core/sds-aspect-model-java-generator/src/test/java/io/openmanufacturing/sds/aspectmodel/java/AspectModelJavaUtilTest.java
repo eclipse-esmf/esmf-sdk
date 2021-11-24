@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,16 +34,15 @@ public class AspectModelJavaUtilTest extends PropertyBasedTest {
          return firstCharacterValid;
       }
       return firstCharacterValid && IntStream.range( 1, value.length() - 1 )
-                                             .mapToObj( value::charAt )
-                                             .map( Character::isJavaIdentifierPart )
-                                             .reduce( true, ( x, y ) -> x && y );
+            .mapToObj( value::charAt )
+            .map( Character::isJavaIdentifierPart )
+            .reduce( true, ( x, y ) -> x && y );
    }
 
    @Property
-   public boolean generatedEnumKeysAreValidJavaIdentifiers(
-         @ForAll( "anyValidTypeValuePair" ) final Tuple.Tuple2<Type, Object> tuple ) {
-      final ImportTracker importTracker = new ImportTracker();
-      final String result = generateEnumKey( Optional.of( tuple.get1() ), tuple.get2(), importTracker );
+   public boolean generatedEnumKeysAreValidJavaIdentifiers( @ForAll( "anyValidTypeValuePair" ) final Tuple.Tuple2<Type, Object> tuple ) {
+      final JavaCodeGenerationConfig codeGenerationConfig = new JavaCodeGenerationConfig( true, "" );
+      final String result = generateEnumKey( Optional.of( tuple.get1() ), tuple.get2(), codeGenerationConfig );
       return isValidJavaIdentifier( result );
    }
 }

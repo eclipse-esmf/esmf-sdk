@@ -1,12 +1,12 @@
 #macro( propertyDeclaration ) public static final #end
 
 #macro( getConstraintClassName )
-    #set( $trait = $Trait.cast( $property.characteristic ) )
-    $trait.constraints.iterator().next().class.simpleName
+    #set( $trait = $Trait.cast( $property.getCharacteristic() ) )
+    $trait.getConstraints().iterator().next().getClass().getSimpleName()
 #end
 
 #macro( getCharacteristicClassName )
-    $property.getEffectiveCharacteristic().class.simpleName
+    $property.getEffectiveCharacteristic().getClass().getSimpleName()
 #end
 
 #macro( extendsComplexType $complexType )
@@ -14,18 +14,18 @@
         #set( $extendedComplexType = $complexType.getExtends().get() )
         #if ( $Entity.isAssignableFrom( $extendedComplexType.class ) )
             #set( $entityType = $Entity.cast( $extendedComplexType ) )
-            $importTracker.importExplicit( $DefaultEntity )
-            Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.metaModelVersion,
-                #elementUrn( $entityType ), "$entityType.name" ),
-            Meta${entityType.name}.INSTANCE.getProperties(),
+            $codeGenerationConfig.getImportTracker().importExplicit( $DefaultEntity )
+            Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
+                #elementUrn( $entityType ), "$entityType.getName()" ),
+            Meta${entityType.getName()}.INSTANCE.getProperties(),
             #extendsComplexType( $entityType )
             )
         )
         #else
             #set( $abstractEntityType = $AbstractEntity.cast( $extendedComplexType ) )
-            $importTracker.importExplicit( $DefaultAbstractEntity )
-            Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.metaModelVersion,
-                #elementUrn( $abstractEntityType ), "$abstractEntityType.name" ),
+            $codeGenerationConfig.getImportTracker().importExplicit( $DefaultAbstractEntity )
+            Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
+                #elementUrn( $abstractEntityType ), "$abstractEntityType.getName()" ),
             Meta${abstractEntityType.name}.INSTANCE.getProperties(),
             #extendsComplexType( $abstractEntityType ),
             List.of(
@@ -44,32 +44,32 @@
 #* @vtlvariable name="characteristic" type="io.openmanufacturing.sds.metamodel.Characteristic" *#
 #* @vtlvariable name="trait" type="io.openmanufacturing.sds.metamodel.Trait" *#
 #macro( characteristicDataType $characteristic )
-    #if( $Trait.isAssignableFrom( $characteristic.class ) )
+    #if( $Trait.isAssignableFrom( $characteristic.getClass() ) )
         #set( $trait = $Trait.cast( $characteristic ) )
-        #characteristicDataType( $trait.baseCharacteristic )
+        #characteristicDataType( $trait.getBaseCharacteristic() )
     #else
-        #if( $characteristic.dataType.isEmpty() )
+        #if( $characteristic.getDataType().isEmpty() )
             Optional.empty()
         #else
-            #set( $type = $characteristic.dataType.get() )
-            #if( $Scalar.isAssignableFrom( $type.class ) )
-                $importTracker.importExplicit( $DefaultScalar )
-                Optional.of(new DefaultScalar("$type.urn", KnownVersion.$characteristic.metaModelVersion))
-            #elseif( $Entity.isAssignableFrom( $type.class ) )
+            #set( $type = $characteristic.getDataType().get() )
+            #if( $Scalar.isAssignableFrom( $type.getClass() ) )
+                $codeGenerationConfig.getImportTracker().importExplicit( $DefaultScalar )
+                Optional.of(new DefaultScalar("$type.getUrn()", KnownVersion.$characteristic.getMetaModelVersion()))
+            #elseif( $Entity.isAssignableFrom( $type.getClass() ) )
                 #set( $entityType = $Entity.cast( $type ) )
-                $importTracker.importExplicit( $DefaultEntity )
-                Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.metaModelVersion,
-                    #elementUrn( $entityType ), "$entityType.name" ),
-                Meta${entityType.name}.INSTANCE.getProperties(),
-                #extendsComplexType( $entityType )
+                $codeGenerationConfig.getImportTracker().importExplicit( $DefaultEntity )
+                Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
+                     #elementUrn( $type ), "$entityType.getName()" ),
+                   Meta${entityType.getName()}.INSTANCE.getProperties(),
+                   #extendsComplexType( $entityType )
+                  )
                 )
-              )
-            #elseif( $AbstractEntity.isAssignableFrom( $type.class ) )
+            #elseif( $AbstractEntity.isAssignableFrom( $type.getClass() ) )
                 #set( $abstractEntityType = $AbstractEntity.cast( $type ) )
-                $importTracker.importExplicit( $DefaultAbstractEntity )
-                Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.metaModelVersion,
-                    #elementUrn( $abstractEntityType ), "$abstractEntityType.name" ),
-                Meta${abstractEntityType.name}.INSTANCE.getProperties(),
+                $codeGenerationConfig.getImportTracker().importExplicit( $DefaultAbstractEntity )
+                Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
+                    #elementUrn( $abstractEntityType ), "$abstractEntityType.getName()" ),
+                Meta${abstractEntityType.getName()}.INSTANCE.getProperties(),
                 #extendsComplexType( $abstractEntityType ),
                 List.of(
                 #foreach( $extendingComplexType in $abstractEntityType.getExtendingElements() )
@@ -87,12 +87,12 @@
 
 #* @vtlvariable name="element" type="io.openmanufacturing.sds.metamodel.IsDescribed" *#
 #macro( elementUrn $element )
-    #if( !$element.aspectModelUrn.isPresent() )
+    #if( !$element.getAspectModelUrn().isPresent() )
         null
-    #elseif( $element.aspectModelUrn.get().toString().startsWith( $modelUrnPrefix ) )
-        AspectModelUrn.fromUrn( NAMESPACE + "$element.name" )
-    #elseif( $element.aspectModelUrn.get().toString().startsWith( $characteristicBaseUrn ) )
-        AspectModelUrn.fromUrn( CHARACTERISTIC_NAMESPACE + "#$element.name" )
+    #elseif( $element.getAspectModelUrn().get().toString().startsWith( $modelUrnPrefix ) )
+        AspectModelUrn.fromUrn( NAMESPACE + "$element.getName()" )
+    #elseif( $element.getAspectModelUrn().get().toString().startsWith( $characteristicBaseUrn ) )
+        AspectModelUrn.fromUrn( CHARACTERISTIC_NAMESPACE + "#$element.getName()" )
     #else
         AspectModelUrn.fromUrn( "$element.aspectModelUrn.get().toString()" )
     #end
@@ -105,19 +105,19 @@
         Optional.empty()
     #else
         #set( $objectClass = $optionalValue.get().getClass() )
-        $importTracker.importExplicit( $objectClass )
-        #set( $xsdType = $ResourceFactory.createResource( $dataType.urn ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $objectClass )
+        #set( $xsdType = $ResourceFactory.createResource( $dataType.getUrn() ) )
         #set( $valueExpression = $optionalValue.get().toString() )
-        #if( $dataType.urn.endsWith( "#float" ) )
+        #if( $dataType.getUrn().endsWith( "#float" ) )
              #set( $valueExpression = "${valueExpression}f" )
         #end
-        #if( $dataType.urn.endsWith( "#integer" )
-          || $dataType.urn.endsWith( "#decimal" )
-          || $dataType.urn.endsWith( "#unsignedLong" )
-          || $dataType.urn.endsWith( "#positiveInteger" )
-          || $dataType.urn.endsWith( "#nonNegativeInteger" )
-          || $dataType.urn.endsWith( "#negativeInteger" )
-          || $dataType.urn.endsWith( "#nonPositiveInteger" ) )
+        #if( $dataType.getUrn().endsWith( "#integer" )
+          || $dataType.getUrn().endsWith( "#decimal" )
+          || $dataType.getUrn().endsWith( "#unsignedLong" )
+          || $dataType.getUrn().endsWith( "#positiveInteger" )
+          || $dataType.getUrn().endsWith( "#nonNegativeInteger" )
+          || $dataType.getUrn().endsWith( "#negativeInteger" )
+          || $dataType.getUrn().endsWith( "#nonPositiveInteger" ) )
           #set( $valueExpression = """${valueExpression}""" )
         #else
           #set( $valueExpression = "$StringEscapeUtils.escapeJava( $valueExpression )" )
@@ -128,19 +128,19 @@
 
 #* @vtlvariable name="element" type="io.openmanufacturing.sds.metamodel.Base" *#
 #macro( getMetaModelBaseAttributes $element )
-    #if( $element.preferredNames.isEmpty() && $element.descriptions.isEmpty() && $element.see.isEmpty() )
-        MetaModelBaseAttributes.from(KnownVersion.$element.metaModelVersion.toString(), #elementUrn( $property ), "$element.name")
+    #if( $element.getPreferredNames().isEmpty() && $element.getDescriptions().isEmpty() && $element.getSee().isEmpty() )
+        MetaModelBaseAttributes.from(KnownVersion.$element.metaModelVersion.toString(), #elementUrn( $property ), "$element.getName()")
     #else
-        MetaModelBaseAttributes.builderFor("$element.name")
-           .withMetaModelVersion(KnownVersion.$element.metaModelVersion.toString())
+        MetaModelBaseAttributes.builderFor("$element.getName()")
+           .withMetaModelVersion(KnownVersion.$element.getMetaModelVersion().toString())
            .withUrn( #elementUrn( $element ) )
-        #foreach( $locale in $element.preferredNames.keySet() )
-           .withPreferredName( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.preferredNames.get( $locale ) )" )
+        #foreach( $locale in $element.getPreferredNames().keySet() )
+           .withPreferredName( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.getPreferredNames().get( $locale ) )" )
         #end
-        #foreach( $locale in $element.descriptions.keySet() )
-            .withDescription( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.descriptions.get( $locale ) )" )
+        #foreach( $locale in $element.getDescriptions().keySet() )
+            .withDescription( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.getDescriptions().get( $locale ) )" )
         #end
-        #foreach( $see in $element.see )
+        #foreach( $see in $element.getSee() )
             .withSee( "$StringEscapeUtils.escapeJava( $see )" )
         #end
         .build()
@@ -158,193 +158,192 @@
 
 #* @vtlvariable name="characteristic" type="io.openmanufacturing.sds.metamodel.Characteristic" *#
 #macro( propertyCharacteristic $characteristic $propertyTypeName )
-    #if( $SingleEntity.isAssignableFrom( $characteristic.class ) )
-        $importTracker.importExplicit( $DefaultSingleEntity )
+    #if( $SingleEntity.isAssignableFrom( $characteristic.getClass() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultSingleEntity )
         new DefaultSingleEntity( #getMetaModelBaseAttributes( $characteristic ),
         #characteristicDataType( $characteristic ) )
-    #elseif( $Collection.isAssignableFrom( $characteristic.class ) )
-        #if( $List.isAssignableFrom( $characteristic.class ) )
+    #elseif( $Collection.isAssignableFrom( $characteristic.getClass() ) )
+        #if( $List.isAssignableFrom( $characteristic.getClass() ) )
             #set( $collectionType = $DefaultList )
-        #elseif( $Set.isAssignableFrom( $characteristic.class ) )
+        #elseif( $Set.isAssignableFrom( $characteristic.getClass() ) )
             #set( $collectionType = $DefaultSet )
-        #elseif( $SortedSet.isAssignableFrom( $characteristic.class ) )
+        #elseif( $SortedSet.isAssignableFrom( $characteristic.getClass() ) )
             #set( $collectionType = $DefaultSortedSet )
         #else
             #set( $collectionType = $DefaultCollection )
         #end
-        $importTracker.importExplicit( $collectionType )
+        $codeGenerationConfig.getImportTracker().importExplicit( $collectionType )
         new ${collectionType.simpleName}( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ), #elementCharacteristic( $characteristic $propertyTypeName ) )
-    #elseif( $Code.isAssignableFrom( $characteristic.class ) )
-        $importTracker.importExplicit( $DefaultCode )
+    #elseif( $Code.isAssignableFrom( $characteristic.getClass() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultCode )
         new DefaultCode( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ) )
-        #elseif( $Duration.isAssignableFrom( $characteristic.class ) )
-        $importTracker.importExplicit( $DefaultDuration )
+        #elseif( $Duration.isAssignableFrom( $characteristic.getClass() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultDuration )
         new DefaultDuration( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ),
             #set( $quantifiable = $Quantifiable.cast( $characteristic ) )
-            $importTracker.importExplicit( $Units )
-            Units.fromName("$quantifiable.unit.get().name")
+            $codeGenerationConfig.getImportTracker().importExplicit( $Units )
+            Units.fromName("$quantifiable.unit.get().getName()")
         )
-    #elseif( $Measurement.isAssignableFrom( $characteristic.class ) )
-        $importTracker.importExplicit( $DefaultMeasurement )
+    #elseif( $Measurement.isAssignableFrom( $characteristic.getClass() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultMeasurement )
         new DefaultMeasurement( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ),
             #set( $quantifiable = $Quantifiable.cast( $characteristic ) )
-            $importTracker.importExplicit( $Units )
-            Units.fromName("$quantifiable.unit.get().name")
+            $codeGenerationConfig.getImportTracker().importExplicit( $Units )
+            Units.fromName("$quantifiable.unit.get().getName()")
         )
-    #elseif( $Quantifiable.isAssignableFrom( $characteristic.class ) )
-        $importTracker.importExplicit( $DefaultQuantifiable )
+    #elseif( $Quantifiable.isAssignableFrom( $characteristic.getClass() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultQuantifiable )
         new DefaultQuantifiable( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ),
             #if ( $util.hasUnit( $characteristic ) )
                 #set( $quantifiable = $Quantifiable.cast( $characteristic ) )
-                $importTracker.importExplicit( $Units )
-                Units.fromName("$quantifiable.unit.get().name")
+                $codeGenerationConfig.getImportTracker().importExplicit( $Units )
+                Units.fromName("$quantifiable.unit.get().getName()")
             #else
                 Optional.empty()
             #end
         )
-    #elseif( $State.isAssignableFrom( $characteristic.class ) )
-        $importTracker.importExplicit( $DefaultState  )
+    #elseif( $State.isAssignableFrom( $characteristic.getClass() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultState  )
         #set( $state = $State.cast( $characteristic ) )
         new DefaultState( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ),
             #if ($property.isOptional())
-                List.of( ${characteristic.name}.values() )
+                List.of( ${characteristic.getName()}.values() )
             #else
                 List.of( ${propertyTypeName}.values() ),
             #end
-            ${propertyTypeName}.${util.generateEnumKey( $characteristic.dataType, $state.defaultValue, $importTracker )} )
-    #elseif( $Enumeration.isAssignableFrom( $characteristic.class ) )
-        $importTracker.importExplicit( $DefaultEnumeration )
+            ${propertyTypeName}.${util.generateEnumKey( $characteristic.dataType, $state.defaultValue, $codeGenerationConfig )} )
+    #elseif( $Enumeration.isAssignableFrom( $characteristic.getClass() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultEnumeration )
         new DefaultEnumeration( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ),
                 #if ($property.isOptional())
-                    List.of( ${characteristic.name}.values() ) )
+                    List.of( ${characteristic.getName()}.values() ) )
                 #else
                     List.of( ${propertyTypeName}.values() ) )
                 #end
-    #elseif( $StructuredValue.isAssignableFrom( $characteristic.class ) )
-        $importTracker.importExplicit( $DefaultStructuredValue )
+    #elseif( $StructuredValue.isAssignableFrom( $characteristic.getClass() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultStructuredValue )
         #set( $structuredValue = $StructuredValue.cast( $characteristic ) )
         new DefaultStructuredValue( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ),
-            "$StringEscapeUtils.escapeJava( $structuredValue.deconstructionRule )",
+            "$StringEscapeUtils.escapeJava( $structuredValue.getDeconstructionRule() )",
             Arrays.asList(
-                #foreach( $structuredValueElement in $structuredValue.elements )
+                #foreach( $structuredValueElement in $structuredValue.getElements() )
                     $util.printStructuredValueElement( $structuredValueElement )
                     #if( $foreach.hasNext ),#end
                 #end
             ) )
-    #elseif( $Trait.isAssignableFrom( $characteristic.class ) )
-        $importTracker.importExplicit( $DefaultTrait )
+    #elseif( $Trait.isAssignableFrom( $characteristic.getClass() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultTrait )
         #set( $trait = $Trait.cast( $characteristic ) )
         new DefaultTrait( #getMetaModelBaseAttributes( $characteristic ),
            #propertyCharacteristic( $trait.baseCharacteristic, $propertyTypeName ),
            Arrays.asList(
-                #foreach( $constraint in $trait.constraints )
+                #foreach( $constraint in $trait.getConstraints() )
                     #propertyConstraint( $constraint )
                     #if( $foreach.hasNext ),#end
                 #end
            ) )
     #else
-        $importTracker.importExplicit( $DefaultCharacteristic )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultCharacteristic )
         new DefaultCharacteristic( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ) )
     #end
 #end
 
 #macro( propertyConstraint $characteristic )
-    #if( $LengthConstraint.isAssignableFrom( $characteristic.class ) )
+    #if( $LengthConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $LengthConstraint.cast( $characteristic ) )
-        $importTracker.importExplicit( $DefaultLengthConstraint )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultLengthConstraint )
         new DefaultLengthConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            #getOptionalStaticDeclarationValue( $nonNegativeInteger, $constraint.minValue, $property.metaModelVersion ),
-            #getOptionalStaticDeclarationValue( $nonNegativeInteger, $constraint.maxValue, $property.metaModelVersion ) )
-    #elseif( $RangeConstraint.isAssignableFrom( $characteristic.class ) )
+            #getOptionalStaticDeclarationValue( $nonNegativeInteger, $constraint.getMinValue(), $property.getMetaModelVersion() ),
+            #getOptionalStaticDeclarationValue( $nonNegativeInteger, $constraint.getMaxValue(), $property.getMetaModelVersion() ) )
+    #elseif( $RangeConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $RangeConstraint.cast( $characteristic ) )
-        $importTracker.importExplicit( $DefaultRangeConstraint  )
-        $importTracker.importExplicit( $BoundDefinition )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultRangeConstraint  )
+        $codeGenerationConfig.getImportTracker().importExplicit( $BoundDefinition )
         new DefaultRangeConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            #getOptionalStaticDeclarationValue( $property.dataType.get(), $constraint.minValue, $property.metaModelVersion ),
-            #getOptionalStaticDeclarationValue( $property.dataType.get(), $constraint.maxValue, $property.metaModelVersion ),
-            BoundDefinition.${constraint.lowerBoundDefinition.name()},
-            BoundDefinition.${constraint.upperBoundDefinition.name()} )
-    #elseif( $RegularExpressionConstraint.isAssignableFrom( $characteristic.class ) )
+            #getOptionalStaticDeclarationValue( $property.dataType.get(), $constraint.getMinValue(), $property.getMetaModelVersion() ),
+            #getOptionalStaticDeclarationValue( $property.dataType.get(), $constraint.getMaxValue(), $property.getMetaModelVersion() ),
+            BoundDefinition.${constraint.getLowerBoundDefinition().name()},
+            BoundDefinition.${constraint.getUpperBoundDefinition().name()} )
+    #elseif( $RegularExpressionConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $RegularExpressionConstraint.cast( $characteristic ) )
-        $importTracker.importExplicit( $DefaultRegularExpressionConstraint )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultRegularExpressionConstraint )
         new DefaultRegularExpressionConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            "$constraint.value" )
-    #elseif( $EncodingConstraint.isAssignableFrom( $characteristic.class ) )
+            "$constraint.getValue()" )
+    #elseif( $EncodingConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $EncodingConstraint.cast( $characteristic ) )
-        $importTracker.importExplicit( $DefaultEncodingConstraint )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultEncodingConstraint )
         new DefaultEncodingConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            "$constraint.value" )
-    #elseif( $LanguageConstraint.isAssignableFrom( $characteristic.class ) )
+            "$constraint.getValue()" )
+    #elseif( $LanguageConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $LanguageConstraint.cast( $characteristic ) )
-        $importTracker.importExplicit( $DefaultLanguageConstraint )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultLanguageConstraint )
         new DefaultLanguageConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            $constraint.languageCode )
-    #elseif( $LocaleConstraint.isAssignableFrom( $characteristic.class ) )
+            $constraint.getLanguageCode() )
+    #elseif( $LocaleConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $LocaleConstraint.cast( $characteristic ) )
-        $importTracker.importExplicit( $DefaultLocaleConstraint )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultLocaleConstraint )
         new DefaultLocaleConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            $constraint.localeCode )
-    #elseif( $FixedPointConstraint.isAssignableFrom( $characteristic.class ) )
+            $constraint.getLocaleCode() )
+    #elseif( $FixedPointConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $FixedPointConstraint.cast( $characteristic ) )
-        $importTracker.importExplicit( $DefaultFixedPointConstraint )
+        $codeGenerationConfig.getImportTracker().importExplicit( $DefaultFixedPointConstraint )
         new DefaultFixedPointConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            $constraint.scale,
-            $constraint.integer )
+            $constraint.getScale(), $constraint.getInteger() )
     #else
-        "Unknown constraint $characteristic.name"
+        "Unknown constraint $characteristic.getName()"
     #end
 #end
 
-#macro( javaStaticClassProperty $property )
-#set( $propertyType = $importTracker.getPropertyType( $property ) )
+#macro( javaStaticClassProperty $property $codeGenerationConfig )
+#set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
 
 ## public static final $type $property = new $type(
-#if( $Trait.isAssignableFrom( $property.characteristic.class ) )
-    $importTracker.importExplicit( $StaticConstraintProperty )
+#if( $Trait.isAssignableFrom( $property.getCharacteristic().getClass() ) )
+    $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintProperty )
     #if( $util.hasContainerType( $property ) )
-        $importTracker.importExplicit( $StaticConstraintContainerProperty )
-        #set( $containedType = $util.getCharacteristicJavaType( $property, $importTracker ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintContainerProperty )
+        #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
         #propertyDeclaration() StaticConstraintContainerProperty<$containedType, $propertyType, #getConstraintClassName(), #getCharacteristicClassName()>
-          $util.toConstant( $property.name ) = new StaticConstraintContainerProperty<$containedType, $propertyType, #getConstraintClassName(),
+          $util.toConstant( $property.getName() ) = new StaticConstraintContainerProperty<$containedType, $propertyType, #getConstraintClassName(),
           #getCharacteristicClassName()>(
-    #elseif( $util.hasUnit( $property.characteristic ) )
-        $importTracker.importExplicit( $StaticConstraintUnitProperty )
-        $importTracker.importExplicit( $Unit )
+    #elseif( $util.hasUnit( $property.getCharacteristic() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintUnitProperty )
+        $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
         #propertyDeclaration() StaticConstraintUnitProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>
-          $util.toConstant( $property.name ) = new StaticConstraintUnitProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>(
+          $util.toConstant( $property.getName() ) = new StaticConstraintUnitProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>(
     #else
         #propertyDeclaration() StaticConstraintProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>
-          $util.toConstant( $property.name ) = new StaticConstraintProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>(
+          $util.toConstant( $property.getName() ) = new StaticConstraintProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>(
     #end
 #else
     #if( $util.hasContainerType( $property ) )
-        $importTracker.importExplicit( $StaticContainerProperty )
-        #set( $containedType = $util.getCharacteristicJavaType( $property, $importTracker ) )
-        #propertyDeclaration() StaticContainerProperty<$containedType, $propertyType> $util.toConstant( $property.name ) =
+        $codeGenerationConfig.getImportTracker().importExplicit( $StaticContainerProperty )
+        #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
+        #propertyDeclaration() StaticContainerProperty<$containedType, $propertyType> $util.toConstant( $property.getName() ) =
           new StaticContainerProperty<$containedType, $propertyType> (
-    #elseif( $util.hasUnit( $property.characteristic ) )
-        $importTracker.importExplicit( $StaticUnitProperty )
-        $importTracker.importExplicit( $Unit )
-        #propertyDeclaration() StaticUnitProperty<$propertyType> $util.toConstant( $property.name ) =
+    #elseif( $util.hasUnit( $property.getCharacteristic() ) )
+        $codeGenerationConfig.getImportTracker().importExplicit( $StaticUnitProperty )
+        $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
+        #propertyDeclaration() StaticUnitProperty<$propertyType> $util.toConstant( $property.getName() ) =
           new StaticUnitProperty<$propertyType>(
     #else
-        #propertyDeclaration() StaticProperty<$propertyType> $util.toConstant( $property.name ) =
+        #propertyDeclaration() StaticProperty<$propertyType> $util.toConstant( $property.getName() ) =
           new StaticProperty<$propertyType>(
     #end
 #end
 
 ## $arg1, $arg2, ... ) {
 #getMetaModelBaseAttributes( $property ),
-#propertyCharacteristic( $property.characteristic, $propertyType ),
+#propertyCharacteristic( $property.getCharacteristic(), $propertyType ),
 Optional.empty(),
 $property.isOptional(),
 $property.isNotInPayload(),
@@ -352,7 +351,7 @@ Optional.of("$property.getPayloadName()")
 ) {
 
 ## Body
-#if( $Trait.isAssignableFrom( $property.characteristic.class ) )
+#if( $Trait.isAssignableFrom( $property.getCharacteristic().getClass() ) )
     @Override
     public #getConstraintClassName() getConstraint() {
         return (#getConstraintClassName())((Trait)getCharacteristic()).getConstraints().iterator().next();
@@ -364,16 +363,16 @@ Optional.of("$property.getPayloadName()")
     }
 #end
 
-#if( $util.hasContainerType( $property ) )
+#if( $util.hasContainerType( $property ) || ${propertyType.contains( "Either" )} )
     @SuppressWarnings("unchecked")
 #end
     @Override
     public Class<$propertyType> getPropertyType() {
 #if( $util.hasContainerType( $property ) )
-        return (Class)${importTracker.getRawContainerType( $propertyType )}.class;
+        return (Class)${codeGenerationConfig.getImportTracker().getRawContainerType( $propertyType )}.class;
 #else
     #if( ${propertyType.contains( "Either" )} )
-        return Either.class;
+        return (Class)Either.class;
     #else
         return ${propertyType}.class;
     #end
@@ -387,12 +386,12 @@ Optional.of("$property.getPayloadName()")
     }
 #end
 
-#if( $util.hasUnit( $property.characteristic ) )
-    $importTracker.importExplicit( $Units )
+#if( $util.hasUnit( $property.getCharacteristic() ) )
+    $codeGenerationConfig.getImportTracker().importExplicit( $Units )
     @Override
     public Unit getUnit() {
-       return Units.fromName("$Quantifiable.cast( $property.characteristic ).unit.get().name")
-          .orElseThrow(() -> new RuntimeException("Unknown unit: $Quantifiable.cast( $property.characteristic ).unit.get().name"));
+       return Units.fromName("$Quantifiable.cast( $property.getCharacteristic() ).unit.get().getName()")
+          .orElseThrow(() -> new RuntimeException("Unknown unit: $Quantifiable.cast( $property.getCharacteristic() ).getUnit().get().getName()"));
     }
 #end
 

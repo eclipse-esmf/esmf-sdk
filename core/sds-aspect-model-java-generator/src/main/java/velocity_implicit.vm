@@ -1,7 +1,4 @@
 #* @implicitly included *#
-#* @vtlvariable name="Trait" type="java.lang.class<io.openmanufacturing.sds.metamodel.Trait>" *#
-#* @vtlvariable name="nonNegativeInteger" type="io.openmanufacturing.sds.metamodel.Scalar" *#
-#* @vtlvariable name="Units" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Units>" *#
 #* @vtlvariable name="ArrayList" type="java.util.ArrayList" *#
 #* @vtlvariable name="Arrays" type="java.lang.Class<java.util.Arrays>" *#
 #* @vtlvariable name="Base64BinaryDeserializer" type="java.lang.String" *#
@@ -10,8 +7,10 @@
 #* @vtlvariable name="characteristicBaseUrn" type="java.lang.String" *#
 #* @vtlvariable name="className" type="java.lang.String" *#
 #* @vtlvariable name="Code" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Code>" *#
+#* @vtlvariable name="codeGenerationConfig" type="io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig" *#
 #* @vtlvariable name="Collections" type="java.lang.Class<java.util.Collections>" *#
 #* @vtlvariable name="Collection" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Collection>" *#
+#* @vtlvariable name="ComplexType" type="java.lang.Class<io.openmanufacturing.sds.metamodel.ComplexType>" *#
 #* @vtlvariable name="Constraint" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Constraint>" *#
 #* @vtlvariable name="currentYear" type="java.time.Year" *#
 #* @vtlvariable name="DatatypeConfigurationException" type="java.lang.Class<javax.xml.datatype.DatatypeConfigurationException>" *#
@@ -46,7 +45,6 @@
 #* @vtlvariable name="Duration" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Duration>" *#
 #* @vtlvariable name="Either" type="java.lang.Class<io.openmanufacturing.sds.aspectmodel.java.types.Either>" *#
 #* @vtlvariable name="element" type="io.openmanufacturing.sds.metamodel.StructureElement" *#
-#* @vtlvariable name="enableJacksonAnnotations" type="java.lang.Boolean" *#
 #* @vtlvariable name="EncodingConstraint" type="java.lang.Class<io.openmanufacturing.sds.metamodel.EncodingConstraint>" *#
 #* @vtlvariable name="Entity" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Entity>" *#
 #* @vtlvariable name="enumeration" type="io.openmanufacturing.sds.metamodel.Enumeration" *#
@@ -54,7 +52,6 @@
 #* @vtlvariable name="FixedPointConstraint" type="java.lang.Class<io.openmanufacturing.sds.metamodel.FixedPointConstraint>" *#
 #* @vtlvariable name="HexBinaryDeserializer" type="java.lang.String" *#
 #* @vtlvariable name="HexBinarySerializer" type="java.lang.String" *#
-#* @vtlvariable name="importTracker" type="io.openmanufacturing.sds.aspectmodel.java.ImportTracker" *#
 #* @vtlvariable name="JsonCreator" type="java.lang.Class<com.fasterxml.jackson.annotation.JsonCreator>" *#
 #* @vtlvariable name="JsonDeserialize" type="java.lang.Class<com.fasterxml.jackson.databind.annotation.JsonDeserialize>" *#
 #* @vtlvariable name="JsonFormat" type="java.lang.Class<com.fasterxml.jackson.annotation.JsonFormat>" *#
@@ -71,9 +68,9 @@
 #* @vtlvariable name="Matcher" type="java.lang.Class<java.util.regex.Matcher>" *#
 #* @vtlvariable name="Measurement" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Measurement>" *#
 #* @vtlvariable name="modelUrnPrefix" type="java.lang.String" *#
+#* @vtlvariable name="nonNegativeInteger" type="io.openmanufacturing.sds.metamodel.Scalar" *#
 #* @vtlvariable name="NotNull" type="java.lang.Class<javax.validation.constraints.NotNull>" *#
 #* @vtlvariable name="Optional" type="java.lang.Class<java.util.Optional>" *#
-#* @vtlvariable name="packageName" type="java.lang.String" *#
 #* @vtlvariable name="Pattern" type="java.lang.Class<java.util.regex.Pattern>" *#
 #* @vtlvariable name="property" type="io.openmanufacturing.sds.metamodel.Property" *#
 #* @vtlvariable name="Quantifiable" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Quantifiable>" *#
@@ -93,7 +90,9 @@
 #* @vtlvariable name="StringEscapeUtils" type="org.apache.commons.text.StringEscapeUtils" *#
 #* @vtlvariable name="StringUtils" type="org.apache.commons.lang3.StringUtils" *#
 #* @vtlvariable name="StructuredValue" type="java.lang.Class<io.openmanufacturing.sds.metamodel.StructuredValue>" *#
+#* @vtlvariable name="Trait" type="java.lang.class<io.openmanufacturing.sds.metamodel.Trait>" *#
 #* @vtlvariable name="Unit" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Unit>" *#
+#* @vtlvariable name="Units" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Units>" *#
 #* @vtlvariable name="util" type="io.openmanufacturing.sds.aspectmodel.java.AspectModelJavaUtil" *#
 #* @vtlvariable name="valueInitializer" type="io.openmanufacturing.sds.aspectmodel.java.ValueInitializer" *#
 #* @vtlvariable name="XSD" type="org.apache.jena.vocabulary.XSD" *#

@@ -50,13 +50,12 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
 
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
             .put( "util", AspectModelJavaUtil.class )
-            .put( "enableJacksonAnnotations", config.doEnableJacksonAnnotations() )
+            .put( "codeGenerationConfig", config )
             .put( "enumeration", element )
-            .put( "packageName", config.getPackageName() )
             .put( "currentYear", Year.now() )
             .put( "importTracker", importTracker )
             .put( "className", element.getName() )
-            .put( "dataType", AspectModelJavaUtil.getDataType( element.getDataType(), importTracker ) )
+            .put( "dataType", AspectModelJavaUtil.getDataType( element.getDataType(), config ) )
             .put( "Optional", Optional.class )
             .put( "Arrays", Arrays.class )
             .put( "JsonValue", JsonValue.class )
@@ -69,8 +68,7 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
       try {
          final String generatedSource = new TemplateEngine( context ).apply( "java-enumeration" );
          final Formatter formatter = new Formatter();
-         return new JavaArtifact( formatter.formatSource( generatedSource ), element.getName(),
-               config.getPackageName() );
+         return new JavaArtifact( formatter.formatSource( generatedSource ), element.getName(), config.getPackageName() );
       } catch ( final FormatterException e ) {
          throw new CodeGenerationException( e );
       }

@@ -1,19 +1,19 @@
 #macro( javaEnumerationClassBody )
-$importTracker.importExplicit( $Optional )
-$importTracker.importExplicit( $Arrays )
-#if( $enableJacksonAnnotations )
-    $importTracker.importExplicit( $JsonValue )
-    $importTracker.importExplicit( $JsonFormat )
-    $importTracker.importExplicit( $JsonCreator )
+$codeGenerationConfig.importTracker.importExplicit( $Optional )
+$codeGenerationConfig.importTracker.importExplicit( $Arrays )
+#if( $codeGenerationConfig.doEnableJacksonAnnotations() )
+    $codeGenerationConfig.importTracker.importExplicit( $JsonValue )
+    $codeGenerationConfig.importTracker.importExplicit( $JsonFormat )
+    $codeGenerationConfig.importTracker.importExplicit( $JsonCreator )
 #end
 
 /**
 * Generated class {@link ${enumeration.name}}.
 */
-#if( $enableJacksonAnnotations )@JsonFormat(shape = JsonFormat.Shape.OBJECT) #end
+#if( $codeGenerationConfig.doEnableJacksonAnnotations() )@JsonFormat(shape = JsonFormat.Shape.OBJECT) #end
 public enum ${enumeration.name} {
 #foreach( $value in $enumeration.values )
-    $util.generateEnumKey($enumeration.dataType, $value, $importTracker)($util.generateEnumValue($enumeration.getDataType(), $value, false, $importTracker))
+    $util.generateEnumKey($enumeration.dataType, $value, $codeGenerationConfig)($util.generateEnumValue($enumeration.getDataType(), $value, false, $codeGenerationConfig))
     #if( $foreach.hasNext), #end
 #end;
 
@@ -23,12 +23,12 @@ $className($dataType value) {
     this.value = value;
 }
 
-#if( $enableJacksonAnnotations )@JsonCreator #end
+#if( $codeGenerationConfig.doEnableJacksonAnnotations() )@JsonCreator #end
 static ${className} enumDeserializationConstructor($dataType value) {
     return fromValue(value).orElseThrow(() -> new EnumAttributeNotFoundException("Tried to parse value \"" + value + "\", but there is no enum field like that in ${className}"));
 }
 
-#if( $enableJacksonAnnotations )@JsonValue #end
+#if( $codeGenerationConfig.doEnableJacksonAnnotations() )@JsonValue #end
 public $dataType getValue() {
     return value;
 }
@@ -36,7 +36,7 @@ public $dataType getValue() {
 #if( $State.isAssignableFrom( $enumeration.class ) )
 public static $className getDefaultValue() {
     #set( $state = $State.cast( $enumeration ) )
-    return $util.generateEnumKey( $enumeration.getDataType(), $state.getDefaultValue(), $importTracker );
+    return $util.generateEnumKey( $enumeration.getDataType(), $state.getDefaultValue(), $codeGenerationConfig );
 }
 #end
 

@@ -342,7 +342,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithEither( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "testProperty", "Either" )
+            .put( "testProperty", "Either<LeftEntity,RightEntity>" )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES;
