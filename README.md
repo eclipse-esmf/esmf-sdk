@@ -41,14 +41,13 @@ concepts for each component can be found in the respective subfolders.
 This repository contains a detailed developer documentation written in AsciiDoc. The source files (AsciiDoc) are
 located [here](documentation/developer-guide) and are built using
 [Antora](https://antora.org/) which generates the documentation as HTML files.
-[//](TODO add link to published developer documentation here as soon as it is available online)
 [//](TODO explain how to build the documentation locally)
 
 ## Getting help
 
-Are you having trouble with SDS SDK? We want to
-help! [//](TODO add link to rendered documentation here * Check the SDS SDK developer documentation)
+Are you having trouble with SDS SDK? We want to help!
 
+* Check the [SDS SDK developer documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/dev-snapshot/index.html)
 * Check the BAMM
   specification [specification](https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/snapshot/index.html)
 * Having issues with the SDS SDK? Open a [GitHub issue]( https://github.com/OpenManufacturingPlatform/sds-sdk/issues).
