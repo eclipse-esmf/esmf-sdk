@@ -1,6 +1,15 @@
-# BAMM Aspect Meta Model Command Line Tool
+# BAMM Aspect Meta Model Command Line Interface
 
-## Building
+The BAMM CLI bundles the functionality provided in the SDS SDK in a CLI application to be used in you terminal for ad-hoc usage outside an IDE.
+For details on the usage and offered functionalities see [Running](#Running) 
+
+## Download
+
+You can find build versions of the BAMM CLI under the [GitHub releases of the SDS SDK](https://github.com/OpenManufacturingPlatform/sds-sdk/releases).
+
+### Building
+
+Alternatively, you can build the BAMM CLI on your local machine using: 
 
 `mvn package`
 

@@ -25,18 +25,16 @@
 ## Introduction
 
 The SDS SDK contains artifacts and resources for all parties that intent to use, extend or integrate with the BAMM
-Aspect Meta Model, e.g. Solution Developers, Domain Experts or OEMs.
+Aspect Meta Model, e.g., Solution Developers, Domain Experts or OEMs.
 
-At its core are components, which help working with the BAMM Aspect Meta Model (BAMM). The SDK comprises components to
-load and validate models such as the one depicted below and generate artifacts such as DTOs, static classes,
-documentation and so on.
-![BAMM Aspect Meta Model (BAMM) Elements](documentation/developer-guide/modules/getting-started-guide/images/solution-with-movement-aspect.svg)
+At its core are components, which help to work with the BAMM Aspect Meta Model (BAMM). The SDK comprises components to
+load and validate models generate artifacts such as static classes, documentation, DTO (data transfer object) and so on.
 
 To fully leverage BAMM, provided components include language-specific meta model implementations, code generators,
 validators etc.
 
-This document provides an overall overview of the SDK and the concepts applied throughout it. Detailed documentation and
-concepts for each component can be found in the respective subfolders.
+This document provides an overall overview of the SDK, and the concepts applied throughout it. Detailed documentation and
+concepts for each component can be found in the respective subfolder.
 
 This repository contains a detailed developer documentation written in AsciiDoc. The source files (AsciiDoc) are
 located [here](documentation/developer-guide) and are built using
@@ -49,21 +47,21 @@ Are you having trouble with SDS SDK? We want to help!
 
 * Check the [SDS SDK developer documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/dev-snapshot/index.html)
 * Check the BAMM
-  specification [specification](https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/snapshot/index.html)
+  specification [specification](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/index.html)
 * Having issues with the SDS SDK? Open a [GitHub issue]( https://github.com/OpenManufacturingPlatform/sds-sdk/issues).
 
 ## Build and contribute
 
-The top level elements of the SDK structure are all carried out as Maven multi module projects. Building the SDK
+The top level elements of the SDK structure are all carried out as Maven multimodule projects. Building the SDK
 components of one group (e.g. all core components) then is as easy as running `mvn package` or `mvn install`
 in the root directory of the repository.
 
 We are always looking forward to your contributions. For more details on how to contribute just take a look at the
-[contribution guidelines](CONTRIBUTING.md). Please keep in mind to create an issue first before opening a pull request.
+[contribution guidelines](CONTRIBUTING.md). Please create an issue first before opening a pull request.
 
 ## SDK Structure
 
-To ease navigation through the SDK and its components, the following structure is employed:
+To ease navigation through the SDK and its components, the repository employs the following structure:
 
 ```
 sds-sdk
@@ -128,7 +126,7 @@ For the BAMM, semantic versioning (`major.minor.micro`) is applied with the foll
 A new BAMM version always comprises new releases of the SDK components that depend on the BAMM, however not the other
 way round. New releases of SDK components may be crafted that are built on the existing BAMM version.
 
-The SDK component versions are otherwise not tied to the BAMM version, i.e. they may differ in any part of the version.
+The SDK component versions are otherwise not tied to the BAMM version, i.e., they may differ in any part of the version.
 
 ### BAMM Java Implementation Packaging
 
@@ -136,7 +134,7 @@ Complex applications might have the need to be implemented against different ver
 should be integrated where there is no control over the underlying meta model version. Thus, Java artifacts for
 different BAMM versions exist.
 
-Version information encoded into the package name and/or class name solve any issues concerning unique adressability of
+Version information encoded into the package name and/or class name solve any issues concerning unique addressability of
 a class in a concrete version, however any version update forces consumers to change the code base if they want to stay
 on the latest version.
 
@@ -197,7 +195,7 @@ or a subpackage of  `io.openmanufacturing.sds.aspectmodel.versionupdate`
 
 ## BAMM CLI
 
-The BAMM CLI provides all generation as well as validation functionality as a CLI for ad-hoc usage outside of an IDE,
+The [BAMM CLI](tools/bamm-cli) provides all generation as well as validation functionality as a CLI for ad-hoc usage outside an IDE,
 automated build or any project at all. Provided functions are:
 
 * Model validation
@@ -207,7 +205,8 @@ automated build or any project at all. Provided functions are:
 * Java class generation
 * Static meta model generation
 
-New SDK functionality based on the Aspect Meta Model will always be also provided through the BAMM CLI.
+New SDK functionality based on the Aspect Meta Model will always be also provided through the BAMM CLI. 
+Build binary versions of the BAMM CLI are available as part of the [BAMM SDK releases in GitHub](https://github.com/OpenManufacturingPlatform/sds-sdk/releases).
 
 ## License
 
