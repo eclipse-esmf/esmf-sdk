@@ -30,7 +30,6 @@ Aspect Meta Model, e.g. Solution Developers, Domain Experts or OEMs.
 At its core are components, which help working with the BAMM Aspect Meta Model (BAMM). The SDK comprises components to
 load and validate models such as the one depicted below and generate artifacts such as DTOs, static classes,
 documentation and so on.
-![BAMM Aspect Meta Model (BAMM) Elements](documentation/developer-guide/modules/getting-started-guide/images/solution-with-movement-aspect.svg)
 
 To fully leverage BAMM, provided components include language-specific meta model implementations, code generators,
 validators etc.
