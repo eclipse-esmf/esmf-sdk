@@ -131,8 +131,8 @@ This means, before making a pull request or providing an issue please sign the O
 working group “Semantic Data Structuring”.
 
 ## Labeling
-After new `Issues` or `PRs` are created, the Chair or one of the maintainers may further assign a `label` to it 
-according to this table:
+After new `Issues` or `PRs` are created, the `bug` and `task` label will be added automatically according to the chosen issue type.
+Later on the Chair or one of the maintainers may further assign a `label` to it according to this table:
 
 Label Types        | Description
 -------------------| ----------------------------------------
