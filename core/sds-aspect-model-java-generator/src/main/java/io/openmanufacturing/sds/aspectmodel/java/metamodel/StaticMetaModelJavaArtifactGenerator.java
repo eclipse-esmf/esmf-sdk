@@ -22,11 +22,10 @@ import java.util.Map;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
+import org.jboss.forge.roaster.Roaster;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
-import com.google.googlejavaformat.java.Formatter;
-import com.google.googlejavaformat.java.FormatterException;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.generator.TemplateEngine;
@@ -207,10 +206,9 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
 
       final String generatedSource = new TemplateEngine( context ).apply( "java-static-class" );
       try {
-         final Formatter formatter = new Formatter();
-         final String source = formatter.formatSource( generatedSource );
-         return new JavaArtifact( source, "Meta" + element.getName(), config.getPackageName() );
-      } catch ( final FormatterException exception ) {
+         return new JavaArtifact( Roaster.format( generatedSource ), "Meta" + element.getName(),
+               config.getPackageName() );
+      } catch ( final Exception exception ) {
          throw new CodeGenerationException( generatedSource, exception );
       }
    }
