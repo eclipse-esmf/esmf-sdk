@@ -50,10 +50,14 @@ jobs:
           git fetch
           git checkout -b $release_branch_name --track origin/$release_branch_name || true
           git checkout -b $release_branch_name
-      - name: Set version
+      - name: Set Maven version
         run: |
           mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
           mvn versions:commit
+      - name: Set Antora version
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
       - name: Commit version changes and push to upstream repository
         run: |
           git add .
