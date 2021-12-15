@@ -270,7 +270,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
-                  .put( "testPropertyWithRegularExpression", "@NotNull" + "@Pattern(regexp = \"^[a-zA-Z]\")" )
+                  .put( "testPropertyWithRegularExpression", "@NotNull" + "@Pattern(regexp = \"^[a-zA-Z]\\\\.[0-9]\")" )
                   .put( "testPropertyWithDecimalMinDecimalMaxRangeConstraint",
                         "@NotNull" + "@DecimalMin(value = \"2.3\")" + "@DecimalMax(value = \"10.5\")" )
                   .put( "testPropertyWithDecimalMaxRangeConstraint",

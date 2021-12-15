@@ -369,7 +369,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       assertThat( aspectWithConstraints.getTestPropertyWithDecimalMaxRangeConstraint() ).isLessThanOrEqualTo( BigDecimal.valueOf( 10.5 ) );
       assertThat( aspectWithConstraints.getTestPropertyWithDecimalMinDecimalMaxRangeConstraint() ).isBetween( BigDecimal.valueOf( 2.3 ),
             BigDecimal.valueOf( 10.5 ) );
-      assertThat( aspectWithConstraints.getTestPropertyWithRegularExpression() ).matches( "^[a-zA-Z]" );
+      assertThat( aspectWithConstraints.getTestPropertyWithRegularExpression() ).matches( "^[a-zA-Z]\\.[0-9]" );
    }
 
    @ParameterizedTest

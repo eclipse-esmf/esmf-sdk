@@ -277,7 +277,7 @@
         #set( $constraint = $RegularExpressionConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultRegularExpressionConstraint )
         new DefaultRegularExpressionConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            "$constraint.getValue()" )
+            "$StringEscapeUtils.escapeJava( $constraint.getValue() )" )
     #elseif( $EncodingConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $EncodingConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultEncodingConstraint )

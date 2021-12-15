@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,6 +19,8 @@ import java.util.Optional;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 import io.openmanufacturing.sds.aspectmodel.java.rangeconstraint.AnnotationExpression;
 import io.openmanufacturing.sds.aspectmodel.java.rangeconstraint.AnnotationFactory;
@@ -71,7 +73,9 @@ public class ConstraintAnnotationBuilder {
          return;
       }
       final RegularExpressionConstraint regularExpressionConstraint = (RegularExpressionConstraint) constraintClass;
-      appendStringBuilder( Pattern.class, "regexp = \"" + regularExpressionConstraint.getValue() + "\"" );
+      final String value = regularExpressionConstraint.getValue();
+      final String escapedValue = StringEscapeUtils.escapeJava( value );
+      appendStringBuilder( Pattern.class, "regexp = \"" + escapedValue + "\"" );
    }
 
    private void createRangeConstraint() {
@@ -103,7 +107,7 @@ public class ConstraintAnnotationBuilder {
    private AnnotationExpression getAnnotationExpression( final Object value,
          final AnnotationTypeMapping annotationTypeMapping ) {
       return AnnotationFactory.getOperation( value.getClass(), annotationTypeMapping )
-                              .orElseThrow( () -> new IllegalArgumentException( "Invalid Annotation" ) );
+            .orElseThrow( () -> new IllegalArgumentException( "Invalid Annotation" ) );
    }
 
    private void createLengthConstraint() {
@@ -143,10 +147,10 @@ public class ConstraintAnnotationBuilder {
    private void appendStringBuilder( final Class<?> beanAnnotation, final Object expression ) {
       importTracker.importExplicit( beanAnnotation );
       constraintAnnotation.append( ANNOTATION_MARKING )
-                          .append( beanAnnotation.getSimpleName() )
-                          .append( LEFT_BRACKET )
-                          .append( expression )
-                          .append( RIGHT_BRACKET )
-                          .append( '\n' );
+            .append( beanAnnotation.getSimpleName() )
+            .append( LEFT_BRACKET )
+            .append( expression )
+            .append( RIGHT_BRACKET )
+            .append( '\n' );
    }
 }
