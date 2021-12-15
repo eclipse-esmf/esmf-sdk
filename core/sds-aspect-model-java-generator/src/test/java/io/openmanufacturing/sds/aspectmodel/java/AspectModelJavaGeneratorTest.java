@@ -880,4 +880,19 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertClassDeclaration( "ExtendingTestEntity", Collections.emptyList(),
             Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(), Collections.emptyList() );
    }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testGenerateAspectModelWithEntityEnumerationAndLangString( final KnownVersion metaModelVersion ) throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
+      result.assertNumberOfFiles( 3 );
+
+      final ImmutableMap<String, String> expectedConstantArguments = ImmutableMap.<String, String> builder()
+            .put( "ENTITY_INSTANCE",
+                  "new TestEntity(Map.of(Locale.forLanguageTag(\"de\"), \"Dies ist ein Test.\", Locale.forLanguageTag(\"en\"), \"This is a test.\"))" )
+            .build();
+
+      result.assertEnumConstants( "TestEnumeration", ImmutableSet.of( "ENTITY_INSTANCE" ), expectedConstantArguments );
+   }
 }
