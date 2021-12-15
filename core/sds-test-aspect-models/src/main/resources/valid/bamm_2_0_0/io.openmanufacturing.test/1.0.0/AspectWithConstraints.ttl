@@ -34,7 +34,7 @@
    bamm:description "Test Regular Expression Constraint"@en ;
    bamm-c:constraint [
       a bamm-c:RegularExpressionConstraint ;
-      bamm:value "^[a-zA-Z]" ;
+      bamm:value "^[a-zA-Z]\\.[0-9]" ;
    ] ;
    bamm-c:baseCharacteristic bamm-c:Text .
 
