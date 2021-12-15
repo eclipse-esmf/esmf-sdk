@@ -1,6 +1,6 @@
 #macro( javaPojoProperty $property )
 #set( $propertyType = $util.getPropertyType( $property, true, $codeGenerationConfig ) )
-#if( !$property.isOptional() )
+#if( !$property.isOptional() && !$property.isNotInPayload() )
     $codeGenerationConfig.getImportTracker().importExplicit( $NotNull )
 @NotNull
 #end

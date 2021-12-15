@@ -227,7 +227,13 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .findAll( ConstructorDeclaration.class );
       assertThat( constructorDeclarations ).hasSize( 2 );
 
-      result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResults, new HashMap<>() );
+      result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResults, ImmutableMap.<String, String> builder()
+            .put( "average", "" )
+            .put( "numericCode", "@NotNull" )
+            .put( "description", "" )
+            .put( "nestedResult", "@NotNull" )
+            .build()
+      );
       result.assertConstructor( "EvaluationResult", expectedFieldsForEvaluationResults, new HashMap<>() );
 
       final ConstructorDeclaration jacksonConstructor = constructorDeclarations.get( 1 );
