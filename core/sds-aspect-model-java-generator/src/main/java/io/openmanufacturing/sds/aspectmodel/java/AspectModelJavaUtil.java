@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -55,6 +56,7 @@ import io.openmanufacturing.sds.metamodel.SortedSet;
 import io.openmanufacturing.sds.metamodel.StructureElement;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
+import io.vavr.Tuple2;
 
 public class AspectModelJavaUtil {
 
@@ -70,7 +72,7 @@ public class AspectModelJavaUtil {
     * @param codeGenerationConfig the configuration for code generation
     * @return the final type of the property
     */
-   public static String getPropertyType( final Property metaProperty, final boolean inclValidation, JavaCodeGenerationConfig codeGenerationConfig ) {
+   public static String getPropertyType( final Property metaProperty, final boolean inclValidation, final JavaCodeGenerationConfig codeGenerationConfig ) {
       final String propertyType = determinePropertyType( metaProperty.getCharacteristic(), inclValidation, codeGenerationConfig );
       if ( metaProperty.isOptional() ) {
          return containerType( Optional.class, propertyType, Optional.empty() );
@@ -84,7 +86,7 @@ public class AspectModelJavaUtil {
     * @param metaProperty the meta model property to resolve the data type for
     * @return the fully qualified class name (potentially including type parameters) of the resolved data type
     */
-   public static String getPropertyType( final Property metaProperty, JavaCodeGenerationConfig codeGenerationConfig ) {
+   public static String getPropertyType( final Property metaProperty, final JavaCodeGenerationConfig codeGenerationConfig ) {
       final String propertyType = determinePropertyType( metaProperty.getCharacteristic(), false, codeGenerationConfig );
       codeGenerationConfig.getImportTracker().trackPotentiallyParameterizedType( propertyType );
       if ( metaProperty.isOptional() ) {
@@ -153,8 +155,8 @@ public class AspectModelJavaUtil {
          } else {
             codeGenerationConfig.getImportTracker().importExplicit( io.openmanufacturing.sds.aspectmodel.java.types.Either.class );
          }
-         String left = determinePropertyType( ((Either) characteristic).getLeft(), inclValidation, codeGenerationConfig );
-         String right = determinePropertyType( ((Either) characteristic).getRight(), inclValidation, codeGenerationConfig );
+         final String left = determinePropertyType( ((Either) characteristic).getLeft(), inclValidation, codeGenerationConfig );
+         final String right = determinePropertyType( ((Either) characteristic).getRight(), inclValidation, codeGenerationConfig );
          return String.format( "Either<%s,%s>", left, right );
       }
 
@@ -353,6 +355,10 @@ public class AspectModelJavaUtil {
       return dataType.map( type -> type instanceof Entity ).orElse( false );
    }
 
+   public static boolean isLangStringType( final Optional<Type> dataType ) {
+      return dataType.map( type -> type.getUrn().equals( RDF.langString.getURI() ) ).orElse( false );
+   }
+
    /**
     * Takes a class body with FQCNs and replaces them with applied imports (i.e. simply use the class name).
     */
@@ -425,6 +431,12 @@ public class AspectModelJavaUtil {
    public static String generateEnumValue( final Optional<Type> valueDataType, final Object value, final boolean isOptional,
          final JavaCodeGenerationConfig codeGenerationConfig ) {
       final String dataTypeName = getDataType( valueDataType, codeGenerationConfig );
+      if ( isLangStringType( valueDataType ) ) {
+         codeGenerationConfig.getImportTracker().importExplicit( Map.class );
+         codeGenerationConfig.getImportTracker().importExplicit( Locale.class );
+         return generateLangStringEnumValue( value );
+      }
+
       if ( dataTypeName.contains( "String" ) ) {
          final String escapedValue = StringEscapeUtils.escapeJava( (String) value );
          return isOptional ? String.format( "Optional.of(\"%s\")", escapedValue ) : "\"" + escapedValue + "\"";
@@ -466,6 +478,27 @@ public class AspectModelJavaUtil {
                String.format( "%s.valueOf(\"%s\")", dataTypeName, value );
       }
       return isOptional ? String.format( "Optional.of(%s)", value ) : value.toString();
+   }
+
+   private static String generateLangStringEnumValue( final Object value ) {
+      final StringBuilder hashMapBuilder = new StringBuilder( "Map.of(" );
+      final ArrayList<Tuple2<String, String>> values = (ArrayList<Tuple2<String, String>>) value;
+      final int numberOfValues = values.size();
+      int numberOfProcessedValues = 0;
+      for ( final Tuple2<String, String> langStringValue : values ) {
+         numberOfProcessedValues++;
+         final Map.Entry<String, String> entry = langStringValue.toEntry();
+         final String locale = String.format( "Locale.forLanguageTag( \"%s\" )", entry.getKey() );
+         hashMapBuilder.append( locale );
+         hashMapBuilder.append( ",\"" );
+         hashMapBuilder.append( entry.getValue() );
+         hashMapBuilder.append( "\"" );
+         if ( numberOfValues > numberOfProcessedValues ) {
+            hashMapBuilder.append( "," );
+         }
+      }
+      hashMapBuilder.append( ")" );
+      return hashMapBuilder.toString();
    }
 
    private static String generateComplexValue( final Property property, final Object valueMap, final JavaCodeGenerationConfig codeGenerationConfig ) {
