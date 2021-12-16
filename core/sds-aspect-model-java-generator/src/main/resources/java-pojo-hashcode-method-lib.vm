@@ -2,6 +2,12 @@
 @Override
 public int hashCode() {
     return Objects.hash(
+    #if ( $element.isComplex() )
+        #set( $complexElement = $ComplexType.cast( $element ) )
+        #if ( $complexElement.getExtends().isPresent() )
+            super.hashCode(),
+        #end
+    #end
     #foreach( $property in $element.getProperties() )
         ${property.getPayloadName()}
         #if( $foreach.hasNext) , #end
