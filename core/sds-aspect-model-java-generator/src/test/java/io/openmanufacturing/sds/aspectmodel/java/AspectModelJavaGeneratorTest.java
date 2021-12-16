@@ -38,6 +38,7 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedPrimitiveType;
 import com.google.common.collect.ImmutableMap;
@@ -798,6 +799,54 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithBlankNode", expectedFieldsForAspectClass, new HashMap<>() );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGenerateEqualsForAspectWithEntity( final KnownVersion metaModelVersion ) throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
+
+      final PrimitiveType expectedReturnType = PrimitiveType.booleanType();
+      final boolean expectOverride = true;
+      final int expectedNumberOfParameters = 1;
+      List<String> expectedMethodBody = List.of(
+            "if(this==o){",
+            "returntrue;",
+            "}",
+            "if(o==null||getClass()!=o.getClass()){",
+            "returnfalse;",
+            "}",
+            "finalAspectWithEntitythat=(AspectWithEntity)o;",
+            "returnObjects.equals(testProperty,that.testProperty);" );
+      result.assertMethodBody( "AspectWithEntity", "equals", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+
+      expectedMethodBody = List.of(
+            "if(this==o){",
+            "returntrue;",
+            "}",
+            "if(o==null||getClass()!=o.getClass()){",
+            "returnfalse;",
+            "}",
+            "finalTestEntitythat=(TestEntity)o;",
+            "returnObjects.equals(entityProperty,that.entityProperty);" );
+      result.assertMethodBody( "TestEntity", "equals", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGenerateHashCodeForAspectWithEntity( final KnownVersion metaModelVersion ) throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, Optional.empty(), true ) );
+
+      final PrimitiveType expectedReturnType = PrimitiveType.intType();
+      final boolean expectOverride = true;
+      final int expectedNumberOfParameters = 0;
+      List<String> expectedMethodBody = List.of( "returnObjects.hash(testProperty);" );
+      result.assertMethodBody( "AspectWithEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+
+      expectedMethodBody = List.of( "returnObjects.hash(entityProperty);" );
+      result.assertMethodBody( "TestEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
    }
 
    @ParameterizedTest

@@ -2,6 +2,7 @@
 #parse( "java-pojo-constructor-lib.vm" )
 #parse( "java-pojo-getter-lib.vm" )
 #parse( "java-pojo-equals-method-lib.vm" )
+#parse( "java-pojo-hashcode-method-lib.vm" )
 
 #macro( javaPojoClassBody )
 /**
@@ -34,5 +35,7 @@ public class $element.getName() {
 #end
 
     #javaPojoEqualsMethod()
+
+    #javaPojoHashCodeMethod()
 }
 #end
