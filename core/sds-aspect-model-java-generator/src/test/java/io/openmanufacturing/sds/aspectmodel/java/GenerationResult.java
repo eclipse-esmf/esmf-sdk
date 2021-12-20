@@ -39,11 +39,13 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
@@ -179,6 +181,32 @@ class GenerationResult {
 
       assertThat( expectedbody.stream().collect( Collectors.joining() ) ).contains(
             bodyStatements.stream().map( Node::toString ).collect( Collectors.joining() ) );
+   }
+
+   void assertMethodBody( final String className, final String methodName, final boolean override, final PrimitiveType expectedReturnType,
+         final int expectedNumberOfParameters, final List<String> expectedMethodBody ) {
+      final Optional<MethodDeclaration> possibleMethodDeclaration = compilationUnits.get( className )
+            .findAll( MethodDeclaration.class ).stream()
+            .filter( declaration -> declaration.getNameAsString().equals( methodName ) )
+            .findFirst();
+      assertThat( possibleMethodDeclaration ).isPresent();
+
+      final MethodDeclaration methodDeclaration = possibleMethodDeclaration.get();
+      assertThat( methodDeclaration.isPublic() ).isTrue();
+      assertThat( methodDeclaration.getType() ).isEqualTo( expectedReturnType );
+      assertThat( methodDeclaration.getParameters() ).hasSize( expectedNumberOfParameters );
+      assertThat( methodDeclaration.getBody() ).isPresent();
+      if ( override ) {
+         assertThat( methodDeclaration.isAnnotationPresent( "Override" ) ).isTrue();
+      }
+
+      final NodeList<Statement> bodyStatements = methodDeclaration.getBody().get().getStatements();
+      final String actualMethodBody = bodyStatements.stream()
+            .map( Node::toString )
+            .map( s -> s.replaceAll( "\\s", "" ) )
+            .collect( Collectors.joining() );
+      final String expectedBody = String.join( "", expectedMethodBody );
+      assertThat( actualMethodBody ).isEqualTo( expectedBody );
    }
 
    private TypeToken typeTokenToCheck( final Object fieldTypeOrTypeName ) {

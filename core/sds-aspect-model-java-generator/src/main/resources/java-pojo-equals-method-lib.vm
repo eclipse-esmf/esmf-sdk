@@ -19,6 +19,14 @@ if (this == o) {
 if (o == null || getClass() != o.getClass()) {
     return false;
 }
+#if ( $element.isComplex() )
+#set( $complexElement = $ComplexType.cast( $element ) )
+    #if ( $complexElement.getExtends().isPresent() )
+        if ( !super.equals( o ) ) {
+            return false;
+        }
+    #end
+#end
 final $element.getName() that = ($element.getName())o;
     return #foreach( $property in $element.getProperties() )
         Objects.equals(${property.getPayloadName()}, that.${property.getPayloadName()})
