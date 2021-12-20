@@ -47,6 +47,11 @@ The following switches can be used in addition to the ones above to configure th
 | `--disable-jackson-annotations` or `-dja` | This option is to be used together with `-java` or
   `-static-java` and will lead to generated Java code that does not contain
   https://github.com/FasterXML/jackson[Jackson] Annotations.
+| `--execute-library-macros` or `-elm` | This option is used together with `-java` or `-static-java` and lead to generated Java code which includes the output from the custom macros provided via `-tlp` and `-tlfn`.
+| `--template-library-path` or `-tlp` | The path to the template file containing custom macros.
+It is used together with `-elm`.
+| `--template-library-file-name` or `-tlfn` | The name of the template file containing custom macros.
+It is used together with `-elm`.
 | `--use-semantic-api-version` or `-sv` | This option is used together with `-oapi-json` or `-oapi-yaml` in order to use
   the complete semantic version of the Aspect Model as the version of the Aspect API.
 | `--aspect-api-base-url` or `-base-url` | This option is used together with `-oapi-json` or `-oapi-yaml` to provide the
@@ -54,11 +59,6 @@ The following switches can be used in addition to the ones above to configure th
 | `--include-aspect-query-api` or `-query-api` | This option is used together with `-oapi-json` or `-oapi-yaml` to include
   the path for the Query Aspect API Endpoint in the OpenAPI specification.
 | `--aspect-exclude-paging` or `-no-paging` | This option is used to exclude the paging information in the OpenAPI specification. Paging is per default activated.
-| `--execute-library-macros` or `-elm` | This option is used together with `-java` or `-static-java` and lead to generated Java code which includes the output from the custom macros provided via `-tlp` and `-tlfn`.
-| `--template-library-path` or `-tlp` | The path to the template file containing custom macros.
-It is used together with `-elm`.
-| `--template-library-file-name` or `-tlfn` | The name of the template file containing custom macros.
-It is used together with `-elm`.
 | `--aspect-time-based-paging` or `-atbp` | This option is used to set the used paging strategy as time-based paging.
 | `--aspect-offset-based-paging` or `-aobp` | This option is used to set the used paging strategy as offset-based paging.
 | `--aspect-cursor-based-paging` or `-acbp` | This option is used to set the used paging strategy as cursor-based paging.
