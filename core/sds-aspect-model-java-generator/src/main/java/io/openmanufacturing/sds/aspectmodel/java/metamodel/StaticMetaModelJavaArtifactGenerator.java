@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -204,7 +205,11 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "valueInitializer", new ValueInitializer() )
             .build();
 
-      final String generatedSource = new TemplateEngine( context ).apply( "java-static-class" );
+      final Properties engineConfiguration = new Properties();
+      engineConfiguration.put( "velocimacro.library", config.getTemplateLibFileName() );
+      engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibPath() );
+
+      final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-static-class" );
       try {
          return new JavaArtifact( Roaster.format( generatedSource ), "Meta" + element.getName(),
                config.getPackageName() );

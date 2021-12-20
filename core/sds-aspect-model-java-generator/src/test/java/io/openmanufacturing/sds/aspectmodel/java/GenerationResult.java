@@ -41,6 +41,7 @@ import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.Statement;
@@ -365,5 +366,12 @@ class GenerationResult {
       ResolvedType getToResolve() {
          return toResolve;
       }
+   }
+
+   void assertCopyright( final String className, final String expectedCopyright ) {
+      final CompilationUnit compilationUnit = compilationUnits.get( className );
+      assertThat( compilationUnit.getComment() ).isPresent();
+      final Comment copyrightComment = compilationUnit.getComment().get();
+      assertThat( copyrightComment.toString() ).contains( expectedCopyright );
    }
 }

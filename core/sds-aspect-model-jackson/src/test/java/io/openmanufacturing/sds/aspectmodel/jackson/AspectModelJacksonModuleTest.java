@@ -236,7 +236,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectWithEitherWithComplexTypes( KnownVersion metaModelVersion ) throws Exception {
+   public void testAspectWithEitherWithComplexTypes( final KnownVersion metaModelVersion ) throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES, metaModelVersion );
       final Class<?> clazz = instance.getClass();
       final Field testProperty = clazz.getDeclaredField( "testProperty" );
@@ -280,7 +280,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
    }
 
    private Class<?> generatePojo( final Aspect aspect ) {
-      final AspectModelJavaGenerator codeGenerator = new AspectModelJavaGenerator( aspect, PACKAGE, true );
+      final AspectModelJavaGenerator codeGenerator = new AspectModelJavaGenerator( aspect, PACKAGE, true, false, "", "" );
       final Map<QualifiedName, ByteArrayOutputStream> outputs = new LinkedHashMap<>();
       codeGenerator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) );
 

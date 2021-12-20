@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,16 +38,12 @@ public class TemplateEngine implements UnaryOperator<String> {
     * Creates a new instance for the given context
     *
     * @param context the context, i.e. keys and values to inject into the templates
+    * @param engineConfiguration the configuration properties used to setup the {@link VelocityEngine}
     */
-   public TemplateEngine( final Map<String, Object> context ) {
-      this( context, new Properties() );
-   }
-
    public TemplateEngine( final Map<String, Object> context, final Properties engineConfiguration ) {
       this( new VelocityEngine(), context );
-      engine.setProperty( RuntimeConstants.RESOURCE_LOADER, "classpath" );
+      engine.setProperty( RuntimeConstants.RESOURCE_LOADERS, "classpath,file" );
       engine.setProperty( "classpath.resource.loader.class", ClasspathResourceLoader.class.getName() );
-      engine.setProperty( "velocimacro.library", "shared-macros.vm" );
       engine.setProperties( engineConfiguration );
       engine.init();
    }
