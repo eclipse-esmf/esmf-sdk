@@ -314,6 +314,22 @@ To use the generated static meta classes, you need the following additional depe
 
 include::sds-developer-guide:ROOT:partial$sds-aspect-static-meta-model-java-artifact.adoc[]
 
+==== Providing Custom Macros for Code Generation
+
+It is possible to change predefined sections of the generated classes by providing custom https://velocity.apache.org/[Velocity] template http://people.apache.org/~henning/velocity/html/ch07.html[macros].
+The custom macros must be defined in a single template file.
+The path to the template file as well as its name may be passed as arguments to the code generation, e.g. using the xref:bamm-cli.adoc#bamm-cli[BAMM-CLI].
+
+Custom macros may be provided for the following sections:
+
+[width="100%",options="header"]
+|===
+| Section | Macro Name | Default Macro Provided
+| Copyright Licence Header | copyrightHeader | {nok}
+|===
+
+NOTE: When using custom macros, macros for all sections above must be provided.
+
 [[migrate-meta-model-version]]
 == Programmatically migrate the Meta Model Version
 
