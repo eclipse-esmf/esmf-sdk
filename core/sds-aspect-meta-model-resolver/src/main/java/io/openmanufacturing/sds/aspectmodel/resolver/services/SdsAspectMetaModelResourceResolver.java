@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -109,9 +109,8 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
    @Override
    public Try<VersionedModel> mergeMetaModelIntoRawModel( final Model rawModel, final VersionNumber bammVersion ) {
       final Try<KnownVersion> bammKnownVersion = KnownVersion.fromVersionString( bammVersion.toString() )
-                                                             .map( Try::success )
-                                                             .orElse( Try.failure(
-                                                                   new UnsupportedVersionException( bammVersion ) ) );
+            .map( Try::success )
+            .orElse( Try.failure( new UnsupportedVersionException( bammVersion ) ) );
 
       return bammKnownVersion.flatMap( this::loadMetaModel ).map( metaModel -> {
          final Model model = deepCopy( rawModel );
@@ -167,15 +166,15 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
     */
    private Set<Tuple2<Statement, Statement>> determineBammUrlsToReplace( final Model model ) {
       return Streams.stream( model.listStatements( null, SH.jsLibraryURL, (RDFNode) null ) )
-                    .filter( statement -> statement.getObject().isLiteral() )
-                    .filter( statement -> statement.getObject().asLiteral().getString().startsWith( "bamm://" ) )
-                    .flatMap( statement -> rewriteBammUrl( statement.getObject().asLiteral().getString() )
-                          .stream()
-                          .map( newUrl ->
-                                ResourceFactory.createStatement( statement.getSubject(), statement.getPredicate(),
-                                      ResourceFactory.createTypedLiteral( newUrl, ExtendedXsdDataType.ANY_URI ) ) )
-                          .map( newStatement -> new Tuple2<>( statement, newStatement ) ) )
-                    .collect( Collectors.toSet() );
+            .filter( statement -> statement.getObject().isLiteral() )
+            .filter( statement -> statement.getObject().asLiteral().getString().startsWith( "bamm://" ) )
+            .flatMap( statement -> rewriteBammUrl( statement.getObject().asLiteral().getString() )
+                  .stream()
+                  .map( newUrl ->
+                        ResourceFactory.createStatement( statement.getSubject(), statement.getPredicate(),
+                              ResourceFactory.createTypedLiteral( newUrl, ExtendedXsdDataType.ANY_URI ) ) )
+                  .map( newStatement -> new Tuple2<>( statement, newStatement ) ) )
+            .collect( Collectors.toSet() );
    }
 
    /**
@@ -189,11 +188,16 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
     */
    private Optional<String> rewriteBammUrl( final String bammUrl ) {
       final Matcher matcher = Pattern.compile( "^bamm://([\\p{Alpha}-]*)/(\\d+\\.\\d+\\.\\d+)/(.*)$" )
-                                     .matcher( bammUrl );
+            .matcher( bammUrl );
       if ( matcher.find() ) {
          return KnownVersion.fromVersionString( matcher.group( 2 ) ).flatMap( metaModelVersion ->
-               MetaModelUrls.url( matcher.group( 1 ), metaModelVersion, matcher.group( 3 ) ) )
-                            .map( URL::toString );
+                     MetaModelUrls.url( matcher.group( 1 ), metaModelVersion, matcher.group( 3 ) ) )
+               .map( URL::toString );
+      }
+      if ( bammUrl.startsWith( "bamm://scripts/" ) ) {
+         final String resourcePath = bammUrl.replace( "bamm://", "bamm/" );
+         final URL resource = SdsAspectMetaModelResourceResolver.class.getClassLoader().getResource( resourcePath );
+         return Optional.ofNullable( resource ).map( URL::toString );
       }
       return Optional.empty();
    }
@@ -209,17 +213,16 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
       final String bammUrnStart = String.format( "%s:%s",
             AspectModelUrn.VALID_PROTOCOL, AspectModelUrn.VALID_NAMESPACE_IDENTIFIER );
       return model.listObjects()
-                  .toList()
-                  .stream()
-                  .filter( RDFNode::isURIResource )
-                  .map( RDFNode::asResource )
-                  .map( Resource::getURI )
-                  .filter( uri -> uri.startsWith( bammUrnStart ) )
-                  .flatMap( uri -> getAspectModelUrn( uri ).toJavaStream() )
-                  .filter( urn -> (urn.getElementType().equals( ElementType.META_MODEL )
-                        || urn.getElementType().equals( ElementType.CHARACTERISTIC )) )
-                  .map( AspectModelUrn::getVersion )
-                  .map( VersionNumber::parse )
-                  .collect( Collectors.toSet() );
+            .toList()
+            .stream()
+            .filter( RDFNode::isURIResource )
+            .map( RDFNode::asResource )
+            .map( Resource::getURI )
+            .filter( uri -> uri.startsWith( bammUrnStart ) )
+            .flatMap( uri -> getAspectModelUrn( uri ).toJavaStream() )
+            .filter( urn -> (urn.getElementType().equals( ElementType.META_MODEL ) || urn.getElementType().equals( ElementType.CHARACTERISTIC )) )
+            .map( AspectModelUrn::getVersion )
+            .map( VersionNumber::parse )
+            .collect( Collectors.toSet() );
    }
 }
