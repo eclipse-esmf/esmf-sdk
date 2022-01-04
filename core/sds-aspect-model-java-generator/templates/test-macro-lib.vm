@@ -12,6 +12,6 @@
  *#
 #macro( copyrightHeader )
 /*
-* Copyright (c) $currentYear.getValue() OMP Test GmbH. All rights reserved.
+* Copyright (c) $currentYear.getValue() OMP Test Inc. All rights reserved.
 */
 #end

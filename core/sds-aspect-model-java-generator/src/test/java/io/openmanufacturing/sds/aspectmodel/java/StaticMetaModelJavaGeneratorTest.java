@@ -618,7 +618,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
             templateLibPath, "test-macro-lib.vm" ) );
 
       final int currentYear = LocalDate.now().getYear();
-      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test GmbH. All rights reserved", currentYear );
+      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );
       result.assertCopyright( TestAspect.ASPECT_WITH_COMPLEX_ENUM.getName(), expectedCopyright );
       result.assertCopyright( "EvaluationResults", expectedCopyright );
       result.assertCopyright( "EvaluationResult", expectedCopyright );

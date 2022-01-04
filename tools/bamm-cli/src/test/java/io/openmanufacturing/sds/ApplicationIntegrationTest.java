@@ -336,7 +336,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
       final String templateLibPath = currentWorkingDirectory + "/../../core/sds-aspect-model-java-generator/templates";
       final int currentYear = LocalDate.now().getYear();
-      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test GmbH. All rights reserved", currentYear );
+      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );
 
       createValidArgsExecution( metaModelVersion, outputDir, "-java", "-elm", "-tlp", templateLibPath, "-tlfn", "test-macro-lib.vm" );
       final byte[] testAspectRaw = Files
@@ -374,7 +374,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
       final String templateLibPath = currentWorkingDirectory + "/../../core/sds-aspect-model-java-generator/templates";
       final int currentYear = LocalDate.now().getYear();
-      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test GmbH. All rights reserved", currentYear );
+      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );
 
       createValidArgsExecution( metaModelVersion, outputDir, "-static-java", "-elm", "-tlp", templateLibPath, "-tlfn", "test-macro-lib.vm" );
       final byte[] metaTestAspectRaw = Files
