@@ -1,6 +1,6 @@
 [source]
 ----
-#macro( copyrightHeader )
+#macro( fileHeader )
 /*
 * Copyright (c) $currentYear.getValue() OMP Test Inc. All rights reserved.
 */

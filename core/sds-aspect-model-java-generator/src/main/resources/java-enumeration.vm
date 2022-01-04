@@ -13,7 +13,7 @@
 #parse( "java-enumeration-class-body-lib.vm" )
 #set( $classBody = $util.applyImports( "#javaEnumerationClassBody()", $codeGenerationConfig ) )
 #if( $codeGenerationConfig.doExecuteLibraryMacros() )
-#copyrightHeader
+#fileHeader
 #end
 package $codeGenerationConfig.packageName;
 

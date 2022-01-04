@@ -10,7 +10,7 @@
  ~
  ~ SPDX-License-Identifier: MPL-2.0
  *#
-#macro( copyrightHeader )
+#macro( fileHeader )
 /*
 * Copyright (c) $currentYear.getValue() OMP Test Inc. All rights reserved.
 */

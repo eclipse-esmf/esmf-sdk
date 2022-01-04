@@ -325,7 +325,7 @@ Custom macros may be provided for the following sections:
 [width="100%",options="header"]
 |===
 | Section | Macro Name | Default Macro Provided
-| Copyright Licence Header | copyrightHeader | {nok}
+| Copyright Licence Header | fileHeader | {nok}
 |===
 
 NOTE: When using custom macros, macros for all sections above must be provided.

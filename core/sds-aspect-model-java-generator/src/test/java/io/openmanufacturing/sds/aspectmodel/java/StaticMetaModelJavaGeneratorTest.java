@@ -592,7 +592,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testGenerateStaticMetaModelWithoutCopyrightHeader( final KnownVersion metaModelVersion ) throws IOException {
+   public void testGenerateStaticMetaModelWithoutFileHeader( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       final CompilationUnit aspectClass = result.compilationUnits.get( TestAspect.ASPECT_WITH_COMPLEX_ENUM.getName() );
@@ -609,7 +609,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testGenerateAspectWithCopyrightHeader( final KnownVersion metaModelVersion ) throws IOException {
+   public void testGenerateAspectWithFileHeader( final KnownVersion metaModelVersion ) throws IOException {
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
       final String templateLibPath = currentWorkingDirectory + "/templates";
 

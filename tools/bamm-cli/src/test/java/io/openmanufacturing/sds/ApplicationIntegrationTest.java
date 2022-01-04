@@ -314,7 +314,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateJavaClassWithoutCopyright( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testGenerateJavaClassWithoutFileHeader( final KnownVersion metaModelVersion ) throws Throwable {
       final File outputDir = outputDirectory.toFile();
 
       createValidArgsExecution( metaModelVersion, outputDir, "-java" );
@@ -331,7 +331,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateJavaClassWithCopyright( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testGenerateJavaClassWithFileHeader( final KnownVersion metaModelVersion ) throws Throwable {
       final File outputDir = outputDirectory.toFile();
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
       final String templateLibPath = currentWorkingDirectory + "/../../core/sds-aspect-model-java-generator/templates";
@@ -352,7 +352,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticJavaClassWithoutCopyright( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testGenerateStaticJavaClassWithoutFileHeader( final KnownVersion metaModelVersion ) throws Throwable {
       final File outputDir = outputDirectory.toFile();
 
       createValidArgsExecution( metaModelVersion, outputDir, "-static-java" );
@@ -369,7 +369,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticJavaClassWithCopyright( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testGenerateStaticJavaClassWithFileHeader( final KnownVersion metaModelVersion ) throws Throwable {
       final File outputDir = outputDirectory.toFile();
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
       final String templateLibPath = currentWorkingDirectory + "/../../core/sds-aspect-model-java-generator/templates";
