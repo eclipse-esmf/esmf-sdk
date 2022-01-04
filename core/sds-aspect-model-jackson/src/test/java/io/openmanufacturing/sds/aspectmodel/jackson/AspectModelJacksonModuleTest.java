@@ -280,7 +280,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
    }
 
    private Class<?> generatePojo( final Aspect aspect ) {
-      final AspectModelJavaGenerator codeGenerator = new AspectModelJavaGenerator( aspect, PACKAGE, true, false, "", "" );
+      final AspectModelJavaGenerator codeGenerator = new AspectModelJavaGenerator( aspect, PACKAGE, true, false, null );
       final Map<QualifiedName, ByteArrayOutputStream> outputs = new LinkedHashMap<>();
       codeGenerator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) );
 

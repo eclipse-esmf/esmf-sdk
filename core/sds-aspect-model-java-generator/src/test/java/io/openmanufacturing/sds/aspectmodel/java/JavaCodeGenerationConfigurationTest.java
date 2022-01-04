@@ -15,38 +15,44 @@ package io.openmanufacturing.sds.aspectmodel.java;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 
+import java.io.File;
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.Test;
 
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
 
 public class JavaCodeGenerationConfigurationTest {
 
-   private final String templateLibPath = "/test";
-   private final String templateLibFileName = "test.vm";
+   final String currentWorkingDirectory = System.getProperty( "user.dir" );
+   private final File templateLibFile = Path.of( currentWorkingDirectory, "/templates", "/test-macro-lib.vm" ).toFile();
+   private final File emptyTemplateLibFile = Path.of( "" ).toFile();
+   private final File nonExistingTemplateLibPath = Path.of( "/templates", "/non-existing.vm" ).toFile();
 
    @Test
    public void testValidTemplateLibConfig() {
       assertThatCode( () ->
-            new JavaCodeGenerationConfig( true, "", true, templateLibPath, templateLibFileName )
+            new JavaCodeGenerationConfig( true, "", true, templateLibFile )
       ).doesNotThrowAnyException();
 
       assertThatCode( () ->
-            new JavaCodeGenerationConfig( true, "", false, "", "" )
+            new JavaCodeGenerationConfig( true, "", false, emptyTemplateLibFile )
       ).doesNotThrowAnyException();
    }
 
    @Test
-   public void testTemplateLibConfigMissingPath() {
+   public void testTemplateLibConfigMissingFile() {
       assertThatCode( () ->
-            new JavaCodeGenerationConfig( true, "", true, "", templateLibFileName )
+            new JavaCodeGenerationConfig( true, "", true, emptyTemplateLibFile )
       ).isExactlyInstanceOf( CodeGenerationException.class ).hasMessage( "Missing configuration. Please provide path to velocity template library file." );
    }
 
    @Test
-   public void testTemplateLibConfigMissingFileName() {
+   public void testTemplateLibConfigNonExistingFile() {
       assertThatCode( () ->
-            new JavaCodeGenerationConfig( true, "", true, templateLibPath, "" )
-      ).isExactlyInstanceOf( CodeGenerationException.class ).hasMessage( "Missing configuration. Please provide name for velocity template library file." );
+            new JavaCodeGenerationConfig( true, "", true, nonExistingTemplateLibPath )
+      ).isExactlyInstanceOf( CodeGenerationException.class )
+            .hasMessage( "Incorrect configuration. Please provide a valid path to the velocity template library file." );
    }
 
 }

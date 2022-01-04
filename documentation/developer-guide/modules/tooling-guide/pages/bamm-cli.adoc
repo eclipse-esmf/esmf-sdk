@@ -48,9 +48,7 @@ The following switches can be used in addition to the ones above to configure th
   `-static-java` and will lead to generated Java code that does not contain
   https://github.com/FasterXML/jackson[Jackson] Annotations.
 | `--execute-library-macros` or `-elm` | This option is used together with `-java` or `-static-java` and lead to generated Java code which includes the output from the custom macros provided via `-tlp` and `-tlfn`.
-| `--template-library-path` or `-tlp` | The path to the template file containing custom macros.
-It is used together with `-elm`.
-| `--template-library-file-name` or `-tlfn` | The name of the template file containing custom macros.
+| `--template-library-file` or `-tlf` | The path and name of the template file containing custom macros.
 It is used together with `-elm`.
 | `--use-semantic-api-version` or `-sv` | This option is used together with `-oapi-json` or `-oapi-yaml` in order to use
   the complete semantic version of the Aspect Model as the version of the Aspect API.

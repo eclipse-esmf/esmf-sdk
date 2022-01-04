@@ -15,9 +15,11 @@ package io.openmanufacturing.sds.aspectmodel.java;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,18 +62,18 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    private Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion metaModelVersion, final String customJavaPackageName ) {
       final VersionedModel model = TestResources.getModel( aspect, metaModelVersion ).get();
       return List.of(
-            new AspectModelJavaGenerator( model, customJavaPackageName, true, false, "", "" ) );
+            new AspectModelJavaGenerator( model, customJavaPackageName, true, false, null ) );
    }
 
    private Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion metaModelVersion, final boolean enableJacksonAnnotations,
-         final boolean executeLibraryMacros, final String templateLibPath, final String templateLibFileName ) {
+         final boolean executeLibraryMacros, final File templateLibPath ) {
       final VersionedModel model = TestResources.getModel( aspect, metaModelVersion ).get();
-      return List.of( new AspectModelJavaGenerator( model, enableJacksonAnnotations, executeLibraryMacros, templateLibPath, templateLibFileName ) );
+      return List.of( new AspectModelJavaGenerator( model, enableJacksonAnnotations, executeLibraryMacros, templateLibPath ) );
    }
 
    private Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion metaModelVersion ) {
       final VersionedModel model = TestResources.getModel( aspect, metaModelVersion ).get();
-      return List.of( new AspectModelJavaGenerator( model, true, false, "", "" ) );
+      return List.of( new AspectModelJavaGenerator( model, true, false, null ) );
    }
 
    /**
@@ -232,7 +234,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY;
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion,
-            true, false, "", "" ) );
+            true, false, null ) );
 
       final List<ConstructorDeclaration> constructorDeclarations = result.compilationUnits.get( "EvaluationResult" )
             .findAll( ConstructorDeclaration.class );
@@ -277,7 +279,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINTS;
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion,
-            true, false, "", "" ) );
+            true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
@@ -331,7 +333,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXCLUSIVE_RANGE_CONSTRAINT;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, true, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithExclusiveRangeConstraint", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
@@ -376,7 +379,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .put( "testBoolean", Boolean.class.getSimpleName() ).build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, true, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithBoolean", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder().put( "testBoolean", "@NotNull" ).build() );
@@ -391,7 +395,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, true, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithBinary", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder().put( "testBinary",
@@ -487,7 +492,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_ON_MULTIPLE_LEVELS;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, false, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, false, false, null ) );
       result.assertNumberOfFiles( 4 );
       result.assertFields( "AspectWithMultipleEntitiesOnMultipleLevels", expectedFieldsForAspectClass, new HashMap<>() );
       result.assertConstructor( "AspectWithMultipleEntitiesOnMultipleLevels", expectedFieldsForAspectClass, new HashMap<>() );
@@ -585,7 +591,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_FIXED_POINT;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, true, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, true, false, null ) );
       result.assertNumberOfFiles( 1 );
 
       result.assertFields( "AspectWithFixedPoint", expectedFieldsForAspectClass, expectedAnnotations );
@@ -635,7 +642,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_LIST_AND_ELEMENT_CONSTRAINT;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, true, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithListAndElementConstraint", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithListAndElementConstraint", expectedFieldsForAspectClass );
@@ -704,7 +712,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_DURATION_TYPE_FOR_RANGE_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, true, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithDurationTypeForRangeConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
@@ -731,7 +740,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_DATE_TIME_TYPE_FOR_RANGE_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, true, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithDateTimeTypeForRangeConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
@@ -758,7 +768,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, true, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, true, false, null ) );
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithGTypeForRangeConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
@@ -879,7 +890,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_ABSTRACT_ENTITY;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, true, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, true, false, null ) );
       result.assertNumberOfFiles( 3 );
       result.assertFields( "AspectWithAbstractEntity", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithAbstractEntity", expectedFieldsForAspectClass );
@@ -918,7 +930,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY;
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, true, false, "", "" ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, true, false, null ) );
       result.assertNumberOfFiles( 3 );
       result.assertFields( "AspectWithCollectionWithAbstractEntity", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithCollectionWithAbstractEntity", expectedFieldsForAspectClass );
@@ -1036,12 +1049,11 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "versionsStartingWith2_0_0" )
    public void testGenerateAspectWithFileHeader( final KnownVersion metaModelVersion ) throws IOException {
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
-      final String templateLibPath = currentWorkingDirectory + "/templates";
+      final File templateLibFile = Path.of( currentWorkingDirectory, "/templates", "/test-macro-lib.vm" ).toFile();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM;
       final GenerationResult result = TestContext.generateAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion, false, true, templateLibPath,
-                  "test-macro-lib.vm" ) );
+            .apply( getGenerators( aspect, metaModelVersion, false, true, templateLibFile ) );
 
       final int currentYear = LocalDate.now().getYear();
       final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );

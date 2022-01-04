@@ -97,8 +97,10 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .build();
 
       final Properties engineConfiguration = new Properties();
-      engineConfiguration.put( "velocimacro.library", config.getTemplateLibFileName() );
-      engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibPath() );
+      if ( config.doExecuteLibraryMacros() ) {
+         engineConfiguration.put( "velocimacro.library", config.getTemplateLibFile().getName() );
+         engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibFile().getParent() );
+      }
 
       final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-pojo" );
       try {

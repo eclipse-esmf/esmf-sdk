@@ -68,8 +68,10 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
 
       try {
          final Properties engineConfiguration = new Properties();
-         engineConfiguration.put( "velocimacro.library", config.getTemplateLibFileName() );
-         engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibPath() );
+         if ( config.doExecuteLibraryMacros() ) {
+            engineConfiguration.put( "velocimacro.library", config.getTemplateLibFile().getName() );
+            engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibFile().getParent() );
+         }
 
          final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-enumeration" );
          return new JavaArtifact( Roaster.format( generatedSource ), element.getName(),

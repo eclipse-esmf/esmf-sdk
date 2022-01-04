@@ -334,11 +334,11 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    public void testGenerateJavaClassWithFileHeader( final KnownVersion metaModelVersion ) throws Throwable {
       final File outputDir = outputDirectory.toFile();
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
-      final String templateLibPath = currentWorkingDirectory + "/../../core/sds-aspect-model-java-generator/templates";
+      final String templateLibFile = currentWorkingDirectory + "/../../core/sds-aspect-model-java-generator/templates/test-macro-lib.vm";
       final int currentYear = LocalDate.now().getYear();
       final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );
 
-      createValidArgsExecution( metaModelVersion, outputDir, "-java", "-elm", "-tlp", templateLibPath, "-tlfn", "test-macro-lib.vm" );
+      createValidArgsExecution( metaModelVersion, outputDir, "-java", "-elm", "-tlf", templateLibFile );
       final byte[] testAspectRaw = Files
             .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/test/AspectWithEntity.java" ) );
       final String testAspect = new String( testAspectRaw );
@@ -372,11 +372,11 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    public void testGenerateStaticJavaClassWithFileHeader( final KnownVersion metaModelVersion ) throws Throwable {
       final File outputDir = outputDirectory.toFile();
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
-      final String templateLibPath = currentWorkingDirectory + "/../../core/sds-aspect-model-java-generator/templates";
+      final String templateLibFile = currentWorkingDirectory + "/../../core/sds-aspect-model-java-generator/templates/test-macro-lib.vm";
       final int currentYear = LocalDate.now().getYear();
       final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );
 
-      createValidArgsExecution( metaModelVersion, outputDir, "-static-java", "-elm", "-tlp", templateLibPath, "-tlfn", "test-macro-lib.vm" );
+      createValidArgsExecution( metaModelVersion, outputDir, "-static-java", "-elm", "-tlf", templateLibFile );
       final byte[] metaTestAspectRaw = Files
             .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/test/MetaAspectWithEntity.java" ) );
       final String metaTestAspect = new String( metaTestAspectRaw );

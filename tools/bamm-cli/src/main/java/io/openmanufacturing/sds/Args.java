@@ -137,11 +137,7 @@ public class Args {
          description = "Execute the macros provided in the velocity macro library." )
    public boolean executeLibraryMacros = false;
 
-   @Parameter( names = { "--template-library-path", "-tlp" },
-         description = "The resource path for the velocity macro library." )
-   public String templateLibPath = "";
-
-   @Parameter( names = { "--template-library-file-name", "-tlfn" },
-         description = "The name of the velocity template file containing the macro library." )
-   public String templateLibFileName = "";
+   @Parameter( names = { "--template-library-file", "-tlf" },
+         description = "The path and name of the velocity template file containing the macro library." )
+   public String templateLibFile = "";
 }

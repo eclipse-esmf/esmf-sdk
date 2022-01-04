@@ -12,6 +12,7 @@
  */
 package io.openmanufacturing.sds.aspectmodel.java.pojo;
 
+import java.io.File;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -32,29 +33,26 @@ import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
  */
 public class AspectModelJavaGenerator extends JavaGenerator {
    public AspectModelJavaGenerator( final Aspect aspect, final boolean enableJacksonAnnotations, final boolean executeLibraryMacros,
-         final String templateLibPath, final String templateLibFileName ) {
+         final File templateLibFile ) {
       this( aspect, aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace )
-                  .orElseThrow( () -> new CodeGenerationException(
-                        "An Aspect may not be defined as an anonymous node" ) ), enableJacksonAnnotations, executeLibraryMacros, templateLibPath,
-            templateLibFileName );
+            .orElseThrow( () -> new CodeGenerationException(
+                  "An Aspect may not be defined as an anonymous node" ) ), enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
    }
 
    public AspectModelJavaGenerator( final Aspect aspect, final String javaPackagename, final boolean enableJacksonAnnotations,
          final boolean executeLibraryMacros,
-         final String templateLibPath, final String templateLibFileName ) {
-      super( aspect, new JavaCodeGenerationConfig( enableJacksonAnnotations, javaPackagename, executeLibraryMacros, templateLibPath, templateLibFileName ) );
+         final File templateLibFile ) {
+      super( aspect, new JavaCodeGenerationConfig( enableJacksonAnnotations, javaPackagename, executeLibraryMacros, templateLibFile ) );
    }
 
    public AspectModelJavaGenerator( final VersionedModel versionedModel, final boolean enableJacksonAnnotations, final boolean executeLibraryMacros,
-         final String templateLibPath, final String templateLibFileName ) {
-      this( AspectModelLoader.fromVersionedModelUnchecked( versionedModel ), enableJacksonAnnotations, executeLibraryMacros, templateLibPath,
-            templateLibFileName );
+         final File templateLibFile ) {
+      this( AspectModelLoader.fromVersionedModelUnchecked( versionedModel ), enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
    }
 
    public AspectModelJavaGenerator( final VersionedModel versionedModel, final String javaPackageName, final boolean enableJacksonAnnotations,
-         final boolean executeLibraryMacros, final String templateLibPath, final String templateLibFileName ) {
-      this( AspectModelLoader.fromVersionedModelUnchecked( versionedModel ), javaPackageName, enableJacksonAnnotations, executeLibraryMacros, templateLibPath,
-            templateLibFileName );
+         final boolean executeLibraryMacros, final File templateLibFile ) {
+      this( AspectModelLoader.fromVersionedModelUnchecked( versionedModel ), javaPackageName, enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
    }
 
    @Override

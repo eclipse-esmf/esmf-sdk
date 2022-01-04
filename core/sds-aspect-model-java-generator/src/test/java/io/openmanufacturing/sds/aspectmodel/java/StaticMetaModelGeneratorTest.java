@@ -13,6 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.java;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,19 +28,17 @@ import io.openmanufacturing.sds.test.TestResources;
 abstract class StaticMetaModelGeneratorTest extends MetaModelVersions {
 
    Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion version, final boolean executeLibraryMacros,
-         final String templateLibPath, final String templateLibFileName ) {
+         final File templateLibFile ) {
       final VersionedModel model = TestResources.getModel( aspect, version ).get();
-      final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( model, false, executeLibraryMacros, templateLibPath,
-            templateLibFileName );
-      final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( model, executeLibraryMacros, templateLibPath,
-            templateLibFileName );
+      final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( model, false, executeLibraryMacros, templateLibFile );
+      final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( model, executeLibraryMacros, templateLibFile );
       return List.of( pojoGenerator, staticGenerator );
    }
 
    Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion version ) {
       final VersionedModel model = TestResources.getModel( aspect, version ).get();
-      final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( model, false, false, "", "" );
-      final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( model, false, "", "" );
+      final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( model, false, false, null );
+      final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( model, false, null );
       return List.of( pojoGenerator, staticGenerator );
    }
 }

@@ -13,6 +13,8 @@
 
 package io.openmanufacturing.sds.aspectmodel.java;
 
+import java.io.File;
+
 import io.openmanufacturing.sds.aspectmodel.generator.GenerationConfig;
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
 
@@ -24,27 +26,25 @@ public class JavaCodeGenerationConfig implements GenerationConfig {
    private final String packageName;
    private final ImportTracker importTracker;
    private final boolean executeLibraryMacros;
-   private final String templateLibPath;
-   private final String templateLibFileName;
+   private final File templateLibFile;
 
    public JavaCodeGenerationConfig( final boolean enableJacksonAnnotations, final String packageName, final boolean executeLibraryMacros,
-         final String templateLibPath, final String templateLibFileName ) {
+         final File templateLibFile ) {
       this.enableJacksonAnnotations = enableJacksonAnnotations;
       this.packageName = packageName;
       importTracker = new ImportTracker();
 
-      validateTemplateLibConfig( executeLibraryMacros, templateLibPath, templateLibFileName );
+      validateTemplateLibConfig( executeLibraryMacros, templateLibFile );
       this.executeLibraryMacros = executeLibraryMacros;
-      this.templateLibPath = templateLibPath;
-      this.templateLibFileName = templateLibFileName;
+      this.templateLibFile = templateLibFile;
    }
 
-   private void validateTemplateLibConfig( final boolean executeLibraryMacros, final String templateLibPath, final String templateLibFileName ) {
-      if ( executeLibraryMacros && templateLibPath.isEmpty() ) {
+   private void validateTemplateLibConfig( final boolean executeLibraryMacros, final File templateLibFile ) {
+      if ( executeLibraryMacros && ( templateLibFile == null || templateLibFile.toString().isEmpty() ) ) {
          throw new CodeGenerationException( "Missing configuration. Please provide path to velocity template library file." );
       }
-      if ( executeLibraryMacros && templateLibFileName.isEmpty() ) {
-         throw new CodeGenerationException( "Missing configuration. Please provide name for velocity template library file." );
+      if ( executeLibraryMacros && !templateLibFile.exists() ) {
+         throw new CodeGenerationException( "Incorrect configuration. Please provide a valid path to the velocity template library file." );
       }
    }
 
@@ -70,7 +70,7 @@ public class JavaCodeGenerationConfig implements GenerationConfig {
    }
 
    /**
-    * @return a boolean indicating whether the library macros defined in the {@link #templateLibFileName} file will be executed during the code generation.
+    * @return a boolean indicating whether the library macros defined in the {@link #templateLibFile} file will be executed during the code generation.
     */
    public boolean doExecuteLibraryMacros() {
       return executeLibraryMacros;
@@ -79,14 +79,7 @@ public class JavaCodeGenerationConfig implements GenerationConfig {
    /**
     * @return the path from where the file containing the library macros is to be retrieved.
     */
-   public String getTemplateLibPath() {
-      return templateLibPath;
-   }
-
-   /**
-    * @return the name of the file which contains the library macros to be executed during the code generation.
-    */
-   public String getTemplateLibFileName() {
-      return templateLibFileName;
+   public File getTemplateLibFile() {
+      return templateLibFile;
    }
 }

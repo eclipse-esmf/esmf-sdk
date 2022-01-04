@@ -15,9 +15,11 @@ package io.openmanufacturing.sds.aspectmodel.java;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -611,11 +613,11 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
    @MethodSource( value = "versionsStartingWith2_0_0" )
    public void testGenerateAspectWithFileHeader( final KnownVersion metaModelVersion ) throws IOException {
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
-      final String templateLibPath = currentWorkingDirectory + "/templates";
+      final File templateLibFile = Path.of( currentWorkingDirectory, "/templates", "/test-macro-lib.vm" ).toFile();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion, true,
-            templateLibPath, "test-macro-lib.vm" ) );
+            templateLibFile ) );
 
       final int currentYear = LocalDate.now().getYear();
       final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );

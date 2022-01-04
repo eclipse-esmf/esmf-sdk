@@ -354,12 +354,8 @@ public class BammCli {
     }
 	
 	private static void validateVelocityTemplateMacroFilePathAndName( final Args args ) {
-      if ( args.executeLibraryMacros && args.templateLibPath.isEmpty() ) {
+      if ( args.executeLibraryMacros && args.templateLibFile.isEmpty() ) {
          LOG.error( "Missing configuration. Path to velocity template library file must be provided." );
-         System.exit( 1 );
-      }
-      if ( args.executeLibraryMacros && args.templateLibFileName.isEmpty() ) {
-         LOG.error( "Missing configuration. Please provide name for velocity template library file." );
          System.exit( 1 );
       }
    }
@@ -384,10 +380,10 @@ public class BammCli {
       final VersionedModel model = loadModelOrFail( args );
 
       final boolean enableJacksonAnnotations = !args.disableJacksonAnnotations;
+      final File templateLibFile = Path.of( args.templateLibFile ).toFile();
       final AspectModelJavaGenerator aspectModelJavaGenerator = args.packageName.isEmpty() ?
-            new AspectModelJavaGenerator( model, enableJacksonAnnotations, args.executeLibraryMacros, args.templateLibPath, args.templateLibFileName ) :
-            new AspectModelJavaGenerator( model, args.packageName, enableJacksonAnnotations, args.executeLibraryMacros, args.templateLibPath,
-                  args.templateLibFileName );
+            new AspectModelJavaGenerator( model, enableJacksonAnnotations, args.executeLibraryMacros, templateLibFile ) :
+            new AspectModelJavaGenerator( model, args.packageName, enableJacksonAnnotations, args.executeLibraryMacros, templateLibFile);
 
       aspectModelJavaGenerator.generate( artifact -> {
          final String path = artifact.getPackageName();
@@ -399,9 +395,10 @@ public class BammCli {
 
     private static void generateStaticMetaModelJavaClasses( final Args args ) {
       final VersionedModel model = loadModelOrFail( args );
+       final File templateLibFile = Path.of( args.templateLibFile ).toFile();
       final StaticMetaModelJavaGenerator staticMetaModelJavaGenerator = args.packageName.isEmpty() ?
-            new StaticMetaModelJavaGenerator( model, args.executeLibraryMacros, args.templateLibPath, args.templateLibFileName ) :
-            new StaticMetaModelJavaGenerator( model, args.packageName, args.executeLibraryMacros, args.templateLibPath, args.templateLibFileName );
+            new StaticMetaModelJavaGenerator( model, args.executeLibraryMacros, templateLibFile ) :
+            new StaticMetaModelJavaGenerator( model, args.packageName, args.executeLibraryMacros, templateLibFile );
       staticMetaModelJavaGenerator.generate( artifact -> {
          final String path = artifact.getPackageName();
          final String fileName = artifact.getClassName();
