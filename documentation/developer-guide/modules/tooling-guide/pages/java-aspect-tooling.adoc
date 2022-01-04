@@ -330,6 +330,10 @@ Custom macros may be provided for the following sections:
 
 NOTE: When using custom macros, macros for all sections above must be provided.
 
+Example:
+
+include::sds-developer-guide:ROOT:partial$sample-file-header-template.adoc[]
+
 [[migrate-meta-model-version]]
 == Programmatically migrate the Meta Model Version
 
