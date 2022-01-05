@@ -12,7 +12,9 @@
  *#
 #parse( "java-pojo-class-body-lib.vm" )
 #set( $classBody = $util.applyImports( "#javaPojoClassBody()", $codeGenerationConfig ) )
-#copyrightHeader
+#if( $codeGenerationConfig.doExecuteLibraryMacros() )
+#fileHeader
+#end
 package $codeGenerationConfig.getPackageName();
 
 #foreach( $import in $codeGenerationConfig.getImportTracker().getUsedImportsWithoutJavaLang() )

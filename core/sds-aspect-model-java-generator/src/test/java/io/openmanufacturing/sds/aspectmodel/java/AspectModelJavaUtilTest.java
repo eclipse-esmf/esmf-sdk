@@ -41,7 +41,7 @@ public class AspectModelJavaUtilTest extends PropertyBasedTest {
 
    @Property
    public boolean generatedEnumKeysAreValidJavaIdentifiers( @ForAll( "anyValidTypeValuePair" ) final Tuple.Tuple2<Type, Object> tuple ) {
-      final JavaCodeGenerationConfig codeGenerationConfig = new JavaCodeGenerationConfig( true, "" );
+      final JavaCodeGenerationConfig codeGenerationConfig = new JavaCodeGenerationConfig( true, "", false, null );
       final String result = generateEnumKey( Optional.of( tuple.get1() ), tuple.get2(), codeGenerationConfig );
       return isValidJavaIdentifier( result );
    }

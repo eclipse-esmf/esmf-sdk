@@ -17,6 +17,7 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,7 +96,13 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .put( "StringUtils", StringUtils.class )
             .build();
 
-      final String generatedSource = new TemplateEngine( context ).apply( "java-pojo" );
+      final Properties engineConfiguration = new Properties();
+      if ( config.doExecuteLibraryMacros() ) {
+         engineConfiguration.put( "velocimacro.library", config.getTemplateLibFile().getName() );
+         engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibFile().getParent() );
+      }
+
+      final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-pojo" );
       try {
          return new JavaArtifact( Roaster.format( generatedSource ), element.getName(),
                config.getPackageName() );
