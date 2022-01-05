@@ -89,8 +89,9 @@
       <spring-boot-version>2.5.5</spring-boot-version>
       <system-lambda-version>1.2.0</system-lambda-version>
       <vavr-version>0.10.3</vavr-version>
+      <!-- TODO remember to update the link to the Velocity engine user guide in the 'java-aspect-tooling.adoc' page -->
       <velocity-version>2.2</velocity-version>
-       
+
       <!-- Versions of plugins -->
       <jacoco-maven-plugin-version>0.8.7</jacoco-maven-plugin-version>
       <maven-clean-plugin-version>3.1.0</maven-clean-plugin-version>

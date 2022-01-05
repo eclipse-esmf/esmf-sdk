@@ -316,7 +316,7 @@ include::sds-developer-guide:ROOT:partial$sds-aspect-static-meta-model-java-arti
 
 ==== Providing Custom Macros for Code Generation
 
-It is possible to change predefined sections of the generated classes by providing custom https://velocity.apache.org/[Velocity] template http://people.apache.org/~henning/velocity/html/ch07.html[macros].
+It is possible to change predefined sections of the generated classes by providing custom https://velocity.apache.org/[Velocity] templates; see the https://velocity.apache.org/engine/1.7/user-guide.html[Velocity User Guide] for more information.
 The custom macros must be defined in a single template file.
 The path to the template file as well as its name may be passed as arguments to the code generation, e.g. using the xref:bamm-cli.adoc#bamm-cli[BAMM-CLI].
 
