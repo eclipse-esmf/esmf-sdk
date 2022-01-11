@@ -13,7 +13,7 @@ respective subsection), _or_ you can use the `aspect-model-starter` artifact tha
 include::sds-developer-guide:ROOT:partial$sds-aspect-model-starter-artifact.adoc[]
 
 The error handling in many APIs is done using the
-`https://javadoc.io/doc/io.vavr/vavr/0.9.2/io/vavr/control/Try.html[Try]` type provided by the Java library _Vavr_. This
+`https://javadoc.io/doc/io.vavr/vavr/0.10.3/io/vavr/control/Try.html[Try]` type provided by the Java library _Vavr_. This
 is similar to a `java.lang.Optional` in that a successful result can be processed using `.map()` or `.flatMap()`, but if
 an error occurs, the object can also provide the original exception. Compared with throwing exceptions, using a `Try<T>`
 as a return type instead has the advantage of enabling composable and better readable code. Please see the

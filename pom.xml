@@ -90,7 +90,7 @@
         <spring-boot-version>2.5.5</spring-boot-version>
         <system-lambda-version>1.2.0</system-lambda-version>
         <vavr-version>0.10.3</vavr-version>
-        <velocity-version>2.2</velocity-version>
+        <velocity-version>2.3</velocity-version>
 
         <!-- Versions of plugins -->
         <jacoco-maven-plugin-version>0.8.7</jacoco-maven-plugin-version>
