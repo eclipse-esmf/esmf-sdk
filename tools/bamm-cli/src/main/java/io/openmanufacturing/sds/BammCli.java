@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import io.openmanufacturing.sds.aspectmodel.aas.AspectModelAASGenerator;
 import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import io.openmanufacturing.sds.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
 import io.openmanufacturing.sds.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
@@ -133,6 +134,7 @@ public class BammCli {
         performJsonPayloadGeneration(args);
         performJsonSchemaGeneration(args);
         performOpenApiSpecGeneration(args);
+        performAasAasxSpecGeneration(args);
         performDiagramGeneration(args);
         performAspectModelJavaGeneration(args);
         performStaticMetaModelJavaGeneration(args);
@@ -185,6 +187,12 @@ public class BammCli {
         }
         if (args.generateYamlOpenApiSpec) {
             generateOpenApiSpecYaml(args);
+        }
+    }
+
+    private static void performAasAasxSpecGeneration(final Args args) throws IOException {
+        if (args.generateAasAasxSpec) {
+            generateAasAasxSpec(args);
         }
     }
 
@@ -417,6 +425,12 @@ public class BammCli {
         final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
                 loadModelOrFail(args));
         generator.generateJsonPretty(name -> getStreamForFile(name + ".json", args));
+    }
+
+    private static void generateAasAasxSpec(final Args args) throws IOException {
+        final AspectModelAASGenerator generator = new AspectModelAASGenerator();
+        final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked(loadModelOrFail(args));
+        generator.generateAASXFile(aspect, name -> getStreamForFile(name + ".aasx", args));
     }
 
     private static void generateOpenApiSpecYaml(final Args args) {

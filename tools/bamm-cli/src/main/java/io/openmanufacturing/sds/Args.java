@@ -57,6 +57,10 @@ public class Args {
                description = "Generate OpenAPI YAML specification for an Aspect Model" )
    public boolean generateYamlOpenApiSpec = false;
 
+   @Parameter( names = { "--generate-aas-aasx", "-aas-aasx" },
+           description = "Generate Asset Administration Shell Submodel template in AASX format for an Aspect Model" )
+   public boolean generateAasAasxSpec = false;
+
    @Parameter( names = { "--generate-java-classes", "-java" },
                description = "Generate Java domain classes for an Aspect Model" )
    public boolean generateAspectModelJavaClasses = false;
