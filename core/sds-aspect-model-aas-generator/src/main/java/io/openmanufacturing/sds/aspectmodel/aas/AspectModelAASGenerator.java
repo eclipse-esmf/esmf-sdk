@@ -22,7 +22,7 @@ import java.io.*;
 import java.util.function.Function;
 
 /**
- * Generator that generates a AASX file containing a AAS submodel for a given Aspect model
+ * Generator that generates an AASX file containing an AAS submodel for a given Aspect model
  */
 public class AspectModelAASGenerator {
 
@@ -35,10 +35,7 @@ public class AspectModelAASGenerator {
 
    public ByteArrayOutputStream generateOutput (Aspect aspect) throws IOException {
       final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
-
-      AssetAdministrationShellEnvironment environment = new DefaultAssetAdministrationShellEnvironment.Builder().
-              submodels(visitor.visitAspect( aspect, null ))
-              .build();
+      AssetAdministrationShellEnvironment environment = visitor.visitAspect( aspect, null );
 
       try (ByteArrayOutputStream out = new ByteArrayOutputStream();) {
          new AASXSerializer().write(environment, null, out);

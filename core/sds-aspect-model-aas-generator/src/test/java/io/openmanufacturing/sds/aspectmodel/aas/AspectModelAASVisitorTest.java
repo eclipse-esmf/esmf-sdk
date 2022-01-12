@@ -1,6 +1,6 @@
 package io.openmanufacturing.sds.aspectmodel.aas;
 
-import io.adminshell.aas.v3.model.Submodel;
+import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.VersionNumber;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
@@ -10,9 +10,6 @@ import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
 import org.apache.jena.rdf.model.Model;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class AspectModelAASVisitorTest {
 
@@ -29,6 +26,6 @@ class AspectModelAASVisitorTest {
         Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked(versionedModel);
 
         AspectModelAASVisitor visitor = new AspectModelAASVisitor();
-        Submodel submodel = visitor.visitAspect(aspect, null);
+        AssetAdministrationShellEnvironment environment = visitor.visitAspect(aspect, null);
     }
 }

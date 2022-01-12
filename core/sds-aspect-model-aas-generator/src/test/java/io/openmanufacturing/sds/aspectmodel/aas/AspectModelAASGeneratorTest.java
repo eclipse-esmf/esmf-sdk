@@ -41,10 +41,9 @@ class AspectModelAASGeneratorTest {
 
         ByteArrayOutputStream out = generator.generateOutput(aspect);
         validateAASX(out);
-
     }
 
-    // TODO adjust taken from java-serializer AAS lib
+    // TODO adjust, taken from java-serializer AAS lib
     private void validateAASX(ByteArrayOutputStream byteStream) throws IOException {
         ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(byteStream.toByteArray()));
         ZipEntry zipEntry = null;
