@@ -25,109 +25,203 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationShellEnvironment, Base> {
+public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationShellEnvironment, Context> {
 
    public static final String UNKNOWN_TYPE = "Unknown";
    private static final String UNKNOWN_URN = UNKNOWN_TYPE;
 
 
-   private final Submodel submodel;
-   private final AssetAdministrationShellEnvironment environment;
-
-   public AspectModelAASVisitor() {
-      this(new DefaultAssetAdministrationShellEnvironment.Builder().build());
-   }
-
-   public AspectModelAASVisitor (final AssetAdministrationShellEnvironment environment) {
-      this.environment = environment;
-      this.submodel = new DefaultSubmodel.Builder().build();
+   @Override
+   public AssetAdministrationShellEnvironment visitBase( final Base base, Context context ) {
+      return new DefaultAssetAdministrationShellEnvironment.Builder().build();
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitBase( final Base base, final Base context ) {
-      return environment;
+   public AssetAdministrationShellEnvironment visitAspect( final Aspect aspect, Context context ) {
+
+      if(context == null){
+         Submodel submodel = new DefaultSubmodel.Builder().build();
+         AssetAdministrationShellEnvironment environment = new DefaultAssetAdministrationShellEnvironment.Builder()
+                 .submodels(submodel).build();
+         context = new Context(environment, submodel);
+      }
+
+      Submodel submodel = (Submodel) context.getOfInterest();
+
+       submodel.setIdShort(aspect.getName());
+       submodel.setIdentification(extractIdentifier(aspect));
+       submodel.setDescriptions(map(aspect.getDescriptions()));
+       submodel.setKind(ModelingKind.TEMPLATE);
+
+      visitProperties(aspect.getProperties(), context);
+      visitOperations(aspect.getOperations(), context);
+
+      return context.getEnvironment();
    }
 
-   @Override
-   public AssetAdministrationShellEnvironment visitAspect( final Aspect aspect, final Base context ) {
-      // bamm:Aspect/name -> aas:Submodel/idShort
-      submodel.setIdShort(aspect.getName());
-
-      // urn of bamm aspect model -> aas:Submodel/semanticId (optional)
-      // TODO to be clarified if this mapping is ok
-      submodel.setIdentification( extractIdentifier(aspect) );
-
-      // bamm:Aspect/description -> aas:Submodel/description
-      submodel.setDescriptions(map(aspect.getDescriptions()));
-
-      // bamm:Aspect/properties -> aas:Submodel/submodelElements
-      visitProperties( aspect.getProperties() );
-
-      // bamm:Aspect/operations ->aas:Submodel/submodelElement
-      visitOperations( aspect.getOperations() );
-
-      //aspect.getOperations().stream().map( operation -> operation.accept( this, aspect ) ).forEach( this::merge );
-
-      return environment;
+   public AssetAdministrationShellEnvironment visitOperation(final io.openmanufacturing.sds.metamodel.Operation operation, Context context ) {
+      return visitBase( operation, context );
    }
 
-   private void visitOperations(final List<io.openmanufacturing.sds.metamodel.Operation> elements){
+
+   private void visitOperations(final List<io.openmanufacturing.sds.metamodel.Operation> elements, Context context){
       final List<SubmodelElement> subModelElements =
               Stream.ofAll( elements )
                       .map( this::map )
                       .collect( Collectors.toList() );
 
-      submodel.setSubmodelElements(subModelElements);
+      ((Submodel) context.getOfInterest()).setSubmodelElements(subModelElements);
    }
 
-   private void visitProperties(final List<io.openmanufacturing.sds.metamodel.Property>  elements) {
+   private void visitProperties(final List<Property> elements, Context context) {
       final List<SubmodelElement> subModelElements =
             Stream.ofAll( elements )
-                    .map(this::map)
+                    .map(i -> {createConceptDescription(i, context); return map(i); })
                     .collect(Collectors.toList());
 
-      final List<ConceptDescription> conceptDescriptions =
-              Stream.ofAll(elements )
-                      .map(this::createConceptDescription)
-                      .collect(Collectors.toList());
-
       // Hint: As the AAS Meta Model Implementation exposes the internal data structure where the elements
-      // of a collection are stored just setting it would overwrite previous entries. Hence this approach.
-      submodel.getSubmodelElements().addAll(subModelElements);
-      environment.getConceptDescriptions().addAll(conceptDescriptions);
+      // of a collection are stored, just setting it would overwrite previous entries. Hence this approach.
+      ((Submodel)context.getOfInterest()).getSubmodelElements().addAll(subModelElements);
    }
 
    private SubmodelElement map(Property property) {
-      // TODO add decision logic on what kind of property is to be used
-      return new DefaultProperty.Builder()
+      io.adminshell.aas.v3.model.Property aasProperty = new DefaultProperty.Builder()
               .idShort(property.getName())
               .valueType(property.getCharacteristic().getDataType().isPresent() ?
                       mapType(property.getCharacteristic().getDataType().get()) : UNKNOWN_TYPE)
               .displayNames(map(property.getPreferredNames()))
               .value(property.getExampleValue().get().toString())
               .descriptions(map(property.getDescriptions()))
+              .semanticId(buildReference(property.getCharacteristic())) // this is the link to the conceptDescription containing the details for the Characteristic
               .build();
+
+      return aasProperty;
    }
 
-   private ConceptDescription createConceptDescription(final Property property){
-      ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
-              .displayNames(map(property.getPreferredNames())) // prefered name not found in AAS
-              .embeddedDataSpecification(extractEmbeddedDataSpecification(property))
-              .identification(extractIdentifier(property))
+   private Reference buildReference(Characteristic characteristic) {
+      Key key = new DefaultKey.Builder()
+              .idType(KeyType.IRI)
+              .type(KeyElements.CONCEPT_DESCRIPTION)
+              .value(extractIdentifier(characteristic).getIdentifier())
               .build();
-      return conceptDescription;
+      return new DefaultReference.Builder().key(key).build();
    }
 
-   private EmbeddedDataSpecification extractEmbeddedDataSpecification(Property property) {
+   private void createConceptDescription(final Property property, Context context){
+     Characteristic characteristic = property.getCharacteristic();
+     characteristic.accept(this, context);
+   }
+
+   @Override
+   public AssetAdministrationShellEnvironment visitCharacteristic(Characteristic characteristic, Context context) {
+     ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
+     .idShort(characteristic.getName())
+     .displayNames(map(characteristic.getPreferredNames())) // preferred name not found in AAS
+     .embeddedDataSpecification(extractEmbeddedDataSpecification(characteristic))
+     .identification(extractIdentifier(characteristic))
+     .build();
+      context.getEnvironment().getConceptDescriptions().add(conceptDescription);
+      return context.environment;
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitCode(Code code, Context context) {
+      return visitCharacteristic(code, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitTrait(Trait trait, Context context) {
+      return AspectVisitor.super.visitTrait(trait, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitCollection(Collection collection, Context context) {
+      return visitCharacteristic(collection, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitDuration(Duration duration, Context context) {
+      return visitCharacteristic(duration, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitEither(Either either, Context context) {
+      return visitCharacteristic(either, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitEnumeration(Enumeration enumeration, Context context) {
+      return visitCharacteristic(enumeration, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitList(io.openmanufacturing.sds.metamodel.List list, Context context) {
+      return visitCharacteristic(list, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitMeasurement(Measurement measurement, Context context) {
+      return visitCharacteristic(measurement, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitQuantifiable(Quantifiable quantifiable, Context context) {
+      return visitCharacteristic(quantifiable, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitSet(Set set, Context context) {
+      return visitCharacteristic(set, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitSingleEntity(SingleEntity singleEntity, Context context) {
+      return visitCharacteristic(singleEntity, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitSortedSet(SortedSet sortedSet, Context context) {
+      return visitCharacteristic(sortedSet, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitState(State state, Context context) {
+      return visitCharacteristic(state, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitStructuredValue(StructuredValue structuredValue, Context context) {
+      return visitCharacteristic(structuredValue, context);
+   }
+
+   private EmbeddedDataSpecification extractEmbeddedDataSpecification(Characteristic characteristic) {
       EmbeddedDataSpecification embeddedDataSpecification = new DefaultEmbeddedDataSpecification.Builder()
-              .dataSpecificationContent(extractDataSpecificationContent(property))
+              .dataSpecificationContent(extractDataSpecificationContent(characteristic))
               .build();
       return embeddedDataSpecification;
    }
 
-   private DataSpecificationContent extractDataSpecificationContent(Property property) {
+   private DataSpecificationContent extractDataSpecificationContent(Characteristic characteristic) {
       DataSpecificationContent dataSpecificationContent = new DefaultDataSpecificationIEC61360.Builder()
               // TODO add stuff which needs to be converted
+              //TODO clarify how to map types .dataType(characteristic.getDataType().isPresent() ? mapType(characteristic.getDataType().get()) : UNKNOWN_TYPE)
+              .definitions(map(characteristic.getDescriptions()))
+              .preferredNames(map(characteristic.getPreferredNames()))
+              .shortName(new LangString(characteristic.getName(), "EN")) // TODO find generic solution
               .build();
       return dataSpecificationContent;
    }
@@ -139,7 +233,6 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
               .idType(IdentifierType.IRI).build();
       return identifier;
    }
-
 
    private String mapType(Type type){
       return type.getUrn();
@@ -175,16 +268,4 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return langString;
    }
 
-   private AssetAdministrationShellEnvironment merge(AssetAdministrationShellEnvironment env1, AssetAdministrationShellEnvironment env2) {
-      env1.getAssets().addAll(env2.getAssets());
-      env1.getConceptDescriptions().addAll(env2.getConceptDescriptions());
-      env1.getSubmodels().addAll(env2.getSubmodels());
-      env1.getAssetAdministrationShells().addAll(env2.getAssetAdministrationShells());
-
-      return env1;
-   }
-
-   private AssetAdministrationShellEnvironment merge(AssetAdministrationShellEnvironment env2) {
-      return merge(environment, env2);
-   }
 }
