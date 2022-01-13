@@ -17,268 +17,202 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithSimpleTypes a bamm:Aspect ;
-   bamm:name "AspectWithSimpleTypes" ;
    bamm:properties ( :anyUriProperty :base64BinaryProperty :booleanProperty :byteProperty :curieProperty :dateProperty :dateTimeProperty :dateTimeStampProperty :dayTimeDuration :decimalProperty :doubleProperty :durationProperty :floatProperty :gDayProperty :gMonthDayProperty :gMonthProperty :gYearMonthProperty :gYearProperty :hexBinaryProperty :intProperty :integerProperty :langStringProperty :longProperty :negativeIntegerProperty :nonNegativeIntegerProperty :nonPositiveInteger :positiveIntegerProperty :shortProperty :stringProperty :timeProperty :unsignedByteProperty :unsignedIntProperty :unsignedLongProperty :unsignedShortProperty :yearMonthDurationProperty ) ;
    bamm:operations ( ) .
 
 :stringProperty a bamm:Property ;
-   bamm:name "stringProperty" ;
    bamm:characteristic bamm-c:Text .
 
 :booleanProperty a bamm:Property ;
-   bamm:name "booleanProperty" ;
    bamm:characteristic bamm-c:Boolean .
 
 :decimalProperty a bamm:Property ;
-   bamm:name "decimalProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeDecimal" ;
       bamm:dataType xsd:decimal
    ] .
 
 :integerProperty a bamm:Property ;
-   bamm:name "integerProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeInteger" ;
       bamm:dataType xsd:integer
    ] .
 
 :doubleProperty a bamm:Property ;
-   bamm:name "doubleProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeDouble" ;
       bamm:dataType xsd:double
    ] .
 
 :floatProperty a bamm:Property ;
-   bamm:name "floatProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeFloat" ;
       bamm:dataType xsd:float
    ] .
 
 :dateProperty a bamm:Property ;
-   bamm:name "dateProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "DateValue" ;
       bamm:dataType xsd:date
 ] .
 
 :timeProperty a bamm:Property ;
-   bamm:name "timeProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeTime" ;
       bamm:dataType xsd:time
    ] .
 
 :dateTimeProperty a bamm:Property ;
-   bamm:name "dateTimeProperty" ;
    bamm:characteristic bamm-c:Timestamp .
 
 :dateTimeStampProperty a bamm:Property ;
-   bamm:name "dateTimeStampProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeDateTimeStamp" ;
       bamm:dataType xsd:dateTimeStamp
    ] .
 
 :gYearProperty a bamm:Property ;
-   bamm:name "gYearProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeGYear" ;
       bamm:dataType xsd:gYear
    ] .
 
 :gMonthProperty a bamm:Property ;
-   bamm:name "gMonthProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeGMonth" ;
       bamm:dataType xsd:gMonth
    ] .
 
 :gDayProperty a bamm:Property ;
-   bamm:name "gDayProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeGDay" ;
       bamm:dataType xsd:gDay
    ] .
 
 :gYearMonthProperty a bamm:Property ;
-   bamm:name "gYearMonthProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeGYearMonth" ;
       bamm:dataType xsd:gYearMonth
    ] .
 
 :gMonthDayProperty a bamm:Property ;
-   bamm:name "gMonthDayProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeGMonthDay" ;
       bamm:dataType xsd:gMonthDay
    ] .
 
 :durationProperty a bamm:Property ;
-   bamm:name "durationProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeDuration" ;
       bamm:dataType xsd:duration
    ] .
 
 :yearMonthDurationProperty a bamm:Property ;
-   bamm:name "yearMonthDurationProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeYearMonthDuration" ;
       bamm:dataType xsd:yearMonthDuration
    ] .
 
 :dayTimeDuration a bamm:Property ;
-   bamm:name "dayTimeDuration" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeDayTimeDuration" ;
       bamm:dataType xsd:dayTimeDuration
    ] .
 
 :byteProperty a bamm:Property ;
-   bamm:name "byteProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeByte" ;
       bamm:dataType xsd:byte
    ] .
 
 :shortProperty a bamm:Property ;
-   bamm:name "shortProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeShort" ;
       bamm:dataType xsd:short
    ] .
 
 :intProperty a bamm:Property ;
-   bamm:name "intProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeInt" ;
       bamm:dataType xsd:int
    ] .
 
 :longProperty a bamm:Property ;
-   bamm:name "longProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeLong" ;
       bamm:dataType xsd:long
    ] .
 
 :unsignedByteProperty a bamm:Property ;
-   bamm:name "unsignedByteProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeUnsignedByte" ;
       bamm:dataType xsd:unsignedByte
    ] .
 
 :unsignedShortProperty a bamm:Property ;
-   bamm:name "unsignedShortProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeUnsignedShort" ;
       bamm:dataType xsd:unsignedShort
    ] .
 
 :unsignedIntProperty a bamm:Property ;
-   bamm:name "unsignedIntProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeUnsignedInt" ;
       bamm:dataType xsd:unsignedInt
    ] .
 
 :unsignedLongProperty a bamm:Property ;
-   bamm:name "unsignedLongProperty" ;
    bamm:characteristic [
      a bamm-c:Quantifiable ;
-     bamm:name "SomeLength" ;
      bamm:dataType xsd:unsignedLong ;
      bamm-c:unit unit:metre
    ] .
 
 :positiveIntegerProperty a bamm:Property ;
-   bamm:name "positiveIntegerProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomePositiveInteger" ;
       bamm:dataType xsd:positiveInteger
    ] .
 
 :nonNegativeIntegerProperty a bamm:Property ;
-   bamm:name "nonNegativeIntegerProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeNonNegativeInteger" ;
       bamm:dataType xsd:nonNegativeInteger
    ] .
 
 :negativeIntegerProperty a bamm:Property ;
-   bamm:name "negativeIntegerProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeNegativeInteger" ;
       bamm:dataType xsd:negativeInteger
    ] .
 
 :nonPositiveInteger a bamm:Property ;
-   bamm:name "nonPositiveInteger" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeNonPositiveInteger" ;
       bamm:dataType xsd:nonPositiveInteger
    ] .
 
 :hexBinaryProperty a bamm:Property ;
-   bamm:name "hexBinaryProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "HexBinaryValue" ;
       bamm:dataType xsd:hexBinary
    ] .
 
 :base64BinaryProperty a bamm:Property ;
-   bamm:name "base64BinaryProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "Base64BinaryValue" ;
       bamm:dataType xsd:base64Binary
    ] .
 
 :anyUriProperty a bamm:Property ;
-   bamm:name "anyUriProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "SomeAnyUri" ;
       bamm:dataType xsd:anyURI
    ] .
 
 :curieProperty a bamm:Property ;
-   bamm:name "curieProperty" ;
    bamm:characteristic bamm-c:UnitReference .
 
 :langStringProperty a bamm:Property ;
-   bamm:name "langStringProperty" ;
    bamm:characteristic bamm-c:MultiLanguageText .
 

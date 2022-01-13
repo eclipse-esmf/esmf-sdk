@@ -15,16 +15,13 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithUsedAndUnusedCharacteristic a bamm:Aspect ;
-   bamm:name "AspectWithUsedAndUnusedCharacteristic" ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :UsedTestCharacteristic .
 
 :UsedTestCharacteristic a bamm:Characteristic ;
-   bamm:name "UsedTestCharacteristic" ;
    bamm:preferredName "Used Test Characteristic"@en ;
    bamm:description "Used Test Characteristic"@en ;
    bamm:see <http://example.com/omp> ;
@@ -32,7 +29,6 @@
    bamm:dataType xsd:string .
 
 :UnusedTestCharacteristic a bamm:Characteristic ;
-   bamm:name "UnusedTestCharacteristic" ;
    bamm:preferredName "Unused Test Characteristic"@en ;
    bamm:description "Unused Test Characteristic"@en ;
    bamm:see <http://example.com/omp> ;

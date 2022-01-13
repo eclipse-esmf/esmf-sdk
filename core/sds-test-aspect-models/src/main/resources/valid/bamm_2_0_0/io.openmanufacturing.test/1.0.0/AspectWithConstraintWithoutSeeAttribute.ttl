@@ -15,19 +15,15 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithConstraintWithoutSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithConstraintWithoutSeeAttribute" ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :TestTrait .
 
 :TestTrait a bamm-c:Trait ;
-   bamm:name "TestTrait" ;
    bamm-c:constraint [
       a bamm-c:LengthConstraint ;
-      bamm:name "TestConstraint" ;
       bamm:preferredName "Test Constraint"@en ;
       bamm:description "Test Constraint"@en ;
       bamm-c:minValue "5"^^xsd:nonNegativeInteger ;

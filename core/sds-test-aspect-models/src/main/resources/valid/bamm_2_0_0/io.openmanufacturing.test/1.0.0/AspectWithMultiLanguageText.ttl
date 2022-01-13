@@ -18,11 +18,9 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithMultiLanguageText a bamm:Aspect ;
-   bamm:name "AspectWithMultiLanguageText" ;
    bamm:properties ( :prop ) ;
    bamm:operations ( ) .
 
 :prop a bamm:Property ;
-   bamm:name "prop" ;
    bamm:characteristic bamm-c:MultiLanguageText .
 

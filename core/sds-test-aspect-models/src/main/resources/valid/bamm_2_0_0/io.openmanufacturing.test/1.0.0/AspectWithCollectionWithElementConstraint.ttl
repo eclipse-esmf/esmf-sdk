@@ -16,7 +16,6 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithCollectionWithElementConstraint a bamm:Aspect ;
-   bamm:name "AspectWithCollectionWithElementConstraint" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
    bamm:see <http://example.com/omp> ;
@@ -24,7 +23,6 @@
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;
@@ -33,13 +31,11 @@
    bamm:characteristic :TestCollection .
 
 :TestCollection a bamm-c:Collection ;
-   bamm:name "TestCollection" ;
    bamm:preferredName "Test Collection"@en ;
    bamm:description "This is a test collection."@en ;
    bamm:see <http://example.com/omp> ;
    bamm-c:elementCharacteristic [
       a bamm-c:Trait ;
-      bamm:name "ElementRangeConstraint" ;
       bamm-c:baseCharacteristic :Measurement ;
       bamm-c:constraint [
          a bamm-c:RangeConstraint ;
@@ -51,6 +47,5 @@
    ] .
 
 :Measurement a bamm-c:Measurement ;
-   bamm:name "Measurement" ;
    bamm:dataType xsd:float ;
    bamm-c:unit unit:metrePerSecond .

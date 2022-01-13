@@ -14,7 +14,6 @@
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 
 :propertyWithMultipleSeeAttributes a bamm:Property ;
-   bamm:name "propertyWithMultipleSeeAttributes" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;

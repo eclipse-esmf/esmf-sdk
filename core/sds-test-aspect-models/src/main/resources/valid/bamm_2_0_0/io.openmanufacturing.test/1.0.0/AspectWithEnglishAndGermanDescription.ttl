@@ -15,7 +15,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithEnglishAndGermanDescription a bamm:Aspect ;
-   bamm:name "AspectWithEnglishAndGermanDescription" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:preferredName "Testaspekt"@de ;
    bamm:description "Test Aspect"@en ;
@@ -24,7 +23,6 @@
    bamm:operations ( ) .
 
 :testString a bamm:Property ;
-   bamm:name "testString" ;
    bamm:preferredName "testString"@en ;
    bamm:preferredName "testString"@de ;
    bamm:description "testString"@en ;

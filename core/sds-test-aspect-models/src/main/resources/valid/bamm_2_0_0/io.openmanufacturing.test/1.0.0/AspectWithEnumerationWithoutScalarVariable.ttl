@@ -15,17 +15,14 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithEnumerationWithoutScalarVariable a bamm:Aspect ;
-   bamm:name "AspectWithEnumerationWithoutScalarVariable" ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:preferredName "result"@en ;
    bamm:characteristic :EvaluationResults .
 
 :EvaluationResults a bamm-c:Enumeration ;
-   bamm:name "EvaluationResults" ;
    bamm:preferredName "Evaluation Results"@en ;
    bamm:description "Possible values for the evaluation of a process"@en ;
    bamm:dataType :EvaluationResult ;
@@ -34,7 +31,6 @@
 :ResultGood a :EvaluationResult .
 
 :EvaluationResult a bamm:Entity ;
-   bamm:name "EvaluationResult" ;
    bamm:preferredName "Evaluation Result"@en ;
    bamm:description "Possible values for the evaluation of a process"@en ;
    bamm:properties ( ) .

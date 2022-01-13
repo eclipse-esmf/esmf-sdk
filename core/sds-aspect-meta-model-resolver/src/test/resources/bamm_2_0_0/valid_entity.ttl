@@ -13,7 +13,6 @@
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 
 :TestEntity a bamm:Entity ;
-   bamm:name "TestEntity" ;
    bamm:preferredName "Test Entity"@en ;
    bamm:properties ( ) ;
    bamm:operations ( ) .

@@ -16,7 +16,6 @@
 @prefix custom: <http://example.com#> .
 
 :AspectWithCustomNamespace a bamm:Aspect ;
-   bamm:name "AspectWithCustomNamespace" ;
    bamm:preferredName "Test Aspect"@en;
    bamm:description "This is a test description"@en ;
    bamm:properties (  ) ;

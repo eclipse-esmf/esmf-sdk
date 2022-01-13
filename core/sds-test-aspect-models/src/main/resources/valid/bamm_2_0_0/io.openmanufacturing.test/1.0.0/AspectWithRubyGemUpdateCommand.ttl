@@ -15,7 +15,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithRubyGemUpdateCommand a bamm:Aspect ;
-   bamm:name "AspectWithRubyGemUpdateCommand" ;
    bamm:preferredName "gem update --system"@en ;
    bamm:properties ( ) ;
    bamm:operations ( ) .

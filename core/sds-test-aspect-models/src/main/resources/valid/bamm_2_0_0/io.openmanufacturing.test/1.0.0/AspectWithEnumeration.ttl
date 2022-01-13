@@ -16,7 +16,6 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithEnumeration a bamm:Aspect ;
-   bamm:name "AspectWithEnumeration" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
    bamm:see <http://example.com/omp> ;
@@ -24,7 +23,6 @@
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;
@@ -32,7 +30,6 @@
    bamm:characteristic :TestEnumeration .
 
 :TestEnumeration a bamm-c:Enumeration ;
-   bamm:name "TestEnumeration" ;
    bamm:preferredName "Test Enumeration"@en ;
    bamm:description "This is a test for enumeration."@en ;
    bamm:see <http://example.com/omp> ;

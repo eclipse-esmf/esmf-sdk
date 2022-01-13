@@ -15,22 +15,17 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithCollectionsWithElementCharacteristicAndSimpleDataType a bamm:Aspect ;
-   bamm:name "AspectWithCollectionsWithElementCharacteristicAndSimpleDataType" ;
    bamm:properties ( :testProperty :testPropertyTwo ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :TestCollection .
 
 :testPropertyTwo a bamm:Property ;
-   bamm:name "testPropertyTwo" ;
    bamm:characteristic :TestCollectionTwo .
 
 :TestCollection a bamm-c:Collection ;
-   bamm:name "TestCollection" ;
    bamm:dataType xsd:string .
 
 :TestCollectionTwo a bamm-c:Collection ;
-   bamm:name "TestCollectionTwo" ;
    bamm-c:elementCharacteristic bamm-c:Text .

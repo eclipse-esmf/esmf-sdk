@@ -15,16 +15,13 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithCollectionWithoutSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithCollectionWithoutSeeAttribute" ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :TestCollection .
 
 :TestCollection a bamm-c:Collection ;
-   bamm:name "TestCollection" ;
    bamm:preferredName "Test Collection"@en ;
    bamm:description "Test Collection"@en ;
    bamm:dataType xsd:string .

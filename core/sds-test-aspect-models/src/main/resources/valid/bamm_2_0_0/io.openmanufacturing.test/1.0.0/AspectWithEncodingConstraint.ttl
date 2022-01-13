@@ -16,7 +16,6 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithEncodingConstraint a bamm:Aspect ;
-   bamm:name "AspectWithEncodingConstraint" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
    bamm:see <http://example.com/omp> ;
@@ -24,7 +23,6 @@
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;
@@ -33,7 +31,6 @@
    bamm:characteristic :TestEncodingConstraint .
 
 :TestEncodingConstraint a bamm-c:Trait ;
-   bamm:name "TestEncodingConstraint" ;
    bamm-c:constraint [
       a bamm-c:EncodingConstraint ;
       bamm:preferredName "Test Encoding Constraint"@en ;

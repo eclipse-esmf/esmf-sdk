@@ -16,7 +16,6 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithSortedSet a bamm:Aspect ;
-   bamm:name "AspectWithSortedSet" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
    bamm:see <http://example.com/omp> ;
@@ -24,7 +23,6 @@
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;
@@ -33,7 +31,6 @@
    bamm:characteristic :TestSortedSet .
 
 :TestSortedSet a bamm-c:SortedSet ;
-   bamm:name "TestSortedSet" ;
    bamm:preferredName "Test Sorted Set"@en ;
    bamm:description "This is a test sorted set."@en ;
    bamm:see <http://example.com/omp> ;

@@ -14,7 +14,6 @@
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 
 :EntityWithoutSeeAttribute a bamm:Entity ;
-   bamm:name "EntityWithoutSeeAttribute" ;
    bamm:preferredName "Test Entity"@en ;
    bamm:description "This is a test entity."@en ;
    bamm:properties ( ) .

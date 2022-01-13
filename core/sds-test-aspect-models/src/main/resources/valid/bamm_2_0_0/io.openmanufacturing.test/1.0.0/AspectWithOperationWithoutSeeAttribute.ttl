@@ -14,17 +14,14 @@
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 
 :AspectWithOperationWithoutSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithOperationWithoutSeeAttribute" ;
    bamm:properties ( ) ;
    bamm:operations ( :testOperation ) .
 
 :testOperation a bamm:Operation ;
-   bamm:name "testOperation" ;
    bamm:preferredName "Test Operation"@en ;
    bamm:description "Test Operation"@en ;
    bamm:input ( ) ;
    bamm:output :output .
 
 :output a bamm:Property ;
-   bamm:name "output" ;
    bamm:characteristic bamm-c:Text .

@@ -16,7 +16,6 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithEntityEnumerationWithNotExistingEnum a bamm:Aspect ;
-    bamm:name "AspectWithEntityEnumeration" ;
     bamm:preferredName "Aspect with entity enumeration"@en ;
     bamm:description "This is a test description"@en ;
     bamm:see <http://example.com/omp> ;
@@ -24,12 +23,10 @@
     bamm:operations ( ) .
 
 :systemState a bamm:Property ;
-    bamm:name "systemState" ;
     bamm:preferredName "System State"@en ;
     bamm:description "The state the system is currently in, e.g. heat-up."@en ;
     bamm:characteristic [
        a bamm-c:Enumeration ;
-       bamm:name "SystemStates" ;
        bamm:preferredName "System States"@en ;
        bamm:description "Defines which states the system may have."@en ;
        bamm:dataType :SystemState ;
@@ -37,7 +34,6 @@
     ] .
 
 :SystemState a bamm:Entity ;
-             bamm:name "SystemState" ;
              bamm:preferredName "System State"@en ;
              bamm:description "Represents a specific state the system may have."@en ;
              bamm:properties ( :state :description ) .
@@ -59,14 +55,11 @@
       :description "HeatUp" .
 
 :state a bamm:Property ;
-      bamm:name "state" ;
       bamm:characteristic :Measurement .
 
 :description a bamm:Property ;
-       bamm:name "description" ;
        bamm:characteristic bamm-c:Text .
 
 :Measurement a bamm-c:Measurement ;
-             bamm:name "Measurement" ;
              bamm:dataType xsd:short ;
              bamm-c:unit unit:metrePerSecond .

@@ -15,7 +15,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithOptionalPropertiesWithEntity a bamm:Aspect ;
-   bamm:name "AspectWithOptionalPropertiesWithEntity" ;
    bamm:properties ( :testString [
                                     bamm:property :testOptionalString ;
                                     bamm:optional "true"^^xsd:boolean
@@ -26,47 +25,37 @@
    bamm:operations ( ) .
 
 :testOptionalEntity a bamm:Property ;
-   bamm:name "testOptionalEntity" ;
    bamm:characteristic :TestEntityCharacteristic .
 
 :TestEntity a bamm:Entity ;
-   bamm:name "TestEntity" ;
    bamm:properties ( :codeProperty :testSecondString :testIntList ) .
 
 :codeProperty a bamm:Property ;
-   bamm:name "codeProperty" ;
    bamm:characteristic :TestCode .
 
 :TestCode a bamm-c:Code ;
-   bamm:name "TestCode" ;
    bamm:preferredName "Test Code"@en ;
    bamm:description "This is a test code."@en ;
    bamm:dataType xsd:int .
 
 :testString a bamm:Property ;
-   bamm:name "testString" ;
    bamm:exampleValue "Example Value Test" ;
    bamm:characteristic bamm-c:Text .
 
 :testOptionalString a bamm:Property ;
-   bamm:name "testOptionalString" ;
    bamm:exampleValue "Example Value Test" ;
    bamm:characteristic bamm-c:Text .
 
 :testSecondString a bamm:Property ;
-   bamm:name "testSecondString" ;
    bamm:exampleValue "Another Example Value Test" ;
    bamm:characteristic bamm-c:Text .
 
 :testIntList a bamm:Property ;
-   bamm:name "testIntList" ;
    bamm:exampleValue "3"^^xsd:int ;
    bamm:characteristic :IntegerList .
 
 :IntegerList a bamm-c:List ;
-   bamm:name "IntegerList" ;
    bamm:dataType xsd:int .
 
 :TestEntityCharacteristic a bamm:Characteristic ;
-   bamm:name "TestEntityCharacteristic" ;
    bamm:dataType :TestEntity .
