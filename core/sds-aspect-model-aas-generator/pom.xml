@@ -26,11 +26,13 @@
             <groupId>io.openmanufacturing</groupId>
             <artifactId>sds-aspect-meta-model-java</artifactId>
         </dependency>
+        <!-- TODO extract version number to parent pom -->
         <dependency>
             <groupId>io.admin-shell.aas</groupId>
             <artifactId>model</artifactId>
             <version>1.2.0</version>
         </dependency>
+        <!-- TODO extract version number to parent pom -->
         <dependency>
             <groupId>io.admin-shell.aas</groupId>
             <artifactId>dataformat-aasx</artifactId>

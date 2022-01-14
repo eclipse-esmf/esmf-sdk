@@ -25,10 +25,29 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
+/*
+
+Todos for AASXGenerator
+
+TODO lear out result passing in AASVisitor. Using context object to carry AASEnvironment through chain seems promising; problem not side effect free implementation
+
+TODO Implement mappings of specific characteristics classes from meta model via overwritten visitor methods
+
+TODO Implement tests; example could be openAPI or RDF Generatror tests
+
+TODO Use AAS XSD Schema to validate well formedness -> https://www.rgagnon.com/javadetails/java-0669.html
+
+TODO Logger configuration for AAS Serializer package broken. Needs to be piped to SDK configuration
+- SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+- SLF4J: Defaulting to no-operation (NOP) logger implementation
+- SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+ */
 public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationShellEnvironment, Context> {
 
    public static final String UNKNOWN_TYPE = "Unknown";
    private static final String UNKNOWN_URN = UNKNOWN_TYPE;
+   private static final String UNKNOWN_EXAMPLE = UNKNOWN_TYPE;
 
 
    @Override
@@ -59,15 +78,10 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return context.getEnvironment();
    }
 
-   public AssetAdministrationShellEnvironment visitOperation(final io.openmanufacturing.sds.metamodel.Operation operation, Context context ) {
-      return visitBase( operation, context );
-   }
-
-
    private void visitOperations(final List<io.openmanufacturing.sds.metamodel.Operation> elements, Context context){
       final List<SubmodelElement> subModelElements =
               Stream.ofAll( elements )
-                      .map( this::map )
+                      .map( i -> map(i, context) )
                       .collect( Collectors.toList() );
 
       ((Submodel) context.getOfInterest()).setSubmodelElements(subModelElements);
@@ -76,7 +90,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    private void visitProperties(final List<Property> elements, Context context) {
       final List<SubmodelElement> subModelElements =
             Stream.ofAll( elements )
-                    .map(i -> {createConceptDescription(i, context); return map(i); })
+                    .map(i -> map(i, context) )
                     .collect(Collectors.toList());
 
       // Hint: As the AAS Meta Model Implementation exposes the internal data structure where the elements
@@ -84,16 +98,18 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       ((Submodel)context.getOfInterest()).getSubmodelElements().addAll(subModelElements);
    }
 
-   private SubmodelElement map(Property property) {
+   private SubmodelElement map(Property property, Context context) {
       io.adminshell.aas.v3.model.Property aasProperty = new DefaultProperty.Builder()
               .idShort(property.getName())
               .valueType(property.getCharacteristic().getDataType().isPresent() ?
-                      mapType(property.getCharacteristic().getDataType().get()) : UNKNOWN_TYPE)
+                      mapType(property.getCharacteristic().getDataType().get()) : UNKNOWN_TYPE) // TODO decided whether give unknown or not call valueType at all
               .displayNames(map(property.getPreferredNames()))
-              .value(property.getExampleValue().get().toString())
+              .value(property.getExampleValue().isPresent() ? property.getExampleValue().get().toString() : UNKNOWN_EXAMPLE)
               .descriptions(map(property.getDescriptions()))
               .semanticId(buildReference(property.getCharacteristic())) // this is the link to the conceptDescription containing the details for the Characteristic
               .build();
+
+      createConceptDescription(property, context);
 
       return aasProperty;
    }
@@ -114,7 +130,8 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
 
    @Override
    public AssetAdministrationShellEnvironment visitCharacteristic(Characteristic characteristic, Context context) {
-     ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
+     // TODO concept descriptions will not be reused. for each property a new conceptDescription will be created. This should be improved, e.g. by intridcuing a map tht stores created conceptdescriptions and returns them according to their id
+      ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
      .idShort(characteristic.getName())
      .displayNames(map(characteristic.getPreferredNames())) // preferred name not found in AAS
      .embeddedDataSpecification(extractEmbeddedDataSpecification(characteristic))
@@ -238,21 +255,21 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return type.getUrn();
    }
 
-   private Operation map(io.openmanufacturing.sds.metamodel.Operation operation) {
+   private Operation map(io.openmanufacturing.sds.metamodel.Operation operation, Context context) {
 
       // TODO add decision logic on what kind of property is to be used
       return new DefaultOperation.Builder()
               .displayNames(map(operation.getPreferredNames()))
               .descriptions(map(operation.getDescriptions()))
               .idShort(operation.getName())
-              .inputVariables(operation.getInput().stream().map(this::mapOperation).collect(Collectors.toList()))
-              .outputVariables(operation.getOutput().stream().map(this::mapOperation).collect(Collectors.toList()))
+              .inputVariables(operation.getInput().stream().map(i -> mapOperationVariable(i, context)).collect(Collectors.toList()))
+              .outputVariables(operation.getOutput().stream().map(i -> mapOperationVariable(i, context)).collect(Collectors.toList()))
               .build();
    }
 
-   private OperationVariable mapOperation(Property property) {
+   private OperationVariable mapOperationVariable(Property property, Context context) {
       return new DefaultOperationVariable.Builder()
-      .value(map(property)).build();
+      .value(map(property, context)).build();
    }
 
    private List<LangString> map(Map<Locale, String> localizedStrings) {
