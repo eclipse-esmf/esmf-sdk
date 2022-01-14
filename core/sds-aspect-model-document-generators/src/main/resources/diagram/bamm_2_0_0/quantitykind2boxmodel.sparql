@@ -13,7 +13,6 @@ prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>
 prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
 
 # Generates boxes for QuantityKinds
@@ -23,7 +22,7 @@ construct {
   ?quantityKindBox :title ?upperQuantityKindName .
   ?quantityKindBox :entries ()
 } where {
-  [] bamm-c:unit/unit:referenceUnit?/unit:quantityKind ?quantityKind .
+  [] bamm-c:unit/bamm:referenceUnit?/bamm:quantityKind ?quantityKind .
   ?quantityKind bamm:name ?quantityKindName .
   bind( concat( ucase( substr( ?quantityKindName, 1, 1 ) ), substr( ?quantityKindName, 2 ) ) as ?upperQuantityKindName )
   bind( concat( replace( ?upperQuantityKindName, "-", "" ), "QuantityKind" ) as ?boxName )
