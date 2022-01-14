@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -68,8 +68,7 @@ public class MigratorService {
     *
     * @param versionedModel the source model
     * @param targetVersion the target meta model version
-    * @return the resulting {@link VersionedModel} that corresponds to the input Aspect model, but with the new
-    *       meta model version
+    * @return the resulting {@link VersionedModel} that corresponds to the input Aspect model, but with the new meta model version
     */
    public Try<VersionedModel> updateMetaModelVersion( final VersionedModel versionedModel ) {
       final VersionNumber targetVersion = VersionNumber.parse( KnownVersion.getLatest().toVersionString() );
@@ -82,49 +81,37 @@ public class MigratorService {
       }
 
       if ( sourceVersion.equals( targetVersion ) ) {
-         return getSdsMigratorFactory().createAspectMetaModelResourceResolver()
-                                       .mergeMetaModelIntoRawModel( migrationModel, targetVersion );
+         return getSdsMigratorFactory().createAspectMetaModelResourceResolver().mergeMetaModelIntoRawModel( migrationModel, targetVersion );
       }
 
       if ( sourceVersion.greaterThan( targetVersion ) ) {
          return Try.failure( new InvalidVersionException(
-               String.format( "Model version %s can not be updated to version %s", sourceVersion,
-                     targetVersion ) ) );
+               String.format( "Model version %s can not be updated to version %s", sourceVersion, targetVersion ) ) );
       }
 
       return migration( sourceVersion, targetVersion, migrationModel );
    }
 
-   private Model customMigration( final MigratorFactory migratorFactory, final VersionNumber sourceVersion,
-         final VersionedModel versionedModel ) {
-
-      return migrate( migratorFactory.createMigrators(), sourceVersion, migratorFactory.getLatestVersion(),
-            versionedModel.getRawModel() );
+   private Model customMigration( final MigratorFactory migratorFactory, final VersionNumber sourceVersion, final VersionedModel versionedModel ) {
+      return migrate( migratorFactory.createMigrators(), sourceVersion, migratorFactory.getLatestVersion(), versionedModel.getRawModel() );
    }
 
-   private Try<VersionedModel> migration( final VersionNumber sourceVersion, final VersionNumber targetVersion,
-         final Model targetModel ) {
-
+   private Try<VersionedModel> migration( final VersionNumber sourceVersion, final VersionNumber targetVersion, final Model targetModel ) {
       final Model model = migrate( sdsMigratorFactory.createMigrators(), sourceVersion, targetVersion, targetModel );
-      return getSdsMigratorFactory().createAspectMetaModelResourceResolver()
-                                    .mergeMetaModelIntoRawModel( model, targetVersion );
+      return getSdsMigratorFactory().createAspectMetaModelResourceResolver().mergeMetaModelIntoRawModel( model, targetVersion );
    }
 
-   private Model migrate( final List<Migrator> migrators, final VersionNumber sourceVersion,
-         final VersionNumber targetVersion, final Model targetModel ) {
+   private Model migrate( final List<Migrator> migrators, final VersionNumber sourceVersion, final VersionNumber targetVersion, final Model targetModel ) {
       if ( migrators.isEmpty() ) {
          return targetModel;
       }
 
       final Comparator<Migrator> comparator = Comparator.comparing( Migrator::sourceVersion );
-      final List<Migrator> migratorSet = migrators.stream().sorted(
-            comparator.thenComparing( Migrator::order ) )
-                                                  .dropWhile(
-                                                        migrator -> !migrator.sourceVersion().equals( sourceVersion ) )
-                                                  .takeWhile(
-                                                        migrator -> !migrator.targetVersion()
-                                                                             .greaterThan( targetVersion ) )
-                                                  .collect( Collectors.toList() );
+      final List<Migrator> migratorSet = migrators.stream()
+            .sorted( comparator.thenComparing( Migrator::order ) )
+            .dropWhile( migrator -> !migrator.sourceVersion().equals( sourceVersion ) )
+            .takeWhile( migrator -> !migrator.targetVersion().greaterThan( targetVersion ) )
+            .collect( Collectors.toList() );
 
       Model migratorTargetModel = targetModel;
       for ( final Migrator migrator : migratorSet ) {

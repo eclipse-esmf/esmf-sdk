@@ -22,7 +22,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.vocabulary.RDF;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -79,6 +81,21 @@ public class MigratorTest extends MetaModelVersions {
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
 
       assertThat( rewrittenModel.getRawModel().getNsPrefixMap() ).containsKey( "custom" );
+   }
+
+   @Test
+   public void testMigrateUnitsToBammNamespace() {
+      final VersionedModel oldModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_UNIT, KnownVersion.BAMM_1_0_0 );
+      final Model rewrittenModel = migratorService.updateMetaModelVersion( oldModel ).get().getRawModel();
+      final BAMM bamm = new BAMM( KnownVersion.BAMM_2_0_0 );
+
+      assertThat( rewrittenModel.contains( null, RDF.type, bamm.Unit() ) ).isTrue();
+      assertThat( rewrittenModel.contains( null, bamm.symbol(), (RDFNode) null ) ).isTrue();
+      assertThat( rewrittenModel.contains( null, bamm.quantityKind(), (RDFNode) null ) ).isTrue();
+      final Set<String> uris = getAllUris( rewrittenModel );
+      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#Unit" ) );
+      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#symbol" ) );
+      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#quantityKind" ) );
    }
 
    private Set<String> getAllUris( final Model model ) {

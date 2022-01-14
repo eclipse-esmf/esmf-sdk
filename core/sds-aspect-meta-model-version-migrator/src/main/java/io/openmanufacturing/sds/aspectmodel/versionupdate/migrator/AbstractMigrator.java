@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -25,8 +25,7 @@ public abstract class AbstractMigrator implements Migrator {
    private final VersionNumber targetVersion;
    private final int order;
 
-   protected AbstractMigrator( final VersionNumber sourceVersion, final VersionNumber targetVersion,
-         final int order ) {
+   protected AbstractMigrator( final VersionNumber sourceVersion, final VersionNumber targetVersion, final int order ) {
       this.sourceVersion = sourceVersion;
       this.targetVersion = targetVersion;
       this.order = order;
