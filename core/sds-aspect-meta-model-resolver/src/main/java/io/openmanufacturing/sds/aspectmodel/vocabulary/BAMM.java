@@ -164,4 +164,39 @@ public class BAMM implements Namespace {
    public Property value() {
       return property( "value" );
    }
+
+   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   public Resource Unit() {
+      return resource( "Unit" );
+   }
+
+   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   public Resource QuantityKind() {
+      return resource( "QuantityKind" );
+   }
+
+   @SuppressWarnings( "squid:S1845" ) // Method name should match model element
+   public Property quantityKind() {
+      return property( "quantityKind" );
+   }
+
+   public Property referenceUnit() {
+      return property( "referenceUnit" );
+   }
+
+   public Property commonCode() {
+      return property( "commonCode" );
+   }
+
+   public Property conversionFactor() {
+      return property( "conversionFactor" );
+   }
+
+   public Property numericConversionFactor() {
+      return property( "numericConversionFactor" );
+   }
+
+   public Property symbol() {
+      return property( "symbol" );
+   }
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,10 +23,8 @@ public abstract class AbstractSdsMigrator extends AbstractMigrator {
    private final KnownVersion sourceKnownVersion;
    private final KnownVersion targetKnownVersion;
 
-   protected AbstractSdsMigrator( final KnownVersion sourceKnownVersion, final KnownVersion targetKnownVersion,
-         final int order ) {
-      super( VersionNumber.parse( sourceKnownVersion.toVersionString() ),
-            VersionNumber.parse( targetKnownVersion.toVersionString() ), order );
+   protected AbstractSdsMigrator( final KnownVersion sourceKnownVersion, final KnownVersion targetKnownVersion, final int order ) {
+      super( VersionNumber.parse( sourceKnownVersion.toVersionString() ), VersionNumber.parse( targetKnownVersion.toVersionString() ), order );
       this.sourceKnownVersion = sourceKnownVersion;
       this.targetKnownVersion = targetKnownVersion;
    }

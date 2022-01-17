@@ -13,9 +13,6 @@
 
 package io.openmanufacturing.sds.aspectmodel.vocabulary;
 
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 
 public class UNIT implements Namespace {
@@ -30,40 +27,5 @@ public class UNIT implements Namespace {
    @Override
    public String getUri() {
       return bamm.getBaseUri() + "unit:" + bammVersion.toVersionString();
-   }
-
-   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
-   public Resource Unit() {
-      return resource( "Unit" );
-   }
-
-   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
-   public Resource QuantityKind() {
-      return resource( "QuantityKind" );
-   }
-
-   @SuppressWarnings( "squid:S1845" ) // Method name should match model element
-   public Property quantityKind() {
-      return property( "quantityKind" );
-   }
-
-   public Property referenceUnit() {
-      return property( "referenceUnit" );
-   }
-
-   public Property commonCode() {
-      return property( "commonCode" );
-   }
-
-   public Property conversionFactor() {
-      return property( "conversionFactor" );
-   }
-
-   public Property numericConversionFactor() {
-      return property( "numericConversionFactor" );
-   }
-
-   public Property symbol() {
-      return property( "symbol" );
    }
 }

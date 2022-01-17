@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,7 +34,6 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.Namespace;
  * Abstract migration function that is used to apply a change to all URIs in a model
  */
 public abstract class AbstractUriRewriter extends AbstractSdsMigrator {
-
    protected AbstractUriRewriter( final KnownVersion sourceVersion, final KnownVersion targetVersion ) {
       super( sourceVersion, targetVersion, 100 );
    }
@@ -46,13 +45,11 @@ public abstract class AbstractUriRewriter extends AbstractSdsMigrator {
          return resource;
       }
 
-      return rewriteUri( resource.getURI(), oldToNewNamespaces )
-            .map( ResourceFactory::createResource ).orElse( resource );
+      return rewriteUri( resource.getURI(), oldToNewNamespaces ).map( ResourceFactory::createResource ).orElse( resource );
    }
 
    protected Property updateProperty( final Property property, final Map<String, String> oldToNewNamespaces ) {
-      return rewriteUri( property.getURI(), oldToNewNamespaces )
-            .map( ResourceFactory::createProperty ).orElse( property );
+      return rewriteUri( property.getURI(), oldToNewNamespaces ).map( ResourceFactory::createProperty ).orElse( property );
    }
 
    protected RDFNode updateRdfNode( final RDFNode rdfNode, final Map<String, String> oldToNewNamespaces ) {
@@ -71,13 +68,12 @@ public abstract class AbstractUriRewriter extends AbstractSdsMigrator {
 
       final Map<String, String> oldToNewNamespaces =
             Namespace.createPrefixMap( getSourceKnownVersion() )
-                     .keySet()
-                     .stream()
-                     .filter( prefix -> sourceModel.getNsPrefixURI( prefix ) != null )
-                     .map( prefix -> new AbstractMap.SimpleEntry<>( sourceModel.getNsPrefixURI( prefix ),
-                           targetPrefixes.get( prefix ) ) )
-                     .filter( entry -> !entry.getKey().equals( entry.getValue() ) )
-                     .collect( Collectors.toMap( AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue ) );
+                  .keySet()
+                  .stream()
+                  .filter( prefix -> sourceModel.getNsPrefixURI( prefix ) != null )
+                  .map( prefix -> new AbstractMap.SimpleEntry<>( sourceModel.getNsPrefixURI( prefix ), targetPrefixes.get( prefix ) ) )
+                  .filter( entry -> !entry.getKey().equals( entry.getValue() ) )
+                  .collect( Collectors.toMap( AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue ) );
 
       Streams.stream( sourceModel.listStatements() ).map( statement -> targetModel
             .createStatement(
@@ -88,11 +84,9 @@ public abstract class AbstractUriRewriter extends AbstractSdsMigrator {
 
       final Map<String, String> newPrefixMap =
             sourceModel.getNsPrefixMap().keySet().stream()
-                       .map( prefix -> new AbstractMap.SimpleEntry<>( prefix,
-                             Optional.ofNullable( targetPrefixes.get( prefix ) )
-                                     .orElse( sourceModel.getNsPrefixURI( prefix ) ) ) )
-                       .collect(
-                             Collectors.toMap( AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue ) );
+                  .map( prefix -> new AbstractMap.SimpleEntry<>( prefix,
+                        Optional.ofNullable( targetPrefixes.get( prefix ) ).orElse( sourceModel.getNsPrefixURI( prefix ) ) ) )
+                  .collect( Collectors.toMap( AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue ) );
       targetModel.setNsPrefixes( newPrefixMap );
 
       return targetModel;

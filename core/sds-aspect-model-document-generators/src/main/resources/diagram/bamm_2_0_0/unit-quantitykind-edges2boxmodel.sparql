@@ -12,7 +12,6 @@
 prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>
 prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
 
 # Generates edges between Units and QuantityKinds (quantityKind)
@@ -23,7 +22,7 @@ construct {
   ?edge :to ?to .
 } where {
   [] bamm-c:unit ?unit .
-  ?unit unit:referenceUnit?/unit:quantityKind ?quantityKind .
+  ?unit bamm:referenceUnit?/bamm:quantityKind ?quantityKind .
   ?unit bamm:name ?unitName .
   bind( concat( ucase( substr( ?unitName, 1, 1 ) ), substr( ?unitName, 2 ) ) as ?upperUnitName )
   ?quantityKind bamm:name ?quantityKindGivenName .

@@ -14,7 +14,6 @@ prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
 
 # Generates boxes for Units
@@ -40,6 +39,6 @@ construct {
   bind( iri( concat( str( : ), ?boxName ) ) as ?unitBox )
 
   optional {
-    ?unit unit:symbol ?symbol
+    ?unit bamm:symbol ?symbol
   }
 }
