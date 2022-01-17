@@ -14,6 +14,7 @@ prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:bamm:io.openmanufacturing:function:2.0.0#>
 
 # Generates edges between Characteristic and Entities or Abstract Entities (dataType)
 construct {
@@ -26,8 +27,8 @@ construct {
   filter( ! strstarts( str( ?entityOrAbstractEntity ), str( xsd: ) )
          && ! strstarts( str( ?entityOrAbstractEntity ), str( rdf: ) )
          && ! strstarts( str( ?entityOrAbstractEntity ), str ( bamm-e: ) ) )
-  ?characteristic bamm:name ?characteristicName .
-  ?entityOrAbstractEntity bamm:name ?entityOrAbstractEntityName .
+  bind( func:getElementName( ?characteristic ) as ?characteristicName )
+  bind( strafter( str( ?entityOrAbstractEntity ), "#" ) as ?entityOrAbstractEntityName ) .
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
   bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
 

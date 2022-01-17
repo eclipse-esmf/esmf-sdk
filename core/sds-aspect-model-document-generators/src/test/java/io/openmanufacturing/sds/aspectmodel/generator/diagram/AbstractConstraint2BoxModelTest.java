@@ -27,11 +27,17 @@ public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions 
 
    final String sparqlQueryFileName = "constraint2boxmodel.sparql";
 
-   protected String boxSelectorStatement( final KnownVersion metaModelVersion ) {
+   protected String boxSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier ) {
+      if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ) {
+         return String.format( ":%s a :Box", constraintIdentifier );
+      }
       return ":TestConstraintConstraint a :Box";
    }
 
-   protected String entriesSelectorStatement( final KnownVersion metaModelVersion ) {
+   protected String entriesSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier ) {
+      if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ) {
+         return String.format( ":%s :entries *", constraintIdentifier );
+      }
       return ":TestConstraintConstraint :entries *";
    }
 

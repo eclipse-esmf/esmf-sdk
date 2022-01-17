@@ -15,6 +15,7 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:bamm:io.openmanufacturing:function:2.0.0#>
 
 # Generates boxes for Constraints
 construct {
@@ -84,39 +85,8 @@ construct {
     ?aspect (<>|!<>)* ?constraint .
   } )
 
-  optional {
-    ?constraint bamm:name ?givenConstraintName .
-  }
-
-  # Calculate logical hash for constraint in case it does not have a bamm:name
-  # The constraint might also be defined as an anonymous node
-  {
-    select * where {
-      ?constraint rdf:type/rdfs:subClassOf* bamm:Constraint .
-      filter( sameTerm( ?propertySubQueryConstraint, ?constraint ) )
-      {
-        select ?propertySubQueryConstraint ( group_concat( ?serializedProperty; separator=":" ) as ?constraintPropertyValues )
-        where {
-          select *
-          where {
-            ?propertySubQueryConstraint rdf:type/rdfs:subClassOf* bamm:Constraint .
-            ?propertySubQueryConstraint ?anyProperty ?constraintPropertyValue .
-            bind( concat( str( ?anyProperty ), "=", str( ?constraintPropertyValue ) ) as ?serializedProperty )
-          }
-          order by str( ?serializedProperty )
-        }
-        group by ?propertySubQueryConstraint
-      }
-    }
-  }
-
-  bind( coalesce( concat( ?givenConstraintName, "Constraint" ),
-                 concat( "Constraint", substr( md5( ?constraintPropertyValues ), 0, 11 ) ) ) as ?boxName )
-
-  ?constraint a ?constraintType .
-  bind( coalesce( ?givenConstraintName, strafter( str( ?constraintType ), "#" ) ) as ?constraintName )
-
-  bind( iri( concat( str( : ), ?boxName ) ) as ?constraintBox )
+  bind( func:getElementName( ?constraint ) as ?constraintName )
+  bind( iri( concat( str( : ), ?constraintName ) ) as ?constraintBox )
 
   optional {
     ?constraint bamm:preferredName ?preferredNameValue .

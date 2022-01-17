@@ -32,7 +32,7 @@ construct {
   ?measurement bamm-c:unit ?unit .
   # Select only those Units that are used in the Aspect
   filter( exists { ?property bamm:characteristic/( bamm-c:baseCharacteristic* | rdfs:subClassOf* ) ?measurement } )
-  ?unit bamm:name ?unitName .
+  bind( strafter( str( ?unit ), "#" ) as ?unitName ) .
   bind( concat( ucase( substr( ?unitName, 1, 1 ) ), substr( ?unitName, 2 ) ) as ?upperUnitName )
 
   bind( concat( ?upperUnitName, "Unit" ) as ?boxName )

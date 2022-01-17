@@ -43,27 +43,27 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
          qexec.execConstruct( queryResult );
       }
 
-      final String boxNameSuffix = "ConstraintConstraint";
-
-      assertThat( queryResult.listStatements( context.selector( ":UsedTest" + boxNameSuffix + " a :Box" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":UnusedTest" + boxNameSuffix + " a :Box" ) ).toList() ).hasSize( 0 );
+      assertThat( queryResult.listStatements( context.selector( "* a :Box" ) ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() ).hasSize( 5 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+      final String constraintIdentifier = "LengthConstraint294de3c";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE, metaModelVersion );
-      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ), 5, expectedSeeEntryTitle, "http://example.com/omp" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
+      final String constraintIdentifier = "LengthConstraintc82ebce";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             5,
             expectedSeeEntryTitle,
@@ -73,17 +73,20 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+      final String constraintIdentifier = "LengthConstraint125edc1";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
-      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
+      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ), 5 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testRegularExpressionConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
+      final String constraintIdentifier = "RegularExpressionConstraint44300e9";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_NUMERIC_REGULAR_EXPRESSION_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             4,
             expectedValueEntryTitle, "\\\\d*\\|x" );
@@ -92,13 +95,14 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testFixedPointConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
+      final String constraintIdentifier = "FixedPointConstraintf898f1a";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_FIXED_POINT_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             8, "scale", "5" );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             9, "integer", "3" );
    }

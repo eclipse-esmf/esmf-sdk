@@ -31,8 +31,6 @@ import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 
 public class Enumeration2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "enumeration2boxmodel.sparql";
-   private final String boxSelectorStatement = ":TestEnumerationCharacteristic a :Box";
-   private final String entriesSelectorStatement = ":TestEnumerationCharacteristic :entries *";
    private final int totalNumberOfExpectedEntries = 6;
    private final int indexOfSeeValueEntry = 5;
    private final String expectedSeeEntryTitle = "see";
@@ -62,6 +60,9 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+      final String characteristicIdentifier = "TestEnumeration";
+      final String boxSelectorStatement = getBoxSelectorStatement( metaModelVersion, characteristicIdentifier );
+      final String entriesSelectorStatement = getEntriesSelectorStatement( metaModelVersion, characteristicIdentifier );
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUMERATION_WITH_SEE_ATTRIBUTE,
             metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
@@ -71,6 +72,9 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
+      final String characteristicIdentifier = "Enumeration365b407";
+      final String boxSelectorStatement = getBoxSelectorStatement( metaModelVersion, characteristicIdentifier );
+      final String entriesSelectorStatement = getEntriesSelectorStatement( metaModelVersion, characteristicIdentifier );
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUMERATION_WITH_MULTIPLE_SEE_ATTRIBUTES,
             metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
@@ -81,9 +85,26 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+      final String characteristicIdentifier = "TestEnumeration";
+      final String boxSelectorStatement = getBoxSelectorStatement( metaModelVersion, characteristicIdentifier );
+      final String entriesSelectorStatement = getEntriesSelectorStatement( metaModelVersion, characteristicIdentifier );
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUMERATION_WITHOUT_SEE_ATTRIBUTE,
             metaModelVersion );
       context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry );
+   }
+
+   private String getBoxSelectorStatement( final KnownVersion metaModelVersion, final String characteristicIdentifier ) {
+      if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ) {
+         return String.format( ":%sCharacteristic a :Box", characteristicIdentifier );
+      }
+      return ":TestEnumerationCharacteristic a :Box";
+   }
+
+   private String getEntriesSelectorStatement( final KnownVersion metaModelVersion, final String characteristicIdentifier ) {
+      if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ) {
+         return String.format( ":%sCharacteristic :entries *", characteristicIdentifier );
+      }
+      return ":TestEnumerationCharacteristic :entries *";
    }
 }
