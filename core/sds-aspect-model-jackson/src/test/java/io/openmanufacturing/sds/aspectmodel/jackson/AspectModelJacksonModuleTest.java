@@ -175,7 +175,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       final Field enumerationField = clazz.getDeclaredField( "enumerationProperty" );
       enumerationField.setAccessible( true );
       final Class<?> enumerationType = enumerationField.getType();
-      assertThat( enumerationType.getName() ).isEqualTo( PACKAGE + ".Foo" );
+      assertThat( enumerationType.getName() ).isEqualTo( PACKAGE + ".TestEnumeration" );
       assertThat( enumerationType.isEnum() ).isTrue();
 
       final Object enumerationValue = enumerationField.get( instance );

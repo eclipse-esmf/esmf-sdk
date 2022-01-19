@@ -25,13 +25,13 @@
 :systemState a bamm:Property ;
     bamm:preferredName "System State"@en ;
     bamm:description "The state the system is currently in, e.g. heat-up."@en ;
-    bamm:characteristic [
-       a bamm-c:Enumeration ;
-       bamm:preferredName "System States"@en ;
-       bamm:description "Defines which states the system may have."@en ;
-       bamm:dataType :SystemState ;
-       bamm-c:values ( :Off :CoolDown :HeatUp :On )
-    ] .
+    bamm:characteristic :SystemStates .
+
+:SystemStates a bamm-c:Enumeration ;
+   bamm:preferredName "System States"@en ;
+   bamm:description "Defines which states the system may have."@en ;
+   bamm:dataType :SystemState ;
+   bamm-c:values ( :Off :CoolDown :HeatUp :On ) .
 
 :SystemState a bamm:Entity ;
              bamm:preferredName "System State"@en ;
