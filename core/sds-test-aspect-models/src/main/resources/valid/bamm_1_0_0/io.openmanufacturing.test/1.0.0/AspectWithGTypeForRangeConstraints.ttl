@@ -26,12 +26,12 @@
 
 :testPropertyWithGYear
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithGYear" ;
+    bamm:name           "testPropertyWithGYear" ;
     bamm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGYear .
 
 :testWithGregorianCalendarMinGregorianCalendarMaxGYear
     a                       bamm-c:Trait;
-    bamm:name               "TestWithGregorianCalendarMinGregorianCalendarMaxGYear" ;
+    bamm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGYear" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [
@@ -51,12 +51,12 @@
 
 :testPropertyWithGMonth
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithGMonth" ;
+    bamm:name           "testPropertyWithGMonth" ;
     bamm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGMonth .
 
 :testWithGregorianCalendarMinGregorianCalendarMaxGMonth
     a                       bamm-c:Trait ;
-    bamm:name               "TestWithGregorianCalendarMinGregorianCalendarMaxGMonth" ;
+    bamm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGMonth" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [
@@ -76,12 +76,12 @@
 
 :testPropertyWithGDay
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithGDay" ;
+    bamm:name           "testPropertyWithGDay" ;
     bamm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGDay .
 
 :testWithGregorianCalendarMinGregorianCalendarMaxGDay
     a                       bamm-c:Trait ;
-    bamm:name               "TestWithGregorianCalendarMinGregorianCalendarMaxGDay" ;
+    bamm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGDay" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [
@@ -101,12 +101,12 @@
 
 :testPropertyWithGYearMonth
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithGYearMonth" ;
+    bamm:name           "testPropertyWithGYearMonth" ;
     bamm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGYearMonth .
 
 :testWithGregorianCalendarMinGregorianCalendarMaxGYearMonth
     a                       bamm-c:Trait ;
-    bamm:name               "TestWithGregorianCalendarMinGregorianCalendarMaxGYearMonth" ;
+    bamm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGYearMonth" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [
@@ -126,12 +126,12 @@
 
 :testPropertyWithGMonthYear
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithGMonthYear" ;
+    bamm:name           "testPropertyWithGMonthYear" ;
     bamm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGMonthYear .
 
 :testWithGregorianCalendarMinGregorianCalendarMaxGMonthYear
     a                       bamm-c:Trait ;
-    bamm:name               "TestWithGregorianCalendarMinGregorianCalendarMaxGMonthYear" ;
+    bamm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGMonthYear" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [

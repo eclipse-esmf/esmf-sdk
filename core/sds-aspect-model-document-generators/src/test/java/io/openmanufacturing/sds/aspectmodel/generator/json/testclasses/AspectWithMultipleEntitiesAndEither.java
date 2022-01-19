@@ -18,16 +18,16 @@ public class AspectWithMultipleEntitiesAndEither {
 
    private final TestEntityWithSimpleTypes testEntityOne;
    private final TestEntityWithSimpleTypes testEntityTwo;
-   private final Either<TestEntityWithSimpleTypes, String> testEither;
+   private final Either<TestEntityWithSimpleTypes, String> testEitherProperty;
 
    public AspectWithMultipleEntitiesAndEither(
          @JsonProperty( "testEntityOne" ) final TestEntityWithSimpleTypes testEntityOne,
          @JsonProperty( "testEntityTwo" ) final TestEntityWithSimpleTypes testEntityTwo,
-         @JsonProperty( "testEither" ) final Either<TestEntityWithSimpleTypes, String> testEither
+         @JsonProperty( "testEitherProperty" ) final Either<TestEntityWithSimpleTypes, String> testEitherProperty
    ) {
       this.testEntityOne = testEntityOne;
       this.testEntityTwo = testEntityTwo;
-      this.testEither = testEither;
+      this.testEitherProperty = testEitherProperty;
    }
 
    public TestEntityWithSimpleTypes getTestEntityOne() {
@@ -38,7 +38,7 @@ public class AspectWithMultipleEntitiesAndEither {
       return testEntityTwo;
    }
 
-   public Either<TestEntityWithSimpleTypes, String> getTestEither() {
-      return testEither;
+   public Either<TestEntityWithSimpleTypes, String> getTestEitherProperty() {
+      return testEitherProperty;
    }
 }

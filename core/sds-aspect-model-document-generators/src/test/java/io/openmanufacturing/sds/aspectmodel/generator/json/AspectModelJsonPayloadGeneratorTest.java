@@ -307,7 +307,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final AspectWithMultipleEntitiesAndEither aspectWithCollectionOfSimpleType = parseJson( generatedJson, AspectWithMultipleEntitiesAndEither.class );
       assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEntityOne() );
       assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEntityTwo() );
-      assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEither().getLeft() );
+      assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEitherProperty().getLeft() );
    }
 
    @ParameterizedTest
@@ -414,7 +414,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final AspectWithRangeConstraintWithoutMinMaxDoubleValue aspectWithRangeConstraintWithoutMinMaxDoubleValue =
             parseJson( generatedJson, AspectWithRangeConstraintWithoutMinMaxDoubleValue.class );
 
-      assertThat( aspectWithRangeConstraintWithoutMinMaxDoubleValue.getTestDouble() ).isNotNull();
+      assertThat( aspectWithRangeConstraintWithoutMinMaxDoubleValue.getDoubleProperty() ).isNotNull();
    }
 
    @ParameterizedTest
