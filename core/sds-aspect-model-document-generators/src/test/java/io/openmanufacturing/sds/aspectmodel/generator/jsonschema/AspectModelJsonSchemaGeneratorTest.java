@@ -157,13 +157,23 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
 
-      assertThat( context.<String> read( "$['properties']['anyUriProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeAnyUri" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeAnyUri']['type']" ) ).isEqualTo( "string" );
+      String characteristicReference = context.<String> read( "$['properties']['anyUriProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeAnyUri" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      String characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['format']" ) ).isEqualTo( "uri" );
 
-      assertThat( context.<String> read( "$['properties']['base64BinaryProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/Base64BinaryValue" );
-      assertThat( context.<String> read( "$['components']['schemas']['Base64BinaryValue']['type']" ) ).isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['base64BinaryProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/Base64BinaryValue" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['contentEncoding']" ) ).isEqualTo( "base64" );
 
       final String booleanUrn = String.format( "urn_bamm_io.openmanufacturing_characteristic_%s_Boolean",
             KnownVersion.getLatest().toVersionString() );
@@ -172,9 +182,13 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['"+booleanUrn+"']['type']" ) )
             .isEqualTo( "boolean" );
 
-      assertThat( context.<String> read( "$['properties']['byteProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeByte" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeByte']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['byteProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeByte" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
       final String unitReferenceUrn = String
             .format( "urn_bamm_io.openmanufacturing_characteristic_%s_UnitReference",
@@ -184,9 +198,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['"+unitReferenceUrn+"']['type']" ) )
             .isEqualTo( "string" );
 
-      assertThat( context.<String> read( "$['properties']['dateProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/DateValue" );
-      assertThat( context.<String> read( "$['components']['schemas']['DateValue']['type']" ) ).isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['dateProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/DateValue" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['format']" ) ).isEqualTo( "date" );
 
       final String timestampUrn = String.format( "urn_bamm_io.openmanufacturing_characteristic_%s_Timestamp",
             KnownVersion.getLatest().toVersionString() );
@@ -195,58 +214,112 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['"+timestampUrn+"']['type']" ) )
             .isEqualTo( "string" );
 
-      assertThat( context.<String> read( "$['properties']['dateTimeStampProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeDateTimeStamp" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeDateTimeStamp']['type']" ) ).isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['dateTimeStampProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeDateTimeStamp" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['format']" ) ).isEqualTo( "date-time" );
 
-      assertThat( context.<String> read( "$['properties']['dayTimeDuration']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeDayTimeDuration" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeDayTimeDuration']['type']" ) )
-            .isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['dayTimeDuration']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeDayTimeDuration" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
 
-      assertThat( context.<String> read( "$['properties']['decimalProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeDecimal" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeDecimal']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['decimalProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeDecimal" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['doubleProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeDouble" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeDouble']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['doubleProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeDouble" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['durationProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeDuration" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeDuration']['type']" ) ).isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['durationProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeDuration" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['format']" ) ).isEqualTo( "duration" );
 
-      assertThat( context.<String> read( "$['properties']['floatProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeFloat" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeFloat']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['floatProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeFloat" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['gMonthDayProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeGMonthDay" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeGMonthDay']['type']" ) ).isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['gMonthDayProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeGMonthDay" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
 
-      assertThat( context.<String> read( "$['properties']['gMonthProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeGMonth" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeGMonth']['type']" ) ).isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['gMonthProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeGMonth" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
 
-      assertThat( context.<String> read( "$['properties']['gYearMonthProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeGYearMonth" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeGYearMonth']['type']" ) ).isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['gYearMonthProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeGYearMonth" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
 
-      assertThat( context.<String> read( "$['properties']['gYearProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeGYear" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeGYear']['type']" ) ).isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['gYearProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeGYear" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
 
-      assertThat( context.<String> read( "$['properties']['hexBinaryProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/HexBinaryValue" );
-      assertThat( context.<String> read( "$['components']['schemas']['HexBinaryValue']['type']" ) ).isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['hexBinaryProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/HexBinaryValue" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['pattern']" ) ).isEqualTo( "([0-9a-fA-F])([0-9a-fA-F])*" );
 
-      assertThat( context.<String> read( "$['properties']['intProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeInt" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeInt']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['intProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeInt" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['integerProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeInteger" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeInteger']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['integerProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeInteger" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
       final String multiLanguageTextUrn = String
             .format( "urn_bamm_io.openmanufacturing_characteristic_%s_MultiLanguageText",
@@ -256,32 +329,53 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']"
             + "['"+multiLanguageTextUrn+"']['type']" ) ).isEqualTo( "object" );
 
-      assertThat( context.<String> read( "$['properties']['longProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeLong" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeLong']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['longProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeLong" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['negativeIntegerProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeNegativeInteger" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeNegativeInteger']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['negativeIntegerProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeNegativeInteger" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['nonNegativeIntegerProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeNonNegativeInteger" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeNonNegativeInteger']['type']" ) )
-            .isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['nonNegativeIntegerProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeNonNegativeInteger" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['nonPositiveInteger']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeNonPositiveInteger" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeNonPositiveInteger']['type']" ) )
-            .isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['nonPositiveInteger']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeNonPositiveInteger" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['positiveIntegerProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomePositiveInteger" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomePositiveInteger']['type']" ) )
-            .isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['positiveIntegerProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomePositiveInteger" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['shortProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeShort" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeShort']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['shortProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeShort" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
       final String textUrn = String.format( "urn_bamm_io.openmanufacturing_characteristic_%s_Text",
             KnownVersion.getLatest().toVersionString() );
@@ -289,41 +383,54 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/" + textUrn );
       assertThat( context.<String> read( "$['components']['schemas']['"+textUrn+"']['type']" ) ).isEqualTo( "string" );
 
-      assertThat( context.<String> read( "$['properties']['timeProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeTime" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeTime']['type']" ) ).isEqualTo( "string" );
+      characteristicReference = context.<String> read( "$['properties']['timeProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeTime" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['format']" ) ).isEqualTo( "time" );
 
-      assertThat( context.<String> read( "$['properties']['unsignedByteProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeUnsignedByte" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeUnsignedByte']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['unsignedByteProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeUnsignedByte" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['unsignedIntProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeUnsignedInt" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeUnsignedInt']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['unsignedIntProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeUnsignedInt" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['unsignedLongProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeLength" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeLength']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['unsignedLongProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeLength" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Quantifiable[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['unsignedShortProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeUnsignedShort" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeUnsignedShort']['type']" ) ).isEqualTo( "number" );
+      characteristicReference = context.<String> read( "$['properties']['unsignedShortProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeUnsignedShort" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
 
-      assertThat( context.<String> read( "$['properties']['yearMonthDurationProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/SomeYearMonthDuration" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeYearMonthDuration']['type']" ) )
-            .isEqualTo( "string" );
-
-      assertThat( context.<String> read( "$['components']['schemas']['SomeDateTimeStamp']['format']" ) )
-            .isEqualTo( "date-time" );
-      assertThat( context.<String> read( "$['components']['schemas']['DateValue']['format']" ) ).isEqualTo( "date" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeTime']['format']" ) ).isEqualTo( "time" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeDuration']['format']" ) ).isEqualTo( "duration" );
-      assertThat( context.<String> read( "$['components']['schemas']['SomeAnyUri']['format']" ) ).isEqualTo( "uri" );
-      assertThat( context.<String> read( "$['components']['schemas']['Base64BinaryValue']['contentEncoding']" ) )
-            .isEqualTo( "base64" );
-      assertThat( context.<String> read( "$['components']['schemas']['HexBinaryValue']['pattern']" ) )
-            .isEqualTo( "([0-9a-fA-F])([0-9a-fA-F])*" );
+      characteristicReference = context.<String> read( "$['properties']['yearMonthDurationProperty']['$ref']" );
+      assertThat( characteristicReference ).satisfiesAnyOf(
+            reference -> assertThat( reference ).isEqualTo( "#/components/schemas/SomeYearMonthDuration" ),
+            reference -> assertThat( reference ).matches( "#/components/schemas/Characteristic[a-z0-9]{7}" )
+      );
+      characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
+      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
    }
 
    @ParameterizedTest
@@ -826,7 +933,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" );
       assertThat(context.<String>read("$['components']['schemas']"
             + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']"))
-            .isEqualTo( "#/components/schemas/Integer" );
+            .matches( "#/components/schemas/Characteristic[a-z0-9]{7}" );
       assertThat(context.<String>read("$['properties']['testProperty']['$ref']"))
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
    }
@@ -847,7 +954,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" );
       assertThat(context.<String>read("$['components']['schemas']"
             + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']"))
-            .isEqualTo( "#/components/schemas/Integer" );
+            .matches( "#/components/schemas/Characteristic[a-z0-9]{7}" );
       assertThat(context.<String>read("$['properties']['testProperty']['$ref']"))
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity" );
    }
@@ -868,7 +975,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" );
       assertThat(context.<String>read("$['components']['schemas']"
             + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']"))
-            .isEqualTo( "#/components/schemas/Integer" );
+            .matches( "#/components/schemas/Characteristic[a-z0-9]{7}" );
       assertThat(context.<String>read("$['components']['schemas']"
             + "['urn_bamm_io.openmanufacturing.test_1.0.0_EntityCollectionCharacteristic']['items']['$ref']"))
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
