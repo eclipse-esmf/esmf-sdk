@@ -23,12 +23,12 @@
 
 :testPropertyWithDateTime
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithDateTime" ;
+    bamm:name           "testPropertyWithDateTime" ;
     bamm:characteristic :testWithGregorianCalenderMinGregorianCalenderMaxDateTime .
 
 :testWithGregorianCalenderMinGregorianCalenderMaxDateTime
     a                       bamm-c:Trait ;
-    bamm:name               "TestWithGregorianCalenderMinGregorianCalenderMaxDateTime" ;
+    bamm:name               "testWithGregorianCalenderMinGregorianCalenderMaxDateTime" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [
@@ -48,12 +48,12 @@
 
 :testPropertyWithDateTimeStamp
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithDateTimeStamp" ;
+    bamm:name           "testPropertyWithDateTimeStamp" ;
     bamm:characteristic :testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp .
 
 :testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp
     a                       bamm-c:Trait;
-    bamm:name               "TestWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp" ;
+    bamm:name               "testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [
