@@ -70,11 +70,9 @@ sds-sdk
  │     ├─── sds-aspect-meta-model
  │     ├─── sds-aspect-static-meta-model
  │     ├─── ...
- ├─── tools                                     # accompanying tools, build system integrations etc. 
- │     ├─── bamm-cli
- │     ├─── ...
- └─── samples                                   # sample projects to get you started quickly
-
+ └─── tools                                     # accompanying tools, build system integrations etc.
+       ├─── bamm-cli
+       └─── ...
 ```
 
 ## Java Core Components
@@ -205,14 +203,14 @@ automated build or any project at all. Provided functions are:
 * Java class generation
 * Static meta model generation
 
-New SDK functionality based on the Aspect Meta Model will always be also provided through the BAMM CLI. 
+New SDK functionality based on the Aspect Meta Model will always be also provided through the BAMM CLI.
 Build binary versions of the BAMM CLI are available as part of the [BAMM SDK releases in GitHub](https://github.com/OpenManufacturingPlatform/sds-sdk/releases).
 
 ## License
 
 SPDX-License-Identifier: MPL-2.0
 
-This program and the accompanying materials are made available under the terms of the 
+This program and the accompanying materials are made available under the terms of the
 [Mozilla Public License, v. 2.0](LICENSE).
 
 The [Notice file](NOTICE.md) details contained third party materials.
