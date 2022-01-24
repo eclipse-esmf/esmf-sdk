@@ -99,7 +99,6 @@ public class PrettyPrinter {
 
    private Comparator<Property> createPredefinedPropertyOrder( final BAMMC bammc ) {
       final List<Property> predefinedPropertyOrder = new ArrayList<>();
-      predefinedPropertyOrder.add( bamm.name() );
       predefinedPropertyOrder.add( bamm._extends() );
       predefinedPropertyOrder.add( bamm.preferredName() );
       predefinedPropertyOrder.add( bamm.description() );

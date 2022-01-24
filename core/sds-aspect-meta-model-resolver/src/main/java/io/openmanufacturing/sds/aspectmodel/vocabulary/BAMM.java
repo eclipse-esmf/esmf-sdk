@@ -58,10 +58,6 @@ public class BAMM implements Namespace {
       return property( "curie" );
    }
 
-   public Property name() {
-      return property( "name" );
-   }
-
    public Property description() {
       return property( "description" );
    }

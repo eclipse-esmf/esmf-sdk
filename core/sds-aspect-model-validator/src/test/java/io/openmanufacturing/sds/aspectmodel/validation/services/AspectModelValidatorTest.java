@@ -96,7 +96,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    }
 
    @ParameterizedTest
-   @MethodSource( value = "allVersions" )
+   @MethodSource( value = "versionsUpToIncluding1_0_0" )
    public void testInvalidAspect_missingNameAndProperties( final KnownVersion metaModelVersion ) {
       final TestModel testModel = InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES;
       final Try<VersionedModel> validAspectModel = TestResources.getModel( testModel, metaModelVersion );

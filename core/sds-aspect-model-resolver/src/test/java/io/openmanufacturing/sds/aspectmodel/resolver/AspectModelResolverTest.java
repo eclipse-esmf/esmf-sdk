@@ -269,7 +269,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
             .createResource( "urn:bamm:io.openmanufacturing.test:1.0.0#TestCharacteristic" );
       final BAMM bamm = new BAMM( metaModelVersion );
       org.assertj.core.api.Assertions.assertThat(
-            Streams.stream( model.listStatements( testCharacteristic, bamm.name(), (RDFNode) null ) ).count() )
+            Streams.stream( model.listStatements( testCharacteristic, RDF.type, (RDFNode) null ) ).count() )
                                      .isEqualTo( 1 );
    }
 

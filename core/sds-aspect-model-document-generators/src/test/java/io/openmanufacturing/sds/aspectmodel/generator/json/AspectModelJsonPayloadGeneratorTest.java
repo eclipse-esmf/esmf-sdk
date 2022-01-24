@@ -252,9 +252,6 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    public void testGenerateJsonForAspectWithEnumHavingNestedEntities( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES, metaModelVersion );
 
-      final BAMM bamm = new BAMM( metaModelVersion );
-      assertThat( generatedJson ).doesNotContain( bamm.name().toString() );
-
       final AspectWithEnumHavingNestedEntities aspectWithEnum = parseJson( generatedJson, AspectWithEnumHavingNestedEntities.class );
 
       assertThat( aspectWithEnum.getSimpleResult().getValue() ).isEqualTo( "Yes" );

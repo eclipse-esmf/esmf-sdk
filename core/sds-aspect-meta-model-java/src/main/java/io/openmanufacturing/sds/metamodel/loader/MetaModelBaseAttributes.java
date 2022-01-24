@@ -159,18 +159,10 @@ public class MetaModelBaseAttributes {
       final Set<LangString> preferredNames = getLanguages( metaModelElement, bamm.preferredName(), model );
       final Set<LangString> descriptions = getLanguages( metaModelElement, bamm.description(), model );
       final List<String> seeValues = getSeeValues( metaModelElement, model, bamm );
-      final Optional<String> nameGivenInModel = Optional
-            .ofNullable( model.getProperty( metaModelElement, bamm.name() ) )
-            .map( Statement::getString );
-      final Optional<String> nameFromUrn = urn.map( AspectModelUrn::getName );
-      final Optional<String> actualName = Stream.of( nameGivenInModel, nameFromUrn )
-            .filter( Optional::isPresent )
-            .map( Optional::get )
-            .findFirst();
+      final Optional<String> actualName = urn.map( AspectModelUrn::getName );
       final String name = actualName.orElseGet( () -> getSyntheticName( metaModelElement, model ) );
       final boolean isSyntheticName = actualName.isEmpty();
-      return new MetaModelBaseAttributes( metaModelVersion, urn.orElse( null ), name, preferredNames, descriptions,
-            seeValues, isSyntheticName );
+      return new MetaModelBaseAttributes( metaModelVersion, urn.orElse( null ), name, preferredNames, descriptions, seeValues, isSyntheticName );
    }
 
    /**

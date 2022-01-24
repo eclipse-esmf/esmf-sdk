@@ -13,6 +13,6 @@
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 
 :InvalidSyntax a bamm:Aspect;
-	bamm:preferredName "Test Aspect"@en;
+	bamm:preferredName "Test Aspect"@en
 	bamm:properties () ;
 	bamm:operations () .
