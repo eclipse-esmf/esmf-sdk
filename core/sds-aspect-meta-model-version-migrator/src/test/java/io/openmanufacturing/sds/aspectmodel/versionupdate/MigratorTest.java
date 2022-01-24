@@ -15,6 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.versionupdate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,6 +36,7 @@ import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.VersionNumber;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 
@@ -46,7 +49,11 @@ public class MigratorTest extends MetaModelVersions {
    public void testRawModelIsMigrated( final KnownVersion metaModelVersion ) {
       final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
-      assertThat( versionedModel.getRawModel().size() ).isEqualTo( rewrittenModel.getRawModel().size() );
+      if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ) {
+         assertThat( versionedModel.getRawModel().size() ).isEqualTo( rewrittenModel.getRawModel().size() );
+      } else {
+         assertThat( versionedModel.getRawModel().size() - 1 ).isEqualTo( rewrittenModel.getRawModel().size() );
+      }
       if ( metaModelVersion.equals( KnownVersion.getLatest() ) ) {
          return;
       }
@@ -96,6 +103,41 @@ public class MigratorTest extends MetaModelVersions {
       assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#Unit" ) );
       assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#symbol" ) );
       assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#quantityKind" ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "allVersions" )
+   public void testMigrateAnonymousEnums( final KnownVersion metaModelVersion ) {
+      final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_STRING_ENUMERATION, metaModelVersion );
+      final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
+      final BAMMC bammc = new BAMMC( KnownVersion.getLatest() );
+      final List<Statement> anonymousEnumerations = rewrittenModel.getModel().listStatements( null, RDF.type, bammc.Enumeration() ).toList().stream()
+            .filter( statement -> statement.getSubject().isAnon() )
+            .collect( Collectors.toList() );
+      assertThat( anonymousEnumerations ).isEmpty();
+
+      final List<Statement> namedEnumerations = rewrittenModel.getModel().listStatements( null, RDF.type, bammc.Enumeration() ).toList().stream()
+            .filter( statement -> statement.getSubject().isURIResource() )
+            .collect( Collectors.toList() );
+      assertThat( namedEnumerations ).hasSize( 1 );
+
+      final Statement namedEnumeration = namedEnumerations.get( 0 );
+      final List<Statement> namedEnumerationProperties = namedEnumeration.getSubject().listProperties().toList();
+      assertThat( namedEnumerationProperties ).hasSize( 3 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "allVersions" )
+   public void testRemoveBammName( final KnownVersion metaModelVersion ) {
+      final BAMM bamm = new BAMM( metaModelVersion );
+      final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
+      final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
+
+      final String bammNameUrn = bamm.getNamespace() + "name";
+      final List<Statement> bammNameStatements = rewrittenModel.getModel().listStatements().toList().stream()
+            .filter( statement -> statement.getPredicate().getURI().equals( bammNameUrn ) )
+            .collect( Collectors.toList() );
+      assertThat( bammNameStatements ).isEmpty();
    }
 
    private Set<String> getAllUris( final Model model ) {
