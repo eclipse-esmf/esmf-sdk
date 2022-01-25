@@ -64,11 +64,12 @@
       <module>core/sds-test-resources</module>
       <module>tools/bamm-cli</module>
       <module>sds-sdk-test-report</module>
+      <module>core/sds-aspect-model-maven-plugin</module>
    </modules>
 
    <properties>
       <!-- Versions of third party dependencies -->
-      <aspect-meta-model-version>2.0.0-M1</aspect-meta-model-version>
+      <aspect-meta-model-version>2.0.0</aspect-meta-model-version>
       <assertj-vavr-version>0.1.0</assertj-vavr-version>
       <classgraph-version>4.8.29</classgraph-version>
       <commons-text-version>1.6</commons-text-version>
