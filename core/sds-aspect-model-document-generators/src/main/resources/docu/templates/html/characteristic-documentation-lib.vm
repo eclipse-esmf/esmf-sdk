@@ -274,7 +274,9 @@ Characteristic specific macros will be joined together in the main macro (see ab
             <div class="table-cell pb-3 col-span-2">$duration.getDescription($i18n.getLocale())</div>
         </div>
     #end
-    #Unit($!duration.getUnit().get() $aspectModelHelper $i18n)
+    #if($!duration.getUnit().present)
+        #Unit($!duration.getUnit().get() $aspectModelHelper $i18n)
+    #end
 #end
 
 #* -- for Quantifiable ------------------------------------------------------------- *#

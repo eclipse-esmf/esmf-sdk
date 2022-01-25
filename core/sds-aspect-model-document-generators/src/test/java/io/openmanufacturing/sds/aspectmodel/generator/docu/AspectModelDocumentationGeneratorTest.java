@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel.generator.docu;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -154,6 +155,14 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       assertThat( documentation ).contains( "<h3 id=\"testProperty-property\">testProperty</h3>" );
       assertThat( documentation ).contains( "<h5 id=\"abstractTestProperty-property\">abstractTestProperty</h5>" );
       assertThat( documentation ).contains( "<h5 id=\"entityProperty-property\">entityProperty</h5>" );
+   }
+   @ParameterizedTest
+   @MethodSource( "allVersions" )
+   public void testAspectWithQuantifiableWithoutUnit( final KnownVersion metaModelVersion ) throws IOException {
+      try ( final ByteArrayOutputStream stdOut = new ByteArrayOutputStream() ) {
+         System.setOut( new PrintStream( stdOut ) );
+         assertDoesNotThrow( () -> generateHtmlDocumentation( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITHOUT_UNIT, metaModelVersion ) );
+      }
    }
 
    private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion ) throws IOException {
