@@ -348,8 +348,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                         + "@DecimalMin(value = \"12.3\", inclusive = false)"
                         + "@DecimalMax(value = \"23.45\", inclusive = false)" )
                   .put( "intProp", "@NotNull"
-                        + "@Min(value = 12, boundDefinition = BoundDefinition.GREATER_THAN)"
-                        + "@Max(value = 23, boundDefinition = BoundDefinition.LESS_THAN)" )
+                        + "@IntegerMin(value = 12, boundDefinition = BoundDefinition.GREATER_THAN)"
+                        + "@IntegerMax(value = 23, boundDefinition = BoundDefinition.LESS_THAN)" )
                   .put( "integerProp", "@NotNull"
                         + "@DecimalMin(value = \"12\", inclusive = false)"
                         + "@DecimalMax(value = \"23\", inclusive = false)" )

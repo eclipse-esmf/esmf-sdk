@@ -30,8 +30,8 @@ import io.openmanufacturing.sds.aspectmodel.java.customconstraint.FloatMax;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.FloatMin;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.GregorianCalendarMax;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.GregorianCalendarMin;
-import io.openmanufacturing.sds.aspectmodel.java.customconstraint.Max;
-import io.openmanufacturing.sds.aspectmodel.java.customconstraint.Min;
+import io.openmanufacturing.sds.aspectmodel.java.customconstraint.IntegerMax;
+import io.openmanufacturing.sds.aspectmodel.java.customconstraint.IntegerMin;
 
 /**
  * Serves to map used data types to the respective annotation class.
@@ -39,11 +39,11 @@ import io.openmanufacturing.sds.aspectmodel.java.customconstraint.Min;
 public enum AnnotationTypeMapping {
 
    MINIMUM(
-         Map.of( Integer.class, Min.class, Double.class, DoubleMin.class, Float.class, FloatMin.class, BigDecimal.class,
+         Map.of( Integer.class, IntegerMin.class, Double.class, DoubleMin.class, Float.class, FloatMin.class, BigDecimal.class,
                DecimalMin.class, Duration.class, DurationMin.class, XMLGregorianCalendar.class,
                GregorianCalendarMin.class, BigInteger.class, DecimalMin.class ) ),
    MAXIMUM(
-         Map.of( Integer.class, Max.class, Double.class, DoubleMax.class, Float.class, FloatMax.class, BigDecimal.class,
+         Map.of( Integer.class, IntegerMax.class, Double.class, DoubleMax.class, Float.class, FloatMax.class, BigDecimal.class,
                DecimalMax.class, Duration.class, DurationMax.class, XMLGregorianCalendar.class,
                GregorianCalendarMax.class, BigInteger.class, DecimalMax.class ) );
 

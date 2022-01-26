@@ -22,15 +22,15 @@ import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
  * Validates assigned values of type {@link Integer}, which must be below or equal to this limit depending on the
  * provided {@link BoundDefinition}.
  */
-public class MaxValidator implements ConstraintValidator<Max, Integer> {
+public class MaxValidator implements ConstraintValidator<IntegerMax, Integer> {
 
    private int max;
    private BoundDefinition boundDefinition;
 
    @Override
-   public void initialize( final Max max ) {
-      this.max = max.value();
-      this.boundDefinition = max.boundDefinition();
+   public void initialize( final IntegerMax integerMax ) {
+      this.max = integerMax.value();
+      this.boundDefinition = integerMax.boundDefinition();
    }
 
    @Override

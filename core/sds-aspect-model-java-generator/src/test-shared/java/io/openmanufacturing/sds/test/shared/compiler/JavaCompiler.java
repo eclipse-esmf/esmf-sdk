@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -40,16 +40,14 @@ public class JavaCompiler {
       final InMemoryClassFileManager manager = new InMemoryClassFileManager(
             compiler.getStandardFileManager( null, null, null ) );
 
-      final List<JavaFileObject> compilerInput =
-            loadOrder.stream()
-                     .map( key -> new CompilerInput( key.toString(), sources.get( key ) ) )
-                     .collect( Collectors.toList() );
+      final List<JavaFileObject> compilerInput = loadOrder.stream()
+            .map( key -> new CompilerInput( key.toString(), sources.get( key ) ) )
+            .collect( Collectors.toList() );
 
       compiler.getTask( null, manager, new DiagnosticListener(), null, null, compilerInput ).call();
 
       return loadOrder.stream()
-                      .collect( Collectors
-                            .toMap( Function.identity(), qualifiedName -> defineAndLoad( qualifiedName, manager ) ) );
+            .collect( Collectors.toMap( Function.identity(), qualifiedName -> defineAndLoad( qualifiedName, manager ) ) );
    }
 
    @SuppressWarnings( "unchecked" )

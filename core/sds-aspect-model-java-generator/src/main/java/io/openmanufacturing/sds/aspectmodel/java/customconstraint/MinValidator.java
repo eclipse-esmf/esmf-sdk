@@ -22,15 +22,15 @@ import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
  * Validates assigned values of type {@link Integer}, which must be above or equal to this limit depending on the
  * provided {@link BoundDefinition}.
  */
-public class MinValidator implements ConstraintValidator<Min, Integer> {
+public class MinValidator implements ConstraintValidator<IntegerMin, Integer> {
 
    private int min;
    private BoundDefinition boundDefinition;
 
    @Override
-   public void initialize( final Min min ) {
-      this.min = min.value();
-      this.boundDefinition = min.boundDefinition();
+   public void initialize( final IntegerMin integerMin ) {
+      this.min = integerMin.value();
+      this.boundDefinition = integerMin.boundDefinition();
    }
 
    @Override
