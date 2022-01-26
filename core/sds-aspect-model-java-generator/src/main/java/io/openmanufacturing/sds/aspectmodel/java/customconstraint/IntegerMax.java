@@ -27,7 +27,7 @@ import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 
 @Target( { FIELD, TYPE_USE } )
 @Retention( RUNTIME )
-@Constraint( validatedBy = MaxValidator.class )
+@Constraint( validatedBy = IntegerMaxValidator.class )
 public @interface IntegerMax {
 
    String message() default "{io.openmanufacturing.aspectmodel.java.customconstraint.message}";

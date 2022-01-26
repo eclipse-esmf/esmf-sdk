@@ -289,10 +289,10 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                   .put( "testPropertyWithDecimalMaxRangeConstraint",
                         "@NotNull" + "@DecimalMax(value = \"10.5\")" )
                   .put( "testPropertyWithMinMaxRangeConstraint", "@NotNull"
-                        + "@Min(value = 1, boundDefinition = BoundDefinition.AT_LEAST)"
-                        + "@Max(value = 10, boundDefinition = BoundDefinition.AT_MOST)" )
+                        + "@IntegerMin(value = 1, boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@IntegerMax(value = 10, boundDefinition = BoundDefinition.AT_MOST)" )
                   .put( "testPropertyWithMinRangeConstraint", "@NotNull"
-                        + "@Min(value = 1, boundDefinition = BoundDefinition.AT_LEAST)" )
+                        + "@IntegerMin(value = 1, boundDefinition = BoundDefinition.AT_LEAST)" )
                   .put( "testPropertyRangeConstraintWithFloatType", "@NotNull"
                         + "@FloatMin(value = \"1.0\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@FloatMax(value = \"10.0\", boundDefinition = BoundDefinition.AT_MOST)" )

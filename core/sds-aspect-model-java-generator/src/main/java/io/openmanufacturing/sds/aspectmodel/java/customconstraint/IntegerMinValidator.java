@@ -19,18 +19,18 @@ import javax.validation.ConstraintValidatorContext;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 
 /**
- * Validates assigned values of type {@link Integer}, which must be below or equal to this limit depending on the
+ * Validates assigned values of type {@link Integer}, which must be above or equal to this limit depending on the
  * provided {@link BoundDefinition}.
  */
-public class MaxValidator implements ConstraintValidator<IntegerMax, Integer> {
+public class IntegerMinValidator implements ConstraintValidator<IntegerMin, Integer> {
 
-   private int max;
+   private int min;
    private BoundDefinition boundDefinition;
 
    @Override
-   public void initialize( final IntegerMax integerMax ) {
-      this.max = integerMax.value();
-      this.boundDefinition = integerMax.boundDefinition();
+   public void initialize( final IntegerMin integerMin ) {
+      this.min = integerMin.value();
+      this.boundDefinition = integerMin.boundDefinition();
    }
 
    @Override
@@ -38,6 +38,6 @@ public class MaxValidator implements ConstraintValidator<IntegerMax, Integer> {
       if ( integerValue == null ) {
          return true;
       }
-      return boundDefinition.isValid( integerValue, max );
+      return boundDefinition.isValid( integerValue, min );
    }
 }
