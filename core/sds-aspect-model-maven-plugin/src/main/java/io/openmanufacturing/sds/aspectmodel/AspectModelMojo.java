@@ -14,6 +14,8 @@
 package io.openmanufacturing.sds.aspectmodel;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -24,9 +26,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.FileSystemStrategy;
+import io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
+import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
 import io.vavr.CheckedFunction1;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -39,11 +44,45 @@ public abstract class AspectModelMojo extends AbstractMojo {
    @Parameter( required = false, defaultValue = "" )
    protected String outputDirectory;
 
-   public Try<VersionedModel> loadAndResolveModel( final String aspectModelFilePath ) throws MojoExecutionException {
+   protected Try<VersionedModel> loadAndResolveModel( final String aspectModelFilePath ) throws MojoExecutionException {
       final File inputFile = new File( aspectModelFilePath ).getAbsoluteFile();
       final AspectModelUrn urn = fileToUrn( inputFile );
       return getModelRoot( inputFile ).flatMap( modelsRoot ->
             new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ) );
+   }
+
+   protected VersionedModel loadModelOrFail( final String aspectModelFilePath ) throws MojoExecutionException {
+      final Try<VersionedModel> versionedModel = loadAndResolveModel( aspectModelFilePath );
+      if ( versionedModel.isFailure() ) {
+         final Throwable loadModelFailureCause = versionedModel.getCause();
+
+         // Model can not be loaded, root cause e.g. File not found
+         if ( loadModelFailureCause instanceof IllegalArgumentException ) {
+            final String errorMessage = String.format( "Can not open file for reading: %s.", aspectModelFilePath );
+            throw new MojoExecutionException( errorMessage );
+         }
+
+         if ( loadModelFailureCause instanceof ModelResolutionException ) {
+            throw new MojoExecutionException( "Could not resolve all model elements" );
+         }
+
+         // Another exception, e.g. syntax error. Let the validator handle this
+         final AspectModelValidator validator = new AspectModelValidator();
+         final ValidationReport report = validator.validate( versionedModel );
+         throw new MojoExecutionException( report.toString() );
+      }
+      return versionedModel.get();
+   }
+
+   protected FileOutputStream getStreamForFile( final String artifactName, final String outputDirectory ) {
+      try {
+         final File directory = new File( outputDirectory );
+         directory.mkdirs();
+         final File file = new File( directory.getPath() + File.separator + artifactName );
+         return new FileOutputStream( file );
+      } catch ( final FileNotFoundException exception ) {
+         throw new RuntimeException( "Output file for Aspect model documentation generation not found.", exception );
+      }
    }
 
    private static AspectModelUrn fileToUrn( final File inputFile ) throws MojoExecutionException {

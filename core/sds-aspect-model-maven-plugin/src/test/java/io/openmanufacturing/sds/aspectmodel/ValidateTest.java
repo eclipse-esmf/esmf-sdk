@@ -19,10 +19,9 @@ import java.io.File;
 
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
 
-public class ValidateTest extends AbstractMojoTestCase {
+public class ValidateTest extends AspectModelMojoTest {
 
    @Test
    public void testValidateValidAspectModel() throws Exception {
