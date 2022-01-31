@@ -19,16 +19,12 @@ import java.nio.file.Path;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 
-import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
+import io.openmanufacturing.sds.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 
-@Mojo( name = "generateJavaClasses", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
-public class GenerateJavaClasses extends CodeGenerationMojo {
-
-   @Parameter( defaultValue = "false" )
-   private boolean disableJacksonAnnotations;
+@Mojo( name = "generateStaticJavaClasses", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
+public class GenerateStaticJavaClasses extends CodeGenerationMojo {
 
    @Override
    public void execute() throws MojoExecutionException {
@@ -36,11 +32,9 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
       final File templateLibFile = Path.of( templateFile ).toFile();
       validateVelocityTemplateMacroFilePathAndName( templateLibFile );
 
-      final boolean enableJacksonAnnotations = !disableJacksonAnnotations;
-      final AspectModelJavaGenerator aspectModelJavaGenerator = packageName.isEmpty() ?
-            new AspectModelJavaGenerator( model, enableJacksonAnnotations, executeLibraryMacros, templateLibFile ) :
-            new AspectModelJavaGenerator( model, packageName, enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
-
-      aspectModelJavaGenerator.generate( nameMapper );
+      final StaticMetaModelJavaGenerator staticMetaModelJavaGenerator = packageName.isEmpty() ?
+            new StaticMetaModelJavaGenerator( model, executeLibraryMacros, templateLibFile ) :
+            new StaticMetaModelJavaGenerator( model, packageName, executeLibraryMacros, templateLibFile );
+      staticMetaModelJavaGenerator.generate( nameMapper );
    }
 }
