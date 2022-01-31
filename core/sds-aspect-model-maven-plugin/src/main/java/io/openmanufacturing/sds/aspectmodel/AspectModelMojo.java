@@ -41,8 +41,8 @@ public abstract class AspectModelMojo extends AbstractMojo {
    @Parameter( required = true )
    protected String aspectModelFilePath;
 
-   @Parameter( required = false, defaultValue = "" )
-   protected String outputDirectory;
+   @Parameter
+   protected String outputDirectory = "";
 
    protected Try<VersionedModel> loadAndResolveModel( final String aspectModelFilePath ) throws MojoExecutionException {
       final File inputFile = new File( aspectModelFilePath ).getAbsoluteFile();
