@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
+package io.openmanufacturing.sds.aspectmodel;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+
+import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.serializer.PrettyPrinter;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+
+@Mojo( name = "prettyPrint", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
+public class PrettyPrint extends AspectModelMojo {
+
+   @Override
+   public void execute() throws MojoExecutionException, MojoFailureException {
+      final File inputFile = new File( aspectModelFilePath );
+      final AspectModelUrn aspectModelUrn = fileToUrn( inputFile );
+      final String aspectModelFileName = String.format( "%s.ttl", aspectModelUrn.getName() );
+      final FileOutputStream streamForFile = getStreamForFile( aspectModelFileName, outputDirectory );
+      final PrintWriter printWriter = new PrintWriter( streamForFile );
+
+      final VersionedModel versionedModel = loadButNotResolveModel();
+      final PrettyPrinter prettyPrinter = new PrettyPrinter( versionedModel, aspectModelUrn, printWriter );
+      prettyPrinter.print();
+      printWriter.close();
+   }
+}
