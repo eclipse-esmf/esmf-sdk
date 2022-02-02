@@ -21,6 +21,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.serializer.PrettyPrinter;
@@ -28,6 +30,8 @@ import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 
 @Mojo( name = "prettyPrint", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
 public class PrettyPrint extends AspectModelMojo {
+
+   private final Logger logger = LoggerFactory.getLogger( PrettyPrint.class );
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
@@ -41,5 +45,6 @@ public class PrettyPrint extends AspectModelMojo {
       final PrettyPrinter prettyPrinter = new PrettyPrinter( versionedModel, aspectModelUrn, printWriter );
       prettyPrinter.print();
       printWriter.close();
+      logger.info( "Successfully printed Aspect model." );
    }
 }

@@ -27,6 +27,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -40,6 +42,8 @@ import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 
 @Mojo( name = "generateOpenApiSpec", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateOpenApiSpec extends AspectModelMojo {
+
+   private final Logger logger = LoggerFactory.getLogger( GenerateOpenApiSpec.class );
 
    private final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
    private final ObjectMapper objectMapper = new ObjectMapper();
@@ -83,6 +87,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
             return;
          }
          generateOpenApiSpecYaml();
+         logger.info( "Successfully generated OpenAPI specification for Aspect model." );
       } catch ( final IllegalArgumentException exception ) {
          throw new MojoExecutionException( "Invalid output format.", exception );
       }

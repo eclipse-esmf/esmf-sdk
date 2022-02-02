@@ -19,12 +19,16 @@ import java.nio.file.Path;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.openmanufacturing.sds.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 
 @Mojo( name = "generateStaticJavaClasses", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateStaticJavaClasses extends CodeGenerationMojo {
+
+   private final Logger logger = LoggerFactory.getLogger( GenerateStaticJavaClasses.class );
 
    @Override
    public void execute() throws MojoExecutionException {
@@ -36,5 +40,6 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
             new StaticMetaModelJavaGenerator( model, executeLibraryMacros, templateLibFile ) :
             new StaticMetaModelJavaGenerator( model, packageName, executeLibraryMacros, templateLibFile );
       staticMetaModelJavaGenerator.generate( nameMapper );
+      logger.info( "Successfully generated static Java classes for Aspect model." );
    }
 }

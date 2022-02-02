@@ -21,6 +21,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.serializer.PrettyPrinter;
@@ -30,6 +32,8 @@ import io.vavr.control.Try;
 
 @Mojo( name = "migrate", defaultPhase =  LifecyclePhase.INITIALIZE )
 public class Migrate extends AspectModelMojo {
+
+   private final Logger logger = LoggerFactory.getLogger( Migrate.class );
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
@@ -48,5 +52,6 @@ public class Migrate extends AspectModelMojo {
       final PrettyPrinter prettyPrinter = new PrettyPrinter( migratedModel.get(), aspectModelUrn, printWriter );
       prettyPrinter.print();
       printWriter.close();
+      logger.info( "Successfully migrated Aspect model to latest BAMM version." );
    }
 }

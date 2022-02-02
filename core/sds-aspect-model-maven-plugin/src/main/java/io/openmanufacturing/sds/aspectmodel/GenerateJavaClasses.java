@@ -20,12 +20,16 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 
 @Mojo( name = "generateJavaClasses", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJavaClasses extends CodeGenerationMojo {
+
+   private final Logger logger = LoggerFactory.getLogger( GenerateJavaClasses.class );
 
    @Parameter( defaultValue = "false" )
    private boolean disableJacksonAnnotations;
@@ -42,5 +46,6 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
             new AspectModelJavaGenerator( model, packageName, enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
 
       aspectModelJavaGenerator.generate( nameMapper );
+      logger.info( "Successfully generated Java classes for Aspect model." );
    }
 }

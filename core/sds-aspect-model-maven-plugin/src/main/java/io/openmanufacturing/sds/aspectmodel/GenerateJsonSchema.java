@@ -20,6 +20,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +33,8 @@ import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 
 @Mojo( name = "generateJsonSchema", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonSchema extends AspectModelMojo {
+
+   private final Logger logger = LoggerFactory.getLogger( GenerateJsonSchema.class );
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
@@ -44,6 +48,7 @@ public class GenerateJsonSchema extends AspectModelMojo {
       try {
          objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, schema );
          out.flush();
+         logger.info( "Successfully generated JSON Schema for Aspect model." );
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not format JSON Schema", exception );
       }

@@ -21,12 +21,16 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 
 @Mojo( name = "generateDiagram", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDiagram extends AspectModelMojo {
+
+   private final Logger logger = LoggerFactory.getLogger( GenerateDiagram.class );
 
    @Parameter( required = true, property = "targetFormat" )
    private Set<String> targetFormats;
@@ -40,6 +44,7 @@ public class GenerateDiagram extends AspectModelMojo {
                .map( targetFormat -> AspectModelDiagramGenerator.Format.valueOf( targetFormat.toUpperCase() ) )
                .collect( Collectors.toSet() );
          generator.generateDiagrams( formats, name -> getStreamForFile( name, outputDirectory ) );
+         logger.info( "Successfully generated Aspect Model diagram(s)." );
       } catch ( final IllegalArgumentException exception ) {
          throw new MojoExecutionException( "Invalid target format provided. Possible formats are dot, svg & png.", exception );
       } catch ( final IOException exception ) {
