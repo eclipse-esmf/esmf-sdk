@@ -116,25 +116,18 @@
     #if( $optionalValue.isEmpty() )
         Optional.empty()
     #else
-        #set( $objectClass = $optionalValue.get().getClass() )
-        $codeGenerationConfig.getImportTracker().importExplicit( $objectClass )
+        $codeGenerationConfig.getImportTracker().importExplicit( $util.getDataTypeClass( $dataType ) )
         #set( $xsdType = $ResourceFactory.createResource( $dataType.getUrn() ) )
         #set( $valueExpression = $optionalValue.get().toString() )
         #if( $dataType.getUrn().endsWith( "#float" ) )
              #set( $valueExpression = "${valueExpression}f" )
         #end
-        #if( $dataType.getUrn().endsWith( "#integer" )
-          || $dataType.getUrn().endsWith( "#decimal" )
-          || $dataType.getUrn().endsWith( "#unsignedLong" )
-          || $dataType.getUrn().endsWith( "#positiveInteger" )
-          || $dataType.getUrn().endsWith( "#nonNegativeInteger" )
-          || $dataType.getUrn().endsWith( "#negativeInteger" )
-          || $dataType.getUrn().endsWith( "#nonPositiveInteger" ) )
+        #if( $util.doesValueNeedsToBeQuoted( $dataType.getUrn() ) )
           #set( $valueExpression = """${valueExpression}""" )
         #else
           #set( $valueExpression = "$StringEscapeUtils.escapeJava( $valueExpression )" )
         #end
-        Optional.of( $valueInitializer.apply( $xsdType, "${valueExpression}", $metaModelVersion ) )
+    Optional.of( $valueInitializer.apply( $xsdType, "${valueExpression}", $metaModelVersion ) )
     #end
 #end
 
@@ -221,23 +214,25 @@
         )
     #elseif( $State.isAssignableFrom( $characteristic.getClass() ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultState  )
+        $codeGenerationConfig.getImportTracker().importExplicit( $Arrays )
         #set( $state = $State.cast( $characteristic ) )
         new DefaultState( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ),
             #if ($property.isOptional())
-                List.of( ${characteristic.getName()}.values() )
+                Arrays.asList( ${characteristic.getName()}.values() )
             #else
-                List.of( ${propertyTypeName}.values() ),
+                Arrays.asList( ${propertyTypeName}.values() ),
             #end
             ${propertyTypeName}.${util.generateEnumKey( $characteristic.dataType, $state.defaultValue, $codeGenerationConfig )} )
     #elseif( $Enumeration.isAssignableFrom( $characteristic.getClass() ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultEnumeration )
+        $codeGenerationConfig.getImportTracker().importExplicit( $Arrays )
         new DefaultEnumeration( #getMetaModelBaseAttributes( $characteristic ),
             #characteristicDataType( $characteristic ),
                 #if ($property.isOptional())
-                    List.of( ${characteristic.getName()}.values() ) )
+                    Arrays.asList( ${characteristic.getName()}.values() ) )
                 #else
-                    List.of( ${propertyTypeName}.values() ) )
+                    Arrays.asList( ${propertyTypeName}.values() ) )
                 #end
     #elseif( $StructuredValue.isAssignableFrom( $characteristic.getClass() ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultStructuredValue )
@@ -293,18 +288,21 @@
     #elseif( $EncodingConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $EncodingConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultEncodingConstraint )
+        $codeGenerationConfig.getImportTracker().importExplicit( $Charset )
         new DefaultEncodingConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            "$constraint.getValue()" )
+            Charset.forName( "$constraint.getValue()" ) )
     #elseif( $LanguageConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $LanguageConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultLanguageConstraint )
+        $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
         new DefaultLanguageConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            $constraint.getLanguageCode() )
+            Locale.forLanguageTag( "$constraint.getLanguageCode().toLanguageTag()" ) )
     #elseif( $LocaleConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $LocaleConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultLocaleConstraint )
+        $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
         new DefaultLocaleConstraint( #getMetaModelBaseAttributes( $characteristic ),
-            $constraint.getLocaleCode() )
+            Locale.forLanguageTag( "$constraint.getLocaleCode()" ) )
     #elseif( $FixedPointConstraint.isAssignableFrom( $characteristic.getClass() ) )
         #set( $constraint = $FixedPointConstraint.cast( $characteristic ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $DefaultFixedPointConstraint )
@@ -337,7 +335,7 @@
           $util.toConstant( $property.getName() ) = new StaticConstraintProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>(
     #end
 #else
-    #if( $util.hasContainerType( $property ) )
+    #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $StaticContainerProperty )
         #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
         #propertyDeclaration() StaticContainerProperty<$containedType, $propertyType> $util.toConstant( $property.getName() ) =
@@ -399,8 +397,8 @@ Optional.of("$property.getPayloadName()")
 #end
 
 #if( $util.hasUnit( $property.getCharacteristic() ) )
+    $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
     $codeGenerationConfig.getImportTracker().importExplicit( $Units )
-    @Override
     public Unit getUnit() {
        return Units.fromName("$Quantifiable.cast( $property.getCharacteristic() ).unit.get().getName()")
           .orElseThrow(() -> new RuntimeException("Unknown unit: $Quantifiable.cast( $property.getCharacteristic() ).getUnit().get().getName()"));

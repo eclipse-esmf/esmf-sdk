@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -39,8 +39,7 @@ public abstract class JavaGenerator extends Generator<QualifiedName, String> {
    }
 
    @Override
-   public void write( final Artifact<QualifiedName, String> artifact,
-         final Function<QualifiedName, OutputStream> nameMapper ) {
+   public void write( final Artifact<QualifiedName, String> artifact, final Function<QualifiedName, OutputStream> nameMapper ) {
       final QualifiedName qualifiedName = artifact.getId();
       final OutputStream outputStream = nameMapper.apply( qualifiedName );
       final String content = artifact.getContent();

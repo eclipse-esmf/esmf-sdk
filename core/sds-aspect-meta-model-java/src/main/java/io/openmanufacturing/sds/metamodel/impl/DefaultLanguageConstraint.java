@@ -23,8 +23,7 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 public class DefaultLanguageConstraint extends DefaultConstraint implements LanguageConstraint {
    private final Locale languageCode;
 
-   public DefaultLanguageConstraint( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final Locale languageCode ) {
+   public DefaultLanguageConstraint( final MetaModelBaseAttributes metaModelBaseAttributes, final Locale languageCode ) {
       super( metaModelBaseAttributes );
       this.languageCode = languageCode;
    }

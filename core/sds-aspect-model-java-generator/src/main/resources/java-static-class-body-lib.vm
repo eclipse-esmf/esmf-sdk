@@ -23,7 +23,22 @@ public static final String MODEL_ELEMENT_URN = NAMESPACE + "${element.getName()}
 
 private static String CHARACTERISTIC_NAMESPACE = "${characteristicBaseUrn}";
 
-#propertyDeclaration() Meta${element.name} INSTANCE = new Meta${element.getName()}();
+#propertyDeclaration() Meta${element.getName()} INSTANCE = new Meta${element.getName()}();
+
+#if( $util.isXmlDatatypeFactoryRequired( $element ) )
+    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeConfigurationException )
+    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeConstants )
+    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeFactory )
+private static DatatypeFactory _datatypeFactory;
+
+static {
+   try {
+      _datatypeFactory = DatatypeFactory.newInstance();
+   } catch ( DatatypeConfigurationException exception ) {
+      throw new RuntimeException( exception );
+   }
+}
+#end
 
 #foreach( $property in $deconstructor.getAllProperties() )
     #javaStaticClassProperty( $property $codeGenerationConfig )
@@ -62,11 +77,12 @@ private static String CHARACTERISTIC_NAMESPACE = "${characteristicBaseUrn}";
 
 #if( !$element.getPreferredNames().isEmpty() )
     $codeGenerationConfig.getImportTracker().importExplicit( $Map )
+    $codeGenerationConfig.getImportTracker().importExplicit( $HashMap )
     $codeGenerationConfig.getImportTracker().importExplicit( $Collections )
     $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
     @Override
     public Map<Locale, String> getPreferredNames() {
-       Map<Locale, String> preferredNames = Collections.emptyMap();
+       Map<Locale, String> preferredNames = new HashMap<>();
        #foreach( $locale in $element.getPreferredNames().keySet() )
        preferredNames.put( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.getPreferredNames().get( $locale ) )" );
        #end
@@ -76,11 +92,12 @@ private static String CHARACTERISTIC_NAMESPACE = "${characteristicBaseUrn}";
 
 #if( !$element.descriptions.isEmpty() )
    $codeGenerationConfig.getImportTracker().importExplicit( $Map )
+   $codeGenerationConfig.getImportTracker().importExplicit( $HashMap )
    $codeGenerationConfig.getImportTracker().importExplicit( $Collections )
    $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
    @Override
    public Map<Locale, String> getDescriptions() {
-      Map<Locale, String> descriptions = Collections.emptyMap();
+      Map<Locale, String> descriptions = new HashMap<>();
        #foreach( $locale in $element.getDescriptions().keySet() )
        descriptions.put( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.getDescriptions().get( $locale ) )" );
        #end

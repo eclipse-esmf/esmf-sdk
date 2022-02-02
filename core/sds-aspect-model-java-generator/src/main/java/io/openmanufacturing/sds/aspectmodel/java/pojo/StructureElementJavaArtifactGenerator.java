@@ -22,6 +22,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.validation.constraints.NotNull;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -68,32 +71,35 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
       importTracker.importExplicit( java.util.Objects.class );
 
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
-            .put( "util", AspectModelJavaUtil.class )
-            .put( "XSD", new FieldMethodizer( new XSD() ) )
-            .put( "localeEn", Locale.ENGLISH )
-            .put( "currentYear", Year.now() )
             .put( "ArrayList", ArrayList.class )
+            .put( "Base64BinarySerializer", "io.openmanufacturing.sds.aspectmodel.jackson.Base64BinarySerializer" )
+            .put( "Base64BinaryDeserializer", "io.openmanufacturing.sds.aspectmodel.jackson.Base64BinaryDeserializer" )
+            .put( "codeGenerationConfig", config )
             .put( "Constraint", Constraint.class )
             .put( "ComplexType", ComplexType.class )
-            .put( "Trait", Trait.class )
-            .put( "NotNull", NotNull.class )
+            .put( "currentYear", Year.now() )
+            .put( "DataType", DataType.class )
+            .put( "DatatypeConfigurationException", DatatypeConfigurationException.class )
+            .put( "DatatypeConstants", DatatypeConstants.class )
+            .put( "DatatypeFactory", DatatypeFactory.class )
+            .put( "deconstructor", new StructuredValuePropertiesDeconstructor( element ) )
+            .put( "element", element )
+            .put( "HexBinarySerializer", "io.openmanufacturing.sds.aspectmodel.jackson.HexBinarySerializer" )
+            .put( "HexBinaryDeserializer", "io.openmanufacturing.sds.aspectmodel.jackson.HexBinaryDeserializer" )
             .put( "JsonProperty", JsonProperty.class )
             .put( "JsonCreator", JsonCreator.class )
             .put( "JsonSerialize", JsonSerialize.class )
             .put( "JsonDeserialize", JsonDeserialize.class )
-            .put( "ResourceFactory", ResourceFactory.class )
+            .put( "localeEn", Locale.ENGLISH )
             .put( "Matcher", Matcher.class )
+            .put( "NotNull", NotNull.class )
             .put( "Pattern", Pattern.class )
-            .put( "DataType", DataType.class )
-            .put( "HexBinarySerializer", "io.openmanufacturing.sds.aspectmodel.jackson.HexBinarySerializer" )
-            .put( "HexBinaryDeserializer", "io.openmanufacturing.sds.aspectmodel.jackson.HexBinaryDeserializer" )
-            .put( "Base64BinarySerializer", "io.openmanufacturing.sds.aspectmodel.jackson.Base64BinarySerializer" )
-            .put( "Base64BinaryDeserializer", "io.openmanufacturing.sds.aspectmodel.jackson.Base64BinaryDeserializer" )
-            .put( "codeGenerationConfig", config )
-            .put( "element", element )
-            .put( "deconstructor", new StructuredValuePropertiesDeconstructor( element ) )
-            .put( "valueInitializer", new ValueInitializer() )
+            .put( "ResourceFactory", ResourceFactory.class )
             .put( "StringUtils", StringUtils.class )
+            .put( "Trait", Trait.class )
+            .put( "util", AspectModelJavaUtil.class )
+            .put( "valueInitializer", new ValueInitializer() )
+            .put( "XSD", new FieldMethodizer( new XSD() ) )
             .build();
 
       final Properties engineConfiguration = new Properties();

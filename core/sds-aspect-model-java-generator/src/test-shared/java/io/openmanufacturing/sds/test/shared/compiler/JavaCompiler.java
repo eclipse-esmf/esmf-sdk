@@ -34,8 +34,7 @@ public class JavaCompiler {
    }
 
    public static Map<QualifiedName, Class<?>> compile( final List<QualifiedName> loadOrder,
-         final Map<QualifiedName, String> sources,
-         final List<String> predefinedClasses ) {
+         final Map<QualifiedName, String> sources, final List<String> predefinedClasses ) {
       final javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
       final InMemoryClassFileManager manager = new InMemoryClassFileManager(
             compiler.getStandardFileManager( null, null, null ) );
@@ -44,7 +43,8 @@ public class JavaCompiler {
             .map( key -> new CompilerInput( key.toString(), sources.get( key ) ) )
             .collect( Collectors.toList() );
 
-      compiler.getTask( null, manager, new DiagnosticListener(), null, null, compilerInput ).call();
+      final List<String> compilerOptions = List.of( "-classpath", System.getProperty( "java.class.path" ) );
+      compiler.getTask( null, manager, new DiagnosticListener(), compilerOptions, null, compilerInput ).call();
 
       return loadOrder.stream()
             .collect( Collectors.toMap( Function.identity(), qualifiedName -> defineAndLoad( qualifiedName, manager ) ) );

@@ -28,6 +28,8 @@ import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Quantifiable;
 import io.openmanufacturing.sds.metamodel.QuantityKind;
+import io.openmanufacturing.sds.metamodel.StructureElement;
+import io.openmanufacturing.sds.metamodel.StructuredValue;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Unit;
 
@@ -44,11 +46,16 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
    }
 
    @Override
+   public Stream<Base> visitStructureElement( final StructureElement structureElement, final Void context ) {
+      return Stream.concat( Stream.of( structureElement ),
+            structureElement.getProperties().stream().flatMap( property -> property.accept( this, null ) ) );
+   }
+
+   @Override
    public Stream<Base> visitAspect( final Aspect aspect, final Void context ) {
-      return Stream.of( Stream.<Base> of( aspect ),
-                  aspect.getProperties().stream().flatMap( property -> property.accept( this, null ) ),
-                  aspect.getOperations().stream().flatMap( operation -> operation.accept( this, null ) ) )
-            .reduce( Stream::concat ).orElseGet( Stream::empty );
+      return Stream.concat(
+            visitStructureElement( aspect, null ),
+            aspect.getOperations().stream().flatMap( operation -> operation.accept( this, null ) ) );
    }
 
    @SuppressWarnings( "squid:S2250" )
@@ -60,7 +67,6 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
       }
       hasVisited.add( property );
       return Stream.concat( Stream.<Base> of( property ), property.getCharacteristic().accept( this, null ) );
-
    }
 
    @Override
@@ -109,11 +115,15 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
    @Override
    public Stream<Base> visitCharacteristic( final Characteristic characteristic, final Void context ) {
       return Stream.concat( Stream.of( characteristic ),
-            characteristic.getDataType()
-                  .stream()
-                  .filter( ComplexType.class::isInstance )
-                  .map( ComplexType.class::cast )
-                  .flatMap( complexType -> complexType.accept( this, null ) ) );
+            characteristic.getDataType().stream().flatMap( type -> type.accept( this, null ) ) );
+   }
+
+   @Override
+   public Stream<Base> visitStructuredValue( final StructuredValue structuredValue, final Void context ) {
+      return Stream.concat( Stream.of( structuredValue ),
+            structuredValue.getElements().stream().filter( Property.class::isInstance )
+                  .map( Property.class::cast )
+                  .flatMap( property -> property.accept( this, null ) ) );
    }
 
    @Override
