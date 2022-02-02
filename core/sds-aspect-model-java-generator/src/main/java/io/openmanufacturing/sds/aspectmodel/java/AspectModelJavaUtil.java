@@ -648,11 +648,4 @@ public class AspectModelJavaUtil {
             || typeUrn.equals( XSD.yearMonthDuration.getURI() )
             || typeUrn.equals( XSD.dayTimeDuration.getURI() );
    }
-
-   void foo() {
-      final String[] arr = new String[] { "a" };
-
-      final List<Object> list = Arrays.asList( arr );
-
-   }
 }
