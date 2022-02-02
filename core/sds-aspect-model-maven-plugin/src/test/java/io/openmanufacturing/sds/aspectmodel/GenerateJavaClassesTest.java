@@ -25,7 +25,7 @@ public class GenerateJavaClassesTest extends AspectModelMojoTest {
 
    @Test
    public void testGenerateJavaClassesValidAspectModel() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-java-classes-pom-valid-aspect-model.xml" );
+      final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
       final Mojo generateJavaClasses = lookupMojo( "generateJavaClasses", testPom );
       assertThatCode( generateJavaClasses::execute ).doesNotThrowAnyException();
 

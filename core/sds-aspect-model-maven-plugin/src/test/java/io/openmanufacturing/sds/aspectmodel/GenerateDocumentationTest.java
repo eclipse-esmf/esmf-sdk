@@ -26,7 +26,7 @@ public class GenerateDocumentationTest extends AspectModelMojoTest {
 
    @Test
    public void testGenerateDocumentation() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-documentation-pom-valid-aspect-model.xml" );
+      final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
       final Mojo generateDocumentation = lookupMojo( "generateDocumentation", testPom );
       assertThatCode( generateDocumentation::execute ).doesNotThrowAnyException();
       assertGeneratedFileExists( "Aspect_en.html" );

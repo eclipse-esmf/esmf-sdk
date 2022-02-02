@@ -24,7 +24,7 @@ public class GenerateJsonSchemaTest extends AspectModelMojoTest {
 
    @Test
    public void testGenerateJsonSchemaTest() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-json-schema-pom-valid-aspect-model.xml" );
+      final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
       final Mojo generateJsonSchema = lookupMojo( "generateJsonSchema", testPom );
       assertThatCode( generateJsonSchema::execute ).doesNotThrowAnyException();
 

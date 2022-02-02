@@ -24,7 +24,7 @@ public class GenerateJsonPayloadTest extends AspectModelMojoTest {
 
    @Test
    public void testGenerateJsonPayload() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/generate-json-payload-pom-valid-aspect-model.xml" );
+      final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
       final Mojo generateJsonPayload = lookupMojo( "generateJsonPayload", testPom );
       assertThatCode( generateJsonPayload::execute ).doesNotThrowAnyException();
 

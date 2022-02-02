@@ -17,10 +17,10 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>io.openmanufacturing</groupId>
-   <artifactId>test-generate-json-schema-mojo</artifactId>
+   <artifactId>test-mojos</artifactId>
    <version>1.0</version>
    <packaging>jar</packaging>
-   <name>Test Generate JSON Schema Mojo</name>
+   <name>Test Mojos</name>
 
    <build>
       <plugins>

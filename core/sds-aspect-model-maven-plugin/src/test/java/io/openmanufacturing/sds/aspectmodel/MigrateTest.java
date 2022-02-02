@@ -26,7 +26,7 @@ public class MigrateTest extends AspectModelMojoTest {
 
    @Test
    public void testMigrateValidAspectModel() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/migrate-pom-valid-aspect-model.xml" );
+      final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
       final Mojo migrate = lookupMojo( "migrate", testPom );
       assertThatCode( migrate::execute ).doesNotThrowAnyException();
 

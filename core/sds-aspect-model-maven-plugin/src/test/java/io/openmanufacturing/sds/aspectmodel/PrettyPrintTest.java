@@ -26,7 +26,7 @@ public class PrettyPrintTest extends AspectModelMojoTest {
 
    @Test
    public void testPrettyPrintValidAspectModel() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/prettyprint-pom-valid-aspect-model.xml" );
+      final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
       final Mojo prettyPrint = lookupMojo( "prettyPrint", testPom );
       assertThatCode( prettyPrint::execute ).doesNotThrowAnyException();
 
