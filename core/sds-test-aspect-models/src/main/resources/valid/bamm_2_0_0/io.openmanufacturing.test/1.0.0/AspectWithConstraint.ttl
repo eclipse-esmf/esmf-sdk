@@ -12,6 +12,7 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#TestAspect> .
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithConstraint a bamm:Aspect ;
@@ -113,19 +114,23 @@
 :DoubleMeasurement a bamm-c:Measurement ;
    bamm:name "AccelerationMeasurement" ;
    bamm:description "The acceleration"@en ;
+   bamm-c:unit unit:metrePerSecondSquared ;
    bamm:dataType xsd:double .
 
 :IntegerMeasurement a bamm-c:Measurement ;
    bamm:name "AccelerationMeasurement" ;
    bamm:description "The acceleration"@en ;
+   bamm-c:unit unit:metrePerSecondSquared ;
    bamm:dataType xsd:int .
 
 :BigIntegerMeasurement a bamm-c:Measurement ;
    bamm:name "AccelerationMeasurement" ;
    bamm:description "The acceleration"@en ;
+   bamm-c:unit unit:metrePerSecondSquared ;
    bamm:dataType xsd:integer .
 
 :FloatMeasurement a bamm-c:Measurement ;
    bamm:name "AccelerationMeasurement" ;
    bamm:description "The acceleration"@en ;
+   bamm-c:unit unit:metrePerSecondSquared ;
    bamm:dataType xsd:float .

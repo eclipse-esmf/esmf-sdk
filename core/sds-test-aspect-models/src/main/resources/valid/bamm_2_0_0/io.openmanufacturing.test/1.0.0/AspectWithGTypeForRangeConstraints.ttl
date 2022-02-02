@@ -45,7 +45,7 @@
     a             bamm-c:Measurement ;
     bamm:name     "Measurement" ;
     bamm:dataType xsd:gYear ;
-    bamm-c:unit   unit:time .
+    bamm-c:unit   unit:year .
 
 :testPropertyWithGMonth
     a                   bamm:Property ;
@@ -68,7 +68,7 @@
     a             bamm-c:Measurement ;
     bamm:name     "Measurement" ;
     bamm:dataType xsd:gMonth ;
-    bamm-c:unit   unit:time .
+    bamm-c:unit   unit:month .
 
 :testPropertyWithGDay
     a                   bamm:Property ;
@@ -91,7 +91,7 @@
     a             bamm-c:Measurement ;
     bamm:name     "Measurement" ;
     bamm:dataType xsd:gDay ;
-    bamm-c:unit   unit:time .
+    bamm-c:unit   unit:day .
 
 :testPropertyWithGYearMonth
     a                   bamm:Property ;
@@ -114,7 +114,7 @@
     a             bamm-c:Measurement ;
     bamm:name     "Measurement" ;
     bamm:dataType xsd:gYearMonth ;
-    bamm-c:unit   unit:time .
+    bamm-c:unit   unit:one .
 
 :testPropertyWithGMonthYear
     a                   bamm:Property ;
@@ -137,4 +137,4 @@
     a             bamm-c:Measurement ;
     bamm:name     "Measurement" ;
     bamm:dataType xsd:gMonthDay ;
-    bamm-c:unit   unit:time .
+    bamm-c:unit   unit:one .
