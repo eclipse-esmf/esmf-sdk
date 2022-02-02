@@ -13,7 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.java;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +35,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -74,6 +75,18 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    private Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion metaModelVersion ) {
       final VersionedModel model = TestResources.getModel( aspect, metaModelVersion ).get();
       return List.of( new AspectModelJavaGenerator( model, true, false, null ) );
+   }
+
+   /**
+    * Tests that code generation succeeds for all test models for the latest meta model version
+    * @param testAspect the injected Aspect model
+    */
+   @ParameterizedTest
+   @EnumSource( value = TestAspect.class )
+   public void testCodeGeneration( final TestAspect testAspect ) {
+      assertThatCode( () ->
+            TestContext.generateAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) )
+      ).doesNotThrowAnyException();
    }
 
    /**
