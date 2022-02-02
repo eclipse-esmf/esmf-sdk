@@ -39,9 +39,7 @@ public class Migrate extends AspectModelMojo {
    public void execute() throws MojoExecutionException, MojoFailureException {
       final File inputFile = new File( aspectModelFilePath );
       final AspectModelUrn aspectModelUrn = fileToUrn( inputFile );
-      final String aspectModelFileName = String.format( "%s.ttl", aspectModelUrn.getName() );
-      final FileOutputStream streamForFile = getStreamForFile( aspectModelFileName, outputDirectory );
-      final PrintWriter printWriter = new PrintWriter( streamForFile );
+      final PrintWriter printWriter = initializePrintWriter( aspectModelUrn );
 
       final MigratorService migratorService = new MigratorService();
       final VersionedModel versionedModel = loadButNotResolveModel();

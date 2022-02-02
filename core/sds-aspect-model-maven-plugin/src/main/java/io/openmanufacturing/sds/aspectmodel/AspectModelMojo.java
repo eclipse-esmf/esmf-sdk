@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -105,7 +106,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
       }
    }
 
-   protected static AspectModelUrn fileToUrn( final File inputFile ) throws MojoExecutionException {
+   protected AspectModelUrn fileToUrn( final File inputFile ) throws MojoExecutionException {
       final File versionDirectory = inputFile.getParentFile();
       final String rawErrorMessage = "Could not determine parent directory of %s. Please verify that the model directory structure is correct.";
       if ( versionDirectory == null ) {
@@ -132,7 +133,13 @@ public abstract class AspectModelMojo extends AbstractMojo {
       return aspectModelUrn.get();
    }
 
-   private static Try<Path> getModelRoot( final File inputFile ) {
+   protected PrintWriter initializePrintWriter( final AspectModelUrn aspectModelUrn ) {
+      final String aspectModelFileName = String.format( "%s.ttl", aspectModelUrn.getName() );
+      final FileOutputStream streamForFile = getStreamForFile( aspectModelFileName, outputDirectory );
+      return new PrintWriter( streamForFile );
+   }
+
+   private Try<Path> getModelRoot( final File inputFile ) {
       return Option.of( Paths.get( inputFile.getParent(), "..", ".." ) )
             .map( Path::toFile )
             .flatMap( file -> CheckedFunction1.lift( File::getCanonicalFile ).apply( file ) )
