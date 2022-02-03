@@ -20,7 +20,6 @@ import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.AspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.Migrator;
-import io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.SdsAnonymousEnumerationMigrator;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.SdsMetaModelVersionUriRewriter;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.SdsRemoveBammNameMigrator;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.UnitInBammNamespaceMigrator;
@@ -32,7 +31,6 @@ public class SdsMigratorFactory {
    private final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
    private final List<Migrator> migrators = ImmutableList.<Migrator> builder()
          .add( new SdsMetaModelVersionUriRewriter( KnownVersion.BAMM_1_0_0, KnownVersion.BAMM_2_0_0 ) )
-         .add( new SdsAnonymousEnumerationMigrator( KnownVersion.BAMM_1_0_0, KnownVersion.BAMM_2_0_0 ) )
          .add( new SdsRemoveBammNameMigrator( KnownVersion.BAMM_1_0_0, KnownVersion.BAMM_2_0_0 ) )
          .add( new UnitInBammNamespaceMigrator() )
          .build();

@@ -36,7 +36,6 @@ import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.VersionNumber;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 
@@ -103,27 +102,6 @@ public class MigratorTest extends MetaModelVersions {
       assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#Unit" ) );
       assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#symbol" ) );
       assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#quantityKind" ) );
-   }
-
-   @ParameterizedTest
-   @MethodSource( "allVersions" )
-   public void testMigrateAnonymousEnums( final KnownVersion metaModelVersion ) {
-      final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_STRING_ENUMERATION, metaModelVersion );
-      final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
-      final BAMMC bammc = new BAMMC( KnownVersion.getLatest() );
-      final List<Statement> anonymousEnumerations = rewrittenModel.getModel().listStatements( null, RDF.type, bammc.Enumeration() ).toList().stream()
-            .filter( statement -> statement.getSubject().isAnon() )
-            .collect( Collectors.toList() );
-      assertThat( anonymousEnumerations ).isEmpty();
-
-      final List<Statement> namedEnumerations = rewrittenModel.getModel().listStatements( null, RDF.type, bammc.Enumeration() ).toList().stream()
-            .filter( statement -> statement.getSubject().isURIResource() )
-            .collect( Collectors.toList() );
-      assertThat( namedEnumerations ).hasSize( 1 );
-
-      final Statement namedEnumeration = namedEnumerations.get( 0 );
-      final List<Statement> namedEnumerationProperties = namedEnumeration.getSubject().listProperties().toList();
-      assertThat( namedEnumerationProperties ).hasSize( 3 );
    }
 
    @ParameterizedTest

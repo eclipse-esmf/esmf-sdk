@@ -23,11 +23,11 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 
 public class SdsRemoveBammNameMigrator extends AbstractSdsMigrator {
 
-   private final BAMM bamm;
+   private final BAMM sourceBamm;
 
    public SdsRemoveBammNameMigrator( final KnownVersion sourceKnownVersion, final KnownVersion targetKnownVersion ) {
       super( sourceKnownVersion, targetKnownVersion, 60 );
-      this.bamm = new BAMM( targetKnownVersion );
+      this.sourceBamm = new BAMM( sourceKnownVersion );
    }
 
    @Override
@@ -36,7 +36,7 @@ public class SdsRemoveBammNameMigrator extends AbstractSdsMigrator {
       final Map<String, String> sourcePrefixMap = sourceModel.getNsPrefixMap();
       targetModel.setNsPrefixes( sourcePrefixMap );
 
-      final String bammNameUrn = bamm.getNamespace() + "name";
+      final String bammNameUrn = sourceBamm.getNamespace() + "name";
       sourceModel.listStatements().toList().stream()
             .filter( statement -> !statement.getPredicate().getURI().equals( bammNameUrn ) )
             .forEach( targetModel::add );
