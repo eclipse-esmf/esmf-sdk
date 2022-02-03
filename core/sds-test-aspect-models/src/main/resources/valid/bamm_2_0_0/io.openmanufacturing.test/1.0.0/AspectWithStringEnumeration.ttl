@@ -23,8 +23,8 @@
 :enumerationProperty a bamm:Property ;
    bamm:preferredName ""@en ;
    bamm:description ""@en ;
-   bamm:characteristic :TestEnumeration .
-
-:TestEnumeration a bamm-c:Enumeration ;
-   bamm:dataType xsd:string ;
-   bamm-c:values ( "foo" "bar" ) .
+   bamm:characteristic [
+     a bamm-c:Enumeration ;
+     bamm:dataType xsd:string ;
+     bamm-c:values ( "foo" "bar" )
+   ] .
