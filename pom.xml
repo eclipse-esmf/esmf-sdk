@@ -63,8 +63,8 @@
       <module>core/sds-test-aspect-models</module>
       <module>core/sds-test-resources</module>
       <module>tools/bamm-cli</module>
+      <module>tools/sds-aspect-model-maven-plugin</module>
       <module>sds-sdk-test-report</module>
-      <module>core/sds-aspect-model-maven-plugin</module>
    </modules>
 
    <properties>

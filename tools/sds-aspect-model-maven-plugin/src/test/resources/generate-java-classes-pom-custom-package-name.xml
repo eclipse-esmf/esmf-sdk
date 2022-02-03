@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>io.openmanufacturing</groupId>
+   <artifactId>test-generate-java-classes-mojo</artifactId>
+   <version>1.0</version>
+   <packaging>jar</packaging>
+   <name>Test Generate Java Classes Mojo</name>
+
+   <build>
+      <plugins>
+         <plugin>
+            <artifactId>sds-aspect-model-maven-plugin</artifactId>
+            <configuration>
+               <aspectModelFilePath>${basedir}/../../core/sds-test-aspect-models/src/main/resources/valid/bamm_2_0_0/io.openmanufacturing.test/1.0.0/Aspect.ttl</aspectModelFilePath>
+               <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
+               <packageName>example.com</packageName>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+</project>
