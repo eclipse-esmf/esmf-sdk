@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 
-@Mojo( name = "generateJavaClasses", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = "generateJavaClasses", defaultPhase =  LifecyclePhase.GENERATE_SOURCES )
 public class GenerateJavaClasses extends CodeGenerationMojo {
 
    private final Logger logger = LoggerFactory.getLogger( GenerateJavaClasses.class );

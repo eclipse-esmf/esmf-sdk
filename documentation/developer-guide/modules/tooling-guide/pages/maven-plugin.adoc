@@ -58,7 +58,7 @@ Configuration Properties:
 
 === Generate Domain Classes
 
-The `generateJavaClasses` goal generates Java domain classes (POJOs) for a given Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+The `generateJavaClasses` goal generates Java domain classes (POJOs) for a given Aspect Model. The default life cycle phase for the goal is `generate-sources`.
 
 Usage:
 
@@ -100,7 +100,7 @@ Configuration Properties:
 
 === Generate Static Meta Classes
 
-The `generateStaticJavaClasses` goal generates static meta classes for a given Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+The `generateStaticJavaClasses` goal generates static meta classes for a given Aspect Model. The default life cycle phase for the goal is `generate-sources`.
 
 Usage:
 
