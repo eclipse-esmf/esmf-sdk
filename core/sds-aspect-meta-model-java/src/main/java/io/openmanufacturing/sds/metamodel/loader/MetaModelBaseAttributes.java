@@ -21,12 +21,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.ImmutableList;
@@ -160,23 +159,26 @@ public class MetaModelBaseAttributes {
       final Set<LangString> descriptions = getLanguages( metaModelElement, bamm.description(), model );
       final List<String> seeValues = getSeeValues( metaModelElement, model, bamm );
       final Optional<String> actualName = urn.map( AspectModelUrn::getName );
-      final String name = actualName.orElseGet( () -> getSyntheticName( metaModelElement, model ) );
+      final String name = actualName.orElseGet( () -> getSyntheticName( metaModelElement, model, bamm ) );
       final boolean isSyntheticName = actualName.isEmpty();
       return new MetaModelBaseAttributes( metaModelVersion, urn.orElse( null ), name, preferredNames, descriptions, seeValues, isSyntheticName );
    }
 
    /**
-    * Generates a synthetic name for a model element, when the model element is defined as an anonymous node and
-    * has no bamm:name set. The synthetic name is a random string that prefixed with the type of the model element
-    * if it can be determined easily. For example, for the following model element:
+    * Generates a synthetic name for a model element, when the model element is defined as an anonymous node.
+    * The synthetic name consists of the name of the first named parent element of the model element suffixed with the type of the model element if it can be
+    * determined easily. For example, for the following model element:
     * <code>
-    * [ a bamm-c:LengthConstraint; bamm-c:minValue 5 ]
+    *    :aProperty a bamm:Property ;
+    *       bamm:characteristic [
+    *          a bamm-c:LengthConstraint; bamm-c:minValue 5
+    *       ]
     * </code>
-    * a synthetic name of "LengthConstraint12345ABC" would be generated (with the last part being a random string).
+    * a synthetic name of "APropertyLengthConstraint" would be generated.
     *
     * @param modelElement a model element
     * @param model the containing model
-    * @return a synthetic name for the model element, possibly prefixed with the model element's type name
+    * @return a synthetic name for the model element, possibly suffixed with the model element's type name
     */
    private static String getSyntheticName( final Resource modelElement, final Model model ) {
       final String randomPart = UUID.nameUUIDFromBytes( modelElement.getId().toString().getBytes() ).toString()
@@ -189,6 +191,29 @@ public class MetaModelBaseAttributes {
             .flatMap( Value::toJavaOptional )
             .map( AspectModelUrn::getName )
             .orElse( "" ) + randomPart;
+   }
+
+   private static String getSyntheticName( final Resource modelElement, final Model model, final BAMM bamm ) {
+      Resource parentModelElement = model.listStatements( null, null, modelElement ).next().getSubject();
+      while ( parentModelElement.isAnon() ) {
+         parentModelElement = model.listStatements( null, null, parentModelElement ).next().getSubject();
+      }
+
+      final String parentModelElementUri = parentModelElement.getURI();
+      final String parentModelElementName = metaModelResourceResolver.getAspectModelUrn( parentModelElementUri )
+            .toJavaOptional()
+            .map( AspectModelUrn::getName )
+            .map( StringUtils::capitalize )
+            .orElse( "" );
+
+      final Resource modelElementType = modelElement.getProperty( RDF.type ).getObject().asResource();
+      final String modelElementTypeUri = modelElementType.getURI();
+      final String modelElementTypeName = metaModelResourceResolver.getAspectModelUrn( modelElementTypeUri )
+            .toJavaOptional()
+            .map( AspectModelUrn::getName )
+            .orElse( "" );
+
+      return parentModelElementName + modelElementTypeName;
    }
 
    /**
