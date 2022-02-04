@@ -218,6 +218,7 @@ Usage:
            <includes>
               <include>{urn-of-aspect-model-to-be-included}</include>
            </includes>
+           <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
            <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
            <outputFormat>yaml</outputFormat>
         </configuration>

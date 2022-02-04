@@ -31,6 +31,7 @@
                <includes>
                   <include>urn:bamm:io.openmanufacturing.test:1.0.0#Aspect</include>
                </includes>
+               <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
                <outputFormat>yaml</outputFormat>
             </configuration>
