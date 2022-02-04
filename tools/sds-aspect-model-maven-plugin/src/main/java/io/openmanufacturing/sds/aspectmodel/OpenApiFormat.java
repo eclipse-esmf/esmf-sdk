@@ -14,8 +14,6 @@
 package io.openmanufacturing.sds.aspectmodel;
 
 public enum OpenApiFormat {
-
    JSON,
    YAML
-
 }
