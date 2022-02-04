@@ -16,10 +16,12 @@ import io.adminshell.aas.v3.model.*;
 import io.adminshell.aas.v3.model.Operation;
 import io.adminshell.aas.v3.model.impl.*;
 import io.openmanufacturing.sds.metamodel.*;
+import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 import io.vavr.collection.Stream;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -72,30 +74,33 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
        submodel.setDescriptions(map(aspect.getDescriptions()));
        submodel.setKind(ModelingKind.TEMPLATE);
 
-      visitProperties(aspect.getProperties(), context);
-      visitOperations(aspect.getOperations(), context);
+      // Hint: As the AAS Meta Model Implementation exposes the internal data structure where the elements
+      // of a collection are stored, just setting it would overwrite previous entries. Hence this approach.
+      ((Submodel)context.getOfInterest()).getSubmodelElements().addAll(visitProperties(aspect.getProperties(), context));
+      ((Submodel)context.getOfInterest()).getSubmodelElements().addAll(visitOperations(aspect.getOperations(), context));
+
+      // TODO might be removed check.
+      context.getEnvironment().setSubmodels(Collections.singletonList(submodel));
 
       return context.getEnvironment();
    }
 
-   private void visitOperations(final List<io.openmanufacturing.sds.metamodel.Operation> elements, Context context){
+   private List<SubmodelElement> visitOperations(final List<io.openmanufacturing.sds.metamodel.Operation> elements, Context context){
       final List<SubmodelElement> subModelElements =
               Stream.ofAll( elements )
                       .map( i -> map(i, context) )
                       .collect( Collectors.toList() );
 
-      ((Submodel) context.getOfInterest()).setSubmodelElements(subModelElements);
+      return subModelElements;
    }
 
-   private void visitProperties(final List<Property> elements, Context context) {
+   private List<SubmodelElement> visitProperties(final List<Property> elements, Context context) {
       final List<SubmodelElement> subModelElements =
             Stream.ofAll( elements )
                     .map(i -> map(i, context) )
                     .collect(Collectors.toList());
 
-      // Hint: As the AAS Meta Model Implementation exposes the internal data structure where the elements
-      // of a collection are stored, just setting it would overwrite previous entries. Hence this approach.
-      ((Submodel)context.getOfInterest()).getSubmodelElements().addAll(subModelElements);
+      return subModelElements;
    }
 
    private SubmodelElement map(Property property, Context context) {
@@ -129,8 +134,16 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    @Override
+   public AssetAdministrationShellEnvironment visitEntity(Entity entity, Context context ) {
+      return visitComplexType( entity, context );
+   }
+
+
+   @Override
    public AssetAdministrationShellEnvironment visitCharacteristic(Characteristic characteristic, Context context) {
      // TODO concept descriptions will not be reused. for each property a new conceptDescription will be created. This should be improved, e.g. by intridcuing a map tht stores created conceptdescriptions and returns them according to their id
+      Type type = characteristic.getDataType().get(); // could return an entity
+
       ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
      .idShort(characteristic.getName())
      .displayNames(map(characteristic.getPreferredNames())) // preferred name not found in AAS
@@ -161,6 +174,24 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
 
    // TODO specific implementation required and general Characteristics implementation replaced
    @Override
+   public AssetAdministrationShellEnvironment visitList(io.openmanufacturing.sds.metamodel.List list, Context context) {
+      return visitCharacteristic(list, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitSet(Set set, Context context) {
+      return visitCharacteristic(set, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
+   public AssetAdministrationShellEnvironment visitSortedSet(SortedSet sortedSet, Context context) {
+      return visitCharacteristic(sortedSet, context);
+   }
+
+   // TODO specific implementation required and general Characteristics implementation replaced
+   @Override
    public AssetAdministrationShellEnvironment visitDuration(Duration duration, Context context) {
       return visitCharacteristic(duration, context);
    }
@@ -179,12 +210,6 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
 
    // TODO specific implementation required and general Characteristics implementation replaced
    @Override
-   public AssetAdministrationShellEnvironment visitList(io.openmanufacturing.sds.metamodel.List list, Context context) {
-      return visitCharacteristic(list, context);
-   }
-
-   // TODO specific implementation required and general Characteristics implementation replaced
-   @Override
    public AssetAdministrationShellEnvironment visitMeasurement(Measurement measurement, Context context) {
       return visitCharacteristic(measurement, context);
    }
@@ -195,22 +220,11 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return visitCharacteristic(quantifiable, context);
    }
 
-   // TODO specific implementation required and general Characteristics implementation replaced
-   @Override
-   public AssetAdministrationShellEnvironment visitSet(Set set, Context context) {
-      return visitCharacteristic(set, context);
-   }
 
    // TODO specific implementation required and general Characteristics implementation replaced
    @Override
    public AssetAdministrationShellEnvironment visitSingleEntity(SingleEntity singleEntity, Context context) {
       return visitCharacteristic(singleEntity, context);
-   }
-
-   // TODO specific implementation required and general Characteristics implementation replaced
-   @Override
-   public AssetAdministrationShellEnvironment visitSortedSet(SortedSet sortedSet, Context context) {
-      return visitCharacteristic(sortedSet, context);
    }
 
    // TODO specific implementation required and general Characteristics implementation replaced
