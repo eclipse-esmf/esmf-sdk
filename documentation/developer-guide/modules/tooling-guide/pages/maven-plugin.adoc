@@ -39,7 +39,10 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <aspectModelFilePath>{path-to-aspect-model/AspectModelFile.ttl}</aspectModelFilePath>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
         </configuration>
      </plugin>
   </plugins>
@@ -51,7 +54,8 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `aspectModelFilePath` | The path to the Aspect Model file. | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 |===
 
 == Generate Java Code for an Aspect Model
@@ -77,7 +81,10 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <aspectModelFilePath>{path-to-aspect-model/AspectModelFile.ttl}</aspectModelFilePath>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
            <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
@@ -90,7 +97,8 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `aspectModelFilePath` | The path to the Aspect Model file. | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
 | `packageName` | The package name for the generated Java files. | `String` | The namespace of the given Aspect Model. | {nok}
 | `templateFile` | The path and name of the velocity template file containing the macro library. See xref:java-aspect-tooling.adoc#providing-custom-macros-for-code-generation[Providing Custom Macros for Code Generation]. | `String` | none | {nok}
@@ -119,7 +127,10 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <aspectModelFilePath>{path-to-aspect-model/AspectModelFile.ttl}</aspectModelFilePath>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
            <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
@@ -132,7 +143,8 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `aspectModelFilePath` | The path to the Aspect Model file. | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
 | `packageName` | The package name for the generated Java files. | `String` | The namespace of the given Aspect Model. | {nok}
 | `templateFile` | The path and name of the velocity template file containing the macro library. See xref:java-aspect-tooling.adoc#providing-custom-macros-for-code-generation[Providing Custom Macros for Code Generation]. | `String` | none | {nok}
@@ -160,7 +172,10 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <aspectModelFilePath>{path-to-aspect-model/AspectModelFile.ttl}</aspectModelFilePath>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
            <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
@@ -173,7 +188,8 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `aspectModelFilePath` | The path to the Aspect Model file. | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON Schema will be written to. | `String` | none | {ok}
 |===
 
@@ -198,7 +214,10 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <aspectModelFilePath>{path-to-aspect-model/AspectModelFile.ttl}</aspectModelFilePath>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
            <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
            <outputFormat>yaml</outputFormat>
         </configuration>
@@ -212,7 +231,8 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `aspectModelFilePath` | The path to the Aspect Model file. | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated OpenAPI Specification will be written to. | `String` | none | {ok}
 | `aspectApiBaseUrl` | The base URL for the Aspect API OpenAPI specification. | `String` | none | {ok}
 | `aspectParameterFile` | The path to a file including the schema description for the resource. For JSON the description has to be in json, for YAML it has to be in YAML. | `String` | none | {nok}
@@ -249,7 +269,10 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <aspectModelFilePath>{path-to-aspect-model/AspectModelFile.ttl}</aspectModelFilePath>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
            <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
@@ -262,7 +285,8 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `aspectModelFilePath` | The path to the Aspect Model file. | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated HTML document will be written to. | `String` | none | {ok}
 | `htmlCustomCSSFilePath` | Path to a CSS file with custom styles to be included in the generated HTML documentation. | `String` | none | {nok}
 |===
@@ -288,7 +312,10 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <aspectModelFilePath>{path-to-aspect-model/AspectModelFile.ttl}</aspectModelFilePath>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
            <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
            <targetFormats>
               <targetFormat>png</targetFormat>
@@ -304,7 +331,8 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `aspectModelFilePath` | The path to the Aspect Model file. | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated diagrams will be written to. | `String` | none | {ok}
 | `targetFormats` | A list formats in which the diagram(s) will be created. A diagram will be generated for each specified format. | `String` | none | {ok}
 |===
@@ -330,7 +358,10 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <aspectModelFilePath>{path-to-aspect-model/AspectModelFile.ttl}</aspectModelFilePath>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
            <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
@@ -343,7 +374,8 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `aspectModelFilePath` | The path to the Aspect Model file. | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
 |===
 
@@ -368,7 +400,10 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <aspectModelFilePath>{path-to-aspect-model/AspectModelFile.ttl}</aspectModelFilePath>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
            <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
@@ -381,7 +416,8 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `aspectModelFilePath` | The path to the Aspect Model file. | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the updated Aspect Model will be written to. | `String` | none | {ok}
 |===
 
@@ -406,7 +442,10 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <aspectModelFilePath>{path-to-aspect-model/AspectModelFile.ttl}</aspectModelFilePath>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
            <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
@@ -419,6 +458,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `aspectModelFilePath` | The path to the Aspect Model file. | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory containing the pretty printed Aspect Model. | `String` | none | {ok}
 |===
