@@ -15,6 +15,7 @@ package io.openmanufacturing.sds.aspectmodel;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -35,22 +36,24 @@ import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 public class GenerateJsonSchema extends AspectModelMojo {
 
    private final Logger logger = LoggerFactory.getLogger( GenerateJsonSchema.class );
+   private final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
-      final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
-      final VersionedModel model = loadModelOrFail( aspectModelFilePath );
-      final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( model );
-      final JsonNode schema = generator.apply( aspect );
-
-      final OutputStream out = getStreamForFile( aspect.getName() + ".schema.json", outputDirectory );
-      final ObjectMapper objectMapper = new ObjectMapper();
+      final Set<VersionedModel> aspectModels = loadModelsOrFail();
       try {
-         objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, schema );
-         out.flush();
-         logger.info( "Successfully generated JSON Schema for Aspect model." );
+         for ( final VersionedModel aspectModel : aspectModels ) {
+            final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( aspectModel );
+            final JsonNode schema = generator.apply( aspect );
+
+            final OutputStream out = getStreamForFile( aspect.getName() + ".schema.json", outputDirectory );
+            final ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, schema );
+            out.flush();
+         }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not format JSON Schema", exception );
       }
+      logger.info( "Successfully generated JSON Schema for Aspect Models." );
    }
 }

@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -37,6 +38,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import io.openmanufacturing.sds.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
 import io.openmanufacturing.sds.aspectmodel.generator.openapi.PagingOption;
+import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 
@@ -80,53 +82,58 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
+      final Set<VersionedModel> aspectModels = loadModelsOrFail();
       try {
          final OpenApiFormat format = OpenApiFormat.valueOf( outputFormat.toUpperCase() );
          if ( format.equals( OpenApiFormat.JSON ) ) {
-            generateOpenApiSpecJson();
+            generateOpenApiSpecJson( aspectModels );
             return;
          }
-         generateOpenApiSpecYaml();
-         logger.info( "Successfully generated OpenAPI specification for Aspect model." );
+         generateOpenApiSpecYaml( aspectModels );
+         logger.info( "Successfully generated OpenAPI specification for Aspect Models." );
       } catch ( final IllegalArgumentException exception ) {
          throw new MojoExecutionException( "Invalid output format.", exception );
       }
    }
 
-   private void generateOpenApiSpecJson() throws MojoExecutionException {
-      final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( loadModelOrFail( aspectModelFilePath ) );
-      JsonNode result = JsonNodeFactory.instance.objectNode();
-      final Optional<String> aspectParameterDefinitionFile = getFileAsString( aspectParameterFile );
-      if ( aspectParameterDefinitionFile.isPresent() ) {
-         try {
-            result = objectMapper.readTree( aspectParameterDefinitionFile.get() );
-         } catch ( final JsonProcessingException e ) {
-            throw new MojoExecutionException( "Could not parse the file to JSON.", e );
+   private void generateOpenApiSpecJson( final Set<VersionedModel> aspectModels ) throws MojoExecutionException {
+      for ( final VersionedModel aspectModel : aspectModels ) {
+         final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( aspectModel );
+         JsonNode result = JsonNodeFactory.instance.objectNode();
+         final Optional<String> aspectParameterDefinitionFile = getFileAsString( aspectParameterFile );
+         if ( aspectParameterDefinitionFile.isPresent() ) {
+            try {
+               result = objectMapper.readTree( aspectParameterDefinitionFile.get() );
+            } catch ( final JsonProcessingException e ) {
+               throw new MojoExecutionException( "Could not parse the file to JSON.", e );
+            }
          }
-      }
-      final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
-            Optional.of( result ), includeQueryApi, getPagingFromArgs() );
+         final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
+               Optional.of( result ), includeQueryApi, getPagingFromArgs() );
 
-      final OutputStream out = getStreamForFile( aspect.getName() + ".oai.json", outputDirectory );
-      try {
-         objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, jsonSpec );
-         out.flush();
-      } catch ( final IOException exception ) {
-         throw new MojoExecutionException( "Could not format OpenAPI JSON.", exception );
+         final OutputStream out = getStreamForFile( aspect.getName() + ".oai.json", outputDirectory );
+         try {
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, jsonSpec );
+            out.flush();
+         } catch ( final IOException exception ) {
+            throw new MojoExecutionException( "Could not format OpenAPI JSON.", exception );
+         }
       }
    }
 
-   private void generateOpenApiSpecYaml() throws MojoExecutionException {
-      final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( loadModelOrFail( aspectModelFilePath ) );
-      try {
-         final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
-               getFileAsString( aspectParameterFile ), includeQueryApi, getPagingFromArgs() );
-         final OutputStream out = getStreamForFile( aspect.getName() + ".oai.yaml", outputDirectory );
-         out.write( yamlSpec.getBytes() );
-         out.flush();
-         out.close();
-      } catch ( final IOException exception ) {
-         throw new MojoExecutionException( "Could not generate OpenAPI YAML specification.", exception );
+   private void generateOpenApiSpecYaml( final Set<VersionedModel> aspectModels ) throws MojoExecutionException {
+      for ( final VersionedModel aspectModel : aspectModels ) {
+         final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( aspectModel );
+         try {
+            final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
+                  getFileAsString( aspectParameterFile ), includeQueryApi, getPagingFromArgs() );
+            final OutputStream out = getStreamForFile( aspect.getName() + ".oai.yaml", outputDirectory );
+            out.write( yamlSpec.getBytes() );
+            out.flush();
+            out.close();
+         } catch ( final IOException exception ) {
+            throw new MojoExecutionException( "Could not generate OpenAPI YAML specification.", exception );
+         }
       }
    }
 

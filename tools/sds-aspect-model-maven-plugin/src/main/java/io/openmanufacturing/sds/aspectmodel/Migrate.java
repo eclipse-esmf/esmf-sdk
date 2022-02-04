@@ -15,6 +15,7 @@ package io.openmanufacturing.sds.aspectmodel;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -33,22 +34,24 @@ import io.vavr.control.Try;
 public class Migrate extends AspectModelMojo {
 
    private final Logger logger = LoggerFactory.getLogger( Migrate.class );
+   private final MigratorService migratorService = new MigratorService();
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
-      final File inputFile = new File( aspectModelFilePath );
-      final AspectModelUrn aspectModelUrn = fileToUrn( inputFile );
-      final PrintWriter printWriter = initializePrintWriter( aspectModelUrn );
-
-      final MigratorService migratorService = new MigratorService();
-      final VersionedModel versionedModel = loadButNotResolveModel();
-      final Try<VersionedModel> migratedModel = migratorService.updateMetaModelVersion( versionedModel );
-      if ( migratedModel.isFailure() ) {
-         throw new MojoFailureException( "Failed to migrate Aspect Model.", migratedModel.getCause() );
+      final Map<AspectModelUrn, VersionedModel> aspectModels = loadButNotResolveModels();
+      for ( Map.Entry<AspectModelUrn, VersionedModel> aspectModelEntry : aspectModels.entrySet() ) {
+         final AspectModelUrn aspectModelUrn = aspectModelEntry.getKey();
+         final PrintWriter printWriter = initializePrintWriter( aspectModelUrn );
+         final VersionedModel versionedModel = aspectModelEntry.getValue();
+         final Try<VersionedModel> migratedModel = migratorService.updateMetaModelVersion( versionedModel );
+         if ( migratedModel.isFailure() ) {
+            final String errorMessage = String.format( "Failed to migrate Aspect Model %s.", aspectModelUrn.getName() );
+            throw new MojoFailureException( errorMessage, migratedModel.getCause() );
+         }
+         final PrettyPrinter prettyPrinter = new PrettyPrinter( migratedModel.get(), aspectModelUrn, printWriter );
+         prettyPrinter.print();
+         printWriter.close();
+         logger.info( "Successfully migrated Aspect Model {} to latest BAMM version.", aspectModelUrn.getName() );
       }
-      final PrettyPrinter prettyPrinter = new PrettyPrinter( migratedModel.get(), aspectModelUrn, printWriter );
-      prettyPrinter.print();
-      printWriter.close();
-      logger.info( "Successfully migrated Aspect Model to latest BAMM version." );
    }
 }

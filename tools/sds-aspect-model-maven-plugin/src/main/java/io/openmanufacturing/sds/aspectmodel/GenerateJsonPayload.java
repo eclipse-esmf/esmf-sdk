@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -32,13 +33,15 @@ public class GenerateJsonPayload extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
+      final Set<VersionedModel> aspectModels = loadModelsOrFail();
       try {
-         final VersionedModel model = loadModelOrFail( aspectModelFilePath );
-         final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( model );
-         generator.generateJsonPretty( name -> getStreamForFile( name + ".json", outputDirectory ) );
-         logger.info( "Successfully generated example JSON payload for Aspect model." );
+         for ( VersionedModel aspectModel : aspectModels ) {
+            final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( aspectModel );
+            generator.generateJsonPretty( name -> getStreamForFile( name + ".json", outputDirectory ) );
+         }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not generate JSON payload.", exception );
       }
+      logger.info( "Successfully generated example JSON payloads for Aspect Models." );
    }
 }

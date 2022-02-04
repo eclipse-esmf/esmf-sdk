@@ -13,6 +13,8 @@
 
 package io.openmanufacturing.sds.aspectmodel;
 
+import java.util.Set;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -29,16 +31,17 @@ import io.vavr.control.Try;
 public class Validate extends AspectModelMojo {
 
    private final Logger logger = LoggerFactory.getLogger( Validate.class );
+   private final AspectModelValidator validator = new AspectModelValidator();
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
-      final Try<VersionedModel> versionedModel = loadAndResolveModel( aspectModelFilePath );
-
-      final AspectModelValidator validator = new AspectModelValidator();
-      final ValidationReport report = validator.validate( versionedModel );
-      if ( !report.conforms() ) {
-         throw new MojoFailureException( report.toString() );
+      final Set<Try<VersionedModel>> resolvedModels = loadAndResolveModels();
+      for ( final Try<VersionedModel> versionedModel : resolvedModels ) {
+         final ValidationReport report = validator.validate( versionedModel );
+         if ( !report.conforms() ) {
+            throw new MojoFailureException( report.toString() );
+         }
       }
-      logger.info( "Aspect Model is valid." );
+      logger.info( "Aspect Models are valid." );
    }
 }

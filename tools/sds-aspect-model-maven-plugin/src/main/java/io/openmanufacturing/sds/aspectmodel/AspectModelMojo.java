@@ -21,9 +21,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -37,36 +40,45 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
-import io.vavr.CheckedFunction1;
-import io.vavr.control.Option;
 import io.vavr.control.Try;
 
 public abstract class AspectModelMojo extends AbstractMojo {
 
    @Parameter( required = true )
-   protected String aspectModelFilePath;
+   private String modelsRootDirectory;
+
+   @Parameter( required = true, property = "include" )
+   private Set<String> includes;
 
    @Parameter
    protected String outputDirectory = "";
 
-   protected Try<VersionedModel> loadAndResolveModel( final String aspectModelFilePath ) throws MojoExecutionException {
-      final File inputFile = new File( aspectModelFilePath ).getAbsoluteFile();
-      final AspectModelUrn urn = fileToUrn( inputFile );
-      return getModelRoot( inputFile ).flatMap( modelsRoot ->
-            new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ) );
+   protected Set<Try<VersionedModel>> loadAndResolveModels() throws MojoExecutionException {
+      final Path modelsRoot = Path.of( modelsRootDirectory );
+      return includes.stream().map( AspectModelUrn::fromUrn )
+            .map( urn -> new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ) )
+            .collect( Collectors.toSet() );
    }
 
-   protected VersionedModel loadModelOrFail( final String aspectModelFilePath ) throws MojoExecutionException {
-      final Try<VersionedModel> versionedModel = loadAndResolveModel( aspectModelFilePath );
-      if ( versionedModel.isSuccess() ) {
-         return versionedModel.get();
+   protected Set<VersionedModel> loadModelsOrFail() throws MojoExecutionException {
+      final Set<VersionedModel> versionedModels = new HashSet<>();
+      final Set<Try<VersionedModel>> resolvedModels = loadAndResolveModels();
+      for ( final Try<VersionedModel> versionedModel : resolvedModels ) {
+         if ( versionedModel.isSuccess() ) {
+            versionedModels.add( versionedModel.get() );
+            continue;
+         }
+         handleFailedModelResolution( versionedModel );
       }
-      final Throwable loadModelFailureCause = versionedModel.getCause();
+      return versionedModels;
+   }
+
+   private void handleFailedModelResolution( final Try<VersionedModel> failedModel ) throws MojoExecutionException {
+      final Throwable loadModelFailureCause = failedModel.getCause();
 
       // Model can not be loaded, root cause e.g. File not found
       if ( loadModelFailureCause instanceof IllegalArgumentException ) {
-         final String errorMessage = String.format( "Can not open file for reading: %s.", aspectModelFilePath );
-         throw new MojoExecutionException( errorMessage, loadModelFailureCause );
+         throw new MojoExecutionException( "Can not open file in models root directory.", loadModelFailureCause );
       }
 
       if ( loadModelFailureCause instanceof ModelResolutionException ) {
@@ -75,24 +87,34 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
       // Another exception, e.g. syntax error. Let the validator handle this
       final AspectModelValidator validator = new AspectModelValidator();
-      final ValidationReport report = validator.validate( versionedModel );
+      final ValidationReport report = validator.validate( failedModel );
       throw new MojoExecutionException( report.toString(), loadModelFailureCause );
    }
 
-   protected VersionedModel loadButNotResolveModel() throws MojoExecutionException {
-      final File inputFile = new File( aspectModelFilePath ).getAbsoluteFile();
-      try ( final InputStream inputStream = new FileInputStream( inputFile ) ) {
-         final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
-         final Try<VersionedModel> versionedModel = TurtleLoader.loadTurtle( inputStream )
-               .flatMap( model -> metaModelResourceResolver.getBammVersion( model )
-               .flatMap( metaModelVersion -> metaModelResourceResolver.mergeMetaModelIntoRawModel( model, metaModelVersion ) ) );
-         if ( versionedModel.isFailure() ) {
-            throw new MojoExecutionException( "Failed to load Aspect model.", versionedModel.getCause() );
+   protected Map<AspectModelUrn,VersionedModel> loadButNotResolveModels() throws MojoExecutionException {
+      final Map<AspectModelUrn,VersionedModel> versionedModels = new HashMap<>();
+      for ( final String urn : includes ) {
+         final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( urn );
+         final String aspectModelFilePath = String.format( "%s/%s/%s/%s.ttl", modelsRootDirectory, aspectModelUrn.getNamespace(), aspectModelUrn.getVersion(),
+               aspectModelUrn.getName() );
+
+         final File inputFile = new File( aspectModelFilePath ).getAbsoluteFile();
+         try ( final InputStream inputStream = new FileInputStream( inputFile ) ) {
+            final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+            final Try<VersionedModel> versionedModel = TurtleLoader.loadTurtle( inputStream )
+                  .flatMap( model -> metaModelResourceResolver.getBammVersion( model )
+                        .flatMap( metaModelVersion -> metaModelResourceResolver.mergeMetaModelIntoRawModel( model, metaModelVersion ) ) );
+            if ( versionedModel.isFailure() ) {
+               final String errorMessage = String.format( "Failed to load Aspect Model %s.", aspectModelUrn.getName() );
+               throw new MojoExecutionException( errorMessage, versionedModel.getCause() );
+            }
+            versionedModels.put( aspectModelUrn, versionedModel.get() );
+         } catch ( final IOException exception ) {
+            final String errorMessage = String.format( "Failed to load Aspect Model %s.", aspectModelUrn.getName() );
+            throw new MojoExecutionException( errorMessage, exception );
          }
-         return versionedModel.get();
-      } catch ( final IOException exception ) {
-         throw new MojoExecutionException( "Failed to load Aspect model.", exception );
       }
+      return versionedModels;
    }
 
    protected FileOutputStream getStreamForFile( final String artifactName, final String outputDirectory ) {
@@ -102,50 +124,14 @@ public abstract class AspectModelMojo extends AbstractMojo {
          final File file = new File( directory.getPath() + File.separator + artifactName );
          return new FileOutputStream( file );
       } catch ( final FileNotFoundException exception ) {
-         throw new RuntimeException( "Output file for Aspect model documentation generation not found.", exception );
+         throw new RuntimeException( "Output file for Aspect Model documentation generation not found.", exception );
       }
-   }
-
-   protected AspectModelUrn fileToUrn( final File inputFile ) throws MojoExecutionException {
-      final File versionDirectory = inputFile.getParentFile();
-      final String rawErrorMessage = "Could not determine parent directory of %s. Please verify that the model directory structure is correct.";
-      if ( versionDirectory == null ) {
-         final String errorMessage = String.format( rawErrorMessage, inputFile );
-         throw new MojoExecutionException( errorMessage );
-      }
-
-      final String version = versionDirectory.getName();
-      final File namespaceDirectory = versionDirectory.getParentFile();
-      if ( namespaceDirectory == null ) {
-         final String errorMessage = String.format( rawErrorMessage, versionDirectory );
-         throw new MojoExecutionException( errorMessage );
-      }
-
-      final String namespace = namespaceDirectory.getName();
-      final String aspectName = FilenameUtils.removeExtension( inputFile.getName() );
-      final String urn = String.format( "urn:bamm:%s:%s#%s", namespace, version, aspectName );
-      final Try<AspectModelUrn> aspectModelUrn = new SdsAspectMetaModelResourceResolver().getAspectModelUrn( urn );
-      if ( aspectModelUrn.isFailure() ) {
-         final String urnRawErrorMessage = "The URN constructed from the input file path is invalid: %s. Please verify that the model directory structure is correct.";
-         final String errorMessage = String.format( urnRawErrorMessage, urn );
-         throw new MojoExecutionException( errorMessage );
-      }
-      return aspectModelUrn.get();
    }
 
    protected PrintWriter initializePrintWriter( final AspectModelUrn aspectModelUrn ) {
       final String aspectModelFileName = String.format( "%s.ttl", aspectModelUrn.getName() );
       final FileOutputStream streamForFile = getStreamForFile( aspectModelFileName, outputDirectory );
       return new PrintWriter( streamForFile );
-   }
-
-   private Try<Path> getModelRoot( final File inputFile ) {
-      return Option.of( Paths.get( inputFile.getParent(), "..", ".." ) )
-            .map( Path::toFile )
-            .flatMap( file -> CheckedFunction1.lift( File::getCanonicalFile ).apply( file ) )
-            .map( File::toPath )
-            .filter( path -> path.toFile().exists() && path.toFile().isDirectory() )
-            .toTry( () -> new MojoExecutionException( "Could not locate models root directory" ) );
    }
 
 }

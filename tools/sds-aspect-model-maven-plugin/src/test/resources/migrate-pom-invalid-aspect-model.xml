@@ -27,7 +27,10 @@
          <plugin>
             <artifactId>sds-aspect-model-maven-plugin</artifactId>
             <configuration>
-               <aspectModelFilePath>${basedir}/../../core/sds-test-aspect-models/src/main/resources/invalid/bamm_1_0_0/io.openmanufacturing.test/1.0.0/InvalidSyntax.ttl</aspectModelFilePath>
+               <modelsRootDirectory>${basedir}/../../core/sds-test-aspect-models/src/main/resources/invalid/bamm_1_0_0</modelsRootDirectory>
+               <includes>
+                  <include>urn:bamm:io.openmanufacturing.test:1.0.0#InvalidSyntax</include>
+               </includes>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
             </configuration>
          </plugin>

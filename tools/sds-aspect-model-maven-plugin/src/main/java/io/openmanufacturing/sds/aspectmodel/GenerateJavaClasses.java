@@ -15,6 +15,7 @@ package io.openmanufacturing.sds.aspectmodel;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -36,16 +37,18 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
 
    @Override
    public void execute() throws MojoExecutionException {
-      final VersionedModel model = loadModelOrFail( aspectModelFilePath );
-      final File templateLibFile = Path.of( templateFile ).toFile();
-      validateVelocityTemplateMacroFilePathAndName( templateLibFile );
+      final Set<VersionedModel> aspectModels = loadModelsOrFail();
+      for ( final VersionedModel aspectModel : aspectModels ) {
+         final File templateLibFile = Path.of( templateFile ).toFile();
+         validateVelocityTemplateMacroFilePathAndName( templateLibFile );
 
-      final boolean enableJacksonAnnotations = !disableJacksonAnnotations;
-      final AspectModelJavaGenerator aspectModelJavaGenerator = packageName.isEmpty() ?
-            new AspectModelJavaGenerator( model, enableJacksonAnnotations, executeLibraryMacros, templateLibFile ) :
-            new AspectModelJavaGenerator( model, packageName, enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
+         final boolean enableJacksonAnnotations = !disableJacksonAnnotations;
+         final AspectModelJavaGenerator aspectModelJavaGenerator = packageName.isEmpty() ?
+               new AspectModelJavaGenerator( aspectModel, enableJacksonAnnotations, executeLibraryMacros, templateLibFile ) :
+               new AspectModelJavaGenerator( aspectModel, packageName, enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
 
-      aspectModelJavaGenerator.generate( nameMapper );
-      logger.info( "Successfully generated Java classes for Aspect Model." );
+         aspectModelJavaGenerator.generate( nameMapper );
+      }
+      logger.info( "Successfully generated Java classes for Aspect Models." );
    }
 }

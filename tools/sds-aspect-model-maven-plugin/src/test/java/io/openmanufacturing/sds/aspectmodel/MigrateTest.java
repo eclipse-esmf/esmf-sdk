@@ -40,7 +40,7 @@ public class MigrateTest extends AspectModelMojoTest {
       final Mojo migrate = lookupMojo( "migrate", testPom );
       assertThatCode( migrate::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessage( "Failed to load Aspect model." )
+            .hasMessage( "Failed to load Aspect Model InvalidSyntax." )
             .hasCauseInstanceOf( RiotException.class )
             .getCause()
             .hasMessage( "[line: 17, col: 2 ] Triples not terminated by DOT" );

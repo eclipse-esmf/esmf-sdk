@@ -15,6 +15,7 @@ package io.openmanufacturing.sds.aspectmodel;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -34,14 +35,15 @@ public class PrettyPrint extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
-      final File inputFile = new File( aspectModelFilePath );
-      final AspectModelUrn aspectModelUrn = fileToUrn( inputFile );
-      final PrintWriter printWriter = initializePrintWriter( aspectModelUrn );
-
-      final VersionedModel versionedModel = loadButNotResolveModel();
-      final PrettyPrinter prettyPrinter = new PrettyPrinter( versionedModel, aspectModelUrn, printWriter );
-      prettyPrinter.print();
-      printWriter.close();
-      logger.info( "Successfully printed Aspect Model." );
+      final Map<AspectModelUrn, VersionedModel> aspectModels = loadButNotResolveModels();
+      for ( final Map.Entry<AspectModelUrn, VersionedModel> aspectModelEntry : aspectModels.entrySet() ) {
+         final AspectModelUrn aspectModelUrn = aspectModelEntry.getKey();
+         final PrintWriter printWriter = initializePrintWriter( aspectModelUrn );
+         final VersionedModel versionedModel = aspectModelEntry.getValue();
+         final PrettyPrinter prettyPrinter = new PrettyPrinter( versionedModel, aspectModelUrn, printWriter );
+         prettyPrinter.print();
+         printWriter.close();
+         logger.info( "Successfully printed Aspect Model {}.", aspectModelUrn.getName() );
+      }
    }
 }

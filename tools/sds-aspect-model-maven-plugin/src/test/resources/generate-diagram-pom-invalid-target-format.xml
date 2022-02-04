@@ -27,7 +27,10 @@
          <plugin>
             <artifactId>sds-aspect-model-maven-plugin</artifactId>
             <configuration>
-               <aspectModelFilePath>${basedir}/../../core/sds-test-aspect-models/src/main/resources/valid/bamm_2_0_0/io.openmanufacturing.test/1.0.0/Aspect.ttl</aspectModelFilePath>
+               <modelsRootDirectory>${basedir}/../../core/sds-test-aspect-models/src/main/resources/valid/bamm_2_0_0</modelsRootDirectory>
+               <includes>
+                  <include>urn:bamm:io.openmanufacturing.test:1.0.0#Aspect</include>
+               </includes>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
                <targetFormats>
                   <targetFormat>jpg</targetFormat>

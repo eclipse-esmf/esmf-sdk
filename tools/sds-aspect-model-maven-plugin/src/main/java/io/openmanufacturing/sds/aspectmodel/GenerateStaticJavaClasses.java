@@ -15,6 +15,7 @@ package io.openmanufacturing.sds.aspectmodel;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -32,14 +33,16 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
 
    @Override
    public void execute() throws MojoExecutionException {
-      final VersionedModel model = loadModelOrFail( aspectModelFilePath );
-      final File templateLibFile = Path.of( templateFile ).toFile();
-      validateVelocityTemplateMacroFilePathAndName( templateLibFile );
+      final Set<VersionedModel> aspectModels = loadModelsOrFail();
+      for ( final VersionedModel aspectModel : aspectModels ) {
+         final File templateLibFile = Path.of( templateFile ).toFile();
+         validateVelocityTemplateMacroFilePathAndName( templateLibFile );
 
-      final StaticMetaModelJavaGenerator staticMetaModelJavaGenerator = packageName.isEmpty() ?
-            new StaticMetaModelJavaGenerator( model, executeLibraryMacros, templateLibFile ) :
-            new StaticMetaModelJavaGenerator( model, packageName, executeLibraryMacros, templateLibFile );
-      staticMetaModelJavaGenerator.generate( nameMapper );
-      logger.info( "Successfully generated static Java classes for Aspect Model." );
+         final StaticMetaModelJavaGenerator staticMetaModelJavaGenerator = packageName.isEmpty() ?
+               new StaticMetaModelJavaGenerator( aspectModel, executeLibraryMacros, templateLibFile ) :
+               new StaticMetaModelJavaGenerator( aspectModel, packageName, executeLibraryMacros, templateLibFile );
+         staticMetaModelJavaGenerator.generate( nameMapper );
+      }
+      logger.info( "Successfully generated static Java classes for Aspect Models." );
    }
 }
