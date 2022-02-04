@@ -44,8 +44,8 @@ import io.vavr.control.Try;
 
 public abstract class AspectModelMojo extends AbstractMojo {
 
-   @Parameter( required = true )
-   private String modelsRootDirectory;
+   @Parameter( defaultValue = "${basedir}/src/main/resources/aspects" )
+   private String modelsRootDirectory = System.getProperty("user.dir") + "/src/main/resources/aspects";
 
    @Parameter( required = true, property = "include" )
    private Set<String> includes;
@@ -54,9 +54,6 @@ public abstract class AspectModelMojo extends AbstractMojo {
    protected String outputDirectory = "";
 
    protected void validateParameters() throws MojoExecutionException {
-      if ( modelsRootDirectory == null || modelsRootDirectory.isEmpty() ) {
-         throw new MojoExecutionException( "Missing configuration. Please provide a valid models root directory." );
-      }
       if ( includes == null || includes.isEmpty() ) {
          throw new MojoExecutionException( "Missing configuration. Please provide Aspect Models to be included." );
       }

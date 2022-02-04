@@ -54,7 +54,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 |===
 
@@ -97,7 +97,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
 | `packageName` | The package name for the generated Java files. | `String` | The namespace of the given Aspect Model. | {nok}
@@ -143,7 +143,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
 | `packageName` | The package name for the generated Java files. | `String` | The namespace of the given Aspect Model. | {nok}
@@ -188,7 +188,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON Schema will be written to. | `String` | none | {ok}
 |===
@@ -232,7 +232,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated OpenAPI Specification will be written to. | `String` | none | {ok}
 | `aspectApiBaseUrl` | The base URL for the Aspect API OpenAPI specification. | `String` | none | {ok}
@@ -286,7 +286,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated HTML document will be written to. | `String` | none | {ok}
 | `htmlCustomCSSFilePath` | Path to a CSS file with custom styles to be included in the generated HTML documentation. | `String` | none | {nok}
@@ -332,7 +332,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated diagrams will be written to. | `String` | none | {ok}
 | `targetFormats` | A list formats in which the diagram(s) will be created. A diagram will be generated for each specified format. | `String` | none | {ok}
@@ -375,7 +375,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
 |===
@@ -417,7 +417,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the updated Aspect Model will be written to. | `String` | none | {ok}
 |===
@@ -459,7 +459,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | none | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory containing the pretty printed Aspect Model. | `String` | none | {ok}
 |===

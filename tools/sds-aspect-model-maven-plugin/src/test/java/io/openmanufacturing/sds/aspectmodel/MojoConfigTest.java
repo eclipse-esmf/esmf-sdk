@@ -37,12 +37,10 @@ public class MojoConfigTest extends AspectModelMojoTest {
    }
 
    @Test
-   public void testMissingModelsRoot() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/test-pom-missing-models-root.xml" );
+   public void testDefaultModelsRoot() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/test-pom-default-models-root.xml" );
       final Mojo validate = lookupMojo( "validate", testPom );
-      assertThatCode( validate::execute )
-            .isInstanceOf( MojoExecutionException.class )
-            .hasMessage( "Missing configuration. Please provide a valid models root directory." );
+      assertThatCode( validate::execute ).doesNotThrowAnyException();
    }
 
    @Test
