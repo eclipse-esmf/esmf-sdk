@@ -40,6 +40,8 @@ public class GenerateJsonSchema extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
+      validateParameters();
+
       final Set<VersionedModel> aspectModels = loadModelsOrFail();
       try {
          for ( final VersionedModel aspectModel : aspectModels ) {

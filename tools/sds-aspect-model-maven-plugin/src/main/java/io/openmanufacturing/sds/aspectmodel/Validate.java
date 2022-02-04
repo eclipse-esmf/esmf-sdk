@@ -35,6 +35,8 @@ public class Validate extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
+      validateParameters();
+
       final Set<Try<VersionedModel>> resolvedModels = loadAndResolveModels();
       for ( final Try<VersionedModel> versionedModel : resolvedModels ) {
          final ValidationReport report = validator.validate( versionedModel );

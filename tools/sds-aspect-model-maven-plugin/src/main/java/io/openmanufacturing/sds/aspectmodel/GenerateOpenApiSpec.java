@@ -82,6 +82,8 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
+      validateParameters();
+
       final Set<VersionedModel> aspectModels = loadModelsOrFail();
       try {
          final OpenApiFormat format = OpenApiFormat.valueOf( outputFormat.toUpperCase() );
@@ -94,6 +96,17 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       } catch ( final IllegalArgumentException exception ) {
          throw new MojoExecutionException( "Invalid output format.", exception );
       }
+   }
+
+   @Override
+   protected void validateParameters() throws MojoExecutionException {
+      if ( aspectApiBaseUrl.isEmpty() ) {
+         throw new MojoExecutionException( "Missing configuration. Please provide the Aspect API base URL." );
+      }
+      if ( outputFormat.isEmpty() ) {
+         throw new MojoExecutionException( "Missing configuration. Please provide an output format." );
+      }
+      super.validateParameters();
    }
 
    private void generateOpenApiSpecJson( final Set<VersionedModel> aspectModels ) throws MojoExecutionException {

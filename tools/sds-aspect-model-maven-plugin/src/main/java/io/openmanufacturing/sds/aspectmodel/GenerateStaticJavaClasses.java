@@ -36,7 +36,7 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
       final Set<VersionedModel> aspectModels = loadModelsOrFail();
       for ( final VersionedModel aspectModel : aspectModels ) {
          final File templateLibFile = Path.of( templateFile ).toFile();
-         validateVelocityTemplateMacroFilePathAndName( templateLibFile );
+         validateParameters( templateLibFile );
 
          final StaticMetaModelJavaGenerator staticMetaModelJavaGenerator = packageName.isEmpty() ?
                new StaticMetaModelJavaGenerator( aspectModel, executeLibraryMacros, templateLibFile ) :

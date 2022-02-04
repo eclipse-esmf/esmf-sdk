@@ -53,6 +53,15 @@ public abstract class AspectModelMojo extends AbstractMojo {
    @Parameter
    protected String outputDirectory = "";
 
+   protected void validateParameters() throws MojoExecutionException {
+      if ( modelsRootDirectory == null || modelsRootDirectory.isEmpty() ) {
+         throw new MojoExecutionException( "Missing configuration. Please provide a valid models root directory." );
+      }
+      if ( includes == null || includes.isEmpty() ) {
+         throw new MojoExecutionException( "Missing configuration. Please provide Aspect Models to be included." );
+      }
+   }
+
    protected Set<Try<VersionedModel>> loadAndResolveModels() throws MojoExecutionException {
       final Path modelsRoot = Path.of( modelsRootDirectory );
       return includes.stream().map( AspectModelUrn::fromUrn )

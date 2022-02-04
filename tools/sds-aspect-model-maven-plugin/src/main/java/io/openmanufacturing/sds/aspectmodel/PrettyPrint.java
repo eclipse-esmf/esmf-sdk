@@ -35,6 +35,8 @@ public class PrettyPrint extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
+      validateParameters();
+
       final Map<AspectModelUrn, VersionedModel> aspectModels = loadButNotResolveModels();
       for ( final Map.Entry<AspectModelUrn, VersionedModel> aspectModelEntry : aspectModels.entrySet() ) {
          final AspectModelUrn aspectModelUrn = aspectModelEntry.getKey();

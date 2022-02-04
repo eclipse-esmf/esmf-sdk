@@ -33,10 +33,11 @@ public abstract class CodeGenerationMojo extends AspectModelMojo {
    @Parameter( defaultValue = "false" )
    protected boolean executeLibraryMacros;
 
-   protected void validateVelocityTemplateMacroFilePathAndName( final File templateLibFile ) throws MojoExecutionException {
+   protected void validateParameters( final File templateLibFile ) throws MojoExecutionException {
       if ( executeLibraryMacros && !templateLibFile.exists() ) {
          throw new MojoExecutionException( "Missing configuration. Valid path to velocity template library file must be provided." );
       }
+      super.validateParameters();
    }
 
    protected final Function<QualifiedName, OutputStream> nameMapper = artifact -> {

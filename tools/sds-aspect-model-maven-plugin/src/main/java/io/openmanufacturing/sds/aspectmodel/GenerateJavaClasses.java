@@ -40,7 +40,7 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
       final Set<VersionedModel> aspectModels = loadModelsOrFail();
       for ( final VersionedModel aspectModel : aspectModels ) {
          final File templateLibFile = Path.of( templateFile ).toFile();
-         validateVelocityTemplateMacroFilePathAndName( templateLibFile );
+         validateParameters( templateLibFile );
 
          final boolean enableJacksonAnnotations = !disableJacksonAnnotations;
          final AspectModelJavaGenerator aspectModelJavaGenerator = packageName.isEmpty() ?

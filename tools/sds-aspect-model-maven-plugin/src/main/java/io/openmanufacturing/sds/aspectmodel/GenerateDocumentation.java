@@ -40,6 +40,8 @@ public class GenerateDocumentation extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException {
+      validateParameters();
+
       try {
          final Set<VersionedModel> aspectModels = loadModelsOrFail();
          for ( final VersionedModel aspectModel : aspectModels ) {

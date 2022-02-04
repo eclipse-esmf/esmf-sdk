@@ -38,6 +38,8 @@ public class Migrate extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
+      validateParameters();
+
       final Map<AspectModelUrn, VersionedModel> aspectModels = loadButNotResolveModels();
       for ( Map.Entry<AspectModelUrn, VersionedModel> aspectModelEntry : aspectModels.entrySet() ) {
          final AspectModelUrn aspectModelUrn = aspectModelEntry.getKey();

@@ -33,6 +33,8 @@ public class GenerateJsonPayload extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
+      validateParameters();
+
       final Set<VersionedModel> aspectModels = loadModelsOrFail();
       try {
          for ( VersionedModel aspectModel : aspectModels ) {

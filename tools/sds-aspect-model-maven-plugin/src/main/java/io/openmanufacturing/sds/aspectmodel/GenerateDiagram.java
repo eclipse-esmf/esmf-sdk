@@ -37,6 +37,8 @@ public class GenerateDiagram extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException {
+      validateParameters();
+
       final Set<VersionedModel> aspectModels = loadModelsOrFail();
       try {
          final Set<AspectModelDiagramGenerator.Format> formats = targetFormats.stream()
@@ -53,5 +55,13 @@ public class GenerateDiagram extends AspectModelMojo {
          throw new MojoExecutionException( "Invalid target format provided. Possible formats are dot, svg & png.", exception );
       }
       logger.info( "Successfully generated Aspect Model diagram(s)." );
+   }
+
+   @Override
+   protected void validateParameters() throws MojoExecutionException {
+      if ( targetFormats == null || targetFormats.isEmpty() ) {
+         throw new MojoExecutionException( "Please provide target formats." );
+      }
+      super.validateParameters();
    }
 }
