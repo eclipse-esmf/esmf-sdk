@@ -387,7 +387,7 @@ Configuration Properties:
 
 == Pretty Print
 
-The `prettyPrint` goal formats the given Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+The `prettyPrint` goal formats the given Aspect Model. The formatted file is written to the location specified in the `outputDirectory` property. The default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 
