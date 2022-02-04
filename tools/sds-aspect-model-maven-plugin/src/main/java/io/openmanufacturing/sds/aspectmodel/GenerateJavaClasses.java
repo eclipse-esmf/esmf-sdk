@@ -46,6 +46,6 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
             new AspectModelJavaGenerator( model, packageName, enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
 
       aspectModelJavaGenerator.generate( nameMapper );
-      logger.info( "Successfully generated Java classes for Aspect model." );
+      logger.info( "Successfully generated Java classes for Aspect Model." );
    }
 }

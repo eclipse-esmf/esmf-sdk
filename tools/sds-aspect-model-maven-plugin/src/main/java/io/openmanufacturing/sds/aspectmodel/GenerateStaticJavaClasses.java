@@ -40,6 +40,6 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
             new StaticMetaModelJavaGenerator( model, executeLibraryMacros, templateLibFile ) :
             new StaticMetaModelJavaGenerator( model, packageName, executeLibraryMacros, templateLibFile );
       staticMetaModelJavaGenerator.generate( nameMapper );
-      logger.info( "Successfully generated static Java classes for Aspect model." );
+      logger.info( "Successfully generated static Java classes for Aspect Model." );
    }
 }

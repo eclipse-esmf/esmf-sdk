@@ -42,6 +42,6 @@ public class PrettyPrint extends AspectModelMojo {
       final PrettyPrinter prettyPrinter = new PrettyPrinter( versionedModel, aspectModelUrn, printWriter );
       prettyPrinter.print();
       printWriter.close();
-      logger.info( "Successfully printed Aspect model." );
+      logger.info( "Successfully printed Aspect Model." );
    }
 }

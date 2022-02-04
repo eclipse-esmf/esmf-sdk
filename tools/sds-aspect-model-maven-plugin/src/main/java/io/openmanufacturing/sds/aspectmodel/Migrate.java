@@ -44,11 +44,11 @@ public class Migrate extends AspectModelMojo {
       final VersionedModel versionedModel = loadButNotResolveModel();
       final Try<VersionedModel> migratedModel = migratorService.updateMetaModelVersion( versionedModel );
       if ( migratedModel.isFailure() ) {
-         throw new MojoFailureException( "Failed to migrate Aspect model.", migratedModel.getCause() );
+         throw new MojoFailureException( "Failed to migrate Aspect Model.", migratedModel.getCause() );
       }
       final PrettyPrinter prettyPrinter = new PrettyPrinter( migratedModel.get(), aspectModelUrn, printWriter );
       prettyPrinter.print();
       printWriter.close();
-      logger.info( "Successfully migrated Aspect model to latest BAMM version." );
+      logger.info( "Successfully migrated Aspect Model to latest BAMM version." );
    }
 }

@@ -112,7 +112,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
          objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, jsonSpec );
          out.flush();
       } catch ( final IOException exception ) {
-         throw new MojoExecutionException( "Could not format OpenApi Json.", exception );
+         throw new MojoExecutionException( "Could not format OpenAPI JSON.", exception );
       }
    }
 
@@ -126,7 +126,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
          out.flush();
          out.close();
       } catch ( final IOException exception ) {
-         throw new MojoExecutionException( "Could not generate OpenApi yaml specification.", exception );
+         throw new MojoExecutionException( "Could not generate OpenAPI YAML specification.", exception );
       }
    }
 
