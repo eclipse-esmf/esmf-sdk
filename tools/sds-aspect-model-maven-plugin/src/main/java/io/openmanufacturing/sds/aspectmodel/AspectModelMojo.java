@@ -58,25 +58,25 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
    protected VersionedModel loadModelOrFail( final String aspectModelFilePath ) throws MojoExecutionException {
       final Try<VersionedModel> versionedModel = loadAndResolveModel( aspectModelFilePath );
-      if ( versionedModel.isFailure() ) {
-         final Throwable loadModelFailureCause = versionedModel.getCause();
-
-         // Model can not be loaded, root cause e.g. File not found
-         if ( loadModelFailureCause instanceof IllegalArgumentException ) {
-            final String errorMessage = String.format( "Can not open file for reading: %s.", aspectModelFilePath );
-            throw new MojoExecutionException( errorMessage );
-         }
-
-         if ( loadModelFailureCause instanceof ModelResolutionException ) {
-            throw new MojoExecutionException( "Could not resolve all model elements" );
-         }
-
-         // Another exception, e.g. syntax error. Let the validator handle this
-         final AspectModelValidator validator = new AspectModelValidator();
-         final ValidationReport report = validator.validate( versionedModel );
-         throw new MojoExecutionException( report.toString() );
+      if ( versionedModel.isSuccess() ) {
+         return versionedModel.get();
       }
-      return versionedModel.get();
+      final Throwable loadModelFailureCause = versionedModel.getCause();
+
+      // Model can not be loaded, root cause e.g. File not found
+      if ( loadModelFailureCause instanceof IllegalArgumentException ) {
+         final String errorMessage = String.format( "Can not open file for reading: %s.", aspectModelFilePath );
+         throw new MojoExecutionException( errorMessage, loadModelFailureCause );
+      }
+
+      if ( loadModelFailureCause instanceof ModelResolutionException ) {
+         throw new MojoExecutionException( "Could not resolve all model elements", loadModelFailureCause );
+      }
+
+      // Another exception, e.g. syntax error. Let the validator handle this
+      final AspectModelValidator validator = new AspectModelValidator();
+      final ValidationReport report = validator.validate( versionedModel );
+      throw new MojoExecutionException( report.toString(), loadModelFailureCause );
    }
 
    protected VersionedModel loadButNotResolveModel() throws MojoExecutionException {
