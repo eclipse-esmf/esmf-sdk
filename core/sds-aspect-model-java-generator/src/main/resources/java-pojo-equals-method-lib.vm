@@ -28,9 +28,13 @@ if (o == null || getClass() != o.getClass()) {
     #end
 #end
 final $element.getName() that = ($element.getName())o;
-    return #foreach( $property in $element.getProperties() )
-        Objects.equals(${property.getPayloadName()}, that.${property.getPayloadName()})
-        #if( $foreach.hasNext) && #end
+    return
+    #if( $element.getProperties().isEmpty() ) true
+    #else
+        #foreach( $property in $element.getProperties() )
+            Objects.equals(${property.getPayloadName()}, that.${property.getPayloadName()})
+            #if( $foreach.hasNext) && #end
+        #end
     #end;
 }
 #end

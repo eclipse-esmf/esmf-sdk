@@ -53,16 +53,16 @@ public class StructuredValuePropertiesDeconstructor {
    private List<DeconstructionSet> deconstructProperties( final HasProperties element ) {
       final AspectVisitor<Stream<Base>, Void> visitor = new AspectStreamTraversalVisitor();
       return element.getProperties().stream().flatMap( property ->
-            visitor.visitProperty( property, null )
-                   .filter( StructuredValue.class::isInstance )
-                   .map( StructuredValue.class::cast )
-                   .map( structuredValue -> new DeconstructionSet( property,
-                         structuredValue.getDeconstructionRule(),
-                         structuredValue.getElements().stream()
-                                        .filter( Property.class::isInstance )
-                                        .map( Property.class::cast )
-                                        .collect( Collectors.toList() ) ) ) )
-                    .collect( Collectors.toList() );
+                  visitor.visitProperty( property, null )
+                        .filter( StructuredValue.class::isInstance )
+                        .map( StructuredValue.class::cast )
+                        .map( structuredValue -> new DeconstructionSet( property,
+                              structuredValue.getDeconstructionRule(),
+                              structuredValue.getElements().stream()
+                                    .filter( Property.class::isInstance )
+                                    .map( Property.class::cast )
+                                    .collect( Collectors.toList() ) ) ) )
+            .collect( Collectors.toList() );
    }
 
    /**
@@ -73,9 +73,9 @@ public class StructuredValuePropertiesDeconstructor {
     */
    private List<Property> getAllProperties( final List<DeconstructionSet> deconstructionSets ) {
       return deconstructionSets.stream()
-                               .map( DeconstructionSet::getElementProperties )
-                               .flatMap( List::stream )
-                               .collect( Collectors.toList() );
+            .map( DeconstructionSet::getElementProperties )
+            .flatMap( List::stream )
+            .collect( Collectors.toList() );
    }
 
    /**

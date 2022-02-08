@@ -49,6 +49,8 @@ public class ValueInitializer {
             String.format( "%s.valueOf( %s )", type.getSimpleName(), valueExpression );
       final BiFunction<Class<?>, String, String> gregorianCalendar = ( type, valueExpression ) ->
             "_datatypeFactory.newXMLGregorianCalendar( " + valueExpression + " )";
+      final BiFunction<Class<?>, String, String> duration = ( type, valueExpression ) ->
+            "_datatypeFactory.newDuration( " + valueExpression + " )";
 
       INITIALIZERS = new HashMap<>();
       INITIALIZERS.put( XSD.xstring, literalExpression );
@@ -60,19 +62,18 @@ public class ValueInitializer {
       INITIALIZERS.put( XSD.date, gregorianCalendar );
       INITIALIZERS.put( XSD.dateTime, gregorianCalendar );
       INITIALIZERS.put( XSD.dateTimeStamp, gregorianCalendar );
-      INITIALIZERS.put( XSD.gYear,
-            ( type, valueExpression ) -> "_dataTypeFactory.newXMLGregorianCalendarDate( Integer.valueOf( "
-                  + valueExpression
-                  + " ), DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
+      INITIALIZERS.put( XSD.gYear, ( type, valueExpression ) ->
+            "_datatypeFactory.newXMLGregorianCalendarDate( Integer.valueOf( " + valueExpression + " )"
+                  + ", DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
       INITIALIZERS.put( XSD.gMonth, ( type, valueExpression ) ->
-            "_dataTypeFactory.newXMLGregorianCalendarDate( DatatypeConstants.FIELD_UNDEFINED, Integer.valueOf( "
-                  + valueExpression
-                  + " ), DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
+            "_datatypeFactory.newXMLGregorianCalendarDate( DatatypeConstants.FIELD_UNDEFINED, Integer.valueOf( " + valueExpression + " )"
+                  + ", DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
       INITIALIZERS.put( XSD.gYearMonth, gregorianCalendar );
-      INITIALIZERS.put( XSD.gMonthDay, null );
-      INITIALIZERS.put( XSD.duration, parseString );
-      INITIALIZERS.put( XSD.yearMonthDuration, parseString );
-      INITIALIZERS.put( XSD.dayTimeDuration, parseString );
+      INITIALIZERS.put( XSD.gMonthDay, gregorianCalendar );
+      INITIALIZERS.put( XSD.gDay, gregorianCalendar );
+      INITIALIZERS.put( XSD.duration, duration );
+      INITIALIZERS.put( XSD.yearMonthDuration, duration );
+      INITIALIZERS.put( XSD.dayTimeDuration, duration );
       INITIALIZERS.put( XSD.xbyte, parseTypeName );
       INITIALIZERS.put( XSD.xshort, parseTypeName );
       INITIALIZERS.put( XSD.xint, valueOf );
