@@ -93,8 +93,8 @@ public class PrettyPrinterTest extends MetaModelVersions {
 
    private String hashAnonymousResource( final Resource resource ) {
       return resource.listProperties().toList().stream()
-                     .map( statement -> hash( statement.getPredicate() ) + hash( statement.getObject() ) )
-                     .sorted()
-                     .collect( Collectors.joining() );
+            .map( statement -> hash( statement.getPredicate() ) + hash( statement.getObject() ) )
+            .sorted()
+            .collect( Collectors.joining() );
    }
 }

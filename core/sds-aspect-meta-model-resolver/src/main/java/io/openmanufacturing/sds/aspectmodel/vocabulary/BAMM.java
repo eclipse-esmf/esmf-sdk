@@ -152,6 +152,11 @@ public class BAMM implements Namespace {
    }
 
    @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   public Resource Event() {
+      return resource( "Event" );
+   }
+
+   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
    public Resource Entity() {
       return resource( "Entity" );
    }

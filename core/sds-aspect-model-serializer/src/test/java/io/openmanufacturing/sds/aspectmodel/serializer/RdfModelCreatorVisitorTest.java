@@ -39,14 +39,14 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, names = {
-      "MOVEMENT",
-      "ENTITY_INSTANCE_TEST1",
-      "ENTITY_INSTANCE_TEST2",
-      "ENTITY_INSTANCE_TEST3",
-      "ENTITY_INSTANCE_TEST4",
-      "ASPECT_WITH_ABSTRACT_ENTITY",
-      "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
-      "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY"
+         "MOVEMENT",
+         "ENTITY_INSTANCE_TEST1",
+         "ENTITY_INSTANCE_TEST2",
+         "ENTITY_INSTANCE_TEST3",
+         "ENTITY_INSTANCE_TEST4",
+         "ASPECT_WITH_ABSTRACT_ENTITY",
+         "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
+         "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY"
    } )
    public void testRdfModelCreatorVisitor( final TestAspect aspect ) {
       testRdfCreation( aspect, KnownVersion.getLatest() );
@@ -54,10 +54,10 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, names = {
-      "ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES",
-      "ASPECT_WITH_OPTIONAL_PROPERTY_WITH_PAYLOAD_NAME",
-      "ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME",
-      "ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL"
+         "ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES",
+         "ASPECT_WITH_OPTIONAL_PROPERTY_WITH_PAYLOAD_NAME",
+         "ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME",
+         "ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL"
    } )
    public void testRdfModelCreatorVisitorPropertyUsageAttributes( final TestAspect aspect ) {
       testRdfCreation( aspect, KnownVersion.getLatest() );
@@ -82,14 +82,14 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
       serializedModel.clearNsPrefixMap();
       originalModel.getNsPrefixMap().forEach( serializedModel::setNsPrefix );
       assertThat(
-         Arrays.stream( TestModel.modelToString( serializedModel ).split( "\\n" ) )
-            .filter( line -> !line.contains( "bamm-c:values" ) )
-            .filter( line -> !line.contains( "bamm:see" ) )
-            .collect( Collectors.toSet() ) )
-         .containsExactlyInAnyOrderElementsOf(
-            Arrays.stream( TestModel.modelToString( originalModel ).split( "\\n" ) )
-               .filter( line -> !line.contains( "bamm-c:values" ) )
-               .filter( line -> !line.contains( "bamm:see" ) )
-               .collect( Collectors.toSet() ) );
+            Arrays.stream( TestModel.modelToString( serializedModel ).split( "\\n" ) )
+                  .filter( line -> !line.contains( "bamm-c:values" ) )
+                  .filter( line -> !line.contains( "bamm:see" ) )
+                  .collect( Collectors.toSet() ) )
+            .containsExactlyInAnyOrderElementsOf(
+                  Arrays.stream( TestModel.modelToString( originalModel ).split( "\\n" ) )
+                        .filter( line -> !line.contains( "bamm-c:values" ) )
+                        .filter( line -> !line.contains( "bamm:see" ) )
+                        .collect( Collectors.toSet() ) );
    }
 }

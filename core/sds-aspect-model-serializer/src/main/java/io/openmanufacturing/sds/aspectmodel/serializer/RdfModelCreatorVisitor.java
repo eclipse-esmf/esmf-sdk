@@ -60,6 +60,7 @@ import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.EncodingConstraint;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Enumeration;
+import io.openmanufacturing.sds.metamodel.Event;
 import io.openmanufacturing.sds.metamodel.FixedPointConstraint;
 import io.openmanufacturing.sds.metamodel.HasProperties;
 import io.openmanufacturing.sds.metamodel.IsDescribed;
@@ -569,10 +570,12 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       model.add( serializeProperties( resource, aspect ) );
       model.add( resource, bamm.operations(), model.createList(
             aspect.getOperations().stream().map( this::getElementResource ).iterator() ) );
-      model.add( resource, bamm.events(), model.createList(
-            aspect.getEvents().stream().map( this::getElementResource ).iterator() ) );
       aspect.getOperations().stream().map( operation -> operation.accept( this, aspect ) ).forEach( model::add );
-      aspect.getEvents().stream().map( event -> event.accept( this, aspect ) ).forEach( model::add );
+      if ( !aspect.getEvents().isEmpty() ) {
+         model.add( resource, bamm.events(), model.createList(
+               aspect.getEvents().stream().map( this::getElementResource ).iterator() ) );
+         aspect.getEvents().stream().map( event -> event.accept( this, aspect ) ).forEach( model::add );
+      }
       return model;
    }
 
@@ -618,6 +621,19 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       operation.getInput().stream().map( property -> property.accept( this, operation ) ).forEach( model::add );
       operation.getOutput().ifPresent( outputProperty -> model.add( resource, bamm.output(), getElementResource( outputProperty ) ) );
       operation.getOutput().map( outputProperty -> outputProperty.accept( this, operation ) ).ifPresent( model::add );
+      return model;
+   }
+
+   @Override
+   public Model visitEvent( final Event event, final Base context ) {
+      final Model model = ModelFactory.createDefaultModel();
+      final Resource resource = getElementResource( event );
+      model.add( resource, RDF.type, bamm.Event() );
+      if ( !event.hasSyntheticName() ) {
+         model.add( resource, bamm.name(), serializePlainString( event.getName() ) );
+      }
+      model.add( serializeDescriptions( resource, event ) );
+      model.add( serializeProperties( resource, event ) );
       return model;
    }
 
