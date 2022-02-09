@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship. 
@@ -13,8 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.java.customconstraint;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.TYPE_USE;
+import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
@@ -27,8 +26,8 @@ import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 
 @Target( { FIELD, TYPE_USE } )
 @Retention( RUNTIME )
-@Constraint( validatedBy = MinValidator.class )
-public @interface Min {
+@Constraint( validatedBy = LongMaxValidator.class )
+public @interface LongMax {
 
    String message() default "{io.openmanufacturing.aspectmodel.java.customconstraint.message}";
 
@@ -37,9 +36,9 @@ public @interface Min {
    Class<? extends Payload>[] payload() default {};
 
    /**
-    * @return value the element must be higher or equal to
+    * @return value the element must be lower or equal to
     */
-   int value();
+   long value();
 
    /**
     * The definition used to determine whether the given {@link #value()} is inclusive or exclusive.

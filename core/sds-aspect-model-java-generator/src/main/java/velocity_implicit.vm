@@ -5,6 +5,7 @@
 #* @vtlvariable name="Base64BinarySerializer" type="java.lang.String" *#
 #* @vtlvariable name="BoundDefinition" type="java.lang.Class<io.openmanufacturing.sds.metamodel.impl.BoundDefinition>" *#
 #* @vtlvariable name="characteristicBaseUrn" type="java.lang.String" *#
+#* @vtlvariable name="Charset" type="java.lang.Class<java.nio.charset.Charset>" *#
 #* @vtlvariable name="className" type="java.lang.String" *#
 #* @vtlvariable name="Code" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Code>" *#
 #* @vtlvariable name="codeGenerationConfig" type="io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig" *#
@@ -50,6 +51,7 @@
 #* @vtlvariable name="enumeration" type="io.openmanufacturing.sds.metamodel.Enumeration" *#
 #* @vtlvariable name="Enumeration" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Enumeration>" *#
 #* @vtlvariable name="FixedPointConstraint" type="java.lang.Class<io.openmanufacturing.sds.metamodel.FixedPointConstraint>" *#
+#* @vtlvariable name="HashMap" type="java.lang.Class<java.util.HashMap>)" *#
 #* @vtlvariable name="HexBinaryDeserializer" type="java.lang.String" *#
 #* @vtlvariable name="HexBinarySerializer" type="java.lang.String" *#
 #* @vtlvariable name="JsonCreator" type="java.lang.Class<com.fasterxml.jackson.annotation.JsonCreator>" *#

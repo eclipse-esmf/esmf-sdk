@@ -13,7 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.java;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +35,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -74,6 +75,18 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    private Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion metaModelVersion ) {
       final VersionedModel model = TestResources.getModel( aspect, metaModelVersion ).get();
       return List.of( new AspectModelJavaGenerator( model, true, false, null ) );
+   }
+
+   /**
+    * Tests that code generation succeeds for all test models for the latest meta model version
+    * @param testAspect the injected Aspect model
+    */
+   @ParameterizedTest
+   @EnumSource( value = TestAspect.class )
+   public void testCodeGeneration( final TestAspect testAspect ) {
+      assertThatCode( () ->
+            TestContext.generateAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) )
+      ).doesNotThrowAnyException();
    }
 
    /**
@@ -289,10 +302,10 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                   .put( "testPropertyWithDecimalMaxRangeConstraint",
                         "@NotNull" + "@DecimalMax(value = \"10.5\")" )
                   .put( "testPropertyWithMinMaxRangeConstraint", "@NotNull"
-                        + "@Min(value = 1, boundDefinition = BoundDefinition.AT_LEAST)"
-                        + "@Max(value = 10, boundDefinition = BoundDefinition.AT_MOST)" )
+                        + "@IntegerMin(value = 1, boundDefinition = BoundDefinition.AT_LEAST)"
+                        + "@IntegerMax(value = 10, boundDefinition = BoundDefinition.AT_MOST)" )
                   .put( "testPropertyWithMinRangeConstraint", "@NotNull"
-                        + "@Min(value = 1, boundDefinition = BoundDefinition.AT_LEAST)" )
+                        + "@IntegerMin(value = 1, boundDefinition = BoundDefinition.AT_LEAST)" )
                   .put( "testPropertyRangeConstraintWithFloatType", "@NotNull"
                         + "@FloatMin(value = \"1.0\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@FloatMax(value = \"10.0\", boundDefinition = BoundDefinition.AT_MOST)" )
@@ -348,8 +361,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                         + "@DecimalMin(value = \"12.3\", inclusive = false)"
                         + "@DecimalMax(value = \"23.45\", inclusive = false)" )
                   .put( "intProp", "@NotNull"
-                        + "@Min(value = 12, boundDefinition = BoundDefinition.GREATER_THAN)"
-                        + "@Max(value = 23, boundDefinition = BoundDefinition.LESS_THAN)" )
+                        + "@IntegerMin(value = 12, boundDefinition = BoundDefinition.GREATER_THAN)"
+                        + "@IntegerMax(value = 23, boundDefinition = BoundDefinition.LESS_THAN)" )
                   .put( "integerProp", "@NotNull"
                         + "@DecimalMin(value = \"12\", inclusive = false)"
                         + "@DecimalMax(value = \"23\", inclusive = false)" )

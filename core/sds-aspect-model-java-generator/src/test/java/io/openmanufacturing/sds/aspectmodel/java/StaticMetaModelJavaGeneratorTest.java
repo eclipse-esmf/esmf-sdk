@@ -13,7 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.java;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -52,6 +54,18 @@ import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintPrope
 import io.openmanufacturing.sds.test.TestAspect;
 
 public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
+
+   /**
+    * Tests that code generation succeeds for all test models for the latest meta model version
+    * @param testAspect the injected Aspect model
+    */
+   @ParameterizedTest
+   @EnumSource( value = TestAspect.class )
+   public void testCodeGeneration( final TestAspect testAspect ) {
+      assertThatCode( () ->
+            TestContext.generateStaticAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) )
+      ).doesNotThrowAnyException();
+   }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
@@ -348,6 +362,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
                   } )
                   .put( "START_TIMESTAMP", new TypeToken<StaticProperty<XMLGregorianCalendar>>() {
                   } )
+                  .put( "_datatypeFactory", DatatypeFactory.class )
                   .build(), new HashMap<>() );
 
       result.assertFields( "MetaAspectWithErrorCollection",
@@ -356,6 +371,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
                   .put( "CHARACTERISTIC_NAMESPACE", String.class )
                   .put( "INSTANCE", "MetaAspectWithErrorCollection" )
                   .put( "ITEMS", "StaticContainerProperty<Error,Collection<Error>>" )
+                  .put( "_datatypeFactory", DatatypeFactory.class )
                   .build(), new HashMap<>() );
    }
 
@@ -451,13 +467,13 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
             + "MetaModelBaseAttributes.from(KnownVersion." + KnownVersion.getLatest() + ", "
             + "AspectModelUrn.fromUrn(NAMESPACE + \"testProperty\"), \"TestEnumeration\"), "
             + "Optional.of(new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#int\", KnownVersion." + KnownVersion.getLatest() + ")), "
-            + "List.of(TestEnumeration.values()))";
+            + "Arrays.asList(TestEnumeration.values()))";
 
       final String expectedOptionalTestPropertyCharacteristicConstructorCall = "new DefaultEnumeration("
             + "MetaModelBaseAttributes.from(KnownVersion." + KnownVersion.getLatest() + ", "
             + "AspectModelUrn.fromUrn(NAMESPACE + \"optionalTestProperty\"), \"TestEnumeration\"), "
             + "Optional.of(new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#int\", KnownVersion." + KnownVersion.getLatest() + ")), "
-            + "List.of(TestEnumeration.values()))";
+            + "Arrays.asList(TestEnumeration.values()))";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithEnumAndOptionalEnumProperties",
             ImmutableMap.<String, String> builder()

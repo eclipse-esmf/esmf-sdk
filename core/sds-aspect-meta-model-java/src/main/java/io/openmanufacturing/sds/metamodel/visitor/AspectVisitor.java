@@ -44,6 +44,7 @@ import io.openmanufacturing.sds.metamodel.Set;
 import io.openmanufacturing.sds.metamodel.SingleEntity;
 import io.openmanufacturing.sds.metamodel.SortedSet;
 import io.openmanufacturing.sds.metamodel.State;
+import io.openmanufacturing.sds.metamodel.StructureElement;
 import io.openmanufacturing.sds.metamodel.StructuredValue;
 import io.openmanufacturing.sds.metamodel.TimeSeries;
 import io.openmanufacturing.sds.metamodel.Trait;
@@ -59,8 +60,16 @@ import io.openmanufacturing.sds.metamodel.Unit;
 public interface AspectVisitor<T, C> {
    T visitBase( Base base, C context );
 
+   default T visitStructureElement( final StructureElement structureElement, final C context ) {
+      return visitBase( structureElement, context );
+   }
+
    default T visitAspect( final Aspect aspect, final C context ) {
       return visitBase( aspect, context );
+   }
+
+   default T visitHasProperties( final Aspect aspect, final C context ) {
+      return visitHasProperties( (HasProperties) aspect, context );
    }
 
    default T visitProperty( final Property property, final C context ) {
@@ -87,10 +96,6 @@ public interface AspectVisitor<T, C> {
       return visitComplexType( abstractEntity, context );
    }
 
-   default T visitComplexType( final ComplexType complexType, final C context ) {
-      return visitBase( complexType, context );
-   }
-
    default T visitUnit( final Unit unit, final C context ) {
       return visitBase( unit, context );
    }
@@ -107,24 +112,48 @@ public interface AspectVisitor<T, C> {
       return visitCharacteristic( code, context );
    }
 
+   default T visitCharacteristic( final Code code, final C context ) {
+      return visitCharacteristic( (Characteristic) code, context );
+   }
+
    default T visitTrait( final Trait trait, final C context ) {
       return visitCharacteristic( trait, context );
+   }
+
+   default T visitCharacteristic( final Trait trait, final C context ) {
+      return visitCharacteristic( (Characteristic) trait, context );
    }
 
    default T visitCollection( final Collection collection, final C context ) {
       return visitCharacteristic( collection, context );
    }
 
+   default T visitCharacteristic( final Collection collection, final C context ) {
+      return visitCharacteristic( (Characteristic) collection, context );
+   }
+
    default T visitDuration( final Duration duration, final C context ) {
       return visitQuantifiable( duration, context );
+   }
+
+   default T visitCharacteristic( final Duration duration, final C context ) {
+      return visitCharacteristic( (Characteristic) duration, context );
    }
 
    default T visitEither( final Either either, final C context ) {
       return visitCharacteristic( either, context );
    }
 
+   default T visitCharacteristic( final Either either, final C context ) {
+      return visitCharacteristic( (Characteristic) either, context );
+   }
+
    default T visitEnumeration( final Enumeration enumeration, final C context ) {
       return visitCharacteristic( enumeration, context );
+   }
+
+   default T visitCharacteristic( final Enumeration enumeration, final C context ) {
+      return visitCharacteristic( (Characteristic) enumeration, context );
    }
 
    default T visitFixedPointConstraint( final FixedPointConstraint fixedPointConstraint, final C context ) {
@@ -147,6 +176,10 @@ public interface AspectVisitor<T, C> {
       return visitCollection( list, context );
    }
 
+   default T visitCharacteristic( final List list, final C context ) {
+      return visitCharacteristic( (Characteristic) list, context );
+   }
+
    default T visitLocaleConstraint( final LocaleConstraint localeConstraint, final C context ) {
       return visitConstraint( localeConstraint, context );
    }
@@ -155,16 +188,23 @@ public interface AspectVisitor<T, C> {
       return visitQuantifiable( measurement, context );
    }
 
+   default T visitCharacteristic( final Measurement measurement, final C context ) {
+      return visitCharacteristic( (Characteristic) measurement, context );
+   }
+
    default T visitQuantifiable( final Quantifiable quantifiable, final C context ) {
       return visitCharacteristic( quantifiable, context );
+   }
+
+   default T visitCharacteristic( final Quantifiable quantifiable, final C context ) {
+      return visitCharacteristic( (Characteristic) quantifiable, context );
    }
 
    default T visitRangeConstraint( final RangeConstraint rangeConstraint, final C context ) {
       return visitConstraint( rangeConstraint, context );
    }
 
-   default T visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint,
-         final C context ) {
+   default T visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint, final C context ) {
       return visitConstraint( regularExpressionConstraint, context );
    }
 
@@ -172,41 +212,76 @@ public interface AspectVisitor<T, C> {
       return visitCollection( set, context );
    }
 
+   default T visitCharacteristic( final Set set, final C context ) {
+      return visitCharacteristic( (Characteristic) set, context );
+   }
+
    default T visitSingleEntity( final SingleEntity singleEntity, final C context ) {
       return visitCharacteristic( singleEntity, context );
+   }
+
+   default T visitCharacteristic( final SingleEntity singleEntity, final C context ) {
+      return visitCharacteristic( (Characteristic) singleEntity, context );
    }
 
    default T visitSortedSet( final SortedSet sortedSet, final C context ) {
       return visitCollection( sortedSet, context );
    }
 
+   default T visitCharacteristic( final SortedSet sortedSet, final C context ) {
+      return visitCharacteristic( (Characteristic) sortedSet, context );
+   }
+
    default T visitState( final State state, final C context ) {
       return visitEnumeration( state, context );
+   }
+
+   default T visitCharacteristic( final State state, final C context ) {
+      return visitCharacteristic( (Characteristic) state, context );
    }
 
    default T visitStructuredValue( final StructuredValue structuredValue, final C context ) {
       return visitCharacteristic( structuredValue, context );
    }
 
+   default T visitCharacteristic( final StructuredValue structuredValue, final C context ) {
+      return visitCharacteristic( (Characteristic) structuredValue, context );
+   }
+
    default T visitTimeSeries( final TimeSeries timeSeries, final C context ) {
       return visitSortedSet( timeSeries, context );
    }
 
+   default T visitCharacteristic( final TimeSeries timeSeries, final C context ) {
+      return visitCharacteristic( (Characteristic) timeSeries, context );
+   }
+
    default T visitHasProperties( final HasProperties element, final C context ) {
-      if ( element instanceof Aspect ) {
-         return visitAspect( (Aspect) element, context );
-      }
-      return visitComplexType( (ComplexType) element, context );
+      return visitStructureElement( (StructureElement) element, context );
    }
 
    default T visitType( final Type type, final C context ) {
-      if ( type instanceof Scalar ) {
-         return visitScalar( (Scalar) type, context );
-      }
-      return visitComplexType( (ComplexType) type, context );
+      return visitBase( type, context );
    }
 
    default T visitScalar( final Scalar scalar, final C context ) {
-      return visitBase( scalar, context );
+      return visitType( scalar, context );
    }
+
+   default T visitType( final Scalar scalar, final C context ) {
+      return visitType( (Type) scalar, context );
+   }
+
+   default T visitComplexType( final ComplexType complexType, final C context ) {
+      return visitType( complexType, context );
+   }
+
+   default T visitHasProperties( final ComplexType complexType, final C context ) {
+      return visitHasProperties( (HasProperties) complexType, context );
+   }
+
+   default T visitType( final ComplexType complexType, final C context ) {
+      return visitType( (Type) complexType, context );
+   }
+
 }

@@ -1,0 +1,465 @@
+:page-partial:
+
+[[maven-plugin]]
+= Maven Plugin
+
+The `sds-aspect-model-maven-plugin` wraps the functionality provided by the SDS-SDK. Each piece of supported functionality is implemented as a goal. As such, developers can easily work with Aspect Models in the build of their maven projects to, for example, generate code from an Aspect Model.
+
+To include the plugin, use the following dependency:
+
+[source,maven,subs=attributes+]
+----
+<dependency>
+    <groupId>io.openmanufacturing</groupId>
+    <artifactId>sds-aspect-model-maven-plugin</artifactId>
+    <version>{sds-sdk-version}</version>
+</dependency>
+----
+
+NOTE: the current implementation of the `sds-aspect-model-maven-plugin` uses the `FileSystemStrategy` to resolve Aspect Models. See xref:java-aspect-tooling.adoc#understanding-model-resolution for more information.
+
+== Validating an Aspect Model
+
+The `validate` goal validates whether a given Aspect Model adheres to the BAMM. The default life cycle phase for the goal is `validate`.
+
+Usage:
+
+[source,maven,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>validate-aspect-model</id>
+              <goals>
+                 <goal>validate</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+|===
+
+== Generate Java Code for an Aspect Model
+
+=== Generate Domain Classes
+
+The `generateJavaClasses` goal generates Java domain classes (POJOs) for a given Aspect Model. The default life cycle phase for the goal is `generate-sources`.
+
+Usage:
+
+[source,maven,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-java-classes</id>
+              <goals>
+                 <goal>generateJavaClasses</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
+| `packageName` | The package name for the generated Java files. | `String` | The namespace of the given Aspect Model. | {nok}
+| `templateFile` | The path and name of the velocity template file containing the macro library. See xref:java-aspect-tooling.adoc#providing-custom-macros-for-code-generation[Providing Custom Macros for Code Generation]. | `String` | none | {nok}
+| `executeLibraryMacros` | Execute the macros provided in the velocity macro library. | `Boolean` | `false` | {nok}
+| `disableJacksonAnnotations` | Leads to generated Java code that does not contain https://github.com/FasterXML/jackson[Jackson] annotations. | `Boolean` | `false` | {nok}
+|===
+
+=== Generate Static Meta Classes
+
+The `generateStaticJavaClasses` goal generates static meta classes for a given Aspect Model. The default life cycle phase for the goal is `generate-sources`.
+
+Usage:
+
+[source,maven,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-static-java-classes</id>
+              <goals>
+                 <goal>generateStaticJavaClasses</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
+| `packageName` | The package name for the generated Java files. | `String` | The namespace of the given Aspect Model. | {nok}
+| `templateFile` | The path and name of the velocity template file containing the macro library. See xref:java-aspect-tooling.adoc#providing-custom-macros-for-code-generation[Providing Custom Macros for Code Generation]. | `String` | none | {nok}
+| `executeLibraryMacros` | Execute the macros provided in the velocity macro library. | `Boolean` | `false` | {nok}
+|===
+
+== Generate a JSON Schema for an Aspect Model
+
+The `generateJsonSchema` goal generates a JSON Schema for a given Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+
+Usage:
+
+[source,maven,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-json-schema</id>
+              <goals>
+                 <goal>generateJsonSchema</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated JSON Schema will be written to. | `String` | none | {ok}
+|===
+
+== Generate an OpenAPI Specification from an Aspect Model
+
+The `generateOpenApiSpec` goal generates an OpenAPI Specification for a given Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+
+Usage:
+
+[source,maven,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-openapi-spec</id>
+              <goals>
+                 <goal>generateOpenApiSpec</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
+           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <outputFormat>yaml</outputFormat>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated OpenAPI Specification will be written to. | `String` | none | {ok}
+| `aspectApiBaseUrl` | The base URL for the Aspect API OpenAPI specification. | `String` | none | {ok}
+| `aspectParameterFile` | The path to a file including the schema description for the resource. For JSON the description has to be in json, for YAML it has to be in YAML. | `String` | none | {nok}
+| `useSemanticApiVersion` | Use the complete semantic version of the Aspect Model as the version of the Aspect API. | `Boolean` | `false` | {nok}
+| `aspectResourcePath` | The resource-path` for the Aspect API endpoints. | `String` | none | {nok}
+| `includeQueryApi` | Include the path for the Query Aspect API Endpoint in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `excludePaging` | Exclude paging information for the Aspect API Endpoint in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `aspectCursorBasedPaging` | Set the used paging strategy as cursor-based paging. | `Boolean` | `false` | {nok}
+| `aspectOffsetBasedPaging` | Set the used paging strategy as offset-based paging. | `Boolean` | `false` | {nok}
+| `aspectTimeBasedPaging` | Set the used paging strategy as time-based paging. | `Boolean` | `false` | {nok}
+| `outputFormat` | The format of the resulting OpenAPI Specification. May be either JSON or YAML. | `String` | none | {ok}
+|===
+
+== Generate Documentation for an Aspect Model
+
+=== Generating HTML Documentation
+
+The `generateDocumentation` goal generates HTML reference documentation for a given Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+
+Usage:
+
+[source,maven,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-html-doc</id>
+              <goals>
+                 <goal>generateDocumentation</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated HTML document will be written to. | `String` | none | {ok}
+| `htmlCustomCSSFilePath` | Path to a CSS file with custom styles to be included in the generated HTML documentation. | `String` | none | {nok}
+|===
+
+=== Generating SVG or PNG Diagrams
+
+The `generateDiagram` goal generates an automatically layouted diagram for a given Aspect Model in SVG, PNG or https://www.graphviz.org/[Graphviz/DOT]. The default life cycle phase for the goal is `generate-resources`.
+
+Usage:
+
+[source,maven,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-aspect-model-diagram</id>
+              <goals>
+                 <goal>generateDiagram</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <targetFormats>
+              <targetFormat>png</targetFormat>
+           </targetFormats>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated diagrams will be written to. | `String` | none | {ok}
+| `targetFormats` | A list formats in which the diagram(s) will be created. A diagram will be generated for each specified format. | `String` | none | {ok}
+|===
+
+=== Generating Sample JSON Payload
+
+The `generateJsonPayload` goal generates a valid sample JSON payload for a given Aspect Model as it could be returned by an Aspect that implements that Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+
+Usage:
+
+[source,maven,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-json-payload</id>
+              <goals>
+                 <goal>generateJsonPayload</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
+|===
+
+== Aspect Model Migration
+
+The `migrate` goal migrates the given Aspect Model to the latest version of the meta model. The default life cycle phase for the goal is `initialize`.
+
+Usage:
+
+[source,maven,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>migrate-aspect-model</id>
+              <goals>
+                 <goal>migrate</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the updated Aspect Model will be written to. | `String` | none | {ok}
+|===
+
+== Pretty Print
+
+The `prettyPrint` goal formats the given Aspect Model. The formatted file is written to the location specified in the `outputDirectory` property. The default life cycle phase for the goal is `generate-resources`.
+
+Usage:
+
+[source,maven,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>pretty-print-aspect-model</id>
+              <goals>
+                 <goal>prettyPrint</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory containing the pretty printed Aspect Model. | `String` | none | {ok}
+|===

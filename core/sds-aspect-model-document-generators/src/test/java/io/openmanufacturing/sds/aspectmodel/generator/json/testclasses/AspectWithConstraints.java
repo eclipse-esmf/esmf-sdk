@@ -29,8 +29,8 @@ import io.openmanufacturing.sds.aspectmodel.java.customconstraint.DoubleMax;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.DoubleMin;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.FloatMax;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.FloatMin;
-import io.openmanufacturing.sds.aspectmodel.java.customconstraint.Max;
-import io.openmanufacturing.sds.aspectmodel.java.customconstraint.Min;
+import io.openmanufacturing.sds.aspectmodel.java.customconstraint.IntegerMax;
+import io.openmanufacturing.sds.aspectmodel.java.customconstraint.IntegerMin;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 
 /** Generated class for AspectWithConstraints. */
@@ -46,11 +46,11 @@ public class AspectWithConstraints {
    @DecimalMax( value = "10.5" )
    private BigDecimal testPropertyWithDecimalMaxRangeConstraint;
 
-   @Min( value = 1, boundDefinition = BoundDefinition.AT_LEAST )
-   @Max( value = 10, boundDefinition = BoundDefinition.AT_MOST )
+   @IntegerMin( value = 1, boundDefinition = BoundDefinition.AT_LEAST )
+   @IntegerMax( value = 10, boundDefinition = BoundDefinition.AT_MOST )
    private Integer testPropertyWithMinMaxRangeConstraint;
 
-   @Min( value = 1, boundDefinition = BoundDefinition.AT_LEAST )
+   @IntegerMin( value = 1, boundDefinition = BoundDefinition.AT_LEAST )
    private Integer testPropertyWithMinRangeConstraint;
 
    @FloatMin( value = "1.0", boundDefinition = BoundDefinition.AT_LEAST )

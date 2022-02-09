@@ -26,9 +26,7 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 public class DefaultEnumeration extends DefaultCharacteristic implements Enumeration {
    private final List<Object> values;
 
-   public DefaultEnumeration( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final Optional<Type> dataType,
-         final List<Object> values ) {
+   public DefaultEnumeration( final MetaModelBaseAttributes metaModelBaseAttributes, final Optional<Type> dataType, final List<Object> values ) {
       super( metaModelBaseAttributes, dataType );
       this.values = values;
    }
