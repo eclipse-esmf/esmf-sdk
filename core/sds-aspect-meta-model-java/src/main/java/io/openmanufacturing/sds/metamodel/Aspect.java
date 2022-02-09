@@ -25,4 +25,10 @@ public interface Aspect extends StructureElement {
     * @return the {@link Operation}s defined in the scope of this Aspect.
     */
    List<Operation> getOperations();
+
+   /**
+    * @return the {@link Event}s defined in the scope of this Aspect.
+    * @since BAMM 2.0.0
+    */
+   List<Event> getEvents();
 }

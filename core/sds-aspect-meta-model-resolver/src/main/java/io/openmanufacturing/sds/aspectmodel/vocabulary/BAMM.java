@@ -142,6 +142,10 @@ public class BAMM implements Namespace {
       return property( "operations" );
    }
 
+   public Property events() {
+      return property( "events" );
+   }
+
    @SuppressWarnings( "squid:S00100" ) // Method name should match model element
    public Resource Operation() {
       return resource( "Operation" );

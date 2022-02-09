@@ -637,7 +637,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final List<Property> properties = List.of( createProperty( modelVersion, "testNumber", constraint, bamm ) );
       final MetaModelBaseAttributes aspectAttributes =
             MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( bamm.Aspect().getURI() ), "AspectWithNumericProperty" );
-      return new DefaultAspect( aspectAttributes, properties, List.of(), false );
+      return new DefaultAspect( aspectAttributes, properties, List.of(), List.of(), false );
    }
 
    private Property createProperty( final KnownVersion modelVersion, final String propertyName, final Characteristic characteristic, final BAMM bamm ) {

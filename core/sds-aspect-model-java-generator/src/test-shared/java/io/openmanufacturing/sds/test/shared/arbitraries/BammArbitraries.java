@@ -37,6 +37,7 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMME;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Entity;
+import io.openmanufacturing.sds.metamodel.Event;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
@@ -44,6 +45,7 @@ import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.impl.DefaultAspect;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEntity;
+import io.openmanufacturing.sds.metamodel.impl.DefaultEvent;
 import io.openmanufacturing.sds.metamodel.impl.DefaultOperation;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
@@ -188,6 +190,11 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
    }
 
    @Provide
+   default Arbitrary<AspectModelUrn> anyEventUrn() {
+      return anyUpperCaseModelElementUrnInTopLevelElementScope();
+   }
+
+   @Provide
    default Arbitrary<AspectModelUrn> anyCharacteristicUrn() {
       return Arbitraries.oneOf(
             anyCharacteristicUrnInMetaModelScope(),
@@ -265,11 +272,11 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
    @Provide
    default Arbitrary<Aspect> anyAspect() {
       return Combinators.combine( anyMetaModelVersion(), anyAspectUrn(), anyPreferredNames(), anyDescriptions(),
-                  anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyOperation().list().ofMaxSize( 3 ) )
-            .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, properties, operations ) -> {
+                  anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyOperation().list().ofMaxSize( 3 ), anyEvent().list().ofMaxSize( 3 ) )
+            .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, properties, operations, events ) -> {
                final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
                      metaModelVersion, aspectUrn, aspectUrn.getName(), preferredNames, descriptions, see );
-               return new DefaultAspect( baseAttributes, properties, operations, false );
+               return new DefaultAspect( baseAttributes, properties, operations, events, false );
             } );
    }
 
@@ -281,6 +288,17 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
                final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
                      metaModelVersion, operationUrn, operationUrn.getName(), preferredNames, descriptions, see );
                return new DefaultOperation( baseAttributes, inputs, output );
+            } );
+   }
+
+   @Provide
+   default Arbitrary<Event> anyEvent() {
+      return Combinators.combine( anyMetaModelVersion(), anyEventUrn(), anyPreferredNames(), anyDescriptions(),
+                  anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ) )
+            .as( ( metaModelVersion, eventUrn, preferredNames, descriptions, see, properties ) -> {
+               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
+                     metaModelVersion, eventUrn, eventUrn.getName(), preferredNames, descriptions, see );
+               return new DefaultEvent( baseAttributes, properties );
             } );
    }
 

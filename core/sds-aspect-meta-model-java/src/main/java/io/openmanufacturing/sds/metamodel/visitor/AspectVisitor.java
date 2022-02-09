@@ -25,6 +25,7 @@ import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.EncodingConstraint;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Enumeration;
+import io.openmanufacturing.sds.metamodel.Event;
 import io.openmanufacturing.sds.metamodel.FixedPointConstraint;
 import io.openmanufacturing.sds.metamodel.HasProperties;
 import io.openmanufacturing.sds.metamodel.LanguageConstraint;
@@ -68,6 +69,10 @@ public interface AspectVisitor<T, C> {
 
    default T visitOperation( final Operation operation, final C context ) {
       return visitBase( operation, context );
+   }
+
+   default T visitEvent( final Event event, final C context ) {
+      return visitBase( event, context );
    }
 
    default T visitCharacteristic( final Characteristic characteristic, final C context ) {

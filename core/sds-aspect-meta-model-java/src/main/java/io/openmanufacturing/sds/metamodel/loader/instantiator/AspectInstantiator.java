@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,6 +20,7 @@ import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.metamodel.Event;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.impl.DefaultAspect;
@@ -39,9 +40,12 @@ public class AspectInstantiator extends Instantiator<Aspect> {
       final List<Operation> operations = getResourcesFromList( aspect, bamm.operations() )
             .map( operation -> modelElementFactory.create( Operation.class, operation ) )
             .collect( Collectors.toList() );
+      final List<Event> events = getResourcesFromList( aspect, bamm.events() )
+            .map( event -> modelElementFactory.create( Event.class, event ) )
+            .collect( Collectors.toList() );
       final boolean isCollectionAspect = properties.stream()
-                                                   .map( Property::getCharacteristic )
-                                                   .filter( Collection.class::isInstance ).count() == 1;
-      return new DefaultAspect( metaModelBaseAttributes, properties, operations, isCollectionAspect );
+            .map( Property::getCharacteristic )
+            .filter( Collection.class::isInstance ).count() == 1;
+      return new DefaultAspect( metaModelBaseAttributes, properties, operations, events, isCollectionAspect );
    }
 }

@@ -101,7 +101,8 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
    }
 
    protected Stream<RDFNode> getNodesFromList( final Resource element, final org.apache.jena.rdf.model.Property property ) {
-      return element.getProperty( property ).getObject().as( RDFList.class ).asJavaList().stream();
+      return Optional.ofNullable( element.getProperty( property ) ).stream()
+            .flatMap( p -> p.getObject().as( RDFList.class ).asJavaList().stream() );
    }
 
    protected Stream<Resource> getResourcesFromList( final Resource element, final org.apache.jena.rdf.model.Property property ) {
