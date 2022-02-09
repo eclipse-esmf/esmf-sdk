@@ -168,8 +168,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       final Optional<RDFDatatype> targetType = optionalType.flatMap( type ->
             DataType.getAllSupportedTypesForMetaModelVersion( metaModelVersion ).stream()
                   .filter( dataType -> dataType.getURI().equals( type.getUrn() ) ).findAny() );
-      if ( targetType.isEmpty() || optionalType.map( type -> type.getUrn().equals( XSD.xstring.getURI() ) )
-            .orElse( false ) ) {
+      if ( targetType.isEmpty() || optionalType.map( type -> type.getUrn().equals( XSD.xstring.getURI() ) ).orElse( false ) ) {
          return ResourceFactory.createStringLiteral( value.toString() );
       }
       return ResourceFactory.createTypedLiteral( targetType.get().unparse( value ), targetType.get() );
@@ -207,7 +206,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
    }
 
    @SuppressWarnings( "squid:S2250" )
-   //Amount of elements in list is regarding to amount of properties in aspect model. Even in bigger aspects this should not lead to performance issues
+   // Amount of elements in list is regarding amount of properties in Aspect Model. Even in bigger aspects this should not lead to performance issues
    private Model serializeProperties( final Resource elementResource, final HasProperties element ) {
       final Model model = ModelFactory.createDefaultModel();
       final List<RDFNode> propertiesList = new ArrayList<>();
@@ -236,8 +235,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       return model;
    }
 
-   private Resource serializeAnonymousPropertyNodes( final Property property, final Model propertyModel,
-         final Resource propertyResource ) {
+   private Resource serializeAnonymousPropertyNodes( final Property property, final Model propertyModel, final Resource propertyResource ) {
       final Resource anonymousPropertyNode = createResource();
       if ( property.isOptional() ) {
          propertyModel.add( anonymousPropertyNode, bamm.property(), propertyResource );
@@ -526,8 +524,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       final Resource resource = getElementResource( structuredValue );
       model.add( resource, RDF.type, bammc.StructuredValue() );
 
-      model.add( resource, bammc.deconstructionRule(),
-            serializePlainString( structuredValue.getDeconstructionRule() ) );
+      model.add( resource, bammc.deconstructionRule(), serializePlainString( structuredValue.getDeconstructionRule() ) );
       final RDFList elementsList = model.createList(
             structuredValue.getElements().stream().map( element -> element instanceof String ?
                   serializePlainString( (String) element ) :
@@ -572,7 +569,10 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       model.add( serializeProperties( resource, aspect ) );
       model.add( resource, bamm.operations(), model.createList(
             aspect.getOperations().stream().map( this::getElementResource ).iterator() ) );
+      model.add( resource, bamm.events(), model.createList(
+            aspect.getEvents().stream().map( this::getElementResource ).iterator() ) );
       aspect.getOperations().stream().map( operation -> operation.accept( this, aspect ) ).forEach( model::add );
+      aspect.getEvents().stream().map( event -> event.accept( this, aspect ) ).forEach( model::add );
       return model;
    }
 
