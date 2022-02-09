@@ -26,13 +26,6 @@
    <packaging>maven-plugin</packaging>
    <name>SDS Aspect Model Maven Plugin</name>
 
-   <properties>
-      <maven-plugin-annotations-version>3.5</maven-plugin-annotations-version>
-      <maven-plugin-depdendencies-version>3.3.9</maven-plugin-depdendencies-version>
-      <maven-plugin-plugin-version>3.6.4</maven-plugin-plugin-version>
-      <maven-plugin-testing-harness-version>3.3.0</maven-plugin-testing-harness-version>
-   </properties>
-
    <dependencies>
       <dependency>
          <groupId>org.apache.maven</groupId>
