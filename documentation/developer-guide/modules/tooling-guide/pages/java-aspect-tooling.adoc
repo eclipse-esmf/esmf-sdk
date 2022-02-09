@@ -314,6 +314,7 @@ To use the generated static meta classes, you need the following additional depe
 
 include::sds-developer-guide:ROOT:partial$sds-aspect-static-meta-model-java-artifact.adoc[]
 
+[[providing-custom-macros-for-code-generation]]
 ==== Providing Custom Macros for Code Generation
 
 It is possible to change predefined sections of the generated classes by providing custom https://velocity.apache.org/[Velocity] templates; see the https://velocity.apache.org/engine/2.3/user-guide.html[Velocity User Guide] for more information.
