@@ -21,7 +21,6 @@ import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 import io.vavr.collection.Stream;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -39,11 +38,6 @@ TODO Implement mappings of specific characteristics classes from meta model via 
 TODO Implement tests; example could be openAPI or RDF Generatror tests
 
 TODO Use AAS XSD Schema to validate well formedness -> https://www.rgagnon.com/javadetails/java-0669.html
-
-TODO Logger configuration for AAS Serializer package broken. Needs to be piped to SDK configuration
-- SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-- SLF4J: Defaulting to no-operation (NOP) logger implementation
-- SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
  */
 public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationShellEnvironment, Context> {
 
@@ -79,9 +73,6 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       ((Submodel)context.getOfInterest()).getSubmodelElements().addAll(visitProperties(aspect.getProperties(), context));
       ((Submodel)context.getOfInterest()).getSubmodelElements().addAll(visitOperations(aspect.getOperations(), context));
 
-      // TODO might be removed check.
-      context.getEnvironment().setSubmodels(Collections.singletonList(submodel));
-
       return context.getEnvironment();
    }
 
@@ -104,6 +95,30 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    private SubmodelElement map(Property property, Context context) {
+
+      // Some logic to decide which kind of Submodel element this will be
+      Type type = property.getCharacteristic().getDataType().get();
+      if (type instanceof Entity){
+         Entity entity = (Entity) type;
+        return mapToAasSubModelElementCollection(entity, context);
+      } else {
+         return mapToAasProperty(property, context);
+      }
+   }
+
+   private SubmodelElementCollection mapToAasSubModelElementCollection(Entity entity, Context context) {
+      List<SubmodelElement> submodelElements = visitProperties(entity.getAllProperties(), context);
+      SubmodelElementCollection aasSubModelElementCollection = new DefaultSubmodelElementCollection.Builder()
+              .idShort(entity.getName())
+              .displayNames(map(entity.getPreferredNames()))
+              .descriptions(map(entity.getDescriptions()))
+              .values(submodelElements)
+              .build();
+
+      return aasSubModelElementCollection;
+   }
+
+   private io.adminshell.aas.v3.model.Property mapToAasProperty(Property property, Context context) {
       io.adminshell.aas.v3.model.Property aasProperty = new DefaultProperty.Builder()
               .idShort(property.getName())
               .valueType(property.getCharacteristic().getDataType().isPresent() ?
@@ -115,7 +130,6 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
               .build();
 
       createConceptDescription(property, context);
-
       return aasProperty;
    }
 
