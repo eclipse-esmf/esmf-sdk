@@ -11,6 +11,7 @@ import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
 import org.apache.jena.rdf.model.Model;
 
+
 class AspectModelAASVisitorTest {
 
     private final SdsAspectMetaModelResourceResolver aspectMetaModelResourceResolver = new SdsAspectMetaModelResourceResolver();

@@ -1,68 +1,69 @@
 package io.openmanufacturing.sds.aspectmodel.aas;
 
-import io.adminshell.aas.v3.dataformat.SerializationException;
-import io.adminshell.aas.v3.dataformat.aasx.InMemoryFile;
+import io.adminshell.aas.v3.dataformat.DeserializationException;
+import io.adminshell.aas.v3.dataformat.aasx.AASXDeserializer;
 import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
+import io.adminshell.aas.v3.model.SubmodelElementCollection;
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import io.openmanufacturing.sds.aspectmodel.VersionNumber;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
-import org.apache.jena.rdf.model.Model;
-import org.junit.Rule;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.TemporaryFolder;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import org.xml.sax.SAXException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
+import javax.xml.parsers.*;
 
 class AspectModelAASGeneratorTest {
 
-    private static final String XML_PATH = "aasx/xml/content.xml";
-
-    private final SdsAspectMetaModelResourceResolver aspectMetaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+    AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
     @Test
-    void generateOutput() throws IOException, SerializationException {
-        final VersionedModel model = TestResources.getModel( TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY, KnownVersion.BAMM_1_0_0 ).get();
-
-        Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked(model);
-
-        AspectModelAASGenerator generator = new AspectModelAASGenerator();
+    void test_generate_aasx_from_bamm_aspect_with_list_and_additional_property() throws IOException, InvalidFormatException, DeserializationException {
+        Aspect aspect = loadAspect(TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY);
 
         ByteArrayOutputStream out = generator.generateOutput(aspect);
-        validateAASX(out);
+
+        AssetAdministrationShellEnvironment env = loadAASX(out);
+
+        assertTrue(env.getConceptDescriptions().size() == 2);
+        assertTrue(env.getSubmodels().size() == 1);
+        assertTrue(env.getSubmodels().get(0).getSubmodelElements().size() == 2);
     }
 
-    // TODO adjust, taken from java-serializer AAS lib
-    private void validateAASX(ByteArrayOutputStream byteStream) throws IOException {
-        ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(byteStream.toByteArray()));
-        ZipEntry zipEntry = null;
+    @Test
+    void test_generate_aasx_from_bamm_aspect_with_entity() throws IOException, InvalidFormatException, DeserializationException {
+        Aspect aspect = loadAspect(TestAspect.ASPECT_WITH_ENTITY);
 
-        ArrayList<String> filePaths = new ArrayList<>();
+        ByteArrayOutputStream out = generator.generateOutput(aspect);
 
-        while ((zipEntry = in.getNextEntry()) != null) {
-            if (zipEntry.getName().equals(XML_PATH)) {
+        AssetAdministrationShellEnvironment env = loadAASX(out);
 
-                // Read the first 5 bytes of the XML file to make sure it is in fact XML file
-                // No further test of XML file necessary as XML-Converter is tested separately
-                byte[] buf = new byte[5];
-                in.read(buf);
-                assertEquals("<?xml", new String(buf));
+        assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
+        assertEquals(1, env.getSubmodels().get(0).getSubmodelElements().size(), "Not exactly one SubmodelElement in Submodel.");
+        assertTrue(env.getSubmodels().get(0).getSubmodelElements().get(0) instanceof SubmodelElementCollection, "SubmodelElement is not a SubmodelElementCollection.");
 
-            }
+        SubmodelElementCollection collection = (SubmodelElementCollection) env.getSubmodels().get(0).getSubmodelElements().get(0);
+        assertEquals(1, collection.getValues().size(), "Not exactly one Element in SubmodelElementCollection");
+        assertEquals("entityProperty", collection.getValues().stream().findFirst().get().getIdShort());
+    }
 
-            // Write the paths of all files contained in the .aasx into filePaths
-            filePaths.add(zipEntry.getName());
-        }
+    private AssetAdministrationShellEnvironment loadAASX(ByteArrayOutputStream byteStream) throws IOException, InvalidFormatException, DeserializationException {
+        AASXDeserializer deserializer = new AASXDeserializer(new ByteArrayInputStream(byteStream.toByteArray()));
+        AssetAdministrationShellEnvironment env= deserializer.read();
+        return env;
+    }
+
+    private Aspect loadAspect(TestAspect testAspect) {
+        final VersionedModel model = TestResources.getModel( testAspect, KnownVersion.BAMM_1_0_0 ).get();
+        Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked(model);
+        return aspect;
     }
 }
