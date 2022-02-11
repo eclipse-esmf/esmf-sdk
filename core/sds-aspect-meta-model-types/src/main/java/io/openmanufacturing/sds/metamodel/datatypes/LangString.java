@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -10,22 +10,35 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
+
 package io.openmanufacturing.sds.metamodel.datatypes;
 
+import java.util.Locale;
 import java.util.Objects;
 
 /**
- * Represents the bamm:curie data type
+ * Java representation of an <a href="https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal">rdf:langString</a>.
  */
-public class Curie {
+public class LangString {
    private final String value;
+   private final Locale languageTag;
 
-   public Curie( final String value ) {
+   public LangString( final String value, final Locale languageTag ) {
       this.value = value;
+      this.languageTag = languageTag;
    }
 
    public String getValue() {
       return value;
+   }
+
+   public Locale getLanguageTag() {
+      return languageTag;
+   }
+
+   @Override
+   public String toString() {
+      return "\"" + value + "\"@" + languageTag;
    }
 
    @Override
@@ -36,13 +49,12 @@ public class Curie {
       if ( o == null || getClass() != o.getClass() ) {
          return false;
       }
-
-      final Curie curie = (Curie) o;
-      return Objects.equals( value, curie.value );
+      final LangString that = (LangString) o;
+      return Objects.equals( value, that.value ) && Objects.equals( languageTag, that.languageTag );
    }
 
    @Override
    public int hashCode() {
-      return value != null ? value.hashCode() : 0;
+      return Objects.hash( value, languageTag );
    }
 }

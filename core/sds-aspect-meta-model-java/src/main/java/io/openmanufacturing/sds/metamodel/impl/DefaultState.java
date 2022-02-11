@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,16 +19,14 @@ import java.util.StringJoiner;
 
 import io.openmanufacturing.sds.metamodel.State;
 import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
 public class DefaultState extends DefaultEnumeration implements State {
-   private final Object defaultValue;
+   private final Value defaultValue;
 
-   public DefaultState( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final Optional<Type> dataType,
-         final List<Object> values,
-         final Object defaultValue ) {
+   public DefaultState( final MetaModelBaseAttributes metaModelBaseAttributes, final Type dataType, final List<Value> values, final Value defaultValue ) {
       super( metaModelBaseAttributes, dataType, values );
       this.defaultValue = defaultValue;
    }
@@ -39,7 +37,7 @@ public class DefaultState extends DefaultEnumeration implements State {
     * @return the defaultValue.
     */
    @Override
-   public Object getDefaultValue() {
+   public Value getDefaultValue() {
       return defaultValue;
    }
 

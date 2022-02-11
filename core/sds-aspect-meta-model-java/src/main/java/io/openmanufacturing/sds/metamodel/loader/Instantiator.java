@@ -15,9 +15,11 @@ package io.openmanufacturing.sds.metamodel.loader;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -29,28 +31,38 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.ImmutableList;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import io.openmanufacturing.sds.aspectmodel.resolver.services.ExtendedXsdDataType;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Entity;
+import io.openmanufacturing.sds.metamodel.EntityInstance;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.QuantityKinds;
+import io.openmanufacturing.sds.metamodel.Scalar;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.Units;
+import io.openmanufacturing.sds.metamodel.Value;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
+import io.openmanufacturing.sds.metamodel.impl.DefaultCollectionValue;
+import io.openmanufacturing.sds.metamodel.impl.DefaultEntityInstance;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
+import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultUnit;
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
 
 public abstract class Instantiator<T extends Base> implements Function<Resource, T> {
    protected final ModelElementFactory modelElementFactory;
@@ -162,135 +174,85 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
    }
 
    /**
-    * Extracts the value of an Enum from the {@link RDFNode} representing this value. In case the value
-    * is a {@link org.apache.jena.rdf.model.Literal} the value is returned directly. In case the value is an Entity,
-    * a {@link Map} is returned.
+    * Creates a {@link Value} from a given constant value in the RDF model. This can be either a scalar, a collection or an Entity.
     *
-    * In case the value being processed is itself an Enum entry, the `enumerationKey` key is added to the map. The value
-    * for this key is the name of the Enum entry. This `enumerationKey` is used to correctly deserialize the JSON.
-    *
-    * @param node the RDF node representing the value to be extracted
+    * @param node the RDF node that represents the value
+    * @param type the type that describes the value
+    * @return a value instance
     */
-   protected Object toEnumNodeValue( final RDFNode node ) {
+   protected Value buildValue( final RDFNode node, final Type type ) {
       if ( node.isLiteral() ) {
-         return node.asLiteral().getValue();
+         return buildScalarValue( node.asLiteral() );
       }
 
-      final Map<String, Object> nodeValues = toComplexNodeValue( node, bammc );
-      nodeValues.put( bamm.name().toString(), node.asNode().getLocalName() );
-      return nodeValues;
+      final Resource resource = node.asResource();
+      if ( node.getModel().contains( resource, RDF.type, RDF.List ) ) {
+         return buildCollectionValue( node.as( RDFList.class ), type );
+      }
+
+      // This could happen if an entity instance should be constructed for an AbstractEntity type
+      if ( !(type instanceof Entity) ) {
+         throw new AspectLoadingException( "Expected type of value " + node + " to be bamm:Entity, but it is not" );
+      }
+      return buildEntityInstance( resource, (Entity) type );
    }
 
-   private Map<String, Object> toComplexNodeValue( final RDFNode node, final BAMMC bammc ) {
-      return node.asResource()
-            .listProperties()
-            .toList()
-            .stream()
-            .filter( statement -> !RDF.type.equals( statement.getPredicate() ) )
-            .map( statement -> getPropertyNameAndObject( statement, bammc ) )
-            .collect( Collectors.groupingBy( PropertyNameAndObject::getName, Collectors.flatMapping(
-                  propertyNameAndObject -> Stream.of( propertyNameAndObject.getObject() ),
-                  Collectors.toList() ) ) )
-            .entrySet().stream()
-            .map( entry -> Tuple.of( entry.getKey(), unwrapList( entry.getValue() ) ) )
-            .collect( Collectors.toMap( Tuple2::_1, Tuple2::_2 ) );
+   private ScalarValue buildScalarValue( final Literal literal ) {
+      // rdf:langString needs special handling here:
+      // 1. A custom parser for rdf:langString values can not be registered with Jena, because it would only receive from Jena during parsing
+      //    the lexical representation of the value without the language tag (this is handled specially in Jena).
+      // 2. This means that a Literal we receive here which has a type URI of rdf:langString will be of type org.apache.jena.datatypes.xsd.impl.RDFLangString
+      //    but _not_ io.openmanufacturing.sds.metamodel.datatypes.LangString as we would like to.
+      // 3. So we construct an instance of LangString here from the RDFLangString.
+      if ( literal.getDatatypeURI().equals( RDF.langString.getURI() ) ) {
+         final LangString langString = new LangString( literal.getString(), Locale.forLanguageTag( literal.getLanguage() ) );
+         final Scalar type = new DefaultScalar( RDF.langString.getURI(), metaModelVersion );
+         return new DefaultScalarValue( langString, type );
+      }
+
+      return ExtendedXsdDataType.supportedXsdTypes.stream()
+            .filter( type -> type.getURI().equals( literal.getDatatypeURI() ) )
+            .map( type -> type.parse( literal.getLexicalForm() ) )
+            .map( value -> new DefaultScalarValue( value, new DefaultScalar( literal.getDatatypeURI(), metaModelVersion ) ) )
+            .findAny()
+            .orElseThrow( () -> new AspectLoadingException( "Literal can not be parsed: " + literal ) );
    }
 
-   private PropertyNameAndObject getPropertyNameAndObject( final Statement valueStatement, final BAMMC bammc ) {
-      if ( valueStatement.getObject().isLiteral() ) {
-         final Literal literal = valueStatement.getObject().asLiteral();
-         if ( literal.getDatatypeURI().equals( RDF.langString.getURI() ) ) {
-            return new PropertyNameAndObject( valueStatement.getPredicate().getLocalName(), Map.of( literal.getLanguage(), literal.getLexicalForm() ) );
+   private CollectionValue buildCollectionValue( final RDFList list, final Type type ) {
+      final Collection<Value> values = createEmptyCollectionForType( type );
+      list.asJavaList().forEach( element -> values.add( buildValue( element, type ) ) );
+      return new DefaultCollectionValue( values, type );
+   }
+
+   private EntityInstance buildEntityInstance( final Resource entityInstance, final Entity type ) {
+      final Map<Property, Value> assertions = new HashMap<>();
+      final Optional<AspectModelUrn> instanceUrn = Optional.ofNullable( entityInstance.getURI() ).map( AspectModelUrn::fromUrn );
+      type.getAllProperties().forEach( property -> {
+         final AspectModelUrn propertyUrn = property.getAspectModelUrn().orElseThrow( () ->
+               new AspectLoadingException( "Invalid Property without a URN found" ) );
+         final org.apache.jena.rdf.model.Property rdfProperty = ResourceFactory.createProperty( propertyUrn.getUrn().toASCIIString() );
+         final Statement statement = entityInstance.getProperty( rdfProperty );
+         if ( statement == null ) {
+            if ( property.isOptional() ) {
+               return;
+            }
+            throw new AspectLoadingException( "Mandatory Property " + property + " not found in Entity instance " + entityInstance );
          }
-      }
-      if ( isEnumValue( valueStatement.getPredicate() ) ) {
-         return new PropertyNameAndObject( valueStatement.getPredicate().getLocalName(), toEnumNodeValue( valueStatement.getObject() ) );
-      } else if ( isCollectionValue( valueStatement.getPredicate(), bammc ) ) {
-         final String propertyName = valueStatement.getPredicate().getLocalName();
-         return new PropertyNameAndObject( propertyName, instantiateCollection( valueStatement ) );
-      }
-      return new PropertyNameAndObject( valueStatement.getPredicate().getLocalName(), toEnumNodeValue( valueStatement.getObject() ) );
+         final RDFNode rdfValue = entityInstance.getProperty( rdfProperty ).getObject();
+         final Type propertyType = property.getDataType().orElseThrow( () -> new AspectLoadingException( "Invalid Property without a dataType found" ) );
+         final Value value = buildValue( rdfValue, propertyType );
+         assertions.put( property, value );
+      } );
+      return new DefaultEntityInstance( assertions, type, instanceUrn );
    }
 
-   private Object unwrapList( final List<Object> list ) {
-      // Entity instance has a regular scalar value
-      if ( list.size() == 1 ) {
-         return list.get( 0 );
-      }
-
-      // Entity instance has values of type rdf:langString, which means multiple values.
-      // Each value is a map of language code to text. Merge list of maps into one map.
-      return list.stream().flatMap( element -> {
-         final Map<String, String> map = (Map<String, String>) element;
-         return map.entrySet().stream().map( entry -> Tuple.of( entry.getKey(), entry.getValue() ) );
-      } ).collect( Collectors.toList() );
-   }
-
-   private Collection<Object> createEmptyCollectionForType( final Resource collectionType ) {
-      if ( collectionType.equals( bammc.SortedSet() ) ) {
+   private Collection<Value> createEmptyCollectionForType( final Type elementType ) {
+      if ( elementType.getUrn().equals( bammc.SortedSet().getURI() ) ) {
          return new LinkedHashSet<>();
       }
-      if ( collectionType.equals( bammc.Set() ) ) {
+      if ( elementType.getUrn().equals( bammc.Set().getURI() ) ) {
          return new HashSet<>();
       }
       return new ArrayList<>();
-   }
-
-   private Collection<?> instantiateCollection( final Statement statement ) {
-      final Resource collectionResource = statement.getPredicate()
-            .asResource()
-            .getProperty( bamm.characteristic() )
-            .getObject()
-            .asResource()
-            .getProperty( RDF.type )
-            .getObject()
-            .asResource();
-
-      final Collection<Object> collection = createEmptyCollectionForType( collectionResource );
-      statement.getObject().as( RDFList.class ).asJavaList().stream().map( this::toEnumNodeValue ).forEach( collection::add );
-      return collection;
-   }
-
-   /**
-    * Determines whether a Property is an Enum by checking whether the Characteristic of the Property is
-    * an Enumeration Characteristic.
-    *
-    * @param node the {@link RDFNode} representing the Property
-    */
-   private boolean isEnumValue( final RDFNode node ) {
-      return node.asResource().getProperty( bamm.characteristic() )
-            .getObject().asResource().getProperty( RDF.type ).getObject().asResource().equals( bammc.Enumeration() );
-   }
-
-   /**
-    * Determines whether a Property is an Collection by checking whether the Characteristic of the Property is
-    * an Collection Characteristic.
-    *
-    * @param node the {@link RDFNode} representing the Property
-    * @param bammc the vocabulary for the Characteristic catalogue
-    */
-   private boolean isCollectionValue( final RDFNode node, final BAMMC bammc ) {
-      return bammc.allCollections().anyMatch( collection ->
-            collection.equals( node.asResource().getProperty( bamm.characteristic() ).getObject().asResource()
-                  .getProperty( RDF.type ).getObject().asResource() ) );
-   }
-
-   private static class PropertyNameAndObject {
-      private final String name;
-
-      private final Object object;
-
-      PropertyNameAndObject( final String name, final Object object ) {
-         this.name = name;
-         this.object = object;
-      }
-
-      public String getName() {
-         return name;
-      }
-
-      public Object getObject() {
-         return object;
-      }
    }
 }

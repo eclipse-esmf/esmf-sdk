@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,13 +14,13 @@
 package io.openmanufacturing.sds.metamodel.loader.instantiator;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.metamodel.State;
 import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.impl.DefaultState;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
@@ -34,11 +34,11 @@ public class StateInstantiator extends Instantiator<State> {
    @Override
    public State apply( final Resource state ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( state );
-      final List<Object> enumValues = getNodesFromList( state, bammc.values() )
-            .map( this::toEnumNodeValue )
+      final Type type = getType( state );
+      final List<Value> enumValues = getNodesFromList( state, bammc.values() )
+            .map( node -> buildValue( node, type ) )
             .collect( Collectors.toList() );
-      final Object defaultValue = propertyValue( state, bammc.defaultValue() ).getLiteral().getValue();
-      final Optional<Type> type = Optional.of( getType( state ) );
+      final Value defaultValue = buildValue( propertyValue( state, bammc.defaultValue() ).getObject(), type );
       return new DefaultState( metaModelBaseAttributes, type, enumValues, defaultValue );
    }
 }

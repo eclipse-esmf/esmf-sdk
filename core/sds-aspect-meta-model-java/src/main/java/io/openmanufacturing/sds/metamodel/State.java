@@ -25,5 +25,5 @@ public interface State extends Enumeration {
     * @return the default value defined for this State. The type of the values is determined by the {@link Type}
     *       returned by {@link State#getDataType()}.
     */
-   Object getDefaultValue();
+   Value getDefaultValue();
 }
