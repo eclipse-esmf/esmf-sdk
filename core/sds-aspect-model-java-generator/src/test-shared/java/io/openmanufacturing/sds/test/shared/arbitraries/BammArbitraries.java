@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -42,6 +43,7 @@ import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.impl.DefaultAspect;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEntity;
@@ -237,18 +239,19 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
    }
 
    @Provide
-   default Arbitrary<Map<Locale, String>> anyLocalizedString() {
+   default Arbitrary<Set<LangString>> anyLocalizedString() {
       final Arbitrary<String> values = Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 10 );
-      return Arbitraries.maps( anyLocale(), values );
+      return Combinators.combine( anyLocale(), values )
+            .as( ( locale, string ) -> new LangString( string, locale ) ).set();
    }
 
    @Provide
-   default Arbitrary<Map<Locale, String>> anyPreferredNames() {
+   default Arbitrary<Set<LangString>> anyPreferredNames() {
       return anyLocalizedString();
    }
 
    @Provide
-   default Arbitrary<Map<Locale, String>> anyDescriptions() {
+   default Arbitrary<Set<LangString>> anyDescriptions() {
       return anyLocalizedString();
    }
 

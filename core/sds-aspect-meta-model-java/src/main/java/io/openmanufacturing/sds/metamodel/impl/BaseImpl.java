@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,15 +14,15 @@ package io.openmanufacturing.sds.metamodel.impl;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 
 /**
@@ -32,8 +32,8 @@ public abstract class BaseImpl implements Base, IsDescribed {
    private final KnownVersion metaModelVersion;
    private final Optional<AspectModelUrn> urn;
    private final String name;
-   private final Map<Locale, String> preferredNames;
-   private final Map<Locale, String> descriptions;
+   private final Set<LangString> preferredNames;
+   private final Set<LangString> descriptions;
    private final List<String> see;
    private final boolean hasSyntheticName;
 
@@ -82,7 +82,7 @@ public abstract class BaseImpl implements Base, IsDescribed {
     * @return the preferredNames.
     */
    @Override
-   public Map<Locale, String> getPreferredNames() {
+   public Set<LangString> getPreferredNames() {
       return preferredNames;
    }
 
@@ -93,33 +93,8 @@ public abstract class BaseImpl implements Base, IsDescribed {
     * @return the descriptions.
     */
    @Override
-   public Map<Locale, String> getDescriptions() {
+   public Set<LangString> getDescriptions() {
       return descriptions;
-   }
-
-   /**
-    * A language specific name for the Element. There may be multiple preferred
-    * names.
-    *
-    * @param locale of the specific text
-    * @return the language specific text.
-    */
-   @Override
-   public String getPreferredName( final Locale locale ) {
-      return preferredNames.getOrDefault( locale, getName() );
-   }
-
-   /**
-    * A language specific description of the Element. There may be multiple
-    * descriptions.
-    *
-    * @param locale of the specific text
-    * @return the language specific text or default is {@link Locale#ENGLISH}.
-    */
-   @Override
-   public String getDescription( final Locale locale ) {
-      final String defaultDescription = descriptions.get( Locale.ENGLISH );
-      return descriptions.getOrDefault( locale, defaultDescription );
    }
 
    @Override

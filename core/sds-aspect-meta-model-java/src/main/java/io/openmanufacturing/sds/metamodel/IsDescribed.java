@@ -15,11 +15,13 @@ package io.openmanufacturing.sds.metamodel;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 
 /**
  * Represents model elements that have human-readable names and descriptions
@@ -54,29 +56,36 @@ public interface IsDescribed {
    /**
     * @return a {@link Map} containing language specific names for the Aspect Model element.
     */
-   default Map<Locale, String> getPreferredNames() {
-      return Collections.emptyMap();
+   default Set<LangString> getPreferredNames() {
+      return Collections.emptySet();
    }
 
    /**
     * @return a {@link Map} containing language specific descriptions for the Aspect Model element.
     */
-   default Map<Locale, String> getDescriptions() {
-      return Collections.emptyMap();
+   default Set<LangString> getDescriptions() {
+      return Collections.emptySet();
    }
 
    /**
-    * @return the preferred name for the Aspect Model element for a specific language
+    * @return the preferred name for the Aspect Model element for a specific language if present, the element's name otherwise.
     */
    default String getPreferredName( final Locale locale ) {
-      return getPreferredNames().getOrDefault( locale, getName() );
+      return getPreferredNames().stream()
+            .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )
+            .findAny()
+            .map( LangString::getValue )
+            .orElse( getName() );
    }
 
    /**
-    * @return the description for the Aspect Model element for a specific language
+    * @return the description for the Aspect Model element for a specific language if present, an empty string otherwise.
     */
    default String getDescription( final Locale locale ) {
-      final String defaultDescription = getDescriptions().get( Locale.ENGLISH );
-      return getDescriptions().getOrDefault( locale, defaultDescription );
+      return getDescriptions().stream()
+            .filter( description -> description.getLanguageTag().equals( locale ) )
+            .findAny()
+            .map( LangString::getValue )
+            .orElse( "" );
    }
 }

@@ -193,11 +193,12 @@ package io.openmanufacturing.sds.metamodel;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Set;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
 /**
@@ -239,23 +240,13 @@ public enum QuantityKinds implements QuantityKind {
    }
 
    @Override
-   public Map<Locale, String> getPreferredNames() {
-      return Collections.emptyMap();
+   public Set<LangString> getPreferredNames() {
+      return Collections.emptySet();
    }
 
    @Override
-   public Map<Locale, String> getDescriptions() {
-      return Collections.emptyMap();
-   }
-
-   @Override
-   public String getPreferredName( final Locale locale ) {
-      return getPreferredNames().get( locale );
-   }
-
-   @Override
-   public String getDescription( final Locale locale ) {
-      return getDescriptions().get( locale );
+   public Set<LangString> getDescriptions() {
+      return Collections.emptySet();
    }
 
    @Override

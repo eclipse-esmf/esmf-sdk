@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,11 +14,11 @@
 package io.openmanufacturing.sds.metamodel.loader;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,11 +30,13 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.vavr.Value;
 
 /**
@@ -46,16 +48,16 @@ public class MetaModelBaseAttributes {
    private final KnownVersion metaModelVersion;
    private final Optional<AspectModelUrn> urn;
    private final String name;
-   private final Map<Locale, String> preferredNames;
-   private final Map<Locale, String> descriptions;
+   private final Set<LangString> preferredNames;
+   private final Set<LangString> descriptions;
    private final List<String> see;
    private final boolean hasSyntheticName;
 
    public MetaModelBaseAttributes( final KnownVersion metaModelVersion,
          final AspectModelUrn urn,
          final String name,
-         final Map<Locale, String> preferredNames,
-         final Map<Locale, String> descriptions,
+         final Set<LangString> preferredNames,
+         final Set<LangString> descriptions,
          final List<String> see ) {
       this( metaModelVersion, urn, name, preferredNames, descriptions, see, false );
    }
@@ -63,8 +65,8 @@ public class MetaModelBaseAttributes {
    public MetaModelBaseAttributes( final KnownVersion metaModelVersion,
          final AspectModelUrn urn,
          final String name,
-         final Map<Locale, String> preferredNames,
-         final Map<Locale, String> descriptions,
+         final Set<LangString> preferredNames,
+         final Set<LangString> descriptions,
          final List<String> see,
          final boolean hasSyntheticName ) {
       this.metaModelVersion = metaModelVersion;
@@ -88,11 +90,11 @@ public class MetaModelBaseAttributes {
       return name;
    }
 
-   public Map<Locale, String> getPreferredNames() {
+   public Set<LangString> getPreferredNames() {
       return preferredNames;
    }
 
-   public Map<Locale, String> getDescriptions() {
+   public Set<LangString> getDescriptions() {
       return descriptions;
    }
 
@@ -139,7 +141,7 @@ public class MetaModelBaseAttributes {
    public static MetaModelBaseAttributes from( final KnownVersion metaModelVersion, final AspectModelUrn urn,
          final String name, final String preferredName ) {
       return builderFor( name ).withMetaModelVersion( metaModelVersion ).withUrn( urn )
-                               .withPreferredName( Locale.ENGLISH, preferredName ).build();
+            .withPreferredName( Locale.ENGLISH, preferredName ).build();
    }
 
    /**
@@ -156,17 +158,17 @@ public class MetaModelBaseAttributes {
       final Optional<AspectModelUrn> urn = metaModelElement.isAnon() ?
             Optional.empty() :
             Optional.of( AspectModelUrn.fromUrn( metaModelElement.getURI() ) );
-      final Map<Locale, String> preferredNames = getLanguages( metaModelElement, bamm.preferredName(), model );
-      final Map<Locale, String> descriptions = getLanguages( metaModelElement, bamm.description(), model );
+      final Set<LangString> preferredNames = getLangStringLiterals( metaModelElement, bamm.preferredName() );
+      final Set<LangString> descriptions = getLangStringLiterals( metaModelElement, bamm.description() );
       final List<String> seeValues = getSeeValues( metaModelElement, model, bamm );
       final Optional<String> nameGivenInModel = Optional
             .ofNullable( model.getProperty( metaModelElement, bamm.name() ) )
             .map( Statement::getString );
       final Optional<String> nameFromUrn = urn.map( AspectModelUrn::getName );
       final Optional<String> actualName = Stream.of( nameGivenInModel, nameFromUrn )
-                                                .filter( Optional::isPresent )
-                                                .map( Optional::get )
-                                                .findFirst();
+            .filter( Optional::isPresent )
+            .map( Optional::get )
+            .findFirst();
       final String name = actualName.orElseGet( () -> getSyntheticName( metaModelElement, model ) );
       final boolean isSyntheticName = actualName.isEmpty();
       return new MetaModelBaseAttributes( metaModelVersion, urn.orElse( null ), name, preferredNames, descriptions,
@@ -188,32 +190,33 @@ public class MetaModelBaseAttributes {
     */
    private static String getSyntheticName( final Resource modelElement, final Model model ) {
       final String randomPart = UUID.nameUUIDFromBytes( modelElement.getId().toString().getBytes() ).toString()
-                                    .substring( 0, 7 );
+            .substring( 0, 7 );
       return ImmutableList.copyOf( model.listStatements( modelElement, RDF.type, (RDFNode) null ) ).stream()
-                          .findFirst()
-                          .filter( statement -> statement.getObject().isResource() )
-                          .map( statement -> statement.getObject().asResource() )
-                          .map( type -> metaModelResourceResolver.getAspectModelUrn( type.getURI() ) )
-                          .flatMap( Value::toJavaOptional )
-                          .map( AspectModelUrn::getName )
-                          .orElse( "" ) + randomPart;
+            .findFirst()
+            .filter( statement -> statement.getObject().isResource() )
+            .map( statement -> statement.getObject().asResource() )
+            .map( type -> metaModelResourceResolver.getAspectModelUrn( type.getURI() ) )
+            .flatMap( Value::toJavaOptional )
+            .map( AspectModelUrn::getName )
+            .orElse( "" ) + randomPart;
    }
 
    /**
+    * Returns the set of rdf:langString literals for a given property on a subject
     * @param subject the RDF {@link Resource} representing the Aspect Model element to be processed
     * @param property the RDF {@link org.apache.jena.rdf.model.Property} for which the values will be retrieved
-    * @param model the RDF {@link Model} representing the entire Aspect Meta Model
-    * @return a {@link List} containing all values for the given Property in the given Aspect Model element
+    * @return the set of {@link LangString}s for the given property
     */
-   private static Map<Locale, String> getLanguages( final Resource subject,
-         final org.apache.jena.rdf.model.Property property, final Model model ) {
-      return ImmutableList.copyOf( model.listStatements( subject, property, (RDFNode) null ) ).stream()
-                          .filter( languageStatement -> !"und"
-                                .equals( Locale.forLanguageTag( languageStatement.getLanguage() )
-                                               .toLanguageTag() ) )
-                          .collect( Collectors
-                                .toMap( languageStatement -> Locale.forLanguageTag( languageStatement.getLanguage() ),
-                                      Statement::getString ) );
+   private static Set<LangString> getLangStringLiterals( final Resource subject, final org.apache.jena.rdf.model.Property property ) {
+      return Streams.stream( subject.getModel().listStatements( subject, property, (RDFNode) null ) )
+            .flatMap( statement -> {
+               final Locale locale = Locale.forLanguageTag( statement.getLanguage() );
+               if ( "und".equals( locale.toLanguageTag() ) ) {
+                  return Stream.of();
+               }
+               return Stream.of( new LangString( statement.getString(), locale ) );
+            } )
+            .collect( Collectors.toSet() );
    }
 
    /**
@@ -234,8 +237,8 @@ public class MetaModelBaseAttributes {
    public static class Builder {
       private AspectModelUrn urn;
       private final String name;
-      private final Map<Locale, String> preferredNames = new HashMap<>();
-      private final Map<Locale, String> descriptions = new HashMap<>();
+      private final Set<LangString> preferredNames = new HashSet<>();
+      private final Set<LangString> descriptions = new HashSet<>();
       private final List<String> see = new ArrayList<>();
       private KnownVersion metaModelVersion;
       private boolean hasSyntheticName;
@@ -251,12 +254,12 @@ public class MetaModelBaseAttributes {
       }
 
       public Builder withPreferredName( final Locale locale, final String preferredName ) {
-         preferredNames.put( locale, preferredName );
+         preferredNames.add( new LangString( preferredName, locale ) );
          return this;
       }
 
       public Builder withDescription( final Locale locale, final String description ) {
-         descriptions.put( locale, description );
+         descriptions.add( new LangString( description, locale ) );
          return this;
       }
 
