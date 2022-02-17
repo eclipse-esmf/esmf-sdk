@@ -8,6 +8,56 @@ The BAMM CLI is a command line tool for the validation of Aspect models and the 
 
 TIP: Download latest version: icon:download[] https://github.com/OpenManufacturingPlatform/sds-sdk/releases/download/v{sds-sdk-version}/bamm-cli-{sds-sdk-version}.jar[bamm-cli-{sds-sdk-version}.jar]
 
+== Preconditions
+=== Step 1 - Java Download
+The BAMM CLI SDK may be downloaded as an executable .jar or it may be built from the user individually. In case of an individual built a java development kit (JDK) is required. To run the java application a JRE is enough. 
+You can download the JDK from https://adoptium.net/?variant=openjdk11&jvmVariant=hotspot[here].
+
+image::../images/1_JDK_Download.png[]
+
+=== Step 2 - Java Check
+Ensure your Java version is up to date:
+1.	Open a terminal or command line
+2.	Enter “java -version”
+3.	Check if result is identical to the downloaded version
+
+image::../images/2_JDK_VersionControl.png[]
+
+=== Step 3 - BAMM Download
+Download the released https://github.com/OpenManufacturingPlatform/sds-sdk/releases[BAMM CLI SDK]
+
+1. In case you want to run a built executable -> Download only the first file "bamm-cli-1.02.jar" (Note: Version number may change over time)
+2. In case you want to build your own executable -> Clone the repository and build with https://maven.apache.org[Maven].
+
+image::../images/3_BAMM_CLI_Download.png[]
+
+=== Step 4 - BAMM Placement
+1. Create directory (e.g. on Desktop)
+2. Place downloaded .jar file in the folder.
+
+image::../images/4_CreateFolderStructure.png[]
+
+3. Also place example model in the corresponding folder. 
+4. !Remember: the model file must be placed according to the URN-schema of your model.
+In this example it's: @prefix : <urn:bamm:io.openmanufacturing:1.0.0#>. That implies the current position of the model is false.
+The correct position in regards to <urn:bamm:io.openmanufacturing:1.0.0#> is as follows:
+
+image::../images/5_PlaceSystemFiles.png[]
+
+5. Correct folder: root folder > io > openmanufacturing > 1.0.0
+
+image::../images/6_PlaceModelFiles.png[]
+
+=== Step 5 - Run CLI
+1.	Navigate to the folder which contains the downloaded .jar (e.g. bamm-cli-1.02.jar)
+    a.	cd {path to folder}
+2.	Start CLI
+    a.	java -jar bamm-cli-1.02.jar
+    b.	Positive feedback is the help manual
+
+image::../images/7_StartCLI.png[]
+
+
 [[bamm-cli-getting-started]]
 == Running the BAMM CLI
 
@@ -126,3 +176,46 @@ _models root_
 The name of the directory shown as _models root_ above can be chosen freely. The BAMM CLI will resolve the file path
 relative to the input file by following the folder structure described above. Each of the files in the `1.0.0` directory
 should therefore have an empty prefix declaration such as `@prefix : <urn:bamm:com.mycompany.myproduct:1.0.0#>`.
+
+
+[[Examples]]
+== Running Examples
+=== Validation
+1.	Identify the path to the model which is to be validated (Note: Here, Movement.ttl as an example)
+
+image::../images/8_ConfirmModelFile.png[]
+
+2.	Add further options to the CLI start including the path to the model. E.g Java -jar bamm-cli-1.02.jar -i  …io/openmanufacturing/1.0.0/Movement.ttl
+
+image::../images/9_InputCommand.png[]
+
+3.	Add other opens like -v to validate the model (Note: Only required in the validation example)
+
+image::../images/10_ValidateCommand.png[]
+
+4. The full code and result looks as followed.
+
+image::../images/11_ValidationResult.png[]
+
+
+You could counter check it, by creating an invalid example first.
+1. Open the Movement.ttl file 
+2. Go to the first model row (beneath prefix rows) and remove ";" at the end of the row.
+    Before: :Movement a bamm:Aspect;
+    After: :Movement a bamm:Aspect
+3. Save the file with a different name (e.g. MovementInvalid.ttl)
+
+image::../images/12_InvalidModelExample.png[]
+
+4. Run same code (with different file name) like above and see failed result
+
+image::../images/13_InvalidModelNegativeValidationResult.png[]
+
+=== Creating an image or html
+1. Pick a valid model file from your folder (e.g. Movement.ttl)
+2. replace the command "-v" with "-png" and run the code
+
+image::../images/14_PNGCommandResult.png[]
+
+
+
