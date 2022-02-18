@@ -26,7 +26,7 @@ class AspectModelAASGeneratorTest {
     AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
     @Test
-    void test_generate_aasx_from_bamm_aspect_with_list_and_additional_property() throws IOException, InvalidFormatException, DeserializationException {
+    void test_generate_aasx_from_bamm_aspect_with_list_and_additional_property() throws IOException, DeserializationException {
         Aspect aspect = loadAspect(TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY);
 
         ByteArrayOutputStream out = generator.generateOutput(aspect);
@@ -39,7 +39,7 @@ class AspectModelAASGeneratorTest {
     }
 
     @Test
-    void test_generate_aasx_from_bamm_aspect_with_entity() throws IOException, InvalidFormatException, DeserializationException {
+    void test_generate_aasx_from_bamm_aspect_with_entity() throws IOException, DeserializationException {
         Aspect aspect = loadAspect(TestAspect.ASPECT_WITH_ENTITY);
 
         ByteArrayOutputStream out = generator.generateOutput(aspect);

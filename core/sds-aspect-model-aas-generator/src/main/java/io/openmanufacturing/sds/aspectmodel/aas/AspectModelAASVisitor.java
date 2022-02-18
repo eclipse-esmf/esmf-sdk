@@ -13,17 +13,21 @@
 package io.openmanufacturing.sds.aspectmodel.aas;
 
 import io.adminshell.aas.v3.model.*;
+import io.adminshell.aas.v3.model.Submodel;
 import io.adminshell.aas.v3.model.Operation;
 import io.adminshell.aas.v3.model.impl.*;
 import io.openmanufacturing.sds.metamodel.*;
+import io.openmanufacturing.sds.metamodel.Collection;
 import io.openmanufacturing.sds.metamodel.Entity;
+import io.openmanufacturing.sds.metamodel.Enumeration;
 import io.openmanufacturing.sds.metamodel.Property;
+import io.openmanufacturing.sds.metamodel.Set;
+import io.openmanufacturing.sds.metamodel.SortedSet;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 import io.vavr.collection.Stream;
 
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -41,6 +45,10 @@ TODO Use AAS XSD Schema to validate well formedness -> https://www.rgagnon.com/j
  */
 public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationShellEnvironment, Context> {
 
+   private interface SubModelElementCollectionBuilder{
+      SubmodelElementCollection build (Property property);
+   }
+
    public static final String UNKNOWN_TYPE = "Unknown";
    private static final String UNKNOWN_URN = UNKNOWN_TYPE;
    private static final String UNKNOWN_EXAMPLE = UNKNOWN_TYPE;
@@ -56,22 +64,29 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
 
       if(context == null){
          Submodel submodel = new DefaultSubmodel.Builder().build();
-         AssetAdministrationShellEnvironment environment = new DefaultAssetAdministrationShellEnvironment.Builder()
+         AssetAdministrationShellEnvironment environment =
+                 new DefaultAssetAdministrationShellEnvironment.Builder()
                  .submodels(submodel).build();
          context = new Context(environment, submodel);
       }
 
-      Submodel submodel = (Submodel) context.getOfInterest();
+      Submodel submodel = context.getSubmodel();
 
        submodel.setIdShort(aspect.getName());
        submodel.setIdentification(extractIdentifier(aspect));
        submodel.setDescriptions(map(aspect.getDescriptions()));
        submodel.setKind(ModelingKind.TEMPLATE);
 
+      AssetAdministrationShell administrationShell =
+              new DefaultAssetAdministrationShell.Builder()
+                      .submodel(buildReferenceToSubmodel(submodel))
+                      .build();
+
+
       // Hint: As the AAS Meta Model Implementation exposes the internal data structure where the elements
       // of a collection are stored, just setting it would overwrite previous entries. Hence this approach.
-      ((Submodel)context.getOfInterest()).getSubmodelElements().addAll(visitProperties(aspect.getProperties(), context));
-      ((Submodel)context.getOfInterest()).getSubmodelElements().addAll(visitOperations(aspect.getOperations(), context));
+      ((Submodel)context.getSubmodel()).getSubmodelElements().addAll(visitProperties(aspect.getProperties(), context));
+      ((Submodel)context.getSubmodel()).getSubmodelElements().addAll(visitOperations(aspect.getOperations(), context));
 
       return context.getEnvironment();
    }
@@ -96,11 +111,24 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
 
    private SubmodelElement map(Property property, Context context) {
 
-      // Some logic to decide which kind of Submodel element this will be
+      // Characteristic defines how the property is mapped to SubmodelElement
+      Characteristic characteristic = property.getCharacteristic();
+
+      context.setProperty(property);
+      characteristic.accept(this, context);
+      SubmodelElement element = context.getPropertyResult();
+
+      return element;
+   }
+
+   private SubmodelElement decideOnMapping(Property property, Context context) {
+      if(property.getCharacteristic().getDataType().isEmpty()) {
+         return new DefaultProperty.Builder().build();
+      }
+
       Type type = property.getCharacteristic().getDataType().get();
-      if (type instanceof Entity){
-         Entity entity = (Entity) type;
-        return mapToAasSubModelElementCollection(entity, context);
+      if (type instanceof Entity) {
+         return mapToAasSubModelElementCollection((Entity)type, context);
       } else {
          return mapToAasProperty(property, context);
       }
@@ -126,46 +154,57 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
               .displayNames(map(property.getPreferredNames()))
               .value(property.getExampleValue().isPresent() ? property.getExampleValue().get().toString() : UNKNOWN_EXAMPLE)
               .descriptions(map(property.getDescriptions()))
-              .semanticId(buildReference(property.getCharacteristic())) // this is the link to the conceptDescription containing the details for the Characteristic
+              .semanticId(buildReferenceToConceptDescription(property.getCharacteristic())) // this is the link to the conceptDescription containing the details for the Characteristic
               .build();
 
-      createConceptDescription(property, context);
       return aasProperty;
    }
 
-   private Reference buildReference(Characteristic characteristic) {
+   private Reference buildReferenceToConceptDescription(Characteristic characteristic) {
       Key key = new DefaultKey.Builder()
-              .idType(KeyType.IRI)
+              .idType(KeyType.CUSTOM)
               .type(KeyElements.CONCEPT_DESCRIPTION)
               .value(extractIdentifier(characteristic).getIdentifier())
               .build();
       return new DefaultReference.Builder().key(key).build();
    }
 
-   private void createConceptDescription(final Property property, Context context){
-     Characteristic characteristic = property.getCharacteristic();
-     characteristic.accept(this, context);
+   private Reference buildReferenceToSubmodel(Submodel submodel) {
+      Key key = new DefaultKey.Builder()
+              .idType(KeyType.CUSTOM)
+              .type(KeyElements.SUBMODEL)
+              .value(submodel.getIdentification().getIdentifier())
+              .build();
+      return new DefaultReference.Builder().key(key).build();
    }
 
-   @Override
-   public AssetAdministrationShellEnvironment visitEntity(Entity entity, Context context ) {
-      return visitComplexType( entity, context );
-   }
 
 
    @Override
    public AssetAdministrationShellEnvironment visitCharacteristic(Characteristic characteristic, Context context) {
-     // TODO concept descriptions will not be reused. for each property a new conceptDescription will be created. This should be improved, e.g. by intridcuing a map tht stores created conceptdescriptions and returns them according to their id
-      Type type = characteristic.getDataType().get(); // could return an entity
+      io.openmanufacturing.sds.metamodel.Property property = context.getProperty();
 
-      ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
-     .idShort(characteristic.getName())
-     .displayNames(map(characteristic.getPreferredNames())) // preferred name not found in AAS
-     .embeddedDataSpecification(extractEmbeddedDataSpecification(characteristic))
-     .identification(extractIdentifier(characteristic))
-     .build();
-      context.getEnvironment().getConceptDescriptions().add(conceptDescription);
+
+     SubmodelElement element = decideOnMapping(property, context);
+     context.setPropertyResult(element);
+
+      createConceptDescription(characteristic, context);
       return context.environment;
+   }
+
+   private void createConceptDescription(Characteristic characteristic, Context context) {
+      // check if the concept description is already created. If not create a new one.
+      if(context.getEnvironment().getConceptDescriptions().contains(characteristic.getName())) {
+         return;
+      }else {
+         ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
+                 .idShort(characteristic.getName())
+                 .displayNames(map(characteristic.getPreferredNames())) // preferred name not found in AAS
+                 .embeddedDataSpecification(extractEmbeddedDataSpecification(characteristic))
+                 .identification(extractIdentifier(characteristic))
+                 .build();
+         context.getEnvironment().getConceptDescriptions().add(conceptDescription);
+      }
    }
 
    // TODO specific implementation required and general Characteristics implementation replaced
@@ -180,28 +219,82 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return AspectVisitor.super.visitTrait(trait, context);
    }
 
-   // TODO specific implementation required and general Characteristics implementation replaced
    @Override
    public AssetAdministrationShellEnvironment visitCollection(Collection collection, Context context) {
-      return visitCharacteristic(collection, context);
+
+      SubModelElementCollectionBuilder builder = (property) -> {
+         SubmodelElementCollection aasSubModelElementCollection = new DefaultSubmodelElementCollection.Builder()
+                 .idShort(property.getName())
+                 .displayNames(map(property.getPreferredNames()))
+                 .descriptions(map(property.getDescriptions()))
+                 .values(Arrays.asList(decideOnMapping(property, context)))
+                 .build();
+         return aasSubModelElementCollection;
+      };
+      createSubModelElement(collection, builder, context);
+
+      return context.getEnvironment();
    }
 
-   // TODO specific implementation required and general Characteristics implementation replaced
+   private void createSubModelElement(Collection collection, SubModelElementCollectionBuilder op, Context context) {
+      Property property = context.getProperty();
+      SubmodelElementCollection aasSubModelElementCollection = op.build(property);
+
+      context.setPropertyResult(aasSubModelElementCollection);
+      createConceptDescription(collection, context);
+   }
+
    @Override
    public AssetAdministrationShellEnvironment visitList(io.openmanufacturing.sds.metamodel.List list, Context context) {
-      return visitCharacteristic(list, context);
+      SubModelElementCollectionBuilder builder = (property) -> {
+         SubmodelElementCollection aasSubModelElementCollection = new DefaultSubmodelElementCollection.Builder()
+                 .idShort(property.getName())
+                 .displayNames(map(property.getPreferredNames()))
+                 .descriptions(map(property.getDescriptions()))
+                 .values(Arrays.asList(decideOnMapping(property, context)))
+                 .ordered(true)
+                 .build();
+         return aasSubModelElementCollection;
+      };
+      createSubModelElement(list, builder, context);
+
+      return context.getEnvironment();
    }
 
-   // TODO specific implementation required and general Characteristics implementation replaced
    @Override
    public AssetAdministrationShellEnvironment visitSet(Set set, Context context) {
-      return visitCharacteristic(set, context);
+      SubModelElementCollectionBuilder builder = (property) -> {
+         SubmodelElementCollection aasSubModelElementCollection = new DefaultSubmodelElementCollection.Builder()
+                 .idShort(property.getName())
+                 .displayNames(map(property.getPreferredNames()))
+                 .descriptions(map(property.getDescriptions()))
+                 .values(Arrays.asList(decideOnMapping(property, context)))
+                 .ordered(false)
+                 .allowDuplicates(false)
+                 .build();
+         return aasSubModelElementCollection;
+      };
+      createSubModelElement(set, builder, context);
+
+      return context.getEnvironment();
    }
 
-   // TODO specific implementation required and general Characteristics implementation replaced
    @Override
    public AssetAdministrationShellEnvironment visitSortedSet(SortedSet sortedSet, Context context) {
-      return visitCharacteristic(sortedSet, context);
+      SubModelElementCollectionBuilder builder = (property) -> {
+         SubmodelElementCollection aasSubModelElementCollection = new DefaultSubmodelElementCollection.Builder()
+                 .idShort(property.getName())
+                 .displayNames(map(property.getPreferredNames()))
+                 .descriptions(map(property.getDescriptions()))
+                 .values(Arrays.asList(decideOnMapping(property, context)))
+                 .ordered(true)
+                 .allowDuplicates(false)
+                 .build();
+         return aasSubModelElementCollection;
+      };
+      createSubModelElement(sortedSet, builder, context);
+
+      return context.getEnvironment();
    }
 
    // TODO specific implementation required and general Characteristics implementation replaced
@@ -275,7 +368,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       Identifier identifier = new DefaultIdentifier.Builder()
               .identifier( element.getAspectModelUrn().isPresent() ?
                       element.getAspectModelUrn().get().toString() : UNKNOWN_URN )
-              .idType(IdentifierType.IRI).build();
+              .idType(IdentifierType.CUSTOM).build();
       return identifier;
    }
 
@@ -308,7 +401,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
 
    private LangString map(Locale locale, String value) {
       LangString langString = new LangString();
-      langString.setLanguage(locale.getCountry());
+      langString.setLanguage(locale.getLanguage());
       langString.setValue(value);
       return langString;
    }

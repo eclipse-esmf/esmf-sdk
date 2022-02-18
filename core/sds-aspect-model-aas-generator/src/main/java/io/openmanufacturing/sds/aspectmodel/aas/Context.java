@@ -2,11 +2,23 @@ package io.openmanufacturing.sds.aspectmodel.aas;
 
 import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
 import io.adminshell.aas.v3.model.Identifiable;
+import io.adminshell.aas.v3.model.Submodel;
+import io.adminshell.aas.v3.model.SubmodelElement;
+import io.openmanufacturing.sds.metamodel.Property;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Context {
-    public Context(AssetAdministrationShellEnvironment environment, Identifiable ofInterest) {
+
+    AssetAdministrationShellEnvironment environment;
+    Submodel submodel;
+    Property property;
+    SubmodelElement propertyResult;
+
+    public Context(AssetAdministrationShellEnvironment environment, Submodel ofInterest) {
         this.environment = environment;
-        this.ofInterest = ofInterest;
+        this.submodel = ofInterest;
     }
 
     public AssetAdministrationShellEnvironment getEnvironment() {
@@ -17,14 +29,28 @@ public class Context {
         this.environment = environment;
     }
 
-    public Identifiable getOfInterest() {
-        return ofInterest;
+    public Submodel getSubmodel() {
+        return submodel;
     }
 
-    public void setOfInterest(Identifiable ofInterest) {
-        this.ofInterest = ofInterest;
+    public void setSubmodel(Submodel submodel) {
+        this.submodel = submodel;
     }
 
-    AssetAdministrationShellEnvironment environment;
-    Identifiable ofInterest;
+    public Property getProperty() {
+        return property;
+    }
+
+    public void setProperty(Property property) {
+        this.property = property;
+    }
+
+    public SubmodelElement getPropertyResult() {
+        return propertyResult;
+    }
+
+    public void setPropertyResult(SubmodelElement propertyResult) {
+        this.propertyResult = propertyResult;
+    }
+
 }
