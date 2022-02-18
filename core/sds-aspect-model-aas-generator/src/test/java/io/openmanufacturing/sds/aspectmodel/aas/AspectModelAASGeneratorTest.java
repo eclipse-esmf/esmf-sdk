@@ -1,25 +1,22 @@
 package io.openmanufacturing.sds.aspectmodel.aas;
 
 import io.adminshell.aas.v3.dataformat.DeserializationException;
-import io.adminshell.aas.v3.dataformat.aasx.AASXDeserializer;
+import io.adminshell.aas.v3.dataformat.xml.XmlDeserializer;
 import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
 import io.adminshell.aas.v3.model.SubmodelElementCollection;
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 class AspectModelAASGeneratorTest {
 
@@ -55,9 +52,33 @@ class AspectModelAASGeneratorTest {
         assertEquals("entityProperty", collection.getValues().stream().findFirst().get().getIdShort());
     }
 
-    private AssetAdministrationShellEnvironment loadAASX(ByteArrayOutputStream byteStream) throws IOException, InvalidFormatException, DeserializationException {
-        AASXDeserializer deserializer = new AASXDeserializer(new ByteArrayInputStream(byteStream.toByteArray()));
-        AssetAdministrationShellEnvironment env= deserializer.read();
+    @Test
+    void test_generate_aasx_from_bamm_aspect_with_collection() throws IOException, DeserializationException {
+        Aspect aspect = loadAspect(TestAspect.ASPECT_WITH_COLLECTION);
+
+        ByteArrayOutputStream out = generator.generateOutput(aspect);
+
+        AssetAdministrationShellEnvironment env = loadAASX(out);
+
+        assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
+    }
+
+
+
+    @ParameterizedTest
+    @EnumSource( value = TestAspect.class)
+    public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException {
+        final Aspect aspect = loadAspect( testAspect );
+
+        ByteArrayOutputStream out = generator.generateOutput(aspect);
+        AssetAdministrationShellEnvironment env = loadAASX(out);
+
+        assertTrue(env.getSubmodels().size() >= 1, "No Submodel in AAS present.");
+    }
+
+    private AssetAdministrationShellEnvironment loadAASX(ByteArrayOutputStream byteStream) throws DeserializationException {
+        XmlDeserializer deserializer = new XmlDeserializer();
+        AssetAdministrationShellEnvironment env = deserializer.read(new ByteArrayInputStream(byteStream.toByteArray()));
         return env;
     }
 

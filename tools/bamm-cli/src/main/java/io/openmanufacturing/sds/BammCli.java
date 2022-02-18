@@ -134,7 +134,7 @@ public class BammCli {
         performJsonPayloadGeneration(args);
         performJsonSchemaGeneration(args);
         performOpenApiSpecGeneration(args);
-        performAasAasxSpecGeneration(args);
+        performAasXmlSpecGeneration(args);
         performDiagramGeneration(args);
         performAspectModelJavaGeneration(args);
         performStaticMetaModelJavaGeneration(args);
@@ -190,9 +190,9 @@ public class BammCli {
         }
     }
 
-    private static void performAasAasxSpecGeneration(final Args args) throws IOException {
-        if (args.generateAasAasxSpec) {
-            generateAasAasxSpec(args);
+    private static void performAasXmlSpecGeneration(final Args args) throws IOException {
+        if (args.generateAasXmlSpec) {
+            generateAasXmlSpec(args);
         }
     }
 
@@ -427,10 +427,10 @@ public class BammCli {
         generator.generateJsonPretty(name -> getStreamForFile(name + ".json", args));
     }
 
-    private static void generateAasAasxSpec(final Args args) throws IOException {
+    private static void generateAasXmlSpec(final Args args) throws IOException {
         final AspectModelAASGenerator generator = new AspectModelAASGenerator();
         final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked(loadModelOrFail(args));
-        generator.generateAASXFile(aspect, name -> getStreamForFile(name + ".aasx", args));
+        generator.generateAASXFile(aspect, name -> getStreamForFile(name + ".xml", args));
     }
 
     private static void generateOpenApiSpecYaml(final Args args) {

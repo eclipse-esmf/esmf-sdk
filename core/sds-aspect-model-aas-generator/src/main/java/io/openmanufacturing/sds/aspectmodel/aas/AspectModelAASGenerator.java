@@ -13,9 +13,8 @@
 package io.openmanufacturing.sds.aspectmodel.aas;
 
 import io.adminshell.aas.v3.dataformat.SerializationException;
-import io.adminshell.aas.v3.dataformat.aasx.AASXSerializer;
+import io.adminshell.aas.v3.dataformat.xml.XmlSerializer;
 import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
-import io.adminshell.aas.v3.model.impl.DefaultAssetAdministrationShellEnvironment;
 import io.openmanufacturing.sds.metamodel.Aspect;
 
 import java.io.*;
@@ -38,7 +37,7 @@ public class AspectModelAASGenerator {
       AssetAdministrationShellEnvironment environment = visitor.visitAspect( aspect, null );
 
       try (ByteArrayOutputStream out = new ByteArrayOutputStream();) {
-         new AASXSerializer().write(environment, null, out);
+         new XmlSerializer().write(out, environment);
          return out;
       }catch (SerializationException e){
          throw new IOException(e);

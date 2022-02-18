@@ -92,6 +92,8 @@
         <system-lambda-version>1.2.0</system-lambda-version>
         <vavr-version>0.10.3</vavr-version>
         <velocity-version>2.2</velocity-version>
+        <io-admin-shell-aas-model>1.2.0</io-admin-shell-aas-model>
+        <io-admin-shell-aas-serializer>1.2.0</io-admin-shell-aas-serializer>
 
         <!-- Versions of plugins -->
         <jacoco-maven-plugin-version>0.8.7</jacoco-maven-plugin-version>
@@ -337,6 +339,23 @@
                 <groupId>io.github.classgraph</groupId>
                 <artifactId>classgraph</artifactId>
                 <version>${classgraph-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.admin-shell.aas</groupId>
+                <artifactId>model</artifactId>
+                <version>${io-admin-shell-aas-model}</version>
+            </dependency>
+            <!-- TODO extract version number to parent pom -->
+            <dependency>
+                <groupId>io.admin-shell.aas</groupId>
+                <artifactId>dataformat-xml</artifactId>
+                <version>${io-admin-shell-aas-serializer}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-simple</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
