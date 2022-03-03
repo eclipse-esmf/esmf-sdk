@@ -101,11 +101,41 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
     *                          HtmlGenerationOption} for the usable keys.
     * @throws IOException when serialization or deserialization fails
     */
-   public void generate( final Function<String, OutputStream> nameMapper,
-         final Map<HtmlGenerationOption, String> generationOptions ) throws IOException {
+   public void generate( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions ) throws IOException {
       final BufferingNameMapper bufferingMapper = new BufferingNameMapper();
       generateHtmlDocu( bufferingMapper, Format.NONE );
+      generateInternal( nameMapper, generationOptions, bufferingMapper );
+   }
 
+   /**
+    * Generates HTML documentation for Aspect Models. This version generates the document only for the language explicitly requested by the user.
+    *
+    * @param nameMapper        The callback function that maps documentation artifact names to OutputStreams
+    * @param generationOptions Additional optional options that control the document generation. See {@link
+    *                          HtmlGenerationOption} for the usable keys.
+    * @param language          The language for which a document should be generated
+    * @throws IOException when serialization or deserialization fails
+    */
+   public void generate( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions, final Locale language )
+         throws IOException {
+      final BufferingNameMapper bufferingMapper = new BufferingNameMapper();
+      generateHtmlDocu( bufferingMapper, Format.NONE, language );
+      generateInternal( nameMapper, generationOptions, bufferingMapper );
+   }
+
+   /**
+    * Generates HTML documentation for Aspect Models. As this generation produces multiple documents
+    * (one for each supported language), the generator provides the caller with the name of the document
+    * (e.g., "FooAspect_en") via the callback function. The caller needs to provide an {@link OutputStream}
+    * for the respective artifact, e.g. a suitable FileOutputStream.
+    *
+    * @param nameMapper        The callback function that maps documentation artifact names to OutputStreams
+    * @param generationOptions Additional optional options that control the document generation. See {@link
+    *                          HtmlGenerationOption} for the usable keys.
+    * @throws IOException when serialization or deserialization fails
+    */
+   private void generateInternal( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions,
+         final BufferingNameMapper bufferingMapper ) throws IOException {
       for ( final Map.Entry<String, ByteArrayOutputStream> entry : bufferingMapper.artifacts.entrySet() ) {
          final String artifactName = entry.getKey();
          final Locale artifactLanguage = bufferingMapper.artifactLanguages.get( artifactName );
@@ -129,10 +159,22 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
       }
    }
 
+   private void generateHtmlDocu( final Function<String, OutputStream> nameMapper, final Format format, final Locale desiredLanguage ) {
+      final Set<Locale> languagesInModel = LanguageCollector.collectUsedLanguages( aspect );
+      if ( !languagesInModel.contains( desiredLanguage ) ) {
+         throw new RuntimeException( String.format( "The model does not contain the desired language: %s.", desiredLanguage.toString() ) );
+      }
+      final Set<Locale> selectedLanguage = Set.of( desiredLanguage );
+      generateHtmlDocu( nameMapper, format, selectedLanguage );
+   }
+
    private void generateHtmlDocu( final Function<String, OutputStream> nameMapper, final Format format ) {
       final Set<Locale> languagesInModel = LanguageCollector.collectUsedLanguages( aspect );
       final Set<Locale> languages = languagesInModel.isEmpty() ? Set.of( Locale.ENGLISH ) : languagesInModel;
+      generateHtmlDocu( nameMapper, format, languages );
+   }
 
+   private void generateHtmlDocu( final Function<String, OutputStream> nameMapper, final Format format, final Set<Locale> languages ) {
       final Map<String, Object> context = new HashMap<>();
       context.put( "aspectModel", aspect );
       context.put( "aspectModelHelper", new AspectModelHelper( versionedModel ) );
