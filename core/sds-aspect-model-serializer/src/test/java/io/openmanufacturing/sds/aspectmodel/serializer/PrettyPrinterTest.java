@@ -19,13 +19,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.riot.RDFLanguages;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -65,36 +61,6 @@ public class PrettyPrinterTest extends MetaModelVersions {
          fail( "Syntax error" );
       }
 
-      assertThat( hash( originalModel ).equals( hash( prettyPrintedModel ) ) ).isTrue();
-   }
-
-   private String hash( final Model model ) {
-      return model.listStatements().toList().stream().map( this::hash ).sorted().collect( Collectors.joining() );
-   }
-
-   private String hash( final Statement statement ) {
-      return hash( statement.getSubject() ) + hash( statement.getPredicate() ) + hash( statement.getObject() );
-   }
-
-   private String hash( final RDFNode object ) {
-      if ( object.isResource() ) {
-         return hash( object.asResource() );
-      }
-      return object.asLiteral().getValue().toString();
-   }
-
-   private String hash( final Resource resource ) {
-      if ( resource.isURIResource() ) {
-         return resource.getURI();
-      }
-
-      return hashAnonymousResource( resource );
-   }
-
-   private String hashAnonymousResource( final Resource resource ) {
-      return resource.listProperties().toList().stream()
-            .map( statement -> hash( statement.getPredicate() ) + hash( statement.getObject() ) )
-            .sorted()
-            .collect( Collectors.joining() );
+      assertThat( RdfComparison.hash( originalModel ).equals( RdfComparison.hash( prettyPrintedModel ) ) ).isTrue();
    }
 }

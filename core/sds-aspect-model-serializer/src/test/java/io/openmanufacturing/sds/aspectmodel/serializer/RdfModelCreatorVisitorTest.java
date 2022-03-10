@@ -38,28 +38,19 @@ import io.vavr.control.Try;
 public class RdfModelCreatorVisitorTest extends MetaModelVersions {
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, names = {
-         "MOVEMENT",
-         "ENTITY_INSTANCE_TEST1",
-         "ENTITY_INSTANCE_TEST2",
-         "ENTITY_INSTANCE_TEST3",
-         "ENTITY_INSTANCE_TEST4",
-         "ASPECT_WITH_ABSTRACT_ENTITY",
-         "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
-         "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY"
-   } )
+   /*
+    * Exclude the test models that contain unused elements; the resulting serialized models can
+    * never be identical to the original because the unused elements are ignored when loading the
+    * model and can therefore not be serialized.
+    */
+      @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
+            "ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC",
+            "ASPECT_WITH_USED_AND_UNUSED_COLLECTION",
+            "ASPECT_WITH_USED_AND_UNUSED_CONSTRAINT",
+            "ASPECT_WITH_USED_AND_UNUSED_EITHER",
+            "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION"
+      } )
    public void testRdfModelCreatorVisitor( final TestAspect aspect ) {
-      testRdfCreation( aspect, KnownVersion.getLatest() );
-   }
-
-   @ParameterizedTest
-   @EnumSource( value = TestAspect.class, names = {
-         "ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES",
-         "ASPECT_WITH_OPTIONAL_PROPERTY_WITH_PAYLOAD_NAME",
-         "ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME",
-         "ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL"
-   } )
-   public void testRdfModelCreatorVisitorPropertyUsageAttributes( final TestAspect aspect ) {
       testRdfCreation( aspect, KnownVersion.getLatest() );
    }
 
@@ -71,7 +62,7 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
 
       final Namespace namespace = () -> aspect.getAspectModelUrn().get().getUrnPrefix();
       final RdfModelCreatorVisitor visitor = new RdfModelCreatorVisitor( aspect.getMetaModelVersion(), namespace );
-      final Model serializedModel = visitor.visitAspect( aspect, null );
+      final Model serializedModel = visitor.visitAspect( aspect, null ).getModel();
 
       final Map<String, String> prefixMap = new HashMap<>( Namespace.createPrefixMap( knownVersion ) );
       prefixMap.put( "", namespace.getNamespace() );
@@ -81,15 +72,38 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
 
       serializedModel.clearNsPrefixMap();
       originalModel.getNsPrefixMap().forEach( serializedModel::setNsPrefix );
-      assertThat(
-            Arrays.stream( TestModel.modelToString( serializedModel ).split( "\\n" ) )
-                  .filter( line -> !line.contains( "bamm-c:values" ) )
-                  .filter( line -> !line.contains( "bamm:see" ) )
-                  .collect( Collectors.toSet() ) )
-            .containsExactlyInAnyOrderElementsOf(
-                  Arrays.stream( TestModel.modelToString( originalModel ).split( "\\n" ) )
-                        .filter( line -> !line.contains( "bamm-c:values" ) )
-                        .filter( line -> !line.contains( "bamm:see" ) )
-                        .collect( Collectors.toSet() ) );
+
+      final String serializedModelString = modelToString( serializedModel );
+      final String originalModelString = modelToString( originalModel );
+      if ( !serializedModelString.replaceAll( "\\s+", "" ).equals( originalModelString.replaceAll( "\\s+", "" ) ) ) {
+         System.out.println( "Original:" );
+         originalModel.write( System.out, "TTL" );
+         System.out.println( "Serialized:" );
+         serializedModel.write( System.out, "TTL" );
+      }
+      assertThat( serializedModelString ).isEqualToIgnoringWhitespace( originalModelString );
+   }
+
+   private String modelToString( final Model model ) {
+      return Arrays.stream( TestModel.modelToString( model ).split( "\\n" ) )
+            .filter( line -> !line.contains( "bamm-c:values" ) )
+            .filter( line -> !line.contains( "bamm:see" ) )
+            .map( this::sortLineWithRdfListOrLangString )
+            .sorted()
+            .collect( Collectors.joining() )
+            .replaceAll( "  *", " " );
+   }
+
+   /**
+    * In some test models, lines with RDF lists appear, e.g.:
+    *   :property ( "foo" "bar" )
+    * However, for some serialized models, the order of elements is non-deterministic since the underlying collection is a Set.
+    * In order to check that the line is present in the two models, we simply tokenize and sort both lines, so we can compare them.
+    */
+   private String sortLineWithRdfListOrLangString( final String line ) {
+      if ( line.contains( " ( " ) || line.contains( "@" ) ) {
+         return Arrays.stream( line.split( " " ) ).sorted().collect( Collectors.joining() );
+      }
+      return line;
    }
 }
