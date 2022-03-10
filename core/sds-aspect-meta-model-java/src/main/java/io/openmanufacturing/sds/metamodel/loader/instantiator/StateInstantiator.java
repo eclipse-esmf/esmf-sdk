@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.metamodel.loader.instantiator;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Resource;
@@ -26,6 +27,7 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
+@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class StateInstantiator extends Instantiator<State> {
    public StateInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, State.class );
@@ -36,9 +38,9 @@ public class StateInstantiator extends Instantiator<State> {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( state );
       final Type type = getType( state );
       final List<Value> enumValues = getNodesFromList( state, bammc.values() )
-            .map( node -> buildValue( node, type ) )
+            .map( node -> buildValue( node, Optional.of( state ), type ) )
             .collect( Collectors.toList() );
-      final Value defaultValue = buildValue( propertyValue( state, bammc.defaultValue() ).getObject(), type );
+      final Value defaultValue = buildValue( propertyValue( state, bammc.defaultValue() ).getObject(), Optional.of( state ), type );
       return new DefaultState( metaModelBaseAttributes, type, enumValues, defaultValue );
    }
 }

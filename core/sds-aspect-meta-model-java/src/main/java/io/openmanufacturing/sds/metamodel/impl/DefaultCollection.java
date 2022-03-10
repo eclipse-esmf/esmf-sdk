@@ -70,6 +70,11 @@ public class DefaultCollection extends DefaultCharacteristic implements Collecti
       return elementCharacteristic;
    }
 
+   @Override
+   public CollectionType getCollectionType() {
+      return CollectionType.COLLECTION;
+   }
+
    /**
     * Accepts an Aspect visitor
     *

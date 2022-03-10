@@ -17,17 +17,22 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
+import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultCollectionValue extends BaseValue implements CollectionValue {
+public class DefaultCollectionValue implements CollectionValue {
    private final Collection<Value> values;
-   private final Type type;
+   private final io.openmanufacturing.sds.metamodel.Collection.CollectionType collectionType;
+   private final Type elementType;
 
-   public DefaultCollectionValue( final Collection<Value> values, final Type type ) {
+   public DefaultCollectionValue( final Collection<Value> values, final io.openmanufacturing.sds.metamodel.Collection.CollectionType collectionType,
+         final Type elementType ) {
       this.values = values;
-      this.type = type;
+      this.collectionType = collectionType;
+      this.elementType = elementType;
    }
 
    @Override
@@ -37,24 +42,30 @@ public class DefaultCollectionValue extends BaseValue implements CollectionValue
 
    @Override
    public Type getType() {
-      return type;
+      return elementType;
    }
 
    @Override
-   public boolean isCollection() {
-      return true;
+   public io.openmanufacturing.sds.metamodel.Collection.CollectionType getCollectionType() {
+      return collectionType;
    }
 
    @Override
-   public CollectionValue asCollectionValue() {
-      return this;
+   public KnownVersion getMetaModelVersion() {
+      return elementType.getMetaModelVersion();
+   }
+
+   @Override
+   public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
+      return visitor.visitCollectionValue( this, context );
    }
 
    @Override
    public String toString() {
       return new StringJoiner( ", ", DefaultCollectionValue.class.getSimpleName() + "[", "]" )
             .add( "values=" + values )
-            .add( "type='" + type + "'" )
+            .add( "collectionType=" + collectionType )
+            .add( "elementType=" + elementType )
             .toString();
    }
 
@@ -67,11 +78,12 @@ public class DefaultCollectionValue extends BaseValue implements CollectionValue
          return false;
       }
       final DefaultCollectionValue that = (DefaultCollectionValue) o;
-      return Objects.equals( values, that.values ) && Objects.equals( type, that.type );
+      return Objects.equals( values, that.values ) && Objects.equals( collectionType, that.collectionType ) && Objects.equals(
+            elementType, that.elementType );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( values, type );
+      return Objects.hash( values, collectionType, elementType );
    }
 }

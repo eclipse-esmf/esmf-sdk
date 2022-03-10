@@ -16,10 +16,12 @@ package io.openmanufacturing.sds.metamodel.impl;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
+import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultScalarValue extends BaseValue implements ScalarValue {
+public class DefaultScalarValue implements ScalarValue {
    private final Object value;
    private final Scalar type;
 
@@ -39,13 +41,29 @@ public class DefaultScalarValue extends BaseValue implements ScalarValue {
    }
 
    @Override
-   public boolean isScalar() {
-      return true;
+   public KnownVersion getMetaModelVersion() {
+      return type.getMetaModelVersion();
    }
 
    @Override
-   public ScalarValue asScalarValue() {
-      return this;
+   public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
+      return visitor.visitScalarValue( this, context );
+   }
+
+   @Override
+   public int compareTo( final ScalarValue other ) {
+      if ( !type.equals( other.getType() ) ) {
+         throw new UnsupportedOperationException( "Tried to compare values of different types" );
+      }
+      if ( value instanceof Comparable ) {
+         return compareTo( getValue(), other.getValue() );
+      }
+      return 0;
+   }
+
+   @SuppressWarnings( "unchecked" )
+   private <T extends Comparable<T>> int compareTo( final Object value1, final Object value2 ) {
+      return ((T) value1).compareTo( (T) value2 );
    }
 
    @Override

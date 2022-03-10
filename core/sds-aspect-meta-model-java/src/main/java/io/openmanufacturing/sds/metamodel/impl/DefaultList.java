@@ -29,6 +29,11 @@ public class DefaultList extends DefaultCollection implements List {
       super( metaModelBaseAttributes, dataType, true, true, elementCharacteristic );
    }
 
+   @Override
+   public CollectionType getCollectionType() {
+      return CollectionType.LIST;
+   }
+
    /**
     * Accepts an Aspect visitor
     *

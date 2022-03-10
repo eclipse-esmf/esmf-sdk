@@ -28,13 +28,13 @@ public interface RangeConstraint extends Constraint {
     * @return the lower bound of the range. The type of the values is determined by the {@link Type} returned by
     *       {@link RangeConstraint#getDataType()}.
     */
-   Optional<Object> getMinValue();
+   Optional<ScalarValue> getMinValue();
 
    /**
     * @return the upper bound of the range. The type of the values is determined by the {@link Type} returned by
     *       {@link RangeConstraint#getDataType()}.
     */
-   Optional<Object> getMaxValue();
+   Optional<ScalarValue> getMaxValue();
 
    /**
     * @return the definition of how the lower bound of the range is to be interpreted. Possible values are

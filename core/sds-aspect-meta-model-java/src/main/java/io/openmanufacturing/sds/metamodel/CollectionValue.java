@@ -14,5 +14,7 @@
 package io.openmanufacturing.sds.metamodel;
 
 public interface CollectionValue extends Value {
+   Collection.CollectionType getCollectionType();
+
    java.util.Collection<Value> getValues();
 }

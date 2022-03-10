@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,7 +14,6 @@
 package io.openmanufacturing.sds.metamodel;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
 /**
@@ -27,4 +26,12 @@ public interface Base {
    KnownVersion getMetaModelVersion();
 
    <T, C> T accept( AspectVisitor<T, C> visitor, C context );
+
+   default <T extends Base> boolean is( final Class<T> class_ ) {
+      return class_.isAssignableFrom( getClass() );
+   }
+
+   default <T extends Base> T as( final Class<T> class_ ) {
+      return class_.cast( this );
+   }
 }

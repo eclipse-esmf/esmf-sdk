@@ -16,6 +16,6 @@ package io.openmanufacturing.sds.metamodel;
 /**
  * Represents a scalar value.
  */
-public interface ScalarValue extends Value {
+public interface ScalarValue extends Value, Comparable<ScalarValue> {
    Object getValue();
 }

@@ -32,7 +32,7 @@ public interface Property extends Base, IsDescribed {
     * @return an {@link Optional} which may contain an example value for the Property. The type of the value is
     *       determined by the {@link Type} returned by {@link Property#getDataType()}.
     */
-   Optional<Object> getExampleValue();
+   Optional<Value> getExampleValue();
 
    /**
     * @return the name of the Property used in the runtime payload.

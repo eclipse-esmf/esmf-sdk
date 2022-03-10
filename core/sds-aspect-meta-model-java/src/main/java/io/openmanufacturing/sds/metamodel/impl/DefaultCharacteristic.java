@@ -24,8 +24,7 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 public class DefaultCharacteristic extends BaseImpl implements Characteristic {
    private final Optional<Type> dataType;
 
-   public DefaultCharacteristic( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final Optional<Type> dataType ) {
+   public DefaultCharacteristic( final MetaModelBaseAttributes metaModelBaseAttributes, final Optional<Type> dataType ) {
       super( metaModelBaseAttributes );
       this.dataType = dataType;
    }

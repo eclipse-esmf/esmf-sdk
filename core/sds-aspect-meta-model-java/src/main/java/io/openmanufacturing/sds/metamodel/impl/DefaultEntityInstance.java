@@ -15,29 +15,23 @@ package io.openmanufacturing.sds.metamodel.impl;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Value;
+import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
+import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultEntityInstance extends BaseValue implements EntityInstance {
+public class DefaultEntityInstance extends BaseImpl implements EntityInstance {
    private final Map<Property, Value> assertions;
    private final Entity type;
-   private final Optional<AspectModelUrn> aspectModelUrn;
 
-   public DefaultEntityInstance( final Map<Property, Value> assertions, final Entity type, final Optional<AspectModelUrn> aspectModelUrn ) {
+   public DefaultEntityInstance( final MetaModelBaseAttributes metaModelBaseAttributes, final Map<Property, Value> assertions, final Entity type ) {
+      super( metaModelBaseAttributes );
       this.assertions = assertions;
       this.type = type;
-      this.aspectModelUrn = aspectModelUrn;
-   }
-
-   @Override
-   public Optional<AspectModelUrn> getAspectModelUrn() {
-      return aspectModelUrn;
    }
 
    @Override
@@ -51,13 +45,13 @@ public class DefaultEntityInstance extends BaseValue implements EntityInstance {
    }
 
    @Override
-   public boolean isEntityInstance() {
-      return true;
+   public int compareTo( final EntityInstance other ) {
+      return getName().compareTo( other.getName() );
    }
 
    @Override
-   public EntityInstance asEntityInstance() {
-      return this;
+   public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
+      return visitor.visitEntityInstance( this, context );
    }
 
    @Override
@@ -65,7 +59,6 @@ public class DefaultEntityInstance extends BaseValue implements EntityInstance {
       return new StringJoiner( ", ", DefaultEntityInstance.class.getSimpleName() + "[", "]" )
             .add( "assertions=" + assertions )
             .add( "type=" + type )
-            .add( "aspectModelUrn=" + aspectModelUrn )
             .toString();
    }
 
@@ -77,13 +70,15 @@ public class DefaultEntityInstance extends BaseValue implements EntityInstance {
       if ( o == null || getClass() != o.getClass() ) {
          return false;
       }
+      if ( !super.equals( o ) ) {
+         return false;
+      }
       final DefaultEntityInstance that = (DefaultEntityInstance) o;
-      return Objects.equals( assertions, that.assertions ) && Objects.equals( type, that.type ) && Objects.equals( aspectModelUrn,
-            that.aspectModelUrn );
+      return Objects.equals( assertions, that.assertions ) && Objects.equals( type, that.type );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( assertions, type, aspectModelUrn );
+      return Objects.hash( super.hashCode(), assertions, type );
    }
 }

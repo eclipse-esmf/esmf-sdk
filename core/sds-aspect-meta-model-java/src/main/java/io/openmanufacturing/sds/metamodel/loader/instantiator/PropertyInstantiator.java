@@ -17,15 +17,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.rdf.model.Resource;
 
+import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidModelException;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Property;
+import io.openmanufacturing.sds.metamodel.Scalar;
+import io.openmanufacturing.sds.metamodel.Value;
+import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.DefaultPropertyWrapper;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
+@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class PropertyInstantiator extends Instantiator<Property> {
    private final Map<Resource, Property> resourcePropertyMap = new HashMap<>();
 
@@ -66,8 +72,21 @@ public class PropertyInstantiator extends Instantiator<Property> {
       final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
       defaultProperty.setCharacteristic( characteristic );
 
-      final Optional<Object> exampleValue = optionalPropertyValue( propertyResource, bamm.exampleValue() )
-            .map( statement -> statement.getLiteral().getValue() );
+      final Optional<Value> exampleValue = optionalPropertyValue( propertyResource, bamm.exampleValue() )
+            .flatMap( statement -> characteristic.getDataType()
+                  .map( type -> {
+                     if ( !type.is( Scalar.class ) ) {
+                        throw new InvalidModelException( "Type of example value on Property " + property + " has incorrect type" );
+                     }
+                     return type.as( Scalar.class );
+                  } )
+                  .map( type -> {
+                     final Object literal = statement.getLiteral().getValue();
+                     final Object value = literal instanceof BaseDatatype.TypedValue
+                           ? statement.getLiteral().getLexicalForm()
+                           : literal;
+                     return new DefaultScalarValue( value, type );
+                  } ) );
 
       defaultProperty.setExampleValue( exampleValue );
       defaultProperty.setOptional( isOptional );

@@ -14,12 +14,11 @@
 package io.openmanufacturing.sds.metamodel;
 
 import java.util.Map;
-import java.util.Optional;
 
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
-
-public interface EntityInstance extends Value {
-   Optional<AspectModelUrn> getAspectModelUrn();
-
+public interface EntityInstance extends Base, IsDescribed, Value, Comparable<EntityInstance> {
    Map<Property, Value> getAssertions();
+
+   default Entity getEntityType() {
+      return getType().as( Entity.class );
+   }
 }

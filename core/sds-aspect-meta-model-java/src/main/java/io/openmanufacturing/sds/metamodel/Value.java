@@ -16,18 +16,6 @@ package io.openmanufacturing.sds.metamodel;
 /**
  * Base interface for values: Each value can be either a literal (e.g. string or integer), a complex value (Entity) or a collection.
  */
-public interface Value {
-   boolean isScalar();
-
-   boolean isEntityInstance();
-
-   boolean isCollection();
-
-   ScalarValue asScalarValue();
-
-   EntityInstance asEntityInstance();
-
-   CollectionValue asCollectionValue();
-
+public interface Value extends Base {
    Type getType();
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,6 +26,7 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
+@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class MeasurementInstantiator extends Instantiator<Measurement> {
    public MeasurementInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Measurement.class );
@@ -34,7 +35,7 @@ public class MeasurementInstantiator extends Instantiator<Measurement> {
    @Override
    public Measurement apply( final Resource measurement ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( measurement );
-      final Optional<Type> type = Optional.of( getType( measurement ) );
+      final Type type = getType( measurement );
       final Optional<Unit> unit = optionalPropertyValue( measurement, bammc.unit() )
             .map( Statement::getResource )
             .flatMap( this::findOrCreateUnit );

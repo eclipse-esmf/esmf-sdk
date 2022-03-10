@@ -14,7 +14,6 @@
 package io.openmanufacturing.sds.metamodel.loader;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -46,6 +45,7 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.metamodel.Collection;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
@@ -91,8 +91,7 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
       return modelElementFactory.propertyValue( subject, type );
    }
 
-   protected Statement propertyValue( final Resource subject,
-         final org.apache.jena.rdf.model.Property type ) {
+   protected Statement propertyValue( final Resource subject, final org.apache.jena.rdf.model.Property type ) {
       return optionalPropertyValue( subject, type ).orElseThrow( () -> new AspectLoadingException( "Missing Property " + type + " on " + subject ) );
    }
 
@@ -173,27 +172,67 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
                   modelElementFactory.create( Characteristic.class, elementCharacteristicResource ) );
    }
 
+   protected boolean isTypeOf( final Resource element, final Resource type ) {
+      return model.contains( element, RDF.type, type );
+   }
+
+   protected boolean isTypeOfOrSubtypeOf( final Resource element, final Resource type ) {
+      //      Resource typeToCheck = type;
+      //      do {
+      //         if ( isTypeOf( element, typeToCheck ) ) {
+      //            return true;
+      //         }
+      //         typeToCheck = optionalPropertyValue( type, RDFS.subClassOf ).map( Statement::getResource ).orElse( null );
+      //      } while ( typeToCheck != null );
+      //      return false;
+      return isTypeOf( element, type );
+   }
+
    /**
     * Creates a {@link Value} from a given constant value in the RDF model. This can be either a scalar, a collection or an Entity.
+    * What is constructed can depend on the type of RDF node, but also on the Characteristic of the Property this value is used for.
     *
     * @param node the RDF node that represents the value
+    * @param characteristicResource the resources that represents the Characteristic that describes the value. This can be empty for the values of collections
+    *                               that have no bamm-c:elementCharacterisic set
     * @param type the type that describes the value
     * @return a value instance
     */
-   protected Value buildValue( final RDFNode node, final Type type ) {
+   protected Value buildValue( final RDFNode node, final Optional<Resource> characteristicResource, final Type type ) {
+      // Literals
       if ( node.isLiteral() ) {
          return buildScalarValue( node.asLiteral() );
       }
 
-      final Resource resource = node.asResource();
-      if ( node.getModel().contains( resource, RDF.type, RDF.List ) ) {
-         return buildCollectionValue( node.as( RDFList.class ), type );
+      // Collections
+      if ( characteristicResource.isPresent() ) {
+         final Resource characteristic = characteristicResource.get();
+         final Optional<Resource> elementCharacteristic = optionalPropertyValue( characteristic, bammc.elementCharacteristic() ).map( Statement::getResource );
+         Collection.CollectionType collectionType = null;
+         if ( isTypeOfOrSubtypeOf( characteristic, bammc.Set() ) ) {
+            collectionType = Collection.CollectionType.SET;
+         }
+         if ( isTypeOfOrSubtypeOf( characteristic, bammc.SortedSet() ) ) {
+            collectionType = Collection.CollectionType.SORTEDSET;
+         }
+         if ( isTypeOfOrSubtypeOf( characteristic, bammc.List() ) ) {
+            collectionType = Collection.CollectionType.LIST;
+         }
+         if ( isTypeOfOrSubtypeOf( characteristic, bammc.Collection() ) ) {
+            collectionType = Collection.CollectionType.COLLECTION;
+         }
+         if ( collectionType != null ) {
+            return buildCollectionValue( node.as( RDFList.class ), collectionType, elementCharacteristic, type );
+         }
       }
 
       // This could happen if an entity instance should be constructed for an AbstractEntity type
-      if ( !(type instanceof Entity) ) {
+      if ( !type.is( Entity.class ) ) {
          throw new AspectLoadingException( "Expected type of value " + node + " to be bamm:Entity, but it is not" );
       }
+
+      // Entities
+      final Resource resource = node.asResource();
       return buildEntityInstance( resource, (Entity) type );
    }
 
@@ -218,15 +257,15 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
             .orElseThrow( () -> new AspectLoadingException( "Literal can not be parsed: " + literal ) );
    }
 
-   private CollectionValue buildCollectionValue( final RDFList list, final Type type ) {
-      final Collection<Value> values = createEmptyCollectionForType( type );
-      list.asJavaList().forEach( element -> values.add( buildValue( element, type ) ) );
-      return new DefaultCollectionValue( values, type );
+   private CollectionValue buildCollectionValue( final RDFList list, final Collection.CollectionType collectionType,
+         final Optional<Resource> elementCharacteristic, final Type elementType ) {
+      final java.util.Collection<Value> values = createEmptyCollectionForType( collectionType );
+      list.asJavaList().forEach( element -> values.add( buildValue( element, elementCharacteristic, elementType ) ) );
+      return new DefaultCollectionValue( values, collectionType, elementType );
    }
 
    private EntityInstance buildEntityInstance( final Resource entityInstance, final Entity type ) {
       final Map<Property, Value> assertions = new HashMap<>();
-      final Optional<AspectModelUrn> instanceUrn = Optional.ofNullable( entityInstance.getURI() ).map( AspectModelUrn::fromUrn );
       type.getAllProperties().forEach( property -> {
          final AspectModelUrn propertyUrn = property.getAspectModelUrn().orElseThrow( () ->
                new AspectLoadingException( "Invalid Property without a URN found" ) );
@@ -240,17 +279,19 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
          }
          final RDFNode rdfValue = entityInstance.getProperty( rdfProperty ).getObject();
          final Type propertyType = property.getDataType().orElseThrow( () -> new AspectLoadingException( "Invalid Property without a dataType found" ) );
-         final Value value = buildValue( rdfValue, propertyType );
+         final Resource characteristic = propertyValue( rdfProperty, bamm.characteristic() ).getResource();
+         final Value value = buildValue( rdfValue, Optional.of( characteristic ), propertyType );
          assertions.put( property, value );
       } );
-      return new DefaultEntityInstance( assertions, type, instanceUrn );
+      final MetaModelBaseAttributes baseAttributes = buildBaseAttributes( entityInstance );
+      return new DefaultEntityInstance( baseAttributes, assertions, type );
    }
 
-   private Collection<Value> createEmptyCollectionForType( final Type elementType ) {
-      if ( elementType.getUrn().equals( bammc.SortedSet().getURI() ) ) {
+   private java.util.Collection<Value> createEmptyCollectionForType( final Collection.CollectionType collectionType ) {
+      if ( collectionType == Collection.CollectionType.SORTEDSET ) {
          return new LinkedHashSet<>();
       }
-      if ( elementType.getUrn().equals( bammc.Set().getURI() ) ) {
+      if ( collectionType == Collection.CollectionType.SET ) {
          return new HashSet<>();
       }
       return new ArrayList<>();

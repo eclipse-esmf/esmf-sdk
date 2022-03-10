@@ -13,7 +13,6 @@
 package io.openmanufacturing.sds.metamodel.impl;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +25,7 @@ import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 
 /**
- * The basis meta model of our model.
+ * The base implemenation of all model elements.
  */
 public abstract class BaseImpl implements Base, IsDescribed {
    private final KnownVersion metaModelVersion;
@@ -48,9 +47,9 @@ public abstract class BaseImpl implements Base, IsDescribed {
    }
 
    /**
-    * The urn for the element.
+    * The URN for the element, if present. Certain elements (such as Constraints) are allowed to not have URNs, which is why the URN is optional.
     *
-    * @return the urn.
+    * @return the URN.
     */
    @Override
    public Optional<AspectModelUrn> getAspectModelUrn() {
@@ -58,7 +57,7 @@ public abstract class BaseImpl implements Base, IsDescribed {
    }
 
    /**
-    * Returns the Meta Model version this model element is defined against
+    * Returns the metamodel version this model element is defined against
     */
    @Override
    public KnownVersion getMetaModelVersion() {
@@ -66,7 +65,7 @@ public abstract class BaseImpl implements Base, IsDescribed {
    }
 
    /**
-    * The name of the Element.
+    * The name of the element.
     *
     * @return the name.
     */
@@ -76,8 +75,7 @@ public abstract class BaseImpl implements Base, IsDescribed {
    }
 
    /**
-    * A language specific name for the Element. There may be multiple preferred
-    * names.
+    * A language specific name for the ElemenT. There may be multiple preferred names.
     *
     * @return the preferredNames.
     */
@@ -87,8 +85,7 @@ public abstract class BaseImpl implements Base, IsDescribed {
    }
 
    /**
-    * A language specific description of the Element. There may be multiple
-    * descriptions.
+    * A language specific description of the Element. There may be multiple descriptions.
     *
     * @return the descriptions.
     */

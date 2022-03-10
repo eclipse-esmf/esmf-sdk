@@ -27,10 +27,9 @@ public class DefaultStructuredValue extends DefaultCharacteristic implements Str
    private final String deconstructionRule;
    private final List<Object> elements;
 
-   public DefaultStructuredValue(
-         final MetaModelBaseAttributes metaModelBaseAttributes,
-         final Optional<Type> dataType, final String deconstructionRule, final List<Object> elements ) {
-      super( metaModelBaseAttributes, dataType );
+   public DefaultStructuredValue( final MetaModelBaseAttributes metaModelBaseAttributes,
+         final Type dataType, final String deconstructionRule, final List<Object> elements ) {
+      super( metaModelBaseAttributes, Optional.of( dataType ) );
       this.deconstructionRule = deconstructionRule;
       this.elements = elements;
    }

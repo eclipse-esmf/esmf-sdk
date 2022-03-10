@@ -23,9 +23,8 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
 public class DefaultCode extends DefaultCharacteristic implements Code {
 
-   public DefaultCode( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final Optional<Type> dataType ) {
-      super( metaModelBaseAttributes, dataType );
+   public DefaultCode( final MetaModelBaseAttributes metaModelBaseAttributes, final Type dataType ) {
+      super( metaModelBaseAttributes, Optional.of( dataType ) );
    }
 
    /**
@@ -42,6 +41,7 @@ public class DefaultCode extends DefaultCharacteristic implements Code {
 
    @Override
    public String toString() {
-      return new StringJoiner( ", ", DefaultCode.class.getSimpleName() + "[", "]" ).toString();
+      return new StringJoiner( ", ", DefaultCode.class.getSimpleName() + "[", "]" )
+            .toString();
    }
 }

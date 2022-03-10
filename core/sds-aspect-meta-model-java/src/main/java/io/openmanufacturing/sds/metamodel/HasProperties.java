@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.metamodel;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents model elements that contain {@link Property}s
@@ -23,4 +24,8 @@ public interface HasProperties extends Base {
     * @return the {@link Property}(ies) defined in the scope of this element.
     */
    List<Property> getProperties();
+
+   default Optional<Property> getPropertyByName( final String name ) {
+      return getProperties().stream().filter( property -> property.getName().equals( name ) ).findAny();
+   }
 }

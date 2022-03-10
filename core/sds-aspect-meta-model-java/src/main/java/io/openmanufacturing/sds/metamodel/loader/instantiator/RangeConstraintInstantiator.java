@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,19 +15,22 @@ package io.openmanufacturing.sds.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
 import io.openmanufacturing.sds.metamodel.RangeConstraint;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 import io.openmanufacturing.sds.metamodel.impl.DefaultRangeConstraint;
+import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
+import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
+@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
    public RangeConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, RangeConstraint.class );
@@ -37,17 +40,20 @@ public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
    public RangeConstraint apply( final Resource rangeConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( rangeConstraint );
 
-      final Optional<Object> minValue = optionalPropertyValue( rangeConstraint, bammc.minValue() )
-            .map( Statement::getLiteral ).map( Literal::getValue );
-      final Optional<Object> maxValue = optionalPropertyValue( rangeConstraint, bammc.maxValue() )
-            .map( Statement::getLiteral ).map( Literal::getValue );
+      final Optional<ScalarValue> minValue = optionalPropertyValue( rangeConstraint, bammc.minValue() )
+            .map( Statement::getLiteral )
+            .map( literal -> new DefaultScalarValue( literal.getValue(),
+                  new DefaultScalar( literal.getDatatypeURI(), metaModelBaseAttributes.getMetaModelVersion() ) ) );
+      final Optional<ScalarValue> maxValue = optionalPropertyValue( rangeConstraint, bammc.maxValue() )
+            .map( Statement::getLiteral )
+            .map( literal -> new DefaultScalarValue( literal.getValue(),
+                  new DefaultScalar( literal.getDatatypeURI(), metaModelBaseAttributes.getMetaModelVersion() ) ) );
       final BoundDefinition lowerBoundDefinition = getBoundDefinitionForRangeValue( minValue,
             bammc.lowerBoundDefinition(), rangeConstraint, BoundDefinition.AT_LEAST );
       final BoundDefinition upperBoundDefinition = getBoundDefinitionForRangeValue( maxValue,
             bammc.upperBoundDefinition(), rangeConstraint, BoundDefinition.AT_MOST );
 
-      return new DefaultRangeConstraint( metaModelBaseAttributes, minValue, maxValue, lowerBoundDefinition,
-            upperBoundDefinition );
+      return new DefaultRangeConstraint( metaModelBaseAttributes, minValue, maxValue, lowerBoundDefinition, upperBoundDefinition );
    }
 
    /**
@@ -64,11 +70,10 @@ public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
     *       In case a value is given for the provided upper or lower bound and the model does provide a value for the
     *       bound definition property, provided bound definition value is returned.
     */
-   private BoundDefinition getBoundDefinitionForRangeValue( final Optional<Object> rangeValue,
+   private BoundDefinition getBoundDefinitionForRangeValue( final Optional<ScalarValue> rangeValue,
          final Property boundDefinitionProperty, final Resource rangeConstraint,
          final BoundDefinition defaultBoundDefinitionValue ) {
-      final Optional<String> valueForBoundDefinition = getValueForBoundDefinition( rangeConstraint,
-            boundDefinitionProperty );
+      final Optional<String> valueForBoundDefinition = getValueForBoundDefinition( rangeConstraint, boundDefinitionProperty );
       if ( rangeValue.isPresent() && valueForBoundDefinition.isPresent() ) {
          return BoundDefinition.valueOf( valueForBoundDefinition.get() );
       }
@@ -78,12 +83,11 @@ public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
       return BoundDefinition.OPEN;
    }
 
-   private Optional<String> getValueForBoundDefinition( final Resource rangeConstraint,
-         final Property boundDefinitionProperty ) {
+   private Optional<String> getValueForBoundDefinition( final Resource rangeConstraint, final Property boundDefinitionProperty ) {
       return Optional.ofNullable( rangeConstraint.getProperty( boundDefinitionProperty ) )
-                     .map( Statement::getObject )
-                     .map( RDFNode::toString )
-                     .map( this::getBoundDefinitionValue );
+            .map( Statement::getObject )
+            .map( RDFNode::toString )
+            .map( this::getBoundDefinitionValue );
    }
 
    /**

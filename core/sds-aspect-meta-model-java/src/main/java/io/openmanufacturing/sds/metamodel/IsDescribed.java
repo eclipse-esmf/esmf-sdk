@@ -15,7 +15,6 @@ package io.openmanufacturing.sds.metamodel;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -56,36 +55,43 @@ public interface IsDescribed {
    /**
     * @return a {@link Map} containing language specific names for the Aspect Model element.
     */
-   default Set<LangString> getPreferredNames() {
+   default java.util.Set<LangString> getPreferredNames() {
       return Collections.emptySet();
    }
 
    /**
     * @return a {@link Map} containing language specific descriptions for the Aspect Model element.
     */
-   default Set<LangString> getDescriptions() {
+   default java.util.Set<LangString> getDescriptions() {
       return Collections.emptySet();
    }
 
    /**
-    * @return the preferred name for the Aspect Model element for a specific language if present, the element's name otherwise.
+    * A language specific name for the Element. There may be multiple preferred
+    * names.
+    *
+    * @param locale of the specific text
+    * @return the language specific text.
     */
    default String getPreferredName( final Locale locale ) {
       return getPreferredNames().stream()
             .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )
-            .findAny()
             .map( LangString::getValue )
+            .findAny()
             .orElse( getName() );
    }
 
    /**
-    * @return the description for the Aspect Model element for a specific language if present, an empty string otherwise.
+    * Gets the description for the Aspect Model element for a specific language, or null if not such value exists
+    *
+    * @param locale of the specific text
+    * @return the language specific text or null
     */
    default String getDescription( final Locale locale ) {
       return getDescriptions().stream()
             .filter( description -> description.getLanguageTag().equals( locale ) )
-            .findAny()
             .map( LangString::getValue )
-            .orElse( "" );
+            .findAny()
+            .orElse( null );
    }
 }

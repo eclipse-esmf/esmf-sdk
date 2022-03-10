@@ -124,8 +124,7 @@ public class MetaModelBaseAttributes {
     * @param name the meta model element name
     * @return the newly created instance
     */
-   public static MetaModelBaseAttributes from( final KnownVersion metaModelVersion, final AspectModelUrn urn,
-         final String name ) {
+   public static MetaModelBaseAttributes from( final KnownVersion metaModelVersion, final AspectModelUrn urn, final String name ) {
       return builderFor( name ).withMetaModelVersion( metaModelVersion ).withUrn( urn ).build();
    }
 
@@ -138,8 +137,7 @@ public class MetaModelBaseAttributes {
     * @param name the meta model element name
     * @return the newly created instance
     */
-   public static MetaModelBaseAttributes from( final KnownVersion metaModelVersion, final AspectModelUrn urn,
-         final String name, final String preferredName ) {
+   public static MetaModelBaseAttributes from( final KnownVersion metaModelVersion, final AspectModelUrn urn, final String name, final String preferredName ) {
       return builderFor( name ).withMetaModelVersion( metaModelVersion ).withUrn( urn )
             .withPreferredName( Locale.ENGLISH, preferredName ).build();
    }
@@ -158,8 +156,8 @@ public class MetaModelBaseAttributes {
       final Optional<AspectModelUrn> urn = metaModelElement.isAnon() ?
             Optional.empty() :
             Optional.of( AspectModelUrn.fromUrn( metaModelElement.getURI() ) );
-      final Set<LangString> preferredNames = getLangStringLiterals( metaModelElement, bamm.preferredName() );
-      final Set<LangString> descriptions = getLangStringLiterals( metaModelElement, bamm.description() );
+      final Set<LangString> preferredNames = getLanguages( metaModelElement, bamm.preferredName(), model );
+      final Set<LangString> descriptions = getLanguages( metaModelElement, bamm.description(), model );
       final List<String> seeValues = getSeeValues( metaModelElement, model, bamm );
       final Optional<String> nameGivenInModel = Optional
             .ofNullable( model.getProperty( metaModelElement, bamm.name() ) )
@@ -202,20 +200,18 @@ public class MetaModelBaseAttributes {
    }
 
    /**
-    * Returns the set of rdf:langString literals for a given property on a subject
     * @param subject the RDF {@link Resource} representing the Aspect Model element to be processed
     * @param property the RDF {@link org.apache.jena.rdf.model.Property} for which the values will be retrieved
-    * @return the set of {@link LangString}s for the given property
+    * @param model the RDF {@link Model} representing the entire Aspect Meta Model
+    * @return a {@link List} containing all values for the given Property in the given Aspect Model element
     */
-   private static Set<LangString> getLangStringLiterals( final Resource subject, final org.apache.jena.rdf.model.Property property ) {
-      return Streams.stream( subject.getModel().listStatements( subject, property, (RDFNode) null ) )
-            .flatMap( statement -> {
-               final Locale locale = Locale.forLanguageTag( statement.getLanguage() );
-               if ( "und".equals( locale.toLanguageTag() ) ) {
-                  return Stream.of();
-               }
-               return Stream.of( new LangString( statement.getString(), locale ) );
-            } )
+   private static Set<LangString> getLanguages( final Resource subject,
+         final org.apache.jena.rdf.model.Property property, final Model model ) {
+      return Streams.stream( model.listStatements( subject, property, (RDFNode) null ) )
+            .filter( languageStatement -> !"und"
+                  .equals( Locale.forLanguageTag( languageStatement.getLanguage() )
+                        .toLanguageTag() ) )
+            .map( statement -> new LangString( statement.getString(), Locale.forLanguageTag( statement.getLanguage() ) ) )
             .collect( Collectors.toSet() );
    }
 
@@ -279,8 +275,7 @@ public class MetaModelBaseAttributes {
       }
 
       public MetaModelBaseAttributes build() {
-         return new MetaModelBaseAttributes( metaModelVersion, urn, name, preferredNames, descriptions, see,
-               hasSyntheticName );
+         return new MetaModelBaseAttributes( metaModelVersion, urn, name, preferredNames, descriptions, see, hasSyntheticName );
       }
    }
 }
