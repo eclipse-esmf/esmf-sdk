@@ -39,6 +39,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.assertj.core.api.Condition;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -97,14 +98,17 @@ import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.RangeConstraint;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 import io.openmanufacturing.sds.metamodel.impl.DefaultAspect;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
 import io.openmanufacturing.sds.metamodel.impl.DefaultRangeConstraint;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
+import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultTrait;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.test.MetaModelVersions;
@@ -267,7 +271,6 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
       final AspectWithEntityEnumerationAndLangString aspectWithEnum = parseJson( generatedJson, AspectWithEntityEnumerationAndLangString.class );
 
-      assertThat( aspectWithEnum.getTestProperty().getValue().getEntityProperty().get( "de" ) ).isEqualTo( "Dies ist ein Test." );
       assertThat( aspectWithEnum.getTestProperty().getValue().getEntityProperty().get( "en" ) ).isEqualTo( "This is a test." );
    }
 
@@ -338,7 +341,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    public void testGenerateAspectWithMultiLanguageText( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT, metaModelVersion );
       final AspectWithMultiLanguageText aspectWithMultiLanguageText = parseJson( generatedJson, AspectWithMultiLanguageText.class );
-      assertThat( aspectWithMultiLanguageText.getProp() ).containsKey( Locale.ENGLISH );
+      final Condition<LangString> isEnglishLangString = new Condition<>( l -> l.getLanguageTag().equals( Locale.ENGLISH ), "is english" );
+      assertThat( aspectWithMultiLanguageText.getProp() ).has( isEnglishLangString );
    }
 
    @ParameterizedTest
@@ -650,8 +654,12 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
          final BAMM bamm, final Pair<Number, Number> randomRange ) {
       final MetaModelBaseAttributes constraintAttibutes =
             MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( bamm.characteristic().getURI() ), "TestConstraint" );
-      final Optional<Object> minValue = BoundDefinition.OPEN.equals( boundKind ) ? Optional.empty() : Optional.of( randomRange.getLeft() );
-      final Optional<Object> maxValue = BoundDefinition.OPEN.equals( boundKind ) ? Optional.empty() : Optional.of( randomRange.getRight() );
+      final Optional<ScalarValue> minValue = BoundDefinition.OPEN.equals( boundKind )
+            ? Optional.empty()
+            : Optional.of( new DefaultScalarValue( randomRange.getLeft(), new DefaultScalar( dataType.getUrn(), modelVersion ) ) );
+      final Optional<ScalarValue> maxValue = BoundDefinition.OPEN.equals( boundKind )
+            ? Optional.empty()
+            : Optional.of( new DefaultScalarValue( randomRange.getRight(), new DefaultScalar( dataType.getUrn(), modelVersion ) ) );
       final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttibutes, minValue, maxValue, boundKind,
             getMatchingUpperBound( boundKind ) );
       final MetaModelBaseAttributes traitAttributes = MetaModelBaseAttributes

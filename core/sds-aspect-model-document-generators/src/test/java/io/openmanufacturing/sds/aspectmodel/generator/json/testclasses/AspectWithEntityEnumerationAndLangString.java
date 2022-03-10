@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,7 +37,7 @@ public class AspectWithEntityEnumerationAndLangString {
    }
 
    public enum TestEnumeration {
-      ENTITY_INSTANCE( new TestEntity( Map.of( "de", "Dies ist ein Test.", "en", "This is a test." ) ) );
+      ENTITY_INSTANCE( new TestEntity( Map.of( "en", "This is a test." ) ) );
 
       private final TestEntity value;
 
@@ -58,8 +58,8 @@ public class AspectWithEntityEnumerationAndLangString {
 
       public static Optional<TestEnumeration> fromValue( final TestEntity value ) {
          return Arrays.stream( TestEnumeration.values() )
-                      .filter( enumValue -> compareEnumValues( enumValue, value ) )
-                      .findAny();
+               .filter( enumValue -> compareEnumValues( enumValue, value ) )
+               .findAny();
       }
 
       private static boolean compareEnumValues( final TestEnumeration enumValue, final TestEntity value ) {

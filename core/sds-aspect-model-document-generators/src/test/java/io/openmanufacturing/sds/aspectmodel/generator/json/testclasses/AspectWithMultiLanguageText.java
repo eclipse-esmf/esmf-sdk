@@ -13,20 +13,20 @@
  */
 package io.openmanufacturing.sds.aspectmodel.generator.json.testclasses;
 
-import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
+
 /** Generated class for AspectWithMultiLanguageText. */
 public class AspectWithMultiLanguageText {
 
-   private Map<Locale, String> prop;
+   private LangString prop;
 
    @JsonCreator
-   public AspectWithMultiLanguageText( @JsonProperty( value = "prop" ) Map<Locale, String> prop ) {
+   public AspectWithMultiLanguageText( @JsonProperty( value = "prop" ) LangString prop ) {
       this.prop = prop;
    }
 
@@ -35,7 +35,7 @@ public class AspectWithMultiLanguageText {
     *
     * @return {@link #prop}
     */
-   public Map<Locale, String> getProp() {
+   public LangString getProp() {
       return this.prop;
    }
 
