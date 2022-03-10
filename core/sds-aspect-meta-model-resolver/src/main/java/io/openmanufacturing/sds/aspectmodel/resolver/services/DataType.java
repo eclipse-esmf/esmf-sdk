@@ -13,10 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.resolver.services;
 
-import static java.util.function.Predicate.not;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -77,9 +74,7 @@ public class DataType {
     * @return the list of all supported types
     */
    public static List<RDFDatatype> getAllSupportedTypes() {
-      return ImmutableList.copyOf( Iterables.concat( getSupportedXsdTypes(),
-            KnownVersion.getVersions().stream().filter( not( KnownVersion.BAMM_1_0_0::equals ) )
-                        .map( BammDataType::curie ).collect( Collectors.toList() ) ) );
+      return getSupportedXsdTypes();
    }
 
    /**

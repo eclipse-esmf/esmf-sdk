@@ -64,10 +64,5 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             6, "lowerBoundDefinition", "GREATER_THAN" );
-
-      context.executeAttributeIsNotPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
-            7 );
    }
 }

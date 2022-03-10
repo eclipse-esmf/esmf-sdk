@@ -240,16 +240,6 @@ public enum QuantityKinds implements QuantityKind {
    }
 
    @Override
-   public Set<LangString> getPreferredNames() {
-      return Collections.emptySet();
-   }
-
-   @Override
-   public Set<LangString> getDescriptions() {
-      return Collections.emptySet();
-   }
-
-   @Override
    public Optional<AspectModelUrn> getAspectModelUrn() {
       return Optional.of( AspectModelUrn.fromUrn( String.format( "urn:bamm:io.openmanufacturing:unit:%s#%s", LATEST.toVersionString(), this.name ) ) );
    }

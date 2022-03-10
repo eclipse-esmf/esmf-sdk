@@ -19,7 +19,7 @@ import java.util.Objects;
 /**
  * Java representation of an <a href="https://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal">rdf:langString</a>.
  */
-public class LangString {
+public class LangString implements Comparable<LangString> {
    private final String value;
    private final Locale languageTag;
 
@@ -37,8 +37,13 @@ public class LangString {
    }
 
    @Override
+   public int compareTo( final LangString other ) {
+      return getLanguageTag().toLanguageTag().compareTo( other.getLanguageTag().toLanguageTag() );
+   }
+
+   @Override
    public String toString() {
-      return "\"" + value + "\"@" + languageTag;
+      return "\"" + value + "\"@" + languageTag.toLanguageTag();
    }
 
    @Override
