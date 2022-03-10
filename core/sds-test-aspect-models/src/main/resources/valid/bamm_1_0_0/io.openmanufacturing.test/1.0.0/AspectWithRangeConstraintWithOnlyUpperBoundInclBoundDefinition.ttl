@@ -41,6 +41,7 @@
       bamm:see <http://example.com/omp> ;
       bamm-c:maxValue "2.3"^^xsd:float ;
       bamm-c:upperBoundDefinition bamm-c:LESS_THAN ;
+      bamm-c:lowerBoundDefinition bamm-c:OPEN ;
    ] ;
    bamm-c:baseCharacteristic :Measurement .
 

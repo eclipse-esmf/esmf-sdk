@@ -116,7 +116,7 @@
    bamm-c:values ( "Yes"
                    "No" ) .
 
-:simpleResult a bamm-c:Property ;
+:simpleResult a bamm:Property ;
    bamm:name "simpleResult" ;
    bamm:preferredName "simpleResult"@en ;
    bamm:characteristic :YesNo .

@@ -44,7 +44,9 @@
       bamm-c:constraint [
          a bamm-c:RangeConstraint ;
          bamm-c:minValue "2.3"^^xsd:float ;
+         bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
          bamm-c:maxValue "10.5"^^xsd:float ;
+         bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
       ]
    ] .
 

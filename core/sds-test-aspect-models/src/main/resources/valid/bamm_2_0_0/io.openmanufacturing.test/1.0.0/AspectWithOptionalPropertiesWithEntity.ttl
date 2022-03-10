@@ -67,10 +67,6 @@
    bamm:name "IntegerList" ;
    bamm:dataType xsd:int .
 
-:Int a bamm:Characteristic ;
-   bamm:name "Int" ;
-   bamm:dataType xsd:int .
-
 :TestEntityCharacteristic a bamm:Characteristic ;
    bamm:name "TestEntityCharacteristic" ;
    bamm:dataType :TestEntity .

@@ -46,7 +46,7 @@
    bamm:characteristic [
       a bamm-c:List ;
       bamm:name "IntegerList" ;
-      bamm:dataType xsd:int
+      bamm:dataType xsd:integer
    ] .
 
 :ShortCode a bamm:Characteristic ;

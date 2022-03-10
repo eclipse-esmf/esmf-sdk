@@ -29,7 +29,6 @@
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;
    bamm:see <http://example.com/me> ;
-   bamm:exampleValue "Example Value" ;
    bamm:characteristic :TestCollection .
 
 :TestCollection a bamm-c:Collection ;

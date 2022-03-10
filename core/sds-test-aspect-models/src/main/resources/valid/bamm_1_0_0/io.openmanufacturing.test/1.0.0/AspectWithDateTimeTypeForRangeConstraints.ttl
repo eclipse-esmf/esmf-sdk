@@ -35,6 +35,8 @@
        a bamm-c:RangeConstraint ;
        bamm-c:minValue "2000-01-01T14:23:00"^^xsd:dateTime ;
        bamm-c:maxValue "2000-01-02T15:23:00"^^xsd:dateTime ;
+       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
     ] ;
     bamm-c:baseCharacteristic :MeasurementDateTime .
 
@@ -58,6 +60,8 @@
        a bamm-c:RangeConstraint ;
        bamm-c:minValue "2000-01-01T14:23:00.66372+14:00"^^xsd:dateTimeStamp ;
        bamm-c:maxValue "2000-01-01T15:23:00.66372+14:00"^^xsd:dateTimeStamp ;
+       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
     ] ;
     bamm-c:baseCharacteristic :MeasurementDateTimeStamp .
 

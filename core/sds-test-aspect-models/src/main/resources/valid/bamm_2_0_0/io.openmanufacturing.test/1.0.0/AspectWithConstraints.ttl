@@ -40,64 +40,72 @@
 
 :testPropertyWithDecimalMinDecimalMaxRangeConstraint a bamm:Property ;
    bamm:name "testPropertyWithDecimalMinDecimalMaxRangeConstraint" ;
-   bamm:characteristic :testWithDecimalMinDecimalMaxRangeConstraint .
+   bamm:characteristic :TestWithDecimalMinDecimalMaxRangeConstraint .
 
-:testWithDecimalMinDecimalMaxRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestDecimalMinMaxAndDecimalRangeConstraint" ;
+:TestWithDecimalMinDecimalMaxRangeConstraint a bamm-c:Trait ;
+   bamm:name "TestWithDecimalMinDecimalMaxRangeConstraint" ;
    bamm:preferredName "Test Range"@en ;
    bamm:description "Test Range"@en ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "2.3"^^xsd:decimal ;
       bamm-c:maxValue "10.5"^^xsd:decimal ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic :MeasurementDecimal .
 
 :testPropertyWithDecimalMaxRangeConstraint a bamm:Property ;
    bamm:name "testPropertyWithDecimalMaxRangeConstraint" ;
-   bamm:characteristic :testWithDecimalMaxRangeConstraint .
+   bamm:characteristic :TestWithDecimalMaxRangeConstraint .
 
-:testWithDecimalMaxRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestDecimalMaxAndDecimalRangeConstraint" ;
+:TestWithDecimalMaxRangeConstraint a bamm-c:Trait ;
+   bamm:name "TestWithDecimalMaxRangeConstraint" ;
    bamm:preferredName "Test Range"@en ;
    bamm:description "Test Range"@en ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
       bamm-c:maxValue "10.5"^^xsd:decimal ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:OPEN ;
    ] ;
    bamm-c:baseCharacteristic :MeasurementDecimal .
 
 :MeasurementDecimal a bamm-c:Measurement ;
-   bamm:name "Measurement" ;
+   bamm:name "MeasurementDecimal" ;
    bamm:dataType xsd:decimal ;
    bamm-c:unit unit:metrePerSecond .
 
 :testPropertyWithMinMaxRangeConstraint a bamm:Property ;
    bamm:name "testPropertyWithMinMaxRangeConstraint" ;
-   bamm:characteristic :testWithMinMaxRangeConstraint .
+   bamm:characteristic :TestWithMinMaxRangeConstraint .
 
-:testWithMinMaxRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestMinMaxAndNoDecimalRangeConstraint" ;
+:TestWithMinMaxRangeConstraint a bamm-c:Trait ;
+   bamm:name "TestWithMinMaxRangeConstraint" ;
    bamm:preferredName "Test Range"@en ;
    bamm:description "Test Range"@en ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "1"^^xsd:int ;
       bamm-c:maxValue "10"^^xsd:int ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic :Measurement .
 
 :testPropertyWithMinRangeConstraint a bamm:Property ;
    bamm:name "testPropertyWithMinRangeConstraint" ;
-   bamm:characteristic :testWithMinRangeConstraint .
+   bamm:characteristic :TestWithMinRangeConstraint .
 
-:testWithMinRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestMinAndNoDecimalRangeConstraint" ;
+:TestWithMinRangeConstraint a bamm-c:Trait ;
+   bamm:name "TestWithMinRangeConstraint" ;
    bamm:preferredName "Test Range"@en ;
    bamm:description "Test Range"@en ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "1"^^xsd:int ;
+      bamm-c:upperBoundDefinition bamm-c:OPEN ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic :Measurement .
 
@@ -108,41 +116,45 @@
 
 :testPropertyRangeConstraintWithFloatType a bamm:Property ;
    bamm:name "testPropertyRangeConstraintWithFloatType" ;
-   bamm:characteristic :testRangeConstraintWithFloatType .
+   bamm:characteristic :TestRangeConstraintWithFloatType .
 
-:testRangeConstraintWithFloatType a bamm-c:Trait ;
-   bamm:name "testRangeConstraintWithNotAllowedType" ;
+:TestRangeConstraintWithFloatType a bamm-c:Trait ;
+   bamm:name "TestRangeConstraintWithFloatType" ;
    bamm:preferredName "Test Range"@en ;
    bamm:description "Test Range"@en ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
-      bamm-c:minValue "1"^^xsd:float ;
-      bamm-c:maxValue "10"^^xsd:float ;
+      bamm-c:minValue "1.0"^^xsd:float ;
+      bamm-c:maxValue "10.0"^^xsd:float ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic :MeasurementWithFloatType .
 
 :MeasurementWithFloatType a bamm-c:Measurement ;
-   bamm:name "Measurement" ;
+   bamm:name "MeasurementWithFloatType" ;
    bamm:dataType xsd:float ;
    bamm-c:unit unit:metrePerSecond .
 
 :testPropertyRangeConstraintWithDoubleType a bamm:Property ;
    bamm:name "testPropertyRangeConstraintWithDoubleType" ;
-   bamm:characteristic :testRangeConstraintWithDoubleType .
+   bamm:characteristic :TestRangeConstraintWithDoubleType .
 
-:testRangeConstraintWithDoubleType a bamm-c:Trait ;
-   bamm:name "testRangeConstraintWithNotAllowedType" ;
+:TestRangeConstraintWithDoubleType a bamm-c:Trait ;
+   bamm:name "TestRangeConstraintWithDoubleType" ;
    bamm:preferredName "Test Range"@en ;
    bamm:description "Test Range"@en ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
-      bamm-c:minValue "1"^^xsd:double ;
-      bamm-c:maxValue "10"^^xsd:double ;
+      bamm-c:minValue "1.0"^^xsd:double ;
+      bamm-c:maxValue "10.0"^^xsd:double ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic :MeasurementWithDoubleType .
 
 :MeasurementWithDoubleType a bamm-c:Measurement ;
-   bamm:name "Measurement" ;
+   bamm:name "MeasurementWithDoubleType" ;
    bamm:dataType xsd:double ;
    bamm-c:unit unit:metrePerSecond .
 
@@ -166,7 +178,7 @@
    bamm:characteristic :TestLengthConstraintOnlyMin .
 
 :TestLengthConstraintOnlyMin a bamm-c:Trait ;
-   bamm:name "TestLengthConstraint" ;
+   bamm:name "TestLengthConstraintOnlyMin" ;
    bamm:preferredName "Test Length Constraint"@en ;
    bamm:description "Test Length Constraint"@en ;
    bamm-c:constraint [

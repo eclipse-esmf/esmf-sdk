@@ -29,6 +29,8 @@
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "2"^^xsd:integer ;
       bamm-c:maxValue "10"^^xsd:integer ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic [
       a bamm-c:List ;
