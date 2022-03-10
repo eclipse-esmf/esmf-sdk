@@ -18,12 +18,14 @@ import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Code;
 import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Duration;
 import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.EncodingConstraint;
 import io.openmanufacturing.sds.metamodel.Entity;
+import io.openmanufacturing.sds.metamodel.EntityInstance;
 import io.openmanufacturing.sds.metamodel.Enumeration;
 import io.openmanufacturing.sds.metamodel.Event;
 import io.openmanufacturing.sds.metamodel.FixedPointConstraint;
@@ -40,6 +42,7 @@ import io.openmanufacturing.sds.metamodel.QuantityKind;
 import io.openmanufacturing.sds.metamodel.RangeConstraint;
 import io.openmanufacturing.sds.metamodel.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.Scalar;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Set;
 import io.openmanufacturing.sds.metamodel.SingleEntity;
 import io.openmanufacturing.sds.metamodel.SortedSet;
@@ -50,6 +53,7 @@ import io.openmanufacturing.sds.metamodel.TimeSeries;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Unit;
+import io.openmanufacturing.sds.metamodel.Value;
 
 /**
  * Visitor interface for the traversal of Aspect Meta Model instances
@@ -284,4 +288,19 @@ public interface AspectVisitor<T, C> {
       return visitType( (Type) complexType, context );
    }
 
+   default T visitValue( final Value value, final C context ) {
+      return visitBase( value, context );
+   }
+
+   default T visitScalarValue( final ScalarValue value, final C context ) {
+      return visitValue( value, context );
+   }
+
+   default T visitCollectionValue( final CollectionValue value, final C context ) {
+      return visitValue( value, context );
+   }
+
+   default T visitEntityInstance( final EntityInstance instance, final C context ) {
+      return visitValue( instance, context );
+   }
 }
