@@ -25,8 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Resource;
 
-import com.google.common.collect.ImmutableMap;
-
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.BammDataType;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.ExtendedXsdDataType;
@@ -38,19 +36,23 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMME;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Entity;
+import io.openmanufacturing.sds.metamodel.EntityInstance;
 import io.openmanufacturing.sds.metamodel.Event;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.impl.DefaultAspect;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEntity;
+import io.openmanufacturing.sds.metamodel.impl.DefaultEntityInstance;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEvent;
 import io.openmanufacturing.sds.metamodel.impl.DefaultOperation;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
+import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -241,8 +243,7 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
    @Provide
    default Arbitrary<Set<LangString>> anyLocalizedString() {
       final Arbitrary<String> values = Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 10 );
-      return Combinators.combine( anyLocale(), values )
-            .as( ( locale, string ) -> new LangString( string, locale ) ).set();
+      return Combinators.combine( anyLocale(), values ).as( ( locale, string ) -> new LangString( string, locale ) ).set();
    }
 
    @Provide
@@ -334,124 +335,117 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
       return Arbitraries.oneOf( anyScalar().map( x -> x ), anyEntity().map( x -> x ) );
    }
 
+   private Value buildScalarValue( final Object value, final Scalar type ) {
+      return new DefaultScalarValue( value, type );
+   }
+
    @Provide
-   default Arbitrary<Object> anyValueForRdfType( final RDFDatatype rdfDatatype ) {
+   default Arbitrary<Value> anyValueForRdfType( final RDFDatatype rdfDatatype, final Scalar type ) {
       final Arbitrary<String> anyString = Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 25 );
 
       switch ( rdfDatatype.getURI().split( "#" )[1] ) {
       case "boolean":
-         return anyBoolean().map( x -> x );
+         return anyBoolean().map( x -> buildScalarValue( x, type ) );
       case "decimal":
       case "integer":
-         return Arbitraries.bigIntegers().map( x -> x );
+         return Arbitraries.bigIntegers().map( x -> buildScalarValue( x, type ) );
       case "double":
-         return Arbitraries.doubles().map( x -> x );
+         return Arbitraries.doubles().map( x -> buildScalarValue( x, type ) );
       case "float":
-         return Arbitraries.floats().map( x -> x );
+         return Arbitraries.floats().map( x -> buildScalarValue( x, type ) );
       case "date":
-         return anyDate().map( x -> x );
+         return anyDate().map( x -> buildScalarValue( x, type ) );
       case "time":
-         return anyTime().map( x -> x );
+         return anyTime().map( x -> buildScalarValue( x, type ) );
       case "anyDateTime":
-         return anyDateTime().map( x -> x );
+         return anyDateTime().map( x -> buildScalarValue( x, type ) );
       case "anyDateTimeStamp":
-         return anyDateTimeStamp().map( x -> x );
+         return anyDateTimeStamp().map( x -> buildScalarValue( x, type ) );
       case "gYear":
-         return anyGYear().map( x -> x );
+         return anyGYear().map( x -> buildScalarValue( x, type ) );
       case "gMonth":
-         return anyGMonth().map( x -> x );
+         return anyGMonth().map( x -> buildScalarValue( x, type ) );
       case "gDay":
-         return anyGDay().map( x -> x );
+         return anyGDay().map( x -> buildScalarValue( x, type ) );
       case "gYearMonth":
-         return anyGYearMonth().map( x -> x );
+         return anyGYearMonth().map( x -> buildScalarValue( x, type ) );
       case "gMonthDay":
-         return anyGMonthDay().map( x -> x );
+         return anyGMonthDay().map( x -> buildScalarValue( x, type ) );
       case "duration":
-         return anyDuration().map( x -> x );
+         return anyDuration().map( x -> buildScalarValue( x, type ) );
       case "yearMonthDuation":
-         return anyYearMonthDuration().map( x -> x );
+         return anyYearMonthDuration().map( x -> buildScalarValue( x, type ) );
       case "dayTimeDuration":
-         return anyDayTimeDuration().map( x -> x );
+         return anyDayTimeDuration().map( x -> buildScalarValue( x, type ) );
       case "byte":
-         return Arbitraries.bytes().map( x -> x );
+         return Arbitraries.bytes().map( x -> buildScalarValue( x, type ) );
       case "short":
-         return Arbitraries.shorts().map( x -> x );
+         return Arbitraries.shorts().map( x -> buildScalarValue( x, type ) );
       case "unsignedByte":
-         return anyUnsignedByte().map( x -> x );
+         return anyUnsignedByte().map( x -> buildScalarValue( x, type ) );
       case "int":
-         return Arbitraries.integers().map( x -> x );
+         return Arbitraries.integers().map( x -> buildScalarValue( x, type ) );
       case "unsignedShort":
-         return anyUnsignedShort().map( x -> x );
+         return anyUnsignedShort().map( x -> buildScalarValue( x, type ) );
       case "long":
-         return Arbitraries.longs().map( x -> x );
+         return Arbitraries.longs().map( x -> buildScalarValue( x, type ) );
       case "unsignedLong":
-         return anyUnsignedLong().map( x -> x );
+         return anyUnsignedLong().map( x -> buildScalarValue( x, type ) );
       case "positiveInteger":
-         return anyPositiveInteger().map( x -> x );
+         return anyPositiveInteger().map( x -> buildScalarValue( x, type ) );
       case "nonNegativeInteger":
-         return anyNonNegativeInteger().map( x -> x );
+         return anyNonNegativeInteger().map( x -> buildScalarValue( x, type ) );
       case "hexBinary":
-         return anyHexBinary().map( x -> x );
+         return anyHexBinary().map( x -> buildScalarValue( x, type ) );
       case "base64Binary":
-         return anyBase64Binary().map( x -> x );
+         return anyBase64Binary().map( x -> buildScalarValue( x, type ) );
       case "anyURI":
-         return anyUri().map( x -> x );
+         return anyUri().map( x -> buildScalarValue( x, type ) );
       case "curie":
-         return anyMetaModelVersion().map( BammDataType::curie ).map( x -> x );
+         return anyMetaModelVersion().map( BammDataType::curie ).map( x -> buildScalarValue( x, type ) );
       case "langString":
          return Combinators.combine( anyString, anyLocale() )
-               .as( ( string, locale ) -> Map.of( locale, string ) )
-               .map( x -> x );
+               .as( LangString::new )
+               .map( x -> buildScalarValue( x, type ) );
       }
-      return anyString.map( x -> x );
+      return anyString.map( x -> buildScalarValue( x, type ) );
    }
 
    @Provide
-   default Arbitrary<Map<String, Object>> anyEntityInstance( final Entity entity ) {
-      final Arbitrary<Map<String, Object>> anyEntityInstanceIdentifier =
-            anyMetaModelVersion().flatMap( metaModelVersion -> {
-               final Arbitrary<String> key = Arbitraries.constant( bamm( metaModelVersion ) )
-                     .map( BAMM::name )
-                     .map( Object::toString );
-               final Arbitrary<Object> values = anyLowerCaseElementName().map( x -> x );
-               return Arbitraries.maps( key, values ).ofSize( 1 );
+   default Arbitrary<EntityInstance> anyEntityInstance( final Entity entity ) {
+      final Arbitrary<Map<Property, Value>> entityAssertions = Arbitraries.of( entity.getProperties() ).flatMap( property -> {
+         final Arbitrary<Property> key = Arbitraries.of( property );
+         final Arbitrary<Value> value = property.getDataType().map( this::anyValueForType ).orElse( Arbitraries.of( (Value) null ) );
+         return Arbitraries.maps( key, value );
+      } );
+      return Combinators.combine( anyMetaModelVersion(), anyAspectUrn(), anyPreferredNames(), anyDescriptions(), anySee(), entityAssertions )
+            .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, assertions ) -> {
+               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
+                     metaModelVersion, aspectUrn, aspectUrn.getName(), preferredNames, descriptions, see );
+               return new DefaultEntityInstance( baseAttributes, assertions, entity );
             } );
-
-      final Arbitrary<Map<String, Object>> anyEntityInstanceKeyValues =
-            Arbitraries.of( entity.getProperties() ).flatMap( property -> {
-               final Arbitrary<String> key = Arbitraries.constant( property.getName() );
-               final Arbitrary<Object> values = property.getDataType().map( this::anyValueForType )
-                     .orElse( Arbitraries.of( (Object) null ) );
-               return Arbitraries.maps( key, values );
-            } );
-
-      return Combinators.combine( anyEntityInstanceIdentifier, anyEntityInstanceKeyValues )
-            .as( ( identifierMap, propertiesMap ) ->
-                  ImmutableMap.<String, Object> builder().putAll( identifierMap )
-                        .putAll( propertiesMap )
-                        .build() );
    }
 
    @Provide
-   default Arbitrary<Object> anyValueForType( final Type type ) {
-      if ( type.isScalar() ) {
-         return anyValueForScalarType( (Scalar) type );
+   default Arbitrary<Value> anyValueForType( final Type type ) {
+      if ( type.is( Scalar.class ) ) {
+         return anyValueForScalarType( type.as( Scalar.class ) );
       }
-      return anyEntityInstance( (Entity) type ).map( x -> x );
+      return anyEntityInstance( type.as( Entity.class ) ).map( x -> x );
    }
 
    @Provide
-   default Arbitrary<Object> anyValueForScalarType( final Scalar type ) {
+   default Arbitrary<Value> anyValueForScalarType( final Scalar type ) {
       return ExtendedXsdDataType
             .supportedXsdTypes.stream()
             .filter( dataType -> dataType.getURI().equals( type.getUrn() ) )
-            .map( this::anyValueForRdfType )
+            .map( rdfDatatype -> anyValueForRdfType( rdfDatatype, type ) )
             .findFirst()
             .orElseThrow( () -> new RuntimeException( "Could not generate values for type " + type ) );
    }
 
    @Provide
-   default Arbitrary<Tuple.Tuple2<Type, Object>> anyValidTypeValuePair() {
+   default Arbitrary<Tuple.Tuple2<Type, Value>> anyValidTypeValuePair() {
       return anyType().flatMap( type -> anyValueForType( type ).map( value -> Tuple.of( type, value ) ) );
    }
 }

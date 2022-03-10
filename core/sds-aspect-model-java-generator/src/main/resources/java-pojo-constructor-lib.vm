@@ -44,8 +44,13 @@
         final Matcher matcher = pattern.matcher( ${deconstructionSet.getOriginalProperty().getName()}.toString() );
         if ( matcher.find() ) {
         #foreach( $property in $deconstructionSet.getElementProperties() )
+##            this.${property.getName()} = matcher.group( ${foreach.count} );
             #set( $value = "matcher.group( ${foreach.count} )" )
+##            #set( $scalarType = $DefaultScalar.getDeclaredConstructor( $String, $KnownVersion ).newInstance( $XSD.xstring.getURI(), $property.getMetaModelVersion() ) )
+##            #set( $scalarValue = $DefaultScalarValue.getDeclaredConstructor( $Object, $Scalar ).newInstance( $value, $scalarType ) )
+
             this.${property.name} = $util.generateInitializer( $property, $value, $codeGenerationConfig, $valueInitializer );
+##            this.${property.getName()} = $util.generateEnumValue( $scalarValue, $codeGenerationConfig );
         #end
         }
     }
@@ -65,7 +70,7 @@
     $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeConstants )
     $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeFactory )
 #end
-#if ( $element.isComplex() && $element.getExtends().isPresent() )
+#if ( $element.is( $ComplexType ) && $element.getExtends().isPresent() )
 	#set( $allPropertiesInPayload = $util.getAllPropertiesInPayload( $element ) )
 	#set( $allProperties = $util.getAllProperties( $element ) )
 	#set( $elementPropertiesInPayload = $util.getPropertiesInPayload( $element ) )

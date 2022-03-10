@@ -25,8 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,6 +52,7 @@ import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
@@ -142,7 +141,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 5 );
       result.assertFields( "AspectWithMultipleEnumerationsOnMultipleLevels", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithMultipleEnumerationsOnMultipleLevels", expectedFieldsForAspectClass );
-      result.assertFields( "TestEnumOneCharacteristic", ImmutableMap.<String, Object> builder().put( "value", Integer.class ).build(), new HashMap<>() );
+      result.assertFields( "TestEnumOneCharacteristic", ImmutableMap.<String, Object> builder().put( "value", BigInteger.class ).build(), new HashMap<>() );
       result.assertEnumConstants( "TestEnumOneCharacteristic", ImmutableSet.of( "NUMBER_1", "NUMBER_2", "NUMBER_3" ), Collections.emptyMap() );
    }
 
@@ -461,9 +460,9 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertEnumConstants( "EvaluationResults",
             ImmutableSet.of( "RESULT_NO_STATUS", "RESULT_GOOD", "RESULT_BAD" ),
             ImmutableMap.<String, String> builder()
-                  .put( "RESULT_NO_STATUS", "new EvaluationResult(Short.valueOf(\"-1\"), \"No status\")" )
-                  .put( "RESULT_GOOD", "new EvaluationResult(Short.valueOf(\"1\"), \"Good\")" )
-                  .put( "RESULT_BAD", "new EvaluationResult(Short.valueOf(\"2\"), \"Bad\")" )
+                  .put( "RESULT_NO_STATUS", "new EvaluationResult(Short.parseShort(\"-1\"), \"No status\")" )
+                  .put( "RESULT_GOOD", "new EvaluationResult(Short.parseShort(\"1\"), \"Good\")" )
+                  .put( "RESULT_BAD", "new EvaluationResult(Short.parseShort(\"2\"), \"Bad\")" )
                   .build() );
 
       result.assertFields( "YesNo", ImmutableMap.<String, Object> builder().put( "value", String.class ).build(), new HashMap<>() );
@@ -544,9 +543,9 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertEnumConstants( "EvaluationResults",
             ImmutableSet.of( "RESULT_NO_STATUS", "RESULT_GOOD", "RESULT_BAD" ),
             ImmutableMap.<String, String> builder()
-                  .put( "RESULT_NO_STATUS", "new EvaluationResult(Optional.of(Short.valueOf(\"-1\")), Optional.of(\"No status\"))" )
-                  .put( "RESULT_GOOD", "new EvaluationResult(Optional.of(Short.valueOf(\"1\")), Optional.of(\"Good\"))" )
-                  .put( "RESULT_BAD", "new EvaluationResult(Optional.of(Short.valueOf(\"2\")), Optional.of(\"Bad\"))" )
+                  .put( "RESULT_NO_STATUS", "new EvaluationResult(Optional.of(Short.parseShort(\"-1\")), Optional.of(\"No status\"))" )
+                  .put( "RESULT_GOOD", "new EvaluationResult(Optional.of(Short.parseShort(\"1\")), Optional.of(\"Good\"))" )
+                  .put( "RESULT_BAD", "new EvaluationResult(Optional.of(Short.parseShort(\"2\")), Optional.of(\"Bad\"))" )
                   .build() );
    }
 
@@ -558,25 +557,18 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 9 );
       result.assertEnumConstants( "MyEnumerationOne", ImmutableSet.of( "ENTITY_INSTANCE_ONE" ),
             ImmutableMap.<String, String> builder()
-                  .put( "ENTITY_INSTANCE_ONE", "new MyEntityOne(List.of(\"fooOne\", \"barOne\", \"bazOne\"))" )
+                  .put( "ENTITY_INSTANCE_ONE", "new MyEntityOne(new ArrayList<>(){{ add(\"fooOne\");add(\"barOne\");add(\"bazOne\"); }})" )
                   .build() );
 
       result.assertEnumConstants( "MyEnumerationThree", ImmutableSet.of( "ENTITY_INSTANCE_THREE" ),
             ImmutableMap.<String, String> builder()
                   .put( "ENTITY_INSTANCE_THREE",
-                        "new MyEntityThree(new LinkedHashSet<String>() {\n"
-                              + "\n"
-                              + "    {\n"
-                              + "        add(\"fooThree\");\n"
-                              + "        add(\"barThree\");\n"
-                              + "        add(\"bazThree\");\n"
-                              + "    }\n"
-                              + "})" )
+                        "new MyEntityThree(new LinkedHashSet<>(){{ add(\"fooThree\");add(\"barThree\");add(\"bazThree\"); }})" )
                   .build() );
 
       result.assertEnumConstants( "MyEnumerationFour", ImmutableSet.of( "ENTITY_INSTANCE_FOUR" ),
             ImmutableMap.<String, String> builder()
-                  .put( "ENTITY_INSTANCE_FOUR", "new MyEntityFour(List.of(\"fooFour\", \"barFour\", \"bazFour\"))" )
+                  .put( "ENTITY_INSTANCE_FOUR", "new MyEntityFour(new ArrayList<>(){{ add(\"fooFour\");add(\"barFour\");add(\"bazFour\"); }})" )
                   .build() );
    }
 
@@ -588,7 +580,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 4 );
       result.assertEnumConstants( "MyEnumerationOne", ImmutableSet.of( "ENTITY_INSTANCE_ONE" ),
             ImmutableMap.<String, String> builder()
-                  .put( "ENTITY_INSTANCE_ONE", "new MyEntityOne(List.of( new MyEntityTwo(\"foo\") ))" )
+                  .put( "ENTITY_INSTANCE_ONE", "new MyEntityOne(new ArrayList<>(){{ add(newMyEntityTwo(\"foo\")); }})" )
                   .build() );
    }
 
@@ -689,8 +681,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithRdfLangString( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "prop", new TypeToken<Map<Locale, String>>() {
-            } )
+            .put( "prop", LangString.class )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT;
@@ -974,7 +965,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
       final ImmutableMap<String, String> expectedConstantArguments = ImmutableMap.<String, String> builder()
             .put( "ENTITY_INSTANCE",
-                  "new TestEntity(Map.of(Locale.forLanguageTag(\"de\"), \"Dies ist ein Test.\", Locale.forLanguageTag(\"en\"), \"This is a test.\"))" )
+                  "new TestEntity(new LangString(\"This is a test.\", Locale.forLanguageTag(\"en\")))" )
             .build();
 
       result.assertEnumConstants( "TestEnumeration", ImmutableSet.of( "ENTITY_INSTANCE" ), expectedConstantArguments );

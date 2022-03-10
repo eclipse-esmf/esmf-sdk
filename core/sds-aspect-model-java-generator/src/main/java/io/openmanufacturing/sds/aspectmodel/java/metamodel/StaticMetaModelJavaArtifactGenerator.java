@@ -17,7 +17,7 @@ import java.nio.charset.Charset;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -71,9 +71,9 @@ import io.openmanufacturing.sds.metamodel.State;
 import io.openmanufacturing.sds.metamodel.StructureElement;
 import io.openmanufacturing.sds.metamodel.StructuredValue;
 import io.openmanufacturing.sds.metamodel.Trait;
-import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.Units;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 import io.openmanufacturing.sds.metamodel.impl.DefaultAbstractEntity;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
@@ -100,7 +100,6 @@ import io.openmanufacturing.sds.metamodel.impl.DefaultState;
 import io.openmanufacturing.sds.metamodel.impl.DefaultStructuredValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultTrait;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
-import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 import io.openmanufacturing.sds.staticmetamodel.PropertyContainer;
 import io.openmanufacturing.sds.staticmetamodel.StaticContainerProperty;
 import io.openmanufacturing.sds.staticmetamodel.StaticMetaClass;
@@ -137,17 +136,19 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
       final String modelUrnPrefix = element.getAspectModelUrn().map( AspectModelUrn::getUrnPrefix ).orElseThrow( () -> {
          throw new CodeGenerationException( "Aspect or Entity may not be declared as an anonymous node" );
       } );
+      final String characteristicBaseUrn = matchHash.trimTrailingFrom( new BAMMC( element.getMetaModelVersion() ).getNamespace() );
 
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
             .put( "Arrays", java.util.Arrays.class )
             .put( "BoundDefinition", BoundDefinition.class )
-            .put( "characteristicBaseUrn", matchHash.trimTrailingFrom( new BAMMC( element.getMetaModelVersion() ).getNamespace() ) )
+            .put( "characteristicBaseUrn", characteristicBaseUrn )
             .put( "Charset", Charset.class )
             .put( "Code", Code.class )
             .put( "codeGenerationConfig", config )
             .put( "Collection", Collection.class )
             .put( "Collections", Collections.class )
             .put( "Constraint", Constraint.class )
+            .put( "context", new StaticCodeGenerationContext( config, modelUrnPrefix, characteristicBaseUrn, null ) )
             .put( "currentYear", Year.now() )
             .put( "DatatypeConfigurationException", DatatypeConfigurationException.class )
             .put( "DatatypeConstants", DatatypeConstants.class )
@@ -185,7 +186,8 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "AbstractEntity", AbstractEntity.class )
             .put( "Enumeration", Enumeration.class )
             .put( "FixedPointConstraint", FixedPointConstraint.class )
-            .put( "HashMap", HashMap.class )
+            .put( "HashSet", HashSet.class )
+            .put( "LangString", LangString.class )
             .put( "LanguageConstraint", LanguageConstraint.class )
             .put( "LengthConstraint", LengthConstraint.class )
             .put( "List", List.class )
@@ -194,6 +196,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "Map", Map.class )
             .put( "Measurement", Measurement.class )
             .put( "modelUrnPrefix", modelUrnPrefix )
+            .put( "modelVisitor", new StaticMetaModelVisitor() )
             .put( "nonNegativeInteger", new DefaultScalar( XSD.nonNegativeInteger.getURI(), element.getMetaModelVersion() ) )
             .put( "Quantifiable", Quantifiable.class )
             .put( "RangeConstraint", RangeConstraint.class )

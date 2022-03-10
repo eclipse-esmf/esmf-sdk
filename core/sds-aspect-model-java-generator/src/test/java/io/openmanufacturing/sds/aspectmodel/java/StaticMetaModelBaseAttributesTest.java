@@ -154,15 +154,21 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
 
-      final String getPreferredNamesBody = "Map<Locale, String> preferredNames = new HashMap<>();"
-            + " preferredNames.put(Locale.forLanguageTag(\"de\"), \"Aspekt Mit Boolean\");"
-            + " preferredNames.put(Locale.forLanguageTag(\"en\"), \"Aspect With Boolean\");"
-            + " return preferredNames;";
+      final String getPreferredNamesBody = "return new HashSet<>() {\n"
+            + "\n"
+            + "    {\n"
+            + "        add(new LangString(\"Aspekt Mit Boolean\", Locale.forLanguageTag(\"de\")));\n"
+            + "        add(new LangString(\"Aspect With Boolean\", Locale.forLanguageTag(\"en\")));\n"
+            + "    }\n"
+            + "};";
 
-      final String getDescriptionsBody = "Map<Locale, String> descriptions = new HashMap<>();"
-            + " descriptions.put(Locale.forLanguageTag(\"de\"), \"Test Beschreibung\");"
-            + " descriptions.put(Locale.forLanguageTag(\"en\"), \"Test Description\");"
-            + " return descriptions;";
+      final String getDescriptionsBody = "return new HashSet<>() {\n"
+            + "\n"
+            + "    {\n"
+            + "        add(new LangString(\"Test Beschreibung\", Locale.forLanguageTag(\"de\")));\n"
+            + "        add(new LangString(\"Test Description\", Locale.forLanguageTag(\"en\")));\n"
+            + "    }\n"
+            + "};";
 
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
             .put( "getModelClass", "return AspectWithAllBaseAttributes.class;" )
@@ -187,10 +193,13 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
 
-      final String getPreferredNamesBody = "Map<Locale, String> preferredNames = new HashMap<>();"
-            + " preferredNames.put(Locale.forLanguageTag(\"de\"), \"Aspekt Mit Boolean\");"
-            + " preferredNames.put(Locale.forLanguageTag(\"en\"), \"Aspect With Boolean\");"
-            + " return preferredNames;";
+      final String getPreferredNamesBody = "return new HashSet<>() {\n"
+            + "\n"
+            + "    {\n"
+            + "        add(new LangString(\"Aspekt Mit Boolean\", Locale.forLanguageTag(\"de\")));\n"
+            + "        add(new LangString(\"Aspect With Boolean\", Locale.forLanguageTag(\"en\")));\n"
+            + "    }\n"
+            + "};";
 
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
             .put( "getModelClass", "return AspectWithPreferredNames.class;" )
@@ -213,10 +222,13 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
 
-      final String getDescriptionsBody = "Map<Locale, String> descriptions = new HashMap<>();"
-            + " descriptions.put(Locale.forLanguageTag(\"de\"), \"Test Beschreibung\");"
-            + " descriptions.put(Locale.forLanguageTag(\"en\"), \"Test Description\");"
-            + " return descriptions;";
+      final String getDescriptionsBody = "return new HashSet<>() {\n"
+            + "\n"
+            + "    {\n"
+            + "        add(new LangString(\"Test Beschreibung\", Locale.forLanguageTag(\"de\")));\n"
+            + "        add(new LangString(\"Test Description\", Locale.forLanguageTag(\"en\")));\n"
+            + "    }\n"
+            + "};";
 
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
             .put( "getModelClass", "return AspectWithDescriptions.class;" )

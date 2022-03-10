@@ -13,7 +13,7 @@
 #macro( methodName )
     #if( $property.getDataType().isPresent() )
         #set( $type = $property.dataType.get() )
-        #if( $type.isScalar() && $type.getUrn().equals( $XSD.xboolean.getURI() ) )is#{else}get#{end}
+        #if( $type.is( $Scalar ) && $type.getUrn().equals( $XSD.xboolean.getURI() ) )is#{else}get#{end}
     #{else}get#{end}${StringUtils.capitalize( $property.getPayloadName() )}#{end}
 
 #macro( javaPojoGetter $property )
