@@ -17,6 +17,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
+
 /**
  * A Jackson module to register serializers and deserializers specific to Aspect models
  */
@@ -30,5 +32,7 @@ public class AspectModelJacksonModule extends SimpleModule {
       addDeserializer( byte[].class, HexBinaryDeserializer.INSTANCE );
       addSerializer( byte[].class, Base64BinarySerializer.INSTANCE );
       addDeserializer( byte[].class, Base64BinaryDeserializer.INSTANCE );
+      addDeserializer( LangString.class, LangStringDeserializer.INSTANCE );
+      addSerializer( LangString.class, LangStringSerializer.INSTANCE );
    }
 }

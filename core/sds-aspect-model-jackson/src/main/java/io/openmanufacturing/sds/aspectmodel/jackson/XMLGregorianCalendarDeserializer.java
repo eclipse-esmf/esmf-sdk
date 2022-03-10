@@ -50,9 +50,8 @@ public class XMLGregorianCalendarDeserializer extends StdScalarDeserializer<XMLG
    }
 
    @Override
-   public XMLGregorianCalendar deserialize( final JsonParser parser, final DeserializationContext context )
-         throws IOException {
-      if ( parser.getCurrentTokenId() == JsonTokenId.ID_STRING ) {
+   public XMLGregorianCalendar deserialize( final JsonParser parser, final DeserializationContext context ) throws IOException {
+      if ( parser.currentTokenId() == JsonTokenId.ID_STRING ) {
          return datatypeFactory.newXMLGregorianCalendar( parser.getText().trim() );
       }
 
