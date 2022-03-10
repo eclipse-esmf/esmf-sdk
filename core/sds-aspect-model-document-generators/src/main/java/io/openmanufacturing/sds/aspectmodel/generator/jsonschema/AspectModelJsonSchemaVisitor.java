@@ -28,6 +28,7 @@ import org.apache.jena.vocabulary.XSD;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.collect.ImmutableMap;
@@ -41,10 +42,12 @@ import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
+import io.openmanufacturing.sds.metamodel.EntityInstance;
 import io.openmanufacturing.sds.metamodel.Enumeration;
 import io.openmanufacturing.sds.metamodel.HasProperties;
 import io.openmanufacturing.sds.metamodel.LengthConstraint;
@@ -52,15 +55,16 @@ import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.RangeConstraint;
 import io.openmanufacturing.sds.metamodel.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.Scalar;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Set;
 import io.openmanufacturing.sds.metamodel.SingleEntity;
 import io.openmanufacturing.sds.metamodel.SortedSet;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.Value;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
 import io.vavr.collection.Stream;
 import io.vavr.control.Try;
 
@@ -123,8 +127,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
     *
     * @see AspectModelJsonSchemaVisitor#getSchemaTypeForAspectType(Resource)
     */
-   private final Map<Resource, Map<String, JsonNode>> extendedTypeData = ImmutableMap
-         .<Resource, Map<String, JsonNode>> builder()
+   private final Map<Resource, Map<String, JsonNode>> extendedTypeData = ImmutableMap.<Resource, Map<String, JsonNode>> builder()
          .putAll( openApiTypeData )
          .put( RDF.langString,
                Map.of( "patternProperties", factory.objectNode().set( "^.*$", factory.objectNode().set( "type", JsonType.STRING.toJsonNode() ) ) ) )
@@ -241,7 +244,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    //Amount of elements in list is in regard to amount of properties in aspect model. Even in bigger aspects this should not lead to performance issues
    public JsonNode visitProperty( final Property property, final ObjectNode context ) {
       final Characteristic characteristic = property.getCharacteristic();
-      String referenceNodeName;
+      final String referenceNodeName;
       if ( characteristic instanceof SingleEntity ) {
          referenceNodeName = characteristic.getDataType().get().getUrn().replace( "#", "_" ).replace( ":", "_" );
       } else {
@@ -298,7 +301,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
       collection.getDataType().ifPresent( type -> {
          final JsonNode typeNode = type.accept( this, collectionNode );
-         if ( type.isComplex() ) {
+         if ( !type.is( Scalar.class ) ) {
             final String referenceNodeName = type.getUrn().replace( "#", "_" ).replace( ":", "_" );
             final ObjectNode referenceNode = factory.objectNode().put( "$ref", "#/components/schemas/" + referenceNodeName );
             setNodeInRootSchema( typeNode, referenceNodeName );
@@ -346,21 +349,22 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    @Override
    public JsonNode visitRangeConstraint( final RangeConstraint rangeConstraint, final ObjectNode context ) {
-      rangeConstraint.getMaxValue().ifPresent( maxValue -> getNumberNode( maxValue ).forEach( value -> {
-               context.set( "maximum", value );
-               context.put( "exclusiveMaximum", rangeConstraint.getUpperBoundDefinition().equals( BoundDefinition.LESS_THAN ) );
-            }
-      ) );
-
-      rangeConstraint.getMinValue().ifPresent( minValue ->
-            getNumberNode( minValue ).forEach( value -> {
-               context.set( "minimum", value );
-               context.put( "exclusiveMinimum", rangeConstraint.getLowerBoundDefinition().equals( BoundDefinition.GREATER_THAN ) );
-            } ) );
-
+      rangeConstraint.getMaxValue().map( maxValue -> maxValue.accept( this, context ) ).ifPresent( value -> {
+         if ( value instanceof NumericNode ) {
+            context.set( "maximum", value );
+            context.put( "exclusiveMaximum", rangeConstraint.getUpperBoundDefinition().equals( BoundDefinition.LESS_THAN ) );
+         }
+      } );
+      rangeConstraint.getMinValue().map( minValue -> minValue.accept( this, context ) ).ifPresent( value -> {
+         if ( value instanceof NumericNode ) {
+            context.set( "minimum", value );
+            context.put( "exclusiveMinimum", rangeConstraint.getLowerBoundDefinition().equals( BoundDefinition.GREATER_THAN ) );
+         }
+      } );
       return context;
    }
 
+   @Override
    public JsonNode visitScalar( final Scalar scalar, final ObjectNode context ) {
       final ObjectNode propertyNode = factory.objectNode();
       final AspectModelJsonSchemaVisitor.JsonType value = getSchemaTypeForAspectType( ResourceFactory.createResource( scalar.getUrn() ) );
@@ -430,38 +434,48 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       return abstractEntityNode;
    }
 
-   @SuppressWarnings( "unchecked" )
-   private JsonNode valueToJsonNode( final Object value, final Type type, final BAMM bamm ) {
+   @Override
+   public JsonNode visitScalarValue( final ScalarValue value, final ObjectNode context ) {
+      final Type type = value.getType();
       final Resource typeResource = ResourceFactory.createResource( type.getUrn() );
       if ( typeResource.equals( RDF.langString ) ) {
          final ObjectNode result = factory.objectNode();
-         @SuppressWarnings( "unchecked" ) final List<Tuple2<String, String>> valueEntries = (List<Tuple2<String, String>>) value;
-         valueEntries.forEach( entry -> result.set( entry._1(), factory.textNode( entry._2() ) ) );
+         final LangString langString = (LangString) value.getValue();
+         result.set( langString.getLanguageTag().toLanguageTag(), factory.textNode( langString.getValue() ) );
          return result;
-      }
-
-      if ( value instanceof Map ) {
-         return getNodeForEntityInstance( (Map<String, Object>) value, (Entity) type, bamm );
-      }
-
-      if ( value instanceof Iterable ) {
-         final Iterable<?> iterable = (Iterable<?>) value;
-         final ArrayNode array = factory.arrayNode();
-         iterable.forEach( element -> array.add( valueToJsonNode( element, type, bamm ) ) );
-         return array;
       }
 
       final AspectModelJsonSchemaVisitor.JsonType typeNode = getSchemaTypeForAspectType( typeResource );
       switch ( typeNode ) {
       case NUMBER:
-         return getNumberNode( value ).getOrElse( factory.numberNode( 0 ) );
+         return getNumberNode( value.getValue() ).getOrElse( factory.numberNode( 0 ) );
       case STRING:
-         return factory.textNode( value.toString() );
+         return factory.textNode( value.getValue().toString() );
       case BOOLEAN:
-         return factory.booleanNode( (boolean) value );
+         return factory.booleanNode( (boolean) value.getValue() );
       default:
          throw new DocumentGenerationException( "Could not convert value " + value + " to JSON" );
       }
+   }
+
+   @Override
+   public JsonNode visitCollectionValue( final CollectionValue value, final ObjectNode context ) {
+      final ArrayNode array = factory.arrayNode();
+      value.getValues().forEach( collectionValue -> array.add( collectionValue.accept( this, context ) ) );
+      return array;
+   }
+
+   @Override
+   public JsonNode visitEntityInstance( final EntityInstance instance, final ObjectNode context ) {
+      final ObjectNode result = factory.objectNode();
+      for ( final Map.Entry<Property, Value> assertion : instance.getAssertions().entrySet() ) {
+         final Property property = assertion.getKey();
+         if ( property.isNotInPayload() ) {
+            continue;
+         }
+         result.set( property.getPayloadName(), assertion.getValue().accept( this, context ) );
+      }
+      return result;
    }
 
    @Override
@@ -469,10 +483,10 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final BAMM bamm = new BAMM( enumeration.getMetaModelVersion() );
       final Type type = enumeration.getDataType().orElseThrow( () ->
             new DocumentGenerationException( "Characteristic " + enumeration + " is missing a dataType" ) );
-      if ( type.isScalar() ) {
+      if ( type.is( Scalar.class ) ) {
          return createEnumNodeWithScalarValues( enumeration, type, context, bamm );
       }
-      return createEnumNodeWithComplexValues( enumeration, type, bamm );
+      return createEnumNodeWithComplexValues( enumeration, bamm );
    }
 
    private JsonNode createEnumNodeWithScalarValues( final Enumeration enumeration, final Type type, final ObjectNode context, final BAMM bamm ) {
@@ -481,28 +495,27 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
             factory.objectNode().put( "type", "object" ) :
             (ObjectNode) type.accept( this, context );
       enumeration.getValues().stream()
-            .map( value -> valueToJsonNode( value, type, bamm ) )
+            .map( value -> value.accept( this, enumNode ) )
             .forEach( valuesNode::add );
       enumNode.set( "enum", valuesNode );
       return enumNode;
    }
 
-   @SuppressWarnings( "unchecked" )
-   private JsonNode createEnumNodeWithComplexValues( final Enumeration enumeration, final Type type, final BAMM bamm ) {
+   private JsonNode createEnumNodeWithComplexValues( final Enumeration enumeration, final BAMM bamm ) {
       final ObjectNode enumNode = factory.objectNode();
       enumNode.put( "type", "object" );
       final ArrayNode enumValueReferences = factory.arrayNode();
       enumeration.getValues().stream()
-            .map( value -> (Map<String, Object>) value )
+            .map( value -> value.as( EntityInstance.class ) )
             //Should the enum value entity be declared with only optional properties, enum values may be declared
             //without any properties. In such a case the value is ignored in the JSON schema since there is nothing
             //to validate
-            .filter( value -> value.size() > 1 )
-            .forEach( values -> {
-               final Object instanceName = values.get( bamm.name().toString() );
+            .filter( value -> value.getAssertions().size() > 0 )
+            .forEach( value -> {
+               final String instanceName = value.getName();
                enumValueReferences.add( factory.objectNode().put( "$ref", "#/components/schemas/" + instanceName ) );
-               final JsonNode enumValueNode = createNodeForEnumEntityInstance( values, (Entity) type, bamm );
-               setNodeInRootSchema( enumValueNode, instanceName.toString() );
+               final JsonNode enumValueNode = createNodeForEnumEntityInstance( value, bamm );
+               setNodeInRootSchema( enumValueNode, instanceName );
             } );
       if ( enumValueReferences.size() > 0 ) {
          enumNode.set( "oneOf", enumValueReferences );
@@ -510,19 +523,20 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       return enumNode;
    }
 
-   private JsonNode createNodeForEnumEntityInstance( final Map<String, Object> objectMap, final Entity entity, final BAMM bamm ) {
+   private JsonNode createNodeForEnumEntityInstance( final EntityInstance entityInstance, final BAMM bamm ) {
       final ObjectNode enumEntityInstanceNode = factory.objectNode();
       final ArrayNode required = factory.arrayNode();
       final ObjectNode properties = factory.objectNode();
       enumEntityInstanceNode.put( "type", "object" );
 
+      final Entity entity = entityInstance.getEntityType();
       entity.getProperties().stream()
             .filter( property -> !property.isNotInPayload() )
-            .filter( property -> objectMap.containsKey( property.getPayloadName() ) )
+            .filter( property -> entityInstance.getAssertions().containsKey( property ) )
             .forEach( property -> {
                required.add( property.getPayloadName() );
                properties.set( property.getPayloadName(),
-                     createNodeForEnumEntityPropertyInstance( property, objectMap, bamm ) );
+                     createNodeForEnumEntityPropertyInstance( property, entityInstance, bamm ) );
             } );
 
       enumEntityInstanceNode.set( "properties", properties );
@@ -532,22 +546,22 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    @SuppressWarnings( { "unchecked", "squid:S3655" } )
    //squid S3655 - Properties with an Enumeration Characteristic always have a data type
-   private JsonNode createNodeForEnumEntityPropertyInstance( final Property property, final Map<String, Object> objectMap, final BAMM bamm ) {
+   private JsonNode createNodeForEnumEntityPropertyInstance( final Property property, final EntityInstance entityInstance, final BAMM bamm ) {
       final Characteristic characteristic = property.getCharacteristic();
       final Type type = property.getDataType().get();
-      final Object valueForProperty = objectMap.get( property.getPayloadName() );
-      final AspectModelJsonSchemaVisitor.JsonType schemaType = type.isScalar() ? getSchemaTypeForAspectType(
+      final Value valueForProperty = entityInstance.getAssertions().get( property );
+      final AspectModelJsonSchemaVisitor.JsonType schemaType = type.is( Scalar.class ) ? getSchemaTypeForAspectType(
             ResourceFactory.createResource( type.getUrn() ) ) : JsonType.OBJECT;
 
       if ( characteristic instanceof SingleEntity ) {
-         return createNodeForEnumEntityInstance( (Map<String, Object>) valueForProperty, (Entity) type, bamm );
+         return createNodeForEnumEntityInstance( valueForProperty.as( EntityInstance.class ), bamm );
       }
       if ( characteristic instanceof Collection ) {
          final ObjectNode propertyInstanceNode = factory.objectNode();
          propertyInstanceNode.put( "type", "array" );
          final ObjectNode arrayPropertyInstanceNode = factory.objectNode();
          arrayPropertyInstanceNode.set( "type", schemaType.toJsonNode() );
-         final ArrayNode arrayValues = (ArrayNode) valueToJsonNode( valueForProperty, type, bamm );
+         final ArrayNode arrayValues = (ArrayNode) valueForProperty.accept( this, propertyInstanceNode );
          propertyInstanceNode.put( "minItems", arrayValues.size() );
          propertyInstanceNode.put( "maxItems", arrayValues.size() );
          arrayPropertyInstanceNode.set( "enum", arrayValues );
@@ -556,29 +570,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       }
       final ObjectNode propertyInstanceNode = factory.objectNode();
       propertyInstanceNode.set( "type", schemaType.toJsonNode() );
-      propertyInstanceNode.set( "enum", factory.arrayNode().add( valueToJsonNode( valueForProperty, type, bamm ) ) );
+      propertyInstanceNode.set( "enum", factory.arrayNode().add( valueForProperty.accept( this, propertyInstanceNode ) ) );
       return propertyInstanceNode;
-   }
-
-   private JsonNode getNodeForEntityInstance( final Map<String, Object> objectMap, final Entity entity, final BAMM bamm ) {
-      final ObjectNode result = factory.objectNode();
-      objectMap.entrySet().stream()
-            .filter( entry -> !entry.getKey().equals( bamm.name().toString() ) )
-            .forEach( entry ->
-                  entity.getProperties().stream()
-                        .filter( property -> property.getPayloadName().equals( entry.getKey() ) )
-                        .filter( property -> !property.isNotInPayload() )
-                        .forEach( property -> {
-                           final Tuple2<String, JsonNode> propertyEntry = getEntryForProperty( bamm, entry,
-                                 property );
-                           result.set( propertyEntry._1(), propertyEntry._2() );
-                        } ) );
-      return result;
-   }
-
-   private Tuple2<String, JsonNode> getEntryForProperty( final BAMM bamm, final Map.Entry<String, Object> entry, final Property property ) {
-      final Type propertyType = property.getDataType().orElseThrow( () -> new DocumentGenerationException( "Either not supported in Entity instances" ) );
-
-      return Tuple.of( entry.getKey(), valueToJsonNode( entry.getValue(), propertyType, bamm ) );
    }
 }
