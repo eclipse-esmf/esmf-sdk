@@ -43,6 +43,7 @@ import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagram
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 
@@ -148,13 +149,13 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
                   DOCU_TEMPLATE_ROOT_DIR + "/html/property-documentation-lib.vm," +
                   DOCU_TEMPLATE_ROOT_DIR + "/html/common-documentation-lib.vm" );
 
-      final Predicate<Locale> byLanguage = locale -> selectedLanguage == null || locale.getLanguage().equals(
-            selectedLanguage.getLanguage() );
+      final Predicate<Locale> byLanguage = locale -> selectedLanguage == null || locale.getLanguage().equals( selectedLanguage.getLanguage() );
       languages.stream().filter( byLanguage ).forEach( language -> {
 
          logMissingTranslations( aspect, language );
 
          context.put( "i18n", new I18nLanguageBundle( language ) );
+         context.put( "Scalar", Scalar.class );
          final TemplateEngine templateEngine = new TemplateEngine( context, engineConfiguration );
 
          final String artifactName = getArtifactName( aspect, language );
@@ -162,12 +163,8 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
             ((BufferingNameMapper) nameMapper).setLanguageForArtifact( artifactName, language );
          }
 
-         try ( final OutputStream outputStream = nameMapper
-               .apply( format.getArtifactFilename( artifactName ) ) ) {
-
-            final String generatedSource = templateEngine
-                  .apply( DOCU_ROOT_DIR + "/templates/html/aspect-model-documentation" );
-
+         try ( final OutputStream outputStream = nameMapper.apply( format.getArtifactFilename( artifactName ) ) ) {
+            final String generatedSource = templateEngine.apply( DOCU_ROOT_DIR + "/templates/html/aspect-model-documentation" );
             writeCharSequenceToOutputStream( generatedSource, outputStream );
          } catch ( final IOException e ) {
             LOG.error( "Failure on writing generated Asciidoc", e );
@@ -283,18 +280,17 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
       aspectMetaModel.accept( new AspectStreamTraversalVisitor(), null )
             .filter( element -> element instanceof IsDescribed )
             .map( element -> (IsDescribed) element )
-            .forEach( metaModelElement -> {
-               final boolean localeNotUsedInPreferredNames = metaModelElement.getPreferredNames().stream()
-                     .filter( element -> element.getLanguageTag().equals( locale ) ).findAny().isEmpty();
-               if ( !metaModelElement.getPreferredNames().isEmpty() && localeNotUsedInPreferredNames ) {
-                  LOG.warn( "Missing preferred names for {} with locale {}", metaModelElement.getName(),
-                        locale );
+            .forEach( modelElement -> {
+               final boolean hasPreferredNameWithLocale = modelElement.getPreferredNames().stream()
+                     .anyMatch( preferredName -> preferredName.getLanguageTag().equals( locale ) );
+               if ( !modelElement.getPreferredNames().isEmpty() && !hasPreferredNameWithLocale ) {
+                  LOG.warn( "Missing preferred name for {} with locale {}", modelElement.getName(), locale );
                }
 
-               final boolean localeNotUsedInDescriptions = metaModelElement.getDescriptions().stream()
-                     .filter( element -> element.getLanguageTag().equals( locale ) ).findAny().isEmpty();
-               if ( !metaModelElement.getDescriptions().isEmpty() && localeNotUsedInDescriptions ) {
-                  LOG.warn( "Missing description for {} with locale {}", metaModelElement.getName(), locale );
+               final boolean hasDescriptionWithLocale = modelElement.getDescriptions().stream()
+                     .anyMatch( description -> description.getLanguageTag().equals( locale ) );
+               if ( !modelElement.getDescriptions().isEmpty() && !hasDescriptionWithLocale ) {
+                  LOG.warn( "Missing description for {} with locale {}", modelElement.getName(), locale );
                }
             } );
    }
