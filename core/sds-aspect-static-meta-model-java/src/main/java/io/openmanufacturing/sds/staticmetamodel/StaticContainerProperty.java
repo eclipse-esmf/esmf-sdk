@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.staticmetamodel;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 
 /**
@@ -27,7 +28,7 @@ public abstract class StaticContainerProperty<C, T> extends StaticProperty<T> im
    public StaticContainerProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final Characteristic characteristic,
-         final Optional<Object> exampleValue,
+         final Optional<Value> exampleValue,
          final boolean optional,
          final boolean notInPayload,
          final Optional<String> payloadName ) {
