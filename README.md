@@ -13,7 +13,6 @@
 - [Version Handling](#version-handling)
     - [BAMM Versioning](#bamm-versioning)
     - [BAMM Java Implementation Packaging](#bamm-java-implementation-packaging)
-    - [API Versioning](#api-versioning)
 - [BAMM CLI](#bamm-cli)
 - [Artifact Generation facilities](#artifact-generation-facilities)
     - [POJO Generator](#pojo-generator)
@@ -112,6 +111,9 @@ BAMM does evolve over time. While measures are made to do this in a non-breaking
 manner, some changes cannot be carried out without the need to define a new, breaking version. Due to this fact it is
 important to understand the versioning concept that is applied to the BAMM, APIs and SDK components that are derived
 from them.
+
+In case of a prerelease there will be a postfix added and it will be released under Github.
+The way to access the artifact is described in [Github-Installing a package](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package)
 
 ### BAMM Versioning
 
