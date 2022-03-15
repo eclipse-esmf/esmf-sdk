@@ -436,20 +436,40 @@ public class AspectModelJavaUtil {
       final AspectStreamTraversalVisitor visitor = new AspectStreamTraversalVisitor();
       return visitor.visitStructureElement( element, null ).filter( modelElement -> Scalar.class.isAssignableFrom( modelElement.getClass() ) )
             .map( Scalar.class::cast ).map( Type::getUrn ).anyMatch(
-                  typeUrn -> typeUrn.equals( XSD.date.getURI() ) || typeUrn.equals( XSD.time.getURI() ) || typeUrn.equals( XSD.dateTime.getURI() )
-                        || typeUrn.equals( XSD.dateTimeStamp.getURI() ) || typeUrn.equals( XSD.gYear.getURI() ) || typeUrn.equals( XSD.gMonth.getURI() )
-                        || typeUrn.equals( XSD.gDay.getURI() ) || typeUrn.equals( XSD.gYearMonth.getURI() ) || typeUrn.equals( XSD.gMonthDay.getURI() )
-                        || typeUrn.equals( XSD.duration.getURI() ) || typeUrn.equals( XSD.yearMonthDuration.getURI() ) || typeUrn.equals(
+                  typeUrn -> typeUrn.equals( XSD.date.getURI() )
+                        || typeUrn.equals( XSD.time.getURI() )
+                        || typeUrn.equals( XSD.dateTime.getURI() )
+                        || typeUrn.equals( XSD.dateTimeStamp.getURI() )
+                        || typeUrn.equals( XSD.gYear.getURI() )
+                        || typeUrn.equals( XSD.gMonth.getURI() )
+                        || typeUrn.equals( XSD.gDay.getURI() )
+                        || typeUrn.equals( XSD.gYearMonth.getURI() )
+                        || typeUrn.equals( XSD.gMonthDay.getURI() )
+                        || typeUrn.equals( XSD.duration.getURI() )
+                        || typeUrn.equals( XSD.yearMonthDuration.getURI() )
+                        || typeUrn.equals(
                         XSD.dayTimeDuration.getURI() ) );
    }
 
    public static boolean doesValueNeedsToBeQuoted( final String typeUrn ) {
-      return typeUrn.equals( XSD.integer.getURI() ) || typeUrn.equals( XSD.xshort.getURI() ) || typeUrn.equals( XSD.decimal.getURI() ) || typeUrn.equals(
-            XSD.unsignedLong.getURI() ) || typeUrn.equals( XSD.positiveInteger.getURI() ) || typeUrn.equals( XSD.nonNegativeInteger.getURI() )
-            || typeUrn.equals( XSD.negativeInteger.getURI() ) || typeUrn.equals( XSD.nonPositiveInteger.getURI() ) || typeUrn.equals( XSD.date.getURI() )
-            || typeUrn.equals( XSD.time.getURI() ) || typeUrn.equals( XSD.dateTime.getURI() ) || typeUrn.equals( XSD.dateTimeStamp.getURI() ) || typeUrn.equals(
-            XSD.gDay.getURI() ) || typeUrn.equals( XSD.gMonth.getURI() ) || typeUrn.equals( XSD.gYearMonth.getURI() ) || typeUrn.equals(
-            XSD.gMonthDay.getURI() ) || typeUrn.equals( XSD.duration.getURI() ) || typeUrn.equals( XSD.yearMonthDuration.getURI() ) || typeUrn.equals(
-            XSD.dayTimeDuration.getURI() );
+      return typeUrn.equals( XSD.integer.getURI() )
+            || typeUrn.equals( XSD.xshort.getURI() )
+            || typeUrn.equals( XSD.decimal.getURI() )
+            || typeUrn.equals( XSD.unsignedLong.getURI() )
+            || typeUrn.equals( XSD.positiveInteger.getURI() )
+            || typeUrn.equals( XSD.nonNegativeInteger.getURI() )
+            || typeUrn.equals( XSD.negativeInteger.getURI() )
+            || typeUrn.equals( XSD.nonPositiveInteger.getURI() )
+            || typeUrn.equals( XSD.date.getURI() )
+            || typeUrn.equals( XSD.time.getURI() )
+            || typeUrn.equals( XSD.dateTime.getURI() )
+            || typeUrn.equals( XSD.dateTimeStamp.getURI() )
+            || typeUrn.equals( XSD.gDay.getURI() )
+            || typeUrn.equals( XSD.gMonth.getURI() )
+            || typeUrn.equals( XSD.gYearMonth.getURI() )
+            || typeUrn.equals( XSD.gMonthDay.getURI() )
+            || typeUrn.equals( XSD.duration.getURI() )
+            || typeUrn.equals( XSD.yearMonthDuration.getURI() )
+            || typeUrn.equals( XSD.dayTimeDuration.getURI() );
    }
 }

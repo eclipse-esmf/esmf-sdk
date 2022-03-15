@@ -67,8 +67,7 @@ public interface IsDescribed {
    }
 
    /**
-    * A language specific name for the Element. There may be multiple preferred
-    * names.
+    * A language specific name for the Element. There may be multiple preferred names.
     *
     * @param locale of the specific text
     * @return the language specific text.
@@ -82,7 +81,9 @@ public interface IsDescribed {
    }
 
    /**
-    * Gets the description for the Aspect Model element for a specific language, or null if not such value exists
+    * Gets the description for the Aspect Model element for a specific language, if the language is present.
+    * If the language is not present, the description in English is returned. If there is also not description
+    * in English, returns null.
     *
     * @param locale of the specific text
     * @return the language specific text or null
@@ -92,6 +93,11 @@ public interface IsDescribed {
             .filter( description -> description.getLanguageTag().equals( locale ) )
             .map( LangString::getValue )
             .findAny()
-            .orElse( null );
+            .orElseGet( () -> {
+               if ( locale.equals( Locale.ENGLISH ) ) {
+                  return null;
+               }
+               return getDescription( Locale.ENGLISH );
+            } );
    }
 }
