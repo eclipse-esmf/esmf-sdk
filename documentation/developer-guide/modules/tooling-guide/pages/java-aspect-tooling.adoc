@@ -13,7 +13,7 @@ respective subsection), _or_ you can use the `aspect-model-starter` artifact tha
 include::sds-developer-guide:ROOT:partial$sds-aspect-model-starter-artifact.adoc[]
 
 The error handling in many APIs is done using the
-`https://javadoc.io/doc/io.vavr/vavr/0.9.2/io/vavr/control/Try.html[Try]` type provided by the Java library _Vavr_. This
+`https://javadoc.io/doc/io.vavr/vavr/0.10.3/io/vavr/control/Try.html[Try]` type provided by the Java library _Vavr_. This
 is similar to a `java.lang.Optional` in that a successful result can be processed using `.map()` or `.flatMap()`, but if
 an error occurs, the object can also provide the original exception. Compared with throwing exceptions, using a `Try<T>`
 as a return type instead has the advantage of enabling composable and better readable code. Please see the
@@ -313,6 +313,27 @@ include::sds-developer-guide:ROOT:partial$sample-static-meta-class-generation.ad
 To use the generated static meta classes, you need the following additional dependency:
 
 include::sds-developer-guide:ROOT:partial$sds-aspect-static-meta-model-java-artifact.adoc[]
+
+[[providing-custom-macros-for-code-generation]]
+==== Providing Custom Macros for Code Generation
+
+It is possible to change predefined sections of the generated classes by providing custom https://velocity.apache.org/[Velocity] templates; see the https://velocity.apache.org/engine/2.3/user-guide.html[Velocity User Guide] for more information.
+The custom macros must be defined in a single template file.
+The path to the template file as well as its name may be passed as arguments to the code generation, e.g. using the xref:bamm-cli.adoc#bamm-cli[BAMM-CLI].
+
+Custom macros may be provided for the following sections:
+
+[width="100%",options="header"]
+|===
+| Section | Macro Name | Default Macro Provided
+| Copyright Licence Header | fileHeader | {nok}
+|===
+
+NOTE: When using custom macros, macros for all sections above must be provided.
+
+Example:
+
+include::sds-developer-guide:ROOT:partial$sample-file-header-template.adoc[]
 
 [[migrate-meta-model-version]]
 == Programmatically migrate the Meta Model Version

@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,7 +23,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMME;
@@ -37,7 +36,7 @@ public abstract class PropertyBasedTest implements BammArbitraries {
    public PropertyBasedTest() {
       BAMM_VERSIONS = KnownVersion.getVersions().stream().collect( Collectors.toMap( Function.identity(), BAMM::new ) );
       BAMMC_VERSIONS = KnownVersion.getVersions().stream()
-                                   .collect( Collectors.toMap( Function.identity(), BAMMC::new ) );
+            .collect( Collectors.toMap( Function.identity(), BAMMC::new ) );
       BAMME_VERSIONS = KnownVersion.getVersions().stream().collect( Collectors.toMap( Function.identity(),
             version -> new BAMME( version, BAMM_VERSIONS.get( version ) ) ) );
       try {

@@ -144,11 +144,11 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
 
       return Optional.of( new DefaultUnit(
             MetaModelBaseAttributes.fromMetaModelElement( metaModelVersion, unitResource, model, bamm ),
-            optionalPropertyValue( unitResource, unit.symbol() ).map( Statement::getString ),
-            optionalPropertyValue( unitResource, unit.commonCode() ).map( Statement::getString ),
-            optionalPropertyValue( unitResource, unit.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
-            optionalPropertyValue( unitResource, unit.conversionFactor() ).map( Statement::getString ),
-            ImmutableList.copyOf( model.listStatements( unitResource, unit.quantityKind(), (RDFNode) null ) ).stream()
+            optionalPropertyValue( unitResource, bamm.symbol() ).map( Statement::getString ),
+            optionalPropertyValue( unitResource, bamm.commonCode() ).map( Statement::getString ),
+            optionalPropertyValue( unitResource, bamm.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
+            optionalPropertyValue( unitResource, bamm.conversionFactor() ).map( Statement::getString ),
+            ImmutableList.copyOf( model.listStatements( unitResource, bamm.quantityKind(), (RDFNode) null ) ).stream()
                   .flatMap( quantityKindStatement -> QuantityKinds.fromName( quantityKindStatement.getObject().asResource().getLocalName() ).stream() )
                   .collect( Collectors.toSet() ) ) );
    }

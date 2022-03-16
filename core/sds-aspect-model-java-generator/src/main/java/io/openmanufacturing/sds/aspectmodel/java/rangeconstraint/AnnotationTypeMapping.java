@@ -22,6 +22,8 @@ import javax.validation.constraints.DecimalMin;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import com.google.common.collect.ImmutableMap;
+
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.DoubleMax;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.DoubleMin;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.DurationMax;
@@ -30,8 +32,12 @@ import io.openmanufacturing.sds.aspectmodel.java.customconstraint.FloatMax;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.FloatMin;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.GregorianCalendarMax;
 import io.openmanufacturing.sds.aspectmodel.java.customconstraint.GregorianCalendarMin;
-import io.openmanufacturing.sds.aspectmodel.java.customconstraint.Max;
-import io.openmanufacturing.sds.aspectmodel.java.customconstraint.Min;
+import io.openmanufacturing.sds.aspectmodel.java.customconstraint.IntegerMax;
+import io.openmanufacturing.sds.aspectmodel.java.customconstraint.IntegerMin;
+import io.openmanufacturing.sds.aspectmodel.java.customconstraint.LongMax;
+import io.openmanufacturing.sds.aspectmodel.java.customconstraint.LongMin;
+import io.openmanufacturing.sds.aspectmodel.java.customconstraint.ShortMax;
+import io.openmanufacturing.sds.aspectmodel.java.customconstraint.ShortMin;
 
 /**
  * Serves to map used data types to the respective annotation class.
@@ -39,13 +45,30 @@ import io.openmanufacturing.sds.aspectmodel.java.customconstraint.Min;
 public enum AnnotationTypeMapping {
 
    MINIMUM(
-         Map.of( Integer.class, Min.class, Double.class, DoubleMin.class, Float.class, FloatMin.class, BigDecimal.class,
-               DecimalMin.class, Duration.class, DurationMin.class, XMLGregorianCalendar.class,
-               GregorianCalendarMin.class, BigInteger.class, DecimalMin.class ) ),
+         ImmutableMap.<Class<?>, Class<?>> builder()
+               .put( Integer.class, IntegerMin.class )
+               .put( Short.class, ShortMin.class )
+               .put( Long.class, LongMin.class )
+               .put( Double.class, DoubleMin.class )
+               .put( Float.class, FloatMin.class )
+               .put( BigDecimal.class, DecimalMin.class )
+               .put( Duration.class, DurationMin.class )
+               .put( XMLGregorianCalendar.class, GregorianCalendarMin.class )
+               .put( BigInteger.class, DecimalMin.class )
+               .build() ),
    MAXIMUM(
-         Map.of( Integer.class, Max.class, Double.class, DoubleMax.class, Float.class, FloatMax.class, BigDecimal.class,
-               DecimalMax.class, Duration.class, DurationMax.class, XMLGregorianCalendar.class,
-               GregorianCalendarMax.class, BigInteger.class, DecimalMax.class ) );
+         ImmutableMap.<Class<?>, Class<?>> builder()
+               .put( Integer.class, IntegerMax.class )
+               .put( Short.class, ShortMax.class )
+               .put( Long.class, LongMax.class )
+               .put( Double.class, DoubleMax.class )
+               .put( Float.class, FloatMax.class )
+               .put( BigDecimal.class, DecimalMax.class )
+               .put( Duration.class, DurationMax.class )
+               .put( XMLGregorianCalendar.class, GregorianCalendarMax.class )
+               .put( BigInteger.class, DecimalMax.class )
+               .build()
+   );
 
    private final Map<Class<?>, Class<?>> typeMapping;
 

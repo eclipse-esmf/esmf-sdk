@@ -54,6 +54,14 @@ public class AnnotationFactory {
             new IntegerAnnotation( AnnotationTypeMapping.MINIMUM.getAnnotationType( Integer.class ) ) );
       operationMap.put( OperationKeys.INTEGER_MAXIMUM,
             new IntegerAnnotation( AnnotationTypeMapping.MAXIMUM.getAnnotationType( Integer.class ) ) );
+      operationMap.put( OperationKeys.SHORT_MINIMUM,
+            new ShortAnnotation( AnnotationTypeMapping.MINIMUM.getAnnotationType( Short.class ) ) );
+      operationMap.put( OperationKeys.SHORT_MAXIMUM,
+            new ShortAnnotation( AnnotationTypeMapping.MAXIMUM.getAnnotationType( Short.class ) ) );
+      operationMap.put( OperationKeys.LONG_MINIMUM,
+            new LongAnnotation( AnnotationTypeMapping.MINIMUM.getAnnotationType( Long.class ) ) );
+      operationMap.put( OperationKeys.LONG_MAXIMUM,
+            new LongAnnotation( AnnotationTypeMapping.MAXIMUM.getAnnotationType( Long.class ) ) );
       operationMap.put( OperationKeys.DURATIONIMPL_MINIMUM,
             new DurationAnnotation( AnnotationTypeMapping.MINIMUM.getAnnotationType( Duration.class ) ) );
       operationMap.put( OperationKeys.DURATIONIMPL_MAXIMUM,
@@ -89,6 +97,10 @@ public class AnnotationFactory {
       BIGDECIMAL_MAXIMUM,
       INTEGER_MINIMUM,
       INTEGER_MAXIMUM,
+      SHORT_MINIMUM,
+      SHORT_MAXIMUM,
+      LONG_MINIMUM,
+      LONG_MAXIMUM,
       DURATIONIMPL_MINIMUM,
       DURATIONIMPL_MAXIMUM,
       DURATIONYEARMONTHIMPL_MINIMUM,

@@ -29,10 +29,10 @@ public class TestAspect {
    @FloatMax( value = "5.6", boundDefinition = BoundDefinition.AT_MOST )
    private final float testMaxFloat;
 
-   @Min( value = 5, boundDefinition = BoundDefinition.AT_LEAST )
+   @IntegerMin( value = 5, boundDefinition = BoundDefinition.AT_LEAST )
    private final int testMinInt;
 
-   @Max( value = 10, boundDefinition = BoundDefinition.AT_MOST )
+   @IntegerMax( value = 10, boundDefinition = BoundDefinition.AT_MOST )
    private final int testMaxInt;
 
    public TestAspect( final double testMinDouble, final double testMaxDouble, final float testMinFloat,

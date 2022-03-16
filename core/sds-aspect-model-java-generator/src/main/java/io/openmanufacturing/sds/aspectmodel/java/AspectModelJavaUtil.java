@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.aspectmodel.java;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -56,6 +58,7 @@ import io.openmanufacturing.sds.metamodel.SortedSet;
 import io.openmanufacturing.sds.metamodel.StructureElement;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 import io.vavr.Tuple2;
 
 public class AspectModelJavaUtil {
@@ -301,6 +304,19 @@ public class AspectModelJavaUtil {
                + "neither Scalar nor Entity: " + type.getUrn() );
       } ).orElseThrow(
             () -> new CodeGenerationException( "Failed to determine Java data type for empty model type" ) );
+   }
+
+   public static Class<?> getDataTypeClass( final Type dataType ) {
+      if ( dataType instanceof ComplexType ) {
+         return ((ComplexType) dataType).getClass();
+      }
+
+      final Resource typeResource = ResourceFactory.createResource( dataType.getUrn() );
+      if ( typeResource.getURI().equals( RDF.langString.getURI() ) ) {
+         return Map.class;
+      }
+      final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource, dataType.getMetaModelVersion() );
+      return result;
    }
 
    /**
@@ -558,10 +574,14 @@ public class AspectModelJavaUtil {
       }
 
       final Entity entity = (Entity) dataType;
-      return entity.getProperties().stream().filter( property -> !property.isNotInPayload() ).map( property -> {
-         final String propertyName = StringUtils.capitalize( property.getName() );
-         return String.format( "enumValue.getValue().get%s().equals(value.get%s())", propertyName, propertyName );
-      } ).collect( Collectors.joining( " && " ) );
+      if ( entity.getProperties().isEmpty() ) {
+         return "enumValue.getValue().equals(value)";
+      } else {
+         return entity.getProperties().stream().filter( property -> !property.isNotInPayload() ).map( property -> {
+            final String propertyName = StringUtils.capitalize( property.getName() );
+            return String.format( "enumValue.getValue().get%s().equals(value.get%s())", propertyName, propertyName );
+         } ).collect( Collectors.joining( " && " ) );
+      }
    }
 
    public static String getCharacteristicJavaType( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
@@ -585,5 +605,47 @@ public class AspectModelJavaUtil {
          return "\"" + StringEscapeUtils.escapeJava( object.toString() ) + "\"";
       }
       return toConstant( ((Property) object).getName() );
+   }
+
+   public static boolean isXmlDatatypeFactoryRequired( final StructureElement element ) {
+      final AspectStreamTraversalVisitor visitor = new AspectStreamTraversalVisitor();
+      return visitor.visitStructureElement( element, null )
+            .filter( modelElement -> Scalar.class.isAssignableFrom( modelElement.getClass() ) )
+            .map( Scalar.class::cast )
+            .map( Type::getUrn )
+            .anyMatch( typeUrn -> typeUrn.equals( XSD.date.getURI() )
+                  || typeUrn.equals( XSD.time.getURI() )
+                  || typeUrn.equals( XSD.dateTime.getURI() )
+                  || typeUrn.equals( XSD.dateTimeStamp.getURI() )
+                  || typeUrn.equals( XSD.gYear.getURI() )
+                  || typeUrn.equals( XSD.gMonth.getURI() )
+                  || typeUrn.equals( XSD.gDay.getURI() )
+                  || typeUrn.equals( XSD.gYearMonth.getURI() )
+                  || typeUrn.equals( XSD.gMonthDay.getURI() )
+                  || typeUrn.equals( XSD.duration.getURI() )
+                  || typeUrn.equals( XSD.yearMonthDuration.getURI() )
+                  || typeUrn.equals( XSD.dayTimeDuration.getURI() ) );
+   }
+
+   public static boolean doesValueNeedsToBeQuoted( final String typeUrn ) {
+      return typeUrn.equals( XSD.integer.getURI() )
+            || typeUrn.equals (XSD.xshort.getURI() )
+            || typeUrn.equals( XSD.decimal.getURI() )
+            || typeUrn.equals( XSD.unsignedLong.getURI() )
+            || typeUrn.equals( XSD.positiveInteger.getURI() )
+            || typeUrn.equals( XSD.nonNegativeInteger.getURI() )
+            || typeUrn.equals( XSD.negativeInteger.getURI() )
+            || typeUrn.equals( XSD.nonPositiveInteger.getURI() )
+            || typeUrn.equals( XSD.date.getURI() )
+            || typeUrn.equals( XSD.time.getURI() )
+            || typeUrn.equals( XSD.dateTime.getURI() )
+            || typeUrn.equals( XSD.dateTimeStamp.getURI() )
+            || typeUrn.equals( XSD.gDay.getURI() )
+            || typeUrn.equals( XSD.gMonth.getURI() )
+            || typeUrn.equals( XSD.gYearMonth.getURI() )
+            || typeUrn.equals( XSD.gMonthDay.getURI() )
+            || typeUrn.equals( XSD.duration.getURI() )
+            || typeUrn.equals( XSD.yearMonthDuration.getURI() )
+            || typeUrn.equals( XSD.dayTimeDuration.getURI() );
    }
 }

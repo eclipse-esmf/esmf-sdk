@@ -47,6 +47,9 @@ The following switches can be used in addition to the ones above to configure th
 | `--disable-jackson-annotations` or `-dja` | This option is to be used together with `-java` or
   `-static-java` and will lead to generated Java code that does not contain
   https://github.com/FasterXML/jackson[Jackson] Annotations.
+| `--execute-library-macros` or `-elm` | This option is used together with `-java` or `-static-java` and lead to generated Java code which includes the output from the custom macros provided via `-tlp` and `-tlfn`.
+| `--template-library-file` or `-tlf` | The path and name of the template file containing custom macros.
+It is used together with `-elm`.
 | `--use-semantic-api-version` or `-sv` | This option is used together with `-oapi-json` or `-oapi-yaml` in order to use
   the complete semantic version of the Aspect Model as the version of the Aspect API.
 | `--aspect-api-base-url` or `-base-url` | This option is used together with `-oapi-json` or `-oapi-yaml` to provide the
@@ -66,14 +69,14 @@ The following switches can be used in addition to the ones above to configure th
 == Using the CLI to create a JSON OpenAPI Specification
 Every specification is based on one Aspect, which needs a separately defined server URL where the given aspect will be.
 The URL will be defined as string with the `-base-url` command, i.e.: https://www.example.org.
-The default URL, using the above defined -base-url, would result in https://www.example.org/api/v1/{tenantId}/<aspectName>.
+The default URL, using the above defined -base-url, would result in https://www.example.org/api/v1/\{tenantId}/<aspectName>.
 By default the Aspect's local name is used as path. The default path can be manipulated with the `--aspect-resource-path` switch.
-If the path is defined further, for example `--aspect-resource-path "/resources/{resourceId}"`, the resulting URL would be: https://www.example.org/api/v1/{tenantId}/resources/{resourceId}.
+If the path is defined further, for example `--aspect-resource-path "/resources/\{resourceId}"`, the resulting URL would be: https://www.example.org/api/v1/\{tenantId}/resources/\{resourceId}.
 
 It will be required to specify the parameter, in case there is an additional parameter defined.
 This has to be in JSON or in YAML, depending on the kind of specification chosen.
 For example:
-With the option `--aspect-resource-path "/resources/{resourceId}"` the generator constructs the URL https://www.example.org/api/v1/{tenantId}/resources/{resourceId}
+With the option `--aspect-resource-path "/resources/\{resourceId}"` the generator constructs the URL https://www.example.org/api/v1/\{tenantId}/resources/\{resourceId}
 and then the `--aspect-parameter-file` defines the parameter resourceId in yaml:
 ----
 resourceId:
@@ -88,7 +91,7 @@ The full command would result in:
 [source,shell,subs="attributes+,+quotes"]
 ----
 java -jar bamm-cli-{sds-sdk-version}.jar -i _AspectModel.ttl_ -oapi-yaml -baseUrl "https://www.example.org"
--arp "/resources/{resourceId}" -apf _fileLocation_
+-arp "/resources/\{resourceId}" -apf _fileLocation_
 ----
 
 

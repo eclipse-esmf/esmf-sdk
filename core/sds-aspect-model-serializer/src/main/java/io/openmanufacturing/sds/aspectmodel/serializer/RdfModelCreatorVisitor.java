@@ -675,12 +675,12 @@ public class RdfModelCreatorVisitor implements AspectVisitor<Model, Base>, Funct
       if ( !createResource( unitUrn ).getNameSpace().equals( unitNamespace.getNamespace() ) ) {
          // This is a unit defined in the scope of the Aspect model
          final Resource unitResource = getElementResource( unit );
-         model.add( unitResource, RDF.type, unitNamespace.Unit() );
+         model.add( unitResource, RDF.type, bamm.Unit() );
          if ( !unit.hasSyntheticName() ) {
             model.add( unitResource, bamm.name(), serializePlainString( unit.getName() ) );
          }
          unit.getQuantityKinds().forEach( quantityKind ->
-               model.add( unitResource, unitNamespace.quantityKind(), unitNamespace.resource( quantityKind.getName() ) ) );
+               model.add( unitResource, bamm.quantityKind(), unitNamespace.resource( quantityKind.getName() ) ) );
          model.add( serializeDescriptions( unitResource, unit ) );
       }
       return model;

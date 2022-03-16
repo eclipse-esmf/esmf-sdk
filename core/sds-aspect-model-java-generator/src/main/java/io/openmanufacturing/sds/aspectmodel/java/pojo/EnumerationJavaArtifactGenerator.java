@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +17,7 @@ import java.time.Year;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.jboss.forge.roaster.Roaster;
 
@@ -66,7 +67,13 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
             .build();
 
       try {
-         final String generatedSource = new TemplateEngine( context ).apply( "java-enumeration" );
+         final Properties engineConfiguration = new Properties();
+         if ( config.doExecuteLibraryMacros() ) {
+            engineConfiguration.put( "velocimacro.library", config.getTemplateLibFile().getName() );
+            engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibFile().getParent() );
+         }
+
+         final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-enumeration" );
          return new JavaArtifact( Roaster.format( generatedSource ), element.getName(),
                config.getPackageName() );
       } catch ( final Exception e ) {

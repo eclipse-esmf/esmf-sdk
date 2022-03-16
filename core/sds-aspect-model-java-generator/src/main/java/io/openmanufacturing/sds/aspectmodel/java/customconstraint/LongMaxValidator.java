@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship. 
@@ -19,25 +19,25 @@ import javax.validation.ConstraintValidatorContext;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 
 /**
- * Validates assigned values of type {@link Integer}, which must be above or equal to this limit depending on the
+ * Validates assigned values of type {@link Short}, which must be below or equal to this limit depending on the
  * provided {@link BoundDefinition}.
  */
-public class MinValidator implements ConstraintValidator<Min, Integer> {
+public class LongMaxValidator implements ConstraintValidator<LongMax, Long> {
 
-   private int min;
+   private long max;
    private BoundDefinition boundDefinition;
 
    @Override
-   public void initialize( final Min min ) {
-      this.min = min.value();
-      this.boundDefinition = min.boundDefinition();
+   public void initialize( final LongMax longMax ) {
+      this.max = longMax.value();
+      this.boundDefinition = longMax.boundDefinition();
    }
 
    @Override
-   public boolean isValid( final Integer integerValue, final ConstraintValidatorContext context ) {
-      if ( integerValue == null ) {
+   public boolean isValid( final Long longValue, final ConstraintValidatorContext context ) {
+      if ( longValue == null ) {
          return true;
       }
-      return boundDefinition.isValid( integerValue, min );
+      return boundDefinition.isValid( longValue, max );
    }
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,6 +22,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -61,13 +62,13 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    @BeforeEach
    public void beforeEach() throws IOException {
       Files.walk( outputDirectory )
-         .sorted( Comparator.reverseOrder() )
-         .map( Path::toFile )
-         .forEach( file -> {
-            if ( !file.delete() ) {
-               throw new RuntimeException();
-            }
-         } );
+            .sorted( Comparator.reverseOrder() )
+            .map( Path::toFile )
+            .forEach( file -> {
+               if ( !file.delete() ) {
+                  throw new RuntimeException();
+               }
+            } );
       if ( !outputDirectory.toFile().mkdirs() ) {
          throw new RuntimeException();
       }
@@ -148,12 +149,12 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelJavaClassWithDefaultPackageName( final KnownVersion metaModelVersion )
-      throws Throwable {
+         throws Throwable {
       final File outputDir = outputDirectory.toFile();
 
       createValidArgsExecution( metaModelVersion, outputDir, "-java" );
       final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" )
-         .toFile();
+            .toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectory();
 
@@ -164,12 +165,12 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testGenerateStaticMetaModelJavaClassWithDefaultPackageName( final KnownVersion metaModelVersion )
-      throws Throwable {
+         throws Throwable {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, outputDir, "-static-java" );
 
       final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" )
-         .toFile();
+            .toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectory();
 
@@ -225,12 +226,12 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
       createValidArgsExecution( metaModelVersion, outputDir, "-java", "-pn", "io.openmanufacturing" );
       final byte[] testAspectRaw = Files
-         .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/AspectWithEntity.java" ) );
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/AspectWithEntity.java" ) );
       final String testAspect = new String( testAspectRaw );
       assertThat( testAspect ).contains( "JsonProperty" );
 
       final byte[] testEntityRaw = Files
-         .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/TestEntity.java" ) );
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/TestEntity.java" ) );
       final String testEntity = new String( testEntityRaw );
       assertThat( testEntity ).contains( "@JsonProperty" );
    }
@@ -242,12 +243,12 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
       createValidArgsExecution( metaModelVersion, outputDir, "-java", "-dja", "-pn", "io.openmanufacturing" );
       final byte[] testAspectRaw = Files
-         .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/AspectWithEntity.java" ) );
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/AspectWithEntity.java" ) );
       final String testAspect = new String( testAspectRaw );
       assertThat( testAspect ).doesNotContain( "@com.fasterxml.jackson.annotation.JsonProperty" );
 
       final byte[] testEntityRaw = Files
-         .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/TestEntity.java" ) );
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/TestEntity.java" ) );
       final String testEntity = new String( testEntityRaw );
       assertThat( testEntity ).doesNotContain( "@com.fasterxml.jackson.annotation.JsonProperty" );
    }
@@ -272,7 +273,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    public void testGenerateOpenApiSpecWithoutResourcePath( final KnownVersion metaModelVersion ) throws Exception {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, outputDir, "-oapi-json", "-base-url",
-         "https://test.example.com" );
+            "https://test.example.com" );
    }
 
    @ParameterizedTest
@@ -280,11 +281,11 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    public void testGenerateOpenApiSpecWithResourcePath( final KnownVersion metaModelVersion ) throws Exception {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, outputDir, "-oapi-json", "-base-url", "https://test.example.com",
-         "-arp", "my-aspect" );
+            "-arp", "my-aspect" );
    }
 
    private void createValidArgsExecution( final KnownVersion testedVersion, final File targetFolder,
-      final String... args ) throws Exception {
+         final String... args ) throws Exception {
       assertThat( catchSystemExit( () -> {
          final List<String> argumentsList = createArgumentList( testedVersion, targetFolder, args );
          bammCli.run( argumentsList.toArray( new String[0] ) );
@@ -292,11 +293,11 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    }
 
    private List<String> createArgumentList( final KnownVersion testedVersion, final File targetFolder,
-      final String... args ) {
+         final String... args ) {
       final String aspectName = TestAspect.ASPECT_WITH_ENTITY.getName();
       final String resourcePath = String
-         .format( "valid/%s/io.openmanufacturing.test/1.0.0/%s.ttl", testedVersion.toString().toLowerCase(),
-            aspectName );
+            .format( "valid/%s/io.openmanufacturing.test/1.0.0/%s.ttl", testedVersion.toString().toLowerCase(),
+                  aspectName );
       final URL resource = TestAspect.class.getClassLoader().getResource( resourcePath );
       assertThat( resource.getProtocol() ).isEqualTo( "file" );
       final String aspectModelPath = resource.getFile();
@@ -309,5 +310,97 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       argumentsList.add( aspectModelPath );
       argumentsList.addAll( Arrays.asList( args ) );
       return argumentsList;
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGenerateJavaClassWithoutFileHeader( final KnownVersion metaModelVersion ) throws Throwable {
+      final File outputDir = outputDirectory.toFile();
+
+      createValidArgsExecution( metaModelVersion, outputDir, "-java" );
+      final byte[] testAspectRaw = Files
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/test/AspectWithEntity.java" ) );
+      final String testAspect = new String( testAspectRaw );
+      assertThat( testAspect ).doesNotContain( "Copyright" );
+
+      final byte[] testEntityRaw = Files
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/test/TestEntity.java" ) );
+      final String testEntity = new String( testEntityRaw );
+      assertThat( testEntity ).doesNotContain( "Copyright" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGenerateJavaClassWithFileHeader( final KnownVersion metaModelVersion ) throws Throwable {
+      final File outputDir = outputDirectory.toFile();
+      final String currentWorkingDirectory = System.getProperty( "user.dir" );
+      final String templateLibFile = currentWorkingDirectory + "/../../core/sds-aspect-model-java-generator/templates/test-macro-lib.vm";
+      final int currentYear = LocalDate.now().getYear();
+      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );
+
+      createValidArgsExecution( metaModelVersion, outputDir, "-java", "-elm", "-tlf", templateLibFile );
+      final byte[] testAspectRaw = Files
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/test/AspectWithEntity.java" ) );
+      final String testAspect = new String( testAspectRaw );
+      assertThat( testAspect ).contains( expectedCopyright );
+
+      final byte[] testEntityRaw = Files
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/test/TestEntity.java" ) );
+      final String testEntity = new String( testEntityRaw );
+      assertThat( testEntity ).contains( expectedCopyright );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGenerateStaticJavaClassWithoutFileHeader( final KnownVersion metaModelVersion ) throws Throwable {
+      final File outputDir = outputDirectory.toFile();
+
+      createValidArgsExecution( metaModelVersion, outputDir, "-static-java" );
+      final byte[] metaTestAspectRaw = Files
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/test/MetaAspectWithEntity.java" ) );
+      final String metaTestAspect = new String( metaTestAspectRaw );
+      assertThat( metaTestAspect ).doesNotContain( "Copyright" );
+
+      final byte[] metaTestEntityRaw = Files
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/test/MetaTestEntity.java" ) );
+      final String metaTestEntity = new String( metaTestEntityRaw );
+      assertThat( metaTestEntity ).doesNotContain( "Copyright" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGenerateStaticJavaClassWithFileHeader( final KnownVersion metaModelVersion ) throws Throwable {
+      final File outputDir = outputDirectory.toFile();
+      final String currentWorkingDirectory = System.getProperty( "user.dir" );
+      final String templateLibFile = currentWorkingDirectory + "/../../core/sds-aspect-model-java-generator/templates/test-macro-lib.vm";
+      final int currentYear = LocalDate.now().getYear();
+      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );
+
+      createValidArgsExecution( metaModelVersion, outputDir, "-static-java", "-elm", "-tlf", templateLibFile );
+      final byte[] metaTestAspectRaw = Files
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/test/MetaAspectWithEntity.java" ) );
+      final String metaTestAspect = new String( metaTestAspectRaw );
+      assertThat( metaTestAspect ).contains( expectedCopyright );
+
+      final byte[] metaTestEntityRaw = Files
+            .readAllBytes( outputDir.toPath().resolve( "io/openmanufacturing/test/MetaTestEntity.java" ) );
+      final String metaTestEntity = new String( metaTestEntityRaw );
+      assertThat( metaTestEntity ).contains( expectedCopyright );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testValidateVelocityTemplateMacroArgumentValidation( final KnownVersion metaModelVersion ) throws Exception {
+      assertThat( catchSystemExit( () -> {
+         final File outputDir = outputDirectory.toFile();
+         final List<String> argumentsList = createArgumentList( metaModelVersion, outputDir, "-java", "-elm" );
+         bammCli.run( argumentsList.toArray( new String[0] ) );
+      } ) ).isEqualTo( 1 );
+
+      assertThat( catchSystemExit( () -> {
+         final File outputDir = outputDirectory.toFile();
+         final List<String> argumentsList = createArgumentList( metaModelVersion, outputDir, "-static-java", "-elm" );
+         bammCli.run( argumentsList.toArray( new String[0] ) );
+      } ) ).isEqualTo( 1 );
    }
 }

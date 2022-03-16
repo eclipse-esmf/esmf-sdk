@@ -13,11 +13,18 @@
 
 package io.openmanufacturing.sds.aspectmodel.java.metamodel;
 
+import java.nio.charset.Charset;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -64,6 +71,7 @@ import io.openmanufacturing.sds.metamodel.State;
 import io.openmanufacturing.sds.metamodel.StructureElement;
 import io.openmanufacturing.sds.metamodel.StructuredValue;
 import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.Units;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
@@ -92,6 +100,7 @@ import io.openmanufacturing.sds.metamodel.impl.DefaultState;
 import io.openmanufacturing.sds.metamodel.impl.DefaultStructuredValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultTrait;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
+import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 import io.openmanufacturing.sds.staticmetamodel.PropertyContainer;
 import io.openmanufacturing.sds.staticmetamodel.StaticContainerProperty;
 import io.openmanufacturing.sds.staticmetamodel.StaticMetaClass;
@@ -133,12 +142,16 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "Arrays", java.util.Arrays.class )
             .put( "BoundDefinition", BoundDefinition.class )
             .put( "characteristicBaseUrn", matchHash.trimTrailingFrom( new BAMMC( element.getMetaModelVersion() ).getNamespace() ) )
+            .put( "Charset", Charset.class )
             .put( "Code", Code.class )
             .put( "codeGenerationConfig", config )
             .put( "Collection", Collection.class )
             .put( "Collections", Collections.class )
             .put( "Constraint", Constraint.class )
             .put( "currentYear", Year.now() )
+            .put( "DatatypeConfigurationException", DatatypeConfigurationException.class )
+            .put( "DatatypeConstants", DatatypeConstants.class )
+            .put( "DatatypeFactory", DatatypeFactory.class )
             .put( "deconstructor", new StructuredValuePropertiesDeconstructor( element ) )
             .put( "DefaultCharacteristic", DefaultCharacteristic.class )
             .put( "DefaultCode", DefaultCode.class )
@@ -172,6 +185,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "AbstractEntity", AbstractEntity.class )
             .put( "Enumeration", Enumeration.class )
             .put( "FixedPointConstraint", FixedPointConstraint.class )
+            .put( "HashMap", HashMap.class )
             .put( "LanguageConstraint", LanguageConstraint.class )
             .put( "LengthConstraint", LengthConstraint.class )
             .put( "List", List.class )
@@ -204,7 +218,13 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "valueInitializer", new ValueInitializer() )
             .build();
 
-      final String generatedSource = new TemplateEngine( context ).apply( "java-static-class" );
+      final Properties engineConfiguration = new Properties();
+      if ( config.doExecuteLibraryMacros() ) {
+         engineConfiguration.put( "velocimacro.library", config.getTemplateLibFile().getName() );
+         engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibFile().getParent() );
+      }
+
+      final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-static-class" );
       try {
          return new JavaArtifact( Roaster.format( generatedSource ), "Meta" + element.getName(),
                config.getPackageName() );

@@ -5,6 +5,9 @@ on:
       release_version:
         description: 'Version number of the release'
         required: true
+      milestone_version:
+        description: '"true" if a milestone release shall be published'
+        required: false
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -65,7 +68,10 @@ jobs:
           git push origin ${{ env.release_branch_name }}
       - name: Run tests and build
         run: mvn -B clean install
+
+# release-build
       - name: Create GitHub release
+        condition: eq( '${{ github.event.inputs.release_version }}', 'true')
         uses: softprops/action-gh-release@v1
         id: sds_sdk_release
         with: 
@@ -79,8 +85,30 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to OSSRH
-        run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests
+        condition: eq( '${{ github.event.inputs.release_version }}', 'true')
+        run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Prelease-build
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
+
+# milestone-build
+      - name: Create GitHub release
+        condition: ne( '${{ github.event.inputs.release_version }}', 'true')
+        uses: softprops/action-gh-release@v1
+        id: sds_sdk_release
+        with:
+          body: "Release of the BAMM SDK in version v${{ github.event.inputs.release_version  }}."
+          tag_name: v${{ github.event.inputs.release_version }}
+          target_commitish: ${{ env.release_branch_name }}
+          draft: false
+          prerelease: true
+          files: |
+            **/target/*-${{ github.event.inputs.release_version }}.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      - name: Publish to Github
+        condition: ne( '${{ github.event.inputs.release_version }}', 'true')
+        run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
