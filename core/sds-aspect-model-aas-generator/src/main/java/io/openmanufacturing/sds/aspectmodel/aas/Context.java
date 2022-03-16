@@ -1,56 +1,61 @@
 package io.openmanufacturing.sds.aspectmodel.aas;
 
+import java.util.List;
+
 import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
-import io.adminshell.aas.v3.model.Identifiable;
+import io.adminshell.aas.v3.model.ConceptDescription;
 import io.adminshell.aas.v3.model.Submodel;
 import io.adminshell.aas.v3.model.SubmodelElement;
 import io.openmanufacturing.sds.metamodel.Property;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Context {
 
-    AssetAdministrationShellEnvironment environment;
-    Submodel submodel;
-    Property property;
-    SubmodelElement propertyResult;
+   AssetAdministrationShellEnvironment environment;
+   Submodel submodel;
+   Property property;
+   SubmodelElement propertyResult;
 
-    public Context(AssetAdministrationShellEnvironment environment, Submodel ofInterest) {
-        this.environment = environment;
-        this.submodel = ofInterest;
-    }
+   public Context( AssetAdministrationShellEnvironment environment, Submodel ofInterest ) {
+      this.environment = environment;
+      this.submodel = ofInterest;
+   }
 
-    public AssetAdministrationShellEnvironment getEnvironment() {
-        return environment;
-    }
+   public boolean hasEnvironmentConceptDescription( String name ) {
+      return getEnvironment().getConceptDescriptions().stream().anyMatch( x -> x.getIdShort() == name );
+   }
 
-    public void setEnvironment(AssetAdministrationShellEnvironment environment) {
-        this.environment = environment;
-    }
+   public ConceptDescription getConceptDescription( String name ) {
+      return getEnvironment().getConceptDescriptions().stream().filter( x -> x.getIdentification().getIdentifier().equals( name ) ).findFirst().get();
+   }
 
-    public Submodel getSubmodel() {
-        return submodel;
-    }
+   public AssetAdministrationShellEnvironment getEnvironment() {
+      return environment;
+   }
 
-    public void setSubmodel(Submodel submodel) {
-        this.submodel = submodel;
-    }
+   public Submodel getSubmodel() {
+      return submodel;
+   }
 
-    public Property getProperty() {
-        return property;
-    }
+   public void appendToSubModelElements( List<SubmodelElement> elements ) {
+      // Hint: As the AAS Meta Model Implementation exposes the internal data structure where the elements
+      // of a collection are stored, just setting it would overwrite previous entries. Hence this approach.
+      getSubmodel().getSubmodelElements().addAll( elements );
+   }
 
-    public void setProperty(Property property) {
-        this.property = property;
-    }
+   public Property getProperty() {
+      return property;
+   }
 
-    public SubmodelElement getPropertyResult() {
-        return propertyResult;
-    }
+   public void setProperty( Property property ) {
+      this.property = property;
+   }
 
-    public void setPropertyResult(SubmodelElement propertyResult) {
-        this.propertyResult = propertyResult;
-    }
+   public SubmodelElement getPropertyResult() {
+      return propertyResult;
+   }
+
+   public void setPropertyResult( SubmodelElement propertyResult ) {
+      this.propertyResult = propertyResult;
+   }
 
 }
