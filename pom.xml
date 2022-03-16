@@ -73,7 +73,7 @@
       <!-- Versions of third party dependencies -->
       <aspect-meta-model-version>2.0.0-M1</aspect-meta-model-version>
       <assertj-vavr-version>0.1.0</assertj-vavr-version>
-      <classgraph-version>4.8.29</classgraph-version>
+      <classgraph-version>4.8.109</classgraph-version>
       <commons-text-version>1.6</commons-text-version>
       <easy-random-version>4.0.0</easy-random-version>
       <gradle-core-version>6.1.1</gradle-core-version>
