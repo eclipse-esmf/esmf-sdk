@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Constraint;
-import io.openmanufacturing.sds.metamodel.Value;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.staticmetamodel.ContainerProperty;
 
@@ -31,7 +31,7 @@ public abstract class StaticConstraintContainerProperty<R, T, C extends Constrai
    public StaticConstraintContainerProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final Characteristic characteristic,
-         final Optional<Value> exampleValue,
+         final Optional<ScalarValue> exampleValue,
          final boolean optional,
          final boolean notInPayload,
          final Optional<String> payloadName ) {

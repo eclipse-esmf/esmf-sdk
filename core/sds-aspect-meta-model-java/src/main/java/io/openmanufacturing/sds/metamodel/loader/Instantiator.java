@@ -33,6 +33,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 
 import com.google.common.collect.ImmutableList;
 
@@ -172,20 +173,15 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
                   modelElementFactory.create( Characteristic.class, elementCharacteristicResource ) );
    }
 
-   protected boolean isTypeOf( final Resource element, final Resource type ) {
-      return model.contains( element, RDF.type, type );
-   }
-
    protected boolean isTypeOfOrSubtypeOf( final Resource element, final Resource type ) {
-      //      Resource typeToCheck = type;
-      //      do {
-      //         if ( isTypeOf( element, typeToCheck ) ) {
-      //            return true;
-      //         }
-      //         typeToCheck = optionalPropertyValue( type, RDFS.subClassOf ).map( Statement::getResource ).orElse( null );
-      //      } while ( typeToCheck != null );
-      //      return false;
-      return isTypeOf( element, type );
+      Resource typeInHierarchy = element.getPropertyResourceValue( RDF.type );
+      while ( typeInHierarchy != null ) {
+         if ( type.equals( typeInHierarchy ) ) {
+            return true;
+         }
+         typeInHierarchy = typeInHierarchy.getPropertyResourceValue( RDFS.subClassOf );
+      }
+      return false;
    }
 
    /**
@@ -211,14 +207,11 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
          Collection.CollectionType collectionType = null;
          if ( isTypeOfOrSubtypeOf( characteristic, bammc.Set() ) ) {
             collectionType = Collection.CollectionType.SET;
-         }
-         if ( isTypeOfOrSubtypeOf( characteristic, bammc.SortedSet() ) ) {
+         } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.SortedSet() ) ) {
             collectionType = Collection.CollectionType.SORTEDSET;
-         }
-         if ( isTypeOfOrSubtypeOf( characteristic, bammc.List() ) ) {
+         } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.List() ) ) {
             collectionType = Collection.CollectionType.LIST;
-         }
-         if ( isTypeOfOrSubtypeOf( characteristic, bammc.Collection() ) ) {
+         } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.Collection() ) ) {
             collectionType = Collection.CollectionType.COLLECTION;
          }
          if ( collectionType != null ) {

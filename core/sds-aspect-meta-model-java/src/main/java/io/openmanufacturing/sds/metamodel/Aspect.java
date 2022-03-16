@@ -31,4 +31,11 @@ public interface Aspect extends StructureElement {
     * @since BAMM 2.0.0
     */
    List<Event> getEvents();
+
+   /**
+    * @return a {@code boolean} which indicates whether the structure element is a Collection Aspect
+    */
+   default boolean isCollectionAspect() {
+      return false;
+   }
 }

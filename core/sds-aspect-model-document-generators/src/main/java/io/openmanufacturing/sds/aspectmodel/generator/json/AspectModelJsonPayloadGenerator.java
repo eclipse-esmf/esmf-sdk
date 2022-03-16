@@ -337,13 +337,13 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private static class BasicProperty {
       private final String name;
       private final Characteristic characteristic;
-      private final Optional<Value> exampleValue;
+      private final Optional<ScalarValue> exampleValue;
 
       BasicProperty( final Property property ) {
          this( property.getPayloadName(), property.getCharacteristic(), property.getExampleValue() );
       }
 
-      BasicProperty( final String name, final Characteristic characteristic, final Optional<Value> exampleValue ) {
+      BasicProperty( final String name, final Characteristic characteristic, final Optional<ScalarValue> exampleValue ) {
          this.name = name;
          this.characteristic = characteristic;
          this.exampleValue = exampleValue;
@@ -357,7 +357,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return characteristic;
       }
 
-      public Optional<Value> getExampleValue() {
+      public Optional<ScalarValue> getExampleValue() {
          return exampleValue;
       }
    }
@@ -506,10 +506,9 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       }
 
       private Number generateForNumericTypeInRange( final java.lang.reflect.Type valueType, final Number min, final Number max ) {
-         final Number result = generators
+         return generators
                .getOrDefault( valueType, ( low, high ) -> getRandomDouble( low.doubleValue(), high.doubleValue() ) )
                .apply( min, max );
-         return result;
       }
 
       // narrowing conversion from BigDecimal to double

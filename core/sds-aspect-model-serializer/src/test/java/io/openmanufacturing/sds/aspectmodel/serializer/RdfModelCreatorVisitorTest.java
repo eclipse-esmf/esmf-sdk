@@ -43,13 +43,13 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
     * never be identical to the original because the unused elements are ignored when loading the
     * model and can therefore not be serialized.
     */
-      @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-            "ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC",
-            "ASPECT_WITH_USED_AND_UNUSED_COLLECTION",
-            "ASPECT_WITH_USED_AND_UNUSED_CONSTRAINT",
-            "ASPECT_WITH_USED_AND_UNUSED_EITHER",
-            "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION"
-      } )
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
+         "ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC",
+         "ASPECT_WITH_USED_AND_UNUSED_COLLECTION",
+         "ASPECT_WITH_USED_AND_UNUSED_CONSTRAINT",
+         "ASPECT_WITH_USED_AND_UNUSED_EITHER",
+         "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION"
+   } )
    public void testRdfModelCreatorVisitor( final TestAspect aspect ) {
       testRdfCreation( aspect, KnownVersion.getLatest() );
    }

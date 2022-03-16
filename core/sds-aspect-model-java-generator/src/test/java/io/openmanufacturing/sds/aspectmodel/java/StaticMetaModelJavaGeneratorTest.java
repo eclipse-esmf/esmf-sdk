@@ -61,7 +61,6 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
     */
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
-//   @EnumSource( value = TestAspect.class, names = {"ASPECT_WITH_CONSTRAINED_COLLECTION"} )
    public void testCodeGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> TestContext.generateStaticAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) ) ).doesNotThrowAnyException();
    }

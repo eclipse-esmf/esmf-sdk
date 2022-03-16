@@ -145,7 +145,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       return ResourceFactory.createPlainLiteral( string );
    }
 
-   private RDFNode serializeTypedValue( final String value, final RDFDatatype rdfDatatype, final Model model ) {
+   private RDFNode serializeTypedValue( final String value, final RDFDatatype rdfDatatype ) {
       return ResourceFactory.createTypedLiteral( value, rdfDatatype );
    }
 
@@ -244,7 +244,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       if ( !skipDataType && characteristic.getDataType().isPresent() ) {
          final Type type = characteristic.getDataType().get();
          model.add( resource, bamm.dataType(), createResource( type.getUrn() ) );
-         if ( !type.is( Scalar.class ) ) {
+         if ( type.is( ComplexType.class ) ) {
             model.add( type.accept( this, characteristic ).getModel() );
          }
       }
@@ -373,10 +373,10 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Model model = visitConstraint( lengthConstraint, null ).getModel();
       final Resource resource = getElementResource( lengthConstraint );
       lengthConstraint.getMinValue().stream().map( minValue ->
-                  createStatement( resource, bammc.minValue(), serializeTypedValue( minValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER, model ) ) )
+                  createStatement( resource, bammc.minValue(), serializeTypedValue( minValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
             .forEach( model::add );
       lengthConstraint.getMaxValue().stream().map( maxValue ->
-                  createStatement( resource, bammc.maxValue(), serializeTypedValue( maxValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER, model ) ) )
+                  createStatement( resource, bammc.maxValue(), serializeTypedValue( maxValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
             .forEach( model::add );
       model.add( resource, RDF.type, bammc.LengthConstraint() );
       return new ElementModel( model, Optional.of( resource ) );
@@ -386,7 +386,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    public ElementModel visitRangeConstraint( final RangeConstraint rangeConstraint, final Base context ) {
       final Model model = visitConstraint( rangeConstraint, null ).getModel();
       final Resource resource = getElementResource( rangeConstraint );
-      final Trait parentTrait = (Trait) context;
       model.add( resource, RDF.type, bammc.RangeConstraint() );
       rangeConstraint.getMinValue().stream()
             .flatMap( minValue -> minValue.accept( this, rangeConstraint ).getFocusElement().stream() )
@@ -418,9 +417,9 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Resource resource = getElementResource( fixedPointConstraint );
       model.add( resource, RDF.type, bammc.FixedPointConstraint() );
       model.add( resource, bammc.integer(),
-            serializeTypedValue( fixedPointConstraint.getInteger().toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER, model ) );
+            serializeTypedValue( fixedPointConstraint.getInteger().toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) );
       model.add( resource, bammc.scale(),
-            serializeTypedValue( fixedPointConstraint.getScale().toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER, model ) );
+            serializeTypedValue( fixedPointConstraint.getScale().toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
 

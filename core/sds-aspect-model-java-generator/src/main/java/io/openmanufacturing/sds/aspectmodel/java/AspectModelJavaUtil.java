@@ -101,7 +101,7 @@ public class AspectModelJavaUtil {
     * @return {@code true} if the property has a container type, {@code false} else
     */
    public static boolean hasContainerType( final Property metaProperty ) {
-      return metaProperty.isOptional() || (metaProperty.getEffectiveCharacteristic() instanceof Collection);
+      return metaProperty.isOptional() || (metaProperty.getEffectiveCharacteristic().is( Collection.class ));
    }
 
    /**
@@ -239,7 +239,8 @@ public class AspectModelJavaUtil {
    }
 
    private static Optional<String> buildConstraintForCollectionElements( final Collection collection, final JavaCodeGenerationConfig codeGenerationConfig ) {
-      return collection.getElementCharacteristic().filter( elementCharacteristic -> Trait.class.isAssignableFrom( elementCharacteristic.getClass() ) )
+      return collection.getElementCharacteristic()
+            .filter( elementCharacteristic -> elementCharacteristic.is( Trait.class ) )
             .map( elementCharacteristic -> buildConstraintsForCharacteristic( (Trait) elementCharacteristic, codeGenerationConfig ) );
    }
 

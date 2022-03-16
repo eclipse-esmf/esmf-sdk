@@ -75,7 +75,7 @@ public abstract class BaseImpl implements Base, IsDescribed {
    }
 
    /**
-    * A language specific name for the ElemenT. There may be multiple preferred names.
+    * A language specific name for the Element. There may be multiple preferred names.
     *
     * @return the preferredNames.
     */

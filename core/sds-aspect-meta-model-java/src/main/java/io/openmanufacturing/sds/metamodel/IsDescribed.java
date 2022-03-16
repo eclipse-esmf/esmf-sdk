@@ -53,14 +53,14 @@ public interface IsDescribed {
    }
 
    /**
-    * @return a {@link Map} containing language specific names for the Aspect Model element.
+    * @return a {@link Set} containing language specific names for the Aspect Model element.
     */
    default java.util.Set<LangString> getPreferredNames() {
       return Collections.emptySet();
    }
 
    /**
-    * @return a {@link Map} containing language specific descriptions for the Aspect Model element.
+    * @return a {@link Set} containing language specific descriptions for the Aspect Model element.
     */
    default java.util.Set<LangString> getDescriptions() {
       return Collections.emptySet();

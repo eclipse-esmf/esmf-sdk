@@ -24,7 +24,7 @@ import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidModelExce
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
-import io.openmanufacturing.sds.metamodel.Value;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.DefaultPropertyWrapper;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
@@ -72,7 +72,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
       final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
       defaultProperty.setCharacteristic( characteristic );
 
-      final Optional<Value> exampleValue = optionalPropertyValue( propertyResource, bamm.exampleValue() )
+      final Optional<ScalarValue> exampleValue = optionalPropertyValue( propertyResource, bamm.exampleValue() )
             .flatMap( statement -> characteristic.getDataType()
                   .map( type -> {
                      if ( !type.is( Scalar.class ) ) {
