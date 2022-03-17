@@ -93,7 +93,7 @@ jobs:
       - name: Create GitHub release
         if: contains( github.event.inputs.release_version, '-M' )
         uses: softprops/action-gh-release@v1
-        id: sds_sdk_release
+        id: sds_sdk_milestone_release
         with:
           body: "Release of the BAMM SDK in version v${{ github.event.inputs.release_version  }}."
           tag_name: v${{ github.event.inputs.release_version }}
