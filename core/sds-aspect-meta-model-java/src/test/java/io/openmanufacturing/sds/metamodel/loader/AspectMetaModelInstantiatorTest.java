@@ -33,6 +33,7 @@ import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.SingleEntity;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEntity;
 import io.openmanufacturing.sds.test.TestAspect;
@@ -62,7 +63,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertBaseAttributes( property, expectedAspectModelUrn, "testProperty", "Test Property",
             "This is a test property.", "http://example.com/me", "http://example.com/omp" );
-      assertThat( property.getExampleValue() ).contains( "Example Value" );
+      assertThat( property.getExampleValue() ).map( value -> value.as( ScalarValue.class ).getValue() ).contains( "Example Value" );
       assertThat( property.isOptional() ).isFalse();
       assertThat( property.getCharacteristic().getName() ).isEqualTo( "Text" );
       assertThat( property.getDataType() ).isInstanceOf( Optional.class );
@@ -295,8 +296,8 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( baseAttributes.getUrn() ).contains( urn );
       assertThat( baseAttributes.getName() ).isEqualTo( "someName" );
-      assertThat( baseAttributes.getPreferredNames() ).hasSize( 1 ).containsKey( Locale.ENGLISH ).containsValue( "preferredName" );
-      assertThat( baseAttributes.getDescriptions() ).hasSize( 1 ).containsKey( Locale.ENGLISH ).containsValue( "description" );
+      assertThat( baseAttributes.getPreferredNames() ).hasSize( 1 ).allMatch( preferredName -> preferredName.getLanguageTag().equals( Locale.ENGLISH ) );
+      assertThat( baseAttributes.getDescriptions() ).hasSize( 1 ).allMatch( description -> description.getLanguageTag().equals( Locale.ENGLISH ) );
       assertThat( baseAttributes.getSee() ).hasSize( 2 ).contains( "see1", "see2" );
    }
 }

@@ -30,6 +30,7 @@ import io.openmanufacturing.sds.metamodel.FixedPointConstraint;
 import io.openmanufacturing.sds.metamodel.LengthConstraint;
 import io.openmanufacturing.sds.metamodel.RangeConstraint;
 import io.openmanufacturing.sds.metamodel.RegularExpressionConstraint;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 
 /**
@@ -83,8 +84,8 @@ public class ConstraintAnnotationBuilder {
          return;
       }
       final RangeConstraint rangeConstraint = (RangeConstraint) constraintClass;
-      final Optional<Object> minValue = rangeConstraint.getMinValue();
-      final Optional<Object> maxValue = rangeConstraint.getMaxValue();
+      final Optional<Object> minValue = rangeConstraint.getMinValue().map( ScalarValue::getValue );
+      final Optional<Object> maxValue = rangeConstraint.getMaxValue().map( ScalarValue::getValue );
       final BoundDefinition lowerBoundDefinition = rangeConstraint.getLowerBoundDefinition();
       final BoundDefinition upperBoundDefinition = rangeConstraint.getUpperBoundDefinition();
 

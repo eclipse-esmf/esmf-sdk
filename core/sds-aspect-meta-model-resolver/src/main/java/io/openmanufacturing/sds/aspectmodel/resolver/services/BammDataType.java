@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,9 +19,8 @@ import java.util.function.Predicate;
 
 import org.apache.jena.datatypes.BaseDatatype;
 
-import io.openmanufacturing.sds.metamodel.datatypes.Curie;
-
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import io.openmanufacturing.sds.metamodel.datatypes.Curie;
 
 public class BammDataType<T> extends BaseDatatype implements TypedRdfDatatype<T> {
    private final Class<T> javaClass;
@@ -80,6 +79,9 @@ public class BammDataType<T> extends BaseDatatype implements TypedRdfDatatype<T>
    @Override
    @SuppressWarnings( "unchecked" )
    public String unparse( final Object value ) {
+      if ( value instanceof String ) {
+         return (String) value;
+      }
       return unparseTyped( (T) value );
    }
 

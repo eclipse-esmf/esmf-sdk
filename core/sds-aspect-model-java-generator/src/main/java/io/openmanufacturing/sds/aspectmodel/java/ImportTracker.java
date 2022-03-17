@@ -16,11 +16,8 @@ package io.openmanufacturing.sds.aspectmodel.java;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import io.openmanufacturing.sds.metamodel.Property;
 
 /**
  * Tracks necessary Java imports during type resolution so that code generators can apply this information in order

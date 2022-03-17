@@ -85,11 +85,11 @@ public class ModelElementFactory {
             propertyValue( resource, bamm._extends() ).map( Statement::getResource ).map( this::resourceType );
 
       return Stream.of( directType, propertyUsageType, subClassType, extendsType )
-                   .map( Supplier::get )
-                   .filter( Optional::isPresent )
-                   .map( Optional::get )
-                   .findFirst()
-                   .orElseThrow( () -> new AspectLoadingException( "Resource " + resource + " has no type" ) );
+            .map( Supplier::get )
+            .filter( Optional::isPresent )
+            .map( Optional::get )
+            .findFirst()
+            .orElseThrow( () -> new AspectLoadingException( "Resource " + resource + " has no type" ) );
    }
 
    protected KnownVersion getMetaModelVersion() {

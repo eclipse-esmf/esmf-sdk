@@ -38,6 +38,8 @@
        a bamm-c:RangeConstraint ;
        bamm-c:minValue         "2000"^^xsd:gYear ;
        bamm-c:maxValue         "2001"^^xsd:gYear ;
+       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
     ] ;
     bamm-c:baseCharacteristic :MeasurementGYear .
 
@@ -61,6 +63,8 @@
        a bamm-c:RangeConstraint ;
        bamm-c:minValue         "--04"^^xsd:gMonth ;
        bamm-c:maxValue         "--05"^^xsd:gMonth ;
+       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
     ] ;
     bamm-c:baseCharacteristic :MeasurementGMonth .
 
@@ -84,6 +88,8 @@
        a bamm-c:RangeConstraint ;
        bamm-c:minValue         "---04"^^xsd:gDay ;
        bamm-c:maxValue         "---05"^^xsd:gDay ;
+       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
     ] ;
     bamm-c:baseCharacteristic :MeasurementGDay .
 
@@ -107,6 +113,8 @@
        a bamm-c:RangeConstraint ;
        bamm-c:minValue         "2000-01"^^xsd:gYearMonth ;
        bamm-c:maxValue         "2000-02"^^xsd:gYearMonth ;
+       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
     ] ;
     bamm-c:baseCharacteristic :MeasurementGYearMonth .
 
@@ -130,6 +138,8 @@
        a bamm-c:RangeConstraint ;
        bamm-c:minValue         "--01-01"^^xsd:gMonthDay ;
        bamm-c:maxValue         "--01-02"^^xsd:gMonthDay ;
+       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
     ] ;
     bamm-c:baseCharacteristic :MeasurementGMonthYear .
 

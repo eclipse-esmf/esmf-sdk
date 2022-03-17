@@ -753,9 +753,6 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['entityInstance']['type']" ) ).isEqualTo( "object" );
 
       assertThat( context.<String> read( "$['components']['schemas']['entityInstance']['properties']['entityProperty']"
-            + "['enum'][0]['de']" ) ).isEqualTo( "Dies ist ein Test." );
-
-      assertThat( context.<String> read( "$['components']['schemas']['entityInstance']['properties']['entityProperty']"
             + "['enum'][0]['en']" ) ).isEqualTo( "This is a test." );
    }
 

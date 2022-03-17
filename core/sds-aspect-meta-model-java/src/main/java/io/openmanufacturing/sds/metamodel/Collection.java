@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,9 @@ import java.util.Optional;
  * @since BAMM 1.0.0
  */
 public interface Collection extends Characteristic {
+   enum CollectionType {
+      COLLECTION, SET, SORTEDSET, LIST
+   }
 
    /**
     * @return a {@link boolean} which determines whether the elements in the collection are ordered.
@@ -40,4 +43,6 @@ public interface Collection extends Characteristic {
    default Optional<Characteristic> getElementCharacteristic() {
       return Optional.empty();
    }
+
+   CollectionType getCollectionType();
 }

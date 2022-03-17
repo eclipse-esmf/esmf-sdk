@@ -29,6 +29,11 @@ public class DefaultSortedSet extends DefaultCollection implements SortedSet {
       super( metaModelBaseAttributes, dataType, false, true, elementCharacteristic );
    }
 
+   @Override
+   public CollectionType getCollectionType() {
+      return CollectionType.SORTEDSET;
+   }
+
    /**
     * Accepts an Aspect visitor
     *

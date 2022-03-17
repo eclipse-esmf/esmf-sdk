@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableMap;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.generator.TemplateEngine;
 import io.openmanufacturing.sds.aspectmodel.java.AspectModelJavaUtil;
 import io.openmanufacturing.sds.aspectmodel.java.ImportTracker;
@@ -49,8 +50,11 @@ import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationExcepti
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
+import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.StructureElement;
 import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
+import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 
 /**
  * A {@link io.openmanufacturing.sds.aspectmodel.generator.ArtifactGenerator} that generates Java Pojo code
@@ -83,6 +87,8 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .put( "DatatypeConstants", DatatypeConstants.class )
             .put( "DatatypeFactory", DatatypeFactory.class )
             .put( "deconstructor", new StructuredValuePropertiesDeconstructor( element ) )
+            .put( "DefaultScalar", DefaultScalar.class )
+            .put( "DefaultScalarValue", DefaultScalarValue.class )
             .put( "element", element )
             .put( "HexBinarySerializer", "io.openmanufacturing.sds.aspectmodel.jackson.HexBinarySerializer" )
             .put( "HexBinaryDeserializer", "io.openmanufacturing.sds.aspectmodel.jackson.HexBinaryDeserializer" )
@@ -90,11 +96,15 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .put( "JsonCreator", JsonCreator.class )
             .put( "JsonSerialize", JsonSerialize.class )
             .put( "JsonDeserialize", JsonDeserialize.class )
+            .put( "KnownVersion", KnownVersion.class )
             .put( "localeEn", Locale.ENGLISH )
             .put( "Matcher", Matcher.class )
             .put( "NotNull", NotNull.class )
+            .put( "Object", Object.class )
             .put( "Pattern", Pattern.class )
             .put( "ResourceFactory", ResourceFactory.class )
+            .put( "Scalar", Scalar.class )
+            .put( "String", String.class )
             .put( "StringUtils", StringUtils.class )
             .put( "Trait", Trait.class )
             .put( "util", AspectModelJavaUtil.class )

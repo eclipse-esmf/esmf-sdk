@@ -34,8 +34,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
    @MethodSource( value = "allVersions" )
    public void testRangeConstraintInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT, metaModelVersion );
-      assertRangeConstraintWithMinAndMaxValue( aspect, BoundDefinition.AT_LEAST,
-            BoundDefinition.AT_MOST );
+      assertRangeConstraintWithMinAndMaxValue( aspect, BoundDefinition.AT_LEAST, BoundDefinition.AT_MOST );
    }
 
    @ParameterizedTest
@@ -57,7 +56,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
       assertBaseAttributes( rangeConstraint );
 
       assertThat( rangeConstraint.getMaxValue() ).isPresent();
-      assertThat( rangeConstraint.getMaxValue().get() ).isEqualTo( 10.5f );
+      assertThat( rangeConstraint.getMaxValue().get().getValue() ).isEqualTo( 10.5f );
       assertThat( rangeConstraint.getMinValue() ).isPresent();
       assertThat( rangeConstraint.getLowerBoundDefinition() ).isEqualTo( boundDefinitionForLowerBound );
       assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( boundDefinitionForUpperBound );
@@ -79,7 +78,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( rangeConstraint.getMaxValue() ).isNotPresent();
       assertThat( rangeConstraint.getMinValue() ).isPresent();
-      assertThat( rangeConstraint.getMinValue().get() ).isEqualTo( 2.3f );
+      assertThat( rangeConstraint.getMinValue().get().getValue() ).isEqualTo( 2.3f );
       assertThat( rangeConstraint.getLowerBoundDefinition() ).isEqualTo( BoundDefinition.GREATER_THAN );
       assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( BoundDefinition.OPEN );
    }
@@ -100,7 +99,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( rangeConstraint.getMaxValue() ).isPresent();
       assertThat( rangeConstraint.getMinValue() ).isNotPresent();
-      assertThat( rangeConstraint.getMaxValue().get() ).isEqualTo( 2.3f );
+      assertThat( rangeConstraint.getMaxValue().get().getValue() ).isEqualTo( 2.3f );
       assertThat( rangeConstraint.getLowerBoundDefinition() ).isEqualTo( BoundDefinition.OPEN );
       assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( BoundDefinition.LESS_THAN );
    }
@@ -121,7 +120,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( rangeConstraint.getMaxValue() ).isNotPresent();
       assertThat( rangeConstraint.getMinValue() ).isPresent();
-      assertThat( rangeConstraint.getMinValue().get() ).isEqualTo( 2.3f );
+      assertThat( rangeConstraint.getMinValue().get().getValue() ).isEqualTo( 2.3f );
       assertThat( rangeConstraint.getLowerBoundDefinition() ).isEqualTo( BoundDefinition.AT_LEAST );
       assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( BoundDefinition.OPEN );
    }
@@ -141,7 +140,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( rangeConstraint.getMaxValue() ).isPresent();
       assertThat( rangeConstraint.getMinValue() ).isNotPresent();
-      assertThat( rangeConstraint.getMaxValue().get() ).isEqualTo( 2.3f );
+      assertThat( rangeConstraint.getMaxValue().get().getValue() ).isEqualTo( 2.3f );
       assertThat( rangeConstraint.getLowerBoundDefinition() ).isEqualTo( BoundDefinition.OPEN );
       assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( BoundDefinition.AT_MOST );
    }

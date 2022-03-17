@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 
 /**
  * Represents model elements that have human-readable names and descriptions
@@ -52,31 +53,51 @@ public interface IsDescribed {
    }
 
    /**
-    * @return a {@link Map} containing language specific names for the Aspect Model element.
+    * @return a {@link Set} containing language specific names for the Aspect Model element.
     */
-   default Map<Locale, String> getPreferredNames() {
-      return Collections.emptyMap();
+   default java.util.Set<LangString> getPreferredNames() {
+      return Collections.emptySet();
    }
 
    /**
-    * @return a {@link Map} containing language specific descriptions for the Aspect Model element.
+    * @return a {@link Set} containing language specific descriptions for the Aspect Model element.
     */
-   default Map<Locale, String> getDescriptions() {
-      return Collections.emptyMap();
+   default java.util.Set<LangString> getDescriptions() {
+      return Collections.emptySet();
    }
 
    /**
-    * @return the preferred name for the Aspect Model element for a specific language
+    * A language specific name for the Element. There may be multiple preferred names.
+    *
+    * @param locale of the specific text
+    * @return the language specific text.
     */
    default String getPreferredName( final Locale locale ) {
-      return getPreferredNames().getOrDefault( locale, getName() );
+      return getPreferredNames().stream()
+            .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )
+            .map( LangString::getValue )
+            .findAny()
+            .orElse( getName() );
    }
 
    /**
-    * @return the description for the Aspect Model element for a specific language
+    * Gets the description for the Aspect Model element for a specific language, if the language is present.
+    * If the language is not present, the description in English is returned. If there is also not description
+    * in English, returns null.
+    *
+    * @param locale of the specific text
+    * @return the language specific text or null
     */
    default String getDescription( final Locale locale ) {
-      final String defaultDescription = getDescriptions().get( Locale.ENGLISH );
-      return getDescriptions().getOrDefault( locale, defaultDescription );
+      return getDescriptions().stream()
+            .filter( description -> description.getLanguageTag().equals( locale ) )
+            .map( LangString::getValue )
+            .findAny()
+            .orElseGet( () -> {
+               if ( locale.equals( Locale.ENGLISH ) ) {
+                  return null;
+               }
+               return getDescription( Locale.ENGLISH );
+            } );
    }
 }

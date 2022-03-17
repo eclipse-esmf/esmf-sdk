@@ -33,7 +33,7 @@ public class HexBinaryDeserializer extends StdDeserializer<byte[]> {
 
    @Override
    public byte[] deserialize( final JsonParser parser, final DeserializationContext context ) throws IOException {
-      if ( parser.getCurrentTokenId() == JsonTokenId.ID_STRING ) {
+      if ( parser.currentTokenId() == JsonTokenId.ID_STRING ) {
          final Optional<byte[]> value = ExtendedXsdDataType.HEX_BINARY.parseTyped( parser.getText() );
          if ( value.isPresent() ) {
             return value.get();

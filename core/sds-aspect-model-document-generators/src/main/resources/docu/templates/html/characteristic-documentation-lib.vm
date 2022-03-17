@@ -35,7 +35,7 @@
 
 #macro( AnkerLinkToType $characteristic)
     #if($characteristic.getDataType().isPresent() )
-        #if($characteristic.getDataType().get().isComplex())
+        #if(!$characteristic.getDataType().get().is( $Scalar ))
             <a href="#$aspectModelHelper.getNameFromURN($characteristic.getDataType().get().getUrn())-entity"
         #else
             <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/v$aspectModelHelper.getModelVersion().getVersion().toString()/datatypes.html" target="_blank"
@@ -67,7 +67,7 @@ Characteristic specific macros will be joined together in the main macro (see ab
 
 #* -- for Characteristic ---------------------------------------------------------- *#
 #macro( Characteristic $characteristic $aspectModelHelper $i18n $weight)
-    #if($characteristic.getDataType().get().isComplex() == true)
+    #if( !$characteristic.getDataType().get().is( $Scalar ) )
         #set($entity = $!aspectModelUtil.getComplexTypeOfCharacteristic($characteristic))
         #Entity( $entity $aspectModelHelper $i18n $weight)
     #end

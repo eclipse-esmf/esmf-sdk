@@ -35,6 +35,7 @@ import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationExcepti
 import io.openmanufacturing.sds.aspectmodel.java.exception.EnumAttributeNotFoundException;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Enumeration;
+import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.State;
 
 /**
@@ -50,20 +51,21 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
       importTracker.importExplicit( EnumAttributeNotFoundException.class );
 
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
-            .put( "util", AspectModelJavaUtil.class )
-            .put( "codeGenerationConfig", config )
-            .put( "enumeration", element )
-            .put( "currentYear", Year.now() )
-            .put( "importTracker", importTracker )
-            .put( "className", element.getName() )
-            .put( "dataType", AspectModelJavaUtil.getDataType( element.getDataType(), config ) )
-            .put( "Optional", Optional.class )
             .put( "Arrays", Arrays.class )
+            .put( "className", element.getName() )
+            .put( "codeGenerationConfig", config )
+            .put( "currentYear", Year.now() )
+            .put( "dataType", AspectModelJavaUtil.getDataType( element.getDataType(), config.getImportTracker() ) )
+            .put( "Entity", Entity.class )
+            .put( "enumeration", element )
+            .put( "importTracker", importTracker )
             .put( "JsonValue", JsonValue.class )
             .put( "JsonCreator", JsonCreator.class )
             .put( "JsonFormat", JsonFormat.class )
+            .put( "Optional", Optional.class )
+            .put( "Scalar", Scalar.class )
             .put( "State", State.class )
-            .put( "Entity", Entity.class )
+            .put( "util", AspectModelJavaUtil.class )
             .build();
 
       try {

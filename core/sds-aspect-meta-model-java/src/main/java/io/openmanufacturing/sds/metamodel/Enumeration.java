@@ -26,5 +26,5 @@ public interface Enumeration extends Characteristic {
     * @return a {@link List} of values defined in this Enumeration. The type of the values is determined by the
     *       {@link Type} returned by {@link Enumeration#getDataType()}.
     */
-   List<Object> getValues();
+   List<Value> getValues();
 }

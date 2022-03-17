@@ -12,6 +12,8 @@
  */
 package io.openmanufacturing.sds.metamodel.datatypes;
 
+import java.util.Objects;
+
 /**
  * Represents the bamm:curie data type
  */
@@ -36,8 +38,7 @@ public class Curie {
       }
 
       final Curie curie = (Curie) o;
-
-      return value != null ? value.equals( curie.value ) : curie.value == null;
+      return Objects.equals( value, curie.value );
    }
 
    @Override

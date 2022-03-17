@@ -76,33 +76,31 @@ static {
     }
 
 #if( !$element.getPreferredNames().isEmpty() )
-    $codeGenerationConfig.getImportTracker().importExplicit( $Map )
-    $codeGenerationConfig.getImportTracker().importExplicit( $HashMap )
-    $codeGenerationConfig.getImportTracker().importExplicit( $Collections )
+    $codeGenerationConfig.getImportTracker().importExplicit( $LangString )
+    $codeGenerationConfig.getImportTracker().importExplicit( $HashSet )
     $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
     @Override
-    public Map<Locale, String> getPreferredNames() {
-       Map<Locale, String> preferredNames = new HashMap<>();
-       #foreach( $locale in $element.getPreferredNames().keySet() )
-       preferredNames.put( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.getPreferredNames().get( $locale ) )" );
-       #end
-       return preferredNames;
+    public java.util.Set<LangString> getPreferredNames() {
+       return new HashSet<>() {{
+          #foreach( $langString in $element.getPreferredNames() )
+          add( new LangString( "$StringEscapeUtils.escapeJava( $langString.getValue() )", Locale.forLanguageTag( "$langString.getLanguageTag().toLanguageTag()" ) ) );
+          #end
+       }};
     }
 #end
 
 #if( !$element.descriptions.isEmpty() )
-   $codeGenerationConfig.getImportTracker().importExplicit( $Map )
-   $codeGenerationConfig.getImportTracker().importExplicit( $HashMap )
-   $codeGenerationConfig.getImportTracker().importExplicit( $Collections )
-   $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
-   @Override
-   public Map<Locale, String> getDescriptions() {
-      Map<Locale, String> descriptions = new HashMap<>();
-       #foreach( $locale in $element.getDescriptions().keySet() )
-       descriptions.put( Locale.forLanguageTag( "$locale.toLanguageTag()" ), "$StringEscapeUtils.escapeJava( $element.getDescriptions().get( $locale ) )" );
+    $codeGenerationConfig.getImportTracker().importExplicit( $LangString )
+    $codeGenerationConfig.getImportTracker().importExplicit( $HashSet )
+    $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
+    @Override
+    public java.util.Set<LangString> getDescriptions() {
+       return new HashSet<>() {{
+       #foreach( $langString in $element.getDescriptions() )
+       add( new LangString( "$StringEscapeUtils.escapeJava( $langString.getValue() )", Locale.forLanguageTag( "$langString.getLanguageTag().toLanguageTag()" ) ) );
        #end
-      return descriptions;
-   }
+       }};
+    }
 #end
 
 #if( !$element.getSee().isEmpty() )

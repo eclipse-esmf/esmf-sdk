@@ -30,8 +30,7 @@ public class AspectWithComplexEntityCollectionEnum {
    private MyEnumerationOne myPropertyOne;
 
    @JsonCreator
-   public AspectWithComplexEntityCollectionEnum(
-         @JsonProperty( value = "myPropertyOne" ) MyEnumerationOne myPropertyOne ) {
+   public AspectWithComplexEntityCollectionEnum( @JsonProperty( value = "myPropertyOne" ) MyEnumerationOne myPropertyOne ) {
       this.myPropertyOne = myPropertyOne;
    }
 
@@ -62,8 +61,7 @@ public class AspectWithComplexEntityCollectionEnum {
       private List<MyEntityTwo> entityPropertyOne;
 
       @JsonCreator
-      public MyEntityOne(
-            @JsonProperty( value = "entityPropertyOne" ) List<MyEntityTwo> entityPropertyOne ) {
+      public MyEntityOne( @JsonProperty( value = "entityPropertyOne" ) List<MyEntityTwo> entityPropertyOne ) {
          this.entityPropertyOne = entityPropertyOne;
       }
 

@@ -28,7 +28,6 @@
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;
    bamm:see <http://example.com/me> ;
-   bamm:exampleValue "Example Value" ;
    bamm:characteristic :TestEnumeration .
 
 :TestEnumeration a bamm-c:Enumeration ;
@@ -52,5 +51,4 @@
    bamm:characteristic bamm-c:MultiLanguageText .
 
 :entityInstance a :TestEntity ;
-   :entityProperty "This is a test."@en ;
-   :entityProperty "Dies ist ein Test."@de .
+   :entityProperty "This is a test."@en .

@@ -33,6 +33,7 @@
       bamm:see <http://example.com/omp> ;
       bamm-c:minValue "5"^^xsd:nonNegativeInteger ;
       bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
+      bamm-c:upperBoundDefinition bamm-c:OPEN ;
    ] ;
    bamm-c:baseCharacteristic [
       a bamm:Characteristic ;

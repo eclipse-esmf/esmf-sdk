@@ -24,10 +24,6 @@
    bamm:name "testProperty" ;
    bamm:characteristic :TestEither .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestEitherTwo .
-
 :TestEither a bamm-c:Either ;
    bamm:name "TestEither" ;
    bamm:preferredName "Test Either"@en ;
@@ -48,29 +44,4 @@
    bamm:preferredName "Right Type"@en ;
    bamm:description "Right Type Characteristic"@en ;
    bamm:see <http://example.com/omp> ;
-   bamm:dataType xsd:string .
-
-:TestEitherTwo a bamm-c:Either ;
-   bamm:name "TestEitherTwo" ;
-   bamm:preferredName "Test Either"@en ;
-   bamm:description "Test Either Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm-c:left :LeftTypeTwo ;
-   bamm-c:right :RightTypeTwo .
-
-:LeftTypeTwo a bamm:Characteristic ;
-   bamm:name "LeftTypeTwo" ;
-   bamm:preferredName "Left Type"@en ;
-   bamm:description "Left Type Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:float .
-
-:RightTypeTwo a bamm:Characteristic ;
-   bamm:name "RightTypeTwo" ;
-   bamm:preferredName "Right Type"@en ;
-   bamm:description "Right Type Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
    bamm:dataType xsd:string .
