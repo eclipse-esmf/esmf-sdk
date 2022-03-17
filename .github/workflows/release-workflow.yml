@@ -68,7 +68,7 @@ jobs:
 
       # release-build
       - name: Create GitHub release
-        if: endsWith( github.event.inputs.release_version, '_M' ) != 'true'
+        if: contains( github.event.inputs.release_version, '-M' ) != 'true'
         uses: softprops/action-gh-release@v1
         id: sds_sdk_release
         with:
@@ -82,7 +82,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to OSSRH
-        if: endsWith( github.event.inputs.release_version, '_M' ) != 'true'
+        if: contains( github.event.inputs.release_version, '-M' ) != 'true'
         run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Prelease-build
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
@@ -91,7 +91,7 @@ jobs:
 
       # milestone-build
       - name: Create GitHub release
-        if: endsWith( github.event.inputs.release_version, '_M' )
+        if: contains( github.event.inputs.release_version, '-M' )
         uses: softprops/action-gh-release@v1
         id: sds_sdk_release
         with:
@@ -105,7 +105,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to Github
-        if: endsWith( github.event.inputs.release_version, '_M' )
+        if: contains( github.event.inputs.release_version, '-M' )
         run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
