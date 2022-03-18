@@ -62,8 +62,9 @@ jobs:
       - name: Commit version changes and push to upstream repository
         run: |
           git add .
-          git commit -m "Add version ${{ github.event.inputs.release_version }}"
-          git push origin ${{ env.release_branch_name }}
+          if git commit -m "Add version ${{ github.event.inputs.release_version}}"; then
+            git push origin ${{ env.release_branch_name }}
+          fi
       - name: Run tests and build
         run: mvn -B clean install
 
