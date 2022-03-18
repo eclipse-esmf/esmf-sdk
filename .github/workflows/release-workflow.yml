@@ -109,6 +109,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to Github
         condition: ne( '${{ github.event.inputs.release_version }}', 'true')
-        run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
+        run: mvn -s ./.github/workflows/settings.xml -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
