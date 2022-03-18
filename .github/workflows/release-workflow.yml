@@ -5,9 +5,6 @@ on:
       release_version:
         description: 'Version number of the release'
         required: true
-      milestone_version:
-        description: '"true" if a milestone release shall be published'
-        required: false
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -32,6 +29,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
       - name: Sanity check version
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
           current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           release_version=${{ github.event.inputs.release_version }}
