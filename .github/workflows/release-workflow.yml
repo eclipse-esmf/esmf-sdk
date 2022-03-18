@@ -29,7 +29,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
       - name: Sanity check version
-        if: contains( github.event.inputs.release_version, '-M' ) != 'true'
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
           current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           release_version=${{ github.event.inputs.release_version }}
@@ -69,10 +69,10 @@ jobs:
 
       # release-build
       - name: Create GitHub release
-        if: contains( github.event.inputs.release_version, '-M' ) != 'true'
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         uses: softprops/action-gh-release@v1
         id: sds_sdk_release
-        with:
+        with: 
           body: "Release of the BAMM SDK in version v${{ github.event.inputs.release_version  }}."
           tag_name: v${{ github.event.inputs.release_version }}
           target_commitish: ${{ env.release_branch_name }}
@@ -83,7 +83,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to OSSRH
-        if: contains( github.event.inputs.release_version, '-M' ) != 'true'
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Prelease-build
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
