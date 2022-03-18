@@ -5,6 +5,9 @@ on:
       release_version:
         description: 'Version number of the release'
         required: true
+      milestone_version:
+        description: '"true" if a milestone release shall be published'
+        required: false
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -107,6 +110,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to Github
         if: contains( github.event.inputs.release_version, '-M' )
-        run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
+        run: mvn -s ./.github/workflows/settings.xml -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
