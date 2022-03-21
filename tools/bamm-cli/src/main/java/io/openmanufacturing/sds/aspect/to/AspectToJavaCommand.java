@@ -60,20 +60,26 @@ public class AspectToJavaCommand extends AbstractCommand {
    @Override
    public void run() {
       final VersionedModel model = loadModelOrFail( parentCommand.parentCommand.getInput() );
-
-      final boolean enableJacksonAnnotations = !disableJacksonAnnotations;
-      final File templateLibFile = Path.of( templateLib ).toFile();
-      final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses ?
-            (packageName.isEmpty() ?
-                  new StaticMetaModelJavaGenerator( model, executeLibraryMacros, templateLibFile ) :
-                  new StaticMetaModelJavaGenerator( model, packageName, executeLibraryMacros, templateLibFile )) :
-            (packageName.isEmpty() ?
-                  new AspectModelJavaGenerator( model, enableJacksonAnnotations, executeLibraryMacros, templateLibFile ) :
-                  new AspectModelJavaGenerator( model, packageName, enableJacksonAnnotations, executeLibraryMacros, templateLibFile ));
+      final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses ? getStaticModelGenerator( model ) : getModelGenerator( model );
       javaGenerator.generate( artifact -> {
          final String path = artifact.getPackageName();
          final String fileName = artifact.getClassName();
          return getStreamForFile( path.replace( '.', File.separatorChar ), fileName + ".java", outputPath );
       } );
+   }
+
+   private JavaGenerator getStaticModelGenerator( final VersionedModel model ) {
+      final File templateLibFile = Path.of( templateLib ).toFile();
+      return packageName.isEmpty() ?
+            new StaticMetaModelJavaGenerator( model, executeLibraryMacros, templateLibFile ) :
+            new StaticMetaModelJavaGenerator( model, packageName, executeLibraryMacros, templateLibFile );
+   }
+
+   private JavaGenerator getModelGenerator( final VersionedModel model ) {
+      final boolean enableJacksonAnnotations = !disableJacksonAnnotations;
+      final File templateLibFile = Path.of( templateLib ).toFile();
+      return packageName.isEmpty() ?
+            new AspectModelJavaGenerator( model, enableJacksonAnnotations, executeLibraryMacros, templateLibFile ) :
+            new AspectModelJavaGenerator( model, packageName, enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
    }
 }
