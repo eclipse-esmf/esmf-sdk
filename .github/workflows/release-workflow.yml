@@ -27,6 +27,7 @@ jobs:
           server-password: OSSRH_TOKEN
           gpg-private-key: ${{ secrets.PGP_KEY }}
           gpg-passphrase: PGP_KEY_PASSWORD
+          overwrite-settings: false
       - name: Setup Git
         run: |
           git config user.name github-actions
