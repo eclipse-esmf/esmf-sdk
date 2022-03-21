@@ -52,11 +52,9 @@ public class AspectToOpenapiCommand extends AbstractCommand {
          required = true )
    private String aspectApiBaseUrl = "";
 
-   @CommandLine.Option( names = { "--json", "-j" }, description = "Generate OpenAPI JSON specification for an Aspect Model" )
+   @CommandLine.Option( names = { "--json", "-j" },
+         description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
    private boolean generateJsonOpenApiSpec = false;
-
-   @CommandLine.Option( names = { "--yaml", "-y" }, description = "Generate OpenAPI YAML specification for an Aspect Model" )
-   private boolean generateYamlOpenApiSpec = false;
 
    @CommandLine.Option( names = { "--parameter-file", "-p" }, description = "The path to a file including the parameter for the Aspect API endpoints." )
    private String aspectParameterFile;
@@ -100,7 +98,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( loadModelOrFail( parentCommand.parentCommand.getInput() ) );
       if ( generateJsonOpenApiSpec ) {
          generateJson( generator, aspect );
-      } else if ( generateYamlOpenApiSpec ) {
+      } else {
          generateYaml( generator, aspect );
       }
    }
@@ -113,7 +111,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
          out.write( yamlSpec.getBytes() );
          out.close();
       } catch ( final IOException exception ) {
-         throw new CommandException( "Could not generate OpenApi yaml specification.", exception );
+         throw new CommandException( "Could not generate OpenAPI yaml specification.", exception );
       }
    }
 

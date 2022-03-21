@@ -26,14 +26,14 @@ import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectToSchemaCommand.COMMAND_NAME,
+@CommandLine.Command( name = AspectToJsonSchemaCommand.COMMAND_NAME,
       description = "Generate JSON schema for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n",
       mixinStandardHelpOptions = true
 )
-public class AspectToSchemaCommand extends AbstractCommand {
+public class AspectToJsonSchemaCommand extends AbstractCommand {
 
    public static final String COMMAND_NAME = "schema";
 

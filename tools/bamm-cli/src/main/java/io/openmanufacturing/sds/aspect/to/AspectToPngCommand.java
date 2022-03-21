@@ -32,7 +32,8 @@ public class AspectToPngCommand extends AbstractCommand {
 
    public static final String COMMAND_NAME = "png";
 
-   @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path (default: stdout)" )
+   @CommandLine.Option( names = { "--output", "-o" },
+         description = "Output file path (default: stdout; as PNG is a binary format, it is strongly recommended to output the result to a file by using the -o option or the console redirection operator '>')" )
    private String outputFilePath = "-";
 
    @CommandLine.Option( names = { "--language", "-l" }, description = "The language from the model for which the diagram should be generated (default: en)" )

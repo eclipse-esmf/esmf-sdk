@@ -191,36 +191,13 @@ project at all. Provided functions are:
 * Java class generation
 * Static meta model generation
 
-New SDK functionality based on the Aspect Meta Model will always be also provided through the BAMM CLI. Build binary versions of the BAMM CLI are available as
+New SDK functionality based on the Aspect Meta Model will always be also provided through the BAMM CLI. Built binary versions of the BAMM CLI are available as
 part of the [BAMM SDK releases in GitHub](https://github.com/OpenManufacturingPlatform/sds-sdk/releases).
 
 ### Running
 
-For the executable jar, call `java -jar bamm-cli-DEV-SNAPSHOT.jar` followed by one of the following subcommands (
-e.g., `java -jar bamm-cli-DEV-SNAPSHOT.jar help`); for the native binary, call `bamm-cli`
-followed by one of the following subcommands (e.g., `bamm-cli help`). In the following sections, `bamm-cli`
-will be used as the command name, but you can always call the executable jar instead.
-
-To get help for a certain subcommand, add 'help' before the subcommand name or add `--help` to the end, e.g., `bamm-cli help aspect`
-or `bamm-cli aspect --help`. Each subcommand can have its own set of options which allow the user to further fine-tune the execution of the command. The
-available options and their meaning can also be seen in the help text of the individual subcommands.
-
-| Command                               | Description                                                    | Example                                                 |
-|---------------------------------------|----------------------------------------------------------------|---------------------------------------------------------|
-| help                                  | Get overview of all commands                                   | bamm-cli help                                           |
-| help <subcommand>                     | Get help for subcommand                                        | bamm-cli help aspect                                    |
-| aspect help <aspect subcommand>       | Get help for `aspect` subcommands                              | bamm-cli aspect help validate                           |
-| aspect <model> validate               | Validate Aspect Model                                          | bamm-cli aspect AspectModel.ttl validate                |
-| aspect <model> prettyprint            | Pretty-print Aspect Model                                      | bamm-cli aspect AspectModel.ttl prettyprint             |
-| aspect <model> migrate                | Migrate Aspect Model (Bosch or OMP) to latest OMP BAMM version | bamm-cli aspect AspectModel.ttl migrate AspectModel.ttl |
-| aspect <model> to html                | Generate HTML documentation for an Aspect Model                | bamm-cli aspect AspectModel.ttl to html                 |
-| aspect <model> to png                 | Generate PNG diagram for Aspect Model                          | bamm-cli aspect AspectModel.ttl to png                  |
-| aspect <model> to svg                 | Generate SVG diagram for Aspect Model                          | bamm-cli aspect AspectModel.ttl to svg                  |
-| aspect <model> to dot                 | Generate DOT diagram for Aspect Model                          | bamm-cli aspect AspectModel.ttl to dot                  |
-| aspect <model> to java                | Generate Java classes from an Aspect Model                     | bamm-cli aspect AspectModel.ttl to java                 |
-| aspect <model> to openapi             | Generate OpenAPI specification for an Aspect Model             | bamm-cli aspect AspectModel.ttl to openapi -j           |
-| aspect <model> to json                | Generate OpenAPI JSON specification for an Aspect Model        | bamm-cli aspect AspectModel.ttl to json                 |
-| aspect <model> to schema              | Generate JSON schema for an Aspect Model                       | bamm-cli aspect AspectModel.ttl to schema               |
+For information regarding running the command line tool, the available commands and their description, please have a look at the documentation
+under https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/dev-snapshot/tooling-guide/bamm-cli.html.
 
 ## License
 

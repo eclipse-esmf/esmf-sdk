@@ -18,18 +18,18 @@ import io.openmanufacturing.sds.aspect.AspectCommand;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = BammCli.COMMAND_NAME,
-      description = "Command line tool for working with Aspect Models and the Digital Twin System",
+      description = "Command line tool for working with Aspect Models",
       subcommands = { CommandLine.HelpCommand.class },
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n",
       footer = "%nRun @|bold " + BammCli.COMMAND_NAME + " help <command>|@ to display its help."
-            + "%nDocumentation: http://docs.digital-twin.bosch-nexeed.com/"
+            + "%nDocumentation: https://openmanufacturingplatform.github.io/sds-documentation/"
 )
 @SuppressWarnings( "squid:S1147" ) // System.exit is really required here, this is a CLI tool
 public class BammCli extends AbstractCommand {
-   
+
    public static final String COMMAND_NAME = "bamm-cli";
 
    private final CommandLine commandLine = new CommandLine( this );

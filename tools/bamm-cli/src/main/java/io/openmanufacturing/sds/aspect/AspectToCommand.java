@@ -18,9 +18,9 @@ import io.openmanufacturing.sds.aspect.to.AspectToDotCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToHtmlCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToJavaCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToJsonCommand;
+import io.openmanufacturing.sds.aspect.to.AspectToJsonSchemaCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToOpenapiCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToPngCommand;
-import io.openmanufacturing.sds.aspect.to.AspectToSchemaCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToSvgCommand;
 import io.openmanufacturing.sds.exeption.SubCommandException;
 import picocli.CommandLine;
@@ -34,7 +34,7 @@ import picocli.CommandLine;
             AspectToJsonCommand.class,
             AspectToOpenapiCommand.class,
             AspectToPngCommand.class,
-            AspectToSchemaCommand.class,
+            AspectToJsonSchemaCommand.class,
             AspectToSvgCommand.class
       },
       descriptionHeading = "%n@|bold Description|@:%n%n",
