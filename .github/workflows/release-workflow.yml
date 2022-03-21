@@ -106,6 +106,16 @@ jobs:
             **/target/*-${{ github.event.inputs.release_version }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      - name: Print all files
+        run: |
+          echo "print all files current directory"
+          ls -R ./..
+          echo "print all files in directory underneath"
+          ls -R ./..
+          echo current directory: $(pwd)
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to Github
         if: contains( github.event.inputs.release_version, '-M' )
         run: mvn -s ./settings.xml -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
