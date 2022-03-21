@@ -109,7 +109,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Write settings.xml
         if: contains( github.event.inputs.release_version, '-M' )
-        uses: DamianReeves/write-file-action
+        uses: DamianReeves/write-file-action@v1.0
         with:
           path: settings.xml
           contents: |
