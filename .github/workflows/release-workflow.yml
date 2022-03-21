@@ -107,6 +107,31 @@ jobs:
             **/target/*-${{ github.event.inputs.release_version }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      - name: Write settings.xml
+        if: contains( github.event.inputs.release_version, '-M' )
+        uses: DamianReeves/write-file-action
+        with:
+          path: settings.xml
+          contents: |
+            <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+               <servers>
+                  <server>
+                     <id>github</id>
+                     <configuration>
+                        <httpHeaders>
+                           <property>
+                              <name>Authorization</name>
+                              <value>Bearer ${env.GITHUB_TOKEN}</value>
+                           </property>
+                        </httpHeaders>
+                     </configuration>
+                  </server>
+               </servers>
+            </settings>
+          write-mode: overwrite
       - name: Publish to Github
         if: contains( github.event.inputs.release_version, '-M' )
         run: mvn -s ./settings.xml -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
