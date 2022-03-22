@@ -129,6 +129,10 @@ jobs:
                         </httpHeaders>
                      </configuration>
                   </server>
+                  <server>
+                     <id>gpg.passphrase</id>
+                     <passphrase>${env.PGP_KEY_PASSWORD}</passphrase>
+                  </server>
                </servers>
             </settings>
           write-mode: overwrite
