@@ -33,49 +33,59 @@
       <jansi-version>1.18</jansi-version>
    </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.beust</groupId>
-            <artifactId>jcommander</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
+   <dependencies>
+      <dependency>
+         <groupId>io.openmanufacturing</groupId>
+         <artifactId>sds-aspect-model-starter</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.beust</groupId>
+         <artifactId>jcommander</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>ch.qos.logback</groupId>
+         <artifactId>logback-classic</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>info.picocli</groupId>
+         <artifactId>picocli</artifactId>
+         <version>${picocli-version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.fusesource.jansi</groupId>
+         <artifactId>jansi</artifactId>
+         <version>${jansi-version}</version>
+      </dependency>
 
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-lambda</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-test-aspect-models</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+      <!-- Test dependencies -->
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.assertj</groupId>
+         <artifactId>assertj-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.github.stefanbirkner</groupId>
+         <artifactId>system-lambda</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.openmanufacturing</groupId>
+         <artifactId>sds-test-aspect-models</artifactId>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
 
    <build>
       <resources>

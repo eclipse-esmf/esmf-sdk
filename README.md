@@ -191,8 +191,13 @@ project at all. Provided functions are:
 * Java class generation
 * Static meta model generation
 
-New SDK functionality based on the Aspect Meta Model will always be also provided through the BAMM CLI.
-Build binary versions of the BAMM CLI are available as part of the [BAMM SDK releases in GitHub](https://github.com/OpenManufacturingPlatform/sds-sdk/releases).
+New SDK functionality based on the Aspect Meta Model will always be also provided through the BAMM CLI. Built binary versions of the BAMM CLI are available as
+part of the [BAMM SDK releases in GitHub](https://github.com/OpenManufacturingPlatform/sds-sdk/releases).
+
+### Running
+
+For information regarding running the command line tool, the available commands and their description, please have a look at the documentation
+under https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/dev-snapshot/tooling-guide/bamm-cli.html.
 
 ## License
 
