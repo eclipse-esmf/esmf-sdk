@@ -14,13 +14,15 @@ For the executable jar, call `java -jar bamm-cli-{sds-sdk-version}.jar` followed
 In the following sections, `bamm` will be used as the command name.
 
 [TIP]
+====
 To make `bamm-cli` easier to call, you can add an alias to the configuration of the shell of your choice.
 For example, for Bash, you could add the following line to `.bashrc`:
-+
+
 [source,shell,subs="attributes+,+quotes"]
 ----
 alias bamm='java -jar /location/to/bamm-cli-{sds-sdk-version}.jar'
 ----
+====
 
 Successful execution of a command is signaled by returning 0. In case of logical or some other internal problem error code 1 is returned.
 Missing or wrong command parameters result in error code 2 being returned.
