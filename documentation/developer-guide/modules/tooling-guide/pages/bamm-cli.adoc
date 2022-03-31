@@ -10,64 +10,73 @@ TIP: Download latest version: icon:download[] https://github.com/OpenManufacturi
 [[bamm-cli-getting-started]]
 == Running the BAMM CLI
 
-For the executable jar, call `java -jar bamm-cli-{sds-sdk-version}.jar` followed by one of the following subcommands ( e.g., `java -jar bamm-cli-DEV-SNAPSHOT.jar help`).
-In the following sections, `bamm-cli` will be used as the command name.
+For the executable jar, call `java -jar bamm-cli-{sds-sdk-version}.jar` followed by one of the following subcommands (e.g., `java -jar bamm-cli-{sds-sdk-version}.jar help`).
+In the following sections, `bamm` will be used as the command name.
+
+[TIP]
+To make `bamm-cli` easier to call, you can add an alias to the configuration of the shell of your choice.
+For example, for Bash, you could add the following line to `.bashrc`:
++
+[source,shell,subs="attributes+,+quotes"]
+----
+alias bamm='java -jar /location/to/bamm-cli-{sds-sdk-version}.jar'
+----
 
 Successful execution of a command is signaled by returning 0. In case of logical or some other internal problem error code 1 is returned.
 Missing or wrong command parameters result in error code 2 being returned.
 
-To get help for a certain subcommand, add 'help' before the subcommand name or add `--help` to the end, e.g., `bamm-cli help aspect`
-or `bamm-cli aspect --help`.
+To get help for a certain subcommand, add 'help' before the subcommand name or add `--help` to the end, e.g., `bamm help aspect`
+or `bamm aspect --help`.
 Each subcommand can have its own set of options which allow the user to further fine-tune the execution of the command.
 The available options and their meaning can also be seen in the help text of the individual subcommands.
 
 [width="100%",options="header",cols="20,50,30"]
 |===
 | Command | Description/Options | Examples
-| help                                  | Get overview of all commands                                   | bamm-cli help
-| help <subcommand>                     | Get help for a specific subcommand                             | bamm-cli help aspect
-| aspect help <aspect subcommand>       | Get help for `aspect` subcommands                              | bamm-cli aspect help validate
-| aspect <model> validate               | Validate Aspect Model                                          | bamm-cli aspect AspectModel.ttl validate
-| aspect <model> prettyprint            | Pretty-print Aspect Model                                      | bamm-cli aspect AspectModel.ttl prettyprint
-|                                       |   _--output, -o_ : the output will be saved to the given file  | bamm-cli aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl
-| aspect <model> migrate                | Migrate Aspect Model (Bosch or OMP) to latest OMP BAMM version | bamm-cli aspect AspectModel.ttl migrate AspectModel.ttl
-|                                       |    _--output, -o_ : the output will be saved to the given file | bamm-cli aspect AspectModel.ttl migrate AspectModel.ttl -o c:\Results\MigratedModel.ttl
-| aspect <model> to html                | Generate HTML documentation for an Aspect Model                | bamm-cli aspect AspectModel.ttl to html
-|                                       |    _--output, -o_ : the output will be saved to the given file | bamm-cli aspect AspectModel.ttl to html -o c:\Model.html
-|                                       |    _--css, -c_ : CSS file with custom styles to be included in the generated HTML documentation | bamm-cli aspect AspectModel.ttl to html -c c:\styles.css
-|                                       |    _--language, -l_ : The language from the model for which the html should be generated (default: en) | bamm-cli aspect AspectModel.ttl to html -l de
-| aspect <model> to png                 | Generate PNG diagram for Aspect Model                          | bamm-cli aspect AspectModel.ttl to png
-|                                       |    _--output, -o_ : output file path (default: stdout); as PNG is a binary format, it is strongly recommended to output the result to a file by using the -o option or the console redirection operator '>')|
-|                                       |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
-| aspect <model> to svg                 | Generate SVG diagram for Aspect Model                          | bamm-cli aspect AspectModel.ttl to svg
-|                                       |    _--output, -o_ : the output will be saved to the given file |
-|                                       |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
-| aspect <model> to dot                 | Generate DOT diagram for Aspect Model                          | bamm-cli aspect AspectModel.ttl to dot
-|                                       |    _--output, -o_ : output file path (default: stdout)         |
-|                                       |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
-| aspect <model> to java                | Generate Java classes from an Aspect Model                     | bamm-cli aspect AspectModel.ttl to java
-|                                       |  _--output-directory, -d_ : output directory to write files to (default: current directory)|
-|                                       |  _--package-name, -pn_ : package to use for generated Java classes| bamm-cli aspect AspectModel.ttl to java -pn org.company.product
-|                                       |  _--no-jackson, -nj_ : disable Jackson annotation generation in generated Java classes|
-|                                       |  _--template-library-file, -tlf_ : the path and name of the velocity template file containing the macro library|
-|                                       |  _--execute-library-macros, -elm_ : Execute the macros provided in the velocity macro library|
-|                                       |  _--static, -s_ : generate Java domain classes for a Static Meta Model|
-| aspect <model> to openapi             | Generate OpenAPI specification for an Aspect Model             | bamm-cli aspect AspectModel.ttl to openapi -j
-|                                       |  _--output, -o_ : output file path (default: stdout)           |
-|                                       |  _--api-base-url, -b_ : the base url for the Aspect API used in the OpenAPI specification| bamm-cli aspect AspectModel.ttl to openapi -j -b http://mysite.de
-|                                       |  _--json, -j_ : generate a JSON specification for an Aspect Model (default format is YAML)|
-|                                       |  _--parameter-file, -p_ : the path to a file including the parameter for the Aspect API endpoints| For detailed description, see the section bellow
-|                                       |  _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the version for the Aspect API|
-|                                       |  _--resource-path, -r_ : the resource path for the Aspect API endpoints| For detailed description, see the section bellow
-|                                       |  _--include-query-api, -q_ : include the path for the Query Aspect API Endpoint in the OpenAPI specification|
-|                                       |  _--paging-none, -pn_ : exclude paging information for the Aspect API Endpoint in the OpenAPI specification|
-|                                       |  _--paging-cursor-based, -pc_ : in case there is more than one paging possibility, it has to be cursor based paging|
-|                                       |  _--paging-offset-based, -po_ : in case there is more than one paging possibility, it has to be offset based paging|
-|                                       |  _--paging-time-based, -pt_ : in case there is more than one paging possibility, it has to be time based paging|
-| aspect <model> to json                | Generate OpenAPI JSON specification for an Aspect Model        | bamm-cli aspect AspectModel.ttl to json
-|                                       |  _--output, -o_ : output file path (default: stdout)           |
-| aspect <model> to schema              | Generate JSON schema for an Aspect Model                       | bamm-cli aspect AspectModel.ttl to schema
-|                                       |  _--output, -o_ : output file path (default: stdout)           |
+| help                                  | Get overview of all commands                                   | `bamm help`
+| help <subcommand>                     | Get help for a specific subcommand                             | `bamm help aspect`
+| aspect help <aspect subcommand>       | Get help for `aspect` subcommands                              | `bamm aspect help validate`
+| aspect <model> validate               | Validate Aspect Model                                          | `bamm aspect AspectModel.ttl validate`
+.2+| aspect <model> prettyprint         | Pretty-print Aspect Model                                      | `bamm aspect AspectModel.ttl prettyprint`
+                                        |   _--output, -o_ : the output will be saved to the given file  | `bamm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
+.2+| aspect <model> migrate             | Migrate Aspect Model to the latest BAMM version                | `bamm aspect AspectModel.ttl migrate AspectModel.ttl`
+                                        |    _--output, -o_ : the output will be saved to the given file | `bamm aspect AspectModel.ttl migrate AspectModel.ttl -o c:\Results\MigratedModel.ttl`
+.4+| aspect <model> to html             | Generate HTML documentation for an Aspect Model                | `bamm aspect AspectModel.ttl to html`
+                                        |    _--output, -o_ : the output will be saved to the given file | `bamm aspect AspectModel.ttl to html -o c:\Model.html`
+                                        |    _--css, -c_ : CSS file with custom styles to be included in the generated HTML documentation | `bamm aspect AspectModel.ttl to html -c c:\styles.css`
+                                        |    _--language, -l_ : The language from the model for which the HTML should be generated (default: en) | `bamm aspect AspectModel.ttl to html -l de`
+.3+| aspect <model> to png              | Generate PNG diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to png`
+                                        |    _--output, -o_ : output file path (default: stdout); as PNG is a binary format, it is strongly recommended to output the result to a file by using the -o option or the console redirection operator '>')|
+                                        |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
+.3+| aspect <model> to svg              | Generate SVG diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to svg`
+                                        |    _--output, -o_ : the output will be saved to the given file |
+                                        |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
+.3+| aspect <model> to dot              | Generate https://graphviz.org/doc/info/lang.html[DOT] diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to dot`
+                                        |    _--output, -o_ : output file path (default: stdout)         |
+                                        |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
+.7+| aspect <model> to java             | Generate Java classes from an Aspect Model                     | `bamm aspect AspectModel.ttl to java`
+                                        |  _--output-directory, -d_ : output directory to write files to (default: current directory)|
+                                        |  _--package-name, -pn_ : package to use for generated Java classes| `bamm aspect AspectModel.ttl to java -pn org.company.product`
+                                        |  _--no-jackson, -nj_ : disable https://github.com/FasterXML/jackson[Jackson] annotation generation in generated Java classes|
+                                        |  _--template-library-file, -tlf_ : the path and name of the https://velocity.apache.org/[Velocity] template file containing the macro library|
+                                        |  _--execute-library-macros, -elm_ : Execute the macros provided in the https://velocity.apache.org/[Velocity] macro library|
+                                        |  _--static, -s_ : generate Java domain classes for a Static Meta Model|
+.12+| aspect <model> to openapi         | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model             | `bamm aspect AspectModel.ttl to openapi -j`
+                                        |  _--output, -o_ : output file path (default: stdout)           |
+                                        |  _--api-base-url, -b_ : the base url for the Aspect API used in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification| `bamm aspect AspectModel.ttl to openapi -j -b \http://mysite.de`
+                                        |  _--json, -j_ : generate a JSON specification for an Aspect Model (default format is YAML)|
+                                        |  _--parameter-file, -p_ : the path to a file including the parameter for the Aspect API endpoints| For detailed description, see the section bellow
+                                        |  _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the version for the Aspect API|
+                                        |  _--resource-path, -r_ : the resource path for the Aspect API endpoints| For detailed description, see the section bellow
+                                        |  _--include-query-api, -q_ : include the path for the Query Aspect API Endpoint in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification|
+                                        |  _--paging-none, -pn_ : exclude paging information for the Aspect API Endpoint in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification|
+                                        |  _--paging-cursor-based, -pc_ : in case there is more than one paging possibility, it has to be cursor based paging|
+                                        |  _--paging-offset-based, -po_ : in case there is more than one paging possibility, it has to be offset based paging|
+                                        |  _--paging-time-based, -pt_ : in case there is more than one paging possibility, it has to be time based paging|
+.2+| aspect <model> to json             | Generate OpenAPI JSON specification for an Aspect Model        | `bamm aspect AspectModel.ttl to json`
+                                        |  _--output, -o_ : output file path (default: stdout)           |
+.2+| aspect <model> to schema           | Generate JSON schema for an Aspect Model                       | `bamm aspect AspectModel.ttl to schema`
+                                        |  _--output, -o_ : output file path (default: stdout)           |
 |===
 
 == Using the CLI to create a JSON OpenAPI Specification

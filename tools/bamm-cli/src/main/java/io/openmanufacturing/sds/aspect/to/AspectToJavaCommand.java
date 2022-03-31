@@ -39,13 +39,13 @@ public class AspectToJavaCommand extends AbstractCommand {
    private boolean disableJacksonAnnotations = false;
 
    @CommandLine.Option( names = { "--template-library-file", "-tlf" },
-         description = "The path and name of the velocity template file containing the macro library." )
+         description = "The path and name of the Velocity template file containing the macro library." )
    private String templateLib = "";
 
    @CommandLine.Option( names = { "--package-name", "-pn" }, description = "Package to use for generated Java classes" )
    private String packageName = "";
 
-   @CommandLine.Option( names = { "--execute-library-macros", "-elm" }, description = "Execute the macros provided in the velocity macro library." )
+   @CommandLine.Option( names = { "--execute-library-macros", "-elm" }, description = "Execute the macros provided in the Velocity macro library." )
    private boolean executeLibraryMacros = false;
 
    @CommandLine.Option( names = { "--output-directory", "-d" }, description = "Output directory to write files to" )
