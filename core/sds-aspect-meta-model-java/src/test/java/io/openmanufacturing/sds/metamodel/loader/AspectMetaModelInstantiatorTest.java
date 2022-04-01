@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.metamodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
@@ -40,6 +42,13 @@ import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestModel;
 
 public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
+   @ParameterizedTest
+   @EnumSource( value = TestAspect.class )
+   public void testLoadAspectExpectSuccess( final TestAspect aspect ) {
+      assertThatCode( () ->
+            loadAspect( aspect, KnownVersion.getLatest() )
+      ).doesNotThrowAnyException();
+   }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
