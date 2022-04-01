@@ -43,9 +43,9 @@ and are built using
 
 Are you having trouble with SDS SDK? We want to help!
 
-* Check the [SDS SDK developer documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/dev-snapshot/index.html)
-* Check the BAMM specification [specification](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/index.html)
-* Having issues with the SDS SDK? Open a [GitHub issue]( https://github.com/OpenManufacturingPlatform/sds-sdk/issues).
+* Check the [SDS SDK developer documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/index.html)
+* Check the BAMM [specification](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/index.html)
+* Having issues with the SDS SDK? Open a [GitHub issue](https://github.com/OpenManufacturingPlatform/sds-sdk/issues).
 
 ## Build and contribute
 
@@ -196,8 +196,7 @@ part of the [BAMM SDK releases in GitHub](https://github.com/OpenManufacturingPl
 
 ### Running
 
-For information regarding running the command line tool, the available commands and their description, please have a look at the documentation
-under https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/dev-snapshot/tooling-guide/bamm-cli.html.
+For information regarding running the command line tool, the available commands and their description, please have a look at the [documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/tooling-guide/bamm-cli.html).
 
 ## License
 
