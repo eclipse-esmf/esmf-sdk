@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2021, 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -69,7 +69,6 @@ import io.adminshell.aas.v3.model.impl.DefaultSubmodel;
 import io.adminshell.aas.v3.model.impl.DefaultSubmodelElementCollection;
 import io.adminshell.aas.v3.model.impl.DefaultValueList;
 import io.adminshell.aas.v3.model.impl.DefaultValueReferencePair;
-import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
@@ -89,23 +88,16 @@ import io.openmanufacturing.sds.metamodel.State;
 import io.openmanufacturing.sds.metamodel.StructuredValue;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
-import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 import io.vavr.collection.Stream;
 
-/*
 
-Todos for AASXGenerator
-
-TODO Implement mappings of specific characteristics classes from meta model via overwritten visitor methods
-
- */
 public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationShellEnvironment, Context> {
 
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelAASVisitor.class );
 
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
-   public static final String ASSET_NAME = "defautAsset";
+   public static final String ASSET_NAME = "defaultAsset";
    public static final String DEFAULT_LOCALE = "EN";
 
    /**
@@ -257,8 +249,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
             .displayNames( map( property.getPreferredNames() ) )
             .value( property.getExampleValue().isPresent() ? property.getExampleValue().get().toString() : UNKNOWN_EXAMPLE )
             .descriptions( map( property.getDescriptions() ) )
-            .semanticId( buildReferenceToConceptDescription(
-                  property.getCharacteristic() ) ) // this is the link to the conceptDescription containing the details for the Characteristic
+            .semanticId( buildReferenceToConceptDescription( property ) ) // this is the link to the conceptDescription containing the details for the Characteristic
             .build();
    }
 
@@ -327,35 +318,6 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return new DefaultReference.Builder().key( key ).build();
    }
 
-   private void createConceptDescription( Characteristic characteristic, Context context ) {
-      // check if the concept description is already created. If not create a new one.
-      if ( !context.hasEnvironmentConceptDescription( characteristic.getName() ) ) {
-         ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
-               .idShort( characteristic.getName() )
-               .displayNames( map( characteristic.getPreferredNames() ) ) // preferred name not found in AAS
-               .embeddedDataSpecification( extractEmbeddedDataSpecification( characteristic ) )
-               .identification( extractIdentifier( characteristic ) )
-               .build();
-         context.getEnvironment().getConceptDescriptions().add( conceptDescription );
-      }
-   }
-
-   /*TODO according to https://inside-docupedia.bosch.com/confluence/display/DTS/Conversion+BAMM+Aspect+to+AASX+Submodel
-use the following schema to generate ids for concept descriptions
-Every concept description needs a unique global id. This is why the urn of BAMM was extended using the following pattern:
-<urn of aspect model>:<property | characteristic | entity  >:<name>
-<urn of aspect model | urn of DTS system>:characteristic:value:<name>   for values of enumerations
-<urn of DTS system>:characteristic:<name>  for predefined characteristics or data types of BAMM
-<urn of DTS system> := urn:bamm:com.bosch.nexeed.digitaltwin:
-*/
-   private String determineIdentifierFor(IsDescribed isDescribed) {
-      if(isDescribed.getAspectModelUrn().isPresent()){
-         return isDescribed.getAspectModelUrn().get().toString();
-      }else {
-         return isDescribed.getName();
-      }
-   }
-
    private Reference buildReferenceToConceptDescription( Characteristic characteristic ) {
       Key key = new DefaultKey.Builder()
             .idType( KeyType.CUSTOM )
@@ -365,27 +327,61 @@ Every concept description needs a unique global id. This is why the urn of BAMM 
       return new DefaultReference.Builder().key( key ).build();
    }
 
-   private EmbeddedDataSpecification extractEmbeddedDataSpecification( Characteristic characteristic ) {
+   private Reference buildReferenceToConceptDescription( Property property ) {
+      Key key = new DefaultKey.Builder()
+            .idType( KeyType.CUSTOM )
+            .type( KeyElements.CONCEPT_DESCRIPTION )
+            .value( extractIdentifier( property ).getIdentifier() )
+            .build();
+      return new DefaultReference.Builder().key( key ).build();
+   }
+
+   private String determineIdentifierFor(IsDescribed isDescribed) {
+      if(isDescribed.getAspectModelUrn().isPresent()){
+         return isDescribed.getAspectModelUrn().get().toString();
+      }else {
+         return isDescribed.getName();
+      }
+   }
+
+   private void createConceptDescription( Property property, Context context ) {
+      Characteristic characteristic = property.getCharacteristic();
+      // check if the concept description is already created. If not create a new one.
+      if ( !context.hasEnvironmentConceptDescription( characteristic.getName() ) ) {
+         ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
+               .idShort( characteristic.getName() )
+               .displayNames( map( characteristic.getPreferredNames() ) )
+               .embeddedDataSpecification( extractEmbeddedDataSpecification( characteristic ) )
+               .identification( extractIdentifier( property ) )
+               .build();
+         context.getEnvironment().getConceptDescriptions().add( conceptDescription );
+      }
+   }
+
+   private EmbeddedDataSpecification extractEmbeddedDataSpecification( Property property ) {
       return new DefaultEmbeddedDataSpecification.Builder()
-            .dataSpecificationContent( extractDataSpecificationContent( characteristic ) )
+            .dataSpecificationContent( extractDataSpecificationContent( property ) )
             .build();
    }
 
-   private DataSpecificationContent extractDataSpecificationContent( Characteristic characteristic ) {
+   private DataSpecificationContent extractDataSpecificationContent( Property property ) {
+
+      List<LangString> definitions = map( property.getCharacteristic().getDescriptions());
+      definitions.addAll( map( property.getDescriptions() ) );
 
       return new DefaultDataSpecificationIEC61360.Builder()
-            .definitions( map( characteristic.getDescriptions() ) )
-            .preferredNames( map( characteristic.getPreferredNames() ) )
-            .shortName( new LangString( characteristic.getName(), DEFAULT_LOCALE ) )
-            .dataType( mapIEC61360DataType( characteristic )  )
+            .definitions( definitions )
+            .preferredNames( map( property.getPreferredNames() ) )
+            .shortName( new LangString( property.getName(), DEFAULT_LOCALE ) )
+            .dataType( mapIEC61360DataType( property.getCharacteristic() )  )
             .build();
    }
 
-   private void createSubmodelElement( Characteristic characteristic, SubmodelElementBuilder op, Context context ) {
+   private void createSubmodelElement( SubmodelElementBuilder op, Context context ) {
       Property property = context.getProperty();
       SubmodelElement submodelElement = op.build( property );
       context.setPropertyResult( submodelElement );
-      createConceptDescription( characteristic, context );
+      createConceptDescription( property, context );
    }
 
    private DataTypeIEC61360 mapIEC61360DataType( Characteristic characteristic) {
@@ -395,27 +391,26 @@ Every concept description needs a unique global id. This is why the urn of BAMM 
    }
 
    private DataTypeIEC61360 mapIEC61360DataType( String urn) {
-      Resource resource = ResourceFactory.createResource( urn);
+      Resource resource = ResourceFactory.createResource( urn );
       return TYPE_MAP.getOrDefault( resource, DataTypeIEC61360.STRING );
    }
 
    @Override
    public AssetAdministrationShellEnvironment visitCharacteristic( Characteristic characteristic, Context context ) {
-      createSubmodelElement( characteristic, ( property ) -> decideOnMapping( property, context ), context );
+      createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
       return context.environment;
    }
 
    @Override
    public AssetAdministrationShellEnvironment visitCollection( Collection collection, Context context ) {
-      SubmodelElementBuilder builder = ( property ) ->
-         new DefaultSubmodelElementCollection.Builder()
+      SubmodelElementBuilder builder = ( property ) -> new DefaultSubmodelElementCollection.Builder()
                .idShort( property.getName() )
                .displayNames( map( property.getPreferredNames() ) )
                .descriptions( map( property.getDescriptions() ) )
                .values( Collections.singletonList( decideOnMapping( property, context ) ) )
                .build();
 
-      createSubmodelElement( collection, builder, context );
+      createSubmodelElement( builder, context );
       return context.getEnvironment();
    }
 
@@ -428,7 +423,7 @@ Every concept description needs a unique global id. This is why the urn of BAMM 
                .values( Collections.singletonList( decideOnMapping( property, context ) ) )
                .ordered( true )
                .build();
-      createSubmodelElement( list, builder, context );
+      createSubmodelElement( builder, context );
       return context.getEnvironment();
    }
 
@@ -442,7 +437,7 @@ Every concept description needs a unique global id. This is why the urn of BAMM 
                .ordered( false )
                .allowDuplicates( false )
                .build();
-      createSubmodelElement( set, builder, context );
+      createSubmodelElement( builder, context );
       return context.getEnvironment();
    }
 
@@ -456,7 +451,7 @@ Every concept description needs a unique global id. This is why the urn of BAMM 
                .ordered( true )
                .allowDuplicates( false )
                .build();
-      createSubmodelElement( sortedSet, builder, context );
+      createSubmodelElement( builder, context );
       return context.getEnvironment();
    }
 
@@ -478,13 +473,13 @@ Every concept description needs a unique global id. This is why the urn of BAMM 
             .values( submodelElements )
             .build();
       context.setPropertyResult( aasSubModelElementCollection );
-      createConceptDescription( either, context );
+      createConceptDescription( context.getProperty(), context );
       return context.environment;
    }
 
    @Override
    public AssetAdministrationShellEnvironment visitQuantifiable( Quantifiable quantifiable, Context context ) {
-      createSubmodelElement( quantifiable, ( property ) -> decideOnMapping( property, context ), context );
+      createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
 
       if ( quantifiable.getUnit().isPresent() ) {
          ConceptDescription conceptDescription = context.getConceptDescription( determineIdentifierFor( quantifiable ) );
@@ -512,7 +507,7 @@ Every concept description needs a unique global id. This is why the urn of BAMM 
 
    @Override
    public AssetAdministrationShellEnvironment visitEnumeration( Enumeration enumeration, Context context ) {
-      createSubmodelElement( enumeration, ( property ) -> decideOnMapping( property, context ), context );
+      createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
 
       ConceptDescription conceptDescription = context.getConceptDescription( determineIdentifierFor( enumeration ) );
       List<EmbeddedDataSpecification> embeddedDataSpecification = conceptDescription.getEmbeddedDataSpecifications();

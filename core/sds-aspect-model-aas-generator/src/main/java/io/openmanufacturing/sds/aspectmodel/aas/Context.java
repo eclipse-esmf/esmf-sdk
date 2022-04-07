@@ -1,6 +1,19 @@
+/*
+ * Copyright (c) 2021, 2022 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package io.openmanufacturing.sds.aspectmodel.aas;
 
 import java.util.List;
+import java.util.Optional;
 
 import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
 import io.adminshell.aas.v3.model.ConceptDescription;
@@ -21,11 +34,16 @@ public class Context {
    }
 
    public boolean hasEnvironmentConceptDescription( String name ) {
-      return getEnvironment().getConceptDescriptions().stream().anyMatch( x -> x.getIdShort() == name );
+      return getEnvironment().getConceptDescriptions().stream().anyMatch( x -> x.getIdShort().equals(name) );
    }
 
    public ConceptDescription getConceptDescription( String name ) {
-      return getEnvironment().getConceptDescriptions().stream().filter( x -> x.getIdentification().getIdentifier().equals( name ) ).findFirst().get();
+      Optional<ConceptDescription> optional = getEnvironment().getConceptDescriptions().stream().filter( x -> x.getIdentification().getIdentifier().equals( name ) ).findFirst();
+      if(optional.isEmpty()){
+         throw new IllegalArgumentException(
+               String.format( "No ConceptDescription with name %s available.", name ) );
+      }
+      return optional.get();
    }
 
    public AssetAdministrationShellEnvironment getEnvironment() {
@@ -38,7 +56,7 @@ public class Context {
 
    public void appendToSubModelElements( List<SubmodelElement> elements ) {
       // Hint: As the AAS Meta Model Implementation exposes the internal data structure where the elements
-      // of a collection are stored, just setting it would overwrite previous entries. Hence this approach.
+      // of a collection are stored, just setting it would overwrite previous entries. Hence, this approach.
       getSubmodel().getSubmodelElements().addAll( elements );
    }
 
