@@ -19,6 +19,15 @@ an error occurs, the object can also provide the original exception. Compared wi
 as a return type instead has the advantage of enabling composable and better readable code. Please see the
 https://www.vavr.io/vavr-docs/[Vavr User Guide] for more information.
 
+[[versioning]]
+== Getting the right version
+
+The tooling can be made available in two different versions: `release` and `milestone`. The release version represents a stable version of the product
+and can be referenced in your projects in the usual way from the Maven Central repository. There is also the possibility to have the intermediate builds
+made available, these are called `milestone` builds. Instead of Maven Central, these are released via 
+https://github.com/orgs/OpenManufacturingPlatform/packages?repo_name=sds-sdk[GitHub Packages] mechanism.
+For more information about how to reference such artifacts in your projects, please refer to https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package[Github - Installing a package].
+
 [[parsing-aspect-model-urns]]
 == Parsing Aspect Model URNs
 
