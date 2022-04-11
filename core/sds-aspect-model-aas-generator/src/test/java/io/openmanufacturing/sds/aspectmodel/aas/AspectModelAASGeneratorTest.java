@@ -38,7 +38,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 /*
- * TODO Use AAS XSD Schema to validate well formedness -> https://www.rgagnon.com/javadetails/java-0669.html
  *
  */
 class AspectModelAASGeneratorTest {
@@ -52,8 +51,9 @@ class AspectModelAASGeneratorTest {
       assertTrue( env.getSubmodels().size() == 1 );
       assertTrue( env.getSubmodels().get( 0 ).getSubmodelElements().size() == 2 );
 
-      DataSpecificationIEC61360 dataSpecificationContent =
-            getDataSpecificationIEC61360( "TestList", env );
+      Set<String> semanticIds = Stream.of("urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", "urn:bamm:io.openmanufacturing.test:1.0.0#testPropertyTwo").collect(Collectors.toCollection(HashSet::new));
+
+      checkDataSpecificationIEC61360(semanticIds, env);
    }
 
    @Test
@@ -137,11 +137,12 @@ class AspectModelAASGeneratorTest {
       Set<String> testValues = Stream.of( "RightEntity", "LeftEntity" ).collect( Collectors.toCollection( HashSet::new ) );
       assertTrue( elementCollection.getValues().stream().anyMatch( x -> testValues.contains( x.getIdShort() ) ), "Neither left nor right entity contained." );
 
-      DataSpecificationIEC61360 dataSpecificationContent =
-            getDataSpecificationIEC61360( "ResultCharacteristic", env );
+      Set<String> semanticIds = Stream.of(
+            "urn:bamm:io.openmanufacturing.test:1.0.0#result",
+            "urn:bamm:io.openmanufacturing.test:1.0.0#error")
+            .collect(Collectors.toCollection(HashSet::new));
 
-      dataSpecificationContent =
-            getDataSpecificationIEC61360( "ErrorCharacteristic", env );
+      checkDataSpecificationIEC61360(semanticIds, env);
    }
 
    @Test
@@ -162,12 +163,23 @@ class AspectModelAASGeneratorTest {
    void test_generate_aasx_from_bamm_with_constraint() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_CONSTRAINT );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
-      assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 6, "Not exactly six Element in SubmodelElements." );
+      assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 6, "Not exactly six Elements in SubmodelElements." );
       SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().stream().
             filter( x -> x.getIdShort().equals( "stringLcProperty" ) ).findFirst().orElseThrow();
       assertEquals( "stringLcProperty", submodelElement.getIdShort() );
 
-      DataSpecificationIEC61360 dataSpecificationContent = getDataSpecificationIEC61360( "Text", env );
+
+      Set<String> semanticIds = Stream.of(
+            "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringLcProperty",
+            "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectdoubleRcProperty",
+            "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectintRcProperty",
+            "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectbigIntRcProperty",
+            "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectfloatRcProperty",
+            "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringRegexcProperty")
+            .collect(Collectors.toCollection(HashSet::new));
+
+      checkDataSpecificationIEC61360(semanticIds, env);
+
    }
 
    @Test
@@ -223,14 +235,18 @@ class AspectModelAASGeneratorTest {
       assertTrue( env.getSubmodels().size() >= 1, "No Submodel in AAS present." );
    }
 
-   private DataSpecificationIEC61360 getDataSpecificationIEC61360( String characteristicsName, AssetAdministrationShellEnvironment env ) {
+   private void checkDataSpecificationIEC61360(Set<String> semanticIds, AssetAdministrationShellEnvironment env){
+      semanticIds.stream().map( x -> getDataSpecificationIEC61360( x, env ) );
+   }
+
+   private DataSpecificationIEC61360 getDataSpecificationIEC61360( String semanticId, AssetAdministrationShellEnvironment env ) {
       List<ConceptDescription> conceptDescriptions = env.getConceptDescriptions();
       List<ConceptDescription> filteredConceptDescriptions =
-            conceptDescriptions.stream().filter( x -> x.getIdShort().equals( characteristicsName ) ).collect( Collectors.toList() );
-      assertEquals( 1, filteredConceptDescriptions.size(), "Not exactly 1 ConceptDescripton for Characteristic." );
+            conceptDescriptions.stream().filter( x -> x.getIdShort().equals( semanticId ) ).collect( Collectors.toList() );
+      assertEquals( 1, filteredConceptDescriptions.size(), "Not exactly 1 ConceptDescripton for semanticId. " + semanticId );
 
       List<EmbeddedDataSpecification> embeddedDataSpecifications = filteredConceptDescriptions.get( 0 ).getEmbeddedDataSpecifications();
-      assertEquals( 1, embeddedDataSpecifications.size(), "Not exactly 1 EmbeddedDataSpecification for Characteristic." );
+      assertEquals( 1, embeddedDataSpecifications.size(), "Not exactly 1 EmbeddedDataSpecification for semanticId. " + semanticId );
 
       assertTrue( embeddedDataSpecifications.stream().findFirst().isPresent(), "There is no EmbeddedDataSpecification" );
       DataSpecificationIEC61360 dataSpecificationContent =
@@ -238,9 +254,14 @@ class AspectModelAASGeneratorTest {
       return dataSpecificationContent;
    }
 
+   private void checkDataSpecificationIEC61360( String[] propertyUrns, AssetAdministrationShellEnvironment env ) {
+      List<ConceptDescription> conceptDescriptions = env.getConceptDescriptions();
+      Arrays.stream( propertyUrns ).map( x -> getDataSpecificationIEC61360(x, env) );
+   }
+
    private AssetAdministrationShellEnvironment getAssetAdministrationShellFromAspect( TestAspect testAspect ) throws DeserializationException, IOException {
       final Aspect aspect = loadAspect( testAspect );
-      ByteArrayOutputStream out = generator.generateOutput( aspect );
+      ByteArrayOutputStream out = generator.generateXmlOutput( aspect );
       AssetAdministrationShellEnvironment env = loadAASX( out );
       return env;
    }

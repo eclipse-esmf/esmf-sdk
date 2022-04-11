@@ -347,11 +347,11 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    private void createConceptDescription( Property property, Context context ) {
       Characteristic characteristic = property.getCharacteristic();
       // check if the concept description is already created. If not create a new one.
-      if ( !context.hasEnvironmentConceptDescription( characteristic.getName() ) ) {
+      if ( !context.hasEnvironmentConceptDescription( property.getAspectModelUrn().toString() ) ) {
          ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
                .idShort( characteristic.getName() )
                .displayNames( map( characteristic.getPreferredNames() ) )
-               .embeddedDataSpecification( extractEmbeddedDataSpecification( characteristic ) )
+               .embeddedDataSpecification( extractEmbeddedDataSpecification( property ) )
                .identification( extractIdentifier( property ) )
                .build();
          context.getEnvironment().getConceptDescriptions().add( conceptDescription );
@@ -473,7 +473,6 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
             .values( submodelElements )
             .build();
       context.setPropertyResult( aasSubModelElementCollection );
-      createConceptDescription( context.getProperty(), context );
       return context.environment;
    }
 
@@ -482,7 +481,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
 
       if ( quantifiable.getUnit().isPresent() ) {
-         ConceptDescription conceptDescription = context.getConceptDescription( determineIdentifierFor( quantifiable ) );
+         ConceptDescription conceptDescription = context.getConceptDescription( determineIdentifierFor( context.getProperty() ) );
          List<EmbeddedDataSpecification> embeddedDataSpecification = conceptDescription.getEmbeddedDataSpecifications();
          if ( embeddedDataSpecification.stream().findFirst().isPresent() ) {
             DataSpecificationIEC61360 dataSpecificationContent = (DataSpecificationIEC61360)
@@ -509,7 +508,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    public AssetAdministrationShellEnvironment visitEnumeration( Enumeration enumeration, Context context ) {
       createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
 
-      ConceptDescription conceptDescription = context.getConceptDescription( determineIdentifierFor( enumeration ) );
+      ConceptDescription conceptDescription = context.getConceptDescription( determineIdentifierFor( context.getProperty() ) );
       List<EmbeddedDataSpecification> embeddedDataSpecification = conceptDescription.getEmbeddedDataSpecifications();
       if ( embeddedDataSpecification.stream().findFirst().isPresent() ) {
          DataSpecificationIEC61360 dataSpecificationContent = (DataSpecificationIEC61360)
@@ -527,7 +526,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
          dataSpecificationContent.setValueList( valueList );
       }
 
-      return visitCharacteristic( enumeration, context );
+      return context.environment;
    }
 
    @Override

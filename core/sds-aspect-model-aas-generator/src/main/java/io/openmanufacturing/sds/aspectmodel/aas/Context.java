@@ -33,15 +33,15 @@ public class Context {
       this.submodel = ofInterest;
    }
 
-   public boolean hasEnvironmentConceptDescription( String name ) {
-      return getEnvironment().getConceptDescriptions().stream().anyMatch( x -> x.getIdShort().equals(name) );
+   public boolean hasEnvironmentConceptDescription( String id ) {
+      return getEnvironment().getConceptDescriptions().stream().anyMatch( x -> x.getIdentification().getIdentifier().equals(id) );
    }
 
-   public ConceptDescription getConceptDescription( String name ) {
-      Optional<ConceptDescription> optional = getEnvironment().getConceptDescriptions().stream().filter( x -> x.getIdentification().getIdentifier().equals( name ) ).findFirst();
+   public ConceptDescription getConceptDescription( String id ) {
+      Optional<ConceptDescription> optional = getEnvironment().getConceptDescriptions().stream().filter( x -> x.getIdentification().getIdentifier().equals( id ) ).findFirst();
       if(optional.isEmpty()){
          throw new IllegalArgumentException(
-               String.format( "No ConceptDescription with name %s available.", name ) );
+               String.format( "No ConceptDescription with name %s available.", id ) );
       }
       return optional.get();
    }
