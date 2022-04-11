@@ -153,14 +153,12 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
 
       submodel.setIdShort( aspect.getName() );
       submodel.setSemanticId( buildReferenceToAspectModel( aspect ) );
-      //submodel.setIdentification(extractIdentifier(aspect)); // should be removed for now
       submodel.setDescriptions( map( aspect.getDescriptions() ) );
       submodel.setKind( ModelingKind.TEMPLATE );
 
       AssetAdministrationShell administrationShell =
             new DefaultAssetAdministrationShell.Builder()
                   .idShort( ADMIN_SHELL_NAME )
-                  //.submodel(buildReferenceToSubmodel(submodel))
                   .build();
       context.getEnvironment().setAssetAdministrationShells( Collections.singletonList( administrationShell ) );
 
@@ -291,14 +289,6 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return langString;
    }
 
-   private Reference buildReferenceToSubmodel( Submodel submodel ) {
-      Key key = new DefaultKey.Builder()
-            .idType( KeyType.CUSTOM )
-            .type( KeyElements.SUBMODEL )
-            .value( submodel.getIdentification().getIdentifier() )
-            .build();
-      return new DefaultReference.Builder().key( key ).build();
-   }
 
    private Reference buildReferenceToEnumValue( Enumeration enumeration, Object value ) {
       Key key = new DefaultKey.Builder()
