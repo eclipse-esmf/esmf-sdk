@@ -20,6 +20,12 @@ One example use of the generator is with the BAMM CLI, which provides the AAS ge
 ```
 java -jar bamm-cli.jar -i org.idtwin/1.0.0/Nameplate.ttl -aas-xml
 ```
+or
+```
+java -jar bamm-cli.jar -i org.idtwin/1.0.0/Nameplate.ttl -aas-aasx
+```
+The first call generates a plain xml represenation of the AAS whereas the second one generates an AASX archive
+with the AAS xml file in it.
 
 Should the generator be integrated into custom implementations, the class ``AspectModelAASGenerator``
 with its method ``io.openmanufacturing.sds.aspectmodel.aas.AspectModelAASGenerator.generateOutput`` is the 

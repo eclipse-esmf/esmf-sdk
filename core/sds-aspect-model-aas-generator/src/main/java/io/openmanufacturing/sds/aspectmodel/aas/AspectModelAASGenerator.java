@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.util.function.Function;
 
 import io.adminshell.aas.v3.dataformat.SerializationException;
+import io.adminshell.aas.v3.dataformat.aasx.AASXSerializer;
 import io.adminshell.aas.v3.dataformat.xml.XmlSerializer;
 import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
 import io.openmanufacturing.sds.metamodel.Aspect;
@@ -29,11 +30,31 @@ public class AspectModelAASGenerator {
 
    public void generateAASXFile( final Aspect aspect, final Function<String, OutputStream> nameMapper ) throws IOException {
       try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
-         output.write( generateOutput( aspect ).toByteArray() );
+         output.write( generateAasxOutput( aspect ).toByteArray() );
       }
    }
 
-   public ByteArrayOutputStream generateOutput( Aspect aspect ) throws IOException {
+   public void generateAasXmlFile( final Aspect aspect, final Function<String, OutputStream> nameMapper ) throws IOException {
+      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
+         output.write( generateXmlOutput( aspect ).toByteArray() );
+      }
+   }
+
+   public ByteArrayOutputStream generateAasxOutput( Aspect aspect ) throws IOException {
+      final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
+      AssetAdministrationShellEnvironment environment = visitor.visitAspect( aspect, null );
+
+
+      try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
+         AASXSerializer serializer = new AASXSerializer();
+         serializer.write( environment,null,out );
+         return out;
+      } catch ( SerializationException e ) {
+         throw new IOException( e );
+      }
+   }
+
+   public ByteArrayOutputStream generateXmlOutput( Aspect aspect ) throws IOException {
       final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
       AssetAdministrationShellEnvironment environment = visitor.visitAspect( aspect, null );
 

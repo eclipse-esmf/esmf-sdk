@@ -351,7 +351,6 @@
                 <artifactId>model</artifactId>
                 <version>${io-admin-shell-aas-model}</version>
             </dependency>
-            <!-- TODO extract version number to parent pom -->
             <dependency>
                 <groupId>io.admin-shell.aas</groupId>
                 <artifactId>dataformat-xml</artifactId>
@@ -362,6 +361,17 @@
                         <artifactId>slf4j-simple</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+               <groupId>io.admin-shell.aas</groupId>
+               <artifactId>dataformat-aasx</artifactId>
+               <version>${io-admin-shell-aas-serializer}</version>
+               <exclusions>
+                  <exclusion>
+                     <groupId>org.slf4j</groupId>
+                     <artifactId>slf4j-simple</artifactId>
+                  </exclusion>
+               </exclusions>
             </dependency>
         </dependencies>
    </dependencyManagement>

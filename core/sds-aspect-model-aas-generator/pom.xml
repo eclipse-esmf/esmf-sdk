@@ -35,6 +35,10 @@
             <artifactId>dataformat-xml</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.admin-shell.aas</groupId>
+            <artifactId>dataformat-aasx</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.openmanufacturing</groupId>
             <artifactId>sds-test-resources</artifactId>
         </dependency>
