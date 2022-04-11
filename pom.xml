@@ -477,6 +477,11 @@
             </executions>
          </plugin>
          <plugin>
+            <!--
+              This plugin strips down original pom.xml to a required minimum and stores it within the final artifact in favor of the original one.
+              Original pom.xml will be kept untouched. For convenience you'll find the flattened version after a Maven build next to the original pom.xml.
+              This results in a more streamlined POM which is much easier to grasp as a consuming developer of the SDK.
+            -->
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>flatten-maven-plugin</artifactId>
             <configuration>
