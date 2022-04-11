@@ -308,14 +308,6 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return new DefaultReference.Builder().key( key ).build();
    }
 
-   private Reference buildReferenceToConceptDescription( Characteristic characteristic ) {
-      Key key = new DefaultKey.Builder()
-            .idType( KeyType.CUSTOM )
-            .type( KeyElements.CONCEPT_DESCRIPTION )
-            .value( extractIdentifier( characteristic ).getIdentifier() )
-            .build();
-      return new DefaultReference.Builder().key( key ).build();
-   }
 
    private Reference buildReferenceToConceptDescription( Property property ) {
       Key key = new DefaultKey.Builder()
