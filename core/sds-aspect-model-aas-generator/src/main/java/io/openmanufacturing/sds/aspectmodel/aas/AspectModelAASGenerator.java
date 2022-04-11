@@ -28,19 +28,33 @@ import io.openmanufacturing.sds.metamodel.Aspect;
  */
 public class AspectModelAASGenerator {
 
+   /**
+    * Generates an AASX archive file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
+    *
+    * @param aspect the Aspect for which an AASX archive shall be generated
+    * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
+    * @throws IOException in case the generation can not properly be executed
+    */
    public void generateAASXFile( final Aspect aspect, final Function<String, OutputStream> nameMapper ) throws IOException {
       try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
          output.write( generateAasxOutput( aspect ).toByteArray() );
       }
    }
 
+   /**
+    * Generates an AAS XML archive file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
+    *
+    * @param aspect the Aspect for which an AASX archive shall be generated
+    * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
+    * @throws IOException in case the generation can not properly be executed
+    */
    public void generateAasXmlFile( final Aspect aspect, final Function<String, OutputStream> nameMapper ) throws IOException {
       try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
          output.write( generateXmlOutput( aspect ).toByteArray() );
       }
    }
 
-   public ByteArrayOutputStream generateAasxOutput( Aspect aspect ) throws IOException {
+   protected ByteArrayOutputStream generateAasxOutput( Aspect aspect ) throws IOException {
       final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
       AssetAdministrationShellEnvironment environment = visitor.visitAspect( aspect, null );
 
@@ -54,7 +68,7 @@ public class AspectModelAASGenerator {
       }
    }
 
-   public ByteArrayOutputStream generateXmlOutput( Aspect aspect ) throws IOException {
+   protected ByteArrayOutputStream generateXmlOutput( Aspect aspect ) throws IOException {
       final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
       AssetAdministrationShellEnvironment environment = visitor.visitAspect( aspect, null );
 

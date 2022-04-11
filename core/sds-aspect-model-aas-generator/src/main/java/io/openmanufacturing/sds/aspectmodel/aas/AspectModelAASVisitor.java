@@ -99,6 +99,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
    public static final String ASSET_NAME = "defaultAsset";
    public static final String DEFAULT_LOCALE = "EN";
+   public static final String CONCEPT_DESCRIPTION_CATEGORY = "APPLICATION_CLASS";
 
    /**
     * Maps Aspect types to DataTypeIEC61360 Schema types, with no explicit mapping defaulting to string
@@ -152,9 +153,11 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       Submodel submodel = context.getSubmodel();
 
       submodel.setIdShort( aspect.getName() );
-      submodel.setSemanticId( buildReferenceToAspectModel( aspect ) );
+      submodel.setSemanticId( buildReferenceToConceptDescription( aspect ) );
       submodel.setDescriptions( map( aspect.getDescriptions() ) );
       submodel.setKind( ModelingKind.TEMPLATE );
+
+      createConceptDescription( aspect, context );
 
       AssetAdministrationShell administrationShell =
             new DefaultAssetAdministrationShell.Builder()
@@ -299,11 +302,12 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return new DefaultReference.Builder().key( key ).build();
    }
 
-   private Reference buildReferenceToAspectModel( Aspect aspect ) {
+
+   private Reference buildReferenceToConceptDescription( Aspect aspect ) {
       Key key = new DefaultKey.Builder()
             .idType( KeyType.CUSTOM )
-            .type( KeyElements.GLOBAL_REFERENCE )
-            .value( aspect.getName() )
+            .type( KeyElements.CONCEPT_DESCRIPTION )
+            .value( extractIdentifier( aspect ).getIdentifier() )
             .build();
       return new DefaultReference.Builder().key( key ).build();
    }
@@ -340,9 +344,30 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       }
    }
 
+   private void createConceptDescription( Aspect aspect, Context context ) {
+      // check if the concept description is already created. If not create a new one.
+      if ( !context.hasEnvironmentConceptDescription( aspect.getAspectModelUrn().toString() ) ) {
+         ConceptDescription conceptDescription = new DefaultConceptDescription.Builder()
+               .idShort( aspect.getName() )
+               .displayNames( map( aspect.getPreferredNames() ) )
+               .embeddedDataSpecification( extractEmbeddedDataSpecification( aspect ) )
+               .identification( extractIdentifier( aspect ) )
+               .descriptions( map(aspect.getDescriptions()) )
+               .category( CONCEPT_DESCRIPTION_CATEGORY )
+               .build();
+         context.getEnvironment().getConceptDescriptions().add( conceptDescription );
+      }
+   }
+
    private EmbeddedDataSpecification extractEmbeddedDataSpecification( Property property ) {
       return new DefaultEmbeddedDataSpecification.Builder()
             .dataSpecificationContent( extractDataSpecificationContent( property ) )
+            .build();
+   }
+
+   private EmbeddedDataSpecification extractEmbeddedDataSpecification( Aspect aspect ) {
+      return new DefaultEmbeddedDataSpecification.Builder()
+            .dataSpecificationContent( extractDataSpecificationContent( aspect ) )
             .build();
    }
 
@@ -356,6 +381,17 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
             .preferredNames( map( property.getPreferredNames() ) )
             .shortName( new LangString( property.getName(), DEFAULT_LOCALE ) )
             .dataType( mapIEC61360DataType( property.getCharacteristic() )  )
+            .build();
+   }
+
+   private DataSpecificationContent extractDataSpecificationContent( Aspect aspect ) {
+
+      List<LangString> definitions = map( aspect.getDescriptions());
+
+      return new DefaultDataSpecificationIEC61360.Builder()
+            .definitions( definitions )
+            .preferredNames( map( aspect.getPreferredNames() ) )
+            .shortName( new LangString( aspect.getName(), DEFAULT_LOCALE ) )
             .build();
    }
 
@@ -542,5 +578,4 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       // ignored and have to be deduced by resolving a BAMM model referenced by its semanticID
       return visitCharacteristic( trait.getBaseCharacteristic(), context );
    }
-
 }

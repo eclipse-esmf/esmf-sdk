@@ -37,9 +37,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-/*
- *
- */
 class AspectModelAASGeneratorTest {
 
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
@@ -47,11 +44,14 @@ class AspectModelAASGeneratorTest {
    @Test
    void test_generate_aasx_from_bamm_aspect_with_list_and_additional_property() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY );
-      assertTrue( env.getConceptDescriptions().size() == 2 );
-      assertTrue( env.getSubmodels().size() == 1 );
-      assertTrue( env.getSubmodels().get( 0 ).getSubmodelElements().size() == 2 );
+      assertEquals( 3, env.getConceptDescriptions().size());
+      assertEquals( 1, env.getSubmodels().size() );
+      assertEquals( 2, env.getSubmodels().get( 0 ).getSubmodelElements().size() );
 
-      Set<String> semanticIds = Stream.of("urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", "urn:bamm:io.openmanufacturing.test:1.0.0#testPropertyTwo").collect(Collectors.toCollection(HashSet::new));
+      Set<String> semanticIds = Stream.of(
+            "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty",
+            "urn:bamm:io.openmanufacturing.test:1.0.0#testPropertyTwo")
+            .collect(Collectors.toCollection(HashSet::new));
 
       checkDataSpecificationIEC61360(semanticIds, env);
    }
@@ -192,7 +192,7 @@ class AspectModelAASGeneratorTest {
    @Test
    void test_generate_aasx_from_bamm_aspect_with_code() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_CODE );
-      assertEquals( 1, env.getConceptDescriptions().size() );
+      assertEquals( 2, env.getConceptDescriptions().size() );
       assertEquals( 1, env.getSubmodels().size() );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size() );
       Property submodelElement = (Property) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
@@ -206,10 +206,11 @@ class AspectModelAASGeneratorTest {
    @Test
    void test_generate_aasx_from_bamm_aspect_with_enumeration() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENUMERATION );
-      assertEquals( 1, env.getConceptDescriptions().size() );
+
+      assertEquals( 2, env.getConceptDescriptions().size() );
 
       DataSpecificationIEC61360 dataSpecificationContent = (DataSpecificationIEC61360)
-            env.getConceptDescriptions().stream().findFirst().get()
+            env.getConceptDescriptions().stream().filter( x -> x.getIdShort().equals( "TestEnumeration" ) ).findFirst().get()
                   .getEmbeddedDataSpecifications().stream().findFirst().get( )
                   .getDataSpecificationContent();
       assertEquals( 3, dataSpecificationContent.getValueList().getValueReferencePairTypes().size());
