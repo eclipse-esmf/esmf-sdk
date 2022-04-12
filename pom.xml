@@ -85,6 +85,7 @@
       <lombok-version>1.18.20</lombok-version>
       <maven-plugin-annotations-version>3.5</maven-plugin-annotations-version>
       <maven-plugin-depdendencies-version>3.3.9</maven-plugin-depdendencies-version>
+      <maven-plugin-flatten-version>1.2.7</maven-plugin-flatten-version>
       <maven-plugin-plugin-version>3.6.4</maven-plugin-plugin-version>
       <maven-plugin-testing-harness-version>3.3.0</maven-plugin-testing-harness-version>
       <rgxgen-version>1.3</rgxgen-version>
@@ -363,6 +364,11 @@
                <version>${build-helper-maven-plugin-version}</version>
             </plugin>
             <plugin>
+               <groupId>org.codehaus.mojo</groupId>
+               <artifactId>flatten-maven-plugin</artifactId>
+               <version>${maven-plugin-flatten-version}</version>
+            </plugin>
+            <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-jar-plugin</artifactId>
                <version>${maven-jar-plugin-version}</version>
@@ -467,6 +473,35 @@
                   <configuration>
                      <destFile>${project.build.directory}/jacoco.exec</destFile>
                   </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <!--
+              This plugin strips down original pom.xml to a required minimum and stores it within the final artifact in favor of the original one.
+              Original pom.xml will be kept untouched. For convenience you'll find the flattened version after a Maven build next to the original pom.xml.
+              This results in a more streamlined POM which is much easier to grasp as a consuming developer of the SDK.
+            -->
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>flatten-maven-plugin</artifactId>
+            <configuration>
+               <!-- see https://central.sonatype.org/publish/requirements -->
+               <flattenMode>ossrh</flattenMode>
+            </configuration>
+            <executions>
+               <execution>
+                  <id>flatten</id>
+                  <phase>process-resources</phase>
+                  <goals>
+                     <goal>flatten</goal>
+                  </goals>
+               </execution>
+               <execution>
+                  <id>clean-flatten</id>
+                  <phase>clean</phase>
+                  <goals>
+                     <goal>clean</goal>
+                  </goals>
                </execution>
             </executions>
          </plugin>
