@@ -3,81 +3,99 @@
 [[bamm-cli]]
 = BAMM CLI
 
-The BAMM CLI is a command line tool for the validation of Aspect models and the generation of artifacts, such as
- documentation or code, from Aspect models.
+The BAMM CLI is a command line tool for the validation of Aspect models and the generation of artifacts, such as documentation or code, from Aspect models.
 
 TIP: Download latest version: icon:download[] https://github.com/OpenManufacturingPlatform/sds-sdk/releases/download/v{sds-sdk-version}/bamm-cli-{sds-sdk-version}.jar[bamm-cli-{sds-sdk-version}.jar]
 
 [[bamm-cli-getting-started]]
 == Running the BAMM CLI
 
-The basic way to run the tool is as follows:
+For the executable jar, call `java -jar bamm-cli-{sds-sdk-version}.jar` followed by one of the following subcommands (e.g., `java -jar bamm-cli-{sds-sdk-version}.jar help`).
+In the following sections, `bamm` will be used as the command name.
+
+[TIP]
+====
+To make `bamm-cli` easier to call, you can add an alias to the configuration of the shell of your choice.
+For example, for Bash, you could add the following line to `.bashrc`:
 
 [source,shell,subs="attributes+,+quotes"]
 ----
-java -jar bamm-cli-{sds-sdk-version}.jar -i _AspectModel.ttl_ _switch_
+alias bamm='java -jar /location/to/bamm-cli-{sds-sdk-version}.jar'
 ----
-where _switch_ is one of the following:
+====
 
-[width="100%", options="header", cols="40,60"]
-|===
-| Switch | Description
-| `--validate` or `-v` | Validate the Aspect model
-| `--generate-documentation` or `-html` | Generate HTML documentation
-| `--generate-dot-diagram` or `-dot` | Generate diagram in https://www.graphviz.org/[Graphviz/DOT] format
-| `--generate-java-classes` or `-java` | Generate Java domain classes (POJOs)
-| `--generate-json-payload` or `-json` | Generate sample JSON payload
-| `--generate-json-schema` or `-schema` | Generate JSON Schema
-| `--generate-openapi-json` or `-oapi-json` | Generate OpenAPI JSON specification for an Aspect Model
-| `--generate-openapi-yaml` or `-oapi-yaml` | Generate OpenAPI YAML specification for an Aspect Model
-| `--generate-png-diagram` or `-png` | Generate diagram in PNG format
-| `--generate-static-java-classes` or `-static-java` | Generate static meta classes
-| `--generate-svg-diagram` or `-svg` | Generate diagram in SVG format
-| `--migrate` or `-m` | Automatically migrate an Aspect model to the latest Meta Model version
-| `--pretty-print` or `-p` | Print an Aspect model nicely formatted
-|===
+Successful execution of a command is signaled by returning 0. In case of logical or some other internal problem error code 1 is returned.
+Missing or wrong command parameters result in error code 2 being returned.
 
-The following switches can be used in addition to the ones above to configure the generation:
-[width="100%", options="header", cols="40,60"]
+To get help for a certain subcommand, add 'help' before the subcommand name or add `--help` to the end, e.g., `bamm help aspect`
+or `bamm aspect --help`.
+Each subcommand can have its own set of options which allow the user to further fine-tune the execution of the command.
+The available options and their meaning can also be seen in the help text of the individual subcommands.
+
+[width="100%",options="header",cols="20,50,30"]
 |===
-| Switch | Description
-| `--output-directory` or `-d` | Set the directory where files are written, defaults to the current directory. This
-  applies to all switches that generate files.
-| `--package-name` or `-pn` | Set the package name for generated Java files. This applies to `-java` and `-static-java`.
-| `--disable-jackson-annotations` or `-dja` | This option is to be used together with `-java` or
-  `-static-java` and will lead to generated Java code that does not contain
-  https://github.com/FasterXML/jackson[Jackson] Annotations.
-| `--execute-library-macros` or `-elm` | This option is used together with `-java` or `-static-java` and lead to generated Java code which includes the output from the custom macros provided via `-tlp` and `-tlfn`.
-| `--template-library-file` or `-tlf` | The path and name of the template file containing custom macros.
-It is used together with `-elm`.
-| `--use-semantic-api-version` or `-sv` | This option is used together with `-oapi-json` or `-oapi-yaml` in order to use
-  the complete semantic version of the Aspect Model as the version of the Aspect API.
-| `--aspect-api-base-url` or `-base-url` | This option is used together with `-oapi-json` or `-oapi-yaml` to provide the
-  base URL for the Aspect API OpenAPI specification.
-| `--include-aspect-query-api` or `-query-api` | This option is used together with `-oapi-json` or `-oapi-yaml` to include
-  the path for the Query Aspect API Endpoint in the OpenAPI specification.
-| `--aspect-exclude-paging` or `-no-paging` | This option is used to exclude the paging information in the OpenAPI specification. Paging is per default activated.
-| `--aspect-time-based-paging` or `-atbp` | This option is used to set the used paging strategy as time-based paging.
-| `--aspect-offset-based-paging` or `-aobp` | This option is used to set the used paging strategy as offset-based paging.
-| `--aspect-cursor-based-paging` or `-acbp` | This option is used to set the used paging strategy as cursor-based paging.
-| `--aspect-resource-path` or `-arp` | This option is used together with `-oapi-json` or `-oapi-yaml` to set the resource-path`
-  for the Aspect API endpoints.
-| `--aspect-parameter-file` or `-apf` | This option is used together with `-oapi-json` or `-oapi-yaml` to set a file including
-  the schema description for the resource. For JSON the description has to be in json, for YAML it has to be in YAML
+| Command | Description/Options | Examples
+| help                                  | Get overview of all commands                                   | `bamm help`
+| help <subcommand>                     | Get help for a specific subcommand                             | `bamm help aspect`
+| aspect help <aspect subcommand>       | Get help for `aspect` subcommands                              | `bamm aspect help validate`
+| aspect <model> validate               | Validate Aspect Model                                          | `bamm aspect AspectModel.ttl validate`
+.2+| aspect <model> prettyprint         | Pretty-print Aspect Model                                      | `bamm aspect AspectModel.ttl prettyprint`
+                                        |   _--output, -o_ : the output will be saved to the given file  | `bamm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
+.2+| aspect <model> migrate             | Migrate Aspect Model to the latest BAMM version                | `bamm aspect AspectModel.ttl migrate AspectModel.ttl`
+                                        |    _--output, -o_ : the output will be saved to the given file | `bamm aspect AspectModel.ttl migrate AspectModel.ttl -o c:\Results\MigratedModel.ttl`
+.4+| aspect <model> to html             | Generate HTML documentation for an Aspect Model                | `bamm aspect AspectModel.ttl to html`
+                                        |    _--output, -o_ : the output will be saved to the given file | `bamm aspect AspectModel.ttl to html -o c:\Model.html`
+                                        |    _--css, -c_ : CSS file with custom styles to be included in the generated HTML documentation | `bamm aspect AspectModel.ttl to html -c c:\styles.css`
+                                        |    _--language, -l_ : The language from the model for which the HTML should be generated (default: en) | `bamm aspect AspectModel.ttl to html -l de`
+.3+| aspect <model> to png              | Generate PNG diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to png`
+                                        |    _--output, -o_ : output file path (default: stdout); as PNG is a binary format, it is strongly recommended to output the result to a file by using the -o option or the console redirection operator '>')|
+                                        |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
+.3+| aspect <model> to svg              | Generate SVG diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to svg`
+                                        |    _--output, -o_ : the output will be saved to the given file |
+                                        |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
+.3+| aspect <model> to dot              | Generate https://graphviz.org/doc/info/lang.html[DOT] diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to dot`
+                                        |    _--output, -o_ : output file path (default: stdout)         |
+                                        |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
+.7+| aspect <model> to java             | Generate Java classes from an Aspect Model                     | `bamm aspect AspectModel.ttl to java`
+                                        |  _--output-directory, -d_ : output directory to write files to (default: current directory)|
+                                        |  _--package-name, -pn_ : package to use for generated Java classes| `bamm aspect AspectModel.ttl to java -pn org.company.product`
+                                        |  _--no-jackson, -nj_ : disable https://github.com/FasterXML/jackson[Jackson] annotation generation in generated Java classes|
+                                        |  _--template-library-file, -tlf_ : the path and name of the https://velocity.apache.org/[Velocity] template file containing the macro library|
+                                        |  _--execute-library-macros, -elm_ : Execute the macros provided in the https://velocity.apache.org/[Velocity] macro library|
+                                        |  _--static, -s_ : generate Java domain classes for a Static Meta Model|
+.12+| aspect <model> to openapi         | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model             | `bamm aspect AspectModel.ttl to openapi -j`
+                                        |  _--output, -o_ : output file path (default: stdout)           |
+                                        |  _--api-base-url, -b_ : the base url for the Aspect API used in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification| `bamm aspect AspectModel.ttl to openapi -j -b \http://mysite.de`
+                                        |  _--json, -j_ : generate a JSON specification for an Aspect Model (default format is YAML)|
+                                        |  _--parameter-file, -p_ : the path to a file including the parameter for the Aspect API endpoints| For detailed description, see the section bellow
+                                        |  _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the version for the Aspect API|
+                                        |  _--resource-path, -r_ : the resource path for the Aspect API endpoints| For detailed description, see the section bellow
+                                        |  _--include-query-api, -q_ : include the path for the Query Aspect API Endpoint in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification|
+                                        |  _--paging-none, -pn_ : exclude paging information for the Aspect API Endpoint in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification|
+                                        |  _--paging-cursor-based, -pc_ : in case there is more than one paging possibility, it has to be cursor based paging|
+                                        |  _--paging-offset-based, -po_ : in case there is more than one paging possibility, it has to be offset based paging|
+                                        |  _--paging-time-based, -pt_ : in case there is more than one paging possibility, it has to be time based paging|
+.2+| aspect <model> to json             | Generate OpenAPI JSON specification for an Aspect Model        | `bamm aspect AspectModel.ttl to json`
+                                        |  _--output, -o_ : output file path (default: stdout)           |
+.2+| aspect <model> to schema           | Generate JSON schema for an Aspect Model                       | `bamm aspect AspectModel.ttl to schema`
+                                        |  _--output, -o_ : output file path (default: stdout)           |
 |===
 
 == Using the CLI to create a JSON OpenAPI Specification
+
 Every specification is based on one Aspect, which needs a separately defined server URL where the given aspect will be.
-The URL will be defined as string with the `-base-url` command, i.e.: https://www.example.org.
-The default URL, using the above defined -base-url, would result in https://www.example.org/api/v1/\{tenantId}/<aspectName>.
-By default the Aspect's local name is used as path. The default path can be manipulated with the `--aspect-resource-path` switch.
-If the path is defined further, for example `--aspect-resource-path "/resources/\{resourceId}"`, the resulting URL would be: https://www.example.org/api/v1/\{tenantId}/resources/\{resourceId}.
+The URL will be defined as string with the `-b` option, i.e.: https://www.example.org.
+The default URL, using the above defined --api-base-url, would result in https://www.example.org/api/v1/\{tenantId}/<aspectName>.
+By default the Aspect's local name is used as path.
+The default path can be manipulated with the `--resource-path` switch.
+If the path is defined further, for example `--resource-path "/resources/\{resourceId}"`, the resulting URL would be: https://www.example.org/api/v1/\{tenantId}/resources/\{resourceId}.
 
 It will be required to specify the parameter, in case there is an additional parameter defined.
 This has to be in JSON or in YAML, depending on the kind of specification chosen.
 For example:
-With the option `--aspect-resource-path "/resources/\{resourceId}"` the generator constructs the URL https://www.example.org/api/v1/\{tenantId}/resources/\{resourceId}
-and then the `--aspect-parameter-file` defines the parameter resourceId in yaml:
+With the option `--resource-path "/resources/\{resourceId}"` the generator constructs the URL https://www.example.org/api/v1/\{tenantId}/resources/\{resourceId}
+and then the `--parameter-file` defines the parameter resourceId in yaml:
+
 ----
 resourceId:
   name: resourceId
@@ -87,29 +105,27 @@ resourceId:
   schema:
     type: string
 ----
+
 The full command would result in:
+
 [source,shell,subs="attributes+,+quotes"]
 ----
-java -jar bamm-cli-{sds-sdk-version}.jar -i _AspectModel.ttl_ -oapi-yaml -baseUrl "https://www.example.org"
--arp "/resources/\{resourceId}" -apf _fileLocation_
+java -jar bamm-cli-{sds-sdk-version}.jar aspect _AspectModel.ttl_ to openapi -b "https://www.example.org" -r "/resources/\{resourceId}" -p _fileLocation_
 ----
-
 
 [[models-directory-structure]]
 == Understanding the models directory structure
 
-An Aspect model file can contain an Aspect definition as well as other model elements that are defined in the same
-versioned namespace, as described in the xref:bamm-specification:ROOT:namespaces.adoc[Namespaces section of the
-specification]. Additionally, it is possible to split one versioned namespace across multiple files, for example to
-define a Characteristic that is usable in multiple Aspects into its own file. In order for BAMM CLI to be able
-to resolve references to such externally defined model elements, the model files must be organized in a directory
-structure as follows:
+An Aspect model file can contain an Aspect definition as well as other model elements that are defined in the same versioned namespace, as described in the xref:bamm-specification:ROOT:namespaces.adoc[Namespaces section of the
+specification].
+Additionally, it is possible to split one versioned namespace across multiple files, for example to define a Characteristic that is usable in multiple Aspects into its own file.
+In order for BAMM CLI to be able to resolve references to such externally defined model elements, the model files must be organized in a directory structure as follows:
 
 `_namespace_/_version_/_name_.ttl`
 
 where _namespace_ corresponds to the hierarchical namespace that is part of the model element's URN, e.g.
-`com.mycompany.myproduct` and _version_ corresponds to the version of the namespace. The resulting directory structure
-then looks like the following:
+`com.mycompany.myproduct` and _version_ corresponds to the version of the namespace.
+The resulting directory structure then looks like the following:
 
 [source,subs=+quotes]
 ----
@@ -123,6 +139,6 @@ _models root_
         └── MyAspect.ttl
 ----
 
-The name of the directory shown as _models root_ above can be chosen freely. The BAMM CLI will resolve the file path
-relative to the input file by following the folder structure described above. Each of the files in the `1.0.0` directory
-should therefore have an empty prefix declaration such as `@prefix : <urn:bamm:com.mycompany.myproduct:1.0.0#>`.
+The name of the directory shown as _models root_ above can be chosen freely.
+The BAMM CLI will resolve the file path relative to the input file by following the folder structure described above.
+Each of the files in the `1.0.0` directory should therefore have an empty prefix declaration such as `@prefix : <urn:bamm:com.mycompany.myproduct:1.0.0#>`.

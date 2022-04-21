@@ -49,8 +49,7 @@ public class TestContext {
       };
    }
 
-   private static Map<QualifiedName, Class<?>> generateJavaCode( final File tempDirectory,
-         final Collection<JavaGenerator> generators ) throws IOException {
+   private static Map<QualifiedName, Class<?>> generateJavaCode( final File tempDirectory, final Collection<JavaGenerator> generators ) throws IOException {
       final File subFolder = new File(
             tempDirectory.getAbsolutePath() + File.separator + generators.iterator().next().getConfig().getPackageName()
                   .replace( '.', File.separatorChar ) );

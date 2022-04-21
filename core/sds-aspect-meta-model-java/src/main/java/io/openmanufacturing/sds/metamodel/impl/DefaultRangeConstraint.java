@@ -17,18 +17,19 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import io.openmanufacturing.sds.metamodel.RangeConstraint;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
 public class DefaultRangeConstraint extends DefaultConstraint implements RangeConstraint {
-   private final Optional<Object> minValue;
-   private final Optional<Object> maxValue;
+   private final Optional<ScalarValue> minValue;
+   private final Optional<ScalarValue> maxValue;
    private final BoundDefinition lowerBoundDefinition;
    private final BoundDefinition upperBoundDefinition;
 
    public DefaultRangeConstraint( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final Optional<Object> minValue,
-         final Optional<Object> maxValue,
+         final Optional<ScalarValue> minValue,
+         final Optional<ScalarValue> maxValue,
          final BoundDefinition lowerBoundDefinition,
          final BoundDefinition upperBoundDefinition ) {
       super( metaModelBaseAttributes );
@@ -44,7 +45,7 @@ public class DefaultRangeConstraint extends DefaultConstraint implements RangeCo
     * @return the minValue.
     */
    @Override
-   public Optional<Object> getMinValue() {
+   public Optional<ScalarValue> getMinValue() {
       return minValue;
    }
 
@@ -54,7 +55,7 @@ public class DefaultRangeConstraint extends DefaultConstraint implements RangeCo
     * @return the maxValue.
     */
    @Override
-   public Optional<Object> getMaxValue() {
+   public Optional<ScalarValue> getMaxValue() {
       return maxValue;
    }
 

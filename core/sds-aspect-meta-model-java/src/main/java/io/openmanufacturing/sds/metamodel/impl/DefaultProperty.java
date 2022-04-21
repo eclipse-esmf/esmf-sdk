@@ -18,19 +18,20 @@ import java.util.StringJoiner;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Property;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
 public class DefaultProperty extends BaseImpl implements Property {
    private final Characteristic characteristic;
-   private final Optional<Object> exampleValue;
+   private final Optional<ScalarValue> exampleValue;
    private final boolean optional;
    private final boolean notInPayload;
    private final Optional<String> payloadName;
 
    public DefaultProperty( final MetaModelBaseAttributes metaModelBaseAttributes,
          final Characteristic characteristic,
-         final Optional<Object> exampleValue,
+         final Optional<ScalarValue> exampleValue,
          final boolean optional,
          final boolean notInPayload,
          final Optional<String> payloadName ) {
@@ -58,7 +59,7 @@ public class DefaultProperty extends BaseImpl implements Property {
     * @return the exampleValue.
     */
    @Override
-   public Optional<Object> getExampleValue() {
+   public Optional<ScalarValue> getExampleValue() {
       return exampleValue;
    }
 

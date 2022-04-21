@@ -52,6 +52,7 @@ import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
@@ -68,12 +69,9 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
    public void testAspectWithMultiLanguageText( final KnownVersion metaModelVersion ) throws Exception {
       final Object instance = generateInstance( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT, metaModelVersion );
       final Class<?> clazz = instance.getClass();
-
-      final Map<Locale, String> prop = getValue( clazz, instance, "prop", new TypeToken<Map<Locale, String>>() {
-      }.getType() );
-      assertThat( prop ).hasSize( 2 );
-      assertThat( prop.get( Locale.forLanguageTag( "en" ) ) ).isEqualTo( "Value in English" );
-      assertThat( prop.get( Locale.forLanguageTag( "de" ) ) ).isEqualTo( "Wert auf Deutsch" );
+      final LangString prop = getValue( clazz, instance, "prop", LangString.class );
+      assertThat( prop.getLanguageTag() ).isEqualTo( Locale.ENGLISH );
+      assertThat( prop.getValue() ).isEqualTo( "Value in English" );
    }
 
    @ParameterizedTest
@@ -260,9 +258,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       return generateInstance( Tuple.of( model, model.getName() ), knownVersion );
    }
 
-   private Object generateInstance( final Tuple2<TestAspect, String> modelNameAndPayloadName,
-         final KnownVersion knownVersion )
-         throws IOException {
+   private Object generateInstance( final Tuple2<TestAspect, String> modelNameAndPayloadName, final KnownVersion knownVersion ) throws IOException {
       final VersionedModel versionedModel = TestResources.getModel( modelNameAndPayloadName._1(), knownVersion ).get();
       final Class<?> pojo = AspectModelLoader.fromVersionedModel( versionedModel ).map( this::generatePojo ).get();
       final String jsonPayload = loadJsonPayload( modelNameAndPayloadName._1(), knownVersion,
@@ -270,8 +266,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       return parseJson( jsonPayload, pojo );
    }
 
-   private String loadJsonPayload( final TestAspect model, final KnownVersion knownVersion, final String payloadName )
-         throws IOException {
+   private String loadJsonPayload( final TestAspect model, final KnownVersion knownVersion, final String payloadName ) throws IOException {
       final AspectModelUrn modelUrn = model.getUrn();
       final URL jsonUrl = getClass().getResource(
             String.format( "/%s/%s/%s/%s.json", knownVersion.toString().toLowerCase(),
@@ -303,12 +298,12 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       final ObjectMapper mapper = new ObjectMapper();
       mapper.registerModule( new JavaTimeModule() );
       mapper.registerModule( new Jdk8Module() );
-      mapper.registerModule( new AspectModelJacksonModule() );
+      mapper.registerModule( new AspectModelJacksonModule( ) );
       mapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
       try {
          return mapper.readValue( json, targetClass );
       } catch ( final JsonProcessingException exeception ) {
-         throw new EnumAttributeNotFoundException( exeception.getMessage() );
+         throw new EnumAttributeNotFoundException( exeception );
       }
    }
 
@@ -320,8 +315,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       return (T) propertyField.get( instance );
    }
 
-   private <T> T getValue( final Class<?> clazz, final Object instance, final String fieldName,
-         final Type fieldType )
+   private <T> T getValue( final Class<?> clazz, final Object instance, final String fieldName, final Type fieldType )
          throws NoSuchFieldException, IllegalAccessException {
       final Field propertyField = clazz.getDeclaredField( fieldName );
       propertyField.setAccessible( true );

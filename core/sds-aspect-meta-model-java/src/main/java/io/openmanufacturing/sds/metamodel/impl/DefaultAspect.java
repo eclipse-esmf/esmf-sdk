@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.Event;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
@@ -26,15 +27,18 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 public class DefaultAspect extends BaseImpl implements Aspect {
    private final List<Property> properties;
    private final List<Operation> operations;
+   private final List<Event> events;
    private final boolean isCollectionAspect;
 
    public DefaultAspect( final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<Property> properties,
          final List<Operation> operations,
+         final List<Event> events,
          final boolean isCollectionAspect ) {
       super( metaModelBaseAttributes );
       this.properties = new ArrayList<>( properties );
       this.operations = new ArrayList<>( operations );
+      this.events = new ArrayList<>( events );
       this.isCollectionAspect = isCollectionAspect;
    }
 
@@ -59,6 +63,16 @@ public class DefaultAspect extends BaseImpl implements Aspect {
    }
 
    /**
+    * A list of Events provided by the Aspect.
+    *
+    * @return the events.
+    */
+   @Override
+   public List<Event> getEvents() {
+      return events;
+   }
+
+   /**
     * Accepts an Aspect visitor
     *
     * @param visitor The visitor to accept
@@ -80,6 +94,7 @@ public class DefaultAspect extends BaseImpl implements Aspect {
       return new StringJoiner( ", ", DefaultAspect.class.getSimpleName() + "[", "]" )
             .add( "properties=" + properties )
             .add( "operations=" + operations )
+            .add( "events=" + events )
             .add( "isCollectionAspect=" + isCollectionAspect )
             .toString();
    }
@@ -98,11 +113,12 @@ public class DefaultAspect extends BaseImpl implements Aspect {
       final DefaultAspect that = (DefaultAspect) o;
       return isCollectionAspect == that.isCollectionAspect &&
             Objects.equals( properties, that.properties ) &&
-            Objects.equals( operations, that.operations );
+            Objects.equals( operations, that.operations ) &&
+            Objects.equals( events, that.events );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( super.hashCode(), properties, operations, isCollectionAspect );
+      return Objects.hash( super.hashCode(), properties, operations, events, isCollectionAspect );
    }
 }

@@ -39,6 +39,8 @@
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "5"^^xsd:short ;
+      bamm-c:upperBoundDefinition bamm-c:OPEN ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic :Measurement .
 

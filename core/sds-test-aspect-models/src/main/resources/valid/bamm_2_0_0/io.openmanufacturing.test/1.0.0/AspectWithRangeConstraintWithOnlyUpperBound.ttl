@@ -40,6 +40,8 @@
       bamm:description "This is a test range constraint."@en ;
       bamm:see <http://example.com/omp> ;
       bamm-c:maxValue "2.3"^^xsd:float ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:OPEN ;
    ] ;
    bamm-c:baseCharacteristic :Measurement .
 

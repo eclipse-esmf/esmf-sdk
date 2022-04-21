@@ -30,5 +30,5 @@
 
 :TestEnumeration a bamm-c:Enumeration ;
    bamm:name "TestEnumeration" ;
-   bamm:dataType xsd:int ;
+   bamm:dataType xsd:integer ;
    bamm-c:values ( 1 2 3 ) .

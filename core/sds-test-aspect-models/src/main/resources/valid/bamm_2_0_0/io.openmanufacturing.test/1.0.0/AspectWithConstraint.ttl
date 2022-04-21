@@ -65,6 +65,8 @@
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "-0.1"^^xsd:double ;
       bamm-c:maxValue "0.2"^^xsd:double ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic :DoubleMeasurement .
 
@@ -76,6 +78,8 @@
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "-1"^^xsd:int ;
       bamm-c:maxValue "-1"^^xsd:int ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic :IntegerMeasurement .
 
@@ -87,6 +91,8 @@
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "10"^^xsd:int ;
       bamm-c:maxValue "15"^^xsd:int ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic :BigIntegerMeasurement .
 
@@ -98,6 +104,8 @@
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "100"^^xsd:int ;
       bamm-c:maxValue "112"^^xsd:int ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
    bamm-c:baseCharacteristic :FloatMeasurement .
 

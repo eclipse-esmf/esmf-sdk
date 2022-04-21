@@ -13,6 +13,8 @@
 
 package io.openmanufacturing.sds.test.shared.compiler;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -43,8 +45,16 @@ public class JavaCompiler {
             .map( key -> new CompilerInput( key.toString(), sources.get( key ) ) )
             .collect( Collectors.toList() );
 
+      final DiagnosticListener diagnosticListener = new DiagnosticListener() {
+         @Override
+         public void report( final Diagnostic<? extends FileObject> diagnostic ) {
+            System.out.println(sources);
+            fail( "Compilation failed: " + diagnostic );
+         }
+      };
+
       final List<String> compilerOptions = List.of( "-classpath", System.getProperty( "java.class.path" ) );
-      compiler.getTask( null, manager, new DiagnosticListener(), compilerOptions, null, compilerInput ).call();
+      compiler.getTask( null, manager, diagnosticListener, compilerOptions, null, compilerInput ).call();
 
       return loadOrder.stream()
             .collect( Collectors.toMap( Function.identity(), qualifiedName -> defineAndLoad( qualifiedName, manager ) ) );

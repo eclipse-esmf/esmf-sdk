@@ -37,6 +37,8 @@
    bamm:description "Beschränkt einen numerischen Wert auf Werte zwischen 0 und 100."@de ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
+      bamm-c:upperBoundDefinition bamm-c:OPEN ;
+      bamm-c:lowerBoundDefinition bamm-c:OPEN ;
    ] ;
    bamm-c:baseCharacteristic :DoubleCharacteristic .
 

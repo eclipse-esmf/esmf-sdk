@@ -13,8 +13,6 @@
 
 package io.openmanufacturing.sds.metamodel.loader.instantiator;
 
-import java.util.Optional;
-
 import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.metamodel.SingleEntity;
@@ -24,6 +22,7 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
+@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class SingleEntityInstantiator extends Instantiator<SingleEntity> {
    public SingleEntityInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, SingleEntity.class );
@@ -32,7 +31,7 @@ public class SingleEntityInstantiator extends Instantiator<SingleEntity> {
    @Override
    public SingleEntity apply( final Resource singleEntity ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( singleEntity );
-      final Optional<Type> type = Optional.of( getType( singleEntity ) );
+      final Type type = getType( singleEntity );
       return new DefaultSingleEntity( metaModelBaseAttributes, type );
    }
 }

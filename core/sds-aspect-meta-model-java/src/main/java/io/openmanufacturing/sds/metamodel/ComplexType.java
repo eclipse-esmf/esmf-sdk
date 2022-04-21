@@ -26,11 +26,6 @@ public interface ComplexType extends Type, StructureElement {
    }
 
    @Override
-   default boolean isScalar() {
-      return false;
-   }
-
-   @Override
    default String getUrn() {
       return getAspectModelUrn().get().toString();
    }

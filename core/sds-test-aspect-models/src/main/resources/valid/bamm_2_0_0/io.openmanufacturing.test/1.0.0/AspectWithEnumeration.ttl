@@ -29,7 +29,6 @@
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;
    bamm:see <http://example.com/me> ;
-   bamm:exampleValue "Example Value" ;
    bamm:characteristic :TestEnumeration .
 
 :TestEnumeration a bamm-c:Enumeration ;
@@ -37,5 +36,5 @@
    bamm:preferredName "Test Enumeration"@en ;
    bamm:description "This is a test for enumeration."@en ;
    bamm:see <http://example.com/omp> ;
-   bamm:dataType xsd:int ;
+   bamm:dataType xsd:integer ;
    bamm-c:values ( 1 2 3 ) .

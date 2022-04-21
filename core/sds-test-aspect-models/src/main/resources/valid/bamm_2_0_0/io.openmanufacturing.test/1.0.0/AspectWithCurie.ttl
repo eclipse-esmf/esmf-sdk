@@ -21,7 +21,7 @@
 
 :testCurie a bamm:Property ;
    bamm:name "testCurie" ;
-   bamm:exampleValue "unit:hectopascal" ;
+   bamm:exampleValue "unit:hectopascal"^^bamm:curie ;
    bamm:characteristic bamm-c:UnitReference .
 
 :testCurieWithoutExampleValue a bamm:Property ;

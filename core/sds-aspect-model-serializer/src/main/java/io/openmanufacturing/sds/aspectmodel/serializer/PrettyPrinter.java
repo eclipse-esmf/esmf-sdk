@@ -107,6 +107,7 @@ public class PrettyPrinter {
       predefinedPropertyOrder.add( bamm.characteristic() );
       predefinedPropertyOrder.add( bamm.properties() );
       predefinedPropertyOrder.add( bamm.operations() );
+      predefinedPropertyOrder.add( bamm.events() );
       predefinedPropertyOrder.add( bamm.input() );
       predefinedPropertyOrder.add( bamm.output() );
       predefinedPropertyOrder.add( bamm.baseCharacteristic() );

@@ -5,9 +5,6 @@ on:
       release_version:
         description: 'Version number of the release'
         required: true
-      milestone_version:
-        description: '"true" if a milestone release shall be published'
-        required: false
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -27,11 +24,13 @@ jobs:
           server-password: OSSRH_TOKEN
           gpg-private-key: ${{ secrets.PGP_KEY }}
           gpg-passphrase: PGP_KEY_PASSWORD
+          overwrite-settings: false
       - name: Setup Git
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
       - name: Sanity check version
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
           current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           release_version=${{ github.event.inputs.release_version }}
@@ -64,14 +63,15 @@ jobs:
       - name: Commit version changes and push to upstream repository
         run: |
           git add .
-          git commit -m "Add version ${{ github.event.inputs.release_version }}"
-          git push origin ${{ env.release_branch_name }}
+          if git commit -m "Add version ${{ github.event.inputs.release_version}}"; then
+            git push origin ${{ env.release_branch_name }}
+          fi
       - name: Run tests and build
         run: mvn -B clean install
 
-# release-build
+      # release-build
       - name: Create GitHub release
-        condition: eq( '${{ github.event.inputs.release_version }}', 'true')
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         uses: softprops/action-gh-release@v1
         id: sds_sdk_release
         with: 
@@ -85,18 +85,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to OSSRH
-        condition: eq( '${{ github.event.inputs.release_version }}', 'true')
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Prelease-build
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
-# milestone-build
+      # milestone-build
       - name: Create GitHub release
-        condition: ne( '${{ github.event.inputs.release_version }}', 'true')
+        if: contains( github.event.inputs.release_version, '-M' )
         uses: softprops/action-gh-release@v1
-        id: sds_sdk_release
+        id: sds_sdk_milestone_release
         with:
           body: "Release of the BAMM SDK in version v${{ github.event.inputs.release_version  }}."
           tag_name: v${{ github.event.inputs.release_version }}
@@ -107,8 +107,38 @@ jobs:
             **/target/*-${{ github.event.inputs.release_version }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      - name: Write settings.xml
+        if: contains( github.event.inputs.release_version, '-M' )
+        uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: settings.xml
+          contents: |
+            <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+               <servers>
+                  <server>
+                     <id>github</id>
+                     <configuration>
+                        <httpHeaders>
+                           <property>
+                              <name>Authorization</name>
+                              <value>Bearer ${env.GITHUB_TOKEN}</value>
+                           </property>
+                        </httpHeaders>
+                     </configuration>
+                  </server>
+                  <server>
+                     <id>gpg.passphrase</id>
+                     <passphrase>${env.PGP_KEY_PASSWORD}</passphrase>
+                  </server>
+               </servers>
+            </settings>
+          write-mode: overwrite
       - name: Publish to Github
-        condition: ne( '${{ github.event.inputs.release_version }}', 'true')
-        run: mvn -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
+        if: contains( github.event.inputs.release_version, '-M' )
+        run: mvn -s ./settings.xml -B clean -pl '!sds-sdk-test-report,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+          PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}

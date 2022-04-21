@@ -17,13 +17,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
 
 public class DefaultPropertyWrapper extends DefaultProperty {
 
    private Characteristic characteristic;
-   private Optional<Object> exampleValue;
+   private Optional<ScalarValue> exampleValue;
    private boolean optional;
    private boolean notInPayload;
    private Optional<String> payloadName;
@@ -43,11 +44,11 @@ public class DefaultPropertyWrapper extends DefaultProperty {
    }
 
    @Override
-   public Optional<Object> getExampleValue() {
+   public Optional<ScalarValue> getExampleValue() {
       return exampleValue;
    }
 
-   public void setExampleValue( final Optional<Object> exampleValue ) {
+   public void setExampleValue( final Optional<ScalarValue> exampleValue ) {
       this.exampleValue = exampleValue;
    }
 

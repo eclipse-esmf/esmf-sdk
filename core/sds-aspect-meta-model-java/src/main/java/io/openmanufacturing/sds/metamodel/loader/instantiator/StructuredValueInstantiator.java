@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,7 +14,6 @@
 package io.openmanufacturing.sds.metamodel.loader.instantiator;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Literal;
@@ -29,6 +28,7 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
+@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class StructuredValueInstantiator extends Instantiator<StructuredValue> {
    public StructuredValueInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, StructuredValue.class );
@@ -41,7 +41,7 @@ public class StructuredValueInstantiator extends Instantiator<StructuredValue> {
       final List<Object> elements = getNodesFromList( structuredValue, bammc.elements() )
             .map( this::toElement )
             .collect( Collectors.toList() );
-      final Optional<Type> type = Optional.of( getType( structuredValue ) );
+      final Type type = getType( structuredValue );
       return new DefaultStructuredValue( metaModelBaseAttributes, type, deconstructionRule, elements );
    }
 

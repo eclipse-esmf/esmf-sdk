@@ -21,6 +21,7 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
+@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class RegularExpressionConstraintInstantiator extends Instantiator<RegularExpressionConstraint> {
    public RegularExpressionConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, RegularExpressionConstraint.class );

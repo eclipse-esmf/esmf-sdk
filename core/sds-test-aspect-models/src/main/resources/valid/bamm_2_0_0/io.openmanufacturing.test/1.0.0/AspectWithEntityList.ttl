@@ -22,10 +22,10 @@
 :testList a bamm:Property ;
    bamm:name "testList" ;
    bamm:characteristic [
-                          a bamm-c:List ;
-                          bamm:name "EntityList" ;
-                          bamm:dataType :TestEntity
-                       ] .
+     a bamm-c:List ;
+     bamm:name "EntityList" ;
+     bamm:dataType :TestEntity
+   ] .
 
 :TestEntity a bamm:Entity ;
    bamm:name "TestEntity" ;
@@ -66,7 +66,3 @@
 :LocalDateTime a bamm:Characteristic ;
    bamm:name "LocalDateTime" ;
    bamm:dataType xsd:dateTimeStamp .
-
-:TestEntityCharacteristic a bamm:Characteristic ;
-   bamm:name "TestEntityCharacteristic" ;
-   bamm:dataType :TestEntity .

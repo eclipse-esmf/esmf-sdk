@@ -15,10 +15,10 @@ package io.openmanufacturing.sds.aspectmodel.java;
 
 import static io.openmanufacturing.sds.aspectmodel.java.AspectModelJavaUtil.generateEnumKey;
 
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.test.shared.arbitraries.PropertyBasedTest;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
@@ -40,9 +40,8 @@ public class AspectModelJavaUtilTest extends PropertyBasedTest {
    }
 
    @Property
-   public boolean generatedEnumKeysAreValidJavaIdentifiers( @ForAll( "anyValidTypeValuePair" ) final Tuple.Tuple2<Type, Object> tuple ) {
-      final JavaCodeGenerationConfig codeGenerationConfig = new JavaCodeGenerationConfig( true, "", false, null );
-      final String result = generateEnumKey( Optional.of( tuple.get1() ), tuple.get2(), codeGenerationConfig );
+   public boolean generatedEnumKeysAreValidJavaIdentifiers( @ForAll( "anyValidTypeValuePair" ) final Tuple.Tuple2<Type, Value> tuple ) {
+      final String result = generateEnumKey( tuple.get2() );
       return isValidJavaIdentifier( result );
    }
 }

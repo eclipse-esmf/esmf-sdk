@@ -34,6 +34,7 @@
       bamm-c:minValue "5"^^xsd:nonNegativeInteger ;
       bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
       bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
    ] ;
    bamm-c:baseCharacteristic [
       a bamm:Characteristic ;
