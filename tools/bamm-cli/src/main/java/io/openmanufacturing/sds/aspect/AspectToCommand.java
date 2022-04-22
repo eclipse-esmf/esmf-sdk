@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspect;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.aspect.to.AspectToAasCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToDotCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToHtmlCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToJavaCommand;
@@ -35,7 +36,8 @@ import picocli.CommandLine;
             AspectToOpenapiCommand.class,
             AspectToPngCommand.class,
             AspectToJsonSchemaCommand.class,
-            AspectToSvgCommand.class
+            AspectToSvgCommand.class,
+            AspectToAasCommand.class
       },
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

@@ -218,7 +218,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size() );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size() );
       Property submodelElement = (Property) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertEquals( "http://www.w3.org/2001/XMLSchema#int", submodelElement.getValueType(), "Value type not int" );
+      assertEquals( "http://www.w3.org/2001/XMLSchema#integer", submodelElement.getValueType(), "Value type not int" );
    }
 
    @ParameterizedTest
@@ -229,7 +229,9 @@ class AspectModelAASGeneratorTest {
          // TODO io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException: java.io.FileNotFoundException: The AspectModel: urn:bamm:io.openmanufacturing.test:1.0.0#AspectWithCollectionWithAbstractEntity could not be found in directory: valid/bamm_1_0_0/io.openmanufacturing.test/1.0.0
          "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
          // TODO io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException: java.io.FileNotFoundException: The AspectModel: urn:bamm:io.openmanufacturing.test:1.0.0#AspectWithAbstractSingleEntity could not be found in directory: valid/bamm_1_0_0/io.openmanufacturing.test/1.0.0
-         "ASPECT_WITH_STRING_ENUMERATION"//TODO io.adminshell.aas.v3.dataformat.DeserializationException: deserialization failed,
+         "ASPECT_WITH_STRING_ENUMERATION",//TODO io.adminshell.aas.v3.dataformat.DeserializationException: deserialization failed,
+         "ASPECT_WITH_EVENT",
+         "ASPECT_WITHOUT_PROPERTIES_AND_OPERATIONS"
    } )
    public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( testAspect );

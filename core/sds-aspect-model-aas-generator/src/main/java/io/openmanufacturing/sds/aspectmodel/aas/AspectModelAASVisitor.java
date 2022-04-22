@@ -279,9 +279,9 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
             .value( map( property, context ) ).build();
    }
 
-   private List<LangString> map( Map<Locale, String> localizedStrings ) {
-      return localizedStrings.entrySet().stream().map( ( entry ) ->
-                  map( entry.getKey(), entry.getValue() ) )
+   private List<LangString> map( Set<io.openmanufacturing.sds.metamodel.datatypes.LangString> localizedStrings ) {
+      return localizedStrings.stream().map( ( entry ) ->
+                  map( entry.getLanguageTag(), entry.getValue() ) )
             .collect( Collectors.toList() );
    }
 

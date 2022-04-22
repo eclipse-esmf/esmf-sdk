@@ -18,11 +18,11 @@ The implementation relies on the AAS Meta Model implementation [3] and the AAS f
 ## Example uses
 One example use of the generator is with the BAMM CLI, which provides the AAS generator functionality by
 ```
-java -jar bamm-cli.jar -i org.idtwin/1.0.0/Nameplate.ttl -aas-xml
+java -jar bamm-cli.jar aspect org.idtwin/1.0.0/Nameplate.ttl to aas -f xml -o nameplate.xml
 ```
 or
 ```
-java -jar bamm-cli.jar -i org.idtwin/1.0.0/Nameplate.ttl -aas-aasx
+java -jar bamm-cli.jar aspect org.idtwin/1.0.0/Nameplate.ttl to aas -f aasx -o nameplate.aasx
 ```
 The first call generates a plain xml represenation of the AAS whereas the second one generates an AASX archive
 with the AAS xml file in it.
