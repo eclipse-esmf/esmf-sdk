@@ -42,7 +42,7 @@ class AspectModelAASGeneratorTest {
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_list_and_additional_property() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithListAndAdditionalProperty() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY );
       assertEquals( 3, env.getConceptDescriptions().size());
       assertEquals( 1, env.getSubmodels().size() );
@@ -57,7 +57,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_entity() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithEntity() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in Submodel." );
@@ -72,7 +72,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_collection() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithCollection() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_COLLECTION );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
@@ -85,7 +85,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_list() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithList() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_LIST );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
@@ -99,7 +99,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_set() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithSet() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_SET );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
@@ -114,7 +114,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_sorted_set() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithSortedSet() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_SORTED_SET );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
@@ -129,7 +129,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_either_with_complex_types() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithEitherWithComplexTypes() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 1, "Not exactly one Element in SubmodelElements." );
@@ -146,7 +146,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_quantifiable() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithQuantifiable() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 1, "Not exactly one Element in SubmodelElements." );
@@ -160,14 +160,13 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void test_generate_aasx_from_bamm_with_constraint() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammWithConstraint() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_CONSTRAINT );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 6, "Not exactly six Elements in SubmodelElements." );
       SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().stream().
             filter( x -> x.getIdShort().equals( "stringLcProperty" ) ).findFirst().orElseThrow();
       assertEquals( "stringLcProperty", submodelElement.getIdShort() );
-
 
       Set<String> semanticIds = Stream.of(
             "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringLcProperty",
@@ -179,18 +178,16 @@ class AspectModelAASGeneratorTest {
             .collect(Collectors.toCollection(HashSet::new));
 
       checkDataSpecificationIEC61360(semanticIds, env);
-
    }
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_recursive_property_with_optional() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithRecursivePropertyWithOptional() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL );
-
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
    }
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_code() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithCode() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_CODE );
       assertEquals( 2, env.getConceptDescriptions().size() );
       assertEquals( 1, env.getSubmodels().size() );
@@ -200,11 +197,10 @@ class AspectModelAASGeneratorTest {
 
       DataSpecificationIEC61360 dataSpecificationContent =
             getDataSpecificationIEC61360( "TestCode", env );
-
    }
 
    @Test
-   void test_generate_aasx_from_bamm_aspect_with_enumeration() throws IOException, DeserializationException {
+   void testGenerateAasxFromBammAspectWithEnumeration() throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENUMERATION );
 
       assertEquals( 2, env.getConceptDescriptions().size() );
@@ -223,15 +219,12 @@ class AspectModelAASGeneratorTest {
 
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_ABSTRACT_ENTITY",
-         // TODO io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException: java.io.FileNotFoundException: The AspectModel: urn:bamm:io.openmanufacturing.test:1.0.0#AspectWithAbstractEntity could not be found in directory: valid/bamm_1_0_0/io.openmanufacturing.test/1.0.0
-         "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
-         // TODO io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException: java.io.FileNotFoundException: The AspectModel: urn:bamm:io.openmanufacturing.test:1.0.0#AspectWithCollectionWithAbstractEntity could not be found in directory: valid/bamm_1_0_0/io.openmanufacturing.test/1.0.0
-         "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
-         // TODO io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException: java.io.FileNotFoundException: The AspectModel: urn:bamm:io.openmanufacturing.test:1.0.0#AspectWithAbstractSingleEntity could not be found in directory: valid/bamm_1_0_0/io.openmanufacturing.test/1.0.0
-         "ASPECT_WITH_STRING_ENUMERATION",//TODO io.adminshell.aas.v3.dataformat.DeserializationException: deserialization failed,
-         "ASPECT_WITH_EVENT",
-         "ASPECT_WITHOUT_PROPERTIES_AND_OPERATIONS"
+         "ASPECT_WITH_ABSTRACT_ENTITY", // Aspect model not present
+         "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY", // Aspect model not present
+         "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY", // Aspect model not present
+         "ASPECT_WITH_STRING_ENUMERATION",// Aspect model not present
+         "ASPECT_WITH_EVENT", // Aspect model not present
+         "ASPECT_WITHOUT_PROPERTIES_AND_OPERATIONS" // Aspect model not present
    } )
    public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException {
       AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( testAspect );
