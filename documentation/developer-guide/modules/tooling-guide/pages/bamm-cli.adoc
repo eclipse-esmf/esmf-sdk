@@ -79,6 +79,9 @@ The available options and their meaning can also be seen in the help text of the
                                         |  _--output, -o_ : output file path (default: stdout)           |
 .2+| aspect <model> to schema           | Generate JSON schema for an Aspect Model                       | `bamm aspect AspectModel.ttl to schema`
                                         |  _--output, -o_ : output file path (default: stdout)           |
+.3+| aspect <model> to aas              | Generate Asset Administration Shell (AAS) submodel template for an Aspect Model  | `bamm aspect AspectModel.ttl to aas`
+                                        |  _--output, -o_ : output file path (default: stdout)           |
+                                        |  _--format, -f_ : output file format (xml or aasx, default: xml)|
 |===
 
 == Using the CLI to create a JSON OpenAPI Specification
