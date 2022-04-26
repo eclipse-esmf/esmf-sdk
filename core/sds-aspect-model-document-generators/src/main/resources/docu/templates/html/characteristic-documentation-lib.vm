@@ -192,6 +192,11 @@ Characteristic specific macros will be joined together in the main macro (see ab
     <div class="table-row-group">
         <div class="table-cell pb-3 col-span-2">Either</div>
     </div>
+    #if($either.getDescription($i18n.locale))
+    <div class="table-row-group">
+        <div class="table-cell pb-3 col-span-2"> #description( $either.getDescription($i18n.getLocale()) )</div>
+    </div>
+    #end
     <div class="table-row-group">
         <div class="table-row-group">
             <ul class="reset-all-styles m-0 either-left-right">
