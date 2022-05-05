@@ -167,11 +167,15 @@ public class MetaModelBaseAttributes {
    /**
     * Generates a synthetic name for a model element, when the model element is defined as an anonymous node.
     * The synthetic name consists of the name of the first named parent element of the model element suffixed with the type of the model element if it can be
-    * determined easily. For example, for the following model element:
+    * determined easily. For example, for the LengthConstraint in the following model:
     * <code>
     *    :aProperty a bamm:Property ;
     *       bamm:characteristic [
-    *          a bamm-c:LengthConstraint; bamm-c:minValue 5
+    *          a bamm:Trait ;
+    *          bamm-c:baseCharacteristic ... ;
+    *          bamm-c:constraint [
+    *             a bamm-c:LengthConstraint; bamm-c:minValue 5
+    *          ]
     *       ]
     * </code>
     * a synthetic name of "APropertyLengthConstraint" would be generated.
