@@ -74,7 +74,6 @@
       <classgraph-version>4.8.29</classgraph-version>
       <commons-text-version>1.6</commons-text-version>
       <easy-random-version>4.0.0</easy-random-version>
-      <gradle-core-version>6.1.1</gradle-core-version>
       <graphviz-version>0.18.1</graphviz-version>
       <guava-version>30.1-jre</guava-version>
       <guice-version>3.0</guice-version>
