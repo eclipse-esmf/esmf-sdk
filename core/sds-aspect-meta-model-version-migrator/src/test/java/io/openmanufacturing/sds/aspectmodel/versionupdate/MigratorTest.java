@@ -48,11 +48,7 @@ public class MigratorTest extends MetaModelVersions {
    public void testRawModelIsMigrated( final KnownVersion metaModelVersion ) {
       final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
-      if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ) {
-         assertThat( versionedModel.getRawModel().size() ).isEqualTo( rewrittenModel.getRawModel().size() );
-      } else {
-         assertThat( versionedModel.getRawModel().size() - 1 ).isEqualTo( rewrittenModel.getRawModel().size() );
-      }
+      assertThat( versionedModel.getRawModel().size() ).isEqualTo( rewrittenModel.getRawModel().size() );
       if ( metaModelVersion.equals( KnownVersion.getLatest() ) ) {
          return;
       }

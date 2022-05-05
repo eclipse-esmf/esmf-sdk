@@ -95,7 +95,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testFixedPointConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "FixedPointConstraintf898f1a";
+      final String constraintIdentifier = "FixedPointConstraintd050140";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_FIXED_POINT_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
