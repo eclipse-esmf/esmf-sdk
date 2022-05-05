@@ -14,10 +14,8 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
 :TransitiveReferenceTest a bamm:Aspect ;
-   bamm:name "TransitiveReferenceTest" ;
    bamm:properties ( :foo :bar :baz ) ;
    bamm:operations ( ) .
 
 :baz a bamm:Property ;
-   bamm:name "baz" ;
    bamm:characteristic :TestCharacteristic .

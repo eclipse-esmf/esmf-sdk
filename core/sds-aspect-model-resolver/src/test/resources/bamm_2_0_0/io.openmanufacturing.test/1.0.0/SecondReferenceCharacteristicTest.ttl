@@ -14,10 +14,8 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
 :SecondReferenceCharacteristicTest a bamm:Aspect ;
-   bamm:name "SecondReferenceCharacteristicTest" ;
    bamm:properties ( :bar ) ;
    bamm:operations ( ) .
 
 :bar a bamm:Property ;
-   bamm:name "bar" ;
    bamm:characteristic :TestCharacteristic .

@@ -69,7 +69,6 @@
    bamm-c:unit unit:metrePerSecond .
 
 :testPropertyWithMinMaxRangeConstraint a bamm:Property ;
-   bamm:name "testPropertyWithMinMaxRangeConstraint" ;
    bamm:characteristic :TestWithMinMaxRangeConstraint .
 
 :TestWithMinMaxRangeConstraint a bamm-c:Trait ;
@@ -103,7 +102,6 @@
    bamm-c:unit unit:metrePerSecond .
 
 :testPropertyRangeConstraintWithFloatType a bamm:Property ;
-   bamm:name "testPropertyRangeConstraintWithFloatType" ;
    bamm:characteristic :TestRangeConstraintWithFloatType .
 
 :TestRangeConstraintWithFloatType a bamm-c:Trait ;
