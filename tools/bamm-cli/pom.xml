@@ -47,6 +47,10 @@
          <artifactId>slf4j-api</artifactId>
       </dependency>
       <dependency>
+         <groupId>ch.qos.logback</groupId>
+         <artifactId>logback-classic</artifactId>
+      </dependency>
+      <dependency>
          <groupId>info.picocli</groupId>
          <artifactId>picocli</artifactId>
          <version>${picocli-version}</version>
