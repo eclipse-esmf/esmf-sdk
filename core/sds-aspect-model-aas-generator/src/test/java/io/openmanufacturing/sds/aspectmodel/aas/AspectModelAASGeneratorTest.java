@@ -12,9 +12,7 @@
  */
 package io.openmanufacturing.sds.aspectmodel.aas;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -58,7 +56,7 @@ class AspectModelAASGeneratorTest {
     assertEquals(1, env.getSubmodels().size());
     assertEquals(2, env.getSubmodels().get(0).getSubmodelElements().size());
 
-    Set<String> semanticIds =
+    final Set<String> semanticIds =
         Stream.of(
                 "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty",
                 "urn:bamm:io.openmanufacturing.test:1.0.0#testPropertyTwo")
@@ -97,7 +95,7 @@ class AspectModelAASGeneratorTest {
         1,
         env.getSubmodels().get(0).getSubmodelElements().size(),
         "Not exactly one SubmodelElement in AAS.");
-    SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
+    final SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
     assertTrue(
         submodelElement instanceof SubmodelElementCollection,
         "SubmodelElement is not a SubmodelElementCollection");
@@ -115,7 +113,7 @@ class AspectModelAASGeneratorTest {
         1,
         env.getSubmodels().get(0).getSubmodelElements().size(),
         "Not exactly one SubmodelElement in AAS.");
-    SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
+    final SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
     assertTrue(
         submodelElement instanceof SubmodelElementCollection,
         "SubmodelElement is not a SubmodelElementCollection");
@@ -134,7 +132,7 @@ class AspectModelAASGeneratorTest {
         1,
         env.getSubmodels().get(0).getSubmodelElements().size(),
         "Not exactly one SubmodelElement in AAS.");
-    SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
+    final SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
     assertTrue(
         submodelElement instanceof SubmodelElementCollection,
         "SubmodelElement is not a SubmodelElementCollection");
@@ -156,7 +154,7 @@ class AspectModelAASGeneratorTest {
         1,
         env.getSubmodels().get(0).getSubmodelElements().size(),
         "Not exactly one SubmodelElement in AAS.");
-    SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
+    final SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
     assertTrue(
         submodelElement instanceof SubmodelElementCollection,
         "SubmodelElement is not a SubmodelElementCollection");
@@ -183,7 +181,7 @@ class AspectModelAASGeneratorTest {
         "Not exactly one Element in SubmodelElements.");
     final SubmodelElementCollection elementCollection =
         ((SubmodelElementCollection) env.getSubmodels().get(0).getSubmodelElements().get(0));
-    Set<String> testValues =
+    final Set<String> testValues =
         Stream.of("RightEntity", "LeftEntity").collect(Collectors.toCollection(HashSet::new));
     assertTrue(
         elementCollection.getValues().stream().anyMatch(x -> testValues.contains(x.getIdShort())),
@@ -213,8 +211,7 @@ class AspectModelAASGeneratorTest {
     assertEquals("testProperty", element.getIdShort());
 
     final DataSpecificationIEC61360 dataSpecificationContent =
-        getDataSpecificationIEC61360(
-            "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env);
+        getDataSpecificationIEC61360("urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env);
 
     assertEquals("percent", dataSpecificationContent.getUnit(), "Unit is not percent");
   }
@@ -297,7 +294,8 @@ class AspectModelAASGeneratorTest {
 
     assertEquals(1, env.getSubmodels().size());
     assertEquals(1, env.getSubmodels().get(0).getSubmodelElements().size());
-    final Property submodelElement = (Property) env.getSubmodels().get(0).getSubmodelElements().get(0);
+    final Property submodelElement =
+        (Property) env.getSubmodels().get(0).getSubmodelElements().get(0);
     assertEquals(
         "http://www.w3.org/2001/XMLSchema#integer",
         submodelElement.getValueType(),
@@ -308,22 +306,26 @@ class AspectModelAASGeneratorTest {
   @EnumSource(
       value = TestAspect.class,
       mode = EnumSource.Mode.EXCLUDE,
-      names = {"ASPECT_WITH_STRING_ENUMERATION"}) //anonymous enumeration in test has no urn for enum values but is required for Concept Description referencing
+      names = {
+        "ASPECT_WITH_STRING_ENUMERATION"
+      }) // anonymous enumeration in test has no urn for enum values but is required for Concept
+         // Description referencing
   public void testGeneration(final TestAspect testAspect)
       throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect(testAspect);
+    final AssetAdministrationShellEnvironment env =
+        getAssetAdministrationShellFromAspect(testAspect);
     assertTrue(env.getSubmodels().size() >= 1, "No Submodel in AAS present.");
   }
 
   private void checkDataSpecificationIEC61360(
-      Set<String> semanticIds, AssetAdministrationShellEnvironment env) {
+      final Set<String> semanticIds, final AssetAdministrationShellEnvironment env) {
     semanticIds.forEach(x -> getDataSpecificationIEC61360(x, env));
   }
 
   private DataSpecificationIEC61360 getDataSpecificationIEC61360(
-      String semanticId, AssetAdministrationShellEnvironment env) {
+      final String semanticId, final AssetAdministrationShellEnvironment env) {
     final List<ConceptDescription> conceptDescriptions = env.getConceptDescriptions();
-     List<ConceptDescription> filteredConceptDescriptions =
+    final List<ConceptDescription> filteredConceptDescriptions =
         conceptDescriptions.stream()
             .filter(x -> x.getIdentification().getIdentifier().equals(semanticId))
             .collect(Collectors.toList());
