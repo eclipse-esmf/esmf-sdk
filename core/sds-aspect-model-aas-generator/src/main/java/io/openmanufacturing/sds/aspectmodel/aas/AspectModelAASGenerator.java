@@ -23,61 +23,60 @@ import io.adminshell.aas.v3.dataformat.xml.XmlSerializer;
 import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
 import io.openmanufacturing.sds.metamodel.Aspect;
 
-/**
- * Generator that generates an AASX file containing an AAS submodel for a given Aspect model
- */
+/** Generator that generates an AASX file containing an AAS submodel for a given Aspect model */
 public class AspectModelAASGenerator {
 
-   /**
-    * Generates an AASX archive file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
-    *
-    * @param aspect the Aspect for which an AASX archive shall be generated
-    * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
-    * @throws IOException in case the generation can not properly be executed
-    */
-   public void generateAASXFile( final Aspect aspect, final Function<String, OutputStream> nameMapper ) throws IOException {
-      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
-         output.write( generateAasxOutput( aspect ).toByteArray() );
-      }
-   }
+  /**
+   * Generates an AASX archive file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
+   *
+   * @param aspect the Aspect for which an AASX archive shall be generated
+   * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
+   * @throws IOException in case the generation can not properly be executed
+   */
+  public void generateAASXFile(final Aspect aspect, final Function<String, OutputStream> nameMapper)
+      throws IOException {
+    try (final OutputStream output = nameMapper.apply(aspect.getName())) {
+      output.write(generateAasxOutput(aspect).toByteArray());
+    }
+  }
 
-   /**
-    * Generates an AAS XML archive file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
-    *
-    * @param aspect the Aspect for which an AASX archive shall be generated
-    * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
-    * @throws IOException in case the generation can not properly be executed
-    */
-   public void generateAasXmlFile( final Aspect aspect, final Function<String, OutputStream> nameMapper ) throws IOException {
-      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
-         output.write( generateXmlOutput( aspect ).toByteArray() );
-      }
-   }
+  /**
+   * Generates an AAS XML archive file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
+   *
+   * @param aspect the Aspect for which an AASX archive shall be generated
+   * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
+   * @throws IOException in case the generation can not properly be executed
+   */
+  public void generateAasXmlFile(
+      final Aspect aspect, final Function<String, OutputStream> nameMapper) throws IOException {
+    try (final OutputStream output = nameMapper.apply(aspect.getName())) {
+      output.write(generateXmlOutput(aspect).toByteArray());
+    }
+  }
 
-   protected ByteArrayOutputStream generateAasxOutput( Aspect aspect ) throws IOException {
-      final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
-      AssetAdministrationShellEnvironment environment = visitor.visitAspect( aspect, null );
+  protected ByteArrayOutputStream generateAasxOutput(Aspect aspect) throws IOException {
+    final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
+    AssetAdministrationShellEnvironment environment = visitor.visitAspect(aspect, null);
 
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      AASXSerializer serializer = new AASXSerializer();
+      serializer.write(environment, null, out);
+      return out;
+    } catch (SerializationException e) {
+      throw new IOException(e);
+    }
+  }
 
-      try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
-         AASXSerializer serializer = new AASXSerializer();
-         serializer.write( environment,null,out );
-         return out;
-      } catch ( SerializationException e ) {
-         throw new IOException( e );
-      }
-   }
+  protected ByteArrayOutputStream generateXmlOutput(Aspect aspect) throws IOException {
+    final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
+    AssetAdministrationShellEnvironment environment = visitor.visitAspect(aspect, null);
 
-   protected ByteArrayOutputStream generateXmlOutput( Aspect aspect ) throws IOException {
-      final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
-      AssetAdministrationShellEnvironment environment = visitor.visitAspect( aspect, null );
-
-      try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
-         XmlSerializer serializer = new XmlSerializer();
-         serializer.write( out, environment );
-         return out;
-      } catch ( SerializationException e ) {
-         throw new IOException( e );
-      }
-   }
+    try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      XmlSerializer serializer = new XmlSerializer();
+      serializer.write(out, environment);
+      return out;
+    } catch (SerializationException e) {
+      throw new IOException(e);
+    }
+  }
 }
