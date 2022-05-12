@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,7 +24,7 @@ import java.util.Optional;
 public interface Property extends Base, IsDescribed {
 
    /**
-    * @return the {@link Characteristic} describing this Property.
+    * @return the {@link Characteristic} describing this Property
     */
    Characteristic getCharacteristic();
 
@@ -59,6 +59,14 @@ public interface Property extends Base, IsDescribed {
    }
 
    /**
+    *
+    * @return
+    */
+   default boolean isAbstract() {
+      return false;
+   }
+
+   /**
     * Returns the Property's unconstrained Characteristic
     *
     * @return The Property's Characteristic without Constraints
@@ -76,5 +84,12 @@ public interface Property extends Base, IsDescribed {
     */
    default Optional<Type> getDataType() {
       return getEffectiveCharacteristic().getDataType();
+   }
+
+   /**
+    * @return the {@link AbstractProperty} that is extended by this Property, if present
+    */
+   default Optional<Property> getExtends() {
+      return Optional.empty();
    }
 }

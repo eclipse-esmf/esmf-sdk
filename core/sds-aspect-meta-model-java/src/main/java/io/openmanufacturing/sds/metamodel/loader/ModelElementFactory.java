@@ -27,6 +27,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
@@ -61,12 +62,16 @@ public class ModelElementFactory {
 
    @SuppressWarnings( { "unchecked", "squid:S00101" } ) // class parameter is required to fix return type
    private <T extends Base> Instantiator<T> createInstantiator( final Class<T> clazz, final Resource targetType ) {
+      Resource effectiveTargetType = targetType;
       try {
-         final AspectModelUrn urn = AspectModelUrn.fromUrn( targetType.getURI() );
+         if ( targetType.equals( bamm.AbstractProperty() ) ) {
+            effectiveTargetType = bamm.Property();
+         }
+         final AspectModelUrn urn = AspectModelUrn.fromUrn( effectiveTargetType.getURI() );
          final String className = String.format( "%s.%sInstantiator", AspectInstantiator.class.getPackageName(), urn.getName() );
          return (Instantiator<T>) Class.forName( className ).getDeclaredConstructor( getClass() ).newInstance( this );
       } catch ( final Exception exception ) {
-         throw new AspectLoadingException( "Aspect loading does not know type " + targetType, exception );
+         throw new AspectLoadingException( "Aspect loading does not know type " + effectiveTargetType, exception );
       }
    }
 

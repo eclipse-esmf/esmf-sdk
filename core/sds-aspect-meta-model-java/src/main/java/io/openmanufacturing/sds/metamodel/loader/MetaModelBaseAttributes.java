@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.ImmutableList;
@@ -145,23 +146,32 @@ public class MetaModelBaseAttributes {
     * Creates an instance of {@link MetaModelBaseAttributes} for a specific Meta Model element.
     *
     * @param metaModelVersion the used meta model version
-    * @param metaModelElement the Aspect Meta Model element to be processed.
+    * @param modelElement the Aspect model element to be processed.
     * @param model the RDF {@link Model} representing the entire Aspect Meta Model.
     * @param bamm the Aspect Meta Model vocabulary
     * @return the newly created instance
     */
-   public static MetaModelBaseAttributes fromMetaModelElement( final KnownVersion metaModelVersion,
-         final Resource metaModelElement, final Model model, final BAMM bamm ) {
-      final Optional<AspectModelUrn> urn = metaModelElement.isAnon() ?
-            Optional.empty() :
-            Optional.of( AspectModelUrn.fromUrn( metaModelElement.getURI() ) );
-      final Set<LangString> preferredNames = getLanguages( metaModelElement, bamm.preferredName(), model );
-      final Set<LangString> descriptions = getLanguages( metaModelElement, bamm.description(), model );
-      final List<String> seeValues = getSeeValues( metaModelElement, model, bamm );
-      final Optional<String> actualName = urn.map( AspectModelUrn::getName );
-      final String name = actualName.orElseGet( () -> getSyntheticName( metaModelElement, model, bamm ) );
-      final boolean isSyntheticName = actualName.isEmpty();
+   public static MetaModelBaseAttributes fromModelElement( final KnownVersion metaModelVersion,
+         final Resource modelElement, final Model model, final BAMM bamm ) {
+      final Optional<AspectModelUrn> urn = getUrn( modelElement, bamm );
+      final Set<LangString> preferredNames = getLanguages( modelElement, bamm.preferredName(), model );
+      final Set<LangString> descriptions = getLanguages( modelElement, bamm.description(), model );
+      final List<String> seeValues = getSeeValues( modelElement, model, bamm );
+      final String name = getNameFromInheritanceTree( modelElement, bamm )
+            .orElseGet( () -> getSyntheticName( modelElement, model, bamm ) );
+      final boolean isSyntheticName = urn.isEmpty();
       return new MetaModelBaseAttributes( metaModelVersion, urn.orElse( null ), name, preferredNames, descriptions, seeValues, isSyntheticName );
+   }
+
+   private static Optional<AspectModelUrn> getUrn( final Resource modelElement, final BAMM bamm ) {
+      if ( modelElement.isAnon() ) {
+         final Statement propertyStatement = modelElement.getProperty( bamm.property() );
+         if ( propertyStatement != null ) {
+            return getUrn( propertyStatement.getObject().asResource(), bamm );
+         }
+         return Optional.empty();
+      }
+      return Optional.of( AspectModelUrn.fromUrn( modelElement.getURI() ) );
    }
 
    /**
@@ -197,6 +207,29 @@ public class MetaModelBaseAttributes {
             .orElse( "" ) + randomPart;
    }
 
+   /**
+    * Returns a model element's name: If it's a named resource, the name is part of its URN; otherwise
+    * (e.g., [ bamm:extends :foo ; ... ]) go up the inheritance tree recursively.
+    *
+    * @param modelElement the model element to retrieve the name for
+    * @param bamm the meta model vocabulary
+    * @return the element's local name
+    */
+   private static Optional<String> getNameFromInheritanceTree( final Resource modelElement, final BAMM bamm ) {
+      if ( !modelElement.isAnon() ) {
+         return Optional.of( AspectModelUrn.fromUrn( modelElement.getURI() ).getName() );
+      }
+
+      final Statement propertyStatement = modelElement.getProperty( bamm.property() );
+      if ( propertyStatement != null ) {
+         return getNameFromInheritanceTree( propertyStatement.getObject().asResource(), bamm );
+      }
+
+      final Optional<Statement> extendsStatement = Streams.stream(
+            modelElement.getModel().listStatements( modelElement, bamm._extends(), (RDFNode) null ) ).findAny();
+      return extendsStatement.flatMap( statement -> getNameFromInheritanceTree( statement.getObject().asResource(), bamm ) );
+   }
+
    private static String getSyntheticName( final Resource modelElement, final Model model, final BAMM bamm ) {
       Resource parentModelElement = model.listStatements( null, null, modelElement ).next().getSubject();
       while ( parentModelElement.isAnon() ) {
@@ -210,7 +243,7 @@ public class MetaModelBaseAttributes {
             .map( StringUtils::capitalize )
             .orElse( "" );
 
-      final Resource modelElementType = modelElement.getProperty( RDF.type ).getObject().asResource();
+      final Resource modelElementType = getModelElementType( modelElement, bamm );
       final String modelElementTypeUri = modelElementType.getURI();
       final String modelElementTypeName = metaModelResourceResolver.getAspectModelUrn( modelElementTypeUri )
             .toJavaOptional()
@@ -218,6 +251,28 @@ public class MetaModelBaseAttributes {
             .orElse( "" );
 
       return parentModelElementName + modelElementTypeName;
+   }
+
+   private static Resource getModelElementType( final Resource modelElement, final BAMM bamm ) {
+      final Statement typeStatement = modelElement.getProperty( RDF.type );
+      if ( typeStatement != null ) {
+         return typeStatement.getObject().asResource();
+      }
+
+      // If the model element is a Property reference, the actual type will be found when we follow bamm:property
+      final Statement propertyStatement = modelElement.getProperty( bamm.property() );
+      if ( propertyStatement != null ) {
+         return getModelElementType( propertyStatement.getObject().asResource(), bamm );
+      }
+
+      // This model element has no type, but maybe it extends another element
+      final Statement extendsStatement = modelElement.getProperty( bamm._extends() );
+      if ( extendsStatement == null ) {
+         throw new AspectLoadingException( "Model element has no type and does not extend another type: " + modelElement );
+      }
+
+      final Resource superElement = extendsStatement.getObject().asResource();
+      return getModelElementType( superElement, bamm );
    }
 
    /**

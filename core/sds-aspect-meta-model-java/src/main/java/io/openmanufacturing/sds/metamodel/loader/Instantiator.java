@@ -35,7 +35,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.ExtendedXsdDataType;
@@ -85,7 +85,7 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
    }
 
    protected MetaModelBaseAttributes buildBaseAttributes( final Resource resource ) {
-      return MetaModelBaseAttributes.fromMetaModelElement( metaModelVersion, resource, model, bamm );
+      return MetaModelBaseAttributes.fromModelElement( metaModelVersion, resource, model, bamm );
    }
 
    protected Optional<Statement> optionalPropertyValue( final Resource subject, final org.apache.jena.rdf.model.Property type ) {
@@ -96,17 +96,34 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
       return optionalPropertyValue( subject, type ).orElseThrow( () -> new AspectLoadingException( "Missing Property " + type + " on " + subject ) );
    }
 
+   protected Statement propertyValueFromTypeTree( final Resource subject, final org.apache.jena.rdf.model.Property property ) {
+      final Optional<Statement> valueStatement = optionalPropertyValue( subject, property );
+      if ( valueStatement.isPresent() ) {
+         return valueStatement.get();
+      }
+
+      // Check if the subject is a Property reference, then we should continue to search the referenced Property
+      final Optional<Statement> propertyStatement = optionalPropertyValue( subject, bamm.property() );
+      if ( propertyStatement.isPresent() ) {
+         return propertyValueFromTypeTree( propertyStatement.get().getObject().asResource(), property );
+      }
+
+      final Statement extendsStatement = optionalPropertyValue( subject, bamm._extends() )
+            .orElseThrow( () -> new AspectLoadingException( "Property " + property + " not found on " + subject + " or its supertypes" ) );
+      final Resource superType = extendsStatement.getObject().asResource();
+      return propertyValueFromTypeTree( superType, property );
+   }
+
    /**
     * Extracts all {@link BAMM#Property()} model elements which are referenced in the given Property List, e.g.
     * {@link BAMM#properties()}, and creates {@link Property} instances for these model elements.
     *
     * @param elementWithProperties the {@link Resource} which has the propertyRdfClass list for which the model
     *       elements are extracted
-    * @param rootProperty the {@link Property} defining the property list
+    * @param rootProperty the {@link org.apache.jena.rdf.model.Property} defining the property list
     * @return a {@link List} containing the {@link Property} instances
     */
-   protected List<Property> getPropertiesModels( final Resource elementWithProperties,
-         final org.apache.jena.rdf.model.Property rootProperty ) {
+   protected List<Property> getPropertiesModels( final Resource elementWithProperties, final org.apache.jena.rdf.model.Property rootProperty ) {
       return getResourcesFromList( elementWithProperties, rootProperty )
             .map( propertyResource -> modelElementFactory.create( Property.class, propertyResource ) )
             .collect( Collectors.toList() );
@@ -157,12 +174,12 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
       }
 
       return Optional.of( new DefaultUnit(
-            MetaModelBaseAttributes.fromMetaModelElement( metaModelVersion, unitResource, model, bamm ),
+            MetaModelBaseAttributes.fromModelElement( metaModelVersion, unitResource, model, bamm ),
             optionalPropertyValue( unitResource, bamm.symbol() ).map( Statement::getString ),
             optionalPropertyValue( unitResource, bamm.commonCode() ).map( Statement::getString ),
             optionalPropertyValue( unitResource, bamm.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
             optionalPropertyValue( unitResource, bamm.conversionFactor() ).map( Statement::getString ),
-            ImmutableList.copyOf( model.listStatements( unitResource, bamm.quantityKind(), (RDFNode) null ) ).stream()
+            Streams.stream( model.listStatements( unitResource, bamm.quantityKind(), (RDFNode) null ) )
                   .flatMap( quantityKindStatement -> QuantityKinds.fromName( quantityKindStatement.getObject().asResource().getLocalName() ).stream() )
                   .collect( Collectors.toSet() ) ) );
    }
@@ -261,8 +278,7 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
    private EntityInstance buildEntityInstance( final Resource entityInstance, final Entity type ) {
       final Map<Property, Value> assertions = new HashMap<>();
       type.getAllProperties().forEach( property -> {
-         final AspectModelUrn propertyUrn = property.getAspectModelUrn().orElseThrow( () ->
-               new AspectLoadingException( "Invalid Property without a URN found" ) );
+         final AspectModelUrn propertyUrn = property.getAspectModelUrn().orElseThrow( () -> new AspectLoadingException( "Invalid Property without a URN found" ) );
          final org.apache.jena.rdf.model.Property rdfProperty = ResourceFactory.createProperty( propertyUrn.getUrn().toASCIIString() );
          final Statement statement = entityInstance.getProperty( rdfProperty );
          if ( statement == null ) {
