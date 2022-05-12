@@ -75,6 +75,11 @@ public class BAMM implements Namespace {
    }
 
    @SuppressWarnings( { "squid:S00100", "squid:S1845" } ) // Method name should match model element
+   public Resource AbstractProperty() {
+      return resource( "AbstractProperty" );
+   }
+
+   @SuppressWarnings( { "squid:S00100", "squid:S1845" } ) // Method name should match model element
    public Resource Characteristic() {
       return resource( "Characteristic" );
    }
