@@ -314,7 +314,8 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
             .as( ( metaModelVersion, propertyUrn, preferredNames, descriptions, see, characteristic, payloadName ) -> {
                final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
                      metaModelVersion, propertyUrn, propertyUrn.getName(), preferredNames, descriptions, see );
-               return new DefaultProperty( baseAttributes, characteristic, Optional.empty(), false, false, Optional.of( payloadName ) );
+               return new DefaultProperty( baseAttributes, characteristic, Optional.empty(), false, false, Optional.of( payloadName ), false,
+                     Optional.empty() );
             } );
    }
 
