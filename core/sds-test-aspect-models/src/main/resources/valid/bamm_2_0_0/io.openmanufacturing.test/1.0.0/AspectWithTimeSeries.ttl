@@ -41,10 +41,4 @@
    bamm:preferredName "Test Time Series Entity"@en ;
    bamm:description "This is a test time series entity."@en ;
    bamm:see <http://example.com/omp> ;
-   bamm:properties ( :testValue ) .
-
-:testValue a bamm:Property ;
-   bamm:preferredName "Test Value"@en ;
-   bamm:description "This is a test value."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:characteristic bamm-c:Text .
+   bamm:properties ( [ bamm:extends bamm-e:value ; bamm:characteristic bamm-c:Text ] ) .
