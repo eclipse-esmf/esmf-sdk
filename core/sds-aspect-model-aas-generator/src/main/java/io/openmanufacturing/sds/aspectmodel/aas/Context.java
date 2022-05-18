@@ -23,62 +23,61 @@ import io.openmanufacturing.sds.metamodel.Property;
 
 public class Context {
 
-  AssetAdministrationShellEnvironment environment;
-  Submodel submodel;
-  Property property;
-  SubmodelElement propertyResult;
+   AssetAdministrationShellEnvironment environment;
+   Submodel submodel;
+   Property property;
+   SubmodelElement propertyResult;
 
-  public Context(AssetAdministrationShellEnvironment environment, Submodel ofInterest) {
-    this.environment = environment;
-    this.submodel = ofInterest;
-  }
+   public Context( AssetAdministrationShellEnvironment environment, Submodel ofInterest ) {
+      this.environment = environment;
+      this.submodel = ofInterest;
+   }
 
-  public boolean hasEnvironmentConceptDescription(String id) {
-    return getEnvironment().getConceptDescriptions().stream()
-        .anyMatch(x -> x.getIdentification().getIdentifier().equals(id));
-  }
+   public boolean hasEnvironmentConceptDescription( final String id ) {
+      return getEnvironment().getConceptDescriptions().stream()
+            .anyMatch( x -> x.getIdentification().getIdentifier().equals( id ) );
+   }
 
-  public ConceptDescription getConceptDescription(String id) {
-    Optional<ConceptDescription> optional =
-        getEnvironment().getConceptDescriptions().stream()
-            .filter(x -> x.getIdentification().getIdentifier().equals(id))
-            .findFirst();
-    if (optional.isEmpty()) {
-      throw new IllegalArgumentException(
-          String.format("No ConceptDescription with name %s available.", id));
-    }
-    return optional.get();
-  }
+   public ConceptDescription getConceptDescription( final String id ) {
+      final Optional<ConceptDescription> optional =
+            getEnvironment().getConceptDescriptions().stream()
+                  .filter( x -> x.getIdentification().getIdentifier().equals( id ) )
+                  .findFirst();
+      if ( optional.isEmpty() ) {
+         throw new IllegalArgumentException(
+               String.format( "No ConceptDescription with name %s available.", id ) );
+      }
+      return optional.get();
+   }
 
-  public AssetAdministrationShellEnvironment getEnvironment() {
-    return environment;
-  }
+   public AssetAdministrationShellEnvironment getEnvironment() {
+      return environment;
+   }
 
-  public Submodel getSubmodel() {
-    return submodel;
-  }
+   public Submodel getSubmodel() {
+      return submodel;
+   }
 
-  public void appendToSubModelElements(List<SubmodelElement> elements) {
-    // Hint: As the AAS Meta Model Implementation exposes the internal data structure where the
-    // elements
-    // of a collection are stored, just setting it would overwrite previous entries. Hence, this
-    // approach.
-    getSubmodel().getSubmodelElements().addAll(elements);
-  }
+   public void appendToSubModelElements( final List<SubmodelElement> elements ) {
+      // Hint: As the AAS Meta Model Implementation exposes the internal data structure where the
+      // elements of a collection are stored, just setting it would overwrite previous entries.
+      // Hence, this approach.
+      getSubmodel().getSubmodelElements().addAll( elements );
+   }
 
-  public Property getProperty() {
-    return property;
-  }
+   public Property getProperty() {
+      return property;
+   }
 
-  public void setProperty(Property property) {
-    this.property = property;
-  }
+   public void setProperty( final Property property ) {
+      this.property = property;
+   }
 
-  public SubmodelElement getPropertyResult() {
-    return propertyResult;
-  }
+   public SubmodelElement getPropertyResult() {
+      return propertyResult;
+   }
 
-  public void setPropertyResult(SubmodelElement propertyResult) {
-    this.propertyResult = propertyResult;
-  }
+   public void setPropertyResult( final SubmodelElement propertyResult ) {
+      this.propertyResult = propertyResult;
+   }
 }

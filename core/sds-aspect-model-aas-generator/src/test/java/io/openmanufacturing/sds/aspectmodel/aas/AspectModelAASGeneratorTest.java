@@ -45,324 +45,325 @@ import io.openmanufacturing.sds.test.TestResources;
 
 class AspectModelAASGeneratorTest {
 
-  AspectModelAASGenerator generator = new AspectModelAASGenerator();
+   AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
-  @Test
-  void testGenerateAasxFromBammAspectWithListAndAdditionalProperty()
-      throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY);
-    assertEquals(3, env.getConceptDescriptions().size());
-    assertEquals(1, env.getSubmodels().size());
-    assertEquals(2, env.getSubmodels().get(0).getSubmodelElements().size());
+   @Test
+   void testGenerateAasxFromBammAspectWithListAndAdditionalProperty()
+         throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY );
+      assertEquals( 3, env.getConceptDescriptions().size() );
+      assertEquals( 1, env.getSubmodels().size() );
+      assertEquals( 2, env.getSubmodels().get( 0 ).getSubmodelElements().size() );
 
-    final Set<String> semanticIds =
-        Stream.of(
-                "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty",
-                "urn:bamm:io.openmanufacturing.test:1.0.0#testPropertyTwo")
-            .collect(Collectors.toCollection(HashSet::new));
+      final Set<String> semanticIds =
+            Stream.of(
+                        "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty",
+                        "urn:bamm:io.openmanufacturing.test:1.0.0#testPropertyTwo" )
+                  .collect( Collectors.toCollection( HashSet::new ) );
 
-    checkDataSpecificationIEC61360(semanticIds, env);
-  }
+      checkDataSpecificationIEC61360( semanticIds, env );
+   }
 
-  @Test
-  void testGenerateAasxFromBammAspectWithEntity() throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_ENTITY);
-    assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
-    assertEquals(
-        1,
-        env.getSubmodels().get(0).getSubmodelElements().size(),
-        "Not exactly one SubmodelElement in Submodel.");
-    assertTrue(
-        env.getSubmodels().get(0).getSubmodelElements().get(0) instanceof SubmodelElementCollection,
-        "SubmodelElement is not a SubmodelElementCollection.");
-    SubmodelElementCollection collection =
-        (SubmodelElementCollection) env.getSubmodels().get(0).getSubmodelElements().get(0);
-    assertEquals(
-        1, collection.getValues().size(), "Not exactly one Element in SubmodelElementCollection");
-    assertEquals("entityProperty", collection.getValues().stream().findFirst().get().getIdShort());
+   @Test
+   void testGenerateAasxFromBammAspectWithEntity() throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY );
+      assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
+      assertEquals(
+            1,
+            env.getSubmodels().get( 0 ).getSubmodelElements().size(),
+            "Not exactly one SubmodelElement in Submodel." );
+      assertTrue(
+            env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ) instanceof SubmodelElementCollection,
+            "SubmodelElement is not a SubmodelElementCollection." );
+      SubmodelElementCollection collection =
+            (SubmodelElementCollection) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertEquals(
+            1, collection.getValues().size(), "Not exactly one Element in SubmodelElementCollection" );
+      assertEquals( "entityProperty", collection.getValues().stream().findFirst().get().getIdShort() );
 
-    getDataSpecificationIEC61360("urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env);
-  }
+      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+   }
 
-  @Test
-  void testGenerateAasxFromBammAspectWithCollection() throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_COLLECTION);
-    assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
-    assertEquals(
-        1,
-        env.getSubmodels().get(0).getSubmodelElements().size(),
-        "Not exactly one SubmodelElement in AAS.");
-    final SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
-    assertTrue(
-        submodelElement instanceof SubmodelElementCollection,
-        "SubmodelElement is not a SubmodelElementCollection");
-    assertEquals("testProperty", submodelElement.getIdShort());
+   @Test
+   void testGenerateAasxFromBammAspectWithCollection() throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_COLLECTION );
+      assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
+      assertEquals(
+            1,
+            env.getSubmodels().get( 0 ).getSubmodelElements().size(),
+            "Not exactly one SubmodelElement in AAS." );
+      final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertTrue(
+            submodelElement instanceof SubmodelElementCollection,
+            "SubmodelElement is not a SubmodelElementCollection" );
+      assertEquals( "testProperty", submodelElement.getIdShort() );
 
-    getDataSpecificationIEC61360("urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env);
-  }
+      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+   }
 
-  @Test
-  void testGenerateAasxFromBammAspectWithList() throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_LIST);
-    assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
-    assertEquals(
-        1,
-        env.getSubmodels().get(0).getSubmodelElements().size(),
-        "Not exactly one SubmodelElement in AAS.");
-    final SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
-    assertTrue(
-        submodelElement instanceof SubmodelElementCollection,
-        "SubmodelElement is not a SubmodelElementCollection");
-    assertEquals("testProperty", submodelElement.getIdShort());
-    assertTrue(((SubmodelElementCollection) submodelElement).getOrdered(), "List is not ordered.");
+   @Test
+   void testGenerateAasxFromBammAspectWithList() throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_LIST );
+      assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
+      assertEquals(
+            1,
+            env.getSubmodels().get( 0 ).getSubmodelElements().size(),
+            "Not exactly one SubmodelElement in AAS." );
+      final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertTrue(
+            submodelElement instanceof SubmodelElementCollection,
+            "SubmodelElement is not a SubmodelElementCollection" );
+      assertEquals( "testProperty", submodelElement.getIdShort() );
+      assertTrue( ((SubmodelElementCollection) submodelElement).getOrdered(), "List is not ordered." );
 
-    getDataSpecificationIEC61360("urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env);
-  }
+      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+   }
 
-  @Test
-  void testGenerateAasxFromBammAspectWithSet() throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_SET);
-    assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
-    assertEquals(
-        1,
-        env.getSubmodels().get(0).getSubmodelElements().size(),
-        "Not exactly one SubmodelElement in AAS.");
-    final SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
-    assertTrue(
-        submodelElement instanceof SubmodelElementCollection,
-        "SubmodelElement is not a SubmodelElementCollection");
-    assertEquals("testProperty", submodelElement.getIdShort());
-    assertFalse(((SubmodelElementCollection) submodelElement).getOrdered(), "Set is ordered.");
-    assertFalse(
-        ((SubmodelElementCollection) submodelElement).getAllowDuplicates(),
-        "Set allows duplicates.");
+   @Test
+   void testGenerateAasxFromBammAspectWithSet() throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_SET );
+      assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
+      assertEquals(
+            1,
+            env.getSubmodels().get( 0 ).getSubmodelElements().size(),
+            "Not exactly one SubmodelElement in AAS." );
+      final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertTrue(
+            submodelElement instanceof SubmodelElementCollection,
+            "SubmodelElement is not a SubmodelElementCollection" );
+      assertEquals( "testProperty", submodelElement.getIdShort() );
+      assertFalse( ((SubmodelElementCollection) submodelElement).getOrdered(), "Set is ordered." );
+      assertFalse(
+            ((SubmodelElementCollection) submodelElement).getAllowDuplicates(),
+            "Set allows duplicates." );
 
-    getDataSpecificationIEC61360("urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env);
-  }
+      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+   }
 
-  @Test
-  void testGenerateAasxFromBammAspectWithSortedSet() throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_SORTED_SET);
-    assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
-    assertEquals(
-        1,
-        env.getSubmodels().get(0).getSubmodelElements().size(),
-        "Not exactly one SubmodelElement in AAS.");
-    final SubmodelElement submodelElement = env.getSubmodels().get(0).getSubmodelElements().get(0);
-    assertTrue(
-        submodelElement instanceof SubmodelElementCollection,
-        "SubmodelElement is not a SubmodelElementCollection");
-    assertEquals("testProperty", submodelElement.getIdShort());
-    assertTrue(
-        ((SubmodelElementCollection) submodelElement).getOrdered(), "Sorted Set is not ordered.");
-    assertFalse(
-        ((SubmodelElementCollection) submodelElement).getAllowDuplicates(),
-        "Sorted Set allows duplicates.");
+   @Test
+   void testGenerateAasxFromBammAspectWithSortedSet() throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_SORTED_SET );
+      assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
+      assertEquals(
+            1,
+            env.getSubmodels().get( 0 ).getSubmodelElements().size(),
+            "Not exactly one SubmodelElement in AAS." );
+      final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertTrue(
+            submodelElement instanceof SubmodelElementCollection,
+            "SubmodelElement is not a SubmodelElementCollection" );
+      assertEquals( "testProperty", submodelElement.getIdShort() );
+      assertTrue(
+            ((SubmodelElementCollection) submodelElement).getOrdered(), "Sorted Set is not ordered." );
+      assertFalse(
+            ((SubmodelElementCollection) submodelElement).getAllowDuplicates(),
+            "Sorted Set allows duplicates." );
 
-    getDataSpecificationIEC61360("urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env);
-  }
+      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+   }
 
-  @Test
-  void testGenerateAasxFromBammAspectWithEitherWithComplexTypes()
-      throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES);
-    assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
-    assertEquals(
-        1,
-        env.getSubmodels().get(0).getSubmodelElements().size(),
-        1,
-        "Not exactly one Element in SubmodelElements.");
-    final SubmodelElementCollection elementCollection =
-        ((SubmodelElementCollection) env.getSubmodels().get(0).getSubmodelElements().get(0));
-    final Set<String> testValues =
-        Stream.of("RightEntity", "LeftEntity").collect(Collectors.toCollection(HashSet::new));
-    assertTrue(
-        elementCollection.getValues().stream().anyMatch(x -> testValues.contains(x.getIdShort())),
-        "Neither left nor right entity contained.");
+   @Test
+   void testGenerateAasxFromBammAspectWithEitherWithComplexTypes()
+         throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
+      assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
+      assertEquals(
+            1,
+            env.getSubmodels().get( 0 ).getSubmodelElements().size(),
+            1,
+            "Not exactly one Element in SubmodelElements." );
+      final SubmodelElementCollection elementCollection =
+            ((SubmodelElementCollection) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ));
+      final Set<String> testValues =
+            Stream.of( "RightEntity", "LeftEntity" ).collect( Collectors.toCollection( HashSet::new ) );
+      assertTrue(
+            elementCollection.getValues().stream().anyMatch( x -> testValues.contains( x.getIdShort() ) ),
+            "Neither left nor right entity contained." );
 
-    final Set<String> semanticIds =
-        Stream.of(
-                "urn:bamm:io.openmanufacturing.test:1.0.0#result",
-                "urn:bamm:io.openmanufacturing.test:1.0.0#error")
-            .collect(Collectors.toCollection(HashSet::new));
+      final Set<String> semanticIds =
+            Stream.of(
+                        "urn:bamm:io.openmanufacturing.test:1.0.0#result",
+                        "urn:bamm:io.openmanufacturing.test:1.0.0#error" )
+                  .collect( Collectors.toCollection( HashSet::new ) );
 
-    checkDataSpecificationIEC61360(semanticIds, env);
-  }
+      checkDataSpecificationIEC61360( semanticIds, env );
+   }
 
-  @Test
-  void testGenerateAasxFromBammAspectWithQuantifiable()
-      throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT);
-    assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
-    assertEquals(
-        1,
-        env.getSubmodels().get(0).getSubmodelElements().size(),
-        1,
-        "Not exactly one Element in SubmodelElements.");
-    final SubmodelElement element = env.getSubmodels().get(0).getSubmodelElements().get(0);
-    assertEquals("testProperty", element.getIdShort());
+   @Test
+   void testGenerateAasxFromBammAspectWithQuantifiable()
+         throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT );
+      assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
+      assertEquals(
+            1,
+            env.getSubmodels().get( 0 ).getSubmodelElements().size(),
+            1,
+            "Not exactly one Element in SubmodelElements." );
+      final SubmodelElement element = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertEquals( "testProperty", element.getIdShort() );
 
-    final DataSpecificationIEC61360 dataSpecificationContent =
-        getDataSpecificationIEC61360("urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env);
+      final DataSpecificationIEC61360 dataSpecificationContent =
+            getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
 
-    assertEquals("percent", dataSpecificationContent.getUnit(), "Unit is not percent");
-  }
+      assertEquals( "percent", dataSpecificationContent.getUnit(), "Unit is not percent" );
+   }
 
-  @Test
-  void testGenerateAasxFromBammWithConstraint() throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_CONSTRAINT);
-    assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
-    assertEquals(
-        1,
-        env.getSubmodels().get(0).getSubmodelElements().size(),
-        6,
-        "Not exactly six Elements in SubmodelElements.");
-    final SubmodelElement submodelElement =
-        env.getSubmodels().get(0).getSubmodelElements().stream()
-            .filter(x -> x.getIdShort().equals("stringLcProperty"))
-            .findFirst()
-            .orElseThrow();
-    assertEquals("stringLcProperty", submodelElement.getIdShort());
+   @Test
+   void testGenerateAasxFromBammWithConstraint() throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_CONSTRAINT );
+      assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
+      assertEquals(
+            1,
+            env.getSubmodels().get( 0 ).getSubmodelElements().size(),
+            6,
+            "Not exactly six Elements in SubmodelElements." );
+      final SubmodelElement submodelElement =
+            env.getSubmodels().get( 0 ).getSubmodelElements().stream()
+                  .filter( x -> x.getIdShort().equals( "stringLcProperty" ) )
+                  .findFirst()
+                  .orElseThrow();
+      assertEquals( "stringLcProperty", submodelElement.getIdShort() );
 
-    final Set<String> semanticIds =
-        Stream.of(
-                "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringLcProperty",
-                "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectdoubleRcProperty",
-                "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectintRcProperty",
-                "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectbigIntRcProperty",
-                "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectfloatRcProperty",
-                "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringRegexcProperty")
-            .collect(Collectors.toCollection(HashSet::new));
+      final Set<String> semanticIds =
+            Stream.of(
+                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringLcProperty",
+                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectdoubleRcProperty",
+                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectintRcProperty",
+                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectbigIntRcProperty",
+                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectfloatRcProperty",
+                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringRegexcProperty" )
+                  .collect( Collectors.toCollection( HashSet::new ) );
 
-    checkDataSpecificationIEC61360(semanticIds, env);
-  }
+      checkDataSpecificationIEC61360( semanticIds, env );
+   }
 
-  @Test
-  void testGenerateAasxFromBammAspectWithRecursivePropertyWithOptional()
-      throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(
-            TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL);
-    assertEquals(1, env.getSubmodels().size(), "Not exactly one Submodel in AAS.");
-  }
+   @Test
+   void testGenerateAasxFromBammAspectWithRecursivePropertyWithOptional()
+         throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect(
+                  TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL );
+      assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
+   }
 
-  @Test
-  void testGenerateAasxFromBammAspectWithCode() throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_CODE);
-    assertEquals(2, env.getConceptDescriptions().size());
-    assertEquals(1, env.getSubmodels().size());
-    assertEquals(1, env.getSubmodels().get(0).getSubmodelElements().size());
-    Property submodelElement = (Property) env.getSubmodels().get(0).getSubmodelElements().get(0);
-    assertEquals(
-        "http://www.w3.org/2001/XMLSchema#int",
-        submodelElement.getValueType(),
-        "Value type not int");
+   @Test
+   void testGenerateAasxFromBammAspectWithCode() throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_CODE );
+      assertEquals( 2, env.getConceptDescriptions().size() );
+      assertEquals( 1, env.getSubmodels().size() );
+      assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size() );
+      Property submodelElement = (Property) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertEquals(
+            "http://www.w3.org/2001/XMLSchema#int",
+            submodelElement.getValueType(),
+            "Value type not int" );
 
-    getDataSpecificationIEC61360("urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env);
-  }
+      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+   }
 
-  @Test
-  void testGenerateAasxFromBammAspectWithEnumeration()
-      throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(TestAspect.ASPECT_WITH_ENUMERATION);
+   @Test
+   void testGenerateAasxFromBammAspectWithEnumeration()
+         throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENUMERATION );
 
-    assertEquals(2, env.getConceptDescriptions().size());
+      assertEquals( 2, env.getConceptDescriptions().size() );
 
-    final DataSpecificationIEC61360 dataSpecificationContent =
-        (DataSpecificationIEC61360)
-            env.getConceptDescriptions().stream()
-                .filter(x -> x.getIdShort().equals("TestEnumeration"))
-                .findFirst()
-                .get()
-                .getEmbeddedDataSpecifications()
-                .stream()
-                .findFirst()
-                .get()
-                .getDataSpecificationContent();
-    assertEquals(3, dataSpecificationContent.getValueList().getValueReferencePairTypes().size());
+      final DataSpecificationIEC61360 dataSpecificationContent =
+            (DataSpecificationIEC61360)
+                  env.getConceptDescriptions().stream()
+                        .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
+                        .findFirst()
+                        .get()
+                        .getEmbeddedDataSpecifications()
+                        .stream()
+                        .findFirst()
+                        .get()
+                        .getDataSpecificationContent();
+      assertEquals( 3, dataSpecificationContent.getValueList().getValueReferencePairTypes().size() );
 
-    assertEquals(1, env.getSubmodels().size());
-    assertEquals(1, env.getSubmodels().get(0).getSubmodelElements().size());
-    final Property submodelElement =
-        (Property) env.getSubmodels().get(0).getSubmodelElements().get(0);
-    assertEquals(
-        "http://www.w3.org/2001/XMLSchema#integer",
-        submodelElement.getValueType(),
-        "Value type not int");
-  }
+      assertEquals( 1, env.getSubmodels().size() );
+      assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size() );
+      final Property submodelElement =
+            (Property) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+      assertEquals(
+            "http://www.w3.org/2001/XMLSchema#integer",
+            submodelElement.getValueType(),
+            "Value type not int" );
+   }
 
-  @ParameterizedTest
-  @EnumSource(
-      value = TestAspect.class,
-      mode = EnumSource.Mode.EXCLUDE,
-      names = {
-        "ASPECT_WITH_STRING_ENUMERATION"
-      }) // anonymous enumeration in test has no urn for enum values but is required for Concept
-         // Description referencing
-  public void testGeneration(final TestAspect testAspect)
-      throws IOException, DeserializationException {
-    final AssetAdministrationShellEnvironment env =
-        getAssetAdministrationShellFromAspect(testAspect);
-    assertTrue(env.getSubmodels().size() >= 1, "No Submodel in AAS present.");
-  }
+   @ParameterizedTest
+   @EnumSource(
+         value = TestAspect.class,
+         mode = EnumSource.Mode.EXCLUDE,
+         names = {
+               "ASPECT_WITH_STRING_ENUMERATION"
+         } )
+   // anonymous enumeration in test has no urn for enum values but is required for Concept
+   // Description referencing
+   public void testGeneration( final TestAspect testAspect )
+         throws IOException, DeserializationException {
+      final AssetAdministrationShellEnvironment env =
+            getAssetAdministrationShellFromAspect( testAspect );
+      assertTrue( env.getSubmodels().size() >= 1, "No Submodel in AAS present." );
+   }
 
-  private void checkDataSpecificationIEC61360(
-      final Set<String> semanticIds, final AssetAdministrationShellEnvironment env) {
-    semanticIds.forEach(x -> getDataSpecificationIEC61360(x, env));
-  }
+   private void checkDataSpecificationIEC61360(
+         final Set<String> semanticIds, final AssetAdministrationShellEnvironment env ) {
+      semanticIds.forEach( x -> getDataSpecificationIEC61360( x, env ) );
+   }
 
-  private DataSpecificationIEC61360 getDataSpecificationIEC61360(
-      final String semanticId, final AssetAdministrationShellEnvironment env) {
-    final List<ConceptDescription> conceptDescriptions = env.getConceptDescriptions();
-    final List<ConceptDescription> filteredConceptDescriptions =
-        conceptDescriptions.stream()
-            .filter(x -> x.getIdentification().getIdentifier().equals(semanticId))
-            .collect(Collectors.toList());
-    assertEquals(
-        1,
-        filteredConceptDescriptions.size(),
-        "Not exactly 1 ConceptDescription for semanticId. " + semanticId);
+   private DataSpecificationIEC61360 getDataSpecificationIEC61360(
+         final String semanticId, final AssetAdministrationShellEnvironment env ) {
+      final List<ConceptDescription> conceptDescriptions = env.getConceptDescriptions();
+      final List<ConceptDescription> filteredConceptDescriptions =
+            conceptDescriptions.stream()
+                  .filter( x -> x.getIdentification().getIdentifier().equals( semanticId ) )
+                  .collect( Collectors.toList() );
+      assertEquals(
+            1,
+            filteredConceptDescriptions.size(),
+            "Not exactly 1 ConceptDescription for semanticId. " + semanticId );
 
-    final List<EmbeddedDataSpecification> embeddedDataSpecifications =
-        filteredConceptDescriptions.get(0).getEmbeddedDataSpecifications();
-    assertEquals(
-        1,
-        embeddedDataSpecifications.size(),
-        "Not exactly 1 EmbeddedDataSpecification for semanticId. " + semanticId);
+      final List<EmbeddedDataSpecification> embeddedDataSpecifications =
+            filteredConceptDescriptions.get( 0 ).getEmbeddedDataSpecifications();
+      assertEquals(
+            1,
+            embeddedDataSpecifications.size(),
+            "Not exactly 1 EmbeddedDataSpecification for semanticId. " + semanticId );
 
-    assertTrue(
-        embeddedDataSpecifications.stream().findFirst().isPresent(),
-        "There is no EmbeddedDataSpecification");
-    return (DataSpecificationIEC61360)
-        embeddedDataSpecifications.stream().findFirst().get().getDataSpecificationContent();
-  }
+      assertTrue(
+            embeddedDataSpecifications.stream().findFirst().isPresent(),
+            "There is no EmbeddedDataSpecification" );
+      return (DataSpecificationIEC61360)
+            embeddedDataSpecifications.stream().findFirst().get().getDataSpecificationContent();
+   }
 
-  private AssetAdministrationShellEnvironment getAssetAdministrationShellFromAspect(
-      TestAspect testAspect) throws DeserializationException, IOException {
-    final Aspect aspect = loadAspect(testAspect);
-    final ByteArrayOutputStream out = generator.generateXmlOutput(aspect);
-    return loadAASX(out);
-  }
+   private AssetAdministrationShellEnvironment getAssetAdministrationShellFromAspect(
+         TestAspect testAspect ) throws DeserializationException, IOException {
+      final Aspect aspect = loadAspect( testAspect );
+      final ByteArrayOutputStream out = generator.generateXmlOutput( aspect );
+      return loadAASX( out );
+   }
 
-  private Aspect loadAspect(TestAspect testAspect) {
-    final VersionedModel model = TestResources.getModel(testAspect, KnownVersion.getLatest()).get();
-    return AspectModelLoader.fromVersionedModelUnchecked(model);
-  }
+   private Aspect loadAspect( TestAspect testAspect ) {
+      final VersionedModel model = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
+      return AspectModelLoader.fromVersionedModelUnchecked( model );
+   }
 
-  private AssetAdministrationShellEnvironment loadAASX(ByteArrayOutputStream byteStream)
-      throws DeserializationException {
-    final XmlDeserializer deserializer = new XmlDeserializer();
-    return deserializer.read(new ByteArrayInputStream(byteStream.toByteArray()));
-  }
+   private AssetAdministrationShellEnvironment loadAASX( ByteArrayOutputStream byteStream )
+         throws DeserializationException {
+      final XmlDeserializer deserializer = new XmlDeserializer();
+      return deserializer.read( new ByteArrayInputStream( byteStream.toByteArray() ) );
+   }
 }
