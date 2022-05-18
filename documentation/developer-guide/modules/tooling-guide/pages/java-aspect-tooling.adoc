@@ -505,7 +505,7 @@ https://www.plattform-i40.de/IP/Redaktion/EN/Downloads/Publikation/Details_of_th
 
 | xref:bamm-specification:ROOT:characteristics.adoc#state-characteristic[**bamm-c:State**]  | aas:SubmodelElement, aas:ConceptDescription | Same as Enumeration.
 
-| bamm-c:MultiLanguageText  | aas:MultiLanguageProperty | if a MultiLanguageText is used in BAMM it is mapped to the MultiLanguageProperty in AAS.
+| xref:bamm-specification:ROOT:characteristics.adoc#MultiLanguageText[bamm-c:MultiLanguageText]  | aas:MultiLanguageProperty | if a MultiLanguageText is used in BAMM it is mapped to the MultiLanguageProperty in AAS.
 |===
 
 
