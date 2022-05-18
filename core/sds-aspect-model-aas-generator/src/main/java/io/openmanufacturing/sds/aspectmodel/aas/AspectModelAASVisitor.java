@@ -177,12 +177,12 @@ public class AspectModelAASVisitor
 
    private List<SubmodelElement> visitOperations(
          final List<io.openmanufacturing.sds.metamodel.Operation> elements, final Context context ) {
-      return Stream.ofAll( elements ).map( i -> map( i, context ) ).collect( Collectors.toList() );
+      return elements.stream().map( i -> map( i, context ) ).collect( Collectors.toList() );
    }
 
    private List<SubmodelElement> visitProperties(
          final List<Property> elements, final Context context ) {
-      return Stream.ofAll( elements ).map( i -> map( i, context ) ).collect( Collectors.toList() );
+      return elements.stream().map( i -> map( i, context ) ).collect( Collectors.toList() );
    }
 
    private SubmodelElement map( final Property property, final Context context ) {

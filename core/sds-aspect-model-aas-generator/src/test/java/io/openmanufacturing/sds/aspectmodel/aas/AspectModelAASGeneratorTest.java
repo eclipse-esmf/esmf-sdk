@@ -17,11 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -57,10 +55,8 @@ class AspectModelAASGeneratorTest {
       assertEquals( 2, env.getSubmodels().get( 0 ).getSubmodelElements().size() );
 
       final Set<String> semanticIds =
-            Stream.of(
-                        "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty",
-                        "urn:bamm:io.openmanufacturing.test:1.0.0#testPropertyTwo" )
-                  .collect( Collectors.toCollection( HashSet::new ) );
+            Set.of( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#testPropertyTwo" );
 
       checkDataSpecificationIEC61360( semanticIds, env );
    }
@@ -182,16 +178,14 @@ class AspectModelAASGeneratorTest {
       final SubmodelElementCollection elementCollection =
             ((SubmodelElementCollection) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ));
       final Set<String> testValues =
-            Stream.of( "RightEntity", "LeftEntity" ).collect( Collectors.toCollection( HashSet::new ) );
+            Set.of( "RightEntity", "LeftEntity" );
       assertTrue(
             elementCollection.getValues().stream().anyMatch( x -> testValues.contains( x.getIdShort() ) ),
             "Neither left nor right entity contained." );
 
       final Set<String> semanticIds =
-            Stream.of(
-                        "urn:bamm:io.openmanufacturing.test:1.0.0#result",
-                        "urn:bamm:io.openmanufacturing.test:1.0.0#error" )
-                  .collect( Collectors.toCollection( HashSet::new ) );
+            Set.of( "urn:bamm:io.openmanufacturing.test:1.0.0#result",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#error" );
 
       checkDataSpecificationIEC61360( semanticIds, env );
    }
@@ -234,14 +228,12 @@ class AspectModelAASGeneratorTest {
       assertEquals( "stringLcProperty", submodelElement.getIdShort() );
 
       final Set<String> semanticIds =
-            Stream.of(
-                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringLcProperty",
-                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectdoubleRcProperty",
-                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectintRcProperty",
-                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectbigIntRcProperty",
-                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectfloatRcProperty",
-                        "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringRegexcProperty" )
-                  .collect( Collectors.toCollection( HashSet::new ) );
+            Set.of( "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringLcProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectdoubleRcProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectintRcProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectbigIntRcProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectfloatRcProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringRegexcProperty" );
 
       checkDataSpecificationIEC61360( semanticIds, env );
    }
