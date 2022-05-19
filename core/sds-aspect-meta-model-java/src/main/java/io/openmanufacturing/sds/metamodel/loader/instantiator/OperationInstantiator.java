@@ -37,7 +37,7 @@ public class OperationInstantiator extends Instantiator<Operation> {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( operation );
       final List<Property> input = getPropertiesModels( operation, bamm.input() );
       final Optional<Property> output =
-            optionalPropertyValue( operation, bamm.output() )
+            optionalAttributeValue( operation, bamm.output() )
                   .map( Statement::getResource )
                   .map( outputPropertyResource -> modelElementFactory
                         .create( Property.class, outputPropertyResource ) );

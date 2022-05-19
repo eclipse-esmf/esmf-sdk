@@ -28,7 +28,6 @@ import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
-import io.openmanufacturing.sds.metamodel.loader.AspectLoadingException;
 import io.openmanufacturing.sds.metamodel.loader.DefaultPropertyWrapper;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
@@ -44,48 +43,13 @@ public class PropertyInstantiator extends Instantiator<Property> {
 
    @Override
    public Property apply( final Resource property ) {
-      boolean isOptional = false;
-      boolean isNotInPayload = false;
-      boolean isAbstract = false;
-      Optional<String> payloadName = Optional.empty();
-      Optional<Property> extends_ = Optional.empty();
-
-      if ( property.isAnon() ) {
-         // Note the following code is particularly hard to read due to overloading of the
-         // term "property". The variable "property" is an RDF resource an Entity or Aspect points
-         // to from its "bamm:properties", i.e. a BAMM Property. getProperty() refers to the
-         // RDF properties this particular RDF resource has. bamm.property() then refers to the
-         // BAMM RDF vocabulary term "bamm:property", so we talk about this model construct:
-         // :Foo a bamm:Aspect ;
-         //   bamm:properties ( [ bamm:property :bar ; ... ] ) .
-         final Statement propertyStatement = property.getProperty( bamm.property() );
-         if ( propertyStatement == null ) {
-            // The property reference does not contain "bamm:property", but it could contain
-            // "bamm:extends"
-            final Statement superPropertyStatement = property.getProperty( bamm._extends() );
-            if ( superPropertyStatement == null ) {
-               throw new AspectLoadingException( "A Property reference is missing both bamm:property and bamm:extends" );
-            }
-
-            final Resource superPropertyResource = superPropertyStatement.getResource();
-            final Property superProperty = modelElementFactory.create( Property.class, superPropertyResource );
-            extends_ = Optional.of( superProperty );
-         }
-
-         if ( property.hasProperty( bamm.optional() ) ) {
-            isOptional = property.getProperty( bamm.optional() ).getBoolean();
-         }
-         if ( property.hasProperty( bamm.notInPayload() ) ) {
-            isNotInPayload = property.getProperty( bamm.notInPayload() ).getBoolean();
-         }
-         if ( property.hasProperty( bamm.payloadName() ) ) {
-            payloadName = Optional.of( property.getProperty( bamm.payloadName() ).getString() );
-         }
-      }
-
-      if ( property.getModel().contains( property, RDF.type, bamm.AbstractProperty() ) ) {
-         isAbstract = true;
-      }
+      final boolean isOptional = optionalAttributeValue( property, bamm.optional() ).map( Statement::getBoolean ).orElse( false );
+      final boolean isNotInPayload = optionalAttributeValue( property, bamm.notInPayload() ).map( Statement::getBoolean ).orElse( false );
+      final Optional<String> payloadName = optionalAttributeValue( property, bamm.payloadName() ).map( Statement::getString );
+      final Optional<Property> extends_ = optionalAttributeValue( property, bamm._extends() )
+            .map( Statement::getResource )
+            .map( superElementResource -> modelElementFactory.create( Property.class, superElementResource ) );
+      final boolean isAbstract = property.getModel().contains( property, RDF.type, bamm.AbstractProperty() );
 
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( property );
       final DefaultPropertyWrapper defaultProperty = new DefaultPropertyWrapper( metaModelBaseAttributes );
@@ -98,11 +62,11 @@ public class PropertyInstantiator extends Instantiator<Property> {
       resourcePropertyMap.put( property, defaultProperty );
 
       if ( !isAbstract ) {
-         final Resource characteristicResource = propertyValueFromTypeTree( property, bamm.characteristic() ).getResource();
+         final Resource characteristicResource = attributeValue( property, bamm.characteristic() ).getResource();
          final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
          defaultProperty.setCharacteristic( characteristic );
 
-         final Optional<ScalarValue> exampleValue = optionalPropertyValue( property, bamm.exampleValue() )
+         final Optional<ScalarValue> exampleValue = optionalAttributeValue( property, bamm.exampleValue() )
                .flatMap( statement -> characteristic.getDataType()
                      .map( type -> {
                         if ( !type.is( Scalar.class ) ) {

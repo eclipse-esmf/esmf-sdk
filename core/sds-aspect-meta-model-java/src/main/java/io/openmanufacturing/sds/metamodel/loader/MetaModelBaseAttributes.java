@@ -153,11 +153,13 @@ public class MetaModelBaseAttributes {
     */
    public static MetaModelBaseAttributes fromModelElement( final KnownVersion metaModelVersion,
          final Resource modelElement, final Model model, final BAMM bamm ) {
+      final AttributeValueRetriever valueRetriever = new AttributeValueRetriever( bamm );
+
       final Optional<AspectModelUrn> urn = getUrn( modelElement, bamm );
-      final Set<LangString> preferredNames = getLanguages( modelElement, bamm.preferredName(), model );
-      final Set<LangString> descriptions = getLanguages( modelElement, bamm.description(), model );
-      final List<String> seeValues = getSeeValues( modelElement, model, bamm );
-      final String name = getNameFromInheritanceTree( modelElement, bamm )
+      final Set<LangString> preferredNames = getLanguages( modelElement, bamm.preferredName(), valueRetriever );
+      final Set<LangString> descriptions = getLanguages( modelElement, bamm.description(), valueRetriever );
+      final List<String> seeValues = getSeeValues( modelElement, bamm, valueRetriever );
+      final String name = getName( modelElement, bamm )
             .orElseGet( () -> getSyntheticName( modelElement, model, bamm ) );
       final boolean isSyntheticName = urn.isEmpty();
       return new MetaModelBaseAttributes( metaModelVersion, urn.orElse( null ), name, preferredNames, descriptions, seeValues, isSyntheticName );
@@ -175,39 +177,6 @@ public class MetaModelBaseAttributes {
    }
 
    /**
-    * Generates a synthetic name for a model element, when the model element is defined as an anonymous node.
-    * The synthetic name consists of the name of the first named parent element of the model element suffixed with the type of the model element if it can be
-    * determined easily. For example, for the LengthConstraint in the following model:
-    * <code>
-    *    :aProperty a bamm:Property ;
-    *       bamm:characteristic [
-    *          a bamm:Trait ;
-    *          bamm-c:baseCharacteristic ... ;
-    *          bamm-c:constraint [
-    *             a bamm-c:LengthConstraint; bamm-c:minValue 5
-    *          ]
-    *       ]
-    * </code>
-    * a synthetic name of "APropertyLengthConstraint" would be generated.
-    *
-    * @param modelElement a model element
-    * @param model the containing model
-    * @return a synthetic name for the model element, possibly suffixed with the model element's type name
-    */
-   private static String getSyntheticName( final Resource modelElement, final Model model ) {
-      final String randomPart = UUID.nameUUIDFromBytes( modelElement.getId().toString().getBytes() ).toString()
-            .substring( 0, 7 );
-      return ImmutableList.copyOf( model.listStatements( modelElement, RDF.type, (RDFNode) null ) ).stream()
-            .findFirst()
-            .filter( statement -> statement.getObject().isResource() )
-            .map( statement -> statement.getObject().asResource() )
-            .map( type -> metaModelResourceResolver.getAspectModelUrn( type.getURI() ) )
-            .flatMap( Value::toJavaOptional )
-            .map( AspectModelUrn::getName )
-            .orElse( "" ) + randomPart;
-   }
-
-   /**
     * Returns a model element's name: If it's a named resource, the name is part of its URN; otherwise
     * (e.g., [ bamm:extends :foo ; ... ]) go up the inheritance tree recursively.
     *
@@ -215,19 +184,19 @@ public class MetaModelBaseAttributes {
     * @param bamm the meta model vocabulary
     * @return the element's local name
     */
-   private static Optional<String> getNameFromInheritanceTree( final Resource modelElement, final BAMM bamm ) {
+   private static Optional<String> getName( final Resource modelElement, final BAMM bamm ) {
       if ( !modelElement.isAnon() ) {
          return Optional.of( AspectModelUrn.fromUrn( modelElement.getURI() ).getName() );
       }
 
       final Statement propertyStatement = modelElement.getProperty( bamm.property() );
       if ( propertyStatement != null ) {
-         return getNameFromInheritanceTree( propertyStatement.getObject().asResource(), bamm );
+         return getName( propertyStatement.getObject().asResource(), bamm );
       }
 
       final Optional<Statement> extendsStatement = Streams.stream(
             modelElement.getModel().listStatements( modelElement, bamm._extends(), (RDFNode) null ) ).findAny();
-      return extendsStatement.flatMap( statement -> getNameFromInheritanceTree( statement.getObject().asResource(), bamm ) );
+      return extendsStatement.flatMap( statement -> getName( statement.getObject().asResource(), bamm ) );
    }
 
    private static String getSyntheticName( final Resource modelElement, final Model model, final BAMM bamm ) {
@@ -276,31 +245,27 @@ public class MetaModelBaseAttributes {
    }
 
    /**
-    * @param subject the RDF {@link Resource} representing the Aspect Model element to be processed
-    * @param property the RDF {@link org.apache.jena.rdf.model.Property} for which the values will be retrieved
-    * @param model the RDF {@link Model} representing the entire Aspect Meta Model
+    * @param modelElement the RDF {@link Resource} representing the Aspect Model element to be processed
+    * @param attribute the RDF {@link org.apache.jena.rdf.model.Property} for which the values will be retrieved
+    * @param valueRetriever the {@link AttributeValueRetriever} used to retrieve the attribute values
     * @return a {@link List} containing all values for the given Property in the given Aspect Model element
     */
-   private static Set<LangString> getLanguages( final Resource subject,
-         final org.apache.jena.rdf.model.Property property, final Model model ) {
-      return Streams.stream( model.listStatements( subject, property, (RDFNode) null ) )
-            .filter( languageStatement -> !"und"
-                  .equals( Locale.forLanguageTag( languageStatement.getLanguage() )
-                        .toLanguageTag() ) )
+   private static Set<LangString> getLanguages( final Resource modelElement,
+         final org.apache.jena.rdf.model.Property attribute, final AttributeValueRetriever valueRetriever ) {
+      return valueRetriever.attributeValues( modelElement, attribute ).stream()
+            .filter( languageStatement -> !"und".equals( Locale.forLanguageTag( languageStatement.getLanguage() ).toLanguageTag() ) )
             .map( statement -> new LangString( statement.getString(), Locale.forLanguageTag( statement.getLanguage() ) ) )
             .collect( Collectors.toSet() );
    }
 
    /**
     * @param resource the RDF {@link Resource} representing the Aspect Model element to be processed
-    * @param model the RDF {@link Model} representing the entire Aspect Meta Model
     * @param bamm the Aspect Meta Model vocabulary
+    * @param valueRetriever the {@link AttributeValueRetriever} used to retrieve the attribute values
     * @return a {@link List} containing all {@link BAMM#see()} values for a Aspect Model element
     */
-   private static List<String> getSeeValues( final Resource resource, final Model model, final BAMM bamm ) {
-      return ImmutableList
-            .copyOf( model.listStatements( resource, bamm.see(), (RDFNode) null ) )
-            .stream()
+   private static List<String> getSeeValues( final Resource resource, final BAMM bamm, final AttributeValueRetriever valueRetriever ) {
+      return valueRetriever.attributeValues( resource, bamm.see() ).stream()
             .map( statement -> statement.getObject().toString() )
             .sorted()
             .collect( Collectors.toList() );
