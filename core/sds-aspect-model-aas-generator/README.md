@@ -30,7 +30,7 @@ proper entry point. It expects an `io.openmanufacturing.sds.metamodel.Aspect` an
 
 
 ## Details of the Mapping Concept
-The mapping rules applied by the generator are explained in the [user documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/tooling-guide/java-aspect-tooling.html#details-mapping-aas) 
+The mapping rules applied by the generator are explained in the [user documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/tooling-guide/java-aspect-tooling.html#details-mapping-aas).
 The rules apply to BAMM v1.0.0 [6] and  AAS Specification Part 1 V3.0RC01 [7].
 
 
