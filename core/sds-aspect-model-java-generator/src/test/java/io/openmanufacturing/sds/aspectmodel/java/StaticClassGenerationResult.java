@@ -102,7 +102,9 @@ public class StaticClassGenerationResult extends GenerationResult {
             .filter( field -> expectedConstructorArgument.keySet().contains( field.resolve().getName() ) )
             .forEach( field -> {
                final String fieldName = field.resolve().getName();
-               final String expectedBuilderCall = expectedConstructorArgument.get( fieldName );
+               final String expectedBuilderCall = expectedConstructorArgument.get( fieldName )
+                     .replace( "\r", "" )
+                     .replace( "\n", "" );
                final NodeList<VariableDeclarator> declarators = field.getVariables();
                assertThat( declarators ).hasSize( 1 );
 
@@ -111,8 +113,10 @@ public class StaticClassGenerationResult extends GenerationResult {
                                                                                          .asObjectCreationExpr()
                                                                                          .getArguments()
                                                                                          .get( constructorArgumentIndex );
-
-               assertThat( metaModelBaseAttributesDeclarationExpression.toString() ).isEqualTo( expectedBuilderCall );
+               String actualBuilderCall = metaModelBaseAttributesDeclarationExpression.toString().
+                     replace( "\r", "" )
+                     .replace( "\n", "" );
+               assertThat( actualBuilderCall ).isEqualTo( expectedBuilderCall );
             } );
    }
 
@@ -135,11 +139,11 @@ public class StaticClassGenerationResult extends GenerationResult {
       assertThat( methodDeclarations ).allSatisfy( methodDeclaration -> {
          assertThat( expectedMethodBodies ).containsKey( methodDeclaration.getName().getIdentifier() );
          final String expectedBody = expectedMethodBodies.get( methodDeclaration.getName().getIdentifier() )
-                                                         .replace( "\\r", "" ).replace( "\\n", "" );
+                                                         .replace( "\r", "" ).replace( "\n", "" );
 
          final NodeList<Statement> actualStatements = methodDeclaration.getBody().get().getStatements();
          final String actualBody = actualStatements.stream().map( Node::toString ).collect( Collectors.joining( " " ) )
-                                                   .replace( "\\r", "" ).replace( "\\n", "" );
+                                                   .replace( "\r", "" ).replace( "\n", "" );
          assertThat( actualBody ).isEqualTo( expectedBody );
       } );
    }
