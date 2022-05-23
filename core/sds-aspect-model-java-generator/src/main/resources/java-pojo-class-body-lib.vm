@@ -26,9 +26,9 @@ ${util.determineCollectionAspectClassDefinition( $element, $codeGenerationConfig
 #elseif ( $element.is( $ComplexType ) )
 #set( $complexElement = $ComplexType.cast( $element ) )
 ${util.generateAbstractEntityClassAnnotations( $complexElement, $codeGenerationConfig )}
-${util.determineComplexTypeClassDefinition( $complexElement )}
+${util.determineComplexTypeClassDefinition( $complexElement, $codeGenerationConfig )}
 #else
-public class $element.getName() {
+public class $element.getName()${util.genericClassSignature( $element )} {
 #end
 #foreach( $property in $element.properties )
     #javaPojoProperty( $property )
@@ -40,10 +40,11 @@ public class $element.getName() {
 #javaPojoConstructor()
 
 #foreach( $property in $element.properties )
-    #javaPojoGetter( $property )
+    #set( $index = $foreach.count - 1 )
+    #javaPojoGetter( $property, $index )
 #end
 #foreach( $property in $deconstructor.allProperties )
-    #javaPojoGetter( $property )
+    #javaPojoGetter( $property, 0 )
 #end
 
     #javaPojoEqualsMethod()

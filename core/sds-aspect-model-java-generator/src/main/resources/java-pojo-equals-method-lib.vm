@@ -31,10 +31,7 @@ final $element.getName() that = ($element.getName())o;
     return
     #if( $element.getProperties().isEmpty() ) true
     #else
-        #foreach( $property in $element.getProperties() )
-            Objects.equals(${property.getPayloadName()}, that.${property.getPayloadName()})
-            #if( $foreach.hasNext) && #end
-        #end
+        ${util.objectEqualsExpression( $element )}
     #end;
 }
 #end

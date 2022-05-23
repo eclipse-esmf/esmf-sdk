@@ -16,15 +16,21 @@
         #if( $type.is( $Scalar ) && $type.getUrn().equals( $XSD.xboolean.getURI() ) )is#{else}get#{end}
     #{else}get#{end}${StringUtils.capitalize( $property.getPayloadName() )}#{end}
 
-#macro( javaPojoGetter $property )
-#set( $propertyType = $util.getPropertyType( $property, false, $codeGenerationConfig ) )
+#macro( javaPojoGetter $property $propertyIndex )
+
 /**
 * Returns $property.getPreferredName( $localeEn )
 *
 * @return {@link #$property.getPayloadName()}
 */
-#if( $util.isPropertyNotInPayload( $property, $codeGenerationConfig ) )@JsonIgnore #end
+#if( $property.isAbstract() )
+    public abstract T${propertyIndex}  #methodName()();
+#else
+    #set( $propertyType = $util.getPropertyType( $property, false, $codeGenerationConfig ) )
+    #if( $property.getExtends().isPresent() )@Override #end
+    #if( $util.isPropertyNotInPayload( $property, $codeGenerationConfig ) )@JsonIgnore #end
 public $propertyType #methodName()() {
-   return this.$property.getPayloadName();
+    return this.$property.getPayloadName();
 }
+#end
 #end

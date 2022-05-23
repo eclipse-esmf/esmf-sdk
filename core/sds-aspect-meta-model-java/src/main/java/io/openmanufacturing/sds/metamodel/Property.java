@@ -50,7 +50,8 @@ public interface Property extends Base, IsDescribed {
     * @return a {@link boolean} which determines whether the Property is included in the runtime data of an Aspect.
     *       By default Properties are included in the runtime data.
     *
-    * @see <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/snapshot/modeling-guidelines.html#declaring-enumerations">BAMM Aspect Meta Model
+    * @see
+    * <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/snapshot/modeling-guidelines.html#declaring-enumerations">BAMM Aspect Meta Model
     *       Specification - Declaring Enumerations</a>
     * @since BAMM 1.0.0
     */
@@ -67,12 +68,16 @@ public interface Property extends Base, IsDescribed {
    }
 
    /**
-    * Returns the Property's unconstrained Characteristic
+    * Returns the Property's unconstrained Characteristic.
+    * This is undefined when the Property is abstract
     *
-    * @return The Property's Characteristic without Constraints
+    * @return The Property's Characteristic without Constraints, or null, if {@link #isAbstract()} is true
     */
    default Characteristic getEffectiveCharacteristic() {
       Characteristic characteristic = getCharacteristic();
+      if ( characteristic == null ) {
+         return null;
+      }
       while ( characteristic instanceof Trait ) {
          characteristic = ((Trait) characteristic).getBaseCharacteristic();
       }
@@ -83,7 +88,7 @@ public interface Property extends Base, IsDescribed {
     * @return the type for the Property.
     */
    default Optional<Type> getDataType() {
-      return getEffectiveCharacteristic().getDataType();
+      return Optional.ofNullable( getEffectiveCharacteristic() ).flatMap( Characteristic::getDataType );
    }
 
    /**
