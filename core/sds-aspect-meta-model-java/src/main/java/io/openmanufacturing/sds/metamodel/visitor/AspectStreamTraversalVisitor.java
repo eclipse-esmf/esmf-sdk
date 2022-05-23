@@ -66,7 +66,10 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
          return Stream.<Base> of( property );
       }
       hasVisited.add( property );
-      return Stream.concat( Stream.<Base> of( property ), property.getCharacteristic().accept( this, null ) );
+      final Stream<Base> characteristicResult = property.getCharacteristic() == null ? Stream.empty() : property.getCharacteristic().accept( this, null );
+      final Stream<Base> extendsResult = property.getExtends().stream().flatMap( superProperty -> superProperty.accept( this, null ) );
+      return Stream.of( Stream.<Base> of( property ), characteristicResult, extendsResult
+      ).flatMap( Function.identity() );
    }
 
    @Override
