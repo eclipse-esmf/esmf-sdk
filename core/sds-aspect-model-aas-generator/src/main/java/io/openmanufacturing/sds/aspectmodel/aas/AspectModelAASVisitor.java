@@ -89,10 +89,8 @@ import io.openmanufacturing.sds.metamodel.StructuredValue;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
-import io.vavr.collection.Stream;
 
-public class AspectModelAASVisitor
-      implements AspectVisitor<AssetAdministrationShellEnvironment, Context> {
+public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationShellEnvironment, Context> {
 
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelAASVisitor.class );
 
@@ -212,7 +210,7 @@ public class AspectModelAASVisitor
 
       context.setProperty( property );
       characteristic.accept( this, context );
-      SubmodelElement element = context.getPropertyResult();
+      final SubmodelElement element = context.getPropertyResult();
 
       recursiveProperty.remove( property );
       return element;
@@ -325,7 +323,7 @@ public class AspectModelAASVisitor
       return new DefaultReference.Builder().key( key ).build();
    }
 
-   private Reference buildReferenceToConceptDescription( Aspect aspect ) {
+   private Reference buildReferenceToConceptDescription( final Aspect aspect ) {
       final Key key =
             new DefaultKey.Builder()
                   .idType( KeyType.CUSTOM )
@@ -597,7 +595,7 @@ public class AspectModelAASVisitor
                                        .build() )
                      .collect( Collectors.toList() );
 
-         ValueList valueList =
+         final ValueList valueList =
                new DefaultValueList.Builder().valueReferencePairTypes( valueReferencePairs ).build();
 
          dataSpecificationContent.setValueList( valueList );
