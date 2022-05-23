@@ -14,8 +14,10 @@
 package io.openmanufacturing.sds.metamodel.loader;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFList;
@@ -74,6 +76,26 @@ public class AttributeValueRetriever {
 
    /**
     * Returns the values of n-ary attributes on a model element (or its super elements), or if a given attribute is an rdf:List, the list elements.
+    * The list will be ordered by precedence, e.g., if a Property is present on both the current element and it's superelement, the assertion on the
+    * current element will be on a lower list index.
+    * Duplicate attribute assertions are removed and only the assertion with the highest precedence will be returned (bottom-most in the inheritance tree),
+    * this includes multiple assertions for the same attribute with rdf:langString values with the same language tag. For example:
+    *
+    * :SuperEntity a bamm:AbstractEntity ;
+    *   bamm:description "I'm abstract"@en ;
+    *   bamm:description "Ich bin abstrakt"@de ;
+    *   bamm:properties () .
+    *
+    * :MyEntity a bamm:Entity ;
+    *   bamm:extends :SuperEntity ;
+    *   bamm:description "I'm concrete"@en ;
+    *   bamm:properties () .
+    *
+    * Here, attributeValues( :MyEntity, bamm:description ) will return:
+    *   List( Statement( :MyEntity bamm:description "I'm contrete"@en ),
+    *         Statement( :SuperEntity bamm:description "Ich bin abstrakt"@de ) )
+    *
+    * The attribute that is overridden with a new value takes precedence, the one that is not overridden is inherited.
     *
     * @param modelElement the model element
     * @param attribute the given attribute
@@ -115,6 +137,22 @@ public class AttributeValueRetriever {
          result.addAll( attributeValues( superElementNode.asResource(), attribute ) );
       }
 
-      return result;
+      // Filter duplicate assertions by precedence
+      final List<Statement> filteredResult = new ArrayList<>();
+      final Set<String> assertedLanguageTags = new HashSet<>();
+      for ( final Statement statement : result ) {
+         if ( statement.getObject().isLiteral() ) {
+            final String languageTag = statement.getObject().asLiteral().getLanguage();
+            if ( !languageTag.isEmpty() ) {
+               if ( assertedLanguageTags.contains( languageTag ) ) {
+                  continue;
+               }
+               assertedLanguageTags.add( languageTag );
+            }
+         }
+         filteredResult.add( statement );
+      }
+
+      return filteredResult;
    }
 }
