@@ -22,11 +22,13 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidModelException;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
+import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.DefaultPropertyWrapper;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
@@ -35,10 +37,15 @@ import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
 @SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class PropertyInstantiator extends Instantiator<Property> {
+   private final Characteristic fallbackCharacteristic;
    private final Map<Resource, Property> resourcePropertyMap = new HashMap<>();
 
    public PropertyInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Property.class );
+      final MetaModelBaseAttributes characteristicBaseAttributes = MetaModelBaseAttributes.builderFor( "UnnamedCharacteristic" )
+            .withMetaModelVersion( KnownVersion.getLatest() )
+            .build();
+      fallbackCharacteristic = new DefaultCharacteristic( characteristicBaseAttributes, Optional.empty() );
    }
 
    @Override
@@ -61,7 +68,9 @@ public class PropertyInstantiator extends Instantiator<Property> {
       }
       resourcePropertyMap.put( property, defaultProperty );
 
-      if ( !isAbstract ) {
+      if ( isAbstract ) {
+         defaultProperty.setCharacteristic( fallbackCharacteristic );
+      } else {
          final Resource characteristicResource = attributeValue( property, bamm.characteristic() ).getResource();
          final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
          defaultProperty.setCharacteristic( characteristic );
