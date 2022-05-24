@@ -170,12 +170,12 @@ class AspectModelAASGeneratorTest {
       assertEquals( "stringLcProperty", submodelElement.getIdShort() );
 
       final Set<String> semanticIds =
-            Set.of( "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringLcProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectdoubleRcProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectintRcProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectbigIntRcProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectfloatRcProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#TestAspectstringRegexcProperty" );
+            Set.of( "urn:bamm:io.openmanufacturing.test:1.0.0#stringLcProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#doubleRcProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#intRcProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#bigIntRcProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#floatRcProperty",
+                  "urn:bamm:io.openmanufacturing.test:1.0.0#stringRegexcProperty" );
 
       checkDataSpecificationIEC61360( semanticIds, env );
    }
