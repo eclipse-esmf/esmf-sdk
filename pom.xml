@@ -65,13 +65,15 @@
       <module>tools/bamm-cli</module>
       <module>tools/sds-aspect-model-maven-plugin</module>
       <module>sds-sdk-test-report</module>
+      <module>core/sds-aspect-model-aas-generator</module>
+
    </modules>
 
    <properties>
       <!-- Versions of third party dependencies -->
       <aspect-meta-model-version>2.0.0</aspect-meta-model-version>
       <assertj-vavr-version>0.1.0</assertj-vavr-version>
-      <classgraph-version>4.8.29</classgraph-version>
+      <classgraph-version>4.8.109</classgraph-version>
       <commons-text-version>1.6</commons-text-version>
       <easy-random-version>4.0.0</easy-random-version>
       <gradle-core-version>6.1.1</gradle-core-version>
@@ -97,6 +99,8 @@
       <vavr-version>0.10.3</vavr-version>
       <!-- TODO remember to update the link to the Velocity engine user guide in the 'java-aspect-tooling.adoc' page -->
       <velocity-version>2.3</velocity-version>
+      <io-admin-shell-aas-model>1.2.0</io-admin-shell-aas-model>
+      <io-admin-shell-aas-serializer>1.2.0</io-admin-shell-aas-serializer>
 
       <!-- Versions of plugins -->
       <jacoco-maven-plugin-version>0.8.7</jacoco-maven-plugin-version>
@@ -234,116 +238,149 @@
             <artifactId>bamm-cli</artifactId>
             <version>${project.version}</version>
          </dependency>
+         <dependency>
+            <groupId>io.openmanufacturing</groupId>
+            <artifactId>sds-aspect-model-aas-generator</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+         </dependency>
 
          <!-- Third party dependencies -->
          <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-dependencies</artifactId>
-            <version>${spring-boot-version}</version>
-            <type>pom</type>
-            <scope>import</scope>
+             <groupId>org.springframework.boot</groupId>
+             <artifactId>spring-boot-dependencies</artifactId>
+             <version>${spring-boot-version}</version>
+             <type>pom</type>
+             <scope>import</scope>
          </dependency>
          <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava-version}</version>
+             <groupId>com.google.guava</groupId>
+             <artifactId>guava</artifactId>
+             <version>${guava-version}</version>
          </dependency>
          <dependency>
-            <groupId>net.jqwik</groupId>
-            <artifactId>jqwik</artifactId>
-            <version>${jqwik-version}</version>
+             <groupId>net.jqwik</groupId>
+             <artifactId>jqwik</artifactId>
+             <version>${jqwik-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>
-            <version>${jena-version}</version>
+             <groupId>org.apache.jena</groupId>
+             <artifactId>jena-core</artifactId>
+             <version>${jena-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.topbraid</groupId>
-            <artifactId>shacl</artifactId>
-            <version>${shacl-version}</version>
+             <groupId>org.topbraid</groupId>
+             <artifactId>shacl</artifactId>
+             <version>${shacl-version}</version>
          </dependency>
          <dependency>
-            <groupId>io.vavr</groupId>
-            <artifactId>vavr</artifactId>
-            <version>${vavr-version}</version>
+             <groupId>io.vavr</groupId>
+             <artifactId>vavr</artifactId>
+             <version>${vavr-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-vavr</artifactId>
-            <version>${assertj-vavr-version}</version>
+             <groupId>org.assertj</groupId>
+             <artifactId>assertj-vavr</artifactId>
+             <version>${assertj-vavr-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.mozilla</groupId>
-            <artifactId>rhino</artifactId>
-            <version>${rhino-version}</version>
+             <groupId>org.mozilla</groupId>
+             <artifactId>rhino</artifactId>
+             <version>${rhino-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity-engine-core</artifactId>
-            <version>${velocity-version}</version>
+             <groupId>org.apache.velocity</groupId>
+             <artifactId>velocity-engine-core</artifactId>
+             <version>${velocity-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.jboss.forge.roaster</groupId>
-            <artifactId>roaster-jdt</artifactId>
-            <version>${roaster-version}</version>
+             <groupId>org.jboss.forge.roaster</groupId>
+             <artifactId>roaster-jdt</artifactId>
+             <version>${roaster-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.jboss.forge.roaster</groupId>
-            <artifactId>roaster-api</artifactId>
-            <version>${roaster-version}</version>
+             <groupId>org.jboss.forge.roaster</groupId>
+             <artifactId>roaster-api</artifactId>
+             <version>${roaster-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.jeasy</groupId>
-            <artifactId>easy-random-core</artifactId>
-            <version>${easy-random-version}</version>
+             <groupId>org.jeasy</groupId>
+             <artifactId>easy-random-core</artifactId>
+             <version>${easy-random-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-arq</artifactId>
-            <version>${jena-version}</version>
+             <groupId>org.apache.jena</groupId>
+             <artifactId>jena-arq</artifactId>
+             <version>${jena-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>${commons-text-version}</version>
+             <groupId>org.apache.commons</groupId>
+             <artifactId>commons-text</artifactId>
+             <version>${commons-text-version}</version>
          </dependency>
          <dependency>
-            <groupId>guru.nidi</groupId>
-            <artifactId>graphviz-java-all-j2v8</artifactId>
-            <version>${graphviz-version}</version>
+             <groupId>guru.nidi</groupId>
+             <artifactId>graphviz-java-all-j2v8</artifactId>
+             <version>${graphviz-version}</version>
          </dependency>
          <dependency>
-            <groupId>com.github.curious-odd-man</groupId>
-            <artifactId>rgxgen</artifactId>
-            <version>${rgxgen-version}</version>
+             <groupId>com.github.curious-odd-man</groupId>
+             <artifactId>rgxgen</artifactId>
+             <version>${rgxgen-version}</version>
          </dependency>
          <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>${guice-version}</version>
+             <groupId>com.google.inject</groupId>
+             <artifactId>guice</artifactId>
+             <version>${guice-version}</version>
          </dependency>
          <dependency>
-            <groupId>com.github.javaparser</groupId>
-            <artifactId>javaparser-symbol-solver-core</artifactId>
-            <version>${javaparser-version}</version>
+             <groupId>com.github.javaparser</groupId>
+             <artifactId>javaparser-symbol-solver-core</artifactId>
+             <version>${javaparser-version}</version>
          </dependency>
          <dependency>
-            <groupId>com.beust</groupId>
-            <artifactId>jcommander</artifactId>
-            <version>${jcommander-version}</version>
+             <groupId>com.beust</groupId>
+             <artifactId>jcommander</artifactId>
+             <version>${jcommander-version}</version>
          </dependency>
          <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-lambda</artifactId>
-            <version>${system-lambda-version}</version>
+             <groupId>com.github.stefanbirkner</groupId>
+             <artifactId>system-lambda</artifactId>
+             <version>${system-lambda-version}</version>
          </dependency>
          <dependency>
-            <groupId>io.github.classgraph</groupId>
-            <artifactId>classgraph</artifactId>
-            <version>${classgraph-version}</version>
+             <groupId>io.github.classgraph</groupId>
+             <artifactId>classgraph</artifactId>
+             <version>${classgraph-version}</version>
          </dependency>
-      </dependencies>
+         <dependency>
+             <groupId>io.admin-shell.aas</groupId>
+             <artifactId>model</artifactId>
+             <version>${io-admin-shell-aas-model}</version>
+         </dependency>
+         <dependency>
+             <groupId>io.admin-shell.aas</groupId>
+             <artifactId>dataformat-xml</artifactId>
+             <version>${io-admin-shell-aas-serializer}</version>
+             <exclusions>
+                 <exclusion>
+                     <groupId>org.slf4j</groupId>
+                     <artifactId>slf4j-simple</artifactId>
+                 </exclusion>
+             </exclusions>
+         </dependency>
+         <dependency>
+            <groupId>io.admin-shell.aas</groupId>
+            <artifactId>dataformat-aasx</artifactId>
+            <version>${io-admin-shell-aas-serializer}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-simple</artifactId>
+               </exclusion>
+            </exclusions>
+         </dependency>
+        </dependencies>
    </dependencyManagement>
    <build>
       <pluginManagement>
