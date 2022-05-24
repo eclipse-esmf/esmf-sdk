@@ -19,6 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -43,14 +45,14 @@ public class PrettyPrinterTest extends MetaModelVersions {
             .getModelWithoutResolution( testAspect, metaModelVersion ).getRawModel();
 
       final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      final PrintWriter writer = new PrintWriter( buffer );
+      final PrintWriter writer = new PrintWriter( buffer, false, StandardCharsets.UTF_8 );
       new PrettyPrinter( new VersionedModel( ModelFactory.createDefaultModel(),
             VersionNumber.parse( metaModelVersion.toVersionString() ), originalModel ),
             testAspect.getUrn(), writer )
             .print();
       writer.flush();
 
-      final InputStream bufferInput = new ByteArrayInputStream( buffer.toString().getBytes() );
+      final InputStream bufferInput = new ByteArrayInputStream( buffer.toByteArray() );
       final Model prettyPrintedModel = ModelFactory.createDefaultModel();
       try {
          prettyPrintedModel.read( bufferInput, "", RDFLanguages.TURTLE.getName() );
