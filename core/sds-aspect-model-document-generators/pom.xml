@@ -39,10 +39,6 @@
         </dependency>
         <dependency>
             <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-resolver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.openmanufacturing</groupId>
             <artifactId>sds-aspect-model-jackson</artifactId>
         </dependency>
         <dependency>
