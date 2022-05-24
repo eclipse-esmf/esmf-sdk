@@ -138,7 +138,8 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_CONSTRAINED_COLLECTION", // Broken model
-         "ASPECT_WITH_ENUMERATION_WITHOUT_SCALAR_VARIABLE" //Invalid Aspect Model
+         "ASPECT_WITH_ENUMERATION_WITHOUT_SCALAR_VARIABLE", // Invalid Aspect Model
+         "ASPECT_WITH_TIME_SERIES" // This feature branch does not support bamm:AbstractProperty. When support for this is added, remove this
    } )
    public void testGeneration( final TestAspect testAspect ) {
       final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );

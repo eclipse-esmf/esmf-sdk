@@ -53,7 +53,8 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
          "ASPECT_WITH_USED_AND_UNUSED_CONSTRAINT",
          "ASPECT_WITH_USED_AND_UNUSED_EITHER",
          "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION",
-         "ASPECT_WITHOUT_PROPERTIES_AND_OPERATIONS"
+         "ASPECT_WITHOUT_PROPERTIES_AND_OPERATIONS",
+         "ASPECT_WITH_TIME_SERIES" // This feature branch does not support bamm:AbstractProperty. When support for this is added, remove this
    } )
    public void testRdfModelCreatorVisitor( final TestAspect aspect ) {
       testRdfCreation( aspect, KnownVersion.getLatest() );

@@ -43,7 +43,9 @@ import io.openmanufacturing.sds.test.TestModel;
 
 public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class )
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
+         "ASPECT_WITH_TIME_SERIES" // This feature branch does not support bamm:AbstractProperty. When support for this is added, remove this
+   } )
    public void testLoadAspectExpectSuccess( final TestAspect aspect ) {
       assertThatCode( () ->
             loadAspect( aspect, KnownVersion.getLatest() )

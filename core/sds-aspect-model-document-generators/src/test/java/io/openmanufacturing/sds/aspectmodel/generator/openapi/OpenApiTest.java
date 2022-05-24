@@ -73,7 +73,9 @@ public class OpenApiTest extends MetaModelVersions {
    private final Configuration config = Configuration.defaultConfiguration().addOptions( Option.SUPPRESS_EXCEPTIONS );
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class)
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
+         "ASPECT_WITH_TIME_SERIES" // This feature branch does not support bamm:AbstractProperty. When support for this is added, remove this
+   })
    public void testGeneration( final TestAspect testAspect ) {
       final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );
       final JsonNode json = apiJsonGenerator.applyForJson( aspect, false, testBaseUrl, testResourcePath,
@@ -245,7 +247,8 @@ public class OpenApiTest extends MetaModelVersions {
    }
 
    @ParameterizedTest
-   @MethodSource( value = "allVersions" )
+   // This feature branch does not support bamm:AbstractProperty. When support for this is added, change value to "allVersions'
+   @MethodSource( value = "versionsUpToIncluding1_0_0" )
    public void testHasPagingWithoutChosenPaging( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_TIME_SERIES, metaModelVersion );
       final JsonNode json = apiJsonGenerator.applyForJson( aspect, true, testBaseUrl, Optional.empty(),
