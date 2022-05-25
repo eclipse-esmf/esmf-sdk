@@ -199,6 +199,29 @@ public class MetaModelBaseAttributes {
       return extendsStatement.flatMap( statement -> getName( statement.getObject().asResource(), bamm ) );
    }
 
+   /**
+    * Returns a model element's name: If it's a named resource, the name is part of its URN; otherwise
+    * (e.g., [ bamm:extends :foo ; ... ]) go up the inheritance tree recursively.
+    *
+    * @param modelElement the model element to retrieve the name for
+    * @param bamm the meta model vocabulary
+    * @return the element's local name
+    */
+   private static Optional<String> getNameFromInheritanceTree( final Resource modelElement, final BAMM bamm ) {
+      if ( !modelElement.isAnon() ) {
+         return Optional.of( AspectModelUrn.fromUrn( modelElement.getURI() ).getName() );
+      }
+
+      final Statement propertyStatement = modelElement.getProperty( bamm.property() );
+      if ( propertyStatement != null ) {
+         return getNameFromInheritanceTree( propertyStatement.getObject().asResource(), bamm );
+      }
+
+      final Optional<Statement> extendsStatement = Streams.stream(
+            modelElement.getModel().listStatements( modelElement, bamm._extends(), (RDFNode) null ) ).findAny();
+      return extendsStatement.flatMap( statement -> getNameFromInheritanceTree( statement.getObject().asResource(), bamm ) );
+   }
+
    private static String getSyntheticName( final Resource modelElement, final Model model, final BAMM bamm ) {
       Resource parentModelElement = model.listStatements( null, null, modelElement ).next().getSubject();
       while ( parentModelElement.isAnon() ) {

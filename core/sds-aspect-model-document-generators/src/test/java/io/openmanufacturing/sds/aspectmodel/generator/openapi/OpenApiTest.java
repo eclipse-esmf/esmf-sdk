@@ -73,7 +73,7 @@ public class OpenApiTest extends MetaModelVersions {
    private final Configuration config = Configuration.defaultConfiguration().addOptions( Option.SUPPRESS_EXCEPTIONS );
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class)
+   @EnumSource( value = TestAspect.class )
    public void testGeneration( final TestAspect testAspect ) {
       final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );
       final JsonNode json = apiJsonGenerator.applyForJson( aspect, false, testBaseUrl, testResourcePath,

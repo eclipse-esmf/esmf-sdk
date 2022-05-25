@@ -60,6 +60,7 @@ public interface Property extends Base, IsDescribed {
    }
 
    /**
+    * Returns true if the Property is abstract
     *
     * @return
     */

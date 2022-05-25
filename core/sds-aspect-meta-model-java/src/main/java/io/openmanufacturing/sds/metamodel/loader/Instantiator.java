@@ -30,6 +30,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -84,6 +85,24 @@ public abstract class Instantiator<T extends Base> extends AttributeValueRetriev
 
    protected MetaModelBaseAttributes buildBaseAttributes( final Resource resource ) {
       return MetaModelBaseAttributes.fromModelElement( metaModelVersion, resource, model, bamm );
+   }
+
+   protected Statement propertyValueFromTypeTree( final Resource subject, final org.apache.jena.rdf.model.Property property ) {
+      final Optional<Statement> valueStatement = optionalAttributeValue( subject, property );
+      if ( valueStatement.isPresent() ) {
+         return valueStatement.get();
+      }
+
+      // Check if the subject is a Property reference, then we should continue to search the referenced Property
+      final Optional<Statement> propertyStatement = optionalAttributeValue( subject, bamm.property() );
+      if ( propertyStatement.isPresent() ) {
+         return propertyValueFromTypeTree( propertyStatement.get().getObject().asResource(), property );
+      }
+
+      final Statement extendsStatement = optionalAttributeValue( subject, bamm._extends() )
+            .orElseThrow( () -> new AspectLoadingException( "Property " + property + " not found on " + subject + " or its supertypes" ) );
+      final Resource superType = extendsStatement.getObject().asResource();
+      return propertyValueFromTypeTree( superType, property );
    }
 
    /**
@@ -250,9 +269,8 @@ public abstract class Instantiator<T extends Base> extends AttributeValueRetriev
    private EntityInstance buildEntityInstance( final Resource entityInstance, final Entity type ) {
       final Map<Property, Value> assertions = new HashMap<>();
       type.getAllProperties().forEach( property -> {
-         final AspectModelUrn propertyUrn = property.getAspectModelUrn()
-               .orElseThrow( () -> new AspectLoadingException( "Invalid Property without a URN found" ) );
-         final org.apache.jena.rdf.model.Property rdfProperty = entityInstance.getModel().createProperty( propertyUrn.getUrn().toASCIIString() );
+         final AspectModelUrn propertyUrn = property.getAspectModelUrn().orElseThrow( () -> new AspectLoadingException( "Invalid Property without a URN found" ) );
+         final org.apache.jena.rdf.model.Property rdfProperty = ResourceFactory.createProperty( propertyUrn.getUrn().toASCIIString() );
          final Statement statement = entityInstance.getProperty( rdfProperty );
          if ( statement == null ) {
             if ( property.isOptional() ) {
