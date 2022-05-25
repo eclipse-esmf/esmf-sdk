@@ -67,8 +67,7 @@ public class OpenApiTest extends MetaModelVersions {
    private final static Optional<String> testResourcePath = Optional.of( "my-test-aspect" );
    private final static Optional<String> testResourcePathWithParameter = Optional.of( "my-test-aspect/{test-Id}" );
    private final static Optional<String> testResourcePathWithInvalidParameter = Optional.of( "my-test-aspect/{test-\\Id}" );
-   private final static Optional<JsonNode> testInvalidParameter =
-         Optional.of( JsonNodeFactory.instance.objectNode().put( "unitId", "unitId" ) );
+   private final static Optional<JsonNode> testInvalidParameter = Optional.of( JsonNodeFactory.instance.objectNode().put( "unitId", "unitId" ) );
    private final AspectModelOpenApiGenerator apiJsonGenerator = new AspectModelOpenApiGenerator();
    private final Configuration config = Configuration.defaultConfiguration().addOptions( Option.SUPPRESS_EXCEPTIONS );
 

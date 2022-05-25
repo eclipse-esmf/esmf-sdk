@@ -221,6 +221,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final ObjectNode properties =
             Stream.ofAll( element.getProperties() )
                   .filter( property -> !property.isNotInPayload() )
+                  .filter( property -> !property.isAbstract() )
                   .foldLeft( factory.objectNode(), ( propertyContext, property ) -> {
                      final JsonNode jsonNode = visitProperty( property, propertyContext );
                      return propertyContext.set( property.getPayloadName(), jsonNode );
@@ -229,7 +230,8 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final List<TextNode> requiredProperties =
             Stream.ofAll( element.getProperties() )
                   .filter( property -> !property.isNotInPayload() )
-                  .filter( property -> !property.isOptional() ).toList()
+                  .filter( property -> !property.isOptional() )
+                  .filter( property -> !property.isAbstract() ).toList()
                   .map( property -> factory.textNode( property.getPayloadName() ) )
                   .toJavaList();
       if ( !requiredProperties.isEmpty() ) {
