@@ -81,9 +81,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
     * @param testAspect the injected Aspect model
     */
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_TIME_SERIES" // This feature branch does not support bamm:AbstractProperty. When support for this is added, remove this
-   } )
+   @EnumSource( value = TestAspect.class )
    public void testCodeGeneration( final TestAspect testAspect ) {
       assertThatCode( () ->
             TestContext.generateAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) )

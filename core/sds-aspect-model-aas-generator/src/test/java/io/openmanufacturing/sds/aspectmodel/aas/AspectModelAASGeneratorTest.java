@@ -227,8 +227,7 @@ class AspectModelAASGeneratorTest {
          value = TestAspect.class,
          mode = EnumSource.Mode.EXCLUDE,
          names = {
-               "ASPECT_WITH_STRING_ENUMERATION",
-               "ASPECT_WITH_TIME_SERIES" // This feature branch does not support bamm:AbstractProperty. When support for this is added, remove this
+               "ASPECT_WITH_STRING_ENUMERATION"
          } )
    // anonymous enumeration in test has no urn for enum values but is required for Concept
    // Description referencing
