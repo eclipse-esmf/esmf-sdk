@@ -145,7 +145,8 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
       }
       hasVisited.add( abstractEntity );
       return Stream.concat(
-            abstractEntity.getExtendingElements().stream().flatMap( complexType -> complexType.accept( this, null ) ),
+            abstractEntity.getExtendingElements().stream()
+                  .flatMap( complexType -> complexType.accept( this, null ) ),
             visitComplexType( abstractEntity, context )
       );
    }

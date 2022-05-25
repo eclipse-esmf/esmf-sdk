@@ -30,7 +30,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
@@ -269,8 +268,9 @@ public abstract class Instantiator<T extends Base> extends AttributeValueRetriev
    private EntityInstance buildEntityInstance( final Resource entityInstance, final Entity type ) {
       final Map<Property, Value> assertions = new HashMap<>();
       type.getAllProperties().forEach( property -> {
-         final AspectModelUrn propertyUrn = property.getAspectModelUrn().orElseThrow( () -> new AspectLoadingException( "Invalid Property without a URN found" ) );
-         final org.apache.jena.rdf.model.Property rdfProperty = ResourceFactory.createProperty( propertyUrn.getUrn().toASCIIString() );
+         final AspectModelUrn propertyUrn = property.getAspectModelUrn()
+               .orElseThrow( () -> new AspectLoadingException( "Invalid Property without a URN found" ) );
+         final org.apache.jena.rdf.model.Property rdfProperty = model.createProperty( propertyUrn.getUrn().toASCIIString() );
          final Statement statement = entityInstance.getProperty( rdfProperty );
          if ( statement == null ) {
             if ( property.isOptional() ) {

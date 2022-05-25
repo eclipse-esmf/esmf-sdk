@@ -70,6 +70,8 @@ public class PropertyInstantiator extends Instantiator<Property> {
 
       if ( isAbstract ) {
          defaultProperty.setCharacteristic( fallbackCharacteristic );
+         defaultProperty.setExampleValue( Optional.empty() );
+         defaultProperty.setPayloadName( Optional.empty() );
       } else {
          final Resource characteristicResource = attributeValue( property, bamm.characteristic() ).getResource();
          final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );

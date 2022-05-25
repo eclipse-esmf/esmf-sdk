@@ -495,14 +495,23 @@ public class AspectModelJavaUtil {
       return generics.isEmpty() ? "" : "<" + generics + ">";
    }
 
-   public static String constructorArguments( final StructureElement element, final List<Property> allProperties,
-         final JavaCodeGenerationConfig codeGenerationConfig ) {
+   /**
+    * Generates the comma-separated list of arguments in a constructor call
+    *
+    * @param allProperties the list of properties that are turned into arguments
+    * @param codeGenerationConfig the code generation context
+    * @param enableJacksonAnnotations overriding whether Jackson annotations should be generated or not. This is because in certain situations multiple
+    *                                 constructors are generated, only one of which is @JsonCreator and uses @JsonProperty on the arguments
+    * @return the constructor argument string
+    */
+   public static String constructorArguments( final List<Property> allProperties, final JavaCodeGenerationConfig codeGenerationConfig,
+         final boolean enableJacksonAnnotations ) {
       return allProperties.stream()
             .filter( property -> !property.isAbstract() )
             .map( property -> {
                String declaration = "";
-               if ( codeGenerationConfig.doEnableJacksonAnnotations() ) {
-                  declaration += "@JsonProperty( value = \"" + property.getPayloadName() + "\"" + "\" )";
+               if ( enableJacksonAnnotations ) {
+                  declaration += "@JsonProperty( value = \"" + property.getPayloadName() + "\" ) ";
                }
                declaration += getPropertyType( property, false, codeGenerationConfig ) + " " + property.getPayloadName();
                return declaration;
@@ -520,9 +529,8 @@ public class AspectModelJavaUtil {
    public static String objectsHashCodeExpression( final StructureElement element ) {
       return element.getProperties().stream()
             .filter( property -> !property.isAbstract() )
-            .map( property -> "Objects.hash(" + property.getPayloadName() + ")" )
+            .map( Property::getPayloadName )
             .collect( Collectors.joining( ", " ) );
-
    }
 
    /**

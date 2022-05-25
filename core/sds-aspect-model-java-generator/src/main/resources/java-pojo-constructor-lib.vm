@@ -19,15 +19,9 @@
         @JsonCreator
     #end
     public ${element.name}(
-    $util.constructorArguments( $element, $allProperties, $codeGenerationConfig )
+    $util.constructorArguments( $allProperties, $codeGenerationConfig, $enableJacksonAnnotations )
     ) #if( $needInitializer ) throws DatatypeConfigurationException #end {
     super(
-##	#foreach( $property in $allProperties )
-##    	#if( !$elementProperties.contains( $property ) && !$property.getExtends().isPresent() )
-##			$property.getPayloadName()
-##		#end
-##        #if( $foreach.hasNext ), #end
-##    #end
     ${util.superConstructorCallExpression( $allProperties, $elementProperties )}
 	);
     #foreach( $property in $elementProperties )
