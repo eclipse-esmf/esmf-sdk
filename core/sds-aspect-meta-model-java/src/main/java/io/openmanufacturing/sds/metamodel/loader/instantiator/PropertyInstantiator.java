@@ -30,7 +30,6 @@ import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
-import io.openmanufacturing.sds.metamodel.loader.AspectLoadingException;
 import io.openmanufacturing.sds.metamodel.loader.DefaultPropertyWrapper;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;

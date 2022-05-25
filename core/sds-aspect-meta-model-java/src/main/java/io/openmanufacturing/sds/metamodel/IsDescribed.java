@@ -16,7 +16,6 @@ package io.openmanufacturing.sds.metamodel;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;

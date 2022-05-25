@@ -82,8 +82,6 @@ import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.Curie;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
-import io.openmanufacturing.sds.metamodel.loader.Instantiator;
-import io.vavr.Tuple2;
 
 public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    /**

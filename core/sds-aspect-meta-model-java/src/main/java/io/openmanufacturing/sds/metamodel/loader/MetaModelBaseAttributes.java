@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +28,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
@@ -37,7 +35,6 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModel
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
-import io.vavr.Value;
 
 /**
  * Wrapper class for the attributes all Aspect Meta Model elements have.
