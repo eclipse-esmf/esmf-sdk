@@ -187,8 +187,11 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
             .filter( this::isLocalElement )
             .map( property -> {
                final Model propertyModel = ModelFactory.createDefaultModel();
-               final Resource propertyResource = getElementResource( property );
-               propertyModel.add( property.accept( this, element ).getModel() );
+               final ElementModel propertyResult = property.accept( this, element );
+               propertyModel.add( propertyResult.getModel() );
+               final Resource propertyResource = propertyResult.getFocusElement()
+                     .map( RDFNode::asResource )
+                     .orElseGet( () -> getElementResource( property ) );
 
                if ( property.isOptional() || property.isNotInPayload() || !property.getName().equals( property.getPayloadName() ) ) {
                   final Resource anonymousPropertyNode = serializeAnonymousPropertyNodes( property, propertyModel, propertyResource );
@@ -610,6 +613,24 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    @Override
    public ElementModel visitProperty( final Property property, final Base context ) {
       final Model model = ModelFactory.createDefaultModel();
+      if ( property.getExtends().isPresent() ) {
+         final Property superProperty = property.getExtends().get();
+         // The Property is an instantiation of an abstract Property:
+         // [ bamm:extends :superProperty ; bamm:characteristic ... ]
+         if ( !superProperty.getCharacteristic().equals( property.getCharacteristic() ) ) {
+            final Resource propertyResource = createResource();
+            final Resource superPropertyResource = getElementResource( superProperty );
+            final ElementModel superPropertyElementModel = superProperty.accept( this, context );
+            model.add( superPropertyElementModel.getModel() );
+            final Characteristic characteristic = property.getCharacteristic();
+            final Resource characteristicResource = getElementResource( characteristic );
+            model.add( characteristic.accept( this, property ).getModel() );
+            model.add( propertyResource, bamm.characteristic(), characteristicResource );
+            model.add( propertyResource, bamm._extends(), superPropertyResource );
+            return new ElementModel( model, Optional.of( propertyResource ) );
+         }
+      }
+
       if ( !isLocalElement( property ) ) {
          return new ElementModel( model, Optional.empty() );
       }
