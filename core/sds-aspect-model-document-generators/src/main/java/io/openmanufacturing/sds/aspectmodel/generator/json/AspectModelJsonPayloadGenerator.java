@@ -82,8 +82,6 @@ import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.Curie;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
-import io.openmanufacturing.sds.metamodel.loader.Instantiator;
-import io.vavr.Tuple2;
 
 public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    /**
@@ -97,7 +95,6 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private final List<Transformer> transformers;
    private final ExampleValueGenerator exampleValueGenerator;
    private final ObjectMapper objectMapper;
-   private final BAMM bamm;
    private final List<Property> recursiveProperty;
    private final ValueToPayloadStructure valueToPayloadStructure = new ValueToPayloadStructure();
 
@@ -115,7 +112,6 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
    private AspectModelJsonPayloadGenerator( final Aspect aspect, final BAMM bamm, final Random randomStrategy ) {
       this.aspect = aspect;
-      this.bamm = bamm;
       exampleValueGenerator = new ExampleValueGenerator( randomStrategy );
       objectMapper = AspectModelJsonPayloadGenerator.createObjectMapper();
       objectMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );

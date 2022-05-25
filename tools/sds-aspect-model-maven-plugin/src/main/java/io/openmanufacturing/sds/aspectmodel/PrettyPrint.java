@@ -13,7 +13,6 @@
 
 package io.openmanufacturing.sds.aspectmodel;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.util.Map;
 

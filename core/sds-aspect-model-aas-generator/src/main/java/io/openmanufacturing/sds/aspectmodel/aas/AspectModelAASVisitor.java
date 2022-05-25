@@ -89,7 +89,6 @@ import io.openmanufacturing.sds.metamodel.StructuredValue;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
-import io.vavr.collection.Stream;
 
 public class AspectModelAASVisitor
       implements AspectVisitor<AssetAdministrationShellEnvironment, Context> {
