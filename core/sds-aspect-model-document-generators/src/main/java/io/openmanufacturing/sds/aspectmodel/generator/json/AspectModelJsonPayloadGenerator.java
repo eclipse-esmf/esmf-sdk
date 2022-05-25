@@ -178,7 +178,9 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private Map<String, Object> transformProperties( final List<Property> properties ) {
       return Stream.concat(
             properties.stream().filter( recursiveProperty::contains ).map( this::recursiveProperty ),
-            properties.stream().filter( property -> !recursiveProperty.contains( property ) )
+            properties.stream()
+                  .filter( property -> !recursiveProperty.contains( property ) )
+                  .filter( property -> !property.isAbstract() )
                   .map( property -> {
                      recursiveProperty.add( property );
                      final Map<String, Object> result = transformProperty( new BasicProperty( property ) );
