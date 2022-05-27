@@ -101,13 +101,11 @@
         <dependency>
             <groupId>com.github.java-json-tools</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <version>2.2.14</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -123,7 +121,6 @@
         <dependency>
             <groupId>io.swagger.parser.v3</groupId>
             <artifactId>swagger-parser</artifactId>
-            <version>2.0.24</version>
             <scope>test</scope>
         </dependency>
         <dependency>
