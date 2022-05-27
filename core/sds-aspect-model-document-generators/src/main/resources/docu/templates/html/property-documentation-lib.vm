@@ -25,6 +25,24 @@
         <div class="w-full">$property.getName()</div>
     </div>
 
+    #if( $property.isAbstract() )
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">$i18n.getText( "docu.label.abstract" )</div>
+            <div class="w-full">
+                #if( $property.isAbstract() ) $i18n.getText( "docu.label.yes" ) #end
+            </div>
+        </div>
+    #end
+
+    #if( $property.getExtends().isPresent() )
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">$i18n.getText( "docu.label.extends" )</div>
+            <div class="w-full"><a href="#${aspectModelHelper.buildAnchor( $property.getExtends().get(), $parentElement.getExtends().get(), 'property' )}"
+                 class="break-all underline">$property.getExtends().get().getPreferredName( $i18n.getLocale() )</a>
+            </div>
+        </div>
+    #end
+
     #if( $property.getCharacteristic() )
         <div class="flex border-b pb-1 py-4">
             <div class="w-80">$i18n.getText( "docu.label.characteristic" )</div>
