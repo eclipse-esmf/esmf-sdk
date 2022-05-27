@@ -14,11 +14,13 @@
 package io.openmanufacturing.sds.aspectmodel.generator.docu;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -26,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
@@ -35,6 +38,28 @@ import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
 
 public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
+
+   @ParameterizedTest
+   //   @EnumSource( value = TestAspect.class )
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.INCLUDE, names = {
+         "ASPECT_WITH_TIME_SERIES"
+   } )
+   public void testGeneration( final TestAspect testAspect ) {
+      assertThatCode( () -> {
+         final String html = generateHtmlDocumentation( testAspect, KnownVersion.getLatest() );
+         assertThat( html ).doesNotContain( "UnnamedCharacteristic" );
+
+         final File out = new File( "/home/tax6fe/out.html" );
+         try {
+            final FileOutputStream outputStream = new FileOutputStream( out );
+            outputStream.write( html.getBytes( StandardCharsets.UTF_8 ) );
+            outputStream.flush();
+            outputStream.close();
+         } catch ( final IOException e ) {
+            throw new RuntimeException( e );
+         }
+      } ).doesNotThrowAnyException();
+   }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
@@ -156,6 +181,7 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       assertThat( documentation ).contains( "<h5 id=\"abstractTestProperty-property\">abstractTestProperty</h5>" );
       assertThat( documentation ).contains( "<h5 id=\"entityProperty-property\">entityProperty</h5>" );
    }
+
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testAspectWithQuantifiableWithoutUnit( final KnownVersion metaModelVersion ) throws IOException {

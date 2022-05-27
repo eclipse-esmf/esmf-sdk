@@ -178,7 +178,7 @@ Characteristic specific macros will be joined together in the main macro (see ab
                 #foreach( $element in $structuredValue.getElements() )
                     #if( $element )
                         #if( $aspectModelHelper.isProperty( $element ) )
-                            <li>#property( $element $aspectModelHelper $i18n $aspectModelHelper.increment( $aspectModelHelper.increment( $weight ) ) )</li>
+                            <li>#property( $element $structuredValue $aspectModelHelper $i18n $aspectModelHelper.increment( $aspectModelHelper.increment( $weight ) ) )</li>
                         #else
                             <li>$element</li>
                         #end
