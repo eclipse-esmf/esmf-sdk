@@ -11,18 +11,18 @@
  ~ SPDX-License-Identifier: MPL-2.0
  *#
 
-#macro( entity $entity $aspectModelHelper $i18n $weight)
+#macro( entity $entity $aspectModelHelper $i18n $weight )
     <div class="pb-10">
-        #paragraph( $entity.getPreferredName($i18n.getLocale()) "$entity.getName()-entity" $weight)
-        $!entity.getDescription($i18n.getLocale())
-        #if(!$entity.getSee().isEmpty())
-            $i18n.getText("docu.label.see")
-            #list($entity.getSee())
+        #paragraph( $entity.getPreferredName( $i18n.getLocale() ) "$entity.getName()-entity" $weight)
+        $!entity.getDescription( $i18n.getLocale() )
+        #if( !$entity.getSee().isEmpty() )
+            $i18n.getText( "docu.label.see" )
+            #list( $entity.getSee() )
         #end
 
-        #paragraph( $i18n.getText("docu.label.properties") "$entity.getName()-entity-properties" $aspectModelHelper.increment($weight) )
+        #paragraph( $i18n.getText( "docu.label.properties" ) "$entity.getName()-entity-properties" $aspectModelHelper.increment( $weight ) )
         #foreach( $property in $entity.getProperties() )
-            #property( $property $aspectModelHelper $i18n $aspectModelHelper.increment($aspectModelHelper.increment($weight)))
+            #property( $property $aspectModelHelper $i18n $aspectModelHelper.increment( $aspectModelHelper.increment( $weight ) ) )
         #end
     </div>
 #end
