@@ -26,14 +26,14 @@
         #if( $characteristic.getDataType().isPresent() && !$characteristicClass.equals( "Either" )  )
             <div class="table-row-group">
                 <div class="table-cell pb-3 col-span-2">
-                    $i18n.getText( "docu.label.type" ) #AnkerLinkToType( $characteristic )
+                    $i18n.getText( "docu.label.type" ) #AnchorLinkToType( $characteristic )
                 </div>
             </div>
         #end
     </div>
 #end
 
-#macro( AnkerLinkToType $characteristic )
+#macro( AnchorLinkToType $characteristic )
     #if( $characteristic.getDataType().isPresent()  )
         #if( !$characteristic.getDataType().get().is( $Scalar ) )
             <a href="#$aspectModelHelper.getNameFromURN( $characteristic.getDataType().get().getUrn() )-entity"
