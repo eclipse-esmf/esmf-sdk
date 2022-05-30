@@ -122,7 +122,8 @@ public class AspectModelHelper {
 
    public static String buildAnchor( final IsDescribed modelElement, final IsDescribed parentElement, final String suffix ) {
       final String parentNamespaceAnchorPart = namespaceAnchorPart( parentElement );
-      final String parentPart = suffix.equals( "property" ) ? parentNamespaceAnchorPart + "-" + parentElement.getName() + "-" : "";
+      final String parentPart = suffix.equals( "property" ) ? parentNamespaceAnchorPart + "-"
+            + Optional.ofNullable( parentElement ).map( IsDescribed::getName ).orElse( "" ) + "-" : "";
 
       if ( ((Base) modelElement).is( Property.class ) ) {
          final Property property = ((Base) modelElement).as( Property.class );

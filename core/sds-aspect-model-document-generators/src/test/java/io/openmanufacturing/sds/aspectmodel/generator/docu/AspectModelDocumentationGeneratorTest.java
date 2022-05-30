@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -40,24 +39,11 @@ import io.openmanufacturing.sds.test.TestResources;
 public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
-   //   @EnumSource( value = TestAspect.class )
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.INCLUDE, names = {
-         "ASPECT_WITH_TIME_SERIES"
-   } )
+   @EnumSource( value = TestAspect.class )
    public void testGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
          final String html = generateHtmlDocumentation( testAspect, KnownVersion.getLatest() );
          assertThat( html ).doesNotContain( "UnnamedCharacteristic" );
-
-         final File out = new File( "/home/tax6fe/out.html" );
-         try {
-            final FileOutputStream outputStream = new FileOutputStream( out );
-            outputStream.write( html.getBytes( StandardCharsets.UTF_8 ) );
-            outputStream.flush();
-            outputStream.close();
-         } catch ( final IOException e ) {
-            throw new RuntimeException( e );
-         }
       } ).doesNotThrowAnyException();
    }
 
@@ -73,8 +59,10 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       }
       assertThat( htmlResult ).isNotEmpty();
       assertThat( htmlResult ).contains( "<h1 id=\"AspectWithEntityCollection\">Aspect Model Test Aspect</h1>" );
-      assertThat( htmlResult ).contains( "<h3 id=\"testProperty-property\">Test Property</h3>" );
-      assertThat( htmlResult ).contains( "<h5 id=\"entityProperty-property\">Entity Property</h5>" );
+      assertThat( htmlResult ).contains(
+            "<h3 id=\"io-openmanufacturing-test-AspectWithEntityCollection-io-openmanufacturing-test-testProperty-property\">Test Property</h3>" );
+      assertThat( htmlResult ).contains(
+            "<h5 id=\"io-openmanufacturing-test-TestEntity-io-openmanufacturing-test-entityProperty-property\">Entity Property</h5>" );
    }
 
    @ParameterizedTest
@@ -89,7 +77,8 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       }
       assertThat( htmlResult ).isNotEmpty();
       assertThat( htmlResult ).contains( "<h1 id=\"AspectWithCollectionOfSimpleType\">Aspect Model AspectWithCollectionOfSimpleType</h1>" );
-      assertThat( htmlResult ).contains( "<h3 id=\"testList-property\">testList</h3>" );
+      assertThat( htmlResult ).contains(
+            "<h3 id=\"io-openmanufacturing-test-AspectWithCollectionOfSimpleType-io-openmanufacturing-test-testList-property\">testList</h3>" );
    }
 
    @ParameterizedTest
@@ -159,27 +148,36 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    @MethodSource( "versionsStartingWith2_0_0" )
    public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
-      assertThat( documentation ).contains( "<h3 id=\"testProperty-property\">testProperty</h3>" );
-      assertThat( documentation ).contains( "<h5 id=\"abstractTestProperty-property\">abstractTestProperty</h5>" );
-      assertThat( documentation ).contains( "<h5 id=\"entityProperty-property\">entityProperty</h5>" );
+      assertThat( documentation ).contains(
+            "<h3 id=\"io-openmanufacturing-test-AspectWithAbstractSingleEntity-io-openmanufacturing-test-testProperty-property\">testProperty</h3>" );
+      assertThat( documentation ).contains(
+            "<h5 id=\"io-openmanufacturing-test-AbstractTestEntity-io-openmanufacturing-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
+      assertThat( documentation ).contains(
+            "<h5 id=\"io-openmanufacturing-test-ExtendingTestEntity-io-openmanufacturing-test-entityProperty-property\">entityProperty</h5>" );
    }
 
    @ParameterizedTest
    @MethodSource( "versionsStartingWith2_0_0" )
    public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
-      assertThat( documentation ).contains( "<h3 id=\"testProperty-property\">Test Property</h3>" );
-      assertThat( documentation ).contains( "<h5 id=\"abstractTestProperty-property\">abstractTestProperty</h5>" );
-      assertThat( documentation ).contains( "<h5 id=\"entityProperty-property\">Entity Property</h5>" );
+      assertThat( documentation ).contains(
+            "<h3 id=\"io-openmanufacturing-test-AspectWithAbstractEntity-io-openmanufacturing-test-testProperty-property\">Test Property</h3>" );
+      assertThat( documentation ).contains(
+            "<h5 id=\"io-openmanufacturing-test-AbstractTestEntity-io-openmanufacturing-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
+      assertThat( documentation ).contains(
+            "<h5 id=\"io-openmanufacturing-test-ExtendingTestEntity-io-openmanufacturing-test-entityProperty-property\">Entity Property</h5>" );
    }
 
    @ParameterizedTest
    @MethodSource( "versionsStartingWith2_0_0" )
    public void testAspectWithCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
-      assertThat( documentation ).contains( "<h3 id=\"testProperty-property\">testProperty</h3>" );
-      assertThat( documentation ).contains( "<h5 id=\"abstractTestProperty-property\">abstractTestProperty</h5>" );
-      assertThat( documentation ).contains( "<h5 id=\"entityProperty-property\">entityProperty</h5>" );
+      assertThat( documentation ).contains(
+            "<h3 id=\"io-openmanufacturing-test-AspectWithCollectionWithAbstractEntity-io-openmanufacturing-test-testProperty-property\">testProperty</h3>" );
+      assertThat( documentation ).contains(
+            "<h5 id=\"io-openmanufacturing-test-AbstractTestEntity-io-openmanufacturing-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
+      assertThat( documentation ).contains(
+            "<h5 id=\"io-openmanufacturing-test-ExtendingTestEntity-io-openmanufacturing-test-entityProperty-property\">entityProperty</h5>" );
    }
 
    @ParameterizedTest
