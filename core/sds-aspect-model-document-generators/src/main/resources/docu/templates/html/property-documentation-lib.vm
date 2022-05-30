@@ -43,7 +43,7 @@
         </div>
     #end
 
-    #if( $property.getCharacteristic() )
+    #if( !$property.isAbstract() && $property.getCharacteristic() )
         <div class="flex border-b pb-1 py-4">
             <div class="w-80">$i18n.getText( "docu.label.characteristic" )</div>
             <div class="w-full">
