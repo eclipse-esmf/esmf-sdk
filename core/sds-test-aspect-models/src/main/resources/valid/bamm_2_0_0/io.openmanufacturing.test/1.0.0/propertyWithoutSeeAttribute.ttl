@@ -14,7 +14,6 @@
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 
 :propertyWithoutSeeAttribute a bamm:Property ;
-   bamm:name "propertyWithoutSeeAttribute" ;
    bamm:preferredName "Test Property"@en ;
    bamm:exampleValue "foo" ;
    bamm:characteristic bamm-c:Text .

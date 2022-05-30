@@ -13,7 +13,6 @@
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.7.0#> .
 
 :AspectWithInvalidVersion a bamm:Aspect ;
-   bamm:name "AspectWithInvalidVersion" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:properties ( ) ;
    bamm:operations ( ) .

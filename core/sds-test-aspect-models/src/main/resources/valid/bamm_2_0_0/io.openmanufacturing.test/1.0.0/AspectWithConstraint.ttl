@@ -9,43 +9,35 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#TestAspect> .
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithConstraint a bamm:Aspect ;
-   bamm:name "AspectWithConstraint" ;
    bamm:properties ( :stringLcProperty :doubleRcProperty :intRcProperty :bigIntRcProperty :floatRcProperty :stringRegexcProperty ) ;
    bamm:operations ( ) .
 
 :stringLcProperty a bamm:Property ;
-   bamm:name "stringLcProperty" ;
    bamm:characteristic :StringLengthConstraint .
 
 :stringRegexcProperty a bamm:Property ;
-   bamm:name "stringRegexcProperty" ;
    bamm:characteristic :RegularExpressionConstraint .
 
 :doubleRcProperty a bamm:Property ;
-   bamm:name "doubleRcProperty" ;
    bamm:characteristic :DoubleRangeConstraint .
 
 :intRcProperty a bamm:Property ;
-   bamm:name "intRcProperty" ;
    bamm:characteristic :IntegerRangeConstraint .
 
 :bigIntRcProperty a bamm:Property ;
-   bamm:name "bigIntRcProperty" ;
    bamm:characteristic :BigIntegerRangeConstraint .
 
 :floatRcProperty a bamm:Property ;
-   bamm:name "floatRcProperty" ;
    bamm:characteristic :FloatRangeConstraint .
 
 :StringLengthConstraint a bamm-c:Trait ;
-   bamm:name "StringLengthConstraint" ;
    bamm:preferredName "Used Test Constraint"@en ;
    bamm:description "Used Test Constraint"@en ;
    bamm:see <http://example.com/omp> ;
@@ -58,7 +50,6 @@
    bamm-c:baseCharacteristic bamm-c:Text .
 
 :DoubleRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestConstraint" ;
    bamm:preferredName "Test Constraint"@en ;
    bamm:description "Test Constraint"@en ;
    bamm-c:constraint [
@@ -71,7 +62,6 @@
    bamm-c:baseCharacteristic :DoubleMeasurement .
 
 :IntegerRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestConstraint" ;
    bamm:preferredName "Test Constraint"@en ;
    bamm:description "Test Constraint"@en ;
    bamm-c:constraint [
@@ -84,7 +74,6 @@
    bamm-c:baseCharacteristic :IntegerMeasurement .
 
 :BigIntegerRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestConstraint" ;
    bamm:preferredName "Test Constraint"@en ;
    bamm:description "Test Constraint"@en ;
    bamm-c:constraint [
@@ -97,7 +86,6 @@
    bamm-c:baseCharacteristic :BigIntegerMeasurement .
 
 :FloatRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestConstraint" ;
    bamm:preferredName "Test Constraint"@en ;
    bamm:description "Test Constraint"@en ;
    bamm-c:constraint [
@@ -110,7 +98,6 @@
    bamm-c:baseCharacteristic :FloatMeasurement .
 
 :RegularExpressionConstraint a bamm-c:Trait ;
-   bamm:name "TestRegularExpressionConstraint" ;
    bamm:preferredName "Test Regular Expression Constraint"@en ;
    bamm:description "Test Regular Expression Constraint"@en ;
    bamm-c:constraint [
@@ -120,25 +107,21 @@
    bamm-c:baseCharacteristic bamm-c:Text .
 
 :DoubleMeasurement a bamm-c:Measurement ;
-   bamm:name "AccelerationMeasurement" ;
    bamm:description "The acceleration"@en ;
    bamm-c:unit unit:metrePerSecondSquared ;
    bamm:dataType xsd:double .
 
 :IntegerMeasurement a bamm-c:Measurement ;
-   bamm:name "AccelerationMeasurement" ;
    bamm:description "The acceleration"@en ;
    bamm-c:unit unit:metrePerSecondSquared ;
    bamm:dataType xsd:int .
 
 :BigIntegerMeasurement a bamm-c:Measurement ;
-   bamm:name "AccelerationMeasurement" ;
    bamm:description "The acceleration"@en ;
    bamm-c:unit unit:metrePerSecondSquared ;
    bamm:dataType xsd:integer .
 
 :FloatMeasurement a bamm-c:Measurement ;
-   bamm:name "AccelerationMeasurement" ;
    bamm:description "The acceleration"@en ;
    bamm-c:unit unit:metrePerSecondSquared ;
    bamm:dataType xsd:float .

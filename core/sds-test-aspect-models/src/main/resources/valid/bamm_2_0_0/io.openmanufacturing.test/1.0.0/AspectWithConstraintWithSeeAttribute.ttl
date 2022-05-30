@@ -15,23 +15,18 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithConstraintWithSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithConstraintWithSeeAttribute" ;
    bamm:properties ( :testProperty :testPropertyTwo ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :TestTrait .
 
 :testPropertyTwo a bamm:Property ;
-   bamm:name "testPropertyTwo" ;
    bamm:characteristic :TestTraitTwo .
 
 :TestTrait a bamm-c:Trait ;
-   bamm:name "TestTrait" ;
    bamm-c:constraint [
       a bamm-c:LengthConstraint ;
-      bamm:name "TestConstraint" ;
       bamm:preferredName "Test Constraint"@en ;
       bamm:description "Test Constraint"@en ;
       bamm:see <http://example.com/omp> ;
@@ -41,10 +36,8 @@
    bamm-c:baseCharacteristic bamm-c:Text .
 
 :TestTraitTwo a bamm-c:Trait ;
-   bamm:name "TestTraitTwo" ;
    bamm-c:constraint [
       a bamm-c:LengthConstraint ;
-      bamm:name "TestConstraintTwo" ;
       bamm:preferredName "Test Constraint Two"@en ;
       bamm:description "Test Constraint Two"@en ;
       bamm:see <http://example.com/omp> ;

@@ -15,16 +15,13 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithState a bamm:Aspect ;
-   bamm:name "AspectWithState" ;
    bamm:properties ( :status ) ;
    bamm:operations () .
 
 :status a bamm:Property ;
-   bamm:name "status" ;
    bamm:characteristic :TestState .
 
 :TestState a bamm-c:State ;
-   bamm:name "TestState" ;
    bamm:dataType xsd:string ;
    bamm-c:values ( "Success" "Error" "In Progress" ) ;
    bamm-c:defaultValue "In Progress" .

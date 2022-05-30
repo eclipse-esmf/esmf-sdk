@@ -15,7 +15,6 @@
 @prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#> .
 
 :sharedPropertyWithSeeAttribute a bamm:Property ;
-   bamm:name "sharedPropertyWithSeeAttribute" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;
@@ -23,7 +22,6 @@
    bamm:characteristic bamm-c:Text .
 
 bamm-e:sharedProperty a bamm:Property ;
-   bamm:name "sharedProperty" ;
    bamm:preferredName "Shared Property"@en ;
    bamm:description "This is a shared property."@en ;
    bamm:see <http://example.com/omp> ;

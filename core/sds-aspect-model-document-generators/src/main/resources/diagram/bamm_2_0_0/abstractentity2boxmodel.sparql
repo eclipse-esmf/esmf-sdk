@@ -41,7 +41,7 @@ construct {
   ?abstractEntity rdf:type bamm:AbstractEntity .
   #exclude abstract entities from our shared name-space
   filter ( ! strstarts( str( ?abstractEntity ), str ( bamm-e: ) ) )
-  ?abstractEntity bamm:name ?abstractEntityName .
+  bind( strafter( str( ?abstractEntity ), "#" ) as ?abstractEntityName )
 
   bind( concat( ?abstractEntityName, "AbstractEntity" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?abstractEntityBox )

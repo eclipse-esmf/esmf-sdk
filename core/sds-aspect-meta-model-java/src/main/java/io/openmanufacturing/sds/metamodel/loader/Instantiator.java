@@ -152,7 +152,8 @@ public abstract class Instantiator<T extends Base> implements Function<Resource,
 
    protected Optional<Unit> findOrCreateUnit( final Resource unitResource ) {
       if ( unit.getNamespace().equals( unitResource.getNameSpace() ) ) {
-         return Units.fromName( unitResource.getProperty( bamm.name() ).getString(), metaModelVersion );
+         final AspectModelUrn unitUrn = AspectModelUrn.fromUrn( unitResource.getURI() );
+         return Units.fromName( unitUrn.getName(), metaModelVersion );
       }
 
       return Optional.of( new DefaultUnit(

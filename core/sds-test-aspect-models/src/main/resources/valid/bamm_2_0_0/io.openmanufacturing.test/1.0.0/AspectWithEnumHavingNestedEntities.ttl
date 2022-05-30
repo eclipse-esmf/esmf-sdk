@@ -15,69 +15,56 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithEnumHavingNestedEntities a bamm:Aspect ;
-   bamm:name "AspectWithEnumHavingNestedEntities" ;
    bamm:properties ( :result :simpleResult ) ;
    bamm:operations ( ) .
 
 :result a bamm:Property ;
-   bamm:name "result" ;
    bamm:preferredName "result"@en ;
    bamm:characteristic :EvaluationResults .
 
 :simpleResult a bamm:Property ;
-   bamm:name "simpleResult" ;
    bamm:preferredName "simpleResult"@en ;
    bamm:characteristic :YesNo .
 
 :EvaluationResults a bamm-c:Enumeration ;
-   bamm:name "EvaluationResults" ;
    bamm:preferredName "Evaluation Results"@en ;
    bamm:description "Possible values for the evaluation of a process"@en ;
    bamm:dataType :EvaluationResult ;
    bamm-c:values ( :ResultGood :ResultBad ) .
 
 :YesNo a bamm-c:Enumeration ;
-   bamm:name "YesNo" ;
    bamm:preferredName "YesNo Result"@en ;
    bamm:dataType xsd:string ;
    bamm-c:values ( "Yes" "No" ) .
 
 :EvaluationResult a bamm:Entity ;
-   bamm:name "EvaluationResult" ;
    bamm:preferredName "Evalution Result"@en ;
    bamm:description "Possible values for the evaluation of a process"@en ;
    bamm:properties ( :details ) .
 
 :details a bamm:Property ;
-   bamm:name "details" ;
    bamm:characteristic [
       a bamm-c:SingleEntity ;
-      bamm:name "DetailEntityCharacteristic" ;
       bamm:dataType :DetailEntity ;
    ] .
 
 :DetailEntity a bamm:Entity ;
-   bamm:name "DetailEntity" ;
    bamm:properties ( :description :message :numericCode ) .
 
 :description a bamm:Property ;
-   bamm:name "description" ;
    bamm:preferredName "Description"@en ;
    bamm:description "Human-readable description of the process result code"@en ;
    bamm:characteristic bamm-c:Text .
 
 :message a bamm:Property ;
-   bamm:name "message" ;
    bamm:characteristic bamm-c:Text .
 
 :numericCode a bamm:Property ;
-   bamm:name "numericCode" ;
    bamm:preferredName "Numeric Code"@en ;
    bamm:description "Numeric code for the evaluation result"@en ;
    bamm:characteristic :ShortCode .
 
 :ShortCode a bamm:Characteristic ;
-   bamm:name "ShortCode" ;
    bamm:preferredName "Short Code"@en ;
    bamm:description "A numeric code with dataType short"@en ;
    bamm:dataType xsd:short .

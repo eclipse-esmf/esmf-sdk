@@ -18,10 +18,10 @@
    bamm:name "AspectWithRangeConstraintWithoutMinMaxIntegerValue" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:preferredName "Test Aspekt"@de ;
-   bamm:properties ( :integerProperty ) ;
+   bamm:properties ( :testInt ) ;
    bamm:operations ( ) .
 
-:integerProperty a bamm:Property ;
+:testInt a bamm:Property ;
    bamm:name "testInt" ;
    bamm:preferredName "Test Integer Property"@en ;
    bamm:preferredName "Numerischer Wert"@de ;

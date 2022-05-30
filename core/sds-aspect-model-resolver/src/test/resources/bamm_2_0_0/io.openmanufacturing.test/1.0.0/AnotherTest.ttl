@@ -14,7 +14,6 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
 :AnotherTest a bamm:Aspect ;
-   bamm:name "AnotherTest" ;
    bamm:preferredName "Another Test"@en ;
    bamm:properties ( :foo ) ;
    bamm:operations ( ) .

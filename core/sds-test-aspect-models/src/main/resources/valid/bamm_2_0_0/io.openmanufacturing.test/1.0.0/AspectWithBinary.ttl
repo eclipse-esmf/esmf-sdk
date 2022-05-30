@@ -15,14 +15,11 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithBinary a bamm:Aspect ;
-   bamm:name "AspectWithBinary" ;
    bamm:properties ( :testBinary ) ;
    bamm:operations ( ) .
 
 :testBinary a bamm:Property ;
-   bamm:name "testBinary" ;
    bamm:characteristic :BinaryTestCharacteristic .
 
 :BinaryTestCharacteristic a bamm:Characteristic ;
-   bamm:name "BinaryTestCharacteristic" ;
    bamm:dataType xsd:hexBinary .

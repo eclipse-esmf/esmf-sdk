@@ -24,9 +24,9 @@ construct {
   # Operation -> Property (input)
   {
     ?operation a bamm:Operation .
-    ?operation bamm:name ?operationName .
+    bind( strafter( str( ?operation ), "#" ) as ?operationName ) .
     ?operation bamm:input/rdf:rest*/rdf:first ?property .
-    ?property bamm:name ?propertyName .
+    bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
 
     bind( concat( ?operationName, "Operation" ) as ?operationBoxName )
     bind( iri( concat( str( : ), ?operationBoxName ) ) as ?from )
@@ -42,9 +42,9 @@ construct {
   # Operation -> Property (output)
   {
     ?operation a bamm:Operation .
-    ?operation bamm:name ?operationName .
+    bind( strafter( str( ?operation ), "#" ) as ?operationName ) .
     ?operation bamm:output ?property .
-    ?property bamm:name ?propertyName .
+    bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
 
     bind( concat( ?operationName, "Operation" ) as ?operationBoxName )
     bind( iri( concat( str( : ), ?operationBoxName ) ) as ?from )

@@ -24,12 +24,12 @@
 
 :testPropertyWithDayTimeDuration
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithDayTimeDuration" ;
+    bamm:name           "testPropertyWithDayTimeDuration" ;
     bamm:characteristic :testWithDurationMinDurationMaxDayTimeDuration .
 
 :testWithDurationMinDurationMaxDayTimeDuration
     a                       bamm-c:Trait ;
-    bamm:name               "TestWithDurationMinDurationMaxDayTimeDuration" ;
+    bamm:name               "testWithDurationMinDurationMaxDayTimeDuration" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [
@@ -49,12 +49,12 @@
 
 :testPropertyWithDuration
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithDuration" ;
+    bamm:name           "testPropertyWithDuration" ;
     bamm:characteristic :testWithDurationMinDurationMaxDuration .
 
 :testWithDurationMinDurationMaxDuration
     a                       bamm-c:Trait ;
-    bamm:name               "TestWithDurationMinDurationMaxDuration" ;
+    bamm:name               "testWithDurationMinDurationMaxDuration" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [
@@ -74,7 +74,7 @@
 
 :testPropertyWithYearMonthDuration
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithYearMonthDuration" ;
+    bamm:name           "testPropertyWithYearMonthDuration" ;
     bamm:characteristic :testWithDurationMinDurationMaxYearMonthDuration .
 
 :testWithDurationMinDurationMaxYearMonthDuration

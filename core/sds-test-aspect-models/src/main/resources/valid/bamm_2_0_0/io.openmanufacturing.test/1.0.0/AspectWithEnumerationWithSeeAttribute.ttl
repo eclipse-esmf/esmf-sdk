@@ -15,20 +15,16 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithEnumerationWithSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithEnumerationWithSeeAttribute" ;
    bamm:properties ( :testProperty :testPropertyTwo ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :TestEnumeration .
 
 :testPropertyTwo a bamm:Property ;
-   bamm:name "testPropertyTwo" ;
    bamm:characteristic :TestEnumerationTwo .
 
 :TestEnumeration a bamm-c:Enumeration ;
-   bamm:name "TestEnumeration" ;
    bamm:preferredName "Test Enumeration"@en ;
    bamm:description "Test Enumeration"@en ;
    bamm:see <http://example.com/omp> ;
@@ -36,7 +32,6 @@
    bamm:dataType xsd:string .
 
 :TestEnumerationTwo a bamm-c:Enumeration ;
-   bamm:name "TestEnumerationTwo" ;
    bamm:preferredName "Test Enumeration Two"@en ;
    bamm:description "Test Enumeration Two"@en ;
    bamm:see <http://example.com/omp> ;

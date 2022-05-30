@@ -15,14 +15,12 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithRangeConstraintWithoutMinMaxIntegerValue a bamm:Aspect ;
-   bamm:name "AspectWithRangeConstraintWithoutMinMaxIntegerValue" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:preferredName "Test Aspekt"@de ;
-   bamm:properties ( :integerProperty ) ;
+   bamm:properties ( :testInt ) ;
    bamm:operations ( ) .
 
-:integerProperty a bamm:Property ;
-   bamm:name "testInt" ;
+:testInt a bamm:Property ;
    bamm:preferredName "Test Integer Property"@en ;
    bamm:preferredName "Numerischer Wert"@de ;
    bamm:description "A property with a numeric value."@en ;
@@ -30,7 +28,6 @@
    bamm:characteristic :TestRangeConstraint .
 
 :TestRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestRangeConstraint" ;
    bamm:preferredName "Test Range Constraint"@en ;
    bamm:preferredName "Test Range Constraint"@de ;
    bamm:description "Restricts a numeric value to values between 0 and 100."@en ;
@@ -43,7 +40,6 @@
    bamm-c:baseCharacteristic :IntegerCharacteristic .
 
 :IntegerCharacteristic a bamm:Characteristic ;
-   bamm:name "IntegerCharacteristic" ;
    bamm:preferredName "Integer Characteristic"@en ;
    bamm:preferredName "Numerische Charakteristik"@de ;
    bamm:description "Positive Numbers"@en ;

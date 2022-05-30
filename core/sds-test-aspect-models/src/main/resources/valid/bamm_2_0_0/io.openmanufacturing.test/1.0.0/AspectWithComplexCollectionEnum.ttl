@@ -17,101 +17,80 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithComplexCollectionEnum a bamm:Aspect ;
-   bamm:name "AspectWithComplexCollectionEnum" ;
    bamm:properties ( :myPropertyOne :myPropertyTwo :myPropertyThree :myPropertyFour ) ;
    bamm:operations ( ) .
 
 :myPropertyOne a bamm:Property ;
-   bamm:name "myPropertyOne" ;
    bamm:characteristic :MyEnumerationOne .
 
 :MyEnumerationOne a bamm-c:Enumeration ;
-   bamm:name "MyEnumerationOne" ;
    bamm:dataType :MyEntityOne ;
    bamm-c:values ( :entityInstanceOne ) .
 
 :MyEntityOne a bamm:Entity ;
-   bamm:name "MyEntityOne" ;
    bamm:properties ( :entityPropertyOne ) .
 
 :entityPropertyOne a bamm:Property ;
-   bamm:name "entityPropertyOne" ;
    bamm:characteristic :ListCharacteristic .
 
 :ListCharacteristic a bamm-c:List ;
-   bamm:name "ListCharacteristic" ;
    bamm:dataType xsd:string .
 
 :entityInstanceOne a :MyEntityOne ;
    :entityPropertyOne ( "fooOne" "barOne" "bazOne" ) .
 
 :myPropertyTwo a bamm:Property ;
-   bamm:name "myPropertyTwo" ;
    bamm:characteristic :MyEnumerationTwo .
 
 :MyEnumerationTwo a bamm-c:Enumeration ;
-   bamm:name "MyEnumerationTwo" ;
    bamm:dataType :MyEntityTwo ;
    bamm-c:values ( :entityInstanceTwo ) .
 
 :MyEntityTwo a bamm:Entity ;
-   bamm:name "MyEntityTwo" ;
    bamm:properties ( :entityPropertyTwo ) .
 
 :entityPropertyTwo a bamm:Property ;
-   bamm:name "entityPropertyTwo" ;
    bamm:characteristic :setCharacteristic .
 
 :setCharacteristic a bamm-c:Set ;
-   bamm:name "setCharacteristic" ;
    bamm:dataType xsd:string .
 
 :entityInstanceTwo a :MyEntityTwo ;
    :entityPropertyTwo ( "fooTwo" "barTwo" "bazTwo" ) .
 
 :myPropertyThree a bamm:Property ;
-   bamm:name "myPropertyThree" ;
    bamm:characteristic :MyEnumerationThree .
 
 :MyEnumerationThree a bamm-c:Enumeration ;
-   bamm:name "MyEnumerationThree" ;
    bamm:dataType :MyEntityThree ;
    bamm-c:values ( :entityInstanceThree ) .
 
 :MyEntityThree a bamm:Entity ;
-   bamm:name "MyEntityThree" ;
    bamm:properties ( :entityPropertyThree ) .
 
 :entityPropertyThree a bamm:Property ;
-   bamm:name "entityPropertyThree" ;
    bamm:characteristic :sortedSetCharacteristic .
 
 :sortedSetCharacteristic a bamm-c:SortedSet ;
-   bamm:name "sortedSetCharacteristic" ;
    bamm:dataType xsd:string .
 
 :entityInstanceThree a :MyEntityThree ;
    :entityPropertyThree ( "fooThree" "barThree" "bazThree" ) .
 
 :myPropertyFour a bamm:Property ;
-   bamm:name "myPropertyFour" ;
    bamm:characteristic :MyEnumerationFour .
 
 :MyEnumerationFour a bamm-c:Enumeration ;
-   bamm:name "MyEnumerationFour" ;
    bamm:dataType :MyEntityFour ;
    bamm-c:values ( :entityInstanceFour ) .
 
 :MyEntityFour a bamm:Entity ;
-   bamm:name "MyEntityFour" ;
    bamm:properties ( :entityPropertyFour ) .
 
 :entityPropertyFour a bamm:Property ;
-   bamm:name "entityPropertyFour" ;
    bamm:characteristic :collectionCharacteristic .
 
 :collectionCharacteristic a bamm-c:Collection ;
-   bamm:name "collectionCharacteristic" ;
    bamm:dataType xsd:string .
 
 :entityInstanceFour a :MyEntityFour ;

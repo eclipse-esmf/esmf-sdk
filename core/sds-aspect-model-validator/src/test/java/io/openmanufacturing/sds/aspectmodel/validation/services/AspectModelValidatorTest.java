@@ -60,8 +60,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    }
 
    @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testInvalidAspect_missingProperties( final KnownVersion metaModelVersion ) {
+   @MethodSource( value = "versionsUpToIncluding1_0_0" )
+   public void testInvalidAspectMissingProperties( final KnownVersion metaModelVersion ) {
       final TestModel testModel = InvalidTestAspect.ASPECT_MISSING_PROPERTIES;
       final Try<VersionedModel> validAspectModel = TestResources.getModel( testModel, metaModelVersion );
       final ValidationReport report = service.validate( validAspectModel );
@@ -96,8 +96,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    }
 
    @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testInvalidAspect_missingNameAndProperties( final KnownVersion metaModelVersion ) {
+   @MethodSource( value = "versionsUpToIncluding1_0_0" )
+   public void testInvalidAspectMissingNameAndProperties( final KnownVersion metaModelVersion ) {
       final TestModel testModel = InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES;
       final Try<VersionedModel> validAspectModel = TestResources.getModel( testModel, metaModelVersion );
       final ValidationReport report = service.validate( validAspectModel );

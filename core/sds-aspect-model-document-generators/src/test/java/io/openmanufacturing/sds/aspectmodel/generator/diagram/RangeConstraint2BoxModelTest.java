@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,15 +24,17 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testBoundDefinitionAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext(
-            TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_BOUND_DEFINITION_ATTRIBUTES, metaModelVersion );
+      final String constraintIdentifier = "RangeConstraintecd22a3";
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_BOUND_DEFINITION_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             6, "lowerBoundDefinition", "GREATER_THAN" );
 
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             7, "upperBoundDefinition", "LESS_THAN" );
    }
@@ -41,28 +43,34 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
    @MethodSource( value = "allVersions" )
    public void testRangeConstraintWithOnlyLowerBoundDefinitionAndBothValuesExpectSuccess(
          final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext(
-            TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_DEFINITION_AND_BOTH_VALUES,
-            metaModelVersion );
-      context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+      final String constraintIdentifier = "RangeConstrainta825f71";
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_DEFINITION_AND_BOTH_VALUES, metaModelVersion );
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             6, "lowerBoundDefinition", "GREATER_THAN" );
 
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             7, "upperBoundDefinition", "AT_MOST" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testRangeConstraintWithOnlyMinValue( final KnownVersion metaModelVersion ) {
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE,
-            metaModelVersion );
-      context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion ), entriesSelectorStatement( metaModelVersion ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+      final String constraintIdentifier = "RangeConstraintdf1bc0b";
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE, metaModelVersion );
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             6, "lowerBoundDefinition", "GREATER_THAN" );
+
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            7, "upperBoundDefinition", "OPEN" );
+
+      context.executeAttributeIsNotPresentTest(
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            8 );
    }
 }

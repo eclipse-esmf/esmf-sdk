@@ -14,7 +14,6 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
 :FailingTest a bamm:Aspect ;
-   bamm:name "FailingTest" ;
    bamm:preferredName "Failing Test"@en ;
    bamm:properties ( :notExisting ) ;
    bamm:operations ( ) .

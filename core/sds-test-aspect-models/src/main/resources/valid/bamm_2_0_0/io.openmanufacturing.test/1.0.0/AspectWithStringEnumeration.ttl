@@ -17,18 +17,14 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithEnumeration a bamm:Aspect ;
-   bamm:name "AspectWithEnumeration" ;
    bamm:properties ( :enumerationProperty ) ;
    bamm:operations ( ) .
 
 :enumerationProperty a bamm:Property ;
-   bamm:name "enumerationProperty" ;
    bamm:preferredName ""@en ;
    bamm:description ""@en ;
    bamm:characteristic [
      a bamm-c:Enumeration ;
-     bamm:name "Foo" ;
      bamm:dataType xsd:string ;
      bamm-c:values ( "foo" "bar" )
    ] .
-

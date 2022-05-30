@@ -30,87 +30,85 @@ public class AspectWithGTypeForRangeConstraints {
    @NotNull
    @GregorianCalendarMin( value = "2000", boundDefinition = BoundDefinition.AT_LEAST )
    @GregorianCalendarMax( value = "2001", boundDefinition = BoundDefinition.AT_MOST )
-   private XMLGregorianCalendar TestPropertyWithGYear;
+   private XMLGregorianCalendar testPropertyWithGYear;
 
    @NotNull
    @GregorianCalendarMin( value = "--04", boundDefinition = BoundDefinition.AT_LEAST )
    @GregorianCalendarMax( value = "--05", boundDefinition = BoundDefinition.AT_MOST )
-   private XMLGregorianCalendar TestPropertyWithGMonth;
+   private XMLGregorianCalendar testPropertyWithGMonth;
 
    @NotNull
    @GregorianCalendarMin( value = "---04", boundDefinition = BoundDefinition.AT_LEAST )
    @GregorianCalendarMax( value = "---05", boundDefinition = BoundDefinition.AT_MOST )
-   private XMLGregorianCalendar TestPropertyWithGDay;
+   private XMLGregorianCalendar testPropertyWithGDay;
 
    @NotNull
    @GregorianCalendarMin( value = "2000-01", boundDefinition = BoundDefinition.AT_LEAST )
    @GregorianCalendarMax( value = "2000-02", boundDefinition = BoundDefinition.AT_MOST )
-   private XMLGregorianCalendar TestPropertyWithGYearMonth;
+   private XMLGregorianCalendar testPropertyWithGYearMonth;
 
    @NotNull
    @GregorianCalendarMin( value = "--01-01", boundDefinition = BoundDefinition.AT_LEAST )
    @GregorianCalendarMax( value = "--01-02", boundDefinition = BoundDefinition.AT_MOST )
-   private XMLGregorianCalendar TestPropertyWithGMonthYear;
+   private XMLGregorianCalendar testPropertyWithGMonthYear;
 
    @JsonCreator
    public AspectWithGTypeForRangeConstraints(
-         @JsonProperty( value = "TestPropertyWithGYear" ) XMLGregorianCalendar TestPropertyWithGYear,
-         @JsonProperty( value = "TestPropertyWithGMonth" ) XMLGregorianCalendar TestPropertyWithGMonth,
-         @JsonProperty( value = "TestPropertyWithGDay" ) XMLGregorianCalendar TestPropertyWithGDay,
-         @JsonProperty( value = "TestPropertyWithGYearMonth" )
-               XMLGregorianCalendar TestPropertyWithGYearMonth,
-         @JsonProperty( value = "TestPropertyWithGMonthYear" )
-               XMLGregorianCalendar TestPropertyWithGMonthYear ) {
-      this.TestPropertyWithGYear = TestPropertyWithGYear;
-      this.TestPropertyWithGMonth = TestPropertyWithGMonth;
-      this.TestPropertyWithGDay = TestPropertyWithGDay;
-      this.TestPropertyWithGYearMonth = TestPropertyWithGYearMonth;
-      this.TestPropertyWithGMonthYear = TestPropertyWithGMonthYear;
+         @JsonProperty( value = "testPropertyWithGYear" ) XMLGregorianCalendar testPropertyWithGYear,
+         @JsonProperty( value = "testPropertyWithGMonth" ) XMLGregorianCalendar testPropertyWithGMonth,
+         @JsonProperty( value = "testPropertyWithGDay" ) XMLGregorianCalendar testPropertyWithGDay,
+         @JsonProperty( value = "testPropertyWithGYearMonth" ) XMLGregorianCalendar testPropertyWithGYearMonth,
+         @JsonProperty( value = "testPropertyWithGMonthYear" ) XMLGregorianCalendar testPropertyWithGMonthYear ) {
+      this.testPropertyWithGYear = testPropertyWithGYear;
+      this.testPropertyWithGMonth = testPropertyWithGMonth;
+      this.testPropertyWithGDay = testPropertyWithGDay;
+      this.testPropertyWithGYearMonth = testPropertyWithGYearMonth;
+      this.testPropertyWithGMonthYear = testPropertyWithGMonthYear;
    }
 
    /**
     * Returns TestPropertyWithGYear
     *
-    * @return {@link #TestPropertyWithGYear}
+    * @return {@link #testPropertyWithGYear}
     */
    public XMLGregorianCalendar getTestPropertyWithGYear() {
-      return this.TestPropertyWithGYear;
+      return this.testPropertyWithGYear;
    }
 
    /**
     * Returns TestPropertyWithGMonth
     *
-    * @return {@link #TestPropertyWithGMonth}
+    * @return {@link #testPropertyWithGMonth}
     */
    public XMLGregorianCalendar getTestPropertyWithGMonth() {
-      return this.TestPropertyWithGMonth;
+      return this.testPropertyWithGMonth;
    }
 
    /**
     * Returns TestPropertyWithGDay
     *
-    * @return {@link #TestPropertyWithGDay}
+    * @return {@link #testPropertyWithGDay}
     */
    public XMLGregorianCalendar getTestPropertyWithGDay() {
-      return this.TestPropertyWithGDay;
+      return this.testPropertyWithGDay;
    }
 
    /**
     * Returns TestPropertyWithGYearMonth
     *
-    * @return {@link #TestPropertyWithGYearMonth}
+    * @return {@link #testPropertyWithGYearMonth}
     */
    public XMLGregorianCalendar getTestPropertyWithGYearMonth() {
-      return this.TestPropertyWithGYearMonth;
+      return this.testPropertyWithGYearMonth;
    }
 
    /**
     * Returns TestPropertyWithGMonthYear
     *
-    * @return {@link #TestPropertyWithGMonthYear}
+    * @return {@link #testPropertyWithGMonthYear}
     */
    public XMLGregorianCalendar getTestPropertyWithGMonthYear() {
-      return this.TestPropertyWithGMonthYear;
+      return this.testPropertyWithGMonthYear;
    }
 
    @Override
@@ -122,10 +120,10 @@ public class AspectWithGTypeForRangeConstraints {
          return false;
       }
       final AspectWithGTypeForRangeConstraints that = (AspectWithGTypeForRangeConstraints) o;
-      return Objects.equals( TestPropertyWithGYear, that.TestPropertyWithGYear )
-            && Objects.equals( TestPropertyWithGMonth, that.TestPropertyWithGMonth )
-            && Objects.equals( TestPropertyWithGDay, that.TestPropertyWithGDay )
-            && Objects.equals( TestPropertyWithGYearMonth, that.TestPropertyWithGYearMonth )
-            && Objects.equals( TestPropertyWithGMonthYear, that.TestPropertyWithGMonthYear );
+      return Objects.equals( testPropertyWithGYear, that.testPropertyWithGYear )
+            && Objects.equals( testPropertyWithGMonth, that.testPropertyWithGMonth )
+            && Objects.equals( testPropertyWithGDay, that.testPropertyWithGDay )
+            && Objects.equals( testPropertyWithGYearMonth, that.testPropertyWithGYearMonth )
+            && Objects.equals( testPropertyWithGMonthYear, that.testPropertyWithGMonthYear );
    }
 }

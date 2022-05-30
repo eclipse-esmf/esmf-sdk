@@ -15,14 +15,12 @@
 @prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#> .
 
 :SharedEntityWithSeeAttribute a bamm:Entity ;
-   bamm:name "SharedEntityWithSeeAttribute" ;
    bamm:preferredName "Test Entity"@en ;
    bamm:description "This is a test entity."@en ;
    bamm:see <http://example.com/omp> ;
    bamm:properties ( ) .
 
 bamm-e:SharedEntity a bamm:Entity ;
-   bamm:name "SharedEntity" ;
    bamm:preferredName "Shared Entity"@en ;
    bamm:description "This is a shared entity."@en ;
    bamm:see <http://example.com/omp> ;

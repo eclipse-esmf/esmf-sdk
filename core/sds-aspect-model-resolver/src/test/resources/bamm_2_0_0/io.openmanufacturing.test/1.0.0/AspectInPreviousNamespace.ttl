@@ -14,10 +14,8 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
 :AspectInPreviousNamespace a bamm:Aspect ;
-   bamm:name "AspectInPreviousNamespace" ;
    bamm:properties ( :distinctProperty ) ;
    bamm:operations ( ) .
 
 :distinctProperty a bamm:Property ;
-   bamm:name "distinctProperty" ;
    bamm:characteristic bamm-c:Text .

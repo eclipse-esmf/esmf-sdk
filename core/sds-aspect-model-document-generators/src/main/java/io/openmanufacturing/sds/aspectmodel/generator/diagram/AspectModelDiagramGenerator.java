@@ -47,6 +47,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.function.FunctionRegistry;
 import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.ImmutableList;
@@ -58,6 +59,7 @@ import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.UnsupportedVersionException;
 import io.openmanufacturing.sds.aspectmodel.generator.LanguageCollector;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 
 public class AspectModelDiagramGenerator {
@@ -75,6 +77,8 @@ public class AspectModelDiagramGenerator {
 
    private static final String FONT_NAME = "Roboto Condensed";
    private static final String FONT_FILE = "diagram/RobotoCondensed-Regular.ttf";
+
+   private GetElementNameFunctionFactory getElementNameFunctionFactory;
 
    private final Query boxmodelToDotQuery;
    private final BoxModel boxModelNamespace;
@@ -132,6 +136,10 @@ public class AspectModelDiagramGenerator {
             .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getVersion() ) );
       boxmodelToDotQuery = QueryFactory.create( getInputStreamAsString( "boxmodel2dot.sparql" ) );
       boxModelNamespace = new BoxModel( bammVersion );
+
+      getElementNameFunctionFactory = new GetElementNameFunctionFactory( model );
+      final String getElementNameFunctionUrn = "urn:bamm:io.openmanufacturing:function:2.0.0#getElementName";
+      FunctionRegistry.get().put( getElementNameFunctionUrn, getElementNameFunctionFactory );
    }
 
    InputStream getInputStream( final String resource ) {
@@ -261,8 +269,8 @@ public class AspectModelDiagramGenerator {
    private String getAspectName() {
       final BAMM bamm = new BAMM( bammVersion );
       final Resource aspect = model.listStatements( null, RDF.type, bamm.Aspect() ).nextStatement().getSubject();
-      return model.listStatements( aspect, bamm.name(), (RDFNode) null ).nextStatement().getObject().asLiteral()
-            .getString();
+      final AspectModelUrn aspectUrn = AspectModelUrn.fromUrn( aspect.getURI() );
+      return aspectUrn.getName();
    }
 
    /**

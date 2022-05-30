@@ -39,7 +39,7 @@ construct {
     ?aspect (<>|!<>)* ?entity .
   } )
 
-  ?entity bamm:name ?prototype .
+  bind( strafter( str( ?entity ), "#" ) as ?prototype ) .
   bind( strafter( str( ?instance ), "#" ) as ?instanceName )
 
   bind( concat( ?instanceName, "EntityInstance" ) as ?boxName )
@@ -49,7 +49,7 @@ construct {
   ?property bamm:characteristic/bamm-c:baseCharacteristc*/bamm:dataType ?dataType .
   filter ( not exists { ?dataType rdf:type/rdfs:subclassOf* bamm:Entity } ) .
 
-  ?property bamm:name ?propertyName .
+  bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
   bind( ?propertyName as ?entryTitle )
 
   ?instance ?property ?propertyValue .

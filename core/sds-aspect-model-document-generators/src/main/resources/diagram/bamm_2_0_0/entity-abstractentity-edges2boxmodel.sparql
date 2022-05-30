@@ -24,8 +24,8 @@ construct {
 } where {
     ?extendingEntityOrAbstractEntity bamm:extends ?extendedEntityOrAbstractEntity .
 
-    ?extendingEntityOrAbstractEntity bamm:name ?extendingEntityOrAbstractEntityName .
-    ?extendedEntityOrAbstractEntity bamm:name ?extendedEntityOrAbstractEntityName .
+    bind( strafter( str( ?extendingEntityOrAbstractEntity ), "#" ) as ?extendingEntityOrAbstractEntityName ) .
+    bind( strafter( str( ?extendedEntityOrAbstractEntity ), "#" ) as ?extendedEntityOrAbstractEntityName ) .
 
     ?extendingEntityOrAbstractEntity rdf:type ?extendingEntityOrAbstractEntityClass .
     ?extendedEntityOrAbstractEntity rdf:type ?extendedEntityOrAbstractEntityClass .

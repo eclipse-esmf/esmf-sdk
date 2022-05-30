@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.metamodel.loader;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.jena.vocabulary.XSD;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -139,6 +140,8 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
+   /* This feature branch does not support bamm:AbstractProperty. When support for this is added, remove @Disabled */
+   @Disabled
    public void testTimeSeriesInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestTimeSeries" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_TIME_SERIES, metaModelVersion );

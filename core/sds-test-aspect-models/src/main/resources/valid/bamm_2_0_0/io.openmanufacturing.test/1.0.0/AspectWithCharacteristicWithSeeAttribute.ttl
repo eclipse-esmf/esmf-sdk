@@ -15,27 +15,22 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithCharacteristicWithSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithCharacteristicWithSeeAttribute" ;
    bamm:properties ( :testProperty :testPropertyTwo ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :TestCharacteristic .
 
 :testPropertyTwo a bamm:Property ;
-   bamm:name "testPropertyTwo" ;
    bamm:characteristic :TestCharacteristicTwo .
 
 :TestCharacteristic a bamm:Characteristic ;
-   bamm:name "TestCharacteristic" ;
    bamm:preferredName "Test Characteristic"@en ;
    bamm:description "Test Characteristic"@en ;
    bamm:see <http://example.com/omp> ;
    bamm:dataType xsd:string .
 
 :TestCharacteristicTwo a bamm:Characteristic ;
-   bamm:name "TestCharacteristicTwo" ;
    bamm:preferredName "Test Characteristic Two"@en ;
    bamm:description "Test Characteristic Two"@en ;
    bamm:see <http://example.com/omp> ;

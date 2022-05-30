@@ -16,16 +16,13 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithListWithLengthConstraint a bamm:Aspect ;
-   bamm:name "AspectWithListWithLengthConstraint" ;
    bamm:properties ( :testPropertyCollectionLengthConstraint ) ;
    bamm:operations ( ) .
 
 :testPropertyCollectionLengthConstraint a bamm:Property ;
-   bamm:name "testPropertyCollectionLengthConstraint" ;
    bamm:characteristic :TestLengthConstraintWithCollection .
 
 :TestLengthConstraintWithCollection a bamm-c:Trait ;
-   bamm:name "TestLengthConstraintWithCollection" ;
    bamm:preferredName "Test Length Constraint with collection"@en ;
    bamm:description "Test Length Constraint with collection"@en ;
    bamm-c:constraint [
@@ -35,6 +32,5 @@
    ] ;
    bamm-c:baseCharacteristic [
       a bamm-c:List ;
-      bamm:name "IntList" ;
       bamm:dataType xsd:nonNegativeInteger
    ] .

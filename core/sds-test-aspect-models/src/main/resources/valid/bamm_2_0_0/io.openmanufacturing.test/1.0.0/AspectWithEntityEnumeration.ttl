@@ -15,7 +15,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithEntityEnumeration a bamm:Aspect ;
-   bamm:name "AspectWithEntityEnumeration" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
    bamm:see <http://example.com/omp> ;
@@ -23,7 +22,6 @@
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;
@@ -31,7 +29,6 @@
    bamm:characteristic :TestEnumeration .
 
 :TestEnumeration a bamm-c:Enumeration ;
-   bamm:name "TestEnumeration" ;
    bamm:preferredName "Test Enumeration"@en ;
    bamm:description "This is a test for enumeration."@en ;
    bamm:see <http://example.com/omp> ;
@@ -39,13 +36,11 @@
    bamm-c:values ( :entityInstance ) .
 
 :TestEntity a bamm:Entity ;
-   bamm:name "TestEntity" ;
    bamm:preferredName "Test Entity"@en ;
    bamm:description "This is a test entity"@en ;
    bamm:properties ( :entityProperty ) .
 
 :entityProperty a bamm:Property ;
-   bamm:name "entityProperty" ;
    bamm:preferredName "Entity Property"@en ;
    bamm:description "This is a property for the test entity."@en ;
    bamm:characteristic bamm-c:Text .

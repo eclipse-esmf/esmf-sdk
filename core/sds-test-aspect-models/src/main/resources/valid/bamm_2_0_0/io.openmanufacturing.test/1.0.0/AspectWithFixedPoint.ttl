@@ -16,7 +16,6 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithFixedPoint a bamm:Aspect ;
-   bamm:name "AspectWithFixedPoint" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
    bamm:see <http://example.com/omp> ;
@@ -24,11 +23,9 @@
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :TestFixedPoint .
 
 :TestFixedPoint a bamm-c:Trait ;
-   bamm:name "TestFixedPoint" ;
    bamm-c:constraint [
       a bamm-c:FixedPointConstraint ;
       bamm:preferredName "Test Fixed Point"@en ;
@@ -40,6 +37,5 @@
    bamm-c:baseCharacteristic :Measurement .
 
 :Measurement a bamm-c:Measurement ;
-   bamm:name "Measurement" ;
    bamm:dataType xsd:decimal ;
    bamm-c:unit unit:metrePerSecond .

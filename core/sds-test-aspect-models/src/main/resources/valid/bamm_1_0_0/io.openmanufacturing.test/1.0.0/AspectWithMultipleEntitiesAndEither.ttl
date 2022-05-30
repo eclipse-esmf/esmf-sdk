@@ -28,7 +28,7 @@
    bamm:characteristic :TestEntityCharacteristic .
 
 :testEitherProperty a bamm:Property ;
-   bamm:name "testEither" ;
+   bamm:name "testEitherProperty" ;
    bamm:characteristic :TestEither .
 
 :TestEntity a bamm:Entity ;

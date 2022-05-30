@@ -13,7 +13,8 @@
 
 package io.openmanufacturing.sds.aspectmodel.serializer;
 
-import static org.apache.jena.rdf.model.ResourceFactory.*;
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
+import static org.apache.jena.rdf.model.ResourceFactory.createStatement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,7 +100,6 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
  */
 @SuppressWarnings( "squid:S3655" ) // Optional<AspectModelUrn> is checked with isEmpty()
 public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisitor.ElementModel, Base>, Function<Aspect, Model> {
-   private final KnownVersion metaModelVersion;
    private final BAMM bamm;
    private final BAMMC bammc;
    private final BAMME bamme;
@@ -127,7 +127,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
     * @param namespace The namespace the model root element itself uses for its child elements
     */
    public RdfModelCreatorVisitor( final KnownVersion metaModelVersion, final Namespace namespace ) {
-      this.metaModelVersion = metaModelVersion;
       bamm = new BAMM( metaModelVersion );
       bammc = new BAMMC( metaModelVersion );
       bamme = new BAMME( metaModelVersion, bamm );
@@ -156,11 +155,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    private boolean isLocalElement( final IsDescribed element ) {
       return element.getAspectModelUrn().isEmpty()
             || element.getAspectModelUrn().get().getUrnPrefix().equals( namespace.getNamespace() );
-   }
-
-   private Type getEffectiveDatatype( final Characteristic characteristic ) {
-      final Optional<Type> type = characteristic.getDataType();
-      return type.orElseGet( () -> getEffectiveDatatype( ((Trait) characteristic).getBaseCharacteristic() ) );
    }
 
    private Resource getElementResource( final IsDescribed element ) {
@@ -237,10 +231,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       }
 
       final Resource resource = getElementResource( characteristic );
-      if ( !characteristic.hasSyntheticName() ) {
-         model.add( resource, bamm.name(), serializePlainString( characteristic.getName() ) );
-      }
-
       if ( !skipDataType && characteristic.getDataType().isPresent() ) {
          final Type type = characteristic.getDataType().get();
          model.add( resource, bamm.dataType(), createResource( type.getUrn() ) );
@@ -258,7 +248,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       return new ElementModel( ModelFactory.createDefaultModel(), Optional.empty() );
    }
 
-   private Model createCollectionModel( final Collection collection, final Base context ) {
+   private Model createCollectionModel( final Collection collection ) {
       final Model model = ModelFactory.createDefaultModel();
 
       if ( !isLocalElement( collection ) ) {
@@ -266,10 +256,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       }
 
       final Resource resource = getElementResource( collection );
-      if ( !collection.hasSyntheticName() ) {
-         model.add( resource, bamm.name(), serializePlainString( collection.getName() ) );
-      }
-
       if ( collection.getElementCharacteristic().isPresent() ) {
          final Characteristic elementCharacteristic = collection.getElementCharacteristic().get();
          model.add( resource, bammc.elementCharacteristic(), getElementResource( elementCharacteristic ) );
@@ -288,7 +274,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitCollection( final Collection collection, final Base context ) {
-      final Model model = createCollectionModel( collection, context );
+      final Model model = createCollectionModel( collection );
       final Resource resource = getElementResource( collection );
       model.add( resource, RDF.type, bammc.Collection() );
       return new ElementModel( model, Optional.of( resource ) );
@@ -296,7 +282,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitList( final io.openmanufacturing.sds.metamodel.List list, final Base context ) {
-      final Model model = createCollectionModel( list, context );
+      final Model model = createCollectionModel( list );
       final Resource resource = getElementResource( list );
       model.add( resource, RDF.type, bammc.List() );
       return new ElementModel( model, Optional.of( resource ) );
@@ -304,7 +290,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitSet( final Set set, final Base context ) {
-      final Model model = createCollectionModel( set, context );
+      final Model model = createCollectionModel( set );
       final Resource resource = getElementResource( set );
       model.add( resource, RDF.type, bammc.Set() );
       return new ElementModel( model, Optional.of( resource ) );
@@ -312,7 +298,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitSortedSet( final SortedSet sortedSet, final Base context ) {
-      final Model model = createCollectionModel( sortedSet, context );
+      final Model model = createCollectionModel( sortedSet );
       final Resource resource = getElementResource( sortedSet );
       model.add( resource, RDF.type, bammc.SortedSet() );
       return new ElementModel( model, Optional.of( resource ) );
@@ -320,7 +306,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitTimeSeries( final TimeSeries timeSeries, final Base context ) {
-      final Model model = createCollectionModel( timeSeries, context );
+      final Model model = createCollectionModel( timeSeries );
       final Resource resource = getElementResource( timeSeries );
       model.add( resource, RDF.type, bammc.TimeSeries() );
       return new ElementModel( model, Optional.of( resource ) );
@@ -333,9 +319,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
          return new ElementModel( model, Optional.empty() );
       }
       final Resource resource = getElementResource( constraint );
-      if ( !constraint.hasSyntheticName() ) {
-         model.add( resource, bamm.name(), serializePlainString( constraint.getName() ) );
-      }
       model.add( serializeDescriptions( resource, constraint ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
@@ -610,9 +593,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Model model = ModelFactory.createDefaultModel();
       final Resource resource = getElementResource( aspect );
       model.add( resource, RDF.type, bamm.Aspect() );
-      if ( !aspect.hasSyntheticName() ) {
-         model.add( resource, bamm.name(), serializePlainString( aspect.getName() ) );
-      }
       model.add( serializeDescriptions( resource, aspect ) );
       model.add( serializeProperties( resource, aspect ) );
       model.add( resource, bamm.operations(), model.createList(
@@ -636,9 +616,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
       final Resource resource = getElementResource( property );
       model.add( resource, RDF.type, bamm.Property() );
-      if ( !property.hasSyntheticName() ) {
-         model.add( resource, bamm.name(), serializePlainString( property.getName() ) );
-      }
 
       model.add( serializeDescriptions( resource, property ) );
 
@@ -663,9 +640,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Model model = ModelFactory.createDefaultModel();
       final Resource resource = getElementResource( operation );
       model.add( resource, RDF.type, bamm.Operation() );
-      if ( !operation.hasSyntheticName() ) {
-         model.add( resource, bamm.name(), serializePlainString( operation.getName() ) );
-      }
       model.add( serializeDescriptions( resource, operation ) );
       final List<Resource> inputProperties = operation.getInput().stream().map( this::getElementResource ).collect( Collectors.toList() );
       model.add( resource, bamm.input(), model.createList( inputProperties.iterator() ) );
@@ -680,9 +654,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Model model = ModelFactory.createDefaultModel();
       final Resource resource = getElementResource( event );
       model.add( resource, RDF.type, bamm.Event() );
-      if ( !event.hasSyntheticName() ) {
-         model.add( resource, bamm.name(), serializePlainString( event.getName() ) );
-      }
       model.add( serializeDescriptions( resource, event ) );
       model.add( serializeProperties( resource, event ) );
       return new ElementModel( model, Optional.of( resource ) );
@@ -708,9 +679,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       hasVisited.add( complexType );
 
       final Resource resource = getElementResource( complexType );
-      if ( !complexType.hasSyntheticName() ) {
-         model.add( resource, bamm.name(), serializePlainString( complexType.getName() ) );
-      }
       if ( complexType.getExtends().isPresent() ) {
          final ComplexType extendedComplexType = complexType.getExtends().get();
          model.add( extendedComplexType.accept( this, extendedComplexType ).getModel() );
@@ -749,9 +717,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
          // This is a unit defined in the scope of the Aspect model
          final Resource unitResource = getElementResource( unit );
          model.add( unitResource, RDF.type, bamm.Unit() );
-         if ( !unit.hasSyntheticName() ) {
-            model.add( unitResource, bamm.name(), serializePlainString( unit.getName() ) );
-         }
          unit.getQuantityKinds().forEach( quantityKind ->
                model.add( unitResource, bamm.quantityKind(), unitNamespace.resource( quantityKind.getName() ) ) );
          model.add( serializeDescriptions( unitResource, unit ) );

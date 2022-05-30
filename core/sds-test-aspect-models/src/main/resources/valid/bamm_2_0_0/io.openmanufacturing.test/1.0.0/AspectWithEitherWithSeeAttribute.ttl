@@ -16,16 +16,13 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithEitherWithSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithEitherWithSeeAttribute" ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :TestEither .
 
 :TestEither a bamm-c:Either ;
-   bamm:name "TestEither" ;
    bamm:preferredName "Test Either"@en ;
    bamm:description "Test Either Characteristic"@en ;
    bamm:see <http://example.com/omp> ;
@@ -33,14 +30,12 @@
    bamm-c:right :RightType .
 
 :LeftType a bamm:Characteristic ;
-   bamm:name "LeftType" ;
    bamm:preferredName "Left Type"@en ;
    bamm:description "Left Type Characteristic"@en ;
    bamm:see <http://example.com/omp> ;
    bamm:dataType xsd:float .
 
 :RightType a bamm:Characteristic ;
-   bamm:name "RightType" ;
    bamm:preferredName "Right Type"@en ;
    bamm:description "Right Type Characteristic"@en ;
    bamm:see <http://example.com/omp> ;

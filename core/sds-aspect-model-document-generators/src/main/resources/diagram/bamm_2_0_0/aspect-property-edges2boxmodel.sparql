@@ -28,10 +28,10 @@ construct {
   #exclude entities from our shared name-space
   filter ( ! strstarts( str( ?aspectOrEntityOrAbstractEntity ), str ( bamm-e: ) ) )
 
-  ?aspectOrEntityOrAbstractEntity bamm:name ?aspectOrEntityOrAbstractEntityName .
+  bind( strafter( str( ?aspectOrEntityOrAbstractEntity ), "#" ) as ?aspectOrEntityOrAbstractEntityName ) .
 
   ?property rdf:type bamm:Property .
-  ?property bamm:name ?propertyName .
+  bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
   filter( exists { ?aspectOrEntityOrAbstractEntity bamm:properties/rdf:rest*/rdf:first/bamm:property? ?property } )
 
   bind( str(?class) as ?fullClassName )

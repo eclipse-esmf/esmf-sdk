@@ -16,16 +16,13 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithEither a bamm:Aspect ;
-   bamm:name "AspectWithEither" ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :TestEither .
 
 :TestEither a bamm-c:Either ;
-   bamm:name "TestEither" ;
    bamm:preferredName "Test Either"@en ;
    bamm:description "This is a test Either."@en ;
    bamm:see <http://example.com/omp> ;

@@ -40,7 +40,7 @@ construct {
   ?aspect a bamm:Aspect .
   ?aspect bamm:operations/rdf:rest*/rdf:first ?operation .
 
-  ?operation bamm:name ?operationName .
+  bind( strafter( str( ?operation ), "#" ) as ?operationName ) .
 
   bind( concat( ?operationName, "Operation" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?operationBox )

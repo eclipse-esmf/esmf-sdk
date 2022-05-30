@@ -18,25 +18,20 @@
 # Test of Entity instance with one mandatory property
 
 :EntityInstanceTest1 a bamm:Aspect ;
-   bamm:name "EntityInstanceTest1" ;
    bamm:properties ( :aspectProperty ) ;
    bamm:operations ( ) .
 
 :aspectProperty a bamm:Property ;
-   bamm:name "aspectProperty" ;
    bamm:characteristic :TheEnum .
 
 :TheEnum a bamm-c:Enumeration ;
-   bamm:name "TheEnum" ;
    bamm:dataType :TheEntity ;
    bamm-c:values ( :entityInstance ) .
 
 :TheEntity a bamm:Entity ;
-   bamm:name "TheEntity" ;
    bamm:properties ( :entityProperty ) .
 
 :entityProperty a bamm:Property ;
-   bamm:name "entityProperty" ;
    bamm:characteristic bamm-c:Text .
 
 :entityInstance a :TheEntity ;

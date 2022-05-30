@@ -12,13 +12,11 @@
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 
 <urn:bamm:io.openmanufacturing:aspect-model:TestAspect:1.1.0> a bamm:Aspect ;
-   bamm:name "TestAspect" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:properties ( ) ;
    bamm:operations ( ) .
 
 <urn:bamm:io.openmanufacturing:aspect-model:AnotherTestAspect:1.1.0> a bamm:Aspect ;
-   bamm:name "AnotherTestAspect" ;
    bamm:preferredName "Another Test Aspect"@en ;
    bamm:properties ( ) ;
    bamm:operations ( ) .

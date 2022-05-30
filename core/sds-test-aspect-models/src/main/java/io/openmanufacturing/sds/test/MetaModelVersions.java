@@ -47,4 +47,8 @@ public abstract class MetaModelVersions {
    protected static Stream<KnownVersion> versionsStartingWith2_0_0() {
       return versionsStartingWith( KnownVersion.BAMM_2_0_0 );
    }
+
+   protected static Stream<KnownVersion> versionsUpToIncluding1_0_0() {
+      return versionsUpToIncluding( KnownVersion.BAMM_1_0_0 );
+   }
 }

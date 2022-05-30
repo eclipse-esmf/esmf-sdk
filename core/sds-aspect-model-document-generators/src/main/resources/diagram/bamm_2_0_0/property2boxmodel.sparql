@@ -48,7 +48,7 @@ construct {
     ?property rdf:type bamm:Property .
     #exclude properties from our shared name-space
     filter ( ! strstarts( str( ?property ), str ( bamm-e: ) ) )
-    ?property bamm:name ?propertyName .
+    bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
 
     bind( concat( ?propertyName, "Property" ) as ?boxName )
     bind( iri( concat( str( : ), ?boxName ) ) as ?propertyBox )

@@ -15,15 +15,12 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithCurie a bamm:Aspect ;
-   bamm:name "AspectWithCurie" ;
    bamm:properties ( :testCurie :testCurieWithoutExampleValue ) ;
    bamm:operations ( ) .
 
 :testCurie a bamm:Property ;
-   bamm:name "testCurie" ;
    bamm:exampleValue "unit:hectopascal"^^bamm:curie ;
    bamm:characteristic bamm-c:UnitReference .
 
 :testCurieWithoutExampleValue a bamm:Property ;
-   bamm:name "testCurieWithoutExampleValue" ;
    bamm:characteristic bamm-c:UnitReference .

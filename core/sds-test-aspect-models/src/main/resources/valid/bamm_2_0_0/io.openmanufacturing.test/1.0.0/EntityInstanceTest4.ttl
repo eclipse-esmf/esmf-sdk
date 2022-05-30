@@ -18,28 +18,22 @@
 # Test of Entity instance with two optional Properties, # with no Property being present in the instance
 
 :EntityInstanceTest4 a bamm:Aspect ;
-   bamm:name "EntityInstanceTest4" ;
    bamm:properties ( :aspectProperty ) ;
    bamm:operations ( ) .
 
 :aspectProperty a bamm:Property ;
-   bamm:name "aspectProperty" ;
    bamm:characteristic :TheEnum .
 
 :TheEnum a bamm-c:Enumeration ;
-   bamm:name "TheEnum" ;
    bamm:dataType :TheEntity ;
    bamm-c:values ( :entityInstance ) .
 
 :TheEntity a bamm:Entity ;
-   bamm:name "TheEntity" ;
    bamm:properties ( [ bamm:property :entityProperty; bamm:optional true ] [ bamm:property :optionalEntityProperty; bamm:optional true ] ) .
 :entityProperty a bamm:Property ;
-   bamm:name "entityProperty" ;
    bamm:characteristic bamm-c:Text .
 
 :optionalEntityProperty a bamm:Property ;
-   bamm:name "optionalEntityProperty" ;
    bamm:characteristic bamm-c:Text .
 
 :entityInstance a :TheEntity .

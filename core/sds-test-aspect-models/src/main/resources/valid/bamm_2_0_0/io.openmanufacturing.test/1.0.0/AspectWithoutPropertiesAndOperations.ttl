@@ -14,5 +14,4 @@
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithoutPropertiesAndOperations a bamm:Aspect ;
-   bamm:name "AspectWithBoolean" .
+:AspectWithoutPropertiesAndOperations a bamm:Aspect .
