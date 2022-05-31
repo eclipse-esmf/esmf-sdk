@@ -847,7 +847,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestPropertyCharacteristic" );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity" );
    }
 
    @ParameterizedTest
