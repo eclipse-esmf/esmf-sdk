@@ -22,6 +22,7 @@ construct {
   ?constraintBox a :Box .
   ?constraintBox :prototype "Constraint" .
   ?constraintBox :title ?constraintName .
+  ?constraintBox :modelElement ?constraint .
   ?constraintBox :entries (
      [
        a :Entry ;

@@ -19,6 +19,7 @@ construct {
   ?operationBox a :Box .
   ?operationBox :prototype "Operation" .
   ?operationBox :title ?operationName .
+  ?operationBox :modelElement ?operation .
   ?operationBox :entries (
      [
        a :Entry ;

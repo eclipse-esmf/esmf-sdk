@@ -22,6 +22,7 @@ construct {
   ?entityBox a :Box .
   ?entityBox :prototype ?prototype .
   ?entityBox :title ?instanceName .
+  ?entityBox :modelElement ?instance .
   ?entityBox :entry [
     a :Entry ;
     :title ?entryTitle ;
