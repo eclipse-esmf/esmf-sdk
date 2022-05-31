@@ -21,7 +21,7 @@ prefix func: <urn:bamm:io.openmanufacturing:function:2.0.0#>
 # for the implementation of the Property itself, which is then linked to the used Characteristic
 construct {
   ?edge1 a :Edge .
-  ?edge1 :title ?title .
+  ?edge1 :title "property" .
   ?edge1 :from ?entityBox .
   ?edge1 :to ?box .
 
@@ -67,59 +67,4 @@ construct {
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
   bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?characteristicBox )
   bind( iri( concat( str( : ), ?boxName, "_To_", ?characteristicBoxName ) ) as ?edge2 )
-  bind( "property" as ?title )
-
-  # optional {
-    # ?entity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-    # ?propertyNode bamm:extends ?property .
-    # ?propertyNode bamm:characteristic ?characteristic .
-    # ?propertyNode bamm:optional true .
-    # ?propertyNode bamm:payloadName ?payloadName .
-    # bind( func:getElementName( ?characteristic ) as ?characteristicName )
-    # bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-    # bind( iri( concat( str( : ), ?boxName, "_To_", ?characteristicBoxName ) ) as ?edge2 )
-    # bind( concat( " (optional) (", str( ?payloadName ), ")" ) as ?title )
-  # }
-
-#   optional {
-#     ?entity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-#     ?propertyNode bamm:extends ?property .
-#     ?propertyNode bamm:characteristic ?characteristic .
-#     ?propertyNode bamm:optional true .
-#     bind( func:getElementName( ?characteristic ) as ?characteristicName )
-#     bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-#     bind( iri( concat( str( : ), ?boxName, "_To_", ?characteristicBoxName ) ) as ?edge2 )
-#     bind( "property (optional)" as ?title )
-#   }
-
-#   optional {
-#     ?entity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-#     ?propertyNode bamm:extends ?property .
-#     ?propertyNode bamm:characteristic ?characteristic .
-#     ?propertyNode bamm:notInPayload true .
-#     bind( func:getElementName( ?characteristic ) as ?characteristicName )
-#     bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-#     bind( iri( concat( str( : ), ?boxName, "_To_", ?characteristicBoxName ) ) as ?edge2 )
-#     bind( "property (not in payload)" as ?title )
-#   }
-
-#   optional {
-#     ?entity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-#     ?propertyNode bamm:extends ?property .
-#     ?propertyNode bamm:characteristic ?characteristic .
-#     ?propertyNode bamm:payloadName ?payloadName
-#     bind( func:getElementName( ?characteristic ) as ?characteristicName )
-#     bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-#     bind( iri( concat( str( : ), ?boxName, "_To_", ?characteristicBoxName ) ) as ?edge2 )
-#     bind( concat( "property (", str( ?payloadName ), ")" ) as ?title )
-#   }
-
-#   optional {
-#     ?entity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-#     ?propertyNode bamm:characteristic ?characteristic .
-#     bind( "property" as ?title )
-#     bind( func:getElementName( ?characteristic ) as ?characteristicName )
-#     bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-#     bind( iri( concat( str( : ), ?boxName, "_To_", ?characteristicBoxName ) ) as ?edge2 )
-#   }
 }
