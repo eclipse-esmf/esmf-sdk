@@ -114,12 +114,13 @@ public class DefaultPropertyWrapper extends DefaultProperty {
       return optional == that.optional &&
             notInPayload == that.notInPayload &&
             isAbstract == that.isAbstract &&
+            Objects.equals( extends_, that.extends_ ) &&
             Objects.equals( characteristic, that.characteristic ) &&
             Objects.equals( exampleValue, that.exampleValue );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( super.hashCode(), exampleValue, optional, notInPayload, isAbstract );
+      return Objects.hash( super.hashCode(), exampleValue, optional, notInPayload, isAbstract, extends_ );
    }
 }

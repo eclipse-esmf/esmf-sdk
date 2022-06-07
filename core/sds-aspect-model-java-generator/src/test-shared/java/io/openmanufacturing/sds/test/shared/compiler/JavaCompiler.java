@@ -85,16 +85,9 @@ public class JavaCompiler {
       };
 
       final List<String> compilerOptions = List.of( "-classpath", System.getProperty( "java.class.path" ) );
-      compiler.getTask( null, manager, diagnosticListener, compilerOptions, null, compilerInput ).
-
-            call();
-
-      return loadOrder.stream()
-                  .
-
-            collect( Collectors.toMap( Function.identity(), qualifiedName ->
-
-                  defineAndLoad( qualifiedName, manager ) ) );
+      compiler.getTask( null, manager, diagnosticListener, compilerOptions, null, compilerInput ).call();
+      return loadOrder.stream().collect( Collectors.toMap( Function.identity(), qualifiedName ->
+            defineAndLoad( qualifiedName, manager ) ) );
    }
 
    @SuppressWarnings( "unchecked" )
