@@ -340,7 +340,9 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       private final Optional<ScalarValue> exampleValue;
 
       BasicProperty( final Property property ) {
-         this( property.getPayloadName(), property.getCharacteristic(), property.getExampleValue() );
+         this( property.getPayloadName(), property.getCharacteristic().orElseThrow( () ->
+               new IllegalArgumentException( "Could not process Property " + property )
+         ), property.getExampleValue() );
       }
 
       BasicProperty( final String name, final Characteristic characteristic, final Optional<ScalarValue> exampleValue ) {

@@ -644,7 +644,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    private Property createProperty( final KnownVersion modelVersion, final String propertyName, final Characteristic characteristic, final BAMM bamm ) {
       final MetaModelBaseAttributes propertyAttributes =
             MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( bamm.Property().getURI() ), propertyName );
-      return new DefaultProperty( propertyAttributes, characteristic, Optional.empty(), false, false, Optional.empty(), false, Optional.empty() );
+      return new DefaultProperty( propertyAttributes, Optional.of( characteristic ), Optional.empty(), false, false, Optional.empty(), false,
+            Optional.empty() );
    }
 
    Trait createTraitWithRangeConstraint( final KnownVersion modelVersion, final Type dataType, final BoundDefinition boundKind,

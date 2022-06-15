@@ -45,7 +45,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
             "Test Collection", "This is a test collection.", "http://example.com/omp" );
@@ -66,7 +66,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
             "Test Collection", "This is a test collection.", "http://example.com/omp" );
@@ -85,7 +85,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final List list = (List) aspect.getProperties().get( 0 ).getCharacteristic();
+      final List list = (List) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( list, expectedAspectModelUrn, "TestList",
             "Test List", "This is a test list.", "http://example.com/omp" );
@@ -105,7 +105,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Set set = (Set) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Set set = (Set) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( set, expectedAspectModelUrn, "TestSet",
             "Test Set", "This is a test set.", "http://example.com/omp" );
@@ -125,7 +125,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final SortedSet sortedSet = (SortedSet) aspect.getProperties().get( 0 ).getCharacteristic();
+      final SortedSet sortedSet = (SortedSet) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( sortedSet, expectedAspectModelUrn, "TestSortedSet",
             "Test Sorted Set", "This is a test sorted set.", "http://example.com/omp" );
@@ -145,7 +145,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final TimeSeries timeSeries = (TimeSeries) aspect.getProperties().get( 0 ).getCharacteristic();
+      final TimeSeries timeSeries = (TimeSeries) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( timeSeries, expectedAspectModelUrn, "TestTimeSeries",
             "Test Time Series", "This is a test time series.", "http://example.com/omp" );
@@ -163,7 +163,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ELEMENT_CHARACTERISTIC, metaModelVersion );
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
             "Test Collection", "This is a test collection.", "http://example.com/omp" );
 
@@ -185,7 +185,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ELEMENT_CONSTRAINT, metaModelVersion );
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
             "Test Collection", "This is a test collection.", "http://example.com/omp" );
 

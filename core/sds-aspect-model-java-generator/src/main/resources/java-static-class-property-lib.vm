@@ -13,12 +13,12 @@
 #macro( propertyDeclaration ) public static final #end
 
 #macro( getConstraintClassName )
-    #set( $trait = $Trait.cast( $property.getCharacteristic() ) )
+    #set( $trait = $Trait.cast( $property.getCharacteristic().get() ) )
     $trait.getConstraints().iterator().next().getClass().getSimpleName()
 #end
 
 #macro( getCharacteristicClassName )
-    $property.getEffectiveCharacteristic().getClass().getSimpleName()
+    $property.getEffectiveCharacteristic().get().getClass().getSimpleName()
 #end
 
 #macro( extendsComplexType $complexType )
@@ -62,14 +62,14 @@
 #set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
 
 ## public static final $type $property = (definition)
-#if( $Trait.isAssignableFrom( $property.getCharacteristic().getClass() ) )
+#if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
     $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintProperty )
     #if( $util.hasContainerType( $property ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintContainerProperty )
         #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
         #propertyDeclaration() StaticConstraintContainerProperty<$containedType, $propertyType, #getConstraintClassName(), #getCharacteristicClassName()>
           $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
-    #elseif( $util.hasUnit( $property.getCharacteristic() ) )
+    #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintUnitProperty )
         $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
         #propertyDeclaration() StaticConstraintUnitProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>
@@ -84,7 +84,7 @@
         #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
         #propertyDeclaration() StaticContainerProperty<$containedType, java.util.$propertyType> $util.toConstant( $property.getName() ) =
           #staticProperty( $property $codeGenerationConfig );
-    #elseif( $util.hasUnit( $property.getCharacteristic() ) )
+    #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $StaticUnitProperty )
         $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
         #propertyDeclaration() StaticUnitProperty<$propertyType> $util.toConstant( $property.getName() ) =
@@ -103,14 +103,14 @@
     #set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
 
     ## new $type(
-    #if( $Trait.isAssignableFrom( $property.getCharacteristic().getClass() ) )
+    #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintProperty )
         #if( $util.hasContainerType( $property ) )
             $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintContainerProperty )
             #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
             new StaticConstraintContainerProperty<$containedType, $propertyType, #getConstraintClassName(),
             #getCharacteristicClassName()>(
-        #elseif( $util.hasUnit( $property.getCharacteristic() ) )
+        #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
             $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintUnitProperty )
             $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
             new StaticConstraintUnitProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>(
@@ -122,7 +122,7 @@
             $codeGenerationConfig.getImportTracker().importExplicit( $StaticContainerProperty )
             #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
         new StaticContainerProperty<$containedType, $propertyType> (
-        #elseif( $util.hasUnit( $property.getCharacteristic() ) )
+        #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
             $codeGenerationConfig.getImportTracker().importExplicit( $StaticUnitProperty )
             $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
         new StaticUnitProperty<$propertyType>(
@@ -133,7 +133,7 @@
 
     ## $arg1, $arg2, ... ) {
     $modelVisitor.metaModelBaseAttributes( $property, $context ),
-    #propertyCharacteristic( $property.getCharacteristic(), $propertyType ),
+    #propertyCharacteristic( $property.getCharacteristic().get(), $propertyType ),
 Optional.empty(),
     $property.isOptional(),
     $property.isNotInPayload(),
@@ -147,15 +147,15 @@ Optional.of("$property.getPayloadName()"),
 ) {
 
     ## Body
-    #if( $Trait.isAssignableFrom( $property.getCharacteristic().getClass() ) )
+    #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
     @Override
     public #getConstraintClassName() getConstraint() {
-    return (#getConstraintClassName())((Trait)getCharacteristic()).getConstraints().iterator().next();
+    return (#getConstraintClassName())((Trait)getCharacteristic().get()).getConstraints().iterator().next();
     }
 
     @Override
     public #getCharacteristicClassName() getBaseCharacteristic() {
-    return (#getCharacteristicClassName())((Trait)getCharacteristic()).getBaseCharacteristic();
+    return (#getCharacteristicClassName())((Trait)getCharacteristic().get()).getBaseCharacteristic();
     }
     #end
 
@@ -183,12 +183,12 @@ public Class<$propertyType> getPropertyType() {
     }
     #end
 
-    #if( $util.hasUnit( $property.getCharacteristic() ) )
+    #if( $util.hasUnit( $property.getCharacteristic().get() ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
         $codeGenerationConfig.getImportTracker().importExplicit( $Units )
     public Unit getUnit() {
-    return Units.fromName("$Quantifiable.cast( $property.getCharacteristic() ).unit.get().getName()")
-    .orElseThrow(() -> new RuntimeException("Unknown unit: $Quantifiable.cast( $property.getCharacteristic() ).getUnit().get().getName()"));
+    return Units.fromName("$Quantifiable.cast( $property.getCharacteristic().get() ).unit.get().getName()")
+    .orElseThrow(() -> new RuntimeException("Unknown unit: $Quantifiable.cast( $property.getCharacteristic().get() ).getUnit().get().getName()"));
     }
     #end
 

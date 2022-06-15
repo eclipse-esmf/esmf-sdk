@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -105,7 +106,8 @@ public class AspectModelJavaUtil {
     * @return {@code true} if the property has a container type, {@code false} else
     */
    public static boolean hasContainerType( final Property property ) {
-      return property.isOptional() || (property.getEffectiveCharacteristic().is( Collection.class ));
+      return property.isOptional()
+            || (property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ));
    }
 
    /**
@@ -125,38 +127,43 @@ public class AspectModelJavaUtil {
    /**
     * Determines the type of a property
     *
-    * @param characteristic the {@link Characteristic} which describes the data type for a property
+    * @param optionalCharacteristic the {@link Characteristic} which describes the data type for a property
     * @param inclValidation a boolean indicating whether the element validation annotations should be included for
     *       the Collection declarations
     * @return {@link String} containing the definition of the Java Data Type for the property
     */
-   public static String determinePropertyType( final Characteristic characteristic, final boolean inclValidation,
+   public static String determinePropertyType( final Optional<Characteristic> optionalCharacteristic, final boolean inclValidation,
          final JavaCodeGenerationConfig codeGenerationConfig ) {
-      final Optional<Type> dataType = Optional.ofNullable( characteristic ).flatMap( Characteristic::getDataType );
 
-      if ( characteristic instanceof Collection ) {
-         return determineCollectionType( (Collection) characteristic, inclValidation, codeGenerationConfig );
+      final Optional<Type> dataType = optionalCharacteristic.flatMap( Characteristic::getDataType );
+      final Characteristic characteristic = optionalCharacteristic.orElseThrow( () ->
+            new CodeGenerationException( "Can not determine type of missing Characteristic" ) );
+
+      if ( characteristic.is( Collection.class ) ) {
+         return determineCollectionType( characteristic.as( Collection.class ), inclValidation, codeGenerationConfig );
       }
 
-      if ( characteristic instanceof Enumeration ) {
+      if ( characteristic.is( Enumeration.class ) ) {
          return characteristic.getName();
       }
 
-      if ( characteristic instanceof Trait ) {
-         final Characteristic baseCharacteristic = ((Trait) characteristic).getBaseCharacteristic();
-         if ( baseCharacteristic instanceof Collection ) {
-            return determineCollectionType( (Collection) baseCharacteristic, inclValidation, codeGenerationConfig );
+      if ( characteristic.is( Trait.class ) ) {
+         final Characteristic baseCharacteristic = characteristic.as( Trait.class ).getBaseCharacteristic();
+         if ( baseCharacteristic.is( Collection.class ) ) {
+            return determineCollectionType( baseCharacteristic.as( Collection.class ), inclValidation, codeGenerationConfig );
          }
       }
 
-      if ( characteristic instanceof Either ) {
+      if ( characteristic.is( Either.class ) ) {
          if ( codeGenerationConfig.doEnableJacksonAnnotations() ) {
             codeGenerationConfig.getImportTracker().importExplicit( "io.openmanufacturing.sds.aspectmodel.jackson.Either" );
          } else {
             codeGenerationConfig.getImportTracker().importExplicit( io.openmanufacturing.sds.aspectmodel.java.types.Either.class );
          }
-         final String left = determinePropertyType( ((Either) characteristic).getLeft(), inclValidation, codeGenerationConfig );
-         final String right = determinePropertyType( ((Either) characteristic).getRight(), inclValidation, codeGenerationConfig );
+         final String left = determinePropertyType(
+               optionalCharacteristic.map( c -> c.as( Either.class ) ).map( Either::getLeft ), inclValidation, codeGenerationConfig );
+         final String right = determinePropertyType(
+               optionalCharacteristic.map( c -> c.as( Either.class ) ).map( Either::getRight ), inclValidation, codeGenerationConfig );
          return String.format( "Either<%s,%s>", left, right );
       }
 
@@ -164,17 +171,18 @@ public class AspectModelJavaUtil {
    }
 
    public static String determineCollectionAspectClassDefinition( final StructureElement element, final JavaCodeGenerationConfig codeGenerationConfig ) {
+      final Supplier<RuntimeException> error = () -> new CodeGenerationException(
+            "Tried to generate a Collection Aspect class definition, but no " + "Property has a Collection Characteristic in " + element.getName() );
       codeGenerationConfig.getImportTracker().importExplicit( CollectionAspect.class );
       for ( final Property property : element.getProperties() ) {
-         final Characteristic characteristic = property.getEffectiveCharacteristic();
+         final Characteristic characteristic = property.getEffectiveCharacteristic().orElseThrow( error );
          if ( characteristic instanceof Collection ) {
             final String collectionType = determineCollectionType( (Collection) characteristic, false, codeGenerationConfig );
             final String dataType = getDataType( characteristic.getDataType(), codeGenerationConfig.getImportTracker() );
             return String.format( "public class %s implements CollectionAspect<%s,%s>", element.getName(), collectionType, dataType );
          }
       }
-      throw new CodeGenerationException(
-            "Tried to generate a Collection Aspect class definition, but no " + "Property has a Collection Characteristic in " + element.getName() );
+      throw error.get();
    }
 
    public static String determineComplexTypeClassDefinition( final ComplexType element, final JavaCodeGenerationConfig codeGenerationConfig ) {
@@ -423,19 +431,20 @@ public class AspectModelJavaUtil {
    }
 
    public static String getCharacteristicJavaType( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
+      final Supplier<RuntimeException> error = () -> new CodeGenerationException( "No data type found for Property " + property.getName() );
       if ( hasContainerType( property ) ) {
-         return getDataType( property.getCharacteristic().getDataType(), codeGenerationConfig.getImportTracker() );
+         return getDataType( property.getCharacteristic().orElseThrow( error ).getDataType(), codeGenerationConfig.getImportTracker() );
       }
 
-      return property.getEffectiveCharacteristic().getDataType().map( type -> {
-         if ( type instanceof Scalar ) {
+      return property.getEffectiveCharacteristic().flatMap( Characteristic::getDataType ).map( type -> {
+         if ( type.is( Scalar.class ) ) {
             return determinePropertyType( property.getEffectiveCharacteristic(), false, codeGenerationConfig );
-         } else if ( type instanceof Entity ) {
-            return ((Entity) type).getName();
+         } else if ( type.is( Entity.class ) ) {
+            return type.as( Entity.class ).getName();
          } else {
             throw new CodeGenerationException( "Unknown Characteristic data type " + type );
          }
-      } ).orElseThrow( () -> new CodeGenerationException( "No data type found for Property " + property.getName() ) );
+      } ).orElseThrow( error );
    }
 
    public static String printStructuredValueElement( final Object object ) {
@@ -535,8 +544,6 @@ public class AspectModelJavaUtil {
 
    /**
     * Returns the string that is put between super( ... )
-    * @param element
-    * @return
     */
    public static String superConstructorCallExpression( final List<Property> allProperties, final List<Property> elementProperties ) {
       return allProperties.stream()

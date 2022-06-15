@@ -24,7 +24,7 @@ import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
 
 public class DefaultPropertyWrapper extends DefaultProperty {
 
-   private Characteristic characteristic;
+   private Optional<Characteristic> characteristic;
    private Optional<ScalarValue> exampleValue;
    private boolean optional;
    private boolean notInPayload;
@@ -33,7 +33,7 @@ public class DefaultPropertyWrapper extends DefaultProperty {
    private Optional<String> payloadName;
 
    public DefaultPropertyWrapper( final MetaModelBaseAttributes metaModelBaseAttributes ) {
-      super( metaModelBaseAttributes, new DefaultCharacteristic( metaModelBaseAttributes, Optional.empty() ),
+      super( metaModelBaseAttributes, Optional.of( new DefaultCharacteristic( metaModelBaseAttributes, Optional.empty() ) ),
             Optional.empty(), false, false, Optional.empty(), false, Optional.empty() );
    }
 
@@ -92,12 +92,12 @@ public class DefaultPropertyWrapper extends DefaultProperty {
    }
 
    @Override
-   public Characteristic getCharacteristic() {
+   public Optional<Characteristic> getCharacteristic() {
       return characteristic;
    }
 
    public void setCharacteristic( final Characteristic characteristic ) {
-      this.characteristic = characteristic;
+      this.characteristic = Optional.of( characteristic );
    }
 
    @SuppressWarnings( "squid:S1067" )

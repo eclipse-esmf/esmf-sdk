@@ -18,7 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Resource;
@@ -184,29 +186,30 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    private SubmodelElement map( final Property property, final Context context ) {
+      final Supplier<SubmodelElement> defaultResultForProperty = () -> context.getSubmodel().getSubmodelElements().stream()
+            .filter( i -> i.getIdShort().equals( property.getName() ) )
+            .findFirst()
+            .orElse( new DefaultProperty.Builder().build() );
       if ( recursiveProperty.contains( property ) ) {
          // The guard checks for recursion in properties. If a recursion happens, the respective
          // property will be excluded from generation.
          recursiveProperty.remove( property );
          if ( property.isOptional() ) {
-            LOG.warn(
-                  String.format(
-                        "Having a recursive Property %s which is optional. Will be excluded from AAS mapping.",
-                        property ) );
-            return context.getSubmodel().getSubmodelElements().stream()
-                  .filter( i -> i.getIdShort().equals( property.getName() ) )
-                  .findFirst()
-                  .orElse( new DefaultProperty.Builder().build() );
+            LOG.warn( String.format( "Having a recursive Property %s which is optional. Will be excluded from AAS mapping.", property ) );
+            return defaultResultForProperty.get();
          } else {
-            throw new IllegalArgumentException(
-                  String.format(
-                        "Having a recursive Property: %s which is not optional is not valid.", property ) );
+            throw new IllegalArgumentException( String.format( "Having a recursive Property: %s which is not optional is not valid.", property ) );
          }
       }
       recursiveProperty.add( property );
 
+      if ( property.getCharacteristic().isEmpty() ) {
+         LOG.warn( String.format( "Having an Abstract Property. Will be excluded from AAS mapping." ) );
+         return defaultResultForProperty.get();
+      }
+
       // Characteristic defines how the property is mapped to SubmodelElement
-      final Characteristic characteristic = property.getCharacteristic();
+      final Characteristic characteristic = property.getCharacteristic().get();
 
       context.setProperty( property );
       characteristic.accept( this, context );
@@ -217,11 +220,11 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    private SubmodelElement decideOnMapping( final Property property, final Context context ) {
-      if ( property.getCharacteristic().getDataType().isEmpty() ) {
+      if ( property.getCharacteristic().flatMap( Characteristic::getDataType ).isEmpty() ) {
          return new DefaultProperty.Builder().build();
       }
 
-      final Type type = property.getCharacteristic().getDataType().get();
+      final Type type = property.getCharacteristic().get().getDataType().get();
       return decideOnMapping( type, property, context );
    }
 
@@ -250,19 +253,11 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return new DefaultProperty.Builder()
             .idShort( property.getName() )
             .kind( ModelingKind.TEMPLATE )
-            .valueType(
-                  property.getCharacteristic().getDataType().isPresent()
-                        ? mapType( property.getCharacteristic().getDataType().get() )
-                        : UNKNOWN_TYPE )
+            .valueType( property.getCharacteristic().flatMap( Characteristic::getDataType ).map( this::mapType ).orElse( UNKNOWN_TYPE ) )
             .displayNames( map( property.getPreferredNames() ) )
-            .value(
-                  property.getExampleValue().isPresent()
-                        ? property.getExampleValue().get().toString()
-                        : UNKNOWN_EXAMPLE )
+            .value( property.getExampleValue().map( Object::toString ).orElse( UNKNOWN_EXAMPLE ) )
             .descriptions( map( property.getDescriptions() ) )
-            .semanticId(
-                  buildReferenceToConceptDescription(
-                        property ) ) // this is the link to the conceptDescription containing the details for
+            .semanticId( buildReferenceToConceptDescription( property ) ) // this is the link to the conceptDescription containing the details for
             // the Characteristic
             .build();
    }
@@ -299,11 +294,14 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return new DefaultOperationVariable.Builder().value( map( property, context ) ).build();
    }
 
-   private List<LangString> map(
-         final Set<io.openmanufacturing.sds.metamodel.datatypes.LangString> localizedStrings ) {
+   private List<LangString> map( final Set<io.openmanufacturing.sds.metamodel.datatypes.LangString> localizedStrings ) {
       return localizedStrings.stream()
             .map( ( entry ) -> map( entry.getLanguageTag(), entry.getValue() ) )
             .collect( Collectors.toList() );
+   }
+
+   private LangString map( final io.openmanufacturing.sds.metamodel.datatypes.LangString langString ) {
+      return map( langString.getLanguageTag(), langString.getValue() );
    }
 
    private LangString map( final Locale locale, final String value ) {
@@ -352,7 +350,10 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    private void createConceptDescription( final Property property, final Context context ) {
-      final Characteristic characteristic = property.getCharacteristic();
+      if ( property.getCharacteristic().isEmpty() ) {
+         return;
+      }
+      final Characteristic characteristic = property.getCharacteristic().get();
       // check if the concept description is already created. If not create a new one.
       if ( !context.hasEnvironmentConceptDescription( property.getAspectModelUrn().toString() ) ) {
          final ConceptDescription conceptDescription =
@@ -395,9 +396,10 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    private DataSpecificationContent extractDataSpecificationContent( final Property property ) {
-
-      final List<LangString> definitions = map( property.getCharacteristic().getDescriptions() );
-      definitions.addAll( map( property.getDescriptions() ) );
+      final List<LangString> definitions = property.getCharacteristic().stream().flatMap( characteristic ->
+                  characteristic.getDescriptions().stream() )
+            .map( this::map )
+            .collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIEC61360.Builder()
             .definitions( definitions )
@@ -425,12 +427,12 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       createConceptDescription( property, context );
    }
 
+   private DataTypeIEC61360 mapIEC61360DataType( final Optional<Characteristic> characteristic ) {
+      return mapIEC61360DataType( characteristic.flatMap( Characteristic::getDataType ).map( Type::getUrn ).orElse( RDF.langString.getURI() ) );
+   }
+
    private DataTypeIEC61360 mapIEC61360DataType( final Characteristic characteristic ) {
-      final String urn =
-            characteristic.getDataType().isPresent()
-                  ? characteristic.getDataType().get().getUrn()
-                  : RDF.langString.getURI();
-      return mapIEC61360DataType( urn );
+      return mapIEC61360DataType( Optional.of( characteristic ) );
    }
 
    private DataTypeIEC61360 mapIEC61360DataType( final String urn ) {

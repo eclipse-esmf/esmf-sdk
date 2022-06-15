@@ -87,7 +87,6 @@ import io.openmanufacturing.sds.metamodel.TimeSeries;
 import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Unit;
-import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
@@ -622,11 +621,12 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
             final Resource superPropertyResource = getElementResource( superProperty );
             final ElementModel superPropertyElementModel = superProperty.accept( this, context );
             model.add( superPropertyElementModel.getModel() );
-            final Characteristic characteristic = property.getCharacteristic();
-            final Resource characteristicResource = getElementResource( characteristic );
-            model.add( characteristic.accept( this, property ).getModel() );
-            model.add( propertyResource, bamm.characteristic(), characteristicResource );
-            model.add( propertyResource, bamm._extends(), superPropertyResource );
+            property.getCharacteristic().ifPresent( characteristic -> {
+               final Resource characteristicResource = getElementResource( characteristic );
+               model.add( characteristic.accept( this, property ).getModel() );
+               model.add( propertyResource, bamm.characteristic(), characteristicResource );
+               model.add( propertyResource, bamm._extends(), superPropertyResource );
+            } );
             return new ElementModel( model, Optional.of( propertyResource ) );
          }
       }
@@ -637,21 +637,20 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
       final Resource resource = getElementResource( property );
       model.add( resource, RDF.type, bamm.Property() );
-
       model.add( serializeDescriptions( resource, property ) );
 
-      if ( property.getExampleValue().isPresent() ) {
-         final Value exampleValue = property.getExampleValue().get();
+      property.getExampleValue().ifPresent( exampleValue -> {
          final ElementModel exampleValueElementModel = exampleValue.accept( this, property );
          model.add( exampleValueElementModel.getModel() );
          exampleValueElementModel.getFocusElement().ifPresent( exampleValueNode ->
                model.add( resource, bamm.exampleValue(), exampleValueNode ) );
-      }
+      } );
 
-      final Characteristic characteristic = property.getCharacteristic();
-      final Resource characteristicResource = getElementResource( characteristic );
-      model.add( characteristic.accept( this, property ).getModel() );
-      model.add( resource, bamm.characteristic(), characteristicResource );
+      property.getCharacteristic().ifPresent( characteristic -> {
+         final Resource characteristicResource = getElementResource( characteristic );
+         model.add( characteristic.accept( this, property ).getModel() );
+         model.add( resource, bamm.characteristic(), characteristicResource );
+      } );
 
       return new ElementModel( model, Optional.of( resource ) );
    }

@@ -77,9 +77,9 @@ public class AspectModelHelper {
 
    public static Set<Constraint> getConstraints( final Property property ) {
       final Set<Constraint> constraints = new HashSet<>();
-      if ( property.getCharacteristic() instanceof Trait ) {
-         constraints.addAll( ((Trait) property.getCharacteristic()).getConstraints() );
-      }
+      property.getCharacteristic().filter( characteristic -> characteristic.is( Trait.class ) )
+            .map( characteristic -> characteristic.as( Trait.class ) )
+            .ifPresent( trait -> constraints.addAll( trait.getConstraints() ) );
       return constraints;
    }
 

@@ -32,8 +32,8 @@
         @JsonDeserialize( using = Base64BinaryDeserializer.class )
         #end
     #end
-    #if( $Trait.isAssignableFrom( $property.getCharacteristic().getClass() ) )
-        $util.buildConstraintsForCharacteristic( $Trait.cast( $property.characteristic ), $codeGenerationConfig )
+    #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
+        $util.buildConstraintsForCharacteristic( $Trait.cast( $property.getCharacteristic().get() ), $codeGenerationConfig )
     #end
 private $propertyType $property.getPayloadName();
 #end

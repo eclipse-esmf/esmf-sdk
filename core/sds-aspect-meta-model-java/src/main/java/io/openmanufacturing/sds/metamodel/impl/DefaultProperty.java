@@ -23,7 +23,7 @@ import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
 public class DefaultProperty extends BaseImpl implements Property {
-   private final Characteristic characteristic;
+   private final Optional<Characteristic> characteristic;
    private final Optional<ScalarValue> exampleValue;
    private final boolean optional;
    private final boolean notInPayload;
@@ -32,7 +32,7 @@ public class DefaultProperty extends BaseImpl implements Property {
    private final Optional<Property> extends_;
 
    public DefaultProperty( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final Characteristic characteristic,
+         final Optional<Characteristic> characteristic,
          final Optional<ScalarValue> exampleValue,
          final boolean optional,
          final boolean notInPayload,
@@ -55,7 +55,7 @@ public class DefaultProperty extends BaseImpl implements Property {
     * @return the characteristic.
     */
    @Override
-   public Characteristic getCharacteristic() {
+   public Optional<Characteristic> getCharacteristic() {
       return characteristic;
    }
 

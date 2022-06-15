@@ -43,11 +43,11 @@
         </div>
     #end
 
-    #if( !$property.isAbstract() && $property.getCharacteristic() )
+    #if( !$property.isAbstract() && $property.getCharacteristic().get() )
         <div class="flex border-b pb-1 py-4">
             <div class="w-80">$i18n.getText( "docu.label.characteristic" )</div>
             <div class="w-full">
-                #characteristic( $property.getCharacteristic()$aspectModelHelper $i18n $weight )
+                #characteristic( $property.getCharacteristic().get() $aspectModelHelper $i18n $weight )
             </div>
         </div>
     #end

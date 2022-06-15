@@ -35,7 +35,7 @@ public abstract class StaticProperty<T> extends DefaultProperty {
          final Optional<String> payloadName,
          final boolean isAbstract,
          final Optional<Property> extends_ ) {
-      super( metaModelBaseAttributes, characteristic, exampleValue, optional, notInPayload, payloadName, isAbstract, extends_ );
+      super( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, optional, notInPayload, payloadName, isAbstract, extends_ );
    }
 
    /**

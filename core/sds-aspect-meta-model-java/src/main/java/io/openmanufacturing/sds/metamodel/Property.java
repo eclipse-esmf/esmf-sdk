@@ -24,9 +24,9 @@ import java.util.Optional;
 public interface Property extends Base, IsDescribed {
 
    /**
-    * @return the {@link Characteristic} describing this Property
+    * @return the {@link Characteristic} describing this Property. This can be empty when the Property is abstract.
     */
-   Characteristic getCharacteristic();
+   Optional<Characteristic> getCharacteristic();
 
    /**
     * @return an {@link Optional} which may contain an example value for the Property. The type of the value is
@@ -72,28 +72,26 @@ public interface Property extends Base, IsDescribed {
     * Returns the Property's unconstrained Characteristic.
     * This is undefined when the Property is abstract
     *
-    * @return The Property's Characteristic without Constraints, or null, if {@link #isAbstract()} is true
+    * @return The Property's Characteristic without Constraints, or empty, if {@link #isAbstract()} is true
     */
-   default Characteristic getEffectiveCharacteristic() {
-      Characteristic characteristic = getCharacteristic();
-      if ( characteristic == null ) {
-         return null;
-      }
-      while ( characteristic instanceof Trait ) {
-         characteristic = ((Trait) characteristic).getBaseCharacteristic();
-      }
-      return characteristic;
+   default Optional<Characteristic> getEffectiveCharacteristic() {
+      return getCharacteristic().map( characteristic -> {
+         while ( characteristic.is( Trait.class ) ) {
+            characteristic = characteristic.as( Trait.class ).getBaseCharacteristic();
+         }
+         return characteristic;
+      } );
    }
 
    /**
     * @return the type for the Property.
     */
    default Optional<Type> getDataType() {
-      return Optional.ofNullable( getEffectiveCharacteristic() ).flatMap( Characteristic::getDataType );
+      return getEffectiveCharacteristic().flatMap( Characteristic::getDataType );
    }
 
    /**
-    * @return the {@link AbstractProperty} that is extended by this Property, if present
+    * @return the Property that is extended by this Property, if present
     */
    default Optional<Property> getExtends() {
       return Optional.empty();

@@ -243,8 +243,8 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    private Characteristic determineCharacteristic( final Property property ) {
-      if ( property.getCharacteristic() != null ) {
-         return property.getCharacteristic();
+      if ( property.getCharacteristic().isPresent() ) {
+         return property.getCharacteristic().get();
       }
 
       if ( property.isAbstract() ) {
@@ -254,7 +254,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
             }
             final Property superProperty = processedProperty.getExtends().get();
             if ( superProperty.equals( property ) ) {
-               return processedProperty.getCharacteristic();
+               return determineCharacteristic( processedProperty );
             }
          }
       }
@@ -579,16 +579,18 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    @SuppressWarnings( { "squid:S3655" } )
    //squid S3655 - Properties with an Enumeration Characteristic always have a data type
    private JsonNode createNodeForEnumEntityPropertyInstance( final Property property, final EntityInstance entityInstance, final BAMM bamm ) {
-      final Characteristic characteristic = property.getCharacteristic();
+      final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
+            new DocumentGenerationException( "Property " + property + " has no Characteristic" ) );
       final Type type = property.getDataType().get();
       final Value valueForProperty = entityInstance.getAssertions().get( property );
-      final AspectModelJsonSchemaVisitor.JsonType schemaType = type.is( Scalar.class ) ? getSchemaTypeForAspectType(
-            ResourceFactory.createResource( type.getUrn() ) ) : JsonType.OBJECT;
+      final AspectModelJsonSchemaVisitor.JsonType schemaType = type.is( Scalar.class ) ?
+            getSchemaTypeForAspectType( ResourceFactory.createResource( type.getUrn() ) ) :
+            JsonType.OBJECT;
 
-      if ( characteristic instanceof SingleEntity ) {
+      if ( characteristic.is( SingleEntity.class ) ) {
          return createNodeForEnumEntityInstance( valueForProperty.as( EntityInstance.class ), bamm );
       }
-      if ( characteristic instanceof Collection ) {
+      if ( characteristic.is( Collection.class ) ) {
          final ObjectNode propertyInstanceNode = factory.objectNode();
          propertyInstanceNode.put( "type", "array" );
          final ObjectNode arrayPropertyInstanceNode = factory.objectNode();
