@@ -18,7 +18,7 @@ import java.io.IOException;
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
-import io.openmanufacturing.sds.exeption.CommandException;
+import io.openmanufacturing.sds.exception.CommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToJsonCommand.COMMAND_NAME,
