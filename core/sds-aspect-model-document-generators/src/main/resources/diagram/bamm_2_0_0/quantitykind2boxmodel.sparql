@@ -20,6 +20,7 @@ construct {
   ?quantityKindBox a :Box .
   ?quantityKindBox :prototype "QuantityKind" .
   ?quantityKindBox :title ?upperQuantityKindName .
+  ?quantityKindBox :modelElement ?quantityKind .
   ?quantityKindBox :entries ()
 } where {
   [] bamm-c:unit/bamm:referenceUnit?/bamm:quantityKind ?quantityKind .

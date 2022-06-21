@@ -18,7 +18,7 @@ prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
 # Generates boxes for Properties
 construct {
   ?propertyBox a :Box .
-  ?propertyBox :prototype "Property" .
+  ?propertyBox :prototype "AbstractProperty" .
   ?propertyBox :title ?propertyName .
   ?propertyBox :modelElement ?property .
   ?propertyBox :entries (
@@ -37,19 +37,14 @@ construct {
        :title "see" ;
        :text ?seeValues
      ]
-     [
-       a :Entry ;
-       :title "exampleValue" ;
-       :text ?exampleValue
-     ]
   )
 } where {
   #process Properties defined in the Aspect Model being processed
   {
-    ?property rdf:type bamm:Property .
+    ?property rdf:type bamm:AbstractProperty .
     bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
 
-    bind( concat( ?propertyName, "Property" ) as ?boxName )
+    bind( concat( ?propertyName, "AbstractProperty" ) as ?boxName )
     bind( iri( concat( str( : ), ?boxName ) ) as ?propertyBox )
 
     optional {
@@ -62,10 +57,6 @@ construct {
       ?property bamm:description ?descriptionValue .
       filter( lang( ?descriptionValue ) = "en" )
       bind( xsd:string( ?descriptionValue ) as ?description )
-    }
-
-    optional {
-      ?property bamm:exampleValue ?exampleValue .
     }
 
     #subquery which concatenates all values for the bamm:see attributes

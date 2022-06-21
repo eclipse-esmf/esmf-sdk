@@ -11,18 +11,28 @@
  ~ SPDX-License-Identifier: MPL-2.0
  *#
 
-#macro( entity $entity $aspectModelHelper $i18n $weight)
+#macro( entity $entity $aspectModelHelper $i18n $weight )
     <div class="pb-10">
-        #paragraph( $entity.getPreferredName($i18n.getLocale()) "$entity.getName()-entity" $weight)
-        $!entity.getDescription($i18n.getLocale())
-        #if(!$entity.getSee().isEmpty())
-            $i18n.getText("docu.label.see")
-            #list($entity.getSee())
+        #paragraph( $entity.getPreferredName( $i18n.getLocale() ) "${aspectModelHelper.buildAnchor( $entity, null, 'entity' )}" $weight)
+        #if( $entity.getExtends().isPresent() )
+          $i18n.getText( "docu.label.extends" )&nbsp;<a href="#$aspectModelHelper.getNameFromURN( $entity.getExtends().get().getUrn() )-entity"
+        class="break-all underline">$entity.getExtends().get().getPreferredName( $i18n.getLocale() )</a>
+        #end
+        <div class="flex border-b pb-1 py-4">
+        $!entity.getDescription( $i18n.getLocale() )
+        </div>
+        #if( !$entity.getSee().isEmpty() )
+        <div class="flex border-b pb-1 py-4">
+            $i18n.getText( "docu.label.see" )
+            #list( $entity.getSee() )
+        </div>
         #end
 
-        #paragraph( $i18n.getText("docu.label.properties") "$entity.getName()-entity-properties" $aspectModelHelper.increment($weight) )
-        #foreach( $property in $entity.getProperties() )
-            #property( $property $aspectModelHelper $i18n $aspectModelHelper.increment($aspectModelHelper.increment($weight)))
+        #paragraph( $i18n.getText( "docu.label.properties" ) "${aspectModelHelper.buildAnchor( $entity, null, 'entity-properties' )}" $aspectModelHelper.increment( $weight ) )
+        #foreach( $property in $entity.getAllProperties() )
+          #if ( $entity.isAbstractEntity() || !$property.isAbstract() )
+            #property( $property $entity $aspectModelHelper $i18n $aspectModelHelper.increment( $aspectModelHelper.increment( $weight ) ) )
+          #end
         #end
     </div>
 #end

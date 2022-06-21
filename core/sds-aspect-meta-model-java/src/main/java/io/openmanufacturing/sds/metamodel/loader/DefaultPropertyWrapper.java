@@ -17,21 +17,24 @@ import java.util.Objects;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
 
 public class DefaultPropertyWrapper extends DefaultProperty {
 
-   private Characteristic characteristic;
+   private Optional<Characteristic> characteristic;
    private Optional<ScalarValue> exampleValue;
    private boolean optional;
    private boolean notInPayload;
+   private boolean isAbstract;
+   private Optional<Property> extends_;
    private Optional<String> payloadName;
 
    public DefaultPropertyWrapper( final MetaModelBaseAttributes metaModelBaseAttributes ) {
-      super( metaModelBaseAttributes, new DefaultCharacteristic( metaModelBaseAttributes, Optional.empty() ),
-            Optional.empty(), false, false, Optional.empty() );
+      super( metaModelBaseAttributes, Optional.of( new DefaultCharacteristic( metaModelBaseAttributes, Optional.empty() ) ),
+            Optional.empty(), false, false, Optional.empty(), false, Optional.empty() );
    }
 
    @Override
@@ -71,12 +74,30 @@ public class DefaultPropertyWrapper extends DefaultProperty {
    }
 
    @Override
-   public Characteristic getCharacteristic() {
+   public boolean isAbstract() {
+      return isAbstract;
+   }
+
+   public void setAbstract( final boolean isAbstract ) {
+      this.isAbstract = isAbstract;
+   }
+
+   @Override
+   public Optional<Property> getExtends() {
+      return extends_;
+   }
+
+   public void setExtends_( final Optional<Property> extends_ ) {
+      this.extends_ = extends_;
+   }
+
+   @Override
+   public Optional<Characteristic> getCharacteristic() {
       return characteristic;
    }
 
    public void setCharacteristic( final Characteristic characteristic ) {
-      this.characteristic = characteristic;
+      this.characteristic = Optional.of( characteristic );
    }
 
    @SuppressWarnings( "squid:S1067" )
@@ -92,12 +113,14 @@ public class DefaultPropertyWrapper extends DefaultProperty {
       final DefaultPropertyWrapper that = (DefaultPropertyWrapper) o;
       return optional == that.optional &&
             notInPayload == that.notInPayload &&
+            isAbstract == that.isAbstract &&
+            Objects.equals( extends_, that.extends_ ) &&
             Objects.equals( characteristic, that.characteristic ) &&
             Objects.equals( exampleValue, that.exampleValue );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( super.hashCode(), exampleValue, optional, notInPayload );
+      return Objects.hash( super.hashCode(), exampleValue, optional, notInPayload, isAbstract, extends_ );
    }
 }

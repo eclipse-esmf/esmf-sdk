@@ -23,6 +23,7 @@ construct {
   ?characteristicBox a :Box .
   ?characteristicBox :prototype "Characteristic + Collection" .
   ?characteristicBox :title ?characteristicName .
+  ?characteristicBox :modelElement ?characteristic .
   ?characteristicBox :entries (
      [
        a :Entry ;

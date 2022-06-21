@@ -41,7 +41,7 @@ public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final LanguageConstraint languageConstraint = (LanguageConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( languageConstraint,
@@ -59,7 +59,7 @@ public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final EncodingConstraint encodingConstraint = (EncodingConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( encodingConstraint,
@@ -77,7 +77,7 @@ public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final LengthConstraint lengthConstraint = (LengthConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( lengthConstraint,
@@ -98,7 +98,7 @@ public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final RegularExpressionConstraint regularExpressionConstraint = (RegularExpressionConstraint) trait
             .getConstraints().get( 0 );
 

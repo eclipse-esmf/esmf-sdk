@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.aspectmodel.generator.openapi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -150,17 +151,17 @@ class AspectModelPagingGenerator {
    private ObjectNode getPathRootNode( final PagingOption pagingOption ) throws IOException {
       String fileName = "";
       switch ( pagingOption ) {
-         case TIME_BASED_PAGING:
-            fileName = "TimeBasedPaging.json";
-            break;
-         case CURSOR_BASED_PAGING:
-            fileName = "CursorBasedPaging.json";
-            break;
-         case OFFSET_BASED_PAGING:
-            fileName = "OffsetBasedPaging.json";
-            break;
-         default:
-            throw new IllegalArgumentException( String.format( "There is no file defined for the chosen paging option %s", pagingOption ) );
+      case TIME_BASED_PAGING:
+         fileName = "TimeBasedPaging.json";
+         break;
+      case CURSOR_BASED_PAGING:
+         fileName = "CursorBasedPaging.json";
+         break;
+      case OFFSET_BASED_PAGING:
+         fileName = "OffsetBasedPaging.json";
+         break;
+      default:
+         throw new IllegalArgumentException( String.format( "There is no file defined for the chosen paging option %s", pagingOption ) );
       }
       final InputStream inputStream = getClass().getResourceAsStream( "/openapi/" + fileName );
       final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8.name() );
@@ -200,14 +201,14 @@ class AspectModelPagingGenerator {
       @Override
       public Set<PagingOption> visitHasProperties( final HasProperties element, final Object context ) {
          return Stream.ofAll( element.getProperties() )
-                      .filter( property -> !property.isNotInPayload() )
-                      .flatMap( property -> visitProperty( property, context ) )
-                      .collect( Collectors.toSet() );
+               .filter( property -> !property.isNotInPayload() )
+               .flatMap( property -> visitProperty( property, context ) )
+               .collect( Collectors.toSet() );
       }
 
       @Override
       public Set<PagingOption> visitProperty( final Property property, final Object context ) {
-         return property.getCharacteristic().accept( this, context );
+         return property.getCharacteristic().map( characteristic -> characteristic.accept( this, context ) ).orElse( Collections.emptySet() );
       }
    }
 }

@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,9 +24,9 @@ import java.util.Optional;
 public interface Property extends Base, IsDescribed {
 
    /**
-    * @return the {@link Characteristic} describing this Property.
+    * @return the {@link Characteristic} describing this Property. This can be empty when the Property is abstract.
     */
-   Characteristic getCharacteristic();
+   Optional<Characteristic> getCharacteristic();
 
    /**
     * @return an {@link Optional} which may contain an example value for the Property. The type of the value is
@@ -50,7 +50,8 @@ public interface Property extends Base, IsDescribed {
     * @return a {@link boolean} which determines whether the Property is included in the runtime data of an Aspect.
     *       By default Properties are included in the runtime data.
     *
-    * @see <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/snapshot/modeling-guidelines.html#declaring-enumerations">BAMM Aspect Meta Model
+    * @see
+    * <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/snapshot/modeling-guidelines.html#declaring-enumerations">BAMM Aspect Meta Model
     *       Specification - Declaring Enumerations</a>
     * @since BAMM 1.0.0
     */
@@ -59,22 +60,40 @@ public interface Property extends Base, IsDescribed {
    }
 
    /**
-    * Returns the Property's unconstrained Characteristic
+    * Returns true if the Property is abstract
     *
-    * @return The Property's Characteristic without Constraints
+    * @return
     */
-   default Characteristic getEffectiveCharacteristic() {
-      Characteristic characteristic = getCharacteristic();
-      while ( characteristic instanceof Trait ) {
-         characteristic = ((Trait) characteristic).getBaseCharacteristic();
-      }
-      return characteristic;
+   default boolean isAbstract() {
+      return false;
+   }
+
+   /**
+    * Returns the Property's unconstrained Characteristic.
+    * This is undefined when the Property is abstract
+    *
+    * @return The Property's Characteristic without Constraints, or empty, if {@link #isAbstract()} is true
+    */
+   default Optional<Characteristic> getEffectiveCharacteristic() {
+      return getCharacteristic().map( characteristic -> {
+         while ( characteristic.is( Trait.class ) ) {
+            characteristic = characteristic.as( Trait.class ).getBaseCharacteristic();
+         }
+         return characteristic;
+      } );
    }
 
    /**
     * @return the type for the Property.
     */
    default Optional<Type> getDataType() {
-      return getEffectiveCharacteristic().getDataType();
+      return getEffectiveCharacteristic().flatMap( Characteristic::getDataType );
+   }
+
+   /**
+    * @return the Property that is extended by this Property, if present
+    */
+   default Optional<Property> getExtends() {
+      return Optional.empty();
    }
 }

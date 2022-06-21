@@ -11,26 +11,25 @@
  ~ SPDX-License-Identifier: MPL-2.0
  *#
 
-#macro( operation $operation $aspectModelHelper $i18n $weight)
+#macro( operation $operation $aspectModelHelper $i18n $weight )
     <div class="p-4 text-gray">
-        #paragraph( $operation.getPreferredName($i18n.getLocale()) "$operation.getName()-operation" $weight )
+        #paragraph( $operation.getPreferredName( $i18n.getLocale() ) "${aspectModelHelper.buildAnchor( $operation, null, 'operation' )}" $weight )
 
-        #description( $operation.getDescription($i18n.getLocale()) )
+        #description( $operation.getDescription( $i18n.getLocale() ) )
 
-        #if(!$operation.getInput().isEmpty())
-
-            #paragraph($i18n.getText("docu.label.input") "$operation.getName()-operation-in-prop" $aspectModelHelper.increment($weight))
+        #if( !$operation.getInput().isEmpty() )
+            #paragraph( $i18n.getText( "docu.label.input" ) "${aspectModelHelper.buildAnchor( $operation, null, 'operation-in-prop' )}" $aspectModelHelper.increment( $weight ) )
 
             #foreach( $property in $operation.getInput() )
-                #property( $property $aspectModelHelper $i18n )
+                #property( $property $operation $aspectModelHelper $i18n )
             #end
 
         #end
 
 
-        #if( $operation.getOutput().isPresent())
-            #paragraph($i18n.getText("docu.label.output") "$operation.getName()-operation-out-prop" $aspectModelHelper.increment($weight))
-            #property( $operation.getOutput().get() $aspectModelHelper $i18n)
+        #if( $operation.getOutput().isPresent() )
+            #paragraph( $i18n.getText( "docu.label.output" ) "${aspectModelHelper.buildAnchor( $operation, null, 'operation-out-prop' )}" $aspectModelHelper.increment( $weight ) )
+            #property( $operation.getOutput().get(), $operation, $aspectModelHelper $i18n )
         #end
     </div>
 

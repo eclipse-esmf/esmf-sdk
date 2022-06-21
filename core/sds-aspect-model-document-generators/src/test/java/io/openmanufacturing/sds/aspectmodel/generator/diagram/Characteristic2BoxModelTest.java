@@ -114,13 +114,13 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
          qexec.execConstruct( queryResult );
       }
 
-      assertThat( queryResult.listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity a :Edge" ) )
+      assertThat( queryResult.listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity a :Edge" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-                  context.selector( ":EntityCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :from :EntityCharacteristicCharacteristic" ) )
+                  context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :from :EntityCharacteristicCharacteristic" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-                  context.selector( ":EntityCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :to :AbstractTestEntityAbstractEntity" ) )
+                  context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :to :ExtendingTestEntityEntity" ) )
             .toList() ).hasSize( 1 );
    }
 }

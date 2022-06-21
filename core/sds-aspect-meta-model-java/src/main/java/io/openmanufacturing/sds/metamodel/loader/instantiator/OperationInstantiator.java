@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,7 +37,7 @@ public class OperationInstantiator extends Instantiator<Operation> {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( operation );
       final List<Property> input = getPropertiesModels( operation, bamm.input() );
       final Optional<Property> output =
-            optionalPropertyValue( operation, bamm.output() )
+            optionalAttributeValue( operation, bamm.output() )
                   .map( Statement::getResource )
                   .map( outputPropertyResource -> modelElementFactory
                         .create( Property.class, outputPropertyResource ) );

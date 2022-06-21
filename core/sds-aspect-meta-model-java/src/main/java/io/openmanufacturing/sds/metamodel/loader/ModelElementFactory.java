@@ -20,13 +20,10 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-
-import com.google.common.collect.ImmutableList;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
@@ -36,18 +33,17 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.loader.instantiator.AspectInstantiator;
 
-public class ModelElementFactory {
+public class ModelElementFactory extends AttributeValueRetriever {
    private final KnownVersion metaModelVersion;
    private final Model model;
-   private final BAMM bamm;
    private final BAMMC bammc;
    private final UNIT unit;
    private final Map<Resource, Instantiator<?>> instantiators = new HashMap<>();
 
    public ModelElementFactory( final KnownVersion metaModelVersion, final Model model ) {
+      super( new BAMM( metaModelVersion ) );
       this.metaModelVersion = metaModelVersion;
       this.model = model;
-      bamm = new BAMM( metaModelVersion );
       bammc = new BAMMC( metaModelVersion );
       unit = new UNIT( metaModelVersion, bamm );
    }
@@ -61,28 +57,28 @@ public class ModelElementFactory {
 
    @SuppressWarnings( { "unchecked", "squid:S00101" } ) // class parameter is required to fix return type
    private <T extends Base> Instantiator<T> createInstantiator( final Class<T> clazz, final Resource targetType ) {
+      Resource effectiveTargetType = targetType;
       try {
-         final AspectModelUrn urn = AspectModelUrn.fromUrn( targetType.getURI() );
+         if ( targetType.equals( bamm.AbstractProperty() ) ) {
+            effectiveTargetType = bamm.Property();
+         }
+         final AspectModelUrn urn = AspectModelUrn.fromUrn( effectiveTargetType.getURI() );
          final String className = String.format( "%s.%sInstantiator", AspectInstantiator.class.getPackageName(), urn.getName() );
          return (Instantiator<T>) Class.forName( className ).getDeclaredConstructor( getClass() ).newInstance( this );
       } catch ( final Exception exception ) {
-         throw new AspectLoadingException( "Aspect loading does not know type " + targetType, exception );
+         throw new AspectLoadingException( "Aspect loading does not know type " + effectiveTargetType, exception );
       }
-   }
-
-   protected Optional<Statement> propertyValue( final Resource subject, final org.apache.jena.rdf.model.Property type ) {
-      return ImmutableList.copyOf( model.listStatements( subject, type, (RDFNode) null ) ).stream().findAny();
    }
 
    private Resource resourceType( final Resource resource ) {
       final Supplier<Optional<Resource>> directType = () ->
-            propertyValue( resource, RDF.type ).map( Statement::getResource );
+            optionalAttributeValue( resource, RDF.type ).map( Statement::getResource );
       final Supplier<Optional<Resource>> propertyUsageType = () ->
-            propertyValue( resource, bamm.property() ).map( statement -> resourceType( statement.getResource() ) );
+            optionalAttributeValue( resource, bamm.property() ).map( statement -> resourceType( statement.getResource() ) );
       final Supplier<Optional<Resource>> subClassType = () ->
-            propertyValue( resource, RDFS.subClassOf ).map( Statement::getResource ).map( this::resourceType );
+            optionalAttributeValue( resource, RDFS.subClassOf ).map( Statement::getResource ).map( this::resourceType );
       final Supplier<Optional<Resource>> extendsType = () ->
-            propertyValue( resource, bamm._extends() ).map( Statement::getResource ).map( this::resourceType );
+            optionalAttributeValue( resource, bamm._extends() ).map( Statement::getResource ).map( this::resourceType );
 
       return Stream.of( directType, propertyUsageType, subClassType, extendsType )
             .map( Supplier::get )

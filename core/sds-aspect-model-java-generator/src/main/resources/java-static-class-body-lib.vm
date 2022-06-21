@@ -44,7 +44,9 @@ static {
     #javaStaticClassProperty( $property $codeGenerationConfig )
 #end
 #foreach( $property in $element.getProperties() )
-    #javaStaticClassProperty( $property $codeGenerationConfig )
+    #if ( !$property.isAbstract() )
+        #javaStaticClassProperty( $property $codeGenerationConfig )
+    #end
 #end
 
     public Class<${element.getName()}> getModelClass() {
@@ -69,10 +71,8 @@ static {
     @Override
     public List<StaticProperty<?>> getProperties() {
        return Arrays.asList(
-        #foreach( $property in $element.getProperties() )
-            $util.toConstant( $property.getName() )
-            #if( $foreach.hasNext ), #end
-        #end );
+        ${util.staticPropertiesExpression( $element )}
+       );
     }
 
 #if( !$element.getPreferredNames().isEmpty() )
