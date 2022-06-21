@@ -40,11 +40,11 @@ public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
    public RangeConstraint apply( final Resource rangeConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( rangeConstraint );
 
-      final Optional<ScalarValue> minValue = optionalPropertyValue( rangeConstraint, bammc.minValue() )
+      final Optional<ScalarValue> minValue = optionalAttributeValue( rangeConstraint, bammc.minValue() )
             .map( Statement::getLiteral )
             .map( literal -> new DefaultScalarValue( literal.getValue(),
                   new DefaultScalar( literal.getDatatypeURI(), metaModelBaseAttributes.getMetaModelVersion() ) ) );
-      final Optional<ScalarValue> maxValue = optionalPropertyValue( rangeConstraint, bammc.maxValue() )
+      final Optional<ScalarValue> maxValue = optionalAttributeValue( rangeConstraint, bammc.maxValue() )
             .map( Statement::getLiteral )
             .map( literal -> new DefaultScalarValue( literal.getValue(),
                   new DefaultScalar( literal.getDatatypeURI(), metaModelBaseAttributes.getMetaModelVersion() ) ) );

@@ -62,7 +62,7 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 
 public class AspectModelJacksonModuleTest extends MetaModelVersions {
-   private static final String PACKAGE = "com.test";
+   private static final String PACKAGE = "io.openmanufacturing.test";
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
@@ -175,7 +175,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       final Field enumerationField = clazz.getDeclaredField( "enumerationProperty" );
       enumerationField.setAccessible( true );
       final Class<?> enumerationType = enumerationField.getType();
-      assertThat( enumerationType.getName() ).isEqualTo( PACKAGE + ".Foo" );
+      assertThat( enumerationType.getName() ).isEqualTo( PACKAGE + ".EnumerationPropertyEnumeration" );
       assertThat( enumerationType.isEnum() ).isTrue();
 
       final Object enumerationValue = enumerationField.get( instance );
@@ -193,7 +193,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       enumerationField.setAccessible( true );
       final Class<?> enumerationType = enumerationField.getType();
 
-      assertThat( enumerationType.getName() ).isEqualTo( PACKAGE + ".SystemStates" );
+      assertThat( enumerationType.getName() ).isEqualTo( PACKAGE + ".SystemStateEnumeration" );
       assertThat( enumerationType.isEnum() ).isTrue();
 
       final Object enumerationValue = enumerationField.get( instance );
@@ -221,7 +221,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       enumerationField.setAccessible( true );
       final Class<?> enumerationType = enumerationField.getType();
 
-      assertThat( enumerationType.getName() ).isEqualTo( PACKAGE + ".SystemStates" );
+      assertThat( enumerationType.getName() ).isEqualTo( PACKAGE + ".SystemStateEnumeration" );
       assertThat( enumerationType.isEnum() ).isTrue();
 
       final Object enumerationValue = enumerationField.get( instance );

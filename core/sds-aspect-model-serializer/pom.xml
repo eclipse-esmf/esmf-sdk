@@ -63,11 +63,6 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.assertj</groupId>
-         <artifactId>assertj-vavr</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
          <groupId>io.openmanufacturing</groupId>
          <artifactId>sds-test-resources</artifactId>
          <scope>test</scope>

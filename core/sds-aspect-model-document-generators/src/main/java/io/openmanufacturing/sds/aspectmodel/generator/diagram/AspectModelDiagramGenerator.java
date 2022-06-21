@@ -47,6 +47,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.function.FunctionRegistry;
 import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.ImmutableList;
@@ -57,7 +58,10 @@ import guru.nidi.graphviz.parse.Parser;
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.UnsupportedVersionException;
 import io.openmanufacturing.sds.aspectmodel.generator.LanguageCollector;
+import io.openmanufacturing.sds.aspectmodel.resolver.services.MetaModelUrls;
+import io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 
 public class AspectModelDiagramGenerator {
@@ -75,6 +79,8 @@ public class AspectModelDiagramGenerator {
 
    private static final String FONT_NAME = "Roboto Condensed";
    private static final String FONT_FILE = "diagram/RobotoCondensed-Regular.ttf";
+
+   private final GetElementNameFunctionFactory getElementNameFunctionFactory;
 
    private final Query boxmodelToDotQuery;
    private final BoxModel boxModelNamespace;
@@ -115,7 +121,12 @@ public class AspectModelDiagramGenerator {
             "characteristic-constraint-edges"
       );
 
-      final ImmutableList<String> queryFilesForBammVersionsAsOf2_0_0 = ImmutableList.of( "abstractentity", "entity-abstractentity-edges" );
+      final ImmutableList<String> queryFilesForBammVersionsAsOf2_0_0 = ImmutableList.of(
+            "abstractentity",
+            "entity-abstractentity-edges",
+            "abstractproperty",
+            "entity-abstractproperty-edges"
+      );
 
       aspectToBoxmodelQueryFiles.put( KnownVersion.BAMM_1_0_0,
             ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
@@ -132,6 +143,10 @@ public class AspectModelDiagramGenerator {
             .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getVersion() ) );
       boxmodelToDotQuery = QueryFactory.create( getInputStreamAsString( "boxmodel2dot.sparql" ) );
       boxModelNamespace = new BoxModel( bammVersion );
+
+      getElementNameFunctionFactory = new GetElementNameFunctionFactory( model );
+      final String getElementNameFunctionUrn = "urn:bamm:io.openmanufacturing:function:2.0.0#getElementName";
+      FunctionRegistry.get().put( getElementNameFunctionUrn, getElementNameFunctionFactory );
    }
 
    InputStream getInputStream( final String resource ) {
@@ -251,6 +266,12 @@ public class AspectModelDiagramGenerator {
 
       breakLongLinesAndEscapeTexts( targetModel );
 
+      targetModel.add( targetModel.createResource(), boxModelNamespace.rootElement(), getAspect() );
+      MetaModelUrls.url( "meta-model", bammVersion, "prefix-declarations.ttl" )
+            .map( TurtleLoader::openUrl )
+            .map( TurtleLoader::loadTurtle )
+            .ifPresent( tryModel -> tryModel.forEach( targetModel::add ) );
+
       final String queryResult = executeQuery( targetModel, boxmodelToDotQuery );
       final String template = getInputStreamAsString( "aspect2dot.mustache" );
       return template.replace( "{{&statements}}", queryResult )
@@ -258,11 +279,15 @@ public class AspectModelDiagramGenerator {
             .replace( "\\\"", "\"" );
    }
 
-   private String getAspectName() {
+   private Resource getAspect() {
       final BAMM bamm = new BAMM( bammVersion );
-      final Resource aspect = model.listStatements( null, RDF.type, bamm.Aspect() ).nextStatement().getSubject();
-      return model.listStatements( aspect, bamm.name(), (RDFNode) null ).nextStatement().getObject().asLiteral()
-            .getString();
+      return model.listStatements( null, RDF.type, bamm.Aspect() ).nextStatement().getSubject();
+   }
+
+   private String getAspectName() {
+      final Resource aspect = getAspect();
+      final AspectModelUrn aspectUrn = AspectModelUrn.fromUrn( aspect.getURI() );
+      return aspectUrn.getName();
    }
 
    /**

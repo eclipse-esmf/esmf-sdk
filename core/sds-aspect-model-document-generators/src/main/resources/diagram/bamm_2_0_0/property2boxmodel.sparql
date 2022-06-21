@@ -20,6 +20,7 @@ construct {
   ?propertyBox a :Box .
   ?propertyBox :prototype "Property" .
   ?propertyBox :title ?propertyName .
+  ?propertyBox :modelElement ?property .
   ?propertyBox :entries (
      [
        a :Entry ;
@@ -46,9 +47,7 @@ construct {
   #process Properties defined in the Aspect Model being processed
   {
     ?property rdf:type bamm:Property .
-    #exclude properties from our shared name-space
-    filter ( ! strstarts( str( ?property ), str ( bamm-e: ) ) )
-    ?property bamm:name ?propertyName .
+    bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
 
     bind( concat( ?propertyName, "Property" ) as ?boxName )
     bind( iri( concat( str( : ), ?boxName ) ) as ?propertyBox )

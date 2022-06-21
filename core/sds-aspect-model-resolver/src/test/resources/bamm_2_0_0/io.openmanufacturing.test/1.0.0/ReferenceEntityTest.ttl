@@ -14,14 +14,11 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
 :ReferenceEntityTest a bamm:Aspect ;
-   bamm:name "ReferenceEntityTest" ;
    bamm:properties ( :foo ) ;
    bamm:operations ( ) .
 
 :foo a bamm:Property ;
-   bamm:name "foo" ;
    bamm:characteristic :TestCharacteristic .
 
 :TestCharacteristic a bamm-c:SingleEntity ;
-   bamm:name "TestCharacteristic" ;
    bamm:dataType :TestEntity .

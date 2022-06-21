@@ -95,7 +95,6 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private final List<Transformer> transformers;
    private final ExampleValueGenerator exampleValueGenerator;
    private final ObjectMapper objectMapper;
-   private final BAMM bamm;
    private final List<Property> recursiveProperty;
    private final ValueToPayloadStructure valueToPayloadStructure = new ValueToPayloadStructure();
 
@@ -113,7 +112,6 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
    private AspectModelJsonPayloadGenerator( final Aspect aspect, final BAMM bamm, final Random randomStrategy ) {
       this.aspect = aspect;
-      this.bamm = bamm;
       exampleValueGenerator = new ExampleValueGenerator( randomStrategy );
       objectMapper = AspectModelJsonPayloadGenerator.createObjectMapper();
       objectMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
@@ -178,7 +176,9 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private Map<String, Object> transformProperties( final List<Property> properties ) {
       return Stream.concat(
             properties.stream().filter( recursiveProperty::contains ).map( this::recursiveProperty ),
-            properties.stream().filter( property -> !recursiveProperty.contains( property ) )
+            properties.stream()
+                  .filter( property -> !recursiveProperty.contains( property ) )
+                  .filter( property -> !property.isAbstract() )
                   .map( property -> {
                      recursiveProperty.add( property );
                      final Map<String, Object> result = transformProperty( new BasicProperty( property ) );
@@ -340,7 +340,9 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       private final Optional<ScalarValue> exampleValue;
 
       BasicProperty( final Property property ) {
-         this( property.getPayloadName(), property.getCharacteristic(), property.getExampleValue() );
+         this( property.getPayloadName(), property.getCharacteristic().orElseThrow( () ->
+               new IllegalArgumentException( "Could not process Property " + property )
+         ), property.getExampleValue() );
       }
 
       BasicProperty( final String name, final Characteristic characteristic, final Optional<ScalarValue> exampleValue ) {

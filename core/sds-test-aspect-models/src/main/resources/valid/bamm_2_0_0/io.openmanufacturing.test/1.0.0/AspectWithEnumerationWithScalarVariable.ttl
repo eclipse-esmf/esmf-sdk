@@ -15,17 +15,14 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithEnumerationWithScalarVariable a bamm:Aspect ;
-   bamm:name "AspectWithEnumerationWithScalarVariable" ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:preferredName "testProperty"@en ;
    bamm:characteristic :TestScalarEnumeration .
 
 :TestScalarEnumeration a bamm-c:Enumeration ;
-   bamm:name "TestScalarEnumeration" ;
    bamm:preferredName "TestScalarEnumeration Result"@en ;
    bamm:see <http://example.com/omp> ;
    bamm:dataType xsd:string ;

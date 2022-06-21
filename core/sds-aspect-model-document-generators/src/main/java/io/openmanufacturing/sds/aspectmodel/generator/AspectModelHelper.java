@@ -17,13 +17,16 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
+import io.openmanufacturing.sds.metamodel.IsDescribed;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.SingleEntity;
@@ -34,12 +37,12 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 public class AspectModelHelper {
    private final VersionedModel modelVersion;
 
-   public AspectModelHelper( VersionedModel modelVersion ) {
+   public AspectModelHelper( final VersionedModel modelVersion ) {
       this.modelVersion = modelVersion;
    }
 
    public VersionedModel getModelVersion() {
-      return this.modelVersion;
+      return modelVersion;
    }
 
    public static List<Property> sortPropertiesByPreferredName( final List<Property> properties, final Locale locale ) {
@@ -74,9 +77,9 @@ public class AspectModelHelper {
 
    public static Set<Constraint> getConstraints( final Property property ) {
       final Set<Constraint> constraints = new HashSet<>();
-      if ( property.getCharacteristic() instanceof Trait ) {
-         constraints.addAll( ((Trait) property.getCharacteristic()).getConstraints() );
-      }
+      property.getCharacteristic().filter( characteristic -> characteristic.is( Trait.class ) )
+            .map( characteristic -> characteristic.as( Trait.class ) )
+            .ifPresent( trait -> constraints.addAll( trait.getConstraints() ) );
       return constraints;
    }
 
@@ -91,12 +94,12 @@ public class AspectModelHelper {
    }
 
    public static String getNameFromURN( final String urn ) {
-      String[] parts = urn.split( "#" );
+      final String[] parts = urn.split( "#" );
       return parts.length == 2 ? parts[1] : urn;
    }
 
    public static Class<?> getClassForObject( final Object o ) {
-      Class<?>[] interfaces = o.getClass().getInterfaces();
+      final Class<?>[] interfaces = o.getClass().getInterfaces();
       if ( interfaces.length <= 0 ) {
          return Object.class;
       }
@@ -109,5 +112,28 @@ public class AspectModelHelper {
 
    public static int increment( final int number ) {
       return number + 1;
+   }
+
+   private static String namespaceAnchorPart( final IsDescribed modelElement ) {
+      return Optional.ofNullable( modelElement )
+            .flatMap( IsDescribed::getAspectModelUrn )
+            .map( urn -> urn.getNamespace().replace( ".", "-" ) ).orElse( "" );
+   }
+
+   public static String buildAnchor( final IsDescribed modelElement, final IsDescribed parentElement, final String suffix ) {
+      final String parentNamespaceAnchorPart = namespaceAnchorPart( parentElement );
+      final String parentPart = suffix.equals( "property" ) ? parentNamespaceAnchorPart + "-"
+            + Optional.ofNullable( parentElement ).map( IsDescribed::getName ).orElse( "" ) + "-" : "";
+
+      if ( ((Base) modelElement).is( Property.class ) ) {
+         final Property property = ((Base) modelElement).as( Property.class );
+         if ( property.getExtends().isPresent() ) {
+            // The Property actually extends another (possibly Abstract) Property, so it won't have an Aspect Model URN on its own.
+            // Use the parent element's namespace for the anchor.
+            return parentPart + parentNamespaceAnchorPart + "-" + property.getName() + "-" + suffix;
+         }
+      }
+
+      return parentPart + namespaceAnchorPart( modelElement ) + "-" + modelElement.getName() + "-" + suffix;
    }
 }

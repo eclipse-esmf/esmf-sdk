@@ -15,12 +15,10 @@
 @prefix prev: <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
 :Test a bamm:Aspect ;
-   bamm:name "Test" ;
    bamm:preferredName "Test 2.0"@en ;
    bamm:properties ( prev:distinctProperty ) ;
    bamm:operations ( ) .
 
 # Define the Property here too to make sure we can deal with the same name in multiple namespaces
 :distinctProperty a bamm:Property ;
-   bamm:name "distinctProperty" ;
    bamm:characteristic bamm-c:Text .

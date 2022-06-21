@@ -21,9 +21,9 @@ construct {
   ?edge :to ?to .
 } where {
   ?aspect a bamm:Aspect .
-  ?aspect bamm:name ?aspectName .
+  bind( strafter( str( ?aspect ), "#" ) as ?aspectName ) .
   ?operation a bamm:Operation .
-  ?operation bamm:name ?operationName .
+  bind( strafter( str( ?operation ), "#" ) as ?operationName ) .
   filter( exists { ?aspect bamm:operations/rdf:rest*/rdf:first ?operation } )
 
   bind( concat( ?aspectName, "Aspect" ) as ?aspectBoxName )

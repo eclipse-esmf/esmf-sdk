@@ -16,24 +16,19 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithMultipleCollectionsOfSimpleType a bamm:Aspect ;
-   bamm:name "AspectWithMultipleCollectionsOfSimpleType" ;
    bamm:properties ( :testListInt :testListString ) ;
    bamm:operations ( ) .
 
 :testListInt a bamm:Property ;
-   bamm:name "testListInt" ;
    bamm:exampleValue "35"^^xsd:int ;
    bamm:characteristic :IntegerList .
 
 :testListString a bamm:Property ;
-   bamm:name "testListString" ;
    bamm:exampleValue "test string" ;
    bamm:characteristic :StringList .
 
 :IntegerList a bamm-c:List ;
-   bamm:name "IntegerList" ;
    bamm:dataType xsd:int .
 
 :StringList a bamm-c:List ;
-   bamm:name "StringList" ;
    bamm:dataType xsd:string .

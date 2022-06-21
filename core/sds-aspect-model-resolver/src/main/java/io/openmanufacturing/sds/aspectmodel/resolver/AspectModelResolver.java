@@ -132,15 +132,12 @@ public class AspectModelResolver {
                   migratorService.getSdsMigratorFactory()
                                  .createAspectMetaModelResourceResolver()
                                  .mergeMetaModelIntoRawModel( model, oldest )
-                                 .orElse( migratorService.getMigratorFactory()
-                                                         .map( MigratorFactory::createAspectMetaModelResourceResolver )
-                                                         .map( Try::success )
-                                                         .orElseThrow()
-                                                         .flatMap( metaResolver -> metaResolver
-                                                               .mergeMetaModelIntoRawModel( model,
-                                                                     oldest ) ) )
-                                 .flatMap(
-                                       migratorService::updateMetaModelVersion ) ) );
+                                 .orElse( () -> migratorService.getMigratorFactory()
+                                                               .map( MigratorFactory::createAspectMetaModelResourceResolver )
+                                                               .map( Try::success )
+                                                               .orElseThrow()
+                                                               .flatMap( metaResolver -> metaResolver.mergeMetaModelIntoRawModel( model, oldest ) ) )
+                                 .flatMap( migratorService::updateMetaModelVersion ) ) );
    }
 
    /**

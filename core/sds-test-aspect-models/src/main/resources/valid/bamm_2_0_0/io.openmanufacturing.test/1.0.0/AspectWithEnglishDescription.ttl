@@ -15,14 +15,12 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithEnglishDescription a bamm:Aspect ;
-   bamm:name "AspectWithEnglishDescription" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "Test Aspect"@en ;
    bamm:properties ( :testString ) ;
    bamm:operations ( ) .
 
 :testString a bamm:Property ;
-   bamm:name "testString" ;
    bamm:preferredName "testString"@en ;
    bamm:description "testString"@en ;
    bamm:exampleValue "Example Value Test" ;

@@ -17,37 +17,29 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithComplexEntityCollectionEnum a bamm:Aspect ;
-   bamm:name "AspectWithComplexEntityCollectionEnum" ;
    bamm:properties ( :myPropertyOne ) ;
    bamm:operations ( ) .
 
 :myPropertyOne a bamm:Property ;
-   bamm:name "myPropertyOne" ;
    bamm:characteristic :MyEnumerationOne .
 
 :MyEnumerationOne a bamm-c:Enumeration ;
-   bamm:name "MyEnumerationOne" ;
    bamm:dataType :MyEntityOne ;
    bamm-c:values ( :entityInstanceOne ) .
 
 :MyEntityOne a bamm:Entity ;
-   bamm:name "MyEntityOne" ;
    bamm:properties ( :entityPropertyOne ) .
 
 :entityPropertyOne a bamm:Property ;
-   bamm:name "entityPropertyOne" ;
    bamm:characteristic :ListCharacteristic .
 
 :ListCharacteristic a bamm-c:List ;
-   bamm:name "ListCharacteristic" ;
    bamm:dataType :MyEntityTwo .
 
 :MyEntityTwo a bamm:Entity ;
-   bamm:name "MyEntityTwo" ;
    bamm:properties ( :entityPropertyTwo ) .
 
 :entityPropertyTwo a bamm:Property ;
-   bamm:name "entityPropertyTwo" ;
    bamm:characteristic bamm-c:Text .
 
 :entityInstanceOne a :MyEntityOne ;

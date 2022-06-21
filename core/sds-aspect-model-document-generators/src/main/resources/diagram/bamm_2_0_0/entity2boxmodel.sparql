@@ -20,6 +20,7 @@ construct {
   ?entityBox a :Box .
   ?entityBox :prototype "Entity" .
   ?entityBox :title ?entityName .
+  ?entityBox :modelElement ?entity .
   ?entityBox :entries (
      [
        a :Entry ;
@@ -39,9 +40,7 @@ construct {
   )
 } where {
   ?entity rdf:type bamm:Entity .
-  #exclude entities from our shared name-space
-  filter ( ! strstarts( str( ?entity ), str ( bamm-e: ) ) )
-  ?entity bamm:name ?entityName .
+  bind( strafter( str( ?entity ), "#" ) as ?entityName ) .
 
   bind( concat( ?entityName, "Entity" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?entityBox )
@@ -65,8 +64,6 @@ construct {
         select *
         where {
           ?entity rdf:type bamm:Entity .
-          #exclude entities from our shared name-space
-          filter ( ! strstarts( str( ?entity ), str ( bamm-e: ) ) )
           ?entity bamm:see ?seeValue .
         }
         order by str( ?seeValue )

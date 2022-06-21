@@ -40,9 +40,9 @@ public class EntityInstantiator extends Instantiator<Entity> {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( entity );
       final List<Property> properties = getPropertiesModels( entity, bamm.properties() );
 
-      final Optional<ComplexType> extendedEntity = optionalPropertyValue( entity, bamm._extends() )
+      final Optional<ComplexType> extendedEntity = optionalAttributeValue( entity, bamm._extends() )
             .map( Statement::getResource )
-            .map( extendedEntityResource -> propertyValue( extendedEntityResource, RDF.type ) )
+            .map( extendedEntityResource -> attributeValue( extendedEntityResource, RDF.type ) )
             .map( entityStatement -> {
                if ( bamm.AbstractEntity().equals( entityStatement.getObject().asResource() ) ) {
                   return modelElementFactory.create( AbstractEntity.class, entityStatement.getSubject() );

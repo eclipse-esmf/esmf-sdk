@@ -15,12 +15,10 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithPropertyWithAllBaseAttributes a bamm:Aspect ;
-   bamm:name "AspectWithPropertyWithAllBaseAttributes" ;
    bamm:properties ( :testBoolean ) ;
    bamm:operations ( ) .
 
 :testBoolean a bamm:Property ;
-   bamm:name "testBoolean" ;
    bamm:preferredName "Test Boolean"@en ;
    bamm:preferredName "Test Boolean"@de ;
    bamm:description "Test Description"@en ;
@@ -30,5 +28,4 @@
    bamm:see <http://example.com/me> .
 
 :BooleanTestCharacteristic a bamm:Characteristic ;
-   bamm:name "BooleanTestCharacteristic" ;
    bamm:dataType xsd:boolean .

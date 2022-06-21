@@ -25,7 +25,12 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,15 +43,10 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.LoggerFactory;
-
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
@@ -67,13 +67,12 @@ public class OpenApiTest extends MetaModelVersions {
    private final static Optional<String> testResourcePath = Optional.of( "my-test-aspect" );
    private final static Optional<String> testResourcePathWithParameter = Optional.of( "my-test-aspect/{test-Id}" );
    private final static Optional<String> testResourcePathWithInvalidParameter = Optional.of( "my-test-aspect/{test-\\Id}" );
-   private final static Optional<JsonNode> testInvalidParameter =
-         Optional.of( JsonNodeFactory.instance.objectNode().put( "unitId", "unitId" ) );
+   private final static Optional<JsonNode> testInvalidParameter = Optional.of( JsonNodeFactory.instance.objectNode().put( "unitId", "unitId" ) );
    private final AspectModelOpenApiGenerator apiJsonGenerator = new AspectModelOpenApiGenerator();
    private final Configuration config = Configuration.defaultConfiguration().addOptions( Option.SUPPRESS_EXCEPTIONS );
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class)
+   @EnumSource( value = TestAspect.class )
    public void testGeneration( final TestAspect testAspect ) {
       final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );
       final JsonNode json = apiJsonGenerator.applyForJson( aspect, false, testBaseUrl, testResourcePath,
@@ -155,7 +154,7 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openAPI.getPaths().keySet() ).contains( "/{tenant-id}/my-test-aspect/{test-Id}" );
       openAPI.getPaths().forEach( ( key, value ) -> {
          final List<String> params = value.getGet().getParameters().stream().map( Parameter::getName )
-                                          .collect( Collectors.toList() );
+               .collect( Collectors.toList() );
          assertThat( params ).contains( "tenant-id" );
          assertThat( params ).contains( "test-Id" );
       } );
@@ -176,7 +175,7 @@ public class OpenApiTest extends MetaModelVersions {
       logAppender.stop();
       assertThat( result.getMessages().size() ).isNotZero();
       final List<String> logResults = logAppender.list.stream().map( ILoggingEvent::getFormattedMessage )
-                                                      .collect( Collectors.toList() );
+            .collect( Collectors.toList() );
       assertThat( logResults ).contains( "The parameter name test-\\Id is not in the correct form. A valid form is described as: ^[a-zA-Z][a-zA-Z0-9-_]*" );
       assertThat( logResults ).contains( "There was an exception during the read of the root or the validation." );
    }
@@ -261,7 +260,7 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openAPI.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "200" ).get$ref() )
             .isEqualTo( "#/components/responses/AspectWithTimeSeries" );
       assertThat( openAPI.getComponents().getResponses().get( "AspectWithTimeSeries" ).getContent()
-                         .get( "application/json" ).getSchema().get$ref() ).isEqualTo( "#/components/schemas/PagingSchema" );
+            .get( "application/json" ).getSchema().get$ref() ).isEqualTo( "#/components/schemas/PagingSchema" );
    }
 
    @ParameterizedTest
@@ -306,9 +305,9 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openAPI.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "count" );
       assertThat( openAPI.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 3 ).getName() ).isEqualTo( "totalItemCount" );
       assertThat( openAPI.getPaths().values().stream().findFirst().get().getGet().getResponses()
-                         .get( "200" ).get$ref() ).isEqualTo( "#/components/responses/AspectWithCollection" );
+            .get( "200" ).get$ref() ).isEqualTo( "#/components/responses/AspectWithCollection" );
       assertThat( openAPI.getComponents().getResponses().get( "AspectWithCollection" ).getContent()
-                         .get( "application/json" ).getSchema().get$ref() ).isEqualTo( "#/components/schemas/PagingSchema" );
+            .get( "application/json" ).getSchema().get$ref() ).isEqualTo( "#/components/schemas/PagingSchema" );
    }
 
    @ParameterizedTest
@@ -321,9 +320,9 @@ public class OpenApiTest extends MetaModelVersions {
       final OpenAPI openAPI = result.getOpenAPI();
       assertThat( openAPI.getPaths().keySet() ).contains( "/{tenant-id}/aspect-with-collection" );
       assertThat( openAPI.getPaths().values().stream().findFirst().get().getGet().getResponses()
-                         .get( "200" ).get$ref() ).isEqualTo( "#/components/responses/AspectWithCollection" );
+            .get( "200" ).get$ref() ).isEqualTo( "#/components/responses/AspectWithCollection" );
       assertThat( openAPI.getComponents().getResponses().get( "AspectWithCollection" ).getContent()
-                         .get( "application/json" ).getSchema().get$ref() ).isEqualTo( "#/components/schemas/AspectWithCollection" );
+            .get( "application/json" ).getSchema().get$ref() ).isEqualTo( "#/components/schemas/AspectWithCollection" );
    }
 
    @ParameterizedTest
@@ -357,11 +356,11 @@ public class OpenApiTest extends MetaModelVersions {
       final OpenAPI openAPI = result.getOpenAPI();
       assertThat(
             ((ComposedSchema) openAPI.getComponents().getSchemas().get( "testOperation" )).getAllOf().get( 1 )
-                                                                                          .getProperties() )
+                  .getProperties() )
             .doesNotContainKey( "params" );
       assertThat(
             ((ComposedSchema) openAPI.getComponents().getSchemas().get( "testOperationTwo" )).getAllOf().get( 1 )
-                                                                                             .getProperties() )
+                  .getProperties() )
             .doesNotContainKey( "params" );
    }
 
@@ -391,15 +390,15 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openAPI.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
 
       assertThat( openAPI.getServers() ).hasSize( 1 );
-      assertThat( openAPI.getServers().get( 0 ).getUrl() ).isEqualTo( testBaseUrl + "/api/" + expectedApiVersion);
+      assertThat( openAPI.getServers().get( 0 ).getUrl() ).isEqualTo( testBaseUrl + "/api/" + expectedApiVersion );
 
       assertThat( openAPI.getPaths().keySet() ).noneMatch( path -> path.contains( "/query-api" ) );
       openAPI.getPaths().entrySet().stream().filter( item -> !item.getKey().contains( "/operations" ) )
-             .forEach( path -> {
-                assertThat( path.getKey() ).startsWith( "/{tenant-id}/" + testResourcePath.get() );
-                path.getValue().readOperations()
-                    .forEach( operation -> validateSuccessfulResponse( aspect.getName(), operation ) );
-             } );
+            .forEach( path -> {
+               assertThat( path.getKey() ).startsWith( "/{tenant-id}/" + testResourcePath.get() );
+               path.getValue().readOperations()
+                     .forEach( operation -> validateSuccessfulResponse( aspect.getName(), operation ) );
+            } );
 
       assertThat( openAPI.getComponents().getSchemas().keySet() ).contains( aspect.getName() );
       assertThat( openAPI.getComponents().getResponses().keySet() ).contains( aspect.getName() );

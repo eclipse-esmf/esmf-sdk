@@ -14,12 +14,10 @@
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 
 :AspectWithOperationWithMultipleSeeAttributes a bamm:Aspect ;
-   bamm:name "AspectWithOperationWithMultipleSeeAttributes" ;
    bamm:properties ( ) ;
    bamm:operations ( :testOperation ) .
 
 :testOperation a bamm:Operation ;
-   bamm:name "testOperation" ;
    bamm:preferredName "Test Operation"@en ;
    bamm:description "Test Operation"@en ;
    bamm:see <http://example.com/omp> ;
@@ -28,5 +26,4 @@
    bamm:output :output .
 
 :output a bamm:Property ;
-   bamm:name "output" ;
    bamm:characteristic bamm-c:Text .

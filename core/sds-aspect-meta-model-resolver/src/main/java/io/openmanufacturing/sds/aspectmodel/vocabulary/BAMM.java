@@ -58,10 +58,6 @@ public class BAMM implements Namespace {
       return property( "curie" );
    }
 
-   public Property name() {
-      return property( "name" );
-   }
-
    public Property description() {
       return property( "description" );
    }
@@ -76,6 +72,11 @@ public class BAMM implements Namespace {
    @SuppressWarnings( { "squid:S00100", "squid:S1845" } ) // Method name should match model element
    public Resource Property() {
       return resource( "Property" );
+   }
+
+   @SuppressWarnings( { "squid:S00100", "squid:S1845" } ) // Method name should match model element
+   public Resource AbstractProperty() {
+      return resource( "AbstractProperty" );
    }
 
    @SuppressWarnings( { "squid:S00100", "squid:S1845" } ) // Method name should match model element

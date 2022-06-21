@@ -18,19 +18,15 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithOptionalProperties a bamm:Aspect ;
-   bamm:name "AspectWithOptionalProperties" ;
    bamm:properties ( [ bamm:property :numberProperty; bamm:optional true ] :timestampProperty ) ;
    bamm:operations ( ) .
 
 :timestampProperty a bamm:Property ;
-   bamm:name "timestampProperty" ;
    bamm:characteristic bamm-c:Timestamp .
 
 :numberProperty a bamm:Property ;
-   bamm:name "numberProperty" ;
    bamm:characteristic [
      a bamm-c:Quantifiable ;
-     bamm:name "SomeLength" ;
      bamm:dataType xsd:unsignedLong ;
      bamm-c:unit unit:metre
    ] .

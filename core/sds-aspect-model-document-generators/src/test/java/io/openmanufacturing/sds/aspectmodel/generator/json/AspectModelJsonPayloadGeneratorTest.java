@@ -252,9 +252,6 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    public void testGenerateJsonForAspectWithEnumHavingNestedEntities( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES, metaModelVersion );
 
-      final BAMM bamm = new BAMM( metaModelVersion );
-      assertThat( generatedJson ).doesNotContain( bamm.name().toString() );
-
       final AspectWithEnumHavingNestedEntities aspectWithEnum = parseJson( generatedJson, AspectWithEnumHavingNestedEntities.class );
 
       assertThat( aspectWithEnum.getSimpleResult().getValue() ).isEqualTo( "Yes" );
@@ -307,7 +304,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final AspectWithMultipleEntitiesAndEither aspectWithCollectionOfSimpleType = parseJson( generatedJson, AspectWithMultipleEntitiesAndEither.class );
       assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEntityOne() );
       assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEntityTwo() );
-      assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEither().getLeft() );
+      assertTestEntityWithSimpleTypes( aspectWithCollectionOfSimpleType.getTestEitherProperty().getLeft() );
    }
 
    @ParameterizedTest
@@ -414,7 +411,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final AspectWithRangeConstraintWithoutMinMaxDoubleValue aspectWithRangeConstraintWithoutMinMaxDoubleValue =
             parseJson( generatedJson, AspectWithRangeConstraintWithoutMinMaxDoubleValue.class );
 
-      assertThat( aspectWithRangeConstraintWithoutMinMaxDoubleValue.getTestDouble() ).isNotNull();
+      assertThat( aspectWithRangeConstraintWithoutMinMaxDoubleValue.getDoubleProperty() ).isNotNull();
    }
 
    @ParameterizedTest
@@ -647,7 +644,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    private Property createProperty( final KnownVersion modelVersion, final String propertyName, final Characteristic characteristic, final BAMM bamm ) {
       final MetaModelBaseAttributes propertyAttributes =
             MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( bamm.Property().getURI() ), propertyName );
-      return new DefaultProperty( propertyAttributes, characteristic, Optional.empty(), false, false, Optional.empty() );
+      return new DefaultProperty( propertyAttributes, Optional.of( characteristic ), Optional.empty(), false, false, Optional.empty(), false,
+            Optional.empty() );
    }
 
    Trait createTraitWithRangeConstraint( final KnownVersion modelVersion, final Type dataType, final BoundDefinition boundKind,

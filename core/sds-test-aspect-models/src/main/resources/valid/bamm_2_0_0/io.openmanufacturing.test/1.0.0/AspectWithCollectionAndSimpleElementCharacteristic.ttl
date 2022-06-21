@@ -16,14 +16,11 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithCollectionAndSimpleElementCharacteristic a bamm:Aspect ;
-   bamm:name "AspectWithCollectionAndSimpleElementCharacteristic" ;
    bamm:properties ( :items ) ;
    bamm:operations ( ) .
 
 :items a bamm:Property ;
-   bamm:name "items" ;
    bamm:characteristic [
       a bamm-c:Collection ;
-      bamm:name "TestCollection" ;
       bamm-c:elementCharacteristic bamm-c:Text
    ] .

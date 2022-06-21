@@ -16,7 +16,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithAbstractEntity a bamm:Aspect ;
-   bamm:name "AspectWithAbstractEntity" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
    bamm:see <http://example.com/omp> ;
@@ -24,7 +23,6 @@
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
    bamm:see <http://example.com/omp> ;
@@ -32,35 +30,29 @@
    bamm:characteristic :EntityCharacteristic .
 
 :EntityCharacteristic a bamm-c:SingleEntity ;
-   bamm:name "EntityCharacteristic" ;
    bamm:preferredName "Test Entity Characteristic"@en ;
    bamm:description "This is a test Entity Characteristic"@en ;
    bamm:see <http://example.com/omp> ;
    bamm:dataType :ExtendingTestEntity .
 
 :ExtendingTestEntity a bamm:Entity ;
-   bamm:name "ExtendingTestEntity" ;
    bamm:extends :AbstractTestEntity ;
    bamm:preferredName "Test Entity"@en ;
    bamm:description "This is a test entity"@en ;
    bamm:properties ( :entityProperty ) .
 
 :entityProperty a bamm:Property ;
-   bamm:name "entityProperty" ;
    bamm:preferredName "Entity Property"@en ;
    bamm:description "This is a property for the test entity."@en ;
    bamm:characteristic bamm-c:Text .
 
 :AbstractTestEntity a bamm:AbstractEntity ;
-   bamm:name "AbstractTestEntity" ;
    bamm:preferredName "Abstract Test Entity"@en ;
    bamm:description "This is a abstract test entity"@en ;
    bamm:properties ( :abstractTestProperty ).
 
 :abstractTestProperty a bamm:Property ;
-   bamm:name "abstractTestProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "Integer" ;
       bamm:dataType xsd:integer
    ] .

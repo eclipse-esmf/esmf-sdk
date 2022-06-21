@@ -3,6 +3,7 @@ prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:bamm:io.openmanufacturing:function:2.0.0#>
 
 # Generates edges between Enumerations and Entity instances
 construct {
@@ -31,7 +32,7 @@ construct {
   ?instance rdf:type/rdfs:subClassOf* ?instanceClass
   filter( exists { ?instanceClass  rdf:type/rdfs:subClassOf* bamm:Entity} )
 
-  ?characteristic bamm:name ?characteristicName .
+  bind( func:getElementName( ?characteristic ) as ?characteristicName )
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
   bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
   ?characteristic bamm-c:values/rdf:rest*/rdf:first ?instance .

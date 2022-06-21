@@ -18,6 +18,7 @@ construct {
   ?aspectBox a :Box .
   ?aspectBox :prototype "Aspect" .
   ?aspectBox :title ?aspectName .
+  ?aspectBox :modelElement ?aspect .
   ?aspectBox :entries (
      [
        a :Entry ;
@@ -37,7 +38,7 @@ construct {
   )
 } where {
   ?aspect a bamm:Aspect .
-  ?aspect bamm:name ?aspectName .
+  bind( strafter( str( ?aspect ), "#" ) as ?aspectName ) .
 
   bind( concat( ?aspectName, "Aspect" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?aspectBox )

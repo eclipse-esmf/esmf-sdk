@@ -23,9 +23,9 @@ construct {
 } where {
   [] bamm-c:unit ?unit .
   ?unit bamm:referenceUnit?/bamm:quantityKind ?quantityKind .
-  ?unit bamm:name ?unitName .
+  bind( strafter( str( ?unit ), "#" ) as ?unitName ) .
   bind( concat( ucase( substr( ?unitName, 1, 1 ) ), substr( ?unitName, 2 ) ) as ?upperUnitName )
-  ?quantityKind bamm:name ?quantityKindGivenName .
+  bind( strafter( str( ?quantityKind ), "#" ) as ?quantityKindGivenName ) .
   bind( concat( ?quantityKindGivenName, "QuantityKind" ) as ?quantityKindName )
   bind( concat( ucase( substr( ?quantityKindName, 1, 1 ) ), substr( ?quantityKindName, 2 ) ) as ?upperQuantityKindName )
 

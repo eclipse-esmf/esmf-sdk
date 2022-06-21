@@ -15,7 +15,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :EntityWithOptionalAndNotInPayloadProperty a bamm:Entity ;
-   bamm:name "EntityWithOptionalAndNotInPayloadProperty" ;
    bamm:preferredName "Test Entity"@en ;
    bamm:description "This is a test entity."@en ;
    bamm:see <http://example.com/omp> ;
@@ -24,13 +23,10 @@
                      [ bamm:property :testPropertyThree ; bamm:notInPayload "true"^^xsd:boolean ] ) .
 
 :testPropertyOne a bamm:Property ;
-   bamm:name "testPropertyOne" ;
    bamm:characteristic bamm-c:Text .
 
 :testPropertyTwo a bamm:Property ;
-   bamm:name "testPropertyTwo" ;
    bamm:characteristic bamm-c:Text .
 
 :testPropertyThree a bamm:Property ;
-   bamm:name "testPropertyThree" ;
    bamm:characteristic bamm-c:Text .

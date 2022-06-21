@@ -14,13 +14,11 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
 :Test a bamm:Aspect ;
-   bamm:name "Test" ;
    bamm:preferredName "Test"@en ;
    bamm:properties ( ) ;
    bamm:operations ( ) .
 
 :foo a bamm:Property ;
-   bamm:name "foo" ;
    bamm:preferredName "Foo"@en ;
    bamm:description "This is a test property."@en ;
    bamm:characteristic bamm-c:Text .

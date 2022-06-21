@@ -14,6 +14,5 @@
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 
 :propertyWithExampleValue a bamm:Property ;
-   bamm:name "propertyWithExampleValue" ;
    bamm:exampleValue "foo" ;
    bamm:characteristic bamm-c:Text .

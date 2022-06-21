@@ -15,7 +15,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithEncodedStrings a bamm:Aspect ;
-   bamm:name "AspectWithEncodedStrings" ;
    bamm:preferredName "VGhpcyBpcyBhbiBBc3BlY3Qgd2l0aCBlbmNvZGVkIHRleHQu"@en ;
    bamm:description "Aspect With encoded text"@en ;
    bamm:properties ( ) ;

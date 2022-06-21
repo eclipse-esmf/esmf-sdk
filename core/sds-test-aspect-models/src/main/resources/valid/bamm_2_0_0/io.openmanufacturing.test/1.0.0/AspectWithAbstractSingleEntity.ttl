@@ -16,35 +16,27 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithAbstractSingleEntity a bamm:Aspect ;
-   bamm:name "AspectWithAbstractSingleEntity" ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :EntityCharacteristic .
 
 :EntityCharacteristic a bamm-c:SingleEntity ;
-   bamm:name "EntityCharacteristic" ;
-   bamm:dataType :AbstractTestEntity .
+   bamm:dataType :ExtendingTestEntity .
 
 :ExtendingTestEntity a bamm:Entity ;
-   bamm:name "ExtendingTestEntity" ;
    bamm:extends :AbstractTestEntity ;
    bamm:properties ( :entityProperty ) .
 
 :entityProperty a bamm:Property ;
-   bamm:name "entityProperty" ;
    bamm:characteristic bamm-c:Text .
 
 :AbstractTestEntity a bamm:AbstractEntity ;
-   bamm:name "AbstractTestEntity" ;
    bamm:properties ( :abstractTestProperty ).
 
 :abstractTestProperty a bamm:Property ;
-   bamm:name "abstractTestProperty" ;
    bamm:characteristic [
       a bamm:Characteristic ;
-      bamm:name "Integer" ;
       bamm:dataType xsd:integer
    ] .

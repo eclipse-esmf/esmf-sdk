@@ -13,6 +13,7 @@ prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>
 prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:bamm:io.openmanufacturing:function:2.0.0#>
 
 # Generates edges between Collections and Element Characteristics
 construct {
@@ -21,9 +22,9 @@ construct {
   ?edge :from ?from .
   ?edge :to ?to .
 } where {
-  ?characteristic bamm:name ?characteristicName .
   ?characteristic bamm-c:elementCharacteristic ?elementCharacteristic .
-  ?elementCharacteristic bamm:name ?elementCharacteristicName .
+  bind( func:getElementName( ?characteristic ) as ?characteristicName )
+  bind( func:getElementName( ?elementCharacteristic ) as ?elementCharacteristicName )
   bind( concat( ?characteristicName, "Characteristic" ) as ?box1Name )
   bind( iri( concat( str( : ), ?box1Name ) ) as ?from )
 

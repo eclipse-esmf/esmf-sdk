@@ -42,13 +42,18 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
     * Exclude the test models that contain unused elements; the resulting serialized models can
     * never be identical to the original because the unused elements are ignored when loading the
     * model and can therefore not be serialized.
+    * Furthermore, exclude the test model of an Aspect without bamm:properties and bamm:operations,
+    * since the serialization will always write "bamm:properties ()" (i.e., add the attribute with
+    * an empty list as value) for now, so here the serialization will differ from the source model
+    * as well.
     */
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC",
          "ASPECT_WITH_USED_AND_UNUSED_COLLECTION",
          "ASPECT_WITH_USED_AND_UNUSED_CONSTRAINT",
          "ASPECT_WITH_USED_AND_UNUSED_EITHER",
-         "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION"
+         "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION",
+         "ASPECT_WITHOUT_PROPERTIES_AND_OPERATIONS"
    } )
    public void testRdfModelCreatorVisitor( final TestAspect aspect ) {
       testRdfCreation( aspect, KnownVersion.getLatest() );

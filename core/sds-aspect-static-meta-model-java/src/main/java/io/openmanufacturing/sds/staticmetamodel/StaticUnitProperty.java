@@ -15,6 +15,7 @@ package io.openmanufacturing.sds.staticmetamodel;
 
 import java.util.Optional;
 
+import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Quantifiable;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Unit;
@@ -34,7 +35,9 @@ public abstract class StaticUnitProperty<T> extends StaticProperty<T> implements
          final Optional<ScalarValue> exampleValue,
          final boolean optional,
          final boolean notInPayload,
-         final Optional<String> payloadName ) {
-      super( metaModelBaseAttributes, characteristic, exampleValue, optional, notInPayload, payloadName );
+         final Optional<String> payloadName,
+         final boolean isAbstract,
+         final Optional<Property> extends_ ) {
+      super( metaModelBaseAttributes, characteristic, exampleValue, optional, notInPayload, payloadName, isAbstract, extends_ );
    }
 }

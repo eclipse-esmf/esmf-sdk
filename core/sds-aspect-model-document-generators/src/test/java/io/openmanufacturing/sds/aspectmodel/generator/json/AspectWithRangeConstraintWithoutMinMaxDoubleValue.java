@@ -23,21 +23,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class AspectWithRangeConstraintWithoutMinMaxDoubleValue {
 
-   private final Double testDouble;
+   private final Double doubleProperty;
 
    @JsonCreator
    public AspectWithRangeConstraintWithoutMinMaxDoubleValue(
-         @JsonProperty( value = "testDouble" ) final Double testDouble ) {
-      this.testDouble = testDouble;
+         @JsonProperty( value = "doubleProperty" ) final Double doubleProperty ) {
+      this.doubleProperty = doubleProperty;
    }
 
    /**
     * Returns Test Double Property
     *
-    * @return {@link #testDouble}
+    * @return {@link #doubleProperty}
     */
-   public Double getTestDouble() {
-      return testDouble;
+   public Double getDoubleProperty() {
+      return doubleProperty;
    }
 
    @Override
@@ -50,6 +50,6 @@ public class AspectWithRangeConstraintWithoutMinMaxDoubleValue {
       }
       final AspectWithRangeConstraintWithoutMinMaxDoubleValue that =
             (AspectWithRangeConstraintWithoutMinMaxDoubleValue) o;
-      return Objects.equals( testDouble, that.testDouble );
+      return Objects.equals( doubleProperty, that.doubleProperty );
    }
 }

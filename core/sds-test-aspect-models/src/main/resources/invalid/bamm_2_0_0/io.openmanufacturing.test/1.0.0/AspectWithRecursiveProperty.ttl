@@ -17,15 +17,11 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
 :AspectWithRecursiveProperty a bamm:Aspect;
-    bamm:name "AspectWithRecursiveProperty";
     bamm:properties ( :testProperty);
     bamm:operations ().
 :testProperty a bamm:Property;
-    bamm:name "testProperty";
     bamm:characteristic :testItemCharacteristic.
 :testItemCharacteristic a bamm-c:SingleEntity;
-    bamm:name "testItemCharacteristic";
     bamm:dataType :testEntity.
 :testEntity a bamm:Entity;
-    bamm:name "testEntity";
     bamm:properties (:testProperty).

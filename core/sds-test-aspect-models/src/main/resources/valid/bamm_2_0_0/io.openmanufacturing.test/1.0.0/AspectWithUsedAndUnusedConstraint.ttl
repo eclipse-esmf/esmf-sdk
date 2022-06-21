@@ -15,19 +15,15 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithUsedAndUnusedConstraint a bamm:Aspect ;
-   bamm:name "AspectWithUsedAndUnusedConstraint" ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :UsedTestTrait .
 
 :UsedTestTrait a bamm-c:Trait ;
-   bamm:name "UsedTestTrait" ;
    bamm-c:constraint [
       a bamm-c:LengthConstraint ;
-      bamm:name "UsedTestConstraint" ;
       bamm:preferredName "Used Test Constraint"@en ;
       bamm:description "Used Test Constraint"@en ;
       bamm:see <http://example.com/omp> ;
@@ -38,7 +34,6 @@
    bamm-c:baseCharacteristic bamm-c:Text .
 
 :UnusedTestConstraint a bamm-c:LengthConstraint ;
-   bamm:name "UnusedTestConstraint" ;
    bamm:preferredName "Unused Test Constraint"@en ;
    bamm:description "Unused Test Constraint"@en ;
    bamm:see <http://example.com/omp> ;

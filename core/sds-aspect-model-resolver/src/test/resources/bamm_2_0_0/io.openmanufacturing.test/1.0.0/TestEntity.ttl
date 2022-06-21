@@ -15,5 +15,4 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
 :TestEntity a bamm:Entity ;
-   bamm:name "TestEntity" ;
    bamm:properties ( ) .

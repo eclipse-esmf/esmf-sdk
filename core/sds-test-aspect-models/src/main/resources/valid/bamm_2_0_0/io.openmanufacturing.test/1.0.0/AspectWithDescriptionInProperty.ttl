@@ -15,12 +15,10 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithDescriptionInProperty a bamm:Aspect ;
-   bamm:name "AspectWithDescriptionInProperty" ;
    bamm:properties ( :enabled ) ;
    bamm:operations ( ) .
 
 :enabled a bamm:Property ;
-   bamm:name "enabled" ;
    bamm:preferredName "Enabled/Disabled"@en ;
    bamm:preferredName "Aktiviert/Deaktiviert"@de ;
    bamm:characteristic bamm-c:Boolean .

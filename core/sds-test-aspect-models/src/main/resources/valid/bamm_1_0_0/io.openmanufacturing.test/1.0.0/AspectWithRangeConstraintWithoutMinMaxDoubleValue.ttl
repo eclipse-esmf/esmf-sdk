@@ -22,7 +22,7 @@
    bamm:operations ( ) .
 
 :doubleProperty a bamm:Property ;
-   bamm:name "testDouble" ;
+   bamm:name "doubleProperty" ;
    bamm:preferredName "Test Double Property"@en ;
    bamm:preferredName "Numerischer Wert"@de ;
    bamm:description "A property with a numeric value."@en ;

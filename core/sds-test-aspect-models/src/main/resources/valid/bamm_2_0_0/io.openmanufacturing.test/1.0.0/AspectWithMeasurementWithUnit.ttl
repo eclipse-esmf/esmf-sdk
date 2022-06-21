@@ -17,15 +17,12 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithMeasurementWithUnit a bamm:Aspect ;
-   bamm:name "AspectWithMeasurementWithUnit" ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
    bamm:characteristic :TestMeasurement .
 
 :TestMeasurement a bamm-c:Measurement ;
-   bamm:name "TestMeasurement" ;
    bamm-c:unit unit:percent ;
    bamm:dataType xsd:float .

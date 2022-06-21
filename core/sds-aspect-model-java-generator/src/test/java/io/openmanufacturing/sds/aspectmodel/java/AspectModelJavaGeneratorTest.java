@@ -710,9 +710,9 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithDurationTypeForRangeConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "TestPropertyWithDayTimeDuration", Duration.class )
-            .put( "TestPropertyWithDuration", Duration.class )
-            .put( "TestPropertyWithYearMonthDuration", Duration.class )
+            .put( "testPropertyWithDayTimeDuration", Duration.class )
+            .put( "testPropertyWithDuration", Duration.class )
+            .put( "testPropertyWithYearMonthDuration", Duration.class )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_DURATION_TYPE_FOR_RANGE_CONSTRAINTS;
@@ -721,13 +721,13 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithDurationTypeForRangeConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
-                  .put( "TestPropertyWithDayTimeDuration", "@NotNull"
+                  .put( "testPropertyWithDayTimeDuration", "@NotNull"
                         + "@DurationMin(value = \"P1DT5H\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@DurationMax(value = \"P1DT8H\", boundDefinition = BoundDefinition.AT_MOST)" )
-                  .put( "TestPropertyWithDuration", "@NotNull"
+                  .put( "testPropertyWithDuration", "@NotNull"
                         + "@DurationMin(value = \"PT1H5M0S\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@DurationMax(value = \"PT1H5M3S\", boundDefinition = BoundDefinition.AT_MOST)" )
-                  .put( "TestPropertyWithYearMonthDuration", "@NotNull"
+                  .put( "testPropertyWithYearMonthDuration", "@NotNull"
                         + "@DurationMin(value = \"P5Y2M\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@DurationMax(value = \"P5Y3M\", boundDefinition = BoundDefinition.AT_MOST)" )
                   .build() );
@@ -739,8 +739,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithDateTimeTypeForRangeConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "TestPropertyWithDateTime", XMLGregorianCalendar.class )
-            .put( "TestPropertyWithDateTimeStamp", XMLGregorianCalendar.class )
+            .put( "testPropertyWithDateTime", XMLGregorianCalendar.class )
+            .put( "testPropertyWithDateTimeStamp", XMLGregorianCalendar.class )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_DATE_TIME_TYPE_FOR_RANGE_CONSTRAINTS;
@@ -749,10 +749,10 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithDateTimeTypeForRangeConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
-                  .put( "TestPropertyWithDateTime", "@NotNull"
+                  .put( "testPropertyWithDateTime", "@NotNull"
                         + "@GregorianCalendarMin(value = \"2000-01-01T14:23:00\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@GregorianCalendarMax(value = \"2000-01-02T15:23:00\", boundDefinition = BoundDefinition.AT_MOST)" )
-                  .put( "TestPropertyWithDateTimeStamp", "@NotNull"
+                  .put( "testPropertyWithDateTimeStamp", "@NotNull"
                         + "@GregorianCalendarMin(value = \"2000-01-01T14:23:00.66372+14:00\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@GregorianCalendarMax(value = \"2000-01-01T15:23:00.66372+14:00\", boundDefinition = BoundDefinition.AT_MOST)" )
                   .build() );
@@ -764,11 +764,11 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelWithGTypeForRangeConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "TestPropertyWithGYear", XMLGregorianCalendar.class )
-            .put( "TestPropertyWithGMonth", XMLGregorianCalendar.class )
-            .put( "TestPropertyWithGDay", XMLGregorianCalendar.class )
-            .put( "TestPropertyWithGYearMonth", XMLGregorianCalendar.class )
-            .put( "TestPropertyWithGMonthYear", XMLGregorianCalendar.class )
+            .put( "testPropertyWithGYear", XMLGregorianCalendar.class )
+            .put( "testPropertyWithGMonth", XMLGregorianCalendar.class )
+            .put( "testPropertyWithGDay", XMLGregorianCalendar.class )
+            .put( "testPropertyWithGYearMonth", XMLGregorianCalendar.class )
+            .put( "testPropertyWithGMonthYear", XMLGregorianCalendar.class )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS;
@@ -777,19 +777,19 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 1 );
       result.assertFields( "AspectWithGTypeForRangeConstraints", expectedFieldsForAspectClass,
             ImmutableMap.<String, String> builder()
-                  .put( "TestPropertyWithGYear", "@NotNull"
+                  .put( "testPropertyWithGYear", "@NotNull"
                         + "@GregorianCalendarMin(value = \"2000\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@GregorianCalendarMax(value = \"2001\", boundDefinition = BoundDefinition.AT_MOST)" )
-                  .put( "TestPropertyWithGMonth", "@NotNull"
+                  .put( "testPropertyWithGMonth", "@NotNull"
                         + "@GregorianCalendarMin(value = \"--04\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@GregorianCalendarMax(value = \"--05\", boundDefinition = BoundDefinition.AT_MOST)" )
-                  .put( "TestPropertyWithGDay", "@NotNull"
+                  .put( "testPropertyWithGDay", "@NotNull"
                         + "@GregorianCalendarMin(value = \"---04\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@GregorianCalendarMax(value = \"---05\", boundDefinition = BoundDefinition.AT_MOST)" )
-                  .put( "TestPropertyWithGYearMonth", "@NotNull"
+                  .put( "testPropertyWithGYearMonth", "@NotNull"
                         + "@GregorianCalendarMin(value = \"2000-01\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@GregorianCalendarMax(value = \"2000-02\", boundDefinition = BoundDefinition.AT_MOST)" )
-                  .put( "TestPropertyWithGMonthYear", "@NotNull"
+                  .put( "testPropertyWithGMonthYear", "@NotNull"
                         + "@GregorianCalendarMin(value = \"--01-01\", boundDefinition = BoundDefinition.AT_LEAST)"
                         + "@GregorianCalendarMax(value = \"--01-02\", boundDefinition = BoundDefinition.AT_MOST)" )
                   .build() );

@@ -21,7 +21,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -66,13 +68,13 @@ public class AspectModelJavaUtil {
    /**
     * Determines the type of a property and wraps it in an Optional if it has been marked as optional.
     *
-    * @param metaProperty the property meta model instance to determine the type for
+    * @param property the property instance to determine the type for
     * @param codeGenerationConfig the configuration for code generation
     * @return the final type of the property
     */
-   public static String getPropertyType( final Property metaProperty, final boolean inclValidation, final JavaCodeGenerationConfig codeGenerationConfig ) {
-      final String propertyType = determinePropertyType( metaProperty.getCharacteristic(), inclValidation, codeGenerationConfig );
-      if ( metaProperty.isOptional() ) {
+   public static String getPropertyType( final Property property, final boolean inclValidation, final JavaCodeGenerationConfig codeGenerationConfig ) {
+      final String propertyType = determinePropertyType( property.getCharacteristic(), inclValidation, codeGenerationConfig );
+      if ( property.isOptional() ) {
          return containerType( Optional.class, propertyType, Optional.empty() );
       }
       return propertyType;
@@ -81,13 +83,16 @@ public class AspectModelJavaUtil {
    /**
     * Resolves and tracks data type of the given meta model property.
     *
-    * @param metaProperty the meta model property to resolve the data type for
+    * @param property the property to resolve the data type for
     * @return the fully qualified class name (potentially including type parameters) of the resolved data type
     */
-   public static String getPropertyType( final Property metaProperty, final JavaCodeGenerationConfig codeGenerationConfig ) {
-      final String propertyType = determinePropertyType( metaProperty.getCharacteristic(), false, codeGenerationConfig );
+   public static String getPropertyType( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
+      if ( property.isAbstract() ) {
+         return "Object";
+      }
+      final String propertyType = determinePropertyType( property.getCharacteristic(), false, codeGenerationConfig );
       codeGenerationConfig.getImportTracker().trackPotentiallyParameterizedType( propertyType );
-      if ( metaProperty.isOptional() ) {
+      if ( property.isOptional() ) {
          return containerType( Optional.class, propertyType, Optional.empty() );
       }
       return propertyType;
@@ -97,11 +102,12 @@ public class AspectModelJavaUtil {
     * Determines whether the property has a container type, i.e. it will result in an Optional, Collection or
     * something similar.
     *
-    * @param metaProperty the property to check
+    * @param property the property to check
     * @return {@code true} if the property has a container type, {@code false} else
     */
-   public static boolean hasContainerType( final Property metaProperty ) {
-      return metaProperty.isOptional() || (metaProperty.getEffectiveCharacteristic().is( Collection.class ));
+   public static boolean hasContainerType( final Property property ) {
+      return property.isOptional()
+            || (property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ));
    }
 
    /**
@@ -121,38 +127,43 @@ public class AspectModelJavaUtil {
    /**
     * Determines the type of a property
     *
-    * @param characteristic the {@link Characteristic} which describes the data type for a property
+    * @param optionalCharacteristic the {@link Characteristic} which describes the data type for a property
     * @param inclValidation a boolean indicating whether the element validation annotations should be included for
     *       the Collection declarations
     * @return {@link String} containing the definition of the Java Data Type for the property
     */
-   public static String determinePropertyType( final Characteristic characteristic, final boolean inclValidation,
+   public static String determinePropertyType( final Optional<Characteristic> optionalCharacteristic, final boolean inclValidation,
          final JavaCodeGenerationConfig codeGenerationConfig ) {
-      final Optional<Type> dataType = characteristic.getDataType();
 
-      if ( characteristic instanceof Collection ) {
-         return determineCollectionType( (Collection) characteristic, inclValidation, codeGenerationConfig );
+      final Optional<Type> dataType = optionalCharacteristic.flatMap( Characteristic::getDataType );
+      final Characteristic characteristic = optionalCharacteristic.orElseThrow( () ->
+            new CodeGenerationException( "Can not determine type of missing Characteristic" ) );
+
+      if ( characteristic.is( Collection.class ) ) {
+         return determineCollectionType( characteristic.as( Collection.class ), inclValidation, codeGenerationConfig );
       }
 
-      if ( characteristic instanceof Enumeration ) {
+      if ( characteristic.is( Enumeration.class ) ) {
          return characteristic.getName();
       }
 
-      if ( characteristic instanceof Trait ) {
-         final Characteristic baseCharacteristic = ((Trait) characteristic).getBaseCharacteristic();
-         if ( baseCharacteristic instanceof Collection ) {
-            return determineCollectionType( (Collection) baseCharacteristic, inclValidation, codeGenerationConfig );
+      if ( characteristic.is( Trait.class ) ) {
+         final Characteristic baseCharacteristic = characteristic.as( Trait.class ).getBaseCharacteristic();
+         if ( baseCharacteristic.is( Collection.class ) ) {
+            return determineCollectionType( baseCharacteristic.as( Collection.class ), inclValidation, codeGenerationConfig );
          }
       }
 
-      if ( characteristic instanceof Either ) {
+      if ( characteristic.is( Either.class ) ) {
          if ( codeGenerationConfig.doEnableJacksonAnnotations() ) {
             codeGenerationConfig.getImportTracker().importExplicit( "io.openmanufacturing.sds.aspectmodel.jackson.Either" );
          } else {
             codeGenerationConfig.getImportTracker().importExplicit( io.openmanufacturing.sds.aspectmodel.java.types.Either.class );
          }
-         final String left = determinePropertyType( ((Either) characteristic).getLeft(), inclValidation, codeGenerationConfig );
-         final String right = determinePropertyType( ((Either) characteristic).getRight(), inclValidation, codeGenerationConfig );
+         final String left = determinePropertyType(
+               optionalCharacteristic.map( c -> c.as( Either.class ) ).map( Either::getLeft ), inclValidation, codeGenerationConfig );
+         final String right = determinePropertyType(
+               optionalCharacteristic.map( c -> c.as( Either.class ) ).map( Either::getRight ), inclValidation, codeGenerationConfig );
          return String.format( "Either<%s,%s>", left, right );
       }
 
@@ -160,28 +171,37 @@ public class AspectModelJavaUtil {
    }
 
    public static String determineCollectionAspectClassDefinition( final StructureElement element, final JavaCodeGenerationConfig codeGenerationConfig ) {
+      final Supplier<RuntimeException> error = () -> new CodeGenerationException(
+            "Tried to generate a Collection Aspect class definition, but no " + "Property has a Collection Characteristic in " + element.getName() );
       codeGenerationConfig.getImportTracker().importExplicit( CollectionAspect.class );
       for ( final Property property : element.getProperties() ) {
-         final Characteristic characteristic = property.getEffectiveCharacteristic();
+         final Characteristic characteristic = property.getEffectiveCharacteristic().orElseThrow( error );
          if ( characteristic instanceof Collection ) {
             final String collectionType = determineCollectionType( (Collection) characteristic, false, codeGenerationConfig );
             final String dataType = getDataType( characteristic.getDataType(), codeGenerationConfig.getImportTracker() );
             return String.format( "public class %s implements CollectionAspect<%s,%s>", element.getName(), collectionType, dataType );
          }
       }
-      throw new CodeGenerationException(
-            "Tried to generate a Collection Aspect class definition, but no " + "Property has a Collection Characteristic in " + element.getName() );
+      throw error.get();
    }
 
-   public static String determineComplexTypeClassDefinition( final ComplexType element ) {
+   public static String determineComplexTypeClassDefinition( final ComplexType element, final JavaCodeGenerationConfig codeGenerationConfig ) {
       final StringBuilder classDefinitionBuilder = new StringBuilder( "public " );
       if ( element.isAbstractEntity() ) {
          classDefinitionBuilder.append( "abstract " );
       }
       classDefinitionBuilder.append( "class " ).append( element.getName() );
+      classDefinitionBuilder.append( genericClassSignature( element ) );
       if ( element.getExtends().isPresent() ) {
          final ComplexType extendedComplexType = element.getExtends().get();
-         classDefinitionBuilder.append( " extends " ).append( extendedComplexType.getName() );
+         classDefinitionBuilder.append( " extends " );
+         classDefinitionBuilder.append( extendedComplexType.getName() );
+         final String generics = element.getProperties().stream()
+               .filter( property -> property.getExtends().isPresent() )
+               .map( property -> getPropertyType( property, false, codeGenerationConfig ) )
+               .collect( Collectors.joining( "," ) );
+         final String superTypeGenerics = generics.isEmpty() ? "" : "<" + generics + ">";
+         classDefinitionBuilder.append( superTypeGenerics );
       }
       classDefinitionBuilder.append( " {" );
       return classDefinitionBuilder.toString();
@@ -411,19 +431,20 @@ public class AspectModelJavaUtil {
    }
 
    public static String getCharacteristicJavaType( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
+      final Supplier<RuntimeException> error = () -> new CodeGenerationException( "No data type found for Property " + property.getName() );
       if ( hasContainerType( property ) ) {
-         return getDataType( property.getCharacteristic().getDataType(), codeGenerationConfig.getImportTracker() );
+         return getDataType( property.getCharacteristic().orElseThrow( error ).getDataType(), codeGenerationConfig.getImportTracker() );
       }
 
-      return property.getEffectiveCharacteristic().getDataType().map( type -> {
-         if ( type instanceof Scalar ) {
+      return property.getEffectiveCharacteristic().flatMap( Characteristic::getDataType ).map( type -> {
+         if ( type.is( Scalar.class ) ) {
             return determinePropertyType( property.getEffectiveCharacteristic(), false, codeGenerationConfig );
-         } else if ( type instanceof Entity ) {
-            return ((Entity) type).getName();
+         } else if ( type.is( Entity.class ) ) {
+            return type.as( Entity.class ).getName();
          } else {
             throw new CodeGenerationException( "Unknown Characteristic data type " + type );
          }
-      } ).orElseThrow( () -> new CodeGenerationException( "No data type found for Property " + property.getName() ) );
+      } ).orElseThrow( error );
    }
 
    public static String printStructuredValueElement( final Object object ) {
@@ -472,5 +493,70 @@ public class AspectModelJavaUtil {
             || typeUrn.equals( XSD.duration.getURI() )
             || typeUrn.equals( XSD.yearMonthDuration.getURI() )
             || typeUrn.equals( XSD.dayTimeDuration.getURI() );
+   }
+
+   public static String genericClassSignature( final StructureElement element ) {
+      final List<Property> properties = element.getProperties();
+      final String generics = IntStream.range( 0, properties.size() )
+            .filter( i -> properties.get( i ).isAbstract() )
+            .mapToObj( i -> "T" + i + " /* type of " + properties.get( i ).getName() + " */" )
+            .collect( Collectors.joining( "," ) );
+      return generics.isEmpty() ? "" : "<" + generics + ">";
+   }
+
+   /**
+    * Generates the comma-separated list of arguments in a constructor call
+    *
+    * @param allProperties the list of properties that are turned into arguments
+    * @param codeGenerationConfig the code generation context
+    * @param enableJacksonAnnotations overriding whether Jackson annotations should be generated or not. This is because in certain situations multiple
+    *                                 constructors are generated, only one of which is @JsonCreator and uses @JsonProperty on the arguments
+    * @return the constructor argument string
+    */
+   public static String constructorArguments( final List<Property> allProperties, final JavaCodeGenerationConfig codeGenerationConfig,
+         final boolean enableJacksonAnnotations ) {
+      return allProperties.stream()
+            .filter( property -> !property.isAbstract() )
+            .map( property -> {
+               String declaration = "";
+               if ( enableJacksonAnnotations ) {
+                  declaration += "@JsonProperty( value = \"" + property.getPayloadName() + "\" ) ";
+               }
+               declaration += getPropertyType( property, false, codeGenerationConfig ) + " " + property.getPayloadName();
+               return declaration;
+            } )
+            .collect( Collectors.joining( ", " ) );
+   }
+
+   public static String objectEqualsExpression( final StructureElement element ) {
+      return element.getProperties().stream()
+            .filter( property -> !property.isAbstract() )
+            .map( property -> "Objects.equals(" + property.getPayloadName() + ", that." + property.getPayloadName() + ")" )
+            .collect( Collectors.joining( " && " ) );
+   }
+
+   public static String objectsHashCodeExpression( final StructureElement element ) {
+      return element.getProperties().stream()
+            .filter( property -> !property.isAbstract() )
+            .map( Property::getPayloadName )
+            .collect( Collectors.joining( ", " ) );
+   }
+
+   /**
+    * Returns the string that is put between super( ... )
+    */
+   public static String superConstructorCallExpression( final List<Property> allProperties, final List<Property> elementProperties ) {
+      return allProperties.stream()
+            .filter( property -> !elementProperties.contains( property ) )
+            .filter( property -> property.getExtends().isEmpty() && !property.isAbstract() )
+            .map( Property::getPayloadName )
+            .collect( Collectors.joining( ", " ) );
+   }
+
+   public static String staticPropertiesExpression( final StructureElement element ) {
+      return element.getProperties().stream()
+            .filter( property -> !property.isAbstract() )
+            .map( property -> toConstant( property.getName() ) )
+            .collect( Collectors.joining( ", " ) );
    }
 }

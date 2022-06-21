@@ -16,32 +16,25 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :AspectWithExclusiveRangeConstraint a bamm:Aspect ;
-   bamm:name "AspectWithExclusiveRangeConstraint" ;
    bamm:properties ( :floatProp :doubleProp :decimalProp :integerProp :intProp ) ;
    bamm:operations ( ) .
 
 :floatProp a bamm:Property ;
-   bamm:name "floatProp" ;
    bamm:characteristic :FloatRange .
 
 :doubleProp a bamm:Property ;
-   bamm:name "doubleProp" ;
    bamm:characteristic :DoubleRange .
 
 :decimalProp a bamm:Property ;
-   bamm:name "decimalProp" ;
    bamm:characteristic :DecimalRange .
 
 :integerProp a bamm:Property ;
-   bamm:name "integerProp" ;
    bamm:characteristic :IntegerRange .
 
 :intProp a bamm:Property ;
-   bamm:name "intProp" ;
    bamm:characteristic :IntRange .
 
 :FloatRange a bamm-c:Trait;
-   bamm:name "FloatRange" ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "12.3"^^xsd:float ;
@@ -51,12 +44,10 @@
    ] ;
    bamm-c:baseCharacteristic [
       a bamm:Characteristic ;
-      bamm:name "Float" ;
       bamm:dataType xsd:float
    ] .
 
 :DoubleRange a bamm-c:Trait ;
-   bamm:name "DoubleRange" ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "12.3"^^xsd:double ;
@@ -66,12 +57,10 @@
    ] ;
    bamm-c:baseCharacteristic [
       a bamm:Characteristic ;
-      bamm:name "Double" ;
       bamm:dataType xsd:double
    ] .
 
 :DecimalRange a bamm-c:Trait ;
-   bamm:name "DecimalRange" ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "12.3"^^xsd:decimal ;
@@ -81,12 +70,10 @@
    ] ;
    bamm-c:baseCharacteristic [
       a bamm:Characteristic ;
-      bamm:name "Decimal" ;
       bamm:dataType xsd:decimal
    ] .
 
 :IntegerRange a bamm-c:Trait ;
-   bamm:name "IntegerRange" ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "12"^^xsd:integer ;
@@ -96,12 +83,10 @@
    ] ;
    bamm-c:baseCharacteristic [
       a bamm:Characteristic ;
-      bamm:name "Integer" ;
       bamm:dataType xsd:integer
    ] .
 
 :IntRange a bamm-c:Trait ;
-   bamm:name "IntRange" ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
       bamm-c:minValue "12"^^xsd:int ;
@@ -111,6 +96,5 @@
    ] ;
    bamm-c:baseCharacteristic [
       a bamm:Characteristic ;
-      bamm:name "Int" ;
       bamm:dataType xsd:int
    ] .

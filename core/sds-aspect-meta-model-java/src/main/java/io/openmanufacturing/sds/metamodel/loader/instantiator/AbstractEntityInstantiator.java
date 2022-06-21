@@ -68,9 +68,9 @@ public class AbstractEntityInstantiator extends Instantiator<AbstractEntity> {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( abstractEntity );
       final List<Property> properties = getPropertiesModels( abstractEntity, bamm.properties() );
 
-      final Optional<ComplexType> extendedEntity = optionalPropertyValue( abstractEntity, bamm._extends() )
+      final Optional<ComplexType> extendedEntity = optionalAttributeValue( abstractEntity, bamm._extends() )
             .map( Statement::getResource )
-            .map( extendedEntityResource -> propertyValue( extendedEntityResource, RDF.type ) )
+            .map( extendedEntityResource -> attributeValue( extendedEntityResource, RDF.type ) )
             .map( entityStatement -> {
                if ( bamm.AbstractEntity().equals( entityStatement.getObject().asResource() ) ) {
                   return modelElementFactory.create( AbstractEntity.class, entityStatement.getSubject() );
@@ -80,7 +80,7 @@ public class AbstractEntityInstantiator extends Instantiator<AbstractEntity> {
 
       final List<AspectModelUrn> extendingComplexTypes = model
             .listSubjectsWithProperty( bamm._extends(), abstractEntity )
-            .mapWith( extendingComplexType -> propertyValue( extendingComplexType, RDF.type ) )
+            .mapWith( extendingComplexType -> attributeValue( extendingComplexType, RDF.type ) )
             .mapWith( statement -> {
                if ( processedExtendingElements.contains( statement.getSubject() ) ) {
                   return AspectModelUrn.fromUrn( statement.getSubject().getURI() );

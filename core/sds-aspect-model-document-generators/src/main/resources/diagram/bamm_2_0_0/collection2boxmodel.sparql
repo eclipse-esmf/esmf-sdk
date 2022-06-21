@@ -16,12 +16,14 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:bamm:io.openmanufacturing:function:2.0.0#>
 
 # Generates boxes for Collection Characteristics
 construct {
   ?characteristicBox a :Box .
   ?characteristicBox :prototype "Characteristic + Collection" .
   ?characteristicBox :title ?characteristicName .
+  ?characteristicBox :modelElement ?characteristic .
   ?characteristicBox :entries (
      [
        a :Entry ;
@@ -65,7 +67,7 @@ construct {
     ?aspect (<>|!<>)* ?characteristic .
   } )
 
-  ?characteristic bamm:name ?characteristicName .
+  bind( func:getElementName( ?characteristic ) as ?characteristicName )
   bind( concat( ?characteristicName, "Characteristic" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?characteristicBox )
 
@@ -114,7 +116,7 @@ construct {
         # top level collection class are relevant. E.g. for the SortedSet the attributes from the SortedSet need
         # to be returned and not the attributes from the Collection which is the SortedSet's super class
         filter( not exists { ?collection1 rdfs:subClassOf ?collection2 } )
-        ?char bamm:name ?name .
+        bind( func:getElementName( ?char ) as ?name )
       }
 
       union
@@ -125,7 +127,7 @@ construct {
         bind( str( ?booleanOrdered ) as ?ordered )
         ?char rdf:type/mmm:allowDuplicates ?booleanAllowDuplicates .
         bind( str( ?booleanAllowDuplicates ) as ?allowDuplicates )
-        ?char bamm:name ?name .
+        bind( func:getElementName( ?char ) as ?name )
       }
     }
   }

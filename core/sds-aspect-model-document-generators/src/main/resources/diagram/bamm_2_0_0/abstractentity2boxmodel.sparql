@@ -10,7 +10,6 @@
 # SPDX-License-Identifier: MPL-2.0
 
 prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>
-prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
@@ -20,6 +19,7 @@ construct {
   ?abstractEntityBox a :Box .
   ?abstractEntityBox :prototype "Abstract Entity" .
   ?abstractEntityBox :title ?abstractEntityName .
+  ?abstractEntityBox :modelElement ?abstractEntity .
   ?abstractEntityBox :entries (
      [
        a :Entry ;
@@ -39,9 +39,7 @@ construct {
   )
 } where {
   ?abstractEntity rdf:type bamm:AbstractEntity .
-  #exclude abstract entities from our shared name-space
-  filter ( ! strstarts( str( ?abstractEntity ), str ( bamm-e: ) ) )
-  ?abstractEntity bamm:name ?abstractEntityName .
+  bind( strafter( str( ?abstractEntity ), "#" ) as ?abstractEntityName )
 
   bind( concat( ?abstractEntityName, "AbstractEntity" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?abstractEntityBox )
@@ -65,8 +63,6 @@ construct {
         select *
         where {
           ?abstractEntity rdf:type bamm:AbstractEntity .
-          #exclude abstract entities from our shared name-space
-          filter ( ! strstarts( str( ?abstractEntity ), str ( bamm-e: ) ) )
           ?abstractEntity bamm:see ?seeValue .
         }
         order by str( ?seeValue )

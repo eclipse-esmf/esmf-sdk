@@ -36,7 +36,7 @@ construct {
   } )
 
   ?entity bamm:properties/rdf:rest*/rdf:first*/bamm:property* ?property .
-  ?property bamm:name ?propertyName .
+  bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
   ?property bamm:characteristic/bamm-c:baseCharacteristc*/bamm:dataType ?dataType .
   filter ( exists { ?dataType rdf:type/rdfs:subclassOf* bamm:Entity } ) .
 

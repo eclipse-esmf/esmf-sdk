@@ -14,6 +14,7 @@ prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:bamm:io.openmanufacturing:function:2.0.0#>
 
 # Generates edges between Quantifiables and Units (unit)
 construct {
@@ -25,7 +26,7 @@ construct {
   ?quantifiable bamm-c:unit ?unit .
   ?property rdf:type bamm:Property .
   filter( exists { ?property bamm:characteristic/( bamm-c:baseCharacteristic* | rdfs:subClassOf* ) ?quantifiable } )
-  ?quantifiable bamm:name ?quantifiableName .
+  bind( func:getElementName( ?quantifiable ) as ?quantifiableName )
   bind( replace( str( ?unit ), "[^#]*#(.*)", "$1") as ?unitName )
   bind( concat( ucase( substr( ?unitName, 1, 1 ) ), substr( ?unitName, 2 ) ) as ?upperUnitName )
 

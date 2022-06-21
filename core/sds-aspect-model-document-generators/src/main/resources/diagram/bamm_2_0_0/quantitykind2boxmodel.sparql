@@ -20,10 +20,11 @@ construct {
   ?quantityKindBox a :Box .
   ?quantityKindBox :prototype "QuantityKind" .
   ?quantityKindBox :title ?upperQuantityKindName .
+  ?quantityKindBox :modelElement ?quantityKind .
   ?quantityKindBox :entries ()
 } where {
   [] bamm-c:unit/bamm:referenceUnit?/bamm:quantityKind ?quantityKind .
-  ?quantityKind bamm:name ?quantityKindName .
+  bind( strafter( str( ?quantityKind ), "#" ) as ?quantityKindName ) .
   bind( concat( ucase( substr( ?quantityKindName, 1, 1 ) ), substr( ?quantityKindName, 2 ) ) as ?upperQuantityKindName )
   bind( concat( replace( ?upperQuantityKindName, "-", "" ), "QuantityKind" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?quantityKindBox )

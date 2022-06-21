@@ -17,18 +17,15 @@
 
 :AspectWithDateTimeTypeForRangeConstraints
     a               bamm:Aspect ;
-    bamm:name       "AspectWithDateTimeTypeForRangeConstraints" ;
     bamm:properties ( :testPropertyWithDateTime :testPropertyWithDateTimeStamp ) ;
     bamm:operations ( ) .
 
 :testPropertyWithDateTime
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithDateTime" ;
     bamm:characteristic :testWithGregorianCalenderMinGregorianCalenderMaxDateTime .
 
 :testWithGregorianCalenderMinGregorianCalenderMaxDateTime
     a                       bamm-c:Trait ;
-    bamm:name               "TestWithGregorianCalenderMinGregorianCalenderMaxDateTime" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [
@@ -42,18 +39,15 @@
 
 :MeasurementDateTime
     a             bamm-c:Measurement ;
-    bamm:name     "Measurement" ;
     bamm:dataType xsd:dateTime ;
     bamm-c:unit   unit:secondUnitOfTime .
 
 :testPropertyWithDateTimeStamp
     a                   bamm:Property ;
-    bamm:name           "TestPropertyWithDateTimeStamp" ;
     bamm:characteristic :testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp .
 
 :testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp
     a                       bamm-c:Trait;
-    bamm:name               "TestWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp" ;
     bamm:preferredName      "Test Range"@en ;
     bamm:description        "Test Range"@en ;
     bamm-c:constraint [
@@ -67,6 +61,5 @@
 
 :MeasurementDateTimeStamp
     a             bamm-c:Measurement ;
-    bamm:name     "Measurement" ;
     bamm:dataType xsd:dateTimeStamp ;
     bamm-c:unit   unit:secondUnitOfTime .

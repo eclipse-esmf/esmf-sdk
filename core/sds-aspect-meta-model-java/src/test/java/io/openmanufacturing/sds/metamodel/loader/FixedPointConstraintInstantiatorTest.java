@@ -31,7 +31,7 @@ public class FixedPointConstraintInstantiatorTest extends MetaModelInstantiatorT
    @MethodSource( value = "allVersions" )
    public void testFixedPointConstraintInstantiationExpectSuccess( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_FIXED_POINT, metaModelVersion );
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final FixedPointConstraint fixedPointConstraint = (FixedPointConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( fixedPointConstraint,
