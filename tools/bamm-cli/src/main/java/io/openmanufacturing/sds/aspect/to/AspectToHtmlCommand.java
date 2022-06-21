@@ -23,7 +23,7 @@ import org.apache.commons.io.FileUtils;
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
-import io.openmanufacturing.sds.exeption.CommandException;
+import io.openmanufacturing.sds.exception.CommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToHtmlCommand.COMMAND_NAME,

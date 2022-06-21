@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
-import io.openmanufacturing.sds.exeption.CommandException;
+import io.openmanufacturing.sds.exception.CommandException;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import picocli.CommandLine;
