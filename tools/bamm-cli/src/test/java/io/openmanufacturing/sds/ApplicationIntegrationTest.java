@@ -40,7 +40,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
-import io.openmanufacturing.sds.exeption.CommandException;
+import io.openmanufacturing.sds.exception.CommandException;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import picocli.CommandLine;
