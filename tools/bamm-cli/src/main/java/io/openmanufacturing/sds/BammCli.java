@@ -36,24 +36,32 @@ public class BammCli extends AbstractCommand {
 
    public static final String COMMAND_NAME = "bamm";
 
-   private final CommandLine commandLine = new CommandLine( this );
+   private final CommandLine commandLine = new CommandLine( this )
+         .addSubcommand( new AspectCommand() )
+         .setCaseInsensitiveEnumValuesAllowed( true );
 
    @CommandLine.Option( names = { "--version" }, description = "Show current version" )
    private boolean version;
 
-   public void run( final String... argv ) throws Exception {
-      main( argv );
+   int run( final String... argv ) {
+      return commandLine.execute( argv );
    }
 
-   public static void main( final String[] argv ) throws Exception {
+   int runWithExceptionHandler( final CommandLine.IExecutionExceptionHandler exceptionHandler, final String... argv ) {
+      final CommandLine.IExecutionExceptionHandler oldHandler = commandLine.getExecutionExceptionHandler();
+      try {
+         commandLine.setExecutionExceptionHandler( exceptionHandler );
+         return commandLine.execute( argv );
+      } finally {
+         commandLine.setExecutionExceptionHandler( oldHandler );
+      }
+   }
+
+   public static void main( final String[] argv ) {
       AnsiConsole.systemInstall();
 
       final BammCli command = new BammCli();
-      final CommandLine commandLine = command.commandLine
-            .addSubcommand( new AspectCommand() )
-            .setCaseInsensitiveEnumValuesAllowed( true );
-
-      final int exitCode = commandLine.execute( argv );
+      final int exitCode = command.commandLine.execute( argv );
       AnsiConsole.systemUninstall();
       System.exit( exitCode );
    }
