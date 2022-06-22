@@ -21,6 +21,7 @@ construct {
   ?unitBox a :Box .
   ?unitBox :prototype "Unit" .
   ?unitBox :title ?upperUnitName .
+  ?unitBox :modelElement ?unit .
   ?unitBox :entries (
      [
        a :Entry ;

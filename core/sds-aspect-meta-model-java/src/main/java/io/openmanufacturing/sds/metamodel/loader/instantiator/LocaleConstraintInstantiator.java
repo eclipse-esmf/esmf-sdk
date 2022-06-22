@@ -32,7 +32,7 @@ public class LocaleConstraintInstantiator extends Instantiator<LocaleConstraint>
    @Override
    public LocaleConstraint apply( final Resource localeConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( localeConstraint );
-      final String localeCode = propertyValue( localeConstraint, bammc.localeCode() ).getString();
+      final String localeCode = attributeValue( localeConstraint, bammc.localeCode() ).getString();
       return new DefaultLocaleConstraint( metaModelBaseAttributes, Locale.forLanguageTag( localeCode ) );
    }
 }

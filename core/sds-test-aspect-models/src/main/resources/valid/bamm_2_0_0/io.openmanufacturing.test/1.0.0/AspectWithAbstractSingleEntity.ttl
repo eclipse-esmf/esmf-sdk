@@ -23,7 +23,7 @@
    bamm:characteristic :EntityCharacteristic .
 
 :EntityCharacteristic a bamm-c:SingleEntity ;
-   bamm:dataType :AbstractTestEntity .
+   bamm:dataType :ExtendingTestEntity .
 
 :ExtendingTestEntity a bamm:Entity ;
    bamm:extends :AbstractTestEntity ;

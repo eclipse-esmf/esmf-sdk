@@ -18,6 +18,7 @@ construct {
   ?aspectBox a :Box .
   ?aspectBox :prototype "Aspect" .
   ?aspectBox :title ?aspectName .
+  ?aspectBox :modelElement ?aspect .
   ?aspectBox :entries (
      [
        a :Entry ;

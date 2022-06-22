@@ -43,9 +43,7 @@ import io.openmanufacturing.sds.test.TestModel;
 
 public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_TIME_SERIES" // This feature branch does not support bamm:AbstractProperty. When support for this is added, remove this
-   } )
+   @EnumSource( value = TestAspect.class )
    public void testLoadAspectExpectSuccess( final TestAspect aspect ) {
       assertThatCode( () ->
             loadAspect( aspect, KnownVersion.getLatest() )
@@ -76,7 +74,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
             "This is a test property.", "http://example.com/me", "http://example.com/omp" );
       assertThat( property.getExampleValue() ).map( value -> value.as( ScalarValue.class ).getValue() ).contains( "Example Value" );
       assertThat( property.isOptional() ).isFalse();
-      assertThat( property.getCharacteristic().getName() ).isEqualTo( "Text" );
+      assertThat( property.getCharacteristic().get().getName() ).isEqualTo( "Text" );
       assertThat( property.getDataType() ).isInstanceOf( Optional.class );
       assertThat( property.getDataType().get() ).isInstanceOf( Scalar.class );
    }
@@ -98,7 +96,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       assertThat( property.isOptional() ).isTrue();
       assertThat( property.getPayloadName() ).isEqualTo( "testProperty" );
       assertThat( property.isNotInPayload() ).isFalse();
-      assertThat( property.getCharacteristic().getName() ).isEqualTo( "Text" );
+      assertThat( property.getCharacteristic().get().getName() ).isEqualTo( "Text" );
    }
 
    @ParameterizedTest
@@ -117,7 +115,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       assertThat( property.getExampleValue() ).isEmpty();
       assertThat( property.isOptional() ).isFalse();
       assertThat( property.isNotInPayload() ).isTrue();
-      assertThat( property.getCharacteristic().getName() ).isEqualTo( "Text" );
+      assertThat( property.getCharacteristic().get().getName() ).isEqualTo( "Text" );
    }
 
    @ParameterizedTest
@@ -137,7 +135,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       assertThat( property.isOptional() ).isFalse();
       assertThat( property.getPayloadName() ).isEqualTo( "test" );
       assertThat( property.isNotInPayload() ).isFalse();
-      assertThat( property.getCharacteristic().getName() ).isEqualTo( "Text" );
+      assertThat( property.getCharacteristic().get().getName() ).isEqualTo( "Text" );
    }
 
    @ParameterizedTest
@@ -148,7 +146,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Either either = (Either) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Either either = (Either) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( either, expectedAspectModelUrn, "TestEither",
             "Test Either", "This is a test Either.", "http://example.com/omp" );
@@ -166,7 +164,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final SingleEntity singleEntity = (SingleEntity) aspect.getProperties().get( 0 ).getCharacteristic();
+      final SingleEntity singleEntity = (SingleEntity) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( singleEntity, expectedAspectModelUrn, "EntityCharacteristic",
             "Test Entity Characteristic", "This is a test Entity Characteristic", "http://example.com/omp" );
@@ -182,7 +180,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Entity entity = (Entity) aspect.getProperties().get( 0 ).getCharacteristic().getDataType().get();
+      final Entity entity = (Entity) aspect.getProperties().get( 0 ).getCharacteristic().get().getDataType().get();
       final AbstractEntity abstractEntity = (AbstractEntity) entity.getExtends().get();
       assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity",
             "Abstract Test Entity", "This is a abstract test entity" );
@@ -199,7 +197,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final AbstractEntity abstractEntity = (AbstractEntity) aspect.getProperties().get( 0 ).getCharacteristic().getDataType().get();
+      final AbstractEntity abstractEntity = (AbstractEntity) aspect.getProperties().get( 0 ).getCharacteristic().get().getDataType().get();
       assertThat( abstractEntity.getExtends() ).isEmpty();
       assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity", "AbstractTestEntity", null );
       final List<ComplexType> extendingElements = abstractEntity.getExtendingElements();
@@ -214,7 +212,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Code code = (Code) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Code code = (Code) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( code, expectedAspectModelUrn, "TestCode",
             "Test Code", "This is a test code.", "http://example.com/omp" );
@@ -272,8 +270,8 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL, metaModelVersion );
       assertThat( aspect.getProperties().size() ).isEqualTo( 1 );
       final Property firstProperty = aspect.getProperties().get( 0 );
-      final Property secondProperty = ((DefaultEntity) firstProperty.getCharacteristic().getDataType().get()).getProperties().get( 0 );
-      final Property thirdProperty = ((DefaultEntity) secondProperty.getCharacteristic().getDataType().get()).getProperties().get( 0 );
+      final Property secondProperty = ((DefaultEntity) firstProperty.getCharacteristic().get().getDataType().get()).getProperties().get( 0 );
+      final Property thirdProperty = ((DefaultEntity) secondProperty.getCharacteristic().get().getDataType().get()).getProperties().get( 0 );
       assertThat( firstProperty ).isNotEqualTo( secondProperty );
       assertThat( secondProperty ).isEqualTo( thirdProperty );
       assertThat( firstProperty.getCharacteristic() ).isEqualTo( secondProperty.getCharacteristic() );

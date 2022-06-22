@@ -60,9 +60,9 @@ public class LanguageCollectorModelVisitor implements AspectVisitor<Set<Locale>,
    @Override
    public Set<Locale> visitProperty( final Property property, final Set<Locale> context ) {
       return Stream.of(
-                  visitIsDescribed( property, context ),
-                  property.getCharacteristic().accept( this, Collections.emptySet() ) )
-            .reduce( context, Sets::union );
+                  Stream.of( visitIsDescribed( property, context ) ),
+                  property.getCharacteristic().stream().map( characteristic -> characteristic.accept( this, Collections.emptySet() ) ) )
+            .reduce( Stream.empty(), Stream::concat ).reduce( context, Sets::union );
    }
 
    @Override

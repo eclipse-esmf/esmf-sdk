@@ -36,7 +36,7 @@ public class DurationInstantiator extends Instantiator<Duration> {
    public Duration apply( final Resource duration ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( duration );
       final Type type = getType( duration );
-      final Optional<Unit> unit = optionalPropertyValue( duration, bammc.unit() )
+      final Optional<Unit> unit = optionalAttributeValue( duration, bammc.unit() )
             .map( Statement::getResource )
             .flatMap( this::findOrCreateUnit );
       return new DefaultDuration( metaModelBaseAttributes, type, unit );

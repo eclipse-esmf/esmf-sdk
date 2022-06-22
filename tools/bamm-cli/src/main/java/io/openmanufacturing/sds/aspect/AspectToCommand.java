@@ -23,7 +23,7 @@ import io.openmanufacturing.sds.aspect.to.AspectToJsonSchemaCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToOpenapiCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToPngCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToSvgCommand;
-import io.openmanufacturing.sds.exeption.SubCommandException;
+import io.openmanufacturing.sds.exception.SubCommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToCommand.COMMAND_NAME, description = "Transforms an Aspect Model into another format",

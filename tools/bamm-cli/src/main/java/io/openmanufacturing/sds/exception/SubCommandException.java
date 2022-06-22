@@ -11,19 +11,16 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.exeption;
+package io.openmanufacturing.sds.exception;
 
-public class CommandException extends RuntimeException {
+public class SubCommandException extends RuntimeException {
+   private final String subCommandName;
 
-   public CommandException( final String reason ) {
-      super( reason );
+   public SubCommandException( final String subCommandName ) {
+      this.subCommandName = subCommandName;
    }
 
-   public CommandException( final Throwable throwable ) {
-      super( throwable );
-   }
-
-   public CommandException( final String message, final Throwable cause ) {
-      super( message, cause );
+   public String getSubCommandName() {
+      return subCommandName;
    }
 }

@@ -18,7 +18,7 @@ import java.io.IOException;
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.aas.AspectModelAASGenerator;
-import io.openmanufacturing.sds.exeption.CommandException;
+import io.openmanufacturing.sds.exception.CommandException;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import picocli.CommandLine;

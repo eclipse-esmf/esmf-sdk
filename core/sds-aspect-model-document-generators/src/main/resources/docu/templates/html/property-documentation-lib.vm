@@ -11,70 +11,88 @@
  ~ SPDX-License-Identifier: MPL-2.0
  *#
 
-#macro( property $property $aspectModelHelper $i18n $weight )
+#macro( property $property $parentElement $aspectModelHelper $i18n $weight )
 <div class="flex flex-col pb-10">
 
-    #paragraph( $property.getPreferredName($i18n.getLocale()) "$property.getName()-property" $weight)
+    #paragraph( $property.getPreferredName( $i18n.getLocale() ) "${aspectModelHelper.buildAnchor( $property, $parentElement, 'property' )}" $weight )
 
-    #if($property.getDescription($i18n.getLocale()))
-        #description( $property.getDescription($i18n.getLocale()) )
+    #if( $property.getDescription( $i18n.getLocale() ) )
+        #description( $property.getDescription( $i18n.getLocale() ) )
     #end
 
     <div class="flex border-b pb-1 py-4">
-        <div class="w-80">$i18n.getText("docu.label.name")</div>
+        <div class="w-80">$i18n.getText( "docu.label.name" )</div>
         <div class="w-full">$property.getName()</div>
     </div>
 
-    #if($property.getCharacteristic())
+    #if( $property.isAbstract() )
         <div class="flex border-b pb-1 py-4">
-            <div class="w-80">$i18n.getText("docu.label.characteristic")</div>
+            <div class="w-80">$i18n.getText( "docu.label.abstract" )</div>
             <div class="w-full">
-                #characteristic( $property.getCharacteristic()$aspectModelHelper $i18n $weight)
+                #if( $property.isAbstract() ) $i18n.getText( "docu.label.yes" ) #end
             </div>
         </div>
     #end
 
-    #if($property.getExampleValue())
+    #if( $property.getExtends().isPresent() )
         <div class="flex border-b pb-1 py-4">
-            <div class="w-80">$i18n.getText("docu.label.example")</div>
+            <div class="w-80">$i18n.getText( "docu.label.extends" )</div>
+            <div class="w-full"><a href="#${aspectModelHelper.buildAnchor( $property.getExtends().get(), $parentElement.getExtends().get(), 'property' )}"
+                 class="break-all underline">$property.getExtends().get().getPreferredName( $i18n.getLocale() )</a>
+            </div>
+        </div>
+    #end
+
+    #if( !$property.isAbstract() && $property.getCharacteristic().get() )
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">$i18n.getText( "docu.label.characteristic" )</div>
+            <div class="w-full">
+                #characteristic( $property.getCharacteristic().get() $aspectModelHelper $i18n $weight )
+            </div>
+        </div>
+    #end
+
+    #if( $property.getExampleValue() )
+        <div class="flex border-b pb-1 py-4">
+            <div class="w-80">$i18n.getText( "docu.label.example" )</div>
             <div class="w-full">$property.getExampleValue().get()</div>
         </div>
     #end
 
     <div class="flex border-b pb-1 py-4">
-        <div class="w-80">$i18n.getText("docu.label.optional")</div>
+        <div class="w-80">$i18n.getText( "docu.label.optional" )</div>
         <div class="w-full">
-            #if($property.isOptional()) $i18n.getText("docu.label.yes") #else $i18n.getText("docu.label.no") #end
+            #if( $property.isOptional() ) $i18n.getText( "docu.label.yes" ) #else $i18n.getText( "docu.label.no" ) #end
         </div>
     </div>
 
     <div class="flex border-b pb-1 py-4">
-        <div class="w-80">$i18n.getText("docu.label.in-payload")</div>
+        <div class="w-80">$i18n.getText( "docu.label.in-payload" )</div>
         <div class="w-full">
-            #if($property.isNotInPayload()) $i18n.getText("docu.label.no") #else $i18n.getText("docu.label.yes") #end
+            #if( $property.isNotInPayload() ) $i18n.getText( "docu.label.no" ) #else $i18n.getText( "docu.label.yes" ) #end
         </div>
     </div>
 
     <div class="flex border-b pb-1 py-4">
-        <div class="w-80">$i18n.getText("docu.label.payload-name")</div>
+        <div class="w-80">$i18n.getText( "docu.label.payload-name" )</div>
         <div class="w-full">$property.getPayloadName()</div>
     </div>
 
-    #if(!$property.getSee().isEmpty())
+    #if( !$property.getSee().isEmpty() )
         <div class="flex border-b pb-1 py-4">
-            <div class="w-80">$i18n.getText("docu.label.see")</div>
+            <div class="w-80">$i18n.getText( "docu.label.see" )</div>
             #list( $property.getSee() )
         </div>
     #end
 
-    #set($constraints = $aspectModelHelper.getConstraints($property))
+    #set( $constraints = $aspectModelHelper.getConstraints( $property ) )
     #if(!$constraints.isEmpty())
         <div class="flex border-b pb-1 py-4">
-            <div class="w-80">$i18n.getText("docu.label.constraints")</div>
+            <div class="w-80">$i18n.getText( "docu.label.constraints" )</div>
             <div class="w-full">
                <ul class="reset-all-styles m-0 property-constraints">
                    #foreach( $constraint in $constraints )
-                       <li>#constraint( $constraint $aspectModelHelper $i18n)</li>
+                       <li>#constraint( $constraint $aspectModelHelper $i18n )</li>
                    #end
                </ul>
             </div>

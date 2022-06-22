@@ -52,7 +52,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENUMERATION, metaModelVersion );
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
-      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
             "Test Enumeration", "This is a test for enumeration.", "http://example.com/omp" );
 
@@ -69,7 +69,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().as( Enumeration.class );
+      final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().get().as( Enumeration.class );
 
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
             "Test Enumeration", "This is a test for enumeration.", "http://example.com/omp" );
@@ -86,7 +86,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
    @MethodSource( value = "allVersions" )
    public void testEnumerationCharacteristicWithEntityDataTypeWithOptionalAndNotInPayloadPropertiesExpectSuccess( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_OPTIONAL_AND_NOT_IN_PAYLOAD_PROPERTIES, metaModelVersion );
-      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       final Type dataType = enumeration.getDataType().get();
       assertThat( dataType ).isInstanceOf( Entity.class );
@@ -120,7 +120,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
             "Test Enumeration", "This is a test for enumeration.", "http://example.com/omp" );
@@ -141,7 +141,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_NESTED_ENTITY_ENUMERATION_WITH_NOT_IN_PAYLOAD, metaModelVersion );
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
       assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
 
       final Entity dataType = enumeration.getDataType().get().as( Entity.class );
@@ -149,7 +149,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
 
       final Property nestedEntityProperty = dataType.getProperties().get( 1 );
       assertThat( nestedEntityProperty.isNotInPayload() ).isTrue();
-      assertThat( nestedEntityProperty.getCharacteristic() ).isExactlyInstanceOf( DefaultSingleEntity.class );
+      assertThat( nestedEntityProperty.getCharacteristic().get() ).isExactlyInstanceOf( DefaultSingleEntity.class );
 
       final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
       final Entity entity = entityInstance.getEntityType();
@@ -170,7 +170,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST_ENUMERATION_WITH_NOT_IN_PAYLOAD, metaModelVersion );
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().as( Enumeration.class );
+      final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().get().as( Enumeration.class );
       assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
 
       final Entity dataType = enumeration.getDataType().get().as( Entity.class );
@@ -178,7 +178,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
 
       final Property nestedEntityListProperty = dataType.getProperties().get( 1 );
       assertThat( nestedEntityListProperty.isNotInPayload() ).isTrue();
-      assertThat( nestedEntityListProperty.getCharacteristic() ).isExactlyInstanceOf( DefaultSet.class );
+      assertThat( nestedEntityListProperty.getCharacteristic().get() ).isExactlyInstanceOf( DefaultSet.class );
 
       final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
       final Entity entity = entityInstance.getEntityType();
@@ -201,7 +201,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING, metaModelVersion );
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().as( Enumeration.class );
+      final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().get().as( Enumeration.class );
       final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
       final Property property = entityInstance.getEntityType().getPropertyByName( "entityProperty" ).get();
       final ScalarValue scalarValue = entityInstance.getAssertions().get( property ).as( ScalarValue.class );

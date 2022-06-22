@@ -45,7 +45,7 @@ public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final Property property = aspect.getProperties().get( 0 );
-      final Quantifiable quantifiable = (Quantifiable) property.getCharacteristic();
+      final Quantifiable quantifiable = (Quantifiable) property.getCharacteristic().get();
 
       assertBaseAttributes( quantifiable, expectedAspectModelUrn, "TestQuantifiable",
             "Test Quantifiable", "This is a test Quantifiable", "http://example.com/omp" );
@@ -69,7 +69,7 @@ public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Quantifiable quantifiable = (Quantifiable) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Quantifiable quantifiable = (Quantifiable) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( quantifiable, expectedAspectModelUrn, "TestQuantifiable",
             "Test Quantifiable", "This is a test Quantifiable", "http://example.com/omp" );
@@ -87,7 +87,7 @@ public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Measurement measurement = (Measurement) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Measurement measurement = (Measurement) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( measurement, expectedAspectModelUrn, "TestMeasurement",
             "Test Measurement", "This is a test Measurement", "http://example.com/omp" );
@@ -110,7 +110,7 @@ public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Duration duration = (Duration) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Duration duration = (Duration) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( duration, expectedAspectModelUrn, "TestDuration",
             "Test Duration", "This is a test Duration", "http://example.com/omp" );
