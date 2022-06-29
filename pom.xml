@@ -132,8 +132,11 @@
          ${project.basedir}/../../sds-sdk-test-report/target/site/jacoco-aggregate/jacoco.xml
       </sonar.coverage.jacoco.xmlReportPaths>
 
+      <!-- SonarCloud settings -->
       <sonar.organization>OpenManufacturingPlatform</sonar.organization>
       <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+      <sonar.projectKey>OpenManufacturingPlatform_sds-sdk</sonar.projectKey>
+      <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
    </properties>
 
    <dependencyManagement>
@@ -376,7 +379,7 @@
                </exclusion>
             </exclusions>
          </dependency>
-        </dependencies>
+      </dependencies>
    </dependencyManagement>
    <build>
       <pluginManagement>
