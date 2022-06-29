@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.metamodel.loader.instantiator;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Resource;
@@ -45,6 +46,7 @@ public class AspectInstantiator extends Instantiator<Aspect> {
             .collect( Collectors.toList() );
       final boolean isCollectionAspect = properties.stream()
             .map( Property::getCharacteristic )
+            .flatMap( Optional::stream )
             .filter( Collection.class::isInstance ).count() == 1;
       return new DefaultAspect( metaModelBaseAttributes, properties, operations, events, isCollectionAspect );
    }

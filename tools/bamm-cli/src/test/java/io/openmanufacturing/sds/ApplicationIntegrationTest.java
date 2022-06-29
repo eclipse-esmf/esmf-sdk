@@ -13,8 +13,7 @@
 
 package io.openmanufacturing.sds;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -40,10 +39,28 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
+import io.openmanufacturing.sds.exception.CommandException;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
+import picocli.CommandLine;
 
 public class ApplicationIntegrationTest extends MetaModelVersions {
+
+   private static class ExceptionHandler implements CommandLine.IExecutionExceptionHandler {
+
+      private Exception thrownException;
+
+      @Override
+      public int handleExecutionException( final Exception ex, final CommandLine commandLine, final CommandLine.ParseResult parseResult ) {
+         thrownException = ex;
+         return 2;
+      }
+
+      public Exception getException() {
+         return thrownException;
+      }
+   }
 
    private static final SecurityManager SECURITY_MANAGER = System.getSecurityManager();
 
@@ -87,19 +104,19 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    }
 
    @Test
-   public void testNoArgs() throws Exception {
-      assertThat( catchSystemExit( () -> bammCli.run( new String[0] ) ) ).isEqualTo( 0 );
+   public void testNoArgs() {
+      assertThat( bammCli.run( new String[0] ) ).isEqualTo( 0 );
    }
 
    @Test
-   public void testWrongArgs() throws Exception {
-      assertThat( catchSystemExit( () -> bammCli.run( "-i", "notexists" ) ) ).isEqualTo( 2 );
+   public void testWrongArgs() {
+      assertThat( bammCli.run( "-i", "notexists" ) ).isEqualTo( 2 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testHelp( final KnownVersion metaModelVersion ) throws Throwable {
-      assertThat( catchSystemExit( () -> bammCli.run( "help" ) ) ).isEqualTo( 0 );
+   public void testHelp( final KnownVersion metaModelVersion ) {
+      assertThat( bammCli.run( "help" ) ).isEqualTo( 0 );
    }
 
    private void validateFile( final File directory, final String fileName ) {
@@ -110,7 +127,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSvgGenToFileWithDefLanguage( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testSvgGenToFileWithDefLanguage( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "to", "svg", "-o", getPathForArtifact( "AspectWithEntity.svg" ) );
       validateFile( outputDir, "AspectWithEntity.svg" );
@@ -118,7 +135,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSvgGenToFileWithExplicitLanguage( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testSvgGenToFileWithExplicitLanguage( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "to", "svg", "-o", getPathForArtifact( "AspectWithEntity.svg" ), "-l", "en" );
       validateFile( outputDir, "AspectWithEntity.svg" );
@@ -126,21 +143,22 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSvgGenToFileFailForNonexistentLanguage( final KnownVersion metaModelVersion ) throws Throwable {
-      assertThat( executeCommand( metaModelVersion, "to", "svg", "-o", getPathForArtifact( "AspectWithEntity.svg" ), "-l", "de" ) )
-            .isEqualTo( 1 );
+   public void testSvgGenToFileFailForNonexistentLanguage( final KnownVersion metaModelVersion ) {
+      assertThatThrownBy( () -> executeExpectException( metaModelVersion, "to", "svg", "-o", getPathForArtifact( "AspectWithEntity.svg" ), "-l", "de" ) )
+            .isInstanceOf( CommandException.class )
+            .hasMessageContaining( "The model does not contain the desired language" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSvgGenToStdout( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testSvgGenToStdout( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "to", "svg" );
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "<svg" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testPngGenToFileWithDefLanguage( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testPngGenToFileWithDefLanguage( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "to", "png", "-o", getPathForArtifact( "AspectWithEntity.png" ) );
       validateFile( outputDir, "AspectWithEntity.png" );
@@ -148,7 +166,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testPngGenToFileWithExplicitLanguage( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testPngGenToFileWithExplicitLanguage( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "to", "png", "-o", getPathForArtifact( "AspectWithEntity.png" ), "-l", "en" );
       validateFile( outputDir, "AspectWithEntity.png" );
@@ -156,14 +174,15 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testPngGenToFileFailForNonexistentLanguage( final KnownVersion metaModelVersion ) throws Throwable {
-      assertThat( executeCommand( metaModelVersion, "to", "png", "-o", getPathForArtifact( "AspectWithEntity.png" ),
-            "-l", "de" ) ).isEqualTo( 1 );
+   public void testPngGenToFileFailForNonexistentLanguage( final KnownVersion metaModelVersion ) {
+      assertThatThrownBy( () -> executeExpectException( metaModelVersion, "to", "png", "-o", getPathForArtifact( "AspectWithEntity.png" ), "-l", "de" ) )
+            .isInstanceOf( CommandException.class )
+            .hasMessageContaining( "The model does not contain the desired language" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testDotGenToFileWithDefLanguage( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testDotGenToFileWithDefLanguage( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "to", "dot", "-o", getPathForArtifact( "AspectWithEntity.dot" ) );
       validateFile( outputDir, "AspectWithEntity.dot" );
@@ -171,7 +190,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testDotGenToFileWithExplicitLanguage( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testDotGenToFileWithExplicitLanguage( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "to", "dot", "-o", getPathForArtifact( "AspectWithEntity.dot" ), "-l", "en" );
       validateFile( outputDir, "AspectWithEntity.dot" );
@@ -179,21 +198,22 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testDotGenToFileFailForNonexistentLanguage( final KnownVersion metaModelVersion ) throws Throwable {
-      assertThat( executeCommand( metaModelVersion, "to", "dot", "-o", getPathForArtifact( "AspectWithEntity.dot" ),
-            "-l", "de" ) ).isEqualTo( 1 );
+   public void testDotGenToFileFailForNonexistentLanguage( final KnownVersion metaModelVersion ) {
+      assertThatThrownBy( () -> executeExpectException( metaModelVersion, "to", "dot", "-o", getPathForArtifact( "AspectWithEntity.dot" ), "-l", "de" ) )
+            .isInstanceOf( CommandException.class )
+            .hasMessageContaining( "The model does not contain the desired language" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testDotGenToStdout( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testDotGenToStdout( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "to", "dot" );
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "digraph AspectModel" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testJsonToFile( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testJsonToFile( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "to", "json", "-o", getPathForArtifact( "AspectWithEntity.json" ) );
       validateFile( outputDir, "AspectWithEntity.json" );
@@ -201,14 +221,14 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testJsonToStdout( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testJsonToStdout( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "to", "json" );
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "{" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testJsonSchemaToFile( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testJsonSchemaToFile( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "to", "schema", "-o", getPathForArtifact( "AspectWithEntity.schema.json" ) );
       validateFile( outputDir, "AspectWithEntity.schema.json" );
@@ -216,14 +236,14 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testJsonSchemaToStdout( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testJsonSchemaToStdout( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "to", "schema" );
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "{" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelJavaClassWithDefaultPackageName( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testGenerateAspectModelJavaClassWithDefaultPackageName( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
 
       createValidArgsExecution( metaModelVersion, "to", "java", "-d", outputDirectory.toString() );
@@ -252,13 +272,13 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testValidation( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testValidation( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "validate" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testPrettyPrintingToFile( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testPrettyPrintingToFile( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "prettyprint", "-o", getPathForArtifact( "PrettyPrinted.ttl" ) );
       validateFile( outputDir, "PrettyPrinted.ttl" );
@@ -266,14 +286,14 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testPrettyPrintingToStdout( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testPrettyPrintingToStdout( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "prettyprint" );
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "@prefix" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testVersionMigrationToFile( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testVersionMigrationToFile( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "migrate", "-o", getPathForArtifact( "Migrated.ttl" ) );
       validateFile( outputDir, "Migrated.ttl" );
@@ -281,14 +301,14 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testVersionMigrationToStdout( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testVersionMigrationToStdout( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "migrate" );
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "@prefix" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateJavaClassWithCustomPackageName( final KnownVersion metaModelVersion ) throws Throwable {
+   public void testGenerateJavaClassWithCustomPackageName( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
 
       createValidArgsExecution( metaModelVersion, "to", "java", "-d", outputDirectory.toString(), "-pn", "io.openmanufacturing.sds" );
@@ -299,11 +319,6 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
       validateFile( directory, "AspectWithEntity.java" );
       validateFile( directory, "TestEntity.java" );
-   }
-
-   @Test
-   public void testCustomPackageNameWithoutGenerateJavaArgument() throws Exception {
-      assertThat( catchSystemExit( () -> bammCli.run( "-pn", "io.openmanufacturing.sds" ) ) ).isEqualTo( 2 );
    }
 
    @ParameterizedTest
@@ -336,41 +351,39 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       assertThat( testEntity ).doesNotContain( "@com.fasterxml.jackson.annotation.JsonProperty" );
    }
 
-   @Test
-   public void testDisableJacksonAnnotationsWithoutGenerateJavaArgument() throws Exception {
-      assertThat( catchSystemExit( () -> bammCli.run( "-nj" ) ) ).isEqualTo( 2 );
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGenerateOpenApiSpecWithoutBaseUrl( final KnownVersion metaModelVersion ) {
+      final List<String> argumentsList = createArgumentList( metaModelVersion, "to", "openapi", "-j" );
+      assertThat( bammCli.run( argumentsList.toArray( new String[0] ) ) ).isEqualTo( 2 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateOpenApiSpecWithoutBaseUrl( final KnownVersion metaModelVersion ) throws Exception {
-      assertThat( catchSystemExit( () -> {
-         final List<String> argumentsList = createArgumentList( metaModelVersion, "to", "openapi", "-j" );
-         bammCli.run( argumentsList.toArray( new String[0] ) );
-      } ) ).isEqualTo( 2 );
-   }
-
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testGenerateOpenApiSpecWithoutResourcePath( final KnownVersion metaModelVersion ) throws Exception {
+   public void testGenerateOpenApiSpecWithoutResourcePath( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "to", "openapi", "-j", "-b", "https://test.example.com" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateOpenApiSpecWithResourcePath( final KnownVersion metaModelVersion ) throws Exception {
+   public void testGenerateOpenApiSpecWithResourcePath( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "to", "openapi", "-j", "-b", "https://test.example.com", "-r", "my-aspect" );
    }
 
-   private void createValidArgsExecution( final KnownVersion testedVersion, final String... args ) throws Exception {
+   private void createValidArgsExecution( final KnownVersion testedVersion, final String... args ) {
       assertThat( executeCommand( testedVersion, args ) ).isEqualTo( 0 );
    }
 
-   private int executeCommand( final KnownVersion testedVersion, final String... args ) throws Exception {
-      return catchSystemExit( () -> {
-         final List<String> argumentsList = createArgumentList( testedVersion, args );
-         bammCli.run( argumentsList.toArray( new String[0] ) );
-      } );
+   private int executeCommand( final KnownVersion testedVersion, final String... args ) {
+      final List<String> argumentsList = createArgumentList( testedVersion, args );
+      return bammCli.run( argumentsList.toArray( new String[0] ) );
+   }
+
+   private void executeExpectException( final KnownVersion testedVersion, final String... args ) throws Exception {
+      final ExceptionHandler eh = new ExceptionHandler();
+      final List<String> argumentsList = createArgumentList( testedVersion, args );
+      bammCli.runWithExceptionHandler( eh, argumentsList.toArray( new String[0] ) );
+      throw eh.getException();
    }
 
    private List<String> createArgumentList( final KnownVersion testedVersion, final String... args ) {
@@ -457,16 +470,14 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testValidateVelocityTemplateMacroArgumentValidation( final KnownVersion metaModelVersion ) throws Exception {
-      assertThat( catchSystemExit( () -> {
-         final List<String> argumentsList = createArgumentList( metaModelVersion, "to", "java", "-elm" );
-         bammCli.run( argumentsList.toArray( new String[0] ) );
-      } ) ).isEqualTo( 1 );
+   public void testValidateVelocityTemplateMacroArgumentValidation( final KnownVersion metaModelVersion ) {
+      assertThatThrownBy( () -> executeExpectException( metaModelVersion, "to", "java", "-elm" ) )
+            .isInstanceOf( CodeGenerationException.class )
+            .hasMessageContaining( "Missing configuration. Please provide path to velocity template library file." );
 
-      assertThat( catchSystemExit( () -> {
-         final List<String> argumentsList = createArgumentList( metaModelVersion, "to", "java", "-s", "-elm" );
-         bammCli.run( argumentsList.toArray( new String[0] ) );
-      } ) ).isEqualTo( 1 );
+      assertThatThrownBy( () -> executeExpectException( metaModelVersion, "to", "java", "-s", "-elm" ) )
+            .isInstanceOf( CodeGenerationException.class )
+            .hasMessageContaining( "Missing configuration. Please provide path to velocity template library file." );
    }
 
    private String getPathForArtifact( final String artifactName ) {

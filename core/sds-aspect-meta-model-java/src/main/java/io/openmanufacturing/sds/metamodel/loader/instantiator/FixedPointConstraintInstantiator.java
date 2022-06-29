@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,8 +30,8 @@ public class FixedPointConstraintInstantiator extends Instantiator<FixedPointCon
    @Override
    public FixedPointConstraint apply( final Resource fixedPointConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( fixedPointConstraint );
-      final Integer scale = propertyValue( fixedPointConstraint, bammc.scale() ).getLiteral().getInt();
-      final Integer integer = propertyValue( fixedPointConstraint, bammc.integer() ).getLiteral().getInt();
+      final Integer scale = attributeValue( fixedPointConstraint, bammc.scale() ).getLiteral().getInt();
+      final Integer integer = attributeValue( fixedPointConstraint, bammc.integer() ).getLiteral().getInt();
       return new DefaultFixedPointConstraint( metaModelBaseAttributes, scale, integer );
    }
 }

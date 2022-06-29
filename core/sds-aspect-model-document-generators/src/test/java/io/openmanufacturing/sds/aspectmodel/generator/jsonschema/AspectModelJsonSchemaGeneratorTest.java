@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,7 +23,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.assertj.core.data.Percentage;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,12 +45,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.PathNotFoundException;
 
-import org.assertj.core.data.Percentage;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
-
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
@@ -138,8 +138,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_CONSTRAINED_COLLECTION", // Broken model
-         "ASPECT_WITH_ENUMERATION_WITHOUT_SCALAR_VARIABLE", // Invalid Aspect Model
-         "ASPECT_WITH_TIME_SERIES" // This feature branch does not support bamm:AbstractProperty. When support for this is added, remove this
+         "ASPECT_WITH_ENUMERATION_WITHOUT_SCALAR_VARIABLE" //Invalid Aspect Model
    } )
    public void testGeneration( final TestAspect testAspect ) {
       final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );
@@ -161,115 +160,115 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       String characteristicReference = context.<String> read( "$['properties']['anyUriProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/AnyUriPropertyCharacteristic" );
       String characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['format']" ) ).isEqualTo( "uri" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['format']" ) ).isEqualTo( "uri" );
 
       characteristicReference = context.<String> read( "$['properties']['base64BinaryProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/Base64BinaryPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['contentEncoding']" ) ).isEqualTo( "base64" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['contentEncoding']" ) ).isEqualTo( "base64" );
 
       final String booleanUrn = String.format( "urn_bamm_io.openmanufacturing_characteristic_%s_Boolean",
             KnownVersion.getLatest().toVersionString() );
       assertThat( context.<String> read( "$['properties']['booleanProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + booleanUrn );
-      assertThat( context.<String> read( "$['components']['schemas']['"+booleanUrn+"']['type']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['" + booleanUrn + "']['type']" ) )
             .isEqualTo( "boolean" );
 
       characteristicReference = context.<String> read( "$['properties']['byteProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/BytePropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       final String unitReferenceUrn = String
             .format( "urn_bamm_io.openmanufacturing_characteristic_%s_UnitReference",
                   KnownVersion.getLatest().toVersionString() );
       assertThat( context.<String> read( "$['properties']['curieProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + unitReferenceUrn );
-      assertThat( context.<String> read( "$['components']['schemas']['"+unitReferenceUrn+"']['type']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['" + unitReferenceUrn + "']['type']" ) )
             .isEqualTo( "string" );
 
       characteristicReference = context.<String> read( "$['properties']['dateProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/DatePropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['format']" ) ).isEqualTo( "date" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['format']" ) ).isEqualTo( "date" );
 
       final String timestampUrn = String.format( "urn_bamm_io.openmanufacturing_characteristic_%s_Timestamp",
             KnownVersion.getLatest().toVersionString() );
       assertThat( context.<String> read( "$['properties']['dateTimeProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + timestampUrn );
-      assertThat( context.<String> read( "$['components']['schemas']['"+timestampUrn+"']['type']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['" + timestampUrn + "']['type']" ) )
             .isEqualTo( "string" );
 
       characteristicReference = context.<String> read( "$['properties']['dateTimeStampProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/DateTimeStampPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['format']" ) ).isEqualTo( "date-time" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['format']" ) ).isEqualTo( "date-time" );
 
       characteristicReference = context.<String> read( "$['properties']['dayTimeDuration']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/DayTimeDurationCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
 
       characteristicReference = context.<String> read( "$['properties']['decimalProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/DecimalPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['doubleProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/DoublePropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['durationProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/DurationPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['format']" ) ).isEqualTo( "duration" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['format']" ) ).isEqualTo( "duration" );
 
       characteristicReference = context.<String> read( "$['properties']['floatProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/FloatPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['gMonthDayProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/GMonthDayPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
 
       characteristicReference = context.<String> read( "$['properties']['gMonthProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/GMonthPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
 
       characteristicReference = context.<String> read( "$['properties']['gYearMonthProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/GYearMonthPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
 
       characteristicReference = context.<String> read( "$['properties']['gYearProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/GYearPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
 
       characteristicReference = context.<String> read( "$['properties']['hexBinaryProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/HexBinaryPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['pattern']" ) ).isEqualTo( "([0-9a-fA-F])([0-9a-fA-F])*" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['pattern']" ) ).isEqualTo( "([0-9a-fA-F])([0-9a-fA-F])*" );
 
       characteristicReference = context.<String> read( "$['properties']['intProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/IntPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['integerProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/IntegerPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       final String multiLanguageTextUrn = String
             .format( "urn_bamm_io.openmanufacturing_characteristic_%s_MultiLanguageText",
@@ -277,74 +276,74 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['properties']['langStringProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + multiLanguageTextUrn );
       assertThat( context.<String> read( "$['components']['schemas']"
-            + "['"+multiLanguageTextUrn+"']['type']" ) ).isEqualTo( "object" );
+            + "['" + multiLanguageTextUrn + "']['type']" ) ).isEqualTo( "object" );
 
       characteristicReference = context.<String> read( "$['properties']['longProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/LongPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['negativeIntegerProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/NegativeIntegerPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['nonNegativeIntegerProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/NonNegativeIntegerPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['nonPositiveInteger']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/NonPositiveIntegerCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['positiveIntegerProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/PositiveIntegerPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['shortProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/ShortPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       final String textUrn = String.format( "urn_bamm_io.openmanufacturing_characteristic_%s_Text",
             KnownVersion.getLatest().toVersionString() );
       assertThat( context.<String> read( "$['properties']['stringProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + textUrn );
-      assertThat( context.<String> read( "$['components']['schemas']['"+textUrn+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + textUrn + "']['type']" ) ).isEqualTo( "string" );
 
       characteristicReference = context.<String> read( "$['properties']['timeProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/TimePropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['format']" ) ).isEqualTo( "time" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['format']" ) ).isEqualTo( "time" );
 
       characteristicReference = context.<String> read( "$['properties']['unsignedByteProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/UnsignedBytePropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['unsignedIntProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/UnsignedIntPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['unsignedLongProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/UnsignedLongPropertyQuantifiable" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['unsignedShortProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/UnsignedShortPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['yearMonthDurationProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/YearMonthDurationPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
-      assertThat( context.<String> read( "$['components']['schemas']['"+characteristicName+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
    }
 
    @ParameterizedTest
@@ -354,9 +353,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
       final String textUrn = String.format( "urn_bamm_io.openmanufacturing_characteristic_%s_Text",
-                  KnownVersion.getLatest().toVersionString());
+            KnownVersion.getLatest().toVersionString() );
 
-      assertThat( context.<String> read( "$['components']['schemas']['"+textUrn+"']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + textUrn + "']['type']" ) ).isEqualTo( "string" );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + textUrn );
       assertThat( context.<List<String>> read( "$['required']" ) ).isNull();
@@ -460,7 +459,8 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read(
             "$['properties']['testPropertyCollectionLengthConstraint']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_TestLengthConstraintWithCollection" );
-      assertThat( context.<String> read( "$['components']['schemas']['urn_bamm_io.openmanufacturing.test_1.0.0_TestLengthConstraintWithCollection']['type']" ) ).isEqualTo( "array" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['urn_bamm_io.openmanufacturing.test_1.0.0_TestLengthConstraintWithCollection']['type']" ) ).isEqualTo( "array" );
       assertThat( context.<Integer> read( "$['components']['schemas']"
             + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestLengthConstraintWithCollection']['maxItems']" ) )
             .isEqualTo( 10 );
@@ -618,12 +618,12 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_TestSet" );
-      assertThat( context.<String> read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSet']['type']") ).isEqualTo( "array" );
-      assertThat( context.<Boolean> read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSet']['uniqueItems']") ).isTrue();
-      assertThat( context.<String> read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSet']['items']['type']") ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSet']['type']" ) ).isEqualTo( "array" );
+      assertThat( context.<Boolean> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSet']['uniqueItems']" ) ).isTrue();
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSet']['items']['type']" ) ).isEqualTo( "string" );
    }
 
    @Test
@@ -635,12 +635,12 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_TestSortedSet" );
-      assertThat( context.<String> read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSortedSet']['type']") ).isEqualTo( "array" );
-      assertThat( context.<Boolean> read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSortedSet']['uniqueItems']") ).isTrue();
-      assertThat( context.<String> read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSortedSet']['items']['type']") ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSortedSet']['type']" ) ).isEqualTo( "array" );
+      assertThat( context.<Boolean> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSortedSet']['uniqueItems']" ) ).isTrue();
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestSortedSet']['items']['type']" ) ).isEqualTo( "string" );
    }
 
    @ParameterizedTest
@@ -650,14 +650,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final JsonNode schema = buildJsonSchema( aspect );
       final String multiLanguageTextUrn = String
             .format( "urn_bamm_io.openmanufacturing_characteristic_%s_MultiLanguageText",
-                  KnownVersion.getLatest().toVersionString());
+                  KnownVersion.getLatest().toVersionString() );
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['prop']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + multiLanguageTextUrn );
-      assertThat( context.<String> read( "$['components']['schemas']['"+multiLanguageTextUrn+"']['type']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['" + multiLanguageTextUrn + "']['type']" ) )
             .isEqualTo( "object" );
-      assertThat( context.<String> read( "$['components']['schemas']['"+multiLanguageTextUrn+"']['patternProperties']"
+      assertThat( context.<String> read( "$['components']['schemas']['" + multiLanguageTextUrn + "']['patternProperties']"
             + "['^.*$']['type']" ) ).isEqualTo( "string" );
 
       final ObjectNode payload = JsonNodeFactory.instance.objectNode();
@@ -675,13 +675,13 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final JsonNode schema = buildJsonSchema( aspect );
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
-      assertThat( context.<String> read("$['properties']['testProperty']['$ref']") )
+      assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_TestEither" );
-      assertThat( context.<String> read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestEither']['properties']['left']['type']") )
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestEither']['properties']['left']['type']" ) )
             .isEqualTo( "string" );
-      assertThat( context.<String> read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestEither']['properties']['right']['type']") )
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_TestEither']['properties']['right']['type']" ) )
             .isEqualTo( "boolean" );
 
       final ObjectNode leftPayload = JsonNodeFactory.instance.objectNode();
@@ -732,7 +732,6 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             + "['urn_bamm_io.openmanufacturing.test_1.0.0_EvaluationResults']['oneOf'][1]['$ref']" ) )
             .isEqualTo( "#/components/schemas/ResultBad" );
 
-
       assertThat( context.<String> read( "$['components']['schemas']['ResultGood']['properties']['details']"
             + "['properties']['description']['enum'][0]" ) ).isEqualTo( "Result succeeded" );
       assertThat( context.<String> read( "$['components']['schemas']['ResultGood']['properties']['details']"
@@ -751,7 +750,6 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['result']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_EvaluationResults" );
-
 
       assertThat( context.<Integer> read( "$['components']['schemas']['ResultNoStatus']['properties']['average']"
             + "['enum'][0]" ) ).isEqualTo( 3 );
@@ -836,20 +834,20 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       showJson( schema );
 
       assertThatExceptionOfType( PathNotFoundException.class )
-            .isThrownBy( () -> context.<String>read("$['components']['schemas']['ExtendingTestEntity']") );
+            .isThrownBy( () -> context.<String> read( "$['components']['schemas']['ExtendingTestEntity']" ) );
       assertThatExceptionOfType( PathNotFoundException.class )
-            .isThrownBy( () -> context.<String>read("$['components']['schemas']['AbstractTestEntity']") );
-      assertThat( context.<String>read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']") )
+            .isThrownBy( () -> context.<String> read( "$['components']['schemas']['AbstractTestEntity']" ) );
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
-      assertThat( context.<String>read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']") )
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" );
-      assertThat(context.<String>read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']"))
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestPropertyCharacteristic" );
-      assertThat(context.<String>read("$['properties']['testProperty']['$ref']"))
-            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
+      assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity" );
    }
 
    @ParameterizedTest
@@ -860,16 +858,16 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final DocumentContext context = JsonPath.parse( schema.toString() );
       showJson( schema );
 
-      assertThat( context.<String>read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']") )
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
-      assertThat( context.<String>read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']") )
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" );
-      assertThat(context.<String>read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']"))
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestPropertyCharacteristic" );
-      assertThat(context.<String>read("$['properties']['testProperty']['$ref']"))
+      assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity" );
    }
 
@@ -881,19 +879,19 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final DocumentContext context = JsonPath.parse( schema.toString() );
       showJson( schema );
 
-      assertThat( context.<String>read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']") )
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
-      assertThat( context.<String>read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']") )
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" );
-      assertThat(context.<String>read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']"))
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestPropertyCharacteristic" );
-      assertThat(context.<String>read("$['components']['schemas']"
-            + "['urn_bamm_io.openmanufacturing.test_1.0.0_EntityCollectionCharacteristic']['items']['$ref']"))
+      assertThat( context.<String> read( "$['components']['schemas']"
+            + "['urn_bamm_io.openmanufacturing.test_1.0.0_EntityCollectionCharacteristic']['items']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_AbstractTestEntity" );
-      assertThat(context.<String>read("$['properties']['testProperty']['$ref']"))
+      assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_EntityCollectionCharacteristic" );
    }
 }

@@ -19,12 +19,16 @@ import java.util.Optional;
 
 import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidModelException;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
+import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.DefaultPropertyWrapper;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
@@ -33,32 +37,28 @@ import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
 @SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class PropertyInstantiator extends Instantiator<Property> {
+   private final Characteristic fallbackCharacteristic;
    private final Map<Resource, Property> resourcePropertyMap = new HashMap<>();
 
    public PropertyInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Property.class );
+      final MetaModelBaseAttributes characteristicBaseAttributes = MetaModelBaseAttributes.builderFor( "UnnamedCharacteristic" )
+            .withMetaModelVersion( KnownVersion.getLatest() )
+            .build();
+      fallbackCharacteristic = new DefaultCharacteristic( characteristicBaseAttributes, Optional.empty() );
    }
 
    @Override
    public Property apply( final Resource property ) {
-      Resource propertyResource = property;
-      boolean isOptional = false;
-      boolean isNotInPayload = false;
-      Optional<String> payloadName = Optional.empty();
-      if ( property.isAnon() ) {
-         if ( property.hasProperty( bamm.optional() ) ) {
-            isOptional = property.getProperty( bamm.optional() ).getBoolean();
-         }
-         if ( property.hasProperty( bamm.notInPayload() ) ) {
-            isNotInPayload = property.getProperty( bamm.notInPayload() ).getBoolean();
-         }
-         if ( property.hasProperty( bamm.payloadName() ) ) {
-            payloadName = Optional.of( property.getProperty( bamm.payloadName() ).getString() );
-         }
-         propertyResource = property.getProperty( bamm.property() ).getResource();
-      }
+      final boolean isOptional = optionalAttributeValue( property, bamm.optional() ).map( Statement::getBoolean ).orElse( false );
+      final boolean isNotInPayload = optionalAttributeValue( property, bamm.notInPayload() ).map( Statement::getBoolean ).orElse( false );
+      final Optional<String> payloadName = optionalAttributeValue( property, bamm.payloadName() ).map( Statement::getString );
+      final Optional<Property> extends_ = optionalAttributeValue( property, bamm._extends() )
+            .map( Statement::getResource )
+            .map( superElementResource -> modelElementFactory.create( Property.class, superElementResource ) );
+      final boolean isAbstract = property.getModel().contains( property, RDF.type, bamm.AbstractProperty() );
 
-      final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( propertyResource );
+      final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( property );
       final DefaultPropertyWrapper defaultProperty = new DefaultPropertyWrapper( metaModelBaseAttributes );
 
       if ( resourcePropertyMap.containsKey( property ) ) {
@@ -68,30 +68,38 @@ public class PropertyInstantiator extends Instantiator<Property> {
       }
       resourcePropertyMap.put( property, defaultProperty );
 
-      final Resource characteristicResource = propertyValue( propertyResource, bamm.characteristic() ).getResource();
-      final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
-      defaultProperty.setCharacteristic( characteristic );
+      if ( isAbstract ) {
+         defaultProperty.setCharacteristic( fallbackCharacteristic );
+         defaultProperty.setExampleValue( Optional.empty() );
+         defaultProperty.setPayloadName( Optional.empty() );
+      } else {
+         final Resource characteristicResource = attributeValue( property, bamm.characteristic() ).getResource();
+         final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
+         defaultProperty.setCharacteristic( characteristic );
 
-      final Optional<ScalarValue> exampleValue = optionalPropertyValue( propertyResource, bamm.exampleValue() )
-            .flatMap( statement -> characteristic.getDataType()
-                  .map( type -> {
-                     if ( !type.is( Scalar.class ) ) {
-                        throw new InvalidModelException( "Type of example value on Property " + property + " has incorrect type" );
-                     }
-                     return type.as( Scalar.class );
-                  } )
-                  .map( type -> {
-                     final Object literal = statement.getLiteral().getValue();
-                     final Object value = literal instanceof BaseDatatype.TypedValue
-                           ? statement.getLiteral().getLexicalForm()
-                           : literal;
-                     return new DefaultScalarValue( value, type );
-                  } ) );
+         final Optional<ScalarValue> exampleValue = optionalAttributeValue( property, bamm.exampleValue() )
+               .flatMap( statement -> characteristic.getDataType()
+                     .map( type -> {
+                        if ( !type.is( Scalar.class ) ) {
+                           throw new InvalidModelException( "Type of example value on Property " + property + " has incorrect type" );
+                        }
+                        return type.as( Scalar.class );
+                     } )
+                     .map( type -> {
+                        final Object literal = statement.getLiteral().getValue();
+                        final Object value = literal instanceof BaseDatatype.TypedValue
+                              ? statement.getLiteral().getLexicalForm()
+                              : literal;
+                        return new DefaultScalarValue( value, type );
+                     } ) );
 
-      defaultProperty.setExampleValue( exampleValue );
+         defaultProperty.setExampleValue( exampleValue );
+         defaultProperty.setNotInPayload( isNotInPayload );
+      }
       defaultProperty.setOptional( isOptional );
       defaultProperty.setPayloadName( payloadName );
-      defaultProperty.setNotInPayload( isNotInPayload );
+      defaultProperty.setAbstract( isAbstract );
+      defaultProperty.setExtends_( extends_ );
 
       return defaultProperty;
    }

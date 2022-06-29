@@ -144,6 +144,10 @@ build
 /core/sds-aspect-meta-model-legacy*/src
 /core/sds-aspect-meta-model-legacy*/target
 
+# Directories where classes are generated during unit tests
+core/sds-aspect-model-java-generator/src/test/java/io/openmanufacturing/test
+core/sds-aspect-model-jackson/src/main/java/io/openmanufacturing/test
+
 # jqwik
 .jqwik-database
 

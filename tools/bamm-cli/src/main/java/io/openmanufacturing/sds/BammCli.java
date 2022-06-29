@@ -12,6 +12,10 @@
  */
 package io.openmanufacturing.sds;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import org.fusesource.jansi.AnsiConsole;
 
 import io.openmanufacturing.sds.aspect.AspectCommand;
@@ -32,21 +36,32 @@ public class BammCli extends AbstractCommand {
 
    public static final String COMMAND_NAME = "bamm";
 
-   private final CommandLine commandLine = new CommandLine( this );
+   private final CommandLine commandLine = new CommandLine( this )
+         .addSubcommand( new AspectCommand() )
+         .setCaseInsensitiveEnumValuesAllowed( true );
 
-   public void run( final String... argv ) throws Exception {
-      main( argv );
+   @CommandLine.Option( names = { "--version" }, description = "Show current version" )
+   private boolean version;
+
+   int run( final String... argv ) {
+      return commandLine.execute( argv );
    }
 
-   public static void main( final String[] argv ) throws Exception {
+   int runWithExceptionHandler( final CommandLine.IExecutionExceptionHandler exceptionHandler, final String... argv ) {
+      final CommandLine.IExecutionExceptionHandler oldHandler = commandLine.getExecutionExceptionHandler();
+      try {
+         commandLine.setExecutionExceptionHandler( exceptionHandler );
+         return commandLine.execute( argv );
+      } finally {
+         commandLine.setExecutionExceptionHandler( oldHandler );
+      }
+   }
+
+   public static void main( final String[] argv ) {
       AnsiConsole.systemInstall();
 
       final BammCli command = new BammCli();
-      final CommandLine commandLine = command.commandLine
-            .addSubcommand( new AspectCommand() )
-            .setCaseInsensitiveEnumValuesAllowed( true );
-
-      final int exitCode = commandLine.execute( argv );
+      final int exitCode = command.commandLine.execute( argv );
       AnsiConsole.systemUninstall();
       System.exit( exitCode );
    }
@@ -55,8 +70,29 @@ public class BammCli extends AbstractCommand {
       return commandLine.getColorScheme().ansi().string( string );
    }
 
+   private Properties loadProperties( final String filename ) {
+      final Properties properties = new Properties();
+      final InputStream propertiesResource = BammCli.class.getClassLoader().getResourceAsStream( filename );
+      try {
+         properties.load( propertiesResource );
+      } catch ( final IOException exception ) {
+         throw new RuntimeException( "Failed to load Properties: " + filename );
+      }
+      return properties;
+   }
+
    @Override
    public void run() {
+      if ( version ) {
+         final Properties applicationProperties = loadProperties( "application.properties" );
+         final Properties gitProperties = loadProperties( "git.properties" );
+         System.out.printf( "bamm-cli - %s%nVersion: %s%nBuild date: %s%nGit commit: %s%n",
+               applicationProperties.get( "application.name" ),
+               applicationProperties.get( "version" ),
+               applicationProperties.get( "build.date" ),
+               gitProperties.get( "git.commit.id" ) );
+         System.exit( 0 );
+      }
       System.out.println( commandLine.getHelp().fullSynopsis() );
       System.out.println( format( "Run @|bold " + commandLine.getCommandName() + " help|@ for help." ) );
    }

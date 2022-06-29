@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -35,9 +35,9 @@ public class LengthConstraintInstantiator extends Instantiator<LengthConstraint>
    @Override
    public LengthConstraint apply( final Resource lengthConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( lengthConstraint );
-      final Optional<BigInteger> minValue = optionalPropertyValue( lengthConstraint, bammc.minValue() )
+      final Optional<BigInteger> minValue = optionalAttributeValue( lengthConstraint, bammc.minValue() )
             .map( Statement::getLiteral ).map( Literal::getLong ).map( BigInteger::valueOf );
-      final Optional<BigInteger> maxValue = optionalPropertyValue( lengthConstraint, bammc.maxValue() )
+      final Optional<BigInteger> maxValue = optionalAttributeValue( lengthConstraint, bammc.maxValue() )
             .map( Statement::getLiteral ).map( Literal::getLong ).map( BigInteger::valueOf );
       return new DefaultLengthConstraint( metaModelBaseAttributes, minValue, maxValue );
    }

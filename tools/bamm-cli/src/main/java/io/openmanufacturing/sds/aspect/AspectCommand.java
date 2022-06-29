@@ -14,7 +14,7 @@
 package io.openmanufacturing.sds.aspect;
 
 import io.openmanufacturing.sds.AbstractCommand;
-import io.openmanufacturing.sds.exeption.SubCommandException;
+import io.openmanufacturing.sds.exception.SubCommandException;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectCommand.COMMAND_NAME,

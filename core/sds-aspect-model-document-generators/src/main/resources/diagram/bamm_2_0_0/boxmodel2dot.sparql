@@ -9,9 +9,11 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
+prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix sh: <http://www.w3.org/ns/shacl#>
 prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
 
 # Transforms a box model (boxes and edges) into Graphviz/dot statements
@@ -20,12 +22,31 @@ where {
   # Boxes
   {
     ?box a :Box .
-    ?box :title ?title .
+    ?box :title ?givenTitle .
+
+    optional {
+      ?box :modelElement ?modelElement .
+      bind( concat( strbefore( str( ?modelElement ), "#" ), "#" ) as ?modelElementRdfNamespace )
+
+      bamm:prefixDeclarations sh:declare ?declaration .
+      ?declaration sh:prefix ?rdfPrefix .
+      ?declaration sh:namespace ?rdfNamespace .
+      filter( str( ?rdfNamespace ) = str( ?modelElementRdfNamespace ) )
+      bind( concat( str( ?rdfPrefix ), ":" ) as ?titlePrefix )
+    }
+
+    bind( concat( coalesce( ?titlePrefix, "" ), ?givenTitle ) as ?title )
 
     optional {
       ?box :prototype ?prototype .
     }
     bind( coalesce( concat( " «", ?prototype, "»\\n" ), "" ) as ?prototypeString )
+
+    # Show only boxes that are reachable via an edge from the Aspect
+    [] :rootElement ?aspect .
+    ?aspectBox a :Box .
+    ?aspectBox :modelElement ?aspect .
+    filter( exists { ?aspectBox (^:from/:to)* ?box } )
 
     optional {
       select ?box ( group_concat( ?attribute; separator="" ) as ?attributes )
@@ -67,6 +88,12 @@ where {
     ?edge :title ?title .
     ?edge :from ?from .
     ?edge :to ?to .
+
+    # Show only boxes that are reachable via an edge from the Aspect
+    [] :rootElement ?aspect .
+    ?aspectBox a :Box .
+    ?aspectBox :modelElement ?aspect .
+    filter( exists { ?aspectBox (^:from/:to)* ?to } )
 
     bind( replace( str( ?from ), "[^#]*#(.*)", "$1") as ?fromBoxName )
     bind( replace( str( ?to ), "[^#]*#(.*)", "$1") as ?toBoxName )

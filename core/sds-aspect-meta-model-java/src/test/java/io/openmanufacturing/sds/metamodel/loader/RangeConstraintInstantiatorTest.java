@@ -50,7 +50,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
          final BoundDefinition boundDefinitionForLowerBound, final BoundDefinition boundDefinitionForUpperBound ) {
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( rangeConstraint );
@@ -71,7 +71,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( rangeConstraint );
@@ -92,7 +92,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( rangeConstraint );
@@ -113,7 +113,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( rangeConstraint );
@@ -133,7 +133,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
-      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic();
+      final Trait trait = (Trait) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final RangeConstraint rangeConstraint = (RangeConstraint) trait.getConstraints().get( 0 );
 
       assertBaseAttributes( rangeConstraint );

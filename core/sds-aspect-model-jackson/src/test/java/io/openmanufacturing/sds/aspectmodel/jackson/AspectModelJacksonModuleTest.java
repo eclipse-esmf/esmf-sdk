@@ -62,7 +62,7 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 
 public class AspectModelJacksonModuleTest extends MetaModelVersions {
-   private static final String PACKAGE = "com.test";
+   private static final String PACKAGE = "io.openmanufacturing.test";
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )

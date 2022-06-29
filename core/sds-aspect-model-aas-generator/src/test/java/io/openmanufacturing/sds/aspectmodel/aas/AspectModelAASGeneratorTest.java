@@ -205,16 +205,15 @@ class AspectModelAASGeneratorTest {
       assertEquals( 2, env.getConceptDescriptions().size() );
 
       final DataSpecificationIEC61360 dataSpecificationContent =
-            (DataSpecificationIEC61360)
-                  env.getConceptDescriptions().stream()
-                        .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
-                        .findFirst()
-                        .get()
-                        .getEmbeddedDataSpecifications()
-                        .stream()
-                        .findFirst()
-                        .get()
-                        .getDataSpecificationContent();
+            (DataSpecificationIEC61360) env.getConceptDescriptions().stream()
+                  .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
+                  .findFirst()
+                  .get()
+                  .getEmbeddedDataSpecifications()
+                  .stream()
+                  .findFirst()
+                  .get()
+                  .getDataSpecificationContent();
       assertEquals( 3, dataSpecificationContent.getValueList().getValueReferencePairTypes().size() );
 
       assertEquals( 1, env.getSubmodels().size() );
@@ -228,8 +227,7 @@ class AspectModelAASGeneratorTest {
          value = TestAspect.class,
          mode = EnumSource.Mode.EXCLUDE,
          names = {
-               "ASPECT_WITH_STRING_ENUMERATION",
-               "ASPECT_WITH_TIME_SERIES" // This feature branch does not support bamm:AbstractProperty. When support for this is added, remove this
+               "ASPECT_WITH_STRING_ENUMERATION"
          } )
    // anonymous enumeration in test has no urn for enum values but is required for Concept
    // Description referencing

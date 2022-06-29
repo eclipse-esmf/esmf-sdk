@@ -37,7 +37,7 @@ public class StructuredValueInstantiator extends Instantiator<StructuredValue> {
    @Override
    public StructuredValue apply( final Resource structuredValue ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( structuredValue );
-      final String deconstructionRule = propertyValue( structuredValue, bammc.deconstructionRule() ).getString();
+      final String deconstructionRule = attributeValue( structuredValue, bammc.deconstructionRule() ).getString();
       final List<Object> elements = getNodesFromList( structuredValue, bammc.elements() )
             .map( this::toElement )
             .collect( Collectors.toList() );

@@ -73,7 +73,7 @@
                 #title( $i18n.getText("docu.label.properties") "properties" "2" )
 
                         #foreach( $property in $aspectModelHelper.sortPropertiesByPreferredName( $aspectModel.getProperties(), $i18n.getLocale() ) )
-                #property( $property $aspectModelHelper $i18n "3" )
+                #property( $property $aspectModel $aspectModelHelper $i18n "3" )
             #end
             </div>
         #end

@@ -32,7 +32,7 @@ import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
 import io.openmanufacturing.sds.aspectmodel.generator.openapi.PagingOption;
-import io.openmanufacturing.sds.exeption.CommandException;
+import io.openmanufacturing.sds.exception.CommandException;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import picocli.CommandLine;

@@ -32,7 +32,7 @@ public class LanguageConstraintInstantiator extends Instantiator<LanguageConstra
    @Override
    public LanguageConstraint apply( final Resource languageConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( languageConstraint );
-      final String languageCode = propertyValue( languageConstraint, bammc.languageCode() ).getString();
+      final String languageCode = attributeValue( languageConstraint, bammc.languageCode() ).getString();
       return new DefaultLanguageConstraint( metaModelBaseAttributes, Locale.forLanguageTag( languageCode ) );
    }
 }
