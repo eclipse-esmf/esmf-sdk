@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  #  Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          echo '${{ toJSON(github) }}'
-          mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          mvn -B clean install
+          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
       - name: Run tests
         run: mvn -B clean install
