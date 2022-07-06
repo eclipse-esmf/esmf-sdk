@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel.versionupdate.migrator;
 
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,17 +64,19 @@ public abstract class AbstractUriRewriter extends AbstractSdsMigrator {
    public Model migrate( final Model sourceModel ) {
       final Model targetModel = ModelFactory.createDefaultModel();
 
-      final Map<String, String> targetPrefixes;
-      targetPrefixes = Namespace.createPrefixMap( getTargetKnownVersion() );
+      final Map<String, String> targetPrefixes = Namespace.createPrefixMap( getTargetKnownVersion() );
 
-      final Map<String, String> oldToNewNamespaces =
-            Namespace.createPrefixMap( getSourceKnownVersion() )
-                  .keySet()
-                  .stream()
-                  .filter( prefix -> sourceModel.getNsPrefixURI( prefix ) != null )
-                  .map( prefix -> new AbstractMap.SimpleEntry<>( sourceModel.getNsPrefixURI( prefix ), targetPrefixes.get( prefix ) ) )
-                  .filter( entry -> !entry.getKey().equals( entry.getValue() ) )
-                  .collect( Collectors.toMap( AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue ) );
+      final Map<String, String> sourcePrefixes = Namespace.createPrefixMap( getSourceKnownVersion() );
+      final Map<String, String> oldToNewNamespaces = new HashMap<>();
+      for ( final Map.Entry<String, String> targetEntry : targetPrefixes.entrySet() ) {
+         final String prefix = targetEntry.getKey();
+         if ( prefix != null ) {
+            final String sourceUri = sourcePrefixes.get( prefix );
+            if ( sourceUri != null && !sourceUri.equals( targetEntry.getValue() )) {
+               oldToNewNamespaces.put( sourceUri, targetEntry.getValue() );
+            }
+         }
+      }
 
       Streams.stream( sourceModel.listStatements() ).map( statement -> targetModel
             .createStatement(
