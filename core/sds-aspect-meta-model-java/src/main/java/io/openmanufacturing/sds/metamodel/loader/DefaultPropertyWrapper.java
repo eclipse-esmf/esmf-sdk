@@ -111,7 +111,9 @@ public class DefaultPropertyWrapper extends DefaultProperty {
          return false;
       }
       final DefaultPropertyWrapper that = (DefaultPropertyWrapper) o;
-      return optional == that.optional &&
+      return Objects.equals( getName(), that.getName() ) &&
+            Objects.equals( getAspectModelUrn(), that.getAspectModelUrn() ) &&
+            optional == that.optional &&
             notInPayload == that.notInPayload &&
             isAbstract == that.isAbstract &&
             Objects.equals( extends_, that.extends_ ) &&
