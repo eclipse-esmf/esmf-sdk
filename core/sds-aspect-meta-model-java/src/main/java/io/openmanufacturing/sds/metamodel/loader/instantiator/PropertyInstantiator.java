@@ -29,6 +29,7 @@ import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
+import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.DefaultPropertyWrapper;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
@@ -59,24 +60,21 @@ public class PropertyInstantiator extends Instantiator<Property> {
       final boolean isAbstract = property.getModel().contains( property, RDF.type, bamm.AbstractProperty() );
 
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( property );
-      final DefaultPropertyWrapper defaultProperty = new DefaultPropertyWrapper( metaModelBaseAttributes );
+      final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper( );
 
       if ( resourcePropertyMap.containsKey( property ) ) {
          final Property propertyInstance = resourcePropertyMap.get( property );
          resourcePropertyMap.remove( property );
          return propertyInstance;
       }
-      resourcePropertyMap.put( property, defaultProperty );
-
+      resourcePropertyMap.put( property, defaultPropertyWrapper );
+      DefaultProperty defProperty;
       if ( isAbstract ) {
-         defaultProperty.setCharacteristic( fallbackCharacteristic );
-         defaultProperty.setExampleValue( Optional.empty() );
-         defaultProperty.setPayloadName( Optional.empty() );
+         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( fallbackCharacteristic), Optional.empty(), isOptional,
+               isNotInPayload, payloadName, isAbstract, extends_ );
       } else {
          final Resource characteristicResource = attributeValue( property, bamm.characteristic() ).getResource();
          final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
-         defaultProperty.setCharacteristic( characteristic );
-
          final Optional<ScalarValue> exampleValue = optionalAttributeValue( property, bamm.exampleValue() )
                .flatMap( statement -> characteristic.getDataType()
                      .map( type -> {
@@ -93,14 +91,10 @@ public class PropertyInstantiator extends Instantiator<Property> {
                         return new DefaultScalarValue( value, type );
                      } ) );
 
-         defaultProperty.setExampleValue( exampleValue );
-         defaultProperty.setNotInPayload( isNotInPayload );
+         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( characteristic), exampleValue, isOptional,
+               isNotInPayload, payloadName, isAbstract, extends_ );
       }
-      defaultProperty.setOptional( isOptional );
-      defaultProperty.setPayloadName( payloadName );
-      defaultProperty.setAbstract( isAbstract );
-      defaultProperty.setExtends_( extends_ );
-
-      return defaultProperty;
+      defaultPropertyWrapper.setProperty( defProperty );
+      return defaultPropertyWrapper;
    }
 }
