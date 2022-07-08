@@ -140,7 +140,9 @@ public class DefaultProperty extends BaseImpl implements Property {
          return false;
       }
       final DefaultProperty that = (DefaultProperty) o;
-      return optional == that.optional &&
+      return Objects.equals( getName(), that.getName() ) &&
+            Objects.equals( getAspectModelUrn(), that.getAspectModelUrn() ) &&
+            optional == that.optional &&
             notInPayload == that.notInPayload &&
             isAbstract == that.isAbstract &&
             Objects.equals( characteristic, that.characteristic ) &&
