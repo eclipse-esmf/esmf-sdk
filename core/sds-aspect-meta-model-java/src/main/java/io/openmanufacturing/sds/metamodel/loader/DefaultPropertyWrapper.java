@@ -13,19 +13,17 @@
 
 package io.openmanufacturing.sds.metamodel.loader;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
-import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
 
 public class DefaultPropertyWrapper extends DefaultProperty {
    private DefaultProperty property;
-   public DefaultPropertyWrapper( ) {
-      super(null, null,null, false, false, null, false, null);
+   public DefaultPropertyWrapper( MetaModelBaseAttributes metaModelBaseAttributes ) {
+      super(metaModelBaseAttributes, null,null, false, false, null, false, null);
    }
 
    @Override
@@ -65,7 +63,9 @@ public class DefaultPropertyWrapper extends DefaultProperty {
 
    @Override
    public boolean equals( final Object o ) {
-      return property.equals( o );
+      if(o != null)
+         return o.equals( property );
+      return false;
    }
 
    @Override

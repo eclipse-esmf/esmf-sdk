@@ -60,7 +60,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
       final boolean isAbstract = property.getModel().contains( property, RDF.type, bamm.AbstractProperty() );
 
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( property );
-      final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper( );
+      final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper( metaModelBaseAttributes);
 
       if ( resourcePropertyMap.containsKey( property ) ) {
          final Property propertyInstance = resourcePropertyMap.get( property );
