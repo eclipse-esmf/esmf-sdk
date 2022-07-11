@@ -152,7 +152,7 @@ Characteristic specific macros will be joined together in the main macro (see ab
         <div class="table-cell pb-3 col-span-2">
             <ul class="reset-all-styles enum-values">
                 #foreach( $value in $enumeration.getValues() )
-                    <li>$value</li>
+                    <li>$value.getValue()</li>
                 #end
             </ul>
         </div>
@@ -255,7 +255,7 @@ Characteristic specific macros will be joined together in the main macro (see ab
                         #if( $value.equals( $state.getDefaultValue() ) )
                             <li><span class="font-bold">$value</span></li>
                         #else
-                            <li>$value</li>
+                            <li>$value.getValue()</li>
                         #end
                     #end
                 </ul>
