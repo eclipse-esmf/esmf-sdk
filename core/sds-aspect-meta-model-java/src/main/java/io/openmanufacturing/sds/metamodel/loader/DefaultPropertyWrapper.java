@@ -22,8 +22,9 @@ import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
 
 public class DefaultPropertyWrapper extends DefaultProperty {
    private DefaultProperty property;
+
    public DefaultPropertyWrapper( MetaModelBaseAttributes metaModelBaseAttributes ) {
-      super(metaModelBaseAttributes, null,null, false, false, null, false, null);
+      super( metaModelBaseAttributes, null, null, false, false, null, false, null );
    }
 
    @Override
@@ -63,7 +64,7 @@ public class DefaultPropertyWrapper extends DefaultProperty {
 
    @Override
    public boolean equals( final Object o ) {
-      if(o != null)
+      if ( o != null )
          return o.equals( property );
       return false;
    }
@@ -72,8 +73,8 @@ public class DefaultPropertyWrapper extends DefaultProperty {
    public int hashCode() {
       return property.hashCode();
    }
-   public void setProperty(DefaultProperty property)
-   {
+
+   public void setProperty( DefaultProperty property ) {
       this.property = property;
    }
 }
