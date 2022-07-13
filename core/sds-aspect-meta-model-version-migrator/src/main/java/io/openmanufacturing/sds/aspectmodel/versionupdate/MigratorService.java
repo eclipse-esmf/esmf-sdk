@@ -67,7 +67,6 @@ public class MigratorService {
     * which is then applied to the given source model.
     *
     * @param versionedModel the source model
-    * @param targetVersion the target meta model version
     * @return the resulting {@link VersionedModel} that corresponds to the input Aspect model, but with the new meta model version
     */
    public Try<VersionedModel> updateMetaModelVersion( final VersionedModel versionedModel ) {

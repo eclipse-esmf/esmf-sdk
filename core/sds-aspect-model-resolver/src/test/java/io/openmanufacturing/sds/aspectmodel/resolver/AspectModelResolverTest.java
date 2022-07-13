@@ -17,6 +17,7 @@ import static org.assertj.vavr.api.VavrAssertions.assertThat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
@@ -42,10 +43,11 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testLoadDataModelExpectSuccess( final KnownVersion metaModelVersion ) {
+   public void testLoadDataModelExpectSuccess( final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                                          .getResource( metaModelVersion.toString().toLowerCase() )
+                                         .toURI()
                                          .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#Test" );
@@ -68,10 +70,11 @@ public class AspectModelResolverTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testLoadModelWithVersionEqualToUnsupportedMetaModelVersionExpectSuccess(
-         final KnownVersion metaModelVersion ) {
+         final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                                          .getResource( metaModelVersion.toString().toLowerCase() )
+                                         .toURI()
                                          .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing.test:1.1.0#Test" );
@@ -93,10 +96,10 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testResolveReferencedModelFromMemoryExpectSuccess( final KnownVersion metaModelVersion ) {
+   public void testResolveReferencedModelFromMemoryExpectSuccess( final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                                         .toURI().getPath() );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final AspectModelUrn inputUrn = AspectModelUrn
@@ -134,10 +137,10 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testResolveReferencedModelExpectSuccess( final KnownVersion metaModelVersion ) {
+   public void testResolveReferencedModelExpectSuccess( final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                                         .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( "urn:bamm:io.openmanufacturing.test:aspect-model:AnotherTest:1.0.0" );
@@ -170,10 +173,11 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testResolutionMissingAspectExpectFailure( final KnownVersion metaModelVersion ) {
+   public void testResolutionMissingAspectExpectFailure( final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                                          .getResource( metaModelVersion.toString().toLowerCase() )
+                                         .toURI()
                                          .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
@@ -190,7 +194,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testResolutionMissingModelElementExpectFailure( final KnownVersion metaModelVersion ) throws Throwable {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                                         .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#FailingTest" );
@@ -205,10 +209,10 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testResolutionReferencedCharacteristicExpectSuccess( final KnownVersion metaModelVersion ) {
+   public void testResolutionReferencedCharacteristicExpectSuccess( final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                                         .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#ReferenceCharacteristicTest" );
@@ -255,7 +259,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testTransitiveReferenceExpectSuccess( final KnownVersion metaModelVersion ) throws Throwable {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                                         .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#TransitiveReferenceTest" );
@@ -275,10 +279,10 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testResolutionReferencedEntity( final KnownVersion metaModelVersion ) {
+   public void testResolutionReferencedEntity( final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                                         .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#ReferenceEntityTest" );
@@ -313,10 +317,10 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectReferencingAnotherAspectExpectSuccess( final KnownVersion metaModelVersion ) {
+   public void testAspectReferencingAnotherAspectExpectSuccess( final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                                         .toURI().getPath() );
 
       final String aspectUrn = "urn:bamm:io.openmanufacturing.test:2.0.0#Test";
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( aspectUrn );
