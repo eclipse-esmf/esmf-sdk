@@ -14,103 +14,103 @@
 
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-   <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-   <parent>
-      <groupId>io.openmanufacturing</groupId>
-      <artifactId>sds-sdk</artifactId>
-      <version>DEV-SNAPSHOT</version>
-      <relativePath>../../pom.xml</relativePath>
-   </parent>
+    <parent>
+        <groupId>io.openmanufacturing</groupId>
+        <artifactId>sds-sdk-parent</artifactId>
+        <version>DEV-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
-   <artifactId>sds-aspect-model-validator</artifactId>
-   <name>SDS Aspect Model Validator</name>
-   <packaging>jar</packaging>
+    <artifactId>sds-aspect-model-validator</artifactId>
+    <name>SDS Aspect Model Validator</name>
+    <packaging>jar</packaging>
 
-   <dependencies>
-      <dependency>
-         <groupId>org.apache.jena</groupId>
-         <artifactId>jena-core</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.topbraid</groupId>
-         <artifactId>shacl</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>io.openmanufacturing</groupId>
-         <artifactId>sds-aspect-meta-model</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>io.openmanufacturing</groupId>
-         <artifactId>sds-aspect-model-urn</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>io.openmanufacturing</groupId>
-         <artifactId>sds-aspect-meta-model-resolver</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>io.openmanufacturing</groupId>
-         <artifactId>sds-aspect-model-resolver</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.projectlombok</groupId>
-         <artifactId>lombok</artifactId>
-         <scope>provided</scope>
-      </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.topbraid</groupId>
+            <artifactId>shacl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.openmanufacturing</groupId>
+            <artifactId>sds-aspect-meta-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.openmanufacturing</groupId>
+            <artifactId>sds-aspect-model-urn</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.openmanufacturing</groupId>
+            <artifactId>sds-aspect-meta-model-resolver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.openmanufacturing</groupId>
+            <artifactId>sds-aspect-model-resolver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-      <!-- Test dependencies -->
-      <dependency>
-         <groupId>org.junit.jupiter</groupId>
-         <artifactId>junit-jupiter</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.assertj</groupId>
-         <artifactId>assertj-core</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>io.openmanufacturing</groupId>
-         <artifactId>sds-test-resources</artifactId>
-         <scope>test</scope>
-      </dependency>
-   </dependencies>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.openmanufacturing</groupId>
+            <artifactId>sds-test-resources</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-   <build>
-      <plugins>
-         <!-- Disable surefire report plugin. The report is created in the sds-sdk-test-report module -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-report-plugin</artifactId>
-            <version>${maven-surefire-report-plugin-version}</version>
-            <configuration>
-               <skipFailsafeReport>true</skipFailsafeReport>
-               <skipSurefireReport>true</skipSurefireReport>
-            </configuration>
-         </plugin>
-         <!-- Disable maven site plugin. It is not required since the report is created in the
-         sds-sdk-test-report module -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-site-plugin</artifactId>
-            <version>${maven-site-plugin-version}</version>
-            <configuration>
-               <skip>true</skip>
-            </configuration>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-               <annotationProcessorPaths>
-                  <path>
-                     <groupId>org.projectlombok</groupId>
-                     <artifactId>lombok</artifactId>
-                     <version>${lombok-version}</version>
-                  </path>
-               </annotationProcessorPaths>
-            </configuration>
-         </plugin>
-      </plugins>
-   </build>
+    <build>
+        <plugins>
+            <!-- Disable surefire report plugin. The report is created in the sds-sdk-test-report module -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${maven-surefire-report-plugin-version}</version>
+                <configuration>
+                    <skipFailsafeReport>true</skipFailsafeReport>
+                    <skipSurefireReport>true</skipSurefireReport>
+                </configuration>
+            </plugin>
+            <!-- Disable maven site plugin. It is not required since the report is created in the
+            sds-sdk-test-report module -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>${maven-site-plugin-version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok-version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
