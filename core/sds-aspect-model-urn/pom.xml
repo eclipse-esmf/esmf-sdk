@@ -15,54 +15,54 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>io.openmanufacturing</groupId>
-        <artifactId>sds-sdk-parent</artifactId>
-        <version>DEV-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>io.openmanufacturing</groupId>
+      <artifactId>sds-sdk</artifactId>
+      <version>DEV-SNAPSHOT</version>
+      <relativePath>../../pom.xml</relativePath>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>sds-aspect-model-urn</artifactId>
-    <name>SDS Aspect Model URN</name>
-    <packaging>jar</packaging>
+   <artifactId>sds-aspect-model-urn</artifactId>
+   <name>SDS Aspect Model URN</name>
+   <packaging>jar</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <scope>test</scope>
-        </dependency>
+   <dependencies>
+      <dependency>
+         <groupId>com.google.guava</groupId>
+         <artifactId>guava</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-annotations</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
+         <scope>test</scope>
+      </dependency>
 
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.jqwik</groupId>
-            <artifactId>jqwik</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+      <!-- Test dependencies -->
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.assertj</groupId>
+         <artifactId>assertj-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>net.jqwik</groupId>
+         <artifactId>jqwik</artifactId>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
 
 </project>

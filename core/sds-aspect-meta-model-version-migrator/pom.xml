@@ -15,57 +15,57 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <groupId>io.openmanufacturing</groupId>
-        <artifactId>sds-sdk-parent</artifactId>
-        <version>DEV-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>io.openmanufacturing</groupId>
+      <artifactId>sds-sdk</artifactId>
+      <version>DEV-SNAPSHOT</version>
+      <relativePath>../../pom.xml</relativePath>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>sds-aspect-meta-model-version-migrator</artifactId>
-    <name>SDS Aspect Meta Model Version Migrator</name>
-    <packaging>jar</packaging>
+   <artifactId>sds-aspect-meta-model-version-migrator</artifactId>
+   <name>SDS Aspect Meta Model Version Migrator</name>
+   <packaging>jar</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-resolver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-interface</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.classgraph</groupId>
-            <artifactId>classgraph</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.vavr</groupId>
-            <artifactId>vavr</artifactId>
-        </dependency>
+   <dependencies>
+      <dependency>
+         <groupId>io.openmanufacturing</groupId>
+         <artifactId>sds-aspect-meta-model-resolver</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.openmanufacturing</groupId>
+         <artifactId>sds-aspect-meta-model-interface</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.openmanufacturing</groupId>
+         <artifactId>sds-aspect-meta-model</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.github.classgraph</groupId>
+         <artifactId>classgraph</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.vavr</groupId>
+         <artifactId>vavr</artifactId>
+      </dependency>
 
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-vavr</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-test-aspect-models</artifactId>
-            <scope>test</scope>
-        </dependency>
+      <!-- Test dependencies -->
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.assertj</groupId>
+         <artifactId>assertj-vavr</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>io.openmanufacturing</groupId>
+         <artifactId>sds-test-aspect-models</artifactId>
+         <scope>test</scope>
+      </dependency>
 
 
-    </dependencies>
+   </dependencies>
 </project>

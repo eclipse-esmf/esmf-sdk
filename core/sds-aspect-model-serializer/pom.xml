@@ -17,7 +17,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <parent>
       <groupId>io.openmanufacturing</groupId>
-      <artifactId>sds-sdk-parent</artifactId>
+      <artifactId>sds-sdk</artifactId>
       <version>DEV-SNAPSHOT</version>
       <relativePath>../../pom.xml</relativePath>
    </parent>

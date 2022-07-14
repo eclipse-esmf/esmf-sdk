@@ -18,7 +18,7 @@
 
 
    <groupId>io.openmanufacturing</groupId>
-   <artifactId>sds-sdk-parent</artifactId>
+   <artifactId>sds-sdk</artifactId>
    <name>SDS SDK Parent</name>
    <version>DEV-SNAPSHOT</version>
    <packaging>pom</packaging>

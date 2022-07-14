@@ -15,34 +15,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+   <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>io.openmanufacturing</groupId>
-        <artifactId>sds-sdk-parent</artifactId>
-        <version>DEV-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
+   <parent>
+      <groupId>io.openmanufacturing</groupId>
+      <artifactId>sds-sdk</artifactId>
+      <version>DEV-SNAPSHOT</version>
+      <relativePath>../../pom.xml</relativePath>
+   </parent>
 
-    <artifactId>sds-test-aspect-models</artifactId>
-    <name>SDS Test Aspect Models</name>
+   <artifactId>sds-test-aspect-models</artifactId>
+   <name>SDS Test Aspect Models</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-urn</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model</artifactId>
-        </dependency>
-    </dependencies>
+   <dependencies>
+      <dependency>
+         <groupId>io.openmanufacturing</groupId>
+         <artifactId>sds-aspect-model-urn</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-text</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.jena</groupId>
+         <artifactId>jena-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.openmanufacturing</groupId>
+         <artifactId>sds-aspect-meta-model</artifactId>
+      </dependency>
+   </dependencies>
 </project>
