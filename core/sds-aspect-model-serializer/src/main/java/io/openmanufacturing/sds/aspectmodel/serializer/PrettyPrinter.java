@@ -178,7 +178,7 @@ public class PrettyPrinter {
       final Properties applicationProperties = loadProperties( "pom.properties" );
       final String version = applicationProperties.get( "aspect-meta-model-version" ).toString();
       if ( version.contains( "-M" ) ) {
-         writer.println( "# This model has been created by SDS SDK Version " + version + " and is not intended for productive usage." );
+         writer.println( "# This model was created using BAMM version " + version + " and is not intended for productive usage." );
          writer.println();
       }
    }
