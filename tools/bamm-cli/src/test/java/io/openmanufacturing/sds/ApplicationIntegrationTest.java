@@ -288,7 +288,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testPrettyPrintingToStdout( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "prettyprint" );
-      assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "@prefix" );
+      assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).contains( "@prefix" );
    }
 
    @ParameterizedTest
@@ -303,7 +303,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testVersionMigrationToStdout( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "migrate" );
-      assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "@prefix" );
+      assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).contains( "@prefix" );
    }
 
    @ParameterizedTest
