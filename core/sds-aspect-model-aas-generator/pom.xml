@@ -5,6 +5,7 @@
     <parent>
         <artifactId>sds-sdk-parent</artifactId>
         <groupId>io.openmanufacturing</groupId>
+        <name>SDS Aspect Model AAS Generator</name>
         <version>DEV-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
