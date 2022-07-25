@@ -27,7 +27,8 @@ import java.util.stream.Collectors;
  */
 public class ImportTracker {
    private static final String GENERICS_START = "<";
-
+   private static final String EMPTY_STRING = "";
+   private static final String COMMA_STRING = ",";
    private static final String TYPE_BRACKETS_AND_WHITESPACE = "[<>\\s]";
 
    private final Set<String> usedImports = new HashSet<>();
@@ -46,14 +47,10 @@ public class ImportTracker {
 
    public void trackPotentiallyParameterizedType( final String potentiallyParameterizedType ) {
       if ( potentiallyParameterizedType.contains( GENERICS_START ) ) {
-         final String rawContainerType = potentiallyParameterizedType.substring( 0,
-               potentiallyParameterizedType.indexOf( GENERICS_START ) );
-         final List<String> typeParameters = Arrays.asList( potentiallyParameterizedType
-               .substring( potentiallyParameterizedType.indexOf( GENERICS_START ) + 1 )
-               .replaceAll( TYPE_BRACKETS_AND_WHITESPACE, "" )
-               .split( "," ) );
-         usedImports.add( rawContainerType );
-         usedImports.addAll( typeParameters );
+         final List<String> types = Arrays.stream( potentiallyParameterizedType.split( GENERICS_START ) )
+               .flatMap( substring -> Arrays.stream( substring.split( COMMA_STRING ) ) )
+               .map( substring -> substring.replaceAll( TYPE_BRACKETS_AND_WHITESPACE, EMPTY_STRING ) ).collect( Collectors.toList() );
+         usedImports.addAll( types );
       } else {
          usedImports.add( potentiallyParameterizedType );
       }
