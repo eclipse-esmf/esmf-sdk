@@ -1,14 +1,18 @@
 #macro( javaPojoHashCodeMethod )
 @Override
 public int hashCode() {
-    return Objects.hash(
+return Objects.hash(
     #if ( $element.is( $ComplexType ) )
         #set( $complexElement = $ComplexType.cast( $element ) )
         #if ( $complexElement.getExtends().isPresent() )
-            super.hashCode(),
+        super.hashCode()
+            ${util.objectsHashCodeExpression( $element, true )}
+        #else
+            ${util.objectsHashCodeExpression( $element, false )}
         #end
+    #else
+        ${util.objectsHashCodeExpression( $element, false )}
     #end
-    ${util.objectsHashCodeExpression( $element )}
-    );
+);
 }
 #end
