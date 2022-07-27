@@ -46,7 +46,7 @@
     bamm:properties    ( ) .
 
 :AbstractEntity
-    a                  bamm-c:AbstractEntity ;
+    a                  bamm:AbstractEntity ;
     bamm:preferredName "Abstract test Entity"@en ;
     bamm:description   "This is an abstract test entity"@en ;
     bamm:properties    ( :entityProperty ) .
