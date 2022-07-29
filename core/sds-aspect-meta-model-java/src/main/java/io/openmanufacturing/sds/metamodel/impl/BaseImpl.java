@@ -12,6 +12,7 @@
  */
 package io.openmanufacturing.sds.metamodel.impl;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,7 +28,7 @@ import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 /**
  * The base implemenation of all model elements.
  */
-public abstract class BaseImpl implements Base, IsDescribed {
+public abstract class BaseImpl implements Base, IsDescribed, Comparable<BaseImpl> {
    private final KnownVersion metaModelVersion;
    private final Optional<AspectModelUrn> urn;
    private final String name;
@@ -120,5 +121,16 @@ public abstract class BaseImpl implements Base, IsDescribed {
    @Override
    public int hashCode() {
       return Objects.hash( urn, name );
+   }
+
+   @Override
+   public int compareTo( BaseImpl o ) {
+      if(this.urn.isPresent() && o.urn.isPresent())
+         return this.urn.get().compareTo( o.urn.get() );
+      return Comparator
+            .comparing( BaseImpl::getMetaModelVersion )
+            .thenComparing( BaseImpl::getName )
+            .thenComparing( BaseImpl::hasSyntheticName )
+            .compare( this, o );
    }
 }
