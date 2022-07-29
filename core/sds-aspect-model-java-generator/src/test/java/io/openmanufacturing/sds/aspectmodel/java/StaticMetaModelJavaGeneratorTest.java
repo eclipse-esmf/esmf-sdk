@@ -52,6 +52,7 @@ import io.openmanufacturing.sds.staticmetamodel.StaticUnitProperty;
 import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintContainerProperty;
 import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintProperty;
 import io.openmanufacturing.sds.test.TestAspect;
+import io.openmanufacturing.sds.test.TestSharedAspect;
 
 public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
@@ -64,6 +65,17 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
    public void testCodeGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> TestContext.generateStaticAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) ) ).doesNotThrowAnyException();
    }
+
+   /**
+    * Tests that code generation succeeds for all test models for the latest meta model version
+    * @param testAspect the injected Aspect model
+    */
+   @ParameterizedTest
+   @EnumSource( value = TestSharedAspect.class )
+   public void testCodeGenerationSharedAspect( final TestSharedAspect testAspect ) {
+      assertThatCode( () -> TestContext.generateStaticAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) ) ).doesNotThrowAnyException();
+   }
+
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
@@ -143,6 +155,18 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
    }
 
    @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testGenerateStaticMetaModelWithMeasurementTwo( final KnownVersion metaModelVersion ) throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENTITY;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+      result.assertNumberOfFiles( 8 );
+      result.assertFields( "MetaAspectWithExtendedEntity",
+            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithExtendedEntity" )
+                  .put( "TEST_PROPERTY", "StaticContainerProperty<TestEntity,java.util.LinkedHashSet<TestEntity>>").build(), new HashMap<>() );
+   }
+
+   @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testGenerateStaticMetaModelWithRecursiveAspectWithOptional( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL;
@@ -211,7 +235,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
    }
 
    @ParameterizedTest
-//   @MethodSource( value = "allVersions" )
+   //   @MethodSource( value = "allVersions" )
    @MethodSource( value = "latestVersion" )
    public void testGenerateStaticMetaModelWithConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINTS;
