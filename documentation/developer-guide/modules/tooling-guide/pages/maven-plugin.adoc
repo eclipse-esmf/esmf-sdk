@@ -16,7 +16,10 @@ To include the plugin, use the following dependency:
 </dependency>
 ----
 
-NOTE: the current implementation of the `sds-aspect-model-maven-plugin` uses the `FileSystemStrategy` to resolve Aspect Models. See xref:java-aspect-tooling.adoc#understanding-model-resolution for more information.
+NOTE: the current implementation of the `sds-aspect-model-maven-plugin` uses the
+`FileSystemStrategy` to resolve Aspect Models. See
+xref:java-aspect-tooling.adoc#understanding-model-resolution[Understanding Model
+Resolution] for more information.
 
 == Validating an Aspect Model
 
