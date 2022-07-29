@@ -31,7 +31,7 @@ import com.google.common.collect.ImmutableList;
  * @see <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/v1.0.0/namespaces.html">https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/v1.0.0/namespaces.html</a>
  *       for the definition of the URN.
  */
-public class AspectModelUrn {
+public class AspectModelUrn implements Comparable<AspectModelUrn> {
    public static final String NAMESPACE_REGEX = "([a-zA-Z0-9()+,\\-.:=@;$_!*']|%[0-9a-fA-F]{2})+";
    public static final Pattern NAMESPACE_PATTERN = Pattern.compile( NAMESPACE_REGEX );
    public static final String MODEL_ELEMENT_NAME_REGEX = "\\p{Alpha}\\p{Alnum}*";
@@ -350,5 +350,10 @@ public class AspectModelUrn {
    @Override
    public int hashCode() {
       return Objects.hash( urn );
+   }
+
+   @Override
+   public int compareTo( AspectModelUrn o ) {
+      return urn.compareTo( o.urn );
    }
 }
