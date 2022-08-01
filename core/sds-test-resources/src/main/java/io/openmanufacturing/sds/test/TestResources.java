@@ -13,18 +13,12 @@
 
 package io.openmanufacturing.sds.test;
 
-import java.io.File;
 import java.io.InputStream;
-import java.nio.file.Path;
-
-import org.apache.commons.lang3.ClassLoaderUtils;
-import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.VersionNumber;
 import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.ClasspathStrategy;
-import io.openmanufacturing.sds.aspectmodel.resolver.FileSystemStrategy;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
@@ -53,8 +47,7 @@ public class TestResources {
    }
 
    public static Try<VersionedModel> getModel( final TestSharedModel model, final KnownVersion knownVersion ) {
-      final String modelsRoot = "/valid/" + knownVersion.toString().toLowerCase();
-      var s = TestSharedModel.class.getResource(modelsRoot +"/"+ TestSharedAspect.RESOURCE_PATH +"/"+ model.getName()+".ttl").getPath();
-      return new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( new File(s.substring(0, s.indexOf( TestSharedModel.RESOURCE_PATH )  )).toPath()), model.getUrn() );
+      final String modelsRoot = "valid/" + knownVersion.toString().toLowerCase();
+      return new AspectModelResolver().resolveAspectModel( new ClasspathStrategy( modelsRoot ), model.getUrn() );
    }
 }

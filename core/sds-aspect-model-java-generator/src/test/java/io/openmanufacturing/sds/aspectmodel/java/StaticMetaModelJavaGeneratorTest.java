@@ -67,8 +67,8 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
    }
 
    /**
-    * Tests that code generation succeeds for all test models for the latest meta model version
-    * @param testAspect the injected Aspect model
+    * Tests that code generation succeeds for all test models, that have properties shared over two files, for the latest meta model version
+    * @param testAspect the injected shared Aspect models
     */
    @ParameterizedTest
    @EnumSource( value = TestSharedAspect.class )

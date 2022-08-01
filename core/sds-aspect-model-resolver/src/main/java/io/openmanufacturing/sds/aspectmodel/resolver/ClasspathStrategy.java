@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
@@ -86,7 +87,8 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
       return getClass().getClassLoader().getResource( directory + "/" + filename );
    }
 
-   protected Stream<String> filesInDirectory( final String directory ) {
+   protected Stream<String> filesInDirectory( String dir ) {
+      final String directory = dir.startsWith( "/" ) ? dir : "/" + dir;
       try {
          final InputStream directoryUrl = getClass().getResourceAsStream( directory );
          if ( directoryUrl == null ) {
@@ -117,13 +119,13 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
       return filesInDirectory( directory )
             .filter( name -> name.endsWith( ".ttl" ) )
             .map( name -> resourceUrl( directory, name ) )
-            .sorted()
+            .sorted( Comparator.comparing( URL::getPath ) )
             .map( this::loadFromUrl )
             .filter( tryModel -> tryModel
                   .map( model -> AspectModelResolver.containsDefinition( model, aspectModelUrn ) )
                   .getOrElse( false ) )
             .findFirst()
             .orElse( Try.failure( new FileNotFoundException(
-                  "The AspectModel: " + aspectModelUrn.toString() + " could not be found in directory: " + directory ) ) );
+                  "The AspectModel: " + aspectModelUrn + " could not be found in directory: " + directory ) ) );
    }
 }
