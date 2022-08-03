@@ -8,7 +8,6 @@ import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 
 public interface TestSharedModel {
    String TEST_NAMESPACE = "urn:bamm:io.openmanufacturing.test.shared:1.0.0#";
-   String RESOURCE_PATH = "io.openmanufacturing.test.shared/1.0.0";
    String getName();
 
    default AspectModelUrn getUrn() {

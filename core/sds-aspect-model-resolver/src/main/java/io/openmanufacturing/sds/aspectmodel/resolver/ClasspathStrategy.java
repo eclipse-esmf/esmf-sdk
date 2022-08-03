@@ -13,16 +13,23 @@
 
 package io.openmanufacturing.sds.aspectmodel.resolver;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,15 +94,38 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
       return getClass().getClassLoader().getResource( directory + "/" + filename );
    }
 
-   protected Stream<String> filesInDirectory( String dir ) {
-      final String directory = dir.startsWith( "/" ) ? dir : "/" + dir;
+   protected Stream<String> filesInDirectory( final String directory ) {
       try {
-         final InputStream directoryUrl = getClass().getResourceAsStream( directory );
-         if ( directoryUrl == null ) {
-            LOG.warn( "No such classpath directory {}", directory );
-            return Stream.empty();
+         final String url = getClass().getClassLoader().getResource( directory ).toString();
+         final int jarIndex = url.indexOf( ".jar" );
+         final String path = jarIndex > 0 ? url.substring( 0, jarIndex +4 ).replace( "jar:file:", "" ) : url;
+         final File jarFile = new File(path);
+         if(jarFile.isFile()) {
+            final List<String> fileList = new ArrayList<>();
+            final JarFile jar = new JarFile(jarFile);
+            final Enumeration<JarEntry> entries = jar.entries();
+            final String dir = directory.endsWith( "/" ) ? directory : directory + "/";
+            while(entries.hasMoreElements()) {
+               final String name = entries.nextElement().getName();
+               if(name.contains( dir ))
+               {
+                  final String fileName = name.replace( dir, "" );
+                  if(StringUtils.isNotBlank( fileName ))
+                  {
+                     fileList.add( fileName );
+                  }
+               }
+            }
+            jar.close();
+            return fileList.stream();
+         } else {
+            final InputStream directoryUrl = getClass().getClassLoader().getResourceAsStream( directory );
+            if ( directoryUrl == null ) {
+               LOG.warn( "No such classpath directory {}", directory );
+               return Stream.empty();
+            }
+            return Arrays.stream( IOUtils.toString( directoryUrl, StandardCharsets.UTF_8 ).split( "\\n" ) );
          }
-         return Arrays.stream( IOUtils.toString( directoryUrl, StandardCharsets.UTF_8 ).split( "\\n" ) );
       } catch ( final IOException exception ) {
          LOG.warn( "Could not list files in classpath directory {}", directory, exception );
          return Stream.empty();

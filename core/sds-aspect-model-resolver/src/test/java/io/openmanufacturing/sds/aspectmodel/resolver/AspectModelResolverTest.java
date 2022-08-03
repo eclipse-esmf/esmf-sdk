@@ -356,4 +356,15 @@ public class AspectModelResolverTest extends MetaModelVersions {
             .resolveAspectModel( strategy, AspectModelUrn.fromUrn( aspectUrn ) );
       Assertions.assertThat( result.isSuccess() ).describedAs( "Resolution of refined Property failed." ).isTrue();
    }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testResolveAspectContainingRefinedProperty2( final KnownVersion metaModelVersion ) {
+      final String aspectUrn = "urn:bamm:io.openmanufacturing.test:1.0.0#ReferenceCharacteristicTest";
+      final AspectModelResolver resolver = new AspectModelResolver();
+      final ClasspathStrategy strategy = new ClasspathStrategy( metaModelVersion.toString().toLowerCase() );
+      final Try<VersionedModel> result = resolver
+            .resolveAspectModel( strategy, AspectModelUrn.fromUrn( aspectUrn ) );
+      Assertions.assertThat( result.isSuccess() ).describedAs( "Resolution of refined Property failed." ).isTrue();
+   }
 }
