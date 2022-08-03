@@ -127,10 +127,10 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
       final String dir = directory.endsWith( "/" ) ? directory : directory + "/";
       while(entries.hasMoreElements()) {
          final String name = entries.nextElement().getName();
-         if(name.contains( dir ))
+         if(name.startsWith( dir ))
          {
             final String fileName = name.replace( dir, "" );
-            if(StringUtils.isNotBlank( fileName ))
+            if(StringUtils.isNotEmpty( fileName ))
             {
                fileList.add( fileName );
             }
