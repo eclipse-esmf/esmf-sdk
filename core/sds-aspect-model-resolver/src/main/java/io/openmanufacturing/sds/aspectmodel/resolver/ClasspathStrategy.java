@@ -101,35 +101,43 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
          final String path = jarIndex > 0 ? url.substring( 0, jarIndex +4 ).replace( "jar:file:", "" ) : url;
          final File jarFile = new File(path);
          if(jarFile.isFile()) {
-            final List<String> fileList = new ArrayList<>();
-            final JarFile jar = new JarFile(jarFile);
-            final Enumeration<JarEntry> entries = jar.entries();
-            final String dir = directory.endsWith( "/" ) ? directory : directory + "/";
-            while(entries.hasMoreElements()) {
-               final String name = entries.nextElement().getName();
-               if(name.contains( dir ))
-               {
-                  final String fileName = name.replace( dir, "" );
-                  if(StringUtils.isNotBlank( fileName ))
-                  {
-                     fileList.add( fileName );
-                  }
-               }
-            }
-            jar.close();
-            return fileList.stream();
+            return getFilesFromJar( directory, jarFile );
          } else {
-            final InputStream directoryUrl = getClass().getClassLoader().getResourceAsStream( directory );
-            if ( directoryUrl == null ) {
-               LOG.warn( "No such classpath directory {}", directory );
-               return Stream.empty();
-            }
-            return Arrays.stream( IOUtils.toString( directoryUrl, StandardCharsets.UTF_8 ).split( "\\n" ) );
+            return getFilesFromResources( directory );
          }
       } catch ( final IOException exception ) {
          LOG.warn( "Could not list files in classpath directory {}", directory, exception );
          return Stream.empty();
       }
+   }
+
+   private Stream<String> getFilesFromResources( String directory ) throws IOException {
+      final InputStream directoryUrl = getClass().getClassLoader().getResourceAsStream( directory );
+      if ( directoryUrl == null ) {
+         LOG.warn( "No such classpath directory {}", directory );
+         return Stream.empty();
+      }
+      return Arrays.stream( IOUtils.toString( directoryUrl, StandardCharsets.UTF_8 ).split( "\\n" ) );
+   }
+
+   private Stream<String> getFilesFromJar( String directory, File jarFile ) throws IOException {
+      final List<String> fileList = new ArrayList<>();
+      final JarFile jar = new JarFile( jarFile );
+      final Enumeration<JarEntry> entries = jar.entries();
+      final String dir = directory.endsWith( "/" ) ? directory : directory + "/";
+      while(entries.hasMoreElements()) {
+         final String name = entries.nextElement().getName();
+         if(name.contains( dir ))
+         {
+            final String fileName = name.replace( dir, "" );
+            if(StringUtils.isNotBlank( fileName ))
+            {
+               fileList.add( fileName );
+            }
+         }
+      }
+      jar.close();
+      return fileList.stream();
    }
 
    @Override
