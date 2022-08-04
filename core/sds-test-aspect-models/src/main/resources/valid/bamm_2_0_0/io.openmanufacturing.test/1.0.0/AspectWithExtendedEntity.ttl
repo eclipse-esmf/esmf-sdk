@@ -16,8 +16,7 @@
 @prefix unit:   <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithExtendedEntity
-    a               bamm:Aspect ;
+:AspectWithExtendedEntity a bamm:Aspect ;
     bamm:properties ( :testProperty ) ;
     bamm:operations ( ) .
 
@@ -29,29 +28,23 @@
               bamm:characteristic [ a             bamm-c:SortedSet ;
                                     bamm:dataType :TestEntity ] .
 
-:TestEntity
-    a               bamm:Entity ;
-    bamm:extends    :ParentTestEntity ;
+:TestEntity a bamm:Entity ;
+    bamm:extends :ParentTestEntity ;
     bamm:properties ( ) .
 
-:ParentTestEntity
-    a               bamm:AbstractEntity ;
-    bamm:extends    :ParentOfParentEntity ;
+:ParentTestEntity a bamm:AbstractEntity ;
+    bamm:extends  :ParentOfParentEntity ;
     bamm:properties ( :parentString ) .
 
-:ParentOfParentEntity
-    a               bamm:AbstractEntity ;
+:ParentOfParentEntity a bamm:AbstractEntity ;
     bamm:properties ( :parentOfParentString ) .
 
-:StringCode
-    a             bamm-c:Code ;
+:StringCode a bamm-c:Code ;
     bamm:dataType xsd:string .
 
-:parentString
-    a                   bamm:Property ;
+:parentString a bamm:Property ;
     bamm:characteristic :StringCode .
 
-:parentOfParentString
-    a                   bamm:Property ;
+:parentOfParentString a bamm:Property ;
     bamm:characteristic :StringCode .
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -97,8 +97,8 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
 
    protected Stream<String> filesInDirectory( final String directory ) {
       try {
-         final Optional<File> file = getDirectoryFile(directory);
-         if(file.isPresent() && file.get().isFile()) {
+         final Optional<File> file = getDirectoryFile( directory );
+         if ( file.isPresent() && file.get().isFile() ) {
             return getFilesFromJar( directory, file.get() );
          } else {
             return getFilesFromResources( directory );
@@ -110,15 +110,16 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
    }
 
    private Optional<File> getDirectoryFile( String directory ) {
+      // The incoming URL will look like this:  jar:file:/pathToJar/o.jar/packageName/className
+      // In case we run the code from a jar. Because of that we need to deconstruct the path to get the path to the jar only and remove the unwanted part of the URL.
       final URL url = getClass().getClassLoader().getResource( directory );
-      if(url == null)
-      {
+      if ( url == null ) {
          return Optional.empty();
       }
       final String urlString = url.toString();
       final int jarIndex = urlString.indexOf( ".jar" );
-      final String path = jarIndex > 0 ? urlString.substring( 0, jarIndex +4 ).replace( "jar:file:", "" ) : urlString;
-      return Optional.of(new File(path));
+      final String path = jarIndex > 0 ? urlString.substring( 0, jarIndex + 4 ).replace( "jar:file:", "" ) : urlString;
+      return Optional.of( new File( path ) );
    }
 
    private Stream<String> getFilesFromResources( String directory ) throws IOException {
@@ -135,13 +136,11 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
       final JarFile jar = new JarFile( jarFile );
       final Enumeration<JarEntry> entries = jar.entries();
       final String dir = directory.endsWith( "/" ) ? directory : directory + "/";
-      while(entries.hasMoreElements()) {
+      while ( entries.hasMoreElements() ) {
          final String name = entries.nextElement().getName();
-         if(name.startsWith( dir ))
-         {
+         if ( name.startsWith( dir ) ) {
             final String fileName = name.replace( dir, "" );
-            if(StringUtils.isNotEmpty( fileName ))
-            {
+            if ( StringUtils.isNotEmpty( fileName ) ) {
                fileList.add( fileName );
             }
          }

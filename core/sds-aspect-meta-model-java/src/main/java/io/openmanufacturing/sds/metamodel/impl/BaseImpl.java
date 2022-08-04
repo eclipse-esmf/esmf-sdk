@@ -125,7 +125,7 @@ public abstract class BaseImpl implements Base, IsDescribed, Comparable<BaseImpl
 
    @Override
    public int compareTo( BaseImpl o ) {
-      if(this.urn.isPresent() && o.urn.isPresent())
+      if ( this.urn.isPresent() && o.urn.isPresent() )
          return this.urn.get().compareTo( o.urn.get() );
       return Comparator
             .comparing( BaseImpl::getMetaModelVersion )

@@ -235,7 +235,6 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
    }
 
    @ParameterizedTest
-   //   @MethodSource( value = "allVersions" )
    @MethodSource( value = "latestVersion" )
    public void testGenerateStaticMetaModelWithConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINTS;
