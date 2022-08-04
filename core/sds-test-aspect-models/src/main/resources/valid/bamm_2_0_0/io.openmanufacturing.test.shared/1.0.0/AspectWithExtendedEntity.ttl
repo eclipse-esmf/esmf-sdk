@@ -1,0 +1,65 @@
+# Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix :       <urn:bamm:io.openmanufacturing.test.shared:1.0.0#> .
+@prefix bamm:   <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#> .
+@prefix unit:   <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithExtendedEntity
+    a               bamm:Aspect ;
+    bamm:name       "AspectWithExtendedEntity" ;
+    bamm:properties ( :testProperty ) ;
+    bamm:operations ( ) .
+
+:testProperty a bamm:Property ;
+              bamm:preferredName "Test Property"@en ;
+              bamm:description "This is a test property."@en ;
+              bamm:see <http://example.com/omp> ;
+              bamm:see <http://example.com/me> ;
+              bamm:characteristic [ a             bamm-c:SortedSet ;
+                                    bamm:name     "AspectWithExtendedEntity" ;
+                                    bamm:dataType :TestEntity ] .
+
+:TestEntity
+    a               bamm:Entity ;
+    bamm:extends    :ParentTestEntity ;
+    bamm:name       "TestEntity" ;
+    bamm:properties ( ) .
+
+:ParentTestEntity
+    a               bamm:AbstractEntity ;
+    bamm:extends    :ParentOfParentEntity ;
+    bamm:name       "ParentTestEntity" ;
+    bamm:properties ( :parentString ) .
+
+:ParentOfParentEntity
+    a               bamm:AbstractEntity ;
+    bamm:name       "ParentOfParentEntity" ;
+    bamm:properties ( :booleanProperty ) .
+
+:StringCode
+    a             bamm-c:Code ;
+    bamm:name     "StringCode" ;
+    bamm:dataType xsd:string .
+
+:parentString
+    a                   bamm:Property ;
+    bamm:name           "parentString" ;
+    bamm:characteristic :StringCode .
+
+:parentOfParentString
+    a                   bamm:Property ;
+    bamm:name           "parentOfParentString" ;
+    bamm:characteristic :StringCode .
+

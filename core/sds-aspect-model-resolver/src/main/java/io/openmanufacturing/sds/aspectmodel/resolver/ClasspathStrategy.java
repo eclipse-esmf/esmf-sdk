@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,15 +13,24 @@
 
 package io.openmanufacturing.sds.aspectmodel.resolver;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Optional;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,16 +97,56 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
 
    protected Stream<String> filesInDirectory( final String directory ) {
       try {
-         final InputStream directoryUrl = getClass().getResourceAsStream( directory );
-         if ( directoryUrl == null ) {
-            LOG.warn( "No such classpath directory {}", directory );
-            return Stream.empty();
+         final Optional<File> file = getDirectoryFile( directory );
+         if ( file.isPresent() && file.get().isFile() ) {
+            return getFilesFromJar( directory, file.get() );
+         } else {
+            return getFilesFromResources( directory );
          }
-         return Arrays.stream( IOUtils.toString( directoryUrl, StandardCharsets.UTF_8 ).split( "\\n" ) );
       } catch ( final IOException exception ) {
          LOG.warn( "Could not list files in classpath directory {}", directory, exception );
          return Stream.empty();
       }
+   }
+
+   private Optional<File> getDirectoryFile( String directory ) {
+      // The incoming URL will look like this:  jar:file:/pathToJar/o.jar/packageName/className
+      // In case we run the code from a jar. Because of that we need to deconstruct the path to get the path to the jar only and remove the unwanted part of the URL.
+      final URL url = getClass().getClassLoader().getResource( directory );
+      if ( url == null ) {
+         return Optional.empty();
+      }
+      final String urlString = url.toString();
+      final int jarIndex = urlString.indexOf( ".jar" );
+      final String path = jarIndex > 0 ? urlString.substring( 0, jarIndex + 4 ).replace( "jar:file:", "" ) : urlString;
+      return Optional.of( new File( path ) );
+   }
+
+   private Stream<String> getFilesFromResources( String directory ) throws IOException {
+      final InputStream directoryUrl = getClass().getClassLoader().getResourceAsStream( directory );
+      if ( directoryUrl == null ) {
+         LOG.warn( "No such classpath directory {}", directory );
+         return Stream.empty();
+      }
+      return Arrays.stream( IOUtils.toString( directoryUrl, StandardCharsets.UTF_8 ).split( "\\n" ) );
+   }
+
+   private Stream<String> getFilesFromJar( String directory, File jarFile ) throws IOException {
+      final List<String> fileList = new ArrayList<>();
+      final JarFile jar = new JarFile( jarFile );
+      final Enumeration<JarEntry> entries = jar.entries();
+      final String dir = directory.endsWith( "/" ) ? directory : directory + "/";
+      while ( entries.hasMoreElements() ) {
+         final String name = entries.nextElement().getName();
+         if ( name.startsWith( dir ) ) {
+            final String fileName = name.replace( dir, "" );
+            if ( StringUtils.isNotEmpty( fileName ) ) {
+               fileList.add( fileName );
+            }
+         }
+      }
+      jar.close();
+      return fileList.stream();
    }
 
    @Override
@@ -117,13 +166,13 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
       return filesInDirectory( directory )
             .filter( name -> name.endsWith( ".ttl" ) )
             .map( name -> resourceUrl( directory, name ) )
-            .sorted()
+            .sorted( Comparator.comparing( URL::getPath ) )
             .map( this::loadFromUrl )
             .filter( tryModel -> tryModel
                   .map( model -> AspectModelResolver.containsDefinition( model, aspectModelUrn ) )
                   .getOrElse( false ) )
             .findFirst()
             .orElse( Try.failure( new FileNotFoundException(
-                  "The AspectModel: " + aspectModelUrn.toString() + " could not be found in directory: " + directory ) ) );
+                  "The AspectModel: " + aspectModelUrn + " could not be found in directory: " + directory ) ) );
    }
 }

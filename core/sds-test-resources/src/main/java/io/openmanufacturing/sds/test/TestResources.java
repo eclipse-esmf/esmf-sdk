@@ -45,4 +45,9 @@ public class TestResources {
       final String modelsRoot = baseDirectory + "/" + knownVersion.toString().toLowerCase();
       return new AspectModelResolver().resolveAspectModel( new ClasspathStrategy( modelsRoot ), model.getUrn() );
    }
+
+   public static Try<VersionedModel> getModel( final TestSharedModel model, final KnownVersion knownVersion ) {
+      final String modelsRoot = "valid/" + knownVersion.toString().toLowerCase();
+      return new AspectModelResolver().resolveAspectModel( new ClasspathStrategy( modelsRoot ), model.getUrn() );
+   }
 }
