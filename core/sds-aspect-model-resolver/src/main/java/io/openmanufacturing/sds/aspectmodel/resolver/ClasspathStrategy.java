@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
@@ -96,17 +97,9 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
 
    protected Stream<String> filesInDirectory( final String directory ) {
       try {
-         final URL url = getClass().getClassLoader().getResource( directory );
-         if(url == null)
-         {
-            return Stream.empty();
-         }
-         final String urlString = url.toString();
-         final int jarIndex = urlString.indexOf( ".jar" );
-         final String path = jarIndex > 0 ? urlString.substring( 0, jarIndex +4 ).replace( "jar:file:", "" ) : urlString;
-         final File jarFile = new File(path);
-         if(jarFile.isFile()) {
-            return getFilesFromJar( directory, jarFile );
+         final Optional<File> file = getDirectoryFile(directory);
+         if(file.isPresent() && file.get().isFile()) {
+            return getFilesFromJar( directory, file.get() );
          } else {
             return getFilesFromResources( directory );
          }
@@ -114,6 +107,18 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
          LOG.warn( "Could not list files in classpath directory {}", directory, exception );
          return Stream.empty();
       }
+   }
+
+   private Optional<File> getDirectoryFile( String directory ) {
+      final URL url = getClass().getClassLoader().getResource( directory );
+      if(url == null)
+      {
+         return Optional.empty();
+      }
+      final String urlString = url.toString();
+      final int jarIndex = urlString.indexOf( ".jar" );
+      final String path = jarIndex > 0 ? urlString.substring( 0, jarIndex +4 ).replace( "jar:file:", "" ) : urlString;
+      return Optional.of(new File(path));
    }
 
    private Stream<String> getFilesFromResources( String directory ) throws IOException {
