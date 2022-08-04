@@ -96,9 +96,14 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
 
    protected Stream<String> filesInDirectory( final String directory ) {
       try {
-         final String url = getClass().getClassLoader().getResource( directory ).toString();
-         final int jarIndex = url.indexOf( ".jar" );
-         final String path = jarIndex > 0 ? url.substring( 0, jarIndex +4 ).replace( "jar:file:", "" ) : url;
+         final URL url = getClass().getClassLoader().getResource( directory );
+         if(url == null)
+         {
+            return Stream.empty();
+         }
+         final String urlString = url.toString();
+         final int jarIndex = urlString.indexOf( ".jar" );
+         final String path = jarIndex > 0 ? urlString.substring( 0, jarIndex +4 ).replace( "jar:file:", "" ) : urlString;
          final File jarFile = new File(path);
          if(jarFile.isFile()) {
             return getFilesFromJar( directory, jarFile );
