@@ -24,6 +24,8 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
+import io.openmanufacturing.sds.test.TestSharedAspect;
+import io.openmanufacturing.sds.test.TestSharedModel;
 
 abstract class StaticMetaModelGeneratorTest extends MetaModelVersions {
 
@@ -36,6 +38,12 @@ abstract class StaticMetaModelGeneratorTest extends MetaModelVersions {
    }
 
    Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion version ) {
+      final VersionedModel model = TestResources.getModel( aspect, version ).get();
+      final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( model, false, false, null );
+      final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( model, false, null );
+      return List.of( pojoGenerator, staticGenerator );
+   }
+   Collection<JavaGenerator> getGenerators( final TestSharedAspect aspect, final KnownVersion version ) {
       final VersionedModel model = TestResources.getModel( aspect, version ).get();
       final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( model, false, false, null );
       final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( model, false, null );

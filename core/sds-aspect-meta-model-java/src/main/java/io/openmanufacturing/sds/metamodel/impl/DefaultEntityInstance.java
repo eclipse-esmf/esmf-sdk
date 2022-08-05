@@ -45,11 +45,6 @@ public class DefaultEntityInstance extends BaseImpl implements EntityInstance {
    }
 
    @Override
-   public int compareTo( final EntityInstance other ) {
-      return getName().compareTo( other.getName() );
-   }
-
-   @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
       return visitor.visitEntityInstance( this, context );
    }

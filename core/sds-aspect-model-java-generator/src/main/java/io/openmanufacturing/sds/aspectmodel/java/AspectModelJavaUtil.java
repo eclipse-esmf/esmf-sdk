@@ -535,11 +535,15 @@ public class AspectModelJavaUtil {
             .collect( Collectors.joining( " && " ) );
    }
 
-   public static String objectsHashCodeExpression( final StructureElement element ) {
-      return element.getProperties().stream()
+   public static String objectsHashCodeExpression( final StructureElement element, final boolean needsLeadingComma ) {
+      final String elementString = element.getProperties().stream()
             .filter( property -> !property.isAbstract() )
             .map( Property::getPayloadName )
             .collect( Collectors.joining( ", " ) );
+      if ( StringUtils.isNotBlank( elementString ) && needsLeadingComma ) {
+         return ", " + elementString;
+      }
+      return elementString;
    }
 
    /**
