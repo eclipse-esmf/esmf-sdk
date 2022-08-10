@@ -57,6 +57,10 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-shacl</artifactId>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>

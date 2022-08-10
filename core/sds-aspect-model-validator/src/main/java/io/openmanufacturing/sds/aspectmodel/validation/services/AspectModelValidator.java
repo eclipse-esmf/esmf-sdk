@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,12 +13,15 @@
 
 package io.openmanufacturing.sds.aspectmodel.validation.services;
 
-import static io.vavr.API.*;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
 import static io.vavr.Predicates.instanceOf;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.jena.query.ARQ;
@@ -43,6 +46,8 @@ import io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidVersionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.shacl.ShaclValidator;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationError;
 import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
 import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReportBuilder;
@@ -55,6 +60,7 @@ public class AspectModelValidator {
 
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelValidator.class );
    private final SdsAspectMetaModelResourceResolver aspectMetaModelResourceResolver;
+   private final ShaclValidator shaclValidator;
 
    private final Match.Case<RiotException, ValidationReport.InvalidReport> riotExceptionHandler =
          Case( $( instanceOf( RiotException.class ) ), riotException -> {
@@ -97,6 +103,8 @@ public class AspectModelValidator {
       ARQ.init();
       aspectMetaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
       ValidationEngineFactory.set( new BammValidationEngineFactory() );
+      shaclValidator = new ShaclValidator( aspectMetaModelResourceResolver.loadShapesModel( KnownVersion.getLatest() )
+            .getOrElseThrow( () -> new RuntimeException( "Could not load meta model shapes" ) ) );
    }
 
    /**
@@ -134,11 +142,24 @@ public class AspectModelValidator {
       ).get();
    }
 
+   /**
+    * Validates a single model element
+    * @param element the aspect model element to validate
+    * @return the list of violations
+    */
+   public List<Violation> validateElement( final Resource element ) {
+      return shaclValidator.validateElement( element );
+   }
+
+   public List<Violation> validateElements( final List<Resource> elements ) {
+      return shaclValidator.validateElements( elements );
+   }
+
    private String getValidationResultField( final Resource validationResultResource, final Property property ) {
       return Optional.ofNullable( validationResultResource.getProperty( property ) )
-                     .map( Statement::getObject )
-                     .map( RDFNode::toString )
-                     .orElse( "" );
+            .map( Statement::getObject )
+            .map( RDFNode::toString )
+            .orElse( "" );
    }
 
    private Collection<ValidationError.Semantic> buildSemanticValidationErrors( final Resource report ) {
