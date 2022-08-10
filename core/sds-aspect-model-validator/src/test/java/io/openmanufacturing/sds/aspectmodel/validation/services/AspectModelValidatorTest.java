@@ -128,6 +128,18 @@ public class AspectModelValidatorTest extends MetaModelVersions {
          report.getValidationErrors().forEach( System.out::println );
       }
       assertThat( report.conforms() ).isTrue();
+
+      final List<String> elements = versionedModel.getRawModel().listStatements( null, RDF.type, (RDFNode) null )
+            .mapWith( Statement::getSubject )
+            .filterKeep( Resource::isURIResource )
+            .mapWith( Resource::getURI )
+            .toList();
+
+      for ( final String elementUri : elements ) {
+         final Resource element = versionedModel.getModel().createResource( elementUri );
+         final List<Violation> violations = service.validateElement( element );
+         assertThat( violations ).isEmpty();
+      }
    }
 
    @ParameterizedTest
@@ -338,32 +350,6 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             return null;
          }
       } );
-   }
-
-   @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_EVENT",
-         "ASPECT_WITH_STRING_ENUMERATION",
-         "ASPECT_WITH_USED_AND_UNUSED_EITHER"
-   } )
-   public void testValidateTestAspectModel( final TestAspect testAspect ) {
-      final Try<VersionedModel> tryModel = TestResources.getModel( testAspect, KnownVersion.getLatest() );
-      final VersionedModel versionedModel = tryModel.get();
-
-      final ValidationReport report = service.validate( tryModel );
-      assertThat( report.conforms() ).isTrue();
-
-      final List<String> elements = versionedModel.getRawModel().listStatements( null, RDF.type, (RDFNode) null )
-            .mapWith( Statement::getSubject )
-            .filterKeep( Resource::isURIResource )
-            .mapWith( Resource::getURI )
-            .toList();
-
-      for ( final String elementUri : elements ) {
-         final Resource element = versionedModel.getModel().createResource( elementUri );
-         final List<Violation> violations = service.validateElement( element );
-         assertThat( violations ).isEmpty();
-      }
    }
 
    @Test
