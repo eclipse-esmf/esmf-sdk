@@ -31,8 +31,8 @@
       bamm:preferredName "Test Fixed Point"@en ;
       bamm:description "This is a test fixed point constraint."@en ;
       bamm:see <http://example.com/omp> ;
-      bamm-c:scale "5"^^xsd:nonNegativeInteger ;
-      bamm-c:integer "3"^^xsd:nonNegativeInteger ;
+      bamm-c:scale "5"^^xsd:positiveInteger ;
+      bamm-c:integer "3"^^xsd:positiveInteger ;
    ] ;
    bamm-c:baseCharacteristic :Measurement .
 

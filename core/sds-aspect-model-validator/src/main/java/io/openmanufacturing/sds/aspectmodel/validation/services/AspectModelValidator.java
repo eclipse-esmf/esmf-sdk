@@ -127,7 +127,7 @@ public class AspectModelValidator {
 
          return metaModelVersion
                .flatMap( aspectMetaModelResourceResolver::loadShapesModel ).map( shapesModel -> {
-                  final Resource report = ValidationUtil.validateModel( dataModel, shapesModel, true );
+                  final Resource report = ValidationUtil.validateModel( dataModel, shapesModel, false );
 
                   if ( report.getProperty( SH.conforms ).getObject().asLiteral().getBoolean() ) {
                      return new ValidationReportBuilder().buildValidReport();
