@@ -126,7 +126,7 @@ public class AspectModelValidator {
 
          return metaModelVersion
                .flatMap( aspectMetaModelResourceResolver::loadShapesModel ).map( shapesModel -> {
-                  final Resource report = ValidationUtil.validateModel( dataModel, shapesModel, true );
+                  final Resource report = ValidationUtil.validateModel( dataModel, shapesModel, false );
 
                   if ( report.getProperty( SH.conforms ).getObject().asLiteral().getBoolean() ) {
                      // The SHACL validation succeeded. But to catch false positives, also try to load the model
