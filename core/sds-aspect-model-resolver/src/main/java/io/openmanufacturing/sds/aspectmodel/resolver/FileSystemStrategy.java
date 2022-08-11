@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -80,17 +80,16 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
             aspectModelUrn.getName(), directory );
 
       return Arrays.stream( Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} ) )
-                   .filter( File::isFile )
-                   .filter( file -> file.getName().endsWith( ".ttl" ) )
-                   .map( File::toURI )
-                   .sorted()
-                   .map( this::loadFromUri )
-                   .filter( tryModel -> tryModel
-                         .map( model -> AspectModelResolver.containsDefinition( model, aspectModelUrn ) )
-                         .getOrElse( false ) )
-                   .findFirst()
-                   .orElse( Try.failure( new FileNotFoundException(
-                         "The AspectModel: " + aspectModelUrn.toString() + " could not be found in directory: "
-                               + directory ) ) );
+            .filter( File::isFile )
+            .filter( file -> file.getName().endsWith( ".ttl" ) )
+            .map( File::toURI )
+            .sorted()
+            .map( this::loadFromUri )
+            .filter( tryModel -> tryModel
+                  .map( model -> AspectModelResolver.containsDefinition( model, aspectModelUrn ) )
+                  .getOrElse( false ) )
+            .findFirst()
+            .orElse( Try.failure( new FileNotFoundException(
+                  "The model file " + aspectModelUrn.toString() + " could not be found in directory: " + directory ) ) );
    }
 }

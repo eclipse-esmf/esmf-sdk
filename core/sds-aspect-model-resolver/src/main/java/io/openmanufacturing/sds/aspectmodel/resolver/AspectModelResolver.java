@@ -84,7 +84,7 @@ public class AspectModelResolver {
 
       if ( mergedModel.isFailure() ) {
          if ( mergedModel.getCause() instanceof FileNotFoundException ) {
-            return Try.failure( new ModelResolutionException( mergedModel.getCause() ) );
+            return Try.failure( new ModelResolutionException( "While trying to resolve " + input + ": " + mergedModel.getCause() ) );
          }
          return Try.failure( mergedModel.getCause() );
       }
@@ -133,6 +133,14 @@ public class AspectModelResolver {
       return model.contains( model.createResource( urn.toString() ), RDF.type, (RDFNode) null );
    }
 
+   /**
+    * The main model resolution method that takes an Aspect Model element URN and a resolution strategy as input.
+    * The strategy is applied to the URN to load a model, and then repeated for all URNs in the loaded model that
+    * have not yet been loaded.
+    * @param urn the Aspect Model element URN
+    * @param resolutionStrategy the resolution strategy that knowns how to turn a URN into a Model
+    * @return the fully resolved model, or a failure if one of the transitively referenced elements can't be found
+    */
    private Try<Model> resolve( final String urn, final ResolutionStrategy resolutionStrategy ) {
       final Model result = ModelFactory.createDefaultModel();
       final Stack<String> unresolvedUrns = new Stack<>();
@@ -147,14 +155,17 @@ public class AspectModelResolver {
          }
          final Model model = resolvedModel.get();
 
-         // Merge the resolved model into the target if it was not already merged before
-         // (because the model contains more than one definition)
+         // Merge the resolved model into the target if it was not already merged before.
+         // It could have been merged before when the model contains another model definition that was already resolved
          if ( !mergedModels.contains( model ) ) {
             mergeModels( result, model );
             mergedModels.add( model );
          }
          for ( final String element : getAllUrnsInModel( model ) ) {
             if ( !result.contains( model.createResource( element ), RDF.type, (RDFNode) null )
+                  // Backwards compatibility with BAMM 1.0.0
+                  && !result.contains( model.createResource( element ), model.createProperty( "urn:bamm:io.openmanufacturing:meta-model:1.0.0#refines" ),
+                  (RDFNode) null )
                   && !unresolvedUrns.contains( element ) ) {
                unresolvedUrns.push( element );
             }
@@ -166,6 +177,14 @@ public class AspectModelResolver {
 
    private final Model EMPTY_MODEL = ModelFactory.createDefaultModel();
 
+   /**
+    * Applies a {@link ResolutionStrategy} to a URI to be resolved, but only if the URI is actually a valid {@link AspectModelUrn}.
+    * For meta model elements or other URIs, an empty model is returned. This method returns only a failure, when the used resolution
+    * strategy fails.
+    * @param urn the URN to resolve
+    * @param resolutionStrategy the resolution strategy to apply
+    * @return the model containing the defintion of the given model element
+    */
    private Try<Model> getModelForUrn( final String urn, final ResolutionStrategy resolutionStrategy ) {
       if ( urn.startsWith( RDF.getURI() ) || urn.startsWith( XSD.getURI() ) ) {
          return Try.success( EMPTY_MODEL );
@@ -189,6 +208,15 @@ public class AspectModelResolver {
       }
    }
 
+   /**
+    * Defensively merge a model into an existing target model. This means:
+    * <ul>
+    *    <li>Prefixes are only added when they are not already present, i.e., a model won't overwrite the empty prefix of the target model</li>
+    *    <li>Statements that have a blank node (including RDF lists) as their object won't be added</li>
+    * </ul>
+    * @param target the model to merge into
+    * @param other the model to be merged
+    */
    private void mergeModels( final Model target, final Model other ) {
       for ( final Map.Entry<String, String> prefixEntry : other.getNsPrefixMap().entrySet() ) {
          if ( !target.getNsPrefixMap().containsKey( prefixEntry.getKey() ) ) {
