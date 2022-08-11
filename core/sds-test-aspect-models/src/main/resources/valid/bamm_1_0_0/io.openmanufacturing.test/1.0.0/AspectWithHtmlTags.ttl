@@ -14,8 +14,8 @@
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithHTMLTags a bamm:Aspect ;
-   bamm:name "AspectWithHTMLTags" ;
+:AspectWithHtmlTags a bamm:Aspect ;
+   bamm:name "AspectWithHtmlTags" ;
    bamm:preferredName "Aspect With <img src=xss.png onerror=alert('Boom!')> Entity"@en ;
    bamm:description "Aspect With <p>inside html tag</p> Entity"@en ;
    bamm:properties ( :testEntity ) ;
