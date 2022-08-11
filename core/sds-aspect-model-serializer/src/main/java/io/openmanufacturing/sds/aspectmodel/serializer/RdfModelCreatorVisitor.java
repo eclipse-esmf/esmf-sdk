@@ -410,9 +410,9 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Resource resource = getElementResource( fixedPointConstraint );
       model.add( resource, RDF.type, bammc.FixedPointConstraint() );
       model.add( resource, bammc.integer(),
-            serializeTypedValue( fixedPointConstraint.getInteger().toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) );
+            serializeTypedValue( fixedPointConstraint.getInteger().toString(), ExtendedXsdDataType.POSITIVE_INTEGER ) );
       model.add( resource, bammc.scale(),
-            serializeTypedValue( fixedPointConstraint.getScale().toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) );
+            serializeTypedValue( fixedPointConstraint.getScale().toString(), ExtendedXsdDataType.POSITIVE_INTEGER ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
