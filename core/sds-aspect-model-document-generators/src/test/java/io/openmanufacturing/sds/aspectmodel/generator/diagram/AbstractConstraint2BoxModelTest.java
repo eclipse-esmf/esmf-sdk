@@ -29,14 +29,14 @@ public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions 
 
    protected String boxSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier ) {
       if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ) {
-         return String.format( ":%s a :Box", constraintIdentifier );
+         return String.format( "%s a :Box", constraintIdentifier.equals( "*" ) ? "*" : ":" + constraintIdentifier );
       }
       return ":TestConstraintConstraint a :Box";
    }
 
    protected String entriesSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier ) {
       if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ) {
-         return String.format( ":%s :entries *", constraintIdentifier );
+         return String.format( "%s :entries *", constraintIdentifier.equals( "*" ) ? "*" : ":" + constraintIdentifier );
       }
       return ":TestConstraintConstraint :entries *";
    }

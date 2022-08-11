@@ -78,8 +78,8 @@
    bamm:description "Test Constraint"@en ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
-      bamm-c:minValue "10"^^xsd:int ;
-      bamm-c:maxValue "15"^^xsd:int ;
+      bamm-c:minValue "10"^^xsd:integer ;
+      bamm-c:maxValue "15"^^xsd:integer ;
       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
@@ -90,8 +90,8 @@
    bamm:description "Test Constraint"@en ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
-      bamm-c:minValue "100"^^xsd:int ;
-      bamm-c:maxValue "112"^^xsd:int ;
+      bamm-c:minValue "100.0"^^xsd:float ;
+      bamm-c:maxValue "112.0"^^xsd:float ;
       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
