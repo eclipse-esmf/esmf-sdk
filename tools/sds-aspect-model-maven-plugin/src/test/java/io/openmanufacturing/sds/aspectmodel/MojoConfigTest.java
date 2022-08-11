@@ -30,9 +30,7 @@ public class MojoConfigTest extends AspectModelMojoTest {
       final Mojo validate = lookupMojo( "validate", testPom );
       assertThatCode( validate::execute )
             .isInstanceOf( MojoFailureException.class )
-            .hasMessageContaining( "Validation report: Validation failed: \n"
-                  + "The Aspect Model could not be validated: Model could not be resolved entirely: The AspectModel: "
-                  + "urn:bamm:io.openmanufacturing.test:1.0.0#Aspect could not be found in directory:" );
+            .hasMessageContaining( "Validation report: Validation failed" );
    }
 
    @Test
