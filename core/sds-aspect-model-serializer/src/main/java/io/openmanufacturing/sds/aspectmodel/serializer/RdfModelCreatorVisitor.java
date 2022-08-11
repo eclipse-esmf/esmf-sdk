@@ -175,7 +175,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @SuppressWarnings( "squid:S2250" )
    // Amount of elements in list is regarding amount of properties in Aspect Model. Even in bigger aspects this should not lead to performance issues
-   private Model serializeProperties( final Resource elementResource, final HasProperties element ) {
+   private Model serializePropertiesOrParameters( final Resource elementResource, final HasProperties element, final org.apache.jena.rdf.model.Property theProperty ) {
       final Model model = ModelFactory.createDefaultModel();
       final List<RDFNode> propertiesList = new ArrayList<>();
       if ( resourceList.contains( elementResource ) ) {
@@ -202,8 +202,16 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
                return propertyModel;
             } ).forEach( model::add );
 
-      model.add( elementResource, bamm.properties(), model.createList( propertiesList.iterator() ) );
+      model.add( elementResource, theProperty, model.createList( propertiesList.iterator() ) );
       return model;
+   }
+
+   private Model serializeParameters( final Resource elementResource, final HasProperties element ) {
+      return serializePropertiesOrParameters( elementResource, element, bamm.parameters() );
+   }
+
+   private Model serializeProperties( final Resource elementResource, final HasProperties element ) {
+      return serializePropertiesOrParameters( elementResource, element, bamm.properties() );
    }
 
    private Resource serializeAnonymousPropertyNodes( final Property property, final Model propertyModel, final Resource propertyResource ) {
@@ -675,7 +683,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Resource resource = getElementResource( event );
       model.add( resource, RDF.type, bamm.Event() );
       model.add( serializeDescriptions( resource, event ) );
-      model.add( serializeProperties( resource, event ) );
+      model.add( serializeParameters( resource, event ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
