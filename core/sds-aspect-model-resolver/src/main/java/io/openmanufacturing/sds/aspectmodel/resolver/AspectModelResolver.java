@@ -37,6 +37,7 @@ import io.openmanufacturing.sds.aspectmodel.VersionNumber;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.urn.ElementType;
+import io.openmanufacturing.sds.aspectmodel.urn.UrnSyntaxException;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorFactory;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorService;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorServiceLoader;
@@ -170,16 +171,22 @@ public class AspectModelResolver {
          return Try.success( EMPTY_MODEL );
       }
 
-      final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( urn );
-      if ( aspectModelUrn.getElementType() != ElementType.NONE ) {
+      try {
+         final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( urn );
+         if ( aspectModelUrn.getElementType() != ElementType.NONE ) {
+            return Try.success( EMPTY_MODEL );
+         }
+         return resolutionStrategy.apply( aspectModelUrn ).flatMap( model -> {
+            if ( !model.contains( model.createResource( urn ), RDF.type, (RDFNode) null ) ) {
+               return Try.failure( new ModelResolutionException( "Resolution strategy returned a model which does contain element definition for " + urn ) );
+            }
+            return Try.success( model );
+         } );
+      } catch ( final UrnSyntaxException e ) {
+         // If it's no valid Aspect Model URN but some other URI (e.g., a bamm:see value), there is nothing
+         // to resolve, so we return just an empty model
          return Try.success( EMPTY_MODEL );
       }
-      return resolutionStrategy.apply( aspectModelUrn ).flatMap( model -> {
-         if ( !model.contains( model.createResource( urn ), RDF.type, (RDFNode) null ) ) {
-            return Try.failure( new ModelResolutionException( "Resolution strategy returned a model which does contain element definition for " + urn ) );
-         }
-         return Try.success( model );
-      } );
    }
 
    private void mergeModels( final Model target, final Model other ) {
@@ -193,8 +200,13 @@ public class AspectModelResolver {
          final Statement statement = it.next();
 
          if ( target.contains( statement.getSubject(), statement.getPredicate(), (RDFNode) null ) ) {
-            // Only add the assertion that is already present in the target model if the value is a language string
+            // If the value is a language string, add the additional assertion
             if ( statement.getObject().isLiteral() && !statement.getLiteral().getLanguage().isEmpty() ) {
+               target.add( statement );
+            }
+            // If the value is a named resource, also add the additional assertion. This for example
+            // is the case with multiple bamm:see assertions
+            if ( statement.getObject().isResource() && statement.getResource().isURIResource() ) {
                target.add( statement );
             }
          } else {
