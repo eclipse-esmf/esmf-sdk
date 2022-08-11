@@ -41,7 +41,6 @@
       bamm:preferredName "Test Constraint Two"@en ;
       bamm:description "Test Constraint Two"@en ;
       bamm:see <http://example.com/omp> ;
-      bamm:see <http://example.com/me> ;
       bamm-c:minValue "5"^^xsd:nonNegativeInteger ;
       bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
    ] ;

@@ -129,10 +129,10 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
          qexec.execConstruct( queryResult );
       }
 
-      assertThat( queryResult.listStatements( context.selector( ":AspectWithOptionalPropertyAspect_To_testPropertyProperty a :Edge" ) )
+      assertThat( queryResult.listStatements( context.selector( ":AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty a :Edge" ) )
             .toList() ).hasSize( 1 );
       assertThat(
-            queryResult.listStatements( context.selector( ":AspectWithOptionalPropertyAspect_To_testPropertyProperty :title property (optional) (test)" ) )
+            queryResult.listStatements( context.selector( ":AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty :title property (optional) (test)" ) )
                   .toList() ).hasSize( 1 );
    }
 }

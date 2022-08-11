@@ -139,6 +139,10 @@ public class BAMM implements Namespace {
       return property( "properties" );
    }
 
+   public Property parameters() {
+      return property( "parameters" );
+   }
+
    public Property operations() {
       return property( "operations" );
    }
