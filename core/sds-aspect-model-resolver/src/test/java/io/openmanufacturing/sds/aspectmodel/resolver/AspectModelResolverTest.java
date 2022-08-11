@@ -205,8 +205,6 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
       assertThat( result ).isFailure();
       assertThat( result ).failBecauseOf( ModelResolutionException.class );
-      org.assertj.core.api.Assertions
-            .assertThat( result.getCause().getCause() ).isExactlyInstanceOf( FileNotFoundException.class );
    }
 
    @ParameterizedTest
