@@ -21,8 +21,6 @@
    bamm:operations ( ) .
 
 :enumerationProperty a bamm:Property ;
-   bamm:preferredName ""@en ;
-   bamm:description ""@en ;
    bamm:characteristic [
      a bamm-c:Enumeration ;
      bamm:dataType xsd:string ;

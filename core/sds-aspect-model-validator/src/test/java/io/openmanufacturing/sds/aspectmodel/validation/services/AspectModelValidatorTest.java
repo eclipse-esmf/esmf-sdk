@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Collection;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.topbraid.shacl.vocabulary.SH;
 
@@ -57,6 +58,33 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final ValidationReport result = service.validate( validAspectModel );
       assertThat( result.conforms() ).isTrue();
       assertThat( result.getValidationErrors() ).hasSize( 0 );
+   }
+
+   @ParameterizedTest
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
+         "ASPECT_WITH_CONSTRAINTS",
+         // uses bamm-c:OPEN which is not specified, see https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues/174
+         "ASPECT_WITH_FIXED_POINT",
+         "ASPECT_WITH_FIXED_POINT_CONSTRAINT",
+         "ASPECT_WITH_LANGUAGE_CONSTRAINT",
+         "ASPECT_WITH_RANGE_CONSTRAINT_ON_CONSTRAINED_NUMERIC_TYPE", // uses bamm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_DOUBLE_VALUE", // uses bamm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_INTEGER_VALUE", // uses bamm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND", // uses bamm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_INCL_BOUND_DEFINITION", // uses bamm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE", // uses bamm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND", // uses bamm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND_INCL_BOUND_DEFINITION" // uses bamm-c:OPEN
+   } )
+   public void testValidateTestAspectModel( final TestAspect testAspect ) {
+      final Try<VersionedModel> tryModel = TestResources.getModel( testAspect, KnownVersion.getLatest() );
+      final VersionedModel versionedModel = tryModel.get();
+
+      final ValidationReport report = service.validate( tryModel );
+      if ( !report.conforms() ) {
+         report.getValidationErrors().forEach( System.out::println );
+      }
+      assertThat( report.conforms() ).isTrue();
    }
 
    @ParameterizedTest
