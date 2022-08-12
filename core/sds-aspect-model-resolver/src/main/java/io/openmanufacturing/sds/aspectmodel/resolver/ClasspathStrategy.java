@@ -88,7 +88,7 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
 
    protected Stream<String> filesInDirectory( final String directory ) {
       try {
-         final InputStream directoryUrl = getClass().getResourceAsStream( directory );
+         final InputStream directoryUrl = getClass().getClassLoader().getResourceAsStream( directory );
          if ( directoryUrl == null ) {
             LOG.warn( "No such classpath directory {}", directory );
             return Stream.empty();
@@ -116,8 +116,8 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
 
       return filesInDirectory( directory )
             .filter( name -> name.endsWith( ".ttl" ) )
-            .map( name -> resourceUrl( directory, name ) )
             .sorted()
+            .map( name -> resourceUrl( directory, name ) )
             .map( this::loadFromUrl )
             .filter( tryModel -> tryModel
                   .map( model -> AspectModelResolver.containsDefinition( model, aspectModelUrn ) )

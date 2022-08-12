@@ -1,0 +1,22 @@
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>.
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#>.
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#>.
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#>.
+
+:PrimaryAspect a bamm:Aspect ;
+   bamm:name "PrimaryAspect" ;
+   bamm:properties ( :property1 ) ;
+   bamm:operations () .
+
+:property1 a bamm:Property ;
+   bamm:name "property1" ;
+   bamm:characteristic :MyChar .
+
+:MyChar a bamm-c:Enumeration ;
+   bamm:name "MyChar" ;
+   bamm:dataType xsd:string ;
+   bamm-c:values ( "true" "false" ) .
