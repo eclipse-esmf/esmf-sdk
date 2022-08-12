@@ -124,7 +124,7 @@ public abstract class ValidationError {
 
       @Override
       public String toString() {
-         return "The Aspect Model could not be validated: " + message;
+         return "An error occured while trying to validate the Aspect Model: " + message;
       }
 
       @Override
