@@ -153,7 +153,7 @@ public class AspectModelResolver {
             return resolvedModel;
          }
          final Model model = resolvedModel.get();
-         Property refines = model.createProperty( "urn:bamm:io.openmanufacturing:meta-model:1.0.0#refines" );
+         final Property refines = model.createProperty( "urn:bamm:io.openmanufacturing:meta-model:1.0.0#refines" );
 
          // Merge the resolved model into the target if it was not already merged before.
          // It could have been merged before when the model contains another model definition that was already resolved
