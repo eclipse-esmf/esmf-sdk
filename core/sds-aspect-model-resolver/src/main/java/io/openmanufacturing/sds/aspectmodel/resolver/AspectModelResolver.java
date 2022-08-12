@@ -25,9 +25,8 @@ import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
@@ -154,6 +153,7 @@ public class AspectModelResolver {
             return resolvedModel;
          }
          final Model model = resolvedModel.get();
+         Property refines = model.createProperty( "urn:bamm:io.openmanufacturing:meta-model:1.0.0#refines" );
 
          // Merge the resolved model into the target if it was not already merged before.
          // It could have been merged before when the model contains another model definition that was already resolved
@@ -164,8 +164,7 @@ public class AspectModelResolver {
          for ( final String element : getAllUrnsInModel( model ) ) {
             if ( !result.contains( model.createResource( element ), RDF.type, (RDFNode) null )
                   // Backwards compatibility with BAMM 1.0.0
-                  && !result.contains( model.createResource( element ), model.createProperty( "urn:bamm:io.openmanufacturing:meta-model:1.0.0#refines" ),
-                  (RDFNode) null )
+                  && !result.contains( model.createResource( element ), refines, (RDFNode) null )
                   && !unresolvedUrns.contains( element ) ) {
                unresolvedUrns.push( element );
             }
@@ -209,11 +208,9 @@ public class AspectModelResolver {
    }
 
    /**
-    * Defensively merge a model into an existing target model. This means:
-    * <ul>
-    *    <li>Prefixes are only added when they are not already present, i.e., a model won't overwrite the empty prefix of the target model</li>
-    *    <li>Statements that have a blank node (including RDF lists) as their object won't be added</li>
-    * </ul>
+    * Merge a model into an existing target model. Prefixes are only added when they are not already present, i.e.,
+    * a model won't overwrite the empty prefix of the target model.
+    *
     * @param target the model to merge into
     * @param other the model to be merged
     */
@@ -224,22 +221,6 @@ public class AspectModelResolver {
          }
       }
 
-      for ( final StmtIterator it = other.listStatements(); it.hasNext(); ) {
-         final Statement statement = it.next();
-
-         if ( target.contains( statement.getSubject(), statement.getPredicate(), (RDFNode) null ) ) {
-            // If the value is a language string, add the additional assertion
-            if ( statement.getObject().isLiteral() && !statement.getLiteral().getLanguage().isEmpty() ) {
-               target.add( statement );
-            }
-            // If the value is a named resource, also add the additional assertion. This for example
-            // is the case with multiple bamm:see assertions
-            if ( statement.getObject().isResource() && statement.getResource().isURIResource() ) {
-               target.add( statement );
-            }
-         } else {
-            target.add( statement );
-         }
-      }
+      other.listStatements().forEach( target::add );
    }
 }
