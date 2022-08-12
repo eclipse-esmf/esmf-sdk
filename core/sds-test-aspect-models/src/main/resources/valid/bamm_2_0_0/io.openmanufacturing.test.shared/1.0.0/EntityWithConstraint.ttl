@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+# Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
 #
 # See the AUTHORS file(s) distributed with this work for additional
 # information regarding authorship.
@@ -9,13 +9,14 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix : <urn:bamm:io.openmanufacturing.test.shared:1.0.0#> .
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithConstraint a bamm:Aspect ;
+:EntityWithConstraint a bamm:Entity ;
+   bamm:name "EntityWithConstraint" ;
    bamm:properties ( :stringLcProperty :doubleRcProperty :intRcProperty :bigIntRcProperty :floatRcProperty :stringRegexcProperty ) ;
    bamm:operations ( ) .
 
@@ -78,8 +79,8 @@
    bamm:description "Test Constraint"@en ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
-      bamm-c:minValue "10"^^xsd:integer ;
-      bamm-c:maxValue "15"^^xsd:integer ;
+      bamm-c:minValue "10"^^xsd:int ;
+      bamm-c:maxValue "15"^^xsd:int ;
       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;
@@ -90,8 +91,8 @@
    bamm:description "Test Constraint"@en ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
-      bamm-c:minValue "100.0"^^xsd:float ;
-      bamm-c:maxValue "112.0"^^xsd:float ;
+      bamm-c:minValue "100"^^xsd:int ;
+      bamm-c:maxValue "112"^^xsd:int ;
       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
    ] ;

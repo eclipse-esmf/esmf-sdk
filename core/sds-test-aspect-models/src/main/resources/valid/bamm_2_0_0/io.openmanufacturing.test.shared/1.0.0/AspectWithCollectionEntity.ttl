@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+# Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
 #
 # See the AUTHORS file(s) distributed with this work for additional
 # information regarding authorship.
@@ -9,26 +9,44 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix : <urn:bamm:io.openmanufacturing.test.shared:1.0.0#> .
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
-:AspectWithOptionalPropertyWithPayloadName a bamm:Aspect ;
+:AspectWithCollectionEntity a bamm:Aspect ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
    bamm:see <http://example.com/omp> ;
-   bamm:properties ( [
-                        bamm:property :testProperty ;
-                        bamm:optional "true"^^xsd:boolean ;
-                        bamm:payloadName "test"
-                     ] ) ;
+   bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
    bamm:preferredName "Test Property"@en ;
    bamm:description "This is a test property."@en ;
-   bamm:see <http://example.com/me> ;
    bamm:see <http://example.com/omp> ;
+   bamm:see <http://example.com/me> ;
+   bamm:characteristic :EntityCharacteristic .
+
+:EntityCharacteristic a bamm-c:SingleEntity ;
+   bamm:preferredName "Test Entity Characteristic"@en ;
+   bamm:description "This is a test Entity Characteristic"@en ;
+   bamm:see <http://example.com/omp> ;
+   bamm:dataType :TestEntity .
+
+:TestEntity a bamm:Entity ;
+   bamm:extends :ParentTestEntity ;
+   bamm:preferredName "Test Entity"@en ;
+   bamm:description "This is a test entity"@en ;
+   bamm:properties ( :entityProperty ) .
+
+:entityProperty a bamm:Property ;
+   bamm:preferredName "Entity Property"@en ;
+   bamm:description "This is a property for the test entity."@en ;
    bamm:characteristic bamm-c:Text .
+
+:ParentTestEntity
+   a               bamm:AbstractEntity ;
+   bamm:name       "ParentTestEntity" ;
+   bamm:properties ( :testCollectionProperty ) .

@@ -36,6 +36,6 @@
       bamm:preferredName "Test Language Constraint"@en ;
       bamm:description "This is a test language constraint."@en ;
       bamm:see <http://example.com/omp> ;
-      bamm-c:languageCode "de-DE" ;
+      bamm-c:languageCode "de" ;
    ] ;
    bamm-c:baseCharacteristic bamm-c:Text .

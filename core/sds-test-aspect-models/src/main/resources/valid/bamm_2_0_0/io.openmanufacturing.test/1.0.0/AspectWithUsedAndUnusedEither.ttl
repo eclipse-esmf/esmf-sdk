@@ -58,7 +58,7 @@
    bamm:see <http://example.com/me> ;
    bamm:dataType xsd:float .
 
-:UnusedRightType a bamm:Characteristic ;
+:NonUsedRightType a bamm:Characteristic ;
    bamm:preferredName "Right Type"@en ;
    bamm:description "Right Type Characteristic"@en ;
    bamm:see <http://example.com/omp> ;

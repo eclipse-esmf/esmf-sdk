@@ -20,7 +20,7 @@ public interface ComplexType extends Type, StructureElement {
     */
    default List<Property> getAllProperties() {
       if ( getExtends().isPresent() ) {
-         return Stream.of( getProperties(), getExtends().get().getProperties() ).flatMap( Collection::stream ).collect( Collectors.toList() );
+         return Stream.of( getProperties(), getExtends().get().getAllProperties() ).flatMap( Collection::stream ).collect( Collectors.toList() );
       }
       return List.copyOf( getProperties() );
    }

@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.metamodel.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,7 @@ public class DefaultAbstractEntity extends DefaultComplexType implements Abstrac
     */
    @Override
    public List<ComplexType> getExtendingElements() {
-      return extendingElements.stream().map( instances::get ).collect( Collectors.toList() );
+      return extendingElements.stream().map( instances::get ).filter( Objects::nonNull ).collect( Collectors.toList() );
    }
 
    /**

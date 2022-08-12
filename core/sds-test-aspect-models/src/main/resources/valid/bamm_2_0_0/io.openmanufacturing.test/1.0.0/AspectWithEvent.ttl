@@ -25,7 +25,7 @@
 :SomeEvent a bamm:Event ;
    bamm:preferredName "Some Event"@en ;
    bamm:description "This is some event"@en ;
-   bamm:properties ( :testProperty ) .
+   bamm:parameters ( :testProperty ) .
 
 :testProperty a bamm:Property ;
    bamm:preferredName "Test Property"@en ;
