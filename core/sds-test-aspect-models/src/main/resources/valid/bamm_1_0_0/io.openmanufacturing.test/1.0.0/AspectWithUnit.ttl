@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix : <urn:bamm:io.openmanufacturing:aspect-model:AspectWithUnit:1.0.0#> .
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
