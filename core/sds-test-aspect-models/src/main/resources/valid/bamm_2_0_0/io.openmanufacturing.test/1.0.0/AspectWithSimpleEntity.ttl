@@ -16,7 +16,7 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEntity a bamm:Aspect ;
+:AspectWithSimpleEntity a bamm:Aspect ;
    bamm:properties ( :entityProperty ) ;
    bamm:operations ( ) .
 

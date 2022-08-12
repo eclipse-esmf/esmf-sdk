@@ -253,10 +253,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
          @Override
          public Void visit( final ValidationError.Processing error ) {
             assertThat( error.getMessage() ).contains( ValidationError.MESSAGE_MODEL_RESOLUTION_ERROR );
-            assertThat( error.getMessage() )
-                  .startsWith( "Model could not be resolved entirely: The AspectModel: "
-                        + "urn:bamm:io.openmanufacturing.test:2.0.0#AspectWithInvalidVersion could not "
-                        + "be found" );
+            assertThat( error.getMessage() ).startsWith( "Model could not be resolved entirely" );
             return null;
          }
       } );
