@@ -116,7 +116,7 @@ public class TestContext {
          qexec.execConstruct( queryResult );
       }
 
-      assertThat( queryResult.listStatements( selector( boxSelectorStatement ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( selector( boxSelectorStatement ) ).toList() ).hasSizeGreaterThanOrEqualTo( 1 );
 
       final List<RDFNode> entries = queryResult
             .listStatements( selector( entriesSelectorStatement ) )

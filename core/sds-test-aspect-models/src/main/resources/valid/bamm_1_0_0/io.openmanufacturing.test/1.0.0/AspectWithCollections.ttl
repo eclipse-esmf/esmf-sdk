@@ -16,8 +16,8 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithCollection a bamm:Aspect ;
-   bamm:name "AspectWithCollection" ;
+:AspectWithCollections a bamm:Aspect ;
+   bamm:name "AspectWithCollections" ;
    bamm:properties ( :setProperty :listProperty ) ;
    bamm:operations ( ) .
 

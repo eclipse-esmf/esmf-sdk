@@ -9,20 +9,29 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
+# This model reproduces the problem reported in
+# https://github.com/OpenManufacturingPlatform/sds-sdk/issues/139
+# and
+# https://github.com/OpenManufacturingPlatform/sds-sdk/issues/198
+
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
-:AspectWithUnit a bamm:Aspect ;
+:AspectWithFalsePositiveValidation a bamm:Aspect ;
+   bamm:preferredName "Test Aspect"@en ;
+   bamm:description "This is a test description"@en ;
    bamm:properties ( :testProperty ) ;
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-  bamm:characteristic :TestQuantifiable .
+  bamm:characteristic [
+    a bamm-c:SingleEntity ;
+    bamm:dataType :Quantity ;
+  ] ;
+  bamm:exampleValue "invalid"^^:Quantity .
 
-:TestQuantifiable a bamm-c:Quantifiable ;
-   bamm:dataType xsd:int ;
-   bamm-c:unit unit:bitPerSecond .
-
+:Quantity a bamm:Entity ;
+  bamm:properties ( ) .

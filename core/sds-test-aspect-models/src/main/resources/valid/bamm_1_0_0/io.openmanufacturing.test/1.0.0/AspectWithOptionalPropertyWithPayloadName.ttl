@@ -15,8 +15,8 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
 
-:AspectWithOptionalProperty a bamm:Aspect ;
-   bamm:name "AspectWithOptionalProperty" ;
+:AspectWithOptionalPropertyWithPayloadName a bamm:Aspect ;
+   bamm:name "AspectWithOptionalPropertyWithPayloadName" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:description "This is a test description"@en ;
    bamm:see <http://example.com/omp> ;

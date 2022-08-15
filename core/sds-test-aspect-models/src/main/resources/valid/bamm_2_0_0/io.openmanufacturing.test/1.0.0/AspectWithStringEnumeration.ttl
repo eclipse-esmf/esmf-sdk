@@ -16,13 +16,11 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEnumeration a bamm:Aspect ;
+:AspectWithStringEnumeration a bamm:Aspect ;
    bamm:properties ( :enumerationProperty ) ;
    bamm:operations ( ) .
 
 :enumerationProperty a bamm:Property ;
-   bamm:preferredName ""@en ;
-   bamm:description ""@en ;
    bamm:characteristic [
      a bamm-c:Enumeration ;
      bamm:dataType xsd:string ;
