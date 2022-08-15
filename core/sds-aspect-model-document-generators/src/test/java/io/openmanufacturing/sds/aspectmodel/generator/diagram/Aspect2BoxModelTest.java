@@ -152,11 +152,11 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
 
       assertThat(
             queryResult.listStatements( context.selector(
-                  ":AspectWithOptionalPropertyAspect_To_testPropertyProperty a :Edge" ) )
+                  ":AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty a :Edge" ) )
                        .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
             context.selector(
-                  ":AspectWithOptionalPropertyAspect_To_testPropertyProperty :title property (optional) (test)" ) )
+                  ":AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty :title property (optional) (test)" ) )
                              .toList() ).hasSize( 1 );
    }
 }

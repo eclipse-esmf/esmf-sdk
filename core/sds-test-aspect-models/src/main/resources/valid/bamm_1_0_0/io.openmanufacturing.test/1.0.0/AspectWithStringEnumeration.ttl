@@ -16,8 +16,8 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEnumeration a bamm:Aspect ;
-   bamm:name "AspectWithEnumeration" ;
+:AspectWithStringEnumeration a bamm:Aspect ;
+   bamm:name "AspectWithStringEnumeration" ;
    bamm:properties ( :enumerationProperty ) ;
    bamm:operations ( ) .
 

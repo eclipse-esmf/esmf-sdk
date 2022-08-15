@@ -17,11 +17,13 @@ import static org.assertj.vavr.api.VavrAssertions.assertThat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -45,8 +47,8 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testLoadDataModelExpectSuccess( final KnownVersion metaModelVersion ) {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
-                                         .getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                  .getResource( metaModelVersion.toString().toLowerCase() )
+                  .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#Test" );
 
@@ -71,8 +73,8 @@ public class AspectModelResolverTest extends MetaModelVersions {
          final KnownVersion metaModelVersion ) {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
-                                         .getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                  .getResource( metaModelVersion.toString().toLowerCase() )
+                  .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing.test:1.1.0#Test" );
 
@@ -96,7 +98,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testResolveReferencedModelFromMemoryExpectSuccess( final KnownVersion metaModelVersion ) {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                  .getPath() );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final AspectModelUrn inputUrn = AspectModelUrn
@@ -137,10 +139,10 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testResolveReferencedModelExpectSuccess( final KnownVersion metaModelVersion ) {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                  .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
-            .fromUrn( "urn:bamm:io.openmanufacturing.test:aspect-model:AnotherTest:1.0.0" );
+            .fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#AnotherTest" );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
 
@@ -173,8 +175,8 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testResolutionMissingAspectExpectFailure( final KnownVersion metaModelVersion ) {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
-                                         .getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                  .getResource( metaModelVersion.toString().toLowerCase() )
+                  .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#AnotherFailingTest" );
@@ -190,7 +192,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testResolutionMissingModelElementExpectFailure( final KnownVersion metaModelVersion ) throws Throwable {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                  .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#FailingTest" );
@@ -199,8 +201,6 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
       assertThat( result ).isFailure();
       assertThat( result ).failBecauseOf( ModelResolutionException.class );
-      org.assertj.core.api.Assertions
-            .assertThat( result.getCause().getCause() ).isExactlyInstanceOf( FileNotFoundException.class );
    }
 
    @ParameterizedTest
@@ -208,7 +208,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testResolutionReferencedCharacteristicExpectSuccess( final KnownVersion metaModelVersion ) {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                  .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#ReferenceCharacteristicTest" );
@@ -255,7 +255,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testTransitiveReferenceExpectSuccess( final KnownVersion metaModelVersion ) throws Throwable {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                  .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#TransitiveReferenceTest" );
@@ -269,8 +269,8 @@ public class AspectModelResolverTest extends MetaModelVersions {
             .createResource( "urn:bamm:io.openmanufacturing.test:1.0.0#TestCharacteristic" );
       final BAMM bamm = new BAMM( metaModelVersion );
       org.assertj.core.api.Assertions.assertThat(
-            Streams.stream( model.listStatements( testCharacteristic, bamm.name(), (RDFNode) null ) ).count() )
-                                     .isEqualTo( 1 );
+                  Streams.stream( model.listStatements( testCharacteristic, bamm.name(), (RDFNode) null ) ).count() )
+            .isEqualTo( 1 );
    }
 
    @ParameterizedTest
@@ -278,7 +278,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testResolutionReferencedEntity( final KnownVersion metaModelVersion ) {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                  .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#ReferenceEntityTest" );
@@ -316,7 +316,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    public void testAspectReferencingAnotherAspectExpectSuccess( final KnownVersion metaModelVersion ) {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
-                                         .getPath() );
+                  .getPath() );
 
       final String aspectUrn = "urn:bamm:io.openmanufacturing.test:2.0.0#Test";
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( aspectUrn );
@@ -328,7 +328,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Model model = result.get().getModel();
       final BAMM bamm = new BAMM( metaModelVersion );
       org.assertj.core.api.Assertions.assertThat(
-            Streams.stream( model.listStatements( null, RDF.type, bamm.Aspect() ) ).count() ).isEqualTo( 1 );
+            Streams.stream( model.listStatements( null, RDF.type, bamm.Aspect() ) ).count() ).isEqualTo( 2 );
    }
 
    @ParameterizedTest
@@ -351,5 +351,22 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Try<VersionedModel> result = resolver
             .resolveAspectModel( strategy, AspectModelUrn.fromUrn( aspectUrn ) );
       Assertions.assertThat( result.isSuccess() ).describedAs( "Resolution of refined Property failed." ).isTrue();
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testMergingModelsWithBlankNodeValues( final KnownVersion metaModelVersion ) {
+      final String aspectUrn = "urn:bamm:io.openmanufacturing.test:1.0.0#SecondaryAspect";
+      final AspectModelResolver resolver = new AspectModelResolver();
+      final ClasspathStrategy strategy = new ClasspathStrategy( metaModelVersion.toString().toLowerCase() );
+      final Try<VersionedModel> result = resolver
+            .resolveAspectModel( strategy, AspectModelUrn.fromUrn( aspectUrn ) );
+      Assertions.assertThat( result.isSuccess() ).isTrue();
+
+      final Model model = result.get().getModel();
+      final Resource primaryAspect = model.createResource( "urn:bamm:io.openmanufacturing.test:1.0.0#PrimaryAspect" );
+      final BAMM bamm = new BAMM( metaModelVersion );
+      final List<Statement> propertiesAssertions = model.listStatements( primaryAspect, bamm.properties(), (RDFNode) null ).toList();
+      Assertions.assertThat( propertiesAssertions.size() ).isEqualTo( 1 );
    }
 }
