@@ -245,11 +245,11 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       final List<String> getAllPropertiesWithoutExtended = List.of( "returngetProperties();" );
       final List<String> getPropertiesMetaTestEntity = List.of(
             "List<StaticProperty<?>>properties=getProperties();",
-            "properties.addAll(MetaParentTestEntity.INSTANCE.getProperties());",
+            "properties.addAll(MetaParentTestEntity.INSTANCE.getAllProperties());",
             "returnproperties;" );
       final List<String> getPropertiesMetaParentTestEntity = List.of(
             "List<StaticProperty<?>>properties=getProperties();",
-            "properties.addAll(MetaParentOfParentEntity.INSTANCE.getProperties());",
+            "properties.addAll(MetaParentOfParentEntity.INSTANCE.getAllProperties());",
             "returnproperties;" );
       result.assertMethodBody( "MetaAspectWithExtendedEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters,
             getAllPropertiesWithoutExtended );

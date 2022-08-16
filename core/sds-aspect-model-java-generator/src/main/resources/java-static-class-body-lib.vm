@@ -81,7 +81,7 @@ static {
             #set( $extendedElement = $element.getExtends().get() )
             $codeGenerationConfig.getImportTracker().importExplicit( "${codeGenerationConfig.getPackageName()}.Meta${extendedElement.getName()}" )
             List<StaticProperty<?>> properties = getProperties();
-            properties.addAll(Meta${extendedElement.getName()}.INSTANCE.getProperties());
+            properties.addAll(Meta${extendedElement.getName()}.INSTANCE.getAllProperties());
             return properties;
         #else
             return getProperties();
