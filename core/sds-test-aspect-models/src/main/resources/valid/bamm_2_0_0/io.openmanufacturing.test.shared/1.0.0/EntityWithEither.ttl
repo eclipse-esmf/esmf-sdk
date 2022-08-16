@@ -16,7 +16,6 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 
 :EntityWithEither a bamm:Entity ;
-   bamm:name "EntityWithEither" ;
    bamm:properties ( :testPropertyWithEither ) ;
    bamm:operations ( ) .
 
