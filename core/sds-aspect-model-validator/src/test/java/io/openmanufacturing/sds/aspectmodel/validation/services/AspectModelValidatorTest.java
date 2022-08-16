@@ -103,6 +103,25 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       assertThat( result.getValidationErrors() ).hasSize( 0 );
    }
 
+   /**
+    * Test for a model that passes validation via BAMM's SHACL shapes but is actually invalid and can not be loaded using
+    * {@link io.openmanufacturing.sds.metamodel.loader.AspectModelLoader#fromVersionedModel(VersionedModel)}.
+    * This method and the corresponding test model should be removed once
+    * <a href="https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues/173">BAMM-173</a> has been addressed
+    * @param metaModelVersion the meta model version
+    */
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testFalsePositiveValidation( final KnownVersion metaModelVersion ) {
+      final TestModel testModel = InvalidTestAspect.ASPECT_WITH_FALSE_POSITIVE_VALIDATION;
+      final Try<VersionedModel> aspectModel = TestResources.getModel( testModel, metaModelVersion );
+      final ValidationReport result = service.validate( aspectModel );
+
+      System.out.println( result.getValidationErrors().iterator().next() );
+      assertThat( result.conforms() ).isFalse();
+      assertThat( result.getValidationErrors().iterator().next() ).isOfAnyClassIn( ValidationError.Processing.class );
+   }
+
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_CONSTRAINTS",
@@ -308,10 +327,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
          @Override
          public Void visit( final ValidationError.Processing error ) {
             assertThat( error.getMessage() ).contains( ValidationError.MESSAGE_MODEL_RESOLUTION_ERROR );
-            assertThat( error.getMessage() )
-                  .startsWith( "Model could not be resolved entirely: The AspectModel: "
-                        + "urn:bamm:io.openmanufacturing.test:2.0.0#AspectWithInvalidVersion could not "
-                        + "be found" );
+            assertThat( error.getMessage() ).startsWith( "Model could not be resolved entirely" );
             return null;
          }
       } );

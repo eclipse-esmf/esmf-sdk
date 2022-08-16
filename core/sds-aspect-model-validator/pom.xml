@@ -78,6 +78,10 @@
             <artifactId>sds-test-resources</artifactId>
             <scope>test</scope>
         </dependency>
+       <dependency>
+          <groupId>io.openmanufacturing</groupId>
+          <artifactId>sds-aspect-meta-model-java</artifactId>
+       </dependency>
     </dependencies>
 
     <build>

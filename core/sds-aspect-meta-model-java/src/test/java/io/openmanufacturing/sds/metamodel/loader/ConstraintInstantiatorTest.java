@@ -49,7 +49,7 @@ public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
             "This is a test language constraint.",
             "http://example.com/omp" );
 
-      assertThat( languageConstraint.getLanguageCode() ).isEqualTo( Locale.GERMANY );
+      assertThat( languageConstraint.getLanguageCode() ).isEqualTo( Locale.forLanguageTag( "de" ) );
    }
 
    @ParameterizedTest

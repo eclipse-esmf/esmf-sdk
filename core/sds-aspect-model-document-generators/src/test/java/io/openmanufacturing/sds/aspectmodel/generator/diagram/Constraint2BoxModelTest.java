@@ -50,7 +50,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "LengthConstraint294de3c";
+      final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
@@ -60,7 +60,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "LengthConstraintc82ebce";
+      final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
@@ -73,7 +73,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "LengthConstraint125edc1";
+      final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
@@ -83,7 +83,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testRegularExpressionConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "RegularExpressionConstraint44300e9";
+      final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_NUMERIC_REGULAR_EXPRESSION_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
@@ -95,7 +95,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testFixedPointConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "FixedPointConstraintd050140";
+      final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_FIXED_POINT_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
