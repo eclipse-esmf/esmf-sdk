@@ -46,7 +46,5 @@
    bamm:description "This is a property for the test entity."@en ;
    bamm:characteristic bamm-c:Text .
 
-:ParentTestEntity
-   a               bamm:AbstractEntity ;
-   bamm:name       "ParentTestEntity" ;
+:ParentTestEntity a bamm:AbstractEntity ;
    bamm:properties ( :testCollectionProperty ) .

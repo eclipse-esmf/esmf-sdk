@@ -831,7 +831,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
 
-      final PrimitiveType expectedReturnType = PrimitiveType.booleanType();
+      final Optional<PrimitiveType> expectedReturnType = Optional.of( PrimitiveType.booleanType() );
       final boolean expectOverride = true;
       final int expectedNumberOfParameters = 1;
       List<String> expectedMethodBody = List.of(
@@ -863,7 +863,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY;
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
 
-      final PrimitiveType expectedReturnType = PrimitiveType.intType();
+      final Optional<PrimitiveType> expectedReturnType = Optional.of( PrimitiveType.intType() );
       final boolean expectOverride = true;
       final int expectedNumberOfParameters = 0;
       List<String> expectedMethodBody = List.of( "returnObjects.hash(testProperty);" );
@@ -977,7 +977,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ABSTRACT_ENTITY;
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
 
-      final PrimitiveType expectedReturnType = PrimitiveType.booleanType();
+      final Optional<PrimitiveType> expectedReturnType = Optional.of( PrimitiveType.booleanType() );
       final boolean expectOverride = true;
       final int expectedNumberOfParameters = 1;
       List<String> expectedMethodBody = List.of(
@@ -1023,7 +1023,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ABSTRACT_ENTITY;
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
 
-      final PrimitiveType expectedReturnType = PrimitiveType.intType();
+      final Optional<PrimitiveType> expectedReturnType = Optional.of( PrimitiveType.intType() );
       final boolean expectOverride = true;
       final int expectedNumberOfParameters = 0;
       List<String> expectedMethodBody = List.of( "returnObjects.hash(testProperty);" );

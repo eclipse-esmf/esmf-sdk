@@ -140,6 +140,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getMetaModelVersion", "return KnownVersion." + KnownVersion.getLatest().toString() + ";" )
             .put( "getName", "return \"AspectWithBoolean\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
+            .put( "getAllProperties", "return getProperties();" )
             .put( "getPropertyType", "return Boolean.class;" )
             .build();
 
@@ -176,6 +177,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getMetaModelVersion", "return KnownVersion." + KnownVersion.getLatest().toString() + ";" )
             .put( "getName", "return \"AspectWithAllBaseAttributes\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
+            .put( "getAllProperties", "return getProperties();" )
             .put( "getSee", "return Arrays.asList(\"http://example.com/omp\");" )
             .put( "getPreferredNames", getPreferredNamesBody )
             .put( "getDescriptions", getDescriptionsBody )
@@ -207,6 +209,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getMetaModelVersion", "return KnownVersion." + KnownVersion.getLatest().toString() + ";" )
             .put( "getName", "return \"AspectWithPreferredNames\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
+            .put( "getAllProperties", "return getProperties();" )
             .put( "getPreferredNames", getPreferredNamesBody )
             .put( "getPropertyType", "return Boolean.class;" )
             .build();
@@ -236,6 +239,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getMetaModelVersion", "return KnownVersion." + KnownVersion.getLatest().toString() + ";" )
             .put( "getName", "return \"AspectWithDescriptions\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
+            .put( "getAllProperties", "return getProperties();" )
             .put( "getDescriptions", getDescriptionsBody )
             .put( "getPropertyType", "return Boolean.class;" )
             .build();
@@ -257,6 +261,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getMetaModelVersion", "return KnownVersion." + KnownVersion.getLatest().toString() + ";" )
             .put( "getName", "return \"AspectWithPropertyWithSee\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
+            .put( "getAllProperties", "return getProperties();" )
             .put( "getPropertyType", "return Boolean.class;" )
             .build();
 
