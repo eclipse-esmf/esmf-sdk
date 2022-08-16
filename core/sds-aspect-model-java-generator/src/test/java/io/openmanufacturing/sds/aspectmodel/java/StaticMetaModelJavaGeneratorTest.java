@@ -76,7 +76,6 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       assertThatCode( () -> TestContext.generateStaticAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) ) ).doesNotThrowAnyException();
    }
 
-
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testGenerateStaticMetaModelWithOptionalProperties( final KnownVersion metaModelVersion ) throws IOException {
@@ -163,7 +162,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertFields( "MetaAspectWithExtendedEntity",
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithExtendedEntity" )
-                  .put( "TEST_PROPERTY", "StaticContainerProperty<TestEntity,java.util.LinkedHashSet<TestEntity>>").build(), new HashMap<>() );
+                  .put( "TEST_PROPERTY", "StaticContainerProperty<TestEntity,java.util.LinkedHashSet<TestEntity>>" ).build(), new HashMap<>() );
    }
 
    @ParameterizedTest
@@ -232,6 +231,33 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithState" ).put( "STATUS", "StaticProperty<TestState>" )
                   .build(), new HashMap<>() );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "latestVersion" )
+   public void testGenerateStaticMetaModelWithExtendedEntity( final KnownVersion metaModelVersion ) throws IOException {
+      final TestSharedAspect aspect = TestSharedAspect.ASPECT_WITH_EXTENDED_ENTITY;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+      result.assertNumberOfFiles( 8 );
+      final String methodName = "getAllProperties";
+      final boolean expectOverride = true;
+      final int expectedNumberOfParameters = 0;
+      final List<String> getAllPropertiesWithoutExtended = List.of( "returngetProperties();" );
+      final List<String> getPropertiesMetaTestEntity = List.of(
+            "List<StaticProperty<?>>properties=getProperties();",
+            "properties.addAll(MetaParentTestEntity.INSTANCE.getProperties());",
+            "returnproperties;" );
+      final List<String> getPropertiesMetaParentTestEntity = List.of(
+            "List<StaticProperty<?>>properties=getProperties();",
+            "properties.addAll(MetaParentOfParentEntity.INSTANCE.getProperties());",
+            "returnproperties;" );
+      result.assertMethodBody( "MetaAspectWithExtendedEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters,
+            getAllPropertiesWithoutExtended );
+      result.assertMethodBody( "MetaParentTestEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters,
+            getPropertiesMetaParentTestEntity );
+      result.assertMethodBody( "MetaParentOfParentEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters,
+            getAllPropertiesWithoutExtended );
+      result.assertMethodBody( "MetaTestEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters, getPropertiesMetaTestEntity );
    }
 
    @ParameterizedTest
