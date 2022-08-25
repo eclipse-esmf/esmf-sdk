@@ -24,10 +24,9 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
-
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 
 public class Enumeration2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "enumeration2boxmodel.sparql";
@@ -52,7 +51,7 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
             queryResult.listStatements( context.selector( ":UsedTestEnumerationCharacteristic a :Box" ) ).toList() )
             .hasSize( 1 );
       assertThat( queryResult.listStatements( context.selector( ":UnusedTestEnumerationCharacteristic a :Box" ) )
-                             .toList() )
+            .toList() )
             .hasSize( 0 );
       assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() ).hasSize( 5 );
    }
@@ -94,6 +93,26 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
             totalNumberOfExpectedEntries, indexOfSeeValueEntry );
    }
 
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testOnlyRightSeeAttributeIsSelected( final KnownVersion metaModelVersion ) {
+      // See attribute was rendered also on elements on which it was not declared:
+      // https://github.com/OpenManufacturingPlatform/sds-sdk/issues/196
+      String characteristicIdentifier = "Enum1";
+      String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
+      String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUM_ONLY_ONE_SEE, metaModelVersion );
+      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
+            totalNumberOfExpectedEntries, indexOfSeeValueEntry );
+
+      characteristicIdentifier = "Enum2";
+      boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
+      entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );
+
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
+            totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "https://test.com" );
+   }
+
    private String getBoxSelectorStatement( final String characteristicIdentifier ) {
       return String.format( ":%sCharacteristic a :Box", characteristicIdentifier );
    }
@@ -101,4 +120,5 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    private String getEntriesSelectorStatement( final String characteristicIdentifier ) {
       return String.format( ":%sCharacteristic :entries *", characteristicIdentifier );
    }
+
 }
