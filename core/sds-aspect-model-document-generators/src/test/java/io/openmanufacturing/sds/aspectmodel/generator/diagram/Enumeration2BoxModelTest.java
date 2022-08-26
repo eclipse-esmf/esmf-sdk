@@ -108,7 +108,6 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
       characteristicIdentifier = "Enum2";
       boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
       entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );
-
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "https://test.com" );
    }
