@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
 import io.openmanufacturing.sds.aspectmodel.generator.openapi.PagingOption;
@@ -92,10 +93,13 @@ public class AspectToOpenapiCommand extends AbstractCommand {
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
+   @CommandLine.Mixin
+   private ExternalResolverMixin customResolver;
+
    @Override
    public void run() {
       final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
-      final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( loadModelOrFail( parentCommand.parentCommand.getInput() ) );
+      final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
       if ( generateJsonOpenApiSpec ) {
          generateJson( generator, aspect );
       } else {

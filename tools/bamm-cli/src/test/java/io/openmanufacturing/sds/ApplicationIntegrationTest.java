@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -275,7 +276,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    public void testValidation( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "validate" );
    }
-
+   
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testPrettyPrintingToFile( final KnownVersion metaModelVersion ) {
@@ -482,5 +483,14 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    private String getPathForArtifact( final String artifactName ) {
       return outputDirectory.toFile().getAbsolutePath() + File.separator + artifactName;
+   }
+
+   private Path findTestsJar( final Path searchDirectory ) throws IOException {
+      try ( final Stream<Path> files = Files.walk( searchDirectory, 1 ) ) {
+         return files
+               .filter( f -> f.getFileName().toString().endsWith( "-tests.jar" ) )
+               .findFirst()
+               .get();
+      }
    }
 }

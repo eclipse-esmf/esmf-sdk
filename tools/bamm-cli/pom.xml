@@ -215,6 +215,28 @@
                <forceJavacCompilerUse>true</forceJavacCompilerUse>
             </configuration>
          </plugin>
+
+         <!-- for testing of the command executor, we need a test JAR file -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.2</version>
+            <configuration>
+               <archive>
+                  <manifest>
+                     <mainClass>io.openmanufacturing.sds.JavaCmdLine</mainClass>
+                  </manifest>
+               </archive>
+            </configuration>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>test-jar</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+
       </plugins>
    </build>
 </project>
