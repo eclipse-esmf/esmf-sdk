@@ -23,6 +23,7 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.vavr.control.Try;
 
+// Specialized resolution strategy: use external resolver to resolve the URNs passed as argument into models.
 class ExternalResolverStrategy implements ResolutionStrategy {
 
    private final String command;
@@ -35,10 +36,6 @@ class ExternalResolverStrategy implements ResolutionStrategy {
    public Try<Model> apply( final AspectModelUrn aspectModelUrn ) {
       final String commandWithParameters = command + " " + aspectModelUrn.toString();
       final String result = CommandExecutor.executeCommand( commandWithParameters );
-      if ( null == result ) {
-         return Try.failure( new Exception() );
-      }
-      // TODO encodings
       return TurtleLoader.loadTurtle( new ByteArrayInputStream( result.getBytes( StandardCharsets.UTF_8 ) ) );
    }
 }

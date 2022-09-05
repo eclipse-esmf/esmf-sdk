@@ -14,11 +14,13 @@
 package io.openmanufacturing.sds;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import io.openmanufacturing.sds.exception.CommandException;
 
+// Executes an external resolver via the underlying OS command and returns the stdout from the command as result.
 public class CommandExecutor {
 
    public static String executeCommand( String command ) {
@@ -30,14 +32,12 @@ public class CommandExecutor {
       try {
          final Process p = Runtime.getRuntime().exec( command );
          final int result = p.waitFor();
-         final Scanner s = new Scanner( p.getInputStream() ).useDelimiter( "\\A" );
-         final String output = s.hasNext() ? s.next() : "";
          if ( result != 0 ) {
-            throw new CommandException( output );
+            throw new CommandException( getOutputFrom( p.getErrorStream() ) );
          }
-         return output;
+         return getOutputFrom( p.getInputStream() );
       } catch ( final IOException | InterruptedException e ) {
-         throw new CommandException( e );
+         throw new CommandException( "The attempt to execute external resolver failed with the error:", e );
       }
    }
 
@@ -47,5 +47,10 @@ public class CommandExecutor {
          return st.nextToken().toUpperCase().endsWith( ".JAR" );
       }
       return false;
+   }
+
+   private static String getOutputFrom( final InputStream stream ) {
+      final Scanner s = new Scanner( stream ).useDelimiter( "\\A" );
+      return s.hasNext() ? s.next() : "";
    }
 }
