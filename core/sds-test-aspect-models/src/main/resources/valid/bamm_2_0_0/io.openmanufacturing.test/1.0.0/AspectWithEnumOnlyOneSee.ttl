@@ -19,7 +19,6 @@
 @prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#>.
 
 :AspectWithEnumOnlyOneSee a bamm:Aspect;
-    bamm:name "Test";
     bamm:properties (:prop1 :prop2);
     bamm:operations ().
 
