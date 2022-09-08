@@ -28,7 +28,6 @@ import io.vavr.control.Try;
 public class DelegatingCommandResolver {
 
    public static void main( final String[] args ) throws URISyntaxException {
-      System.out.println( args[0] + ", " + args[1] );
       final Path target = Paths.get( DelegatingCommandResolver.class.getResource( "/" ).toURI() ).getParent();
       final Path modelsRoot = Paths.get( target.toString(), "classes", "valid", args[0] );
       final AspectModelUrn urn = AspectModelUrn.fromUrn( args[1] );
