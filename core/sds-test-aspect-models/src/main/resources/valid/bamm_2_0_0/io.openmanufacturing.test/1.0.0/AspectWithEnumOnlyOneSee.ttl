@@ -23,18 +23,16 @@
     bamm:operations ().
 
 :prop1 a bamm:Property;
-    bamm:name "prop1";
     bamm:characteristic :Enum1.
+
 :prop2 a bamm:Property;
-    bamm:name "prop2";
     bamm:characteristic :Enum2.
 
 :Enum1 a bamm-c:Enumeration;
-    bamm:name "Enum1";
     bamm:dataType xsd:string;
     bamm-c:values ("a" "b").
+
 :Enum2 a bamm-c:Enumeration;
-    bamm:name "Enum2";
     bamm:dataType xsd:string;
     bamm-c:values ("1" "2");
     bamm:see <https://test.com>.
