@@ -36,7 +36,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -160,7 +159,6 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "<svg" );
    }
 
-   @EnabledOnOs( OS.WINDOWS )
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSvgGenToFileWithDefLanguageAndExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
@@ -194,7 +192,6 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
             .hasMessageContaining( "The model does not contain the desired language" );
    }
 
-   @EnabledOnOs( OS.WINDOWS )
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testPngGenToFileWithDefLanguageAndExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
@@ -235,7 +232,6 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "digraph AspectModel" );
    }
 
-   @EnabledOnOs( OS.WINDOWS )
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testDotGenToFileWithDefLanguageAndExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
@@ -260,7 +256,6 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "{" );
    }
 
-   @EnabledOnOs( OS.WINDOWS )
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testJsonToFileWithExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
@@ -285,7 +280,6 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "{" );
    }
 
-   @EnabledOnOs( OS.WINDOWS )
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testJsonSchemaToFileWithExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
@@ -309,7 +303,6 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       validateFile( directory, "TestEntity.java" );
    }
 
-   @EnabledOnOs( OS.WINDOWS )
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelJavaClassWithDefaultPackageNameAndExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
@@ -346,7 +339,6 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       createValidArgsExecution( metaModelVersion, "validate" );
    }
 
-   @EnabledOnOs( OS.WINDOWS )
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testValidationWithCustomResolver( final KnownVersion metaModelVersion ) throws IOException, URISyntaxException {
@@ -446,8 +438,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    public void testGenerateOpenApiSpecWithResourcePath( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "to", "openapi", "-j", "-b", "https://test.example.com", "-r", "my-aspect" );
    }
-
-   @EnabledOnOs( OS.WINDOWS )
+   
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testGenerateOpenApiSpecWithResourcePathAndExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
@@ -582,6 +573,7 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       final Path targetDirectory = Paths.get( getClass().getResource( "/" ).toURI() ).getParent();
       final Path testClasses = Paths.get( targetDirectory.toString(), "test-classes" );
       final Path modelsRoot = Paths.get( targetDirectory.toString(), "classes", "valid" );
-      return testClasses + "\\model_resolver.bat " + modelsRoot + " " + metaModelVersion.toString().toLowerCase();
+      final String scriptName = OS.WINDOWS.isCurrentOs() ? "\\model_resolver.bat " : "/model_resolver.sh ";
+      return testClasses + scriptName + modelsRoot + " " + metaModelVersion.toString().toLowerCase();
    }
 }
