@@ -312,4 +312,21 @@ public class AspectModelValidatorTest extends MetaModelVersions {
          }
       } );
    }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testValidationWithMultipleAspects( final KnownVersion metaModelVersion ) {
+      final Try<VersionedModel> model = TestResources.getModel( TestAspect.ASPECT, metaModelVersion );
+      model.forEach( versionedModel -> {
+         final VersionedModel model2 = TestResources.getModel( TestAspect.ASPECT_WITH_SIMPLE_TYPES, metaModelVersion ).get();
+         versionedModel.getModel().add( model2.getRawModel() );
+         versionedModel.getRawModel().add( model2.getRawModel() );
+      } );
+
+      final ValidationReport report = service.validate( model );
+      if ( !report.conforms() ) {
+         report.getValidationErrors().forEach( System.out::println );
+      }
+      assertThat( report.conforms() ).isTrue();
+   }
 }
