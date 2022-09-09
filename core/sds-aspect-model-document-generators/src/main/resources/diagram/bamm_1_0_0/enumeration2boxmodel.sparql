@@ -107,7 +107,7 @@ construct {
 
   optional {
     {
-      select ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
+      select ?characteristic ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
       where {
         ?characteristic rdf:type/rdfs:subClassOf* bamm:Characteristic .
         filter( exists {
