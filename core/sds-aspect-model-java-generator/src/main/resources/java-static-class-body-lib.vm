@@ -77,15 +77,16 @@ static {
 
     @Override
     public List<StaticProperty<?>> getAllProperties() {
-        #if( $element.getExtends().isPresent() )
-            #set( $extendedElement = $element.getExtends().get() )
-            $codeGenerationConfig.getImportTracker().importExplicit( "${codeGenerationConfig.getPackageName()}.Meta${extendedElement.getName()}" )
-            List<StaticProperty<?>> properties = getProperties();
-            properties.addAll(Meta${extendedElement.getName()}.INSTANCE.getAllProperties());
-            return properties;
-        #else
-            return getProperties();
-        #end
+    #if( $element.getExtends().isPresent() )
+        #set( $extendedElement = $element.getExtends().get() )
+        $codeGenerationConfig.getImportTracker().importExplicit( "java.util.stream.Stream" )
+        $codeGenerationConfig.getImportTracker().importExplicit( "java.util.stream.Collectors" )
+        $codeGenerationConfig.getImportTracker().importExplicit( "java.util.Collection" )
+        $codeGenerationConfig.getImportTracker().importExplicit( "${codeGenerationConfig.getPackageName()}.Meta${extendedElement.getName()}" )
+        return Stream.of( getProperties(), Meta${extendedElement.getName()}.INSTANCE.getAllProperties() ).flatMap( Collection::stream ).collect( Collectors.toList() );
+    #else
+        return getProperties();
+    #end
     }
 
 #if( !$element.getPreferredNames().isEmpty() )
