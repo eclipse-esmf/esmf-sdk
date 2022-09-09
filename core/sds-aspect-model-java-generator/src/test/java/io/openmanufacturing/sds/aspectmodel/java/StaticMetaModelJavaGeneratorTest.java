@@ -244,13 +244,9 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       final int expectedNumberOfParameters = 0;
       final List<String> getAllPropertiesWithoutExtended = List.of( "returngetProperties();" );
       final List<String> getPropertiesMetaTestEntity = List.of(
-            "List<StaticProperty<?>>properties=getProperties();",
-            "properties.addAll(MetaParentTestEntity.INSTANCE.getAllProperties());",
-            "returnproperties;" );
+            "returnStream.of(getProperties(),MetaParentTestEntity.INSTANCE.getAllProperties()).flatMap(Collection::stream).collect(Collectors.toList());" );
       final List<String> getPropertiesMetaParentTestEntity = List.of(
-            "List<StaticProperty<?>>properties=getProperties();",
-            "properties.addAll(MetaParentOfParentEntity.INSTANCE.getAllProperties());",
-            "returnproperties;" );
+            "returnStream.of(getProperties(),MetaParentOfParentEntity.INSTANCE.getAllProperties()).flatMap(Collection::stream).collect(Collectors.toList());" );
       result.assertMethodBody( "MetaAspectWithExtendedEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters,
             getAllPropertiesWithoutExtended );
       result.assertMethodBody( "MetaParentTestEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters,
