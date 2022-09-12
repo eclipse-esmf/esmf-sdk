@@ -23,8 +23,10 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.vavr.control.Try;
 
-// Utility class to help test custom model resolution mechanism. It simply wraps the FileSystemStrategy, delegates the resolution to it,
-// and serializes the result to stdout, as expected of the external custom resolver.
+/**
+ * Utility class to help test custom model resolution mechanism. It simply wraps the FileSystemStrategy, delegates the resolution to it,
+ * and serializes the result to stdout, as expected of the external custom resolver.
+ */
 public class DelegatingCommandResolver {
 
    public static void main( final String[] args ) throws URISyntaxException {

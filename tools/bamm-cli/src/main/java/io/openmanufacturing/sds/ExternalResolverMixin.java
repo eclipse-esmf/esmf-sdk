@@ -15,8 +15,10 @@ package io.openmanufacturing.sds;
 
 import picocli.CommandLine;
 
-// Configuration of the external command that can be executed to custom resolve a model. The command will be executed
-// as given, with the model URN to resolve added as the last parameter automatically by the program logic.
+/**
+ * Configuration of the external command that can be executed to custom resolve a model. The command will be executed
+ * as given, with the model URN to resolve added as the last parameter automatically by the program logic.
+ */
 public class ExternalResolverMixin {
    @CommandLine.Option( names = { "--custom-resolver" }, description = "External command to execute to produce the custom model resolution." )
    protected String commandLine = "";

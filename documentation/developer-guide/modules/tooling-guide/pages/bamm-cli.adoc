@@ -94,6 +94,16 @@ The available options and their meaning can also be seen in the help text of the
 | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 |===
 
+=== Custom model resolver
+
+To allow the users to provide their own custom implementations of a model resolver, `--custom-resolver` command-line switch can be used.
+The value of the switch can be any command which is directly executable by the underlying operating system (such as a batch script on Windows or a shell script on Linux/Unix).
+When a model element needs to be resolved, this command is executed with the URN of the element to resolve passed as the last parameter.
+The command can provide other parameters as well, the element URN will be added automatically as the last one by bamm-cli.
+The resolved model definition is expected to be output to the stdout in Turtle format.
+From there, it is read by the bamm-cli and passed on to the internal processing pipeline.
+In this way the extension can be flexibly done in any programming language/script language, including complex logic if necessary.
+
 == Using the CLI to create a JSON OpenAPI Specification
 
 Every specification is based on one Aspect, which needs a separately defined server URL where the given aspect will be.

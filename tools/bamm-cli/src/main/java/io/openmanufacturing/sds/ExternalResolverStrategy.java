@@ -23,7 +23,9 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.vavr.control.Try;
 
-// Specialized resolution strategy: use external resolver to resolve the URNs passed as argument into models.
+/**
+ * Specialized resolution strategy: use external resolver to resolve the URNs passed as argument into models.
+ */
 class ExternalResolverStrategy implements ResolutionStrategy {
 
    private final String command;
