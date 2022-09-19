@@ -40,12 +40,8 @@ import com.google.common.reflect.TypeToken;
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.metamodel.datatypes.Curie;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
-import io.openmanufacturing.sds.metamodel.impl.DefaultFixedPointConstraint;
-import io.openmanufacturing.sds.metamodel.impl.DefaultLengthConstraint;
 import io.openmanufacturing.sds.metamodel.impl.DefaultList;
 import io.openmanufacturing.sds.metamodel.impl.DefaultMeasurement;
-import io.openmanufacturing.sds.metamodel.impl.DefaultRangeConstraint;
-import io.openmanufacturing.sds.metamodel.impl.DefaultRegularExpressionConstraint;
 import io.openmanufacturing.sds.staticmetamodel.StaticContainerProperty;
 import io.openmanufacturing.sds.staticmetamodel.StaticProperty;
 import io.openmanufacturing.sds.staticmetamodel.StaticUnitProperty;
@@ -266,25 +262,25 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertFields( "MetaAspectWithConstraints",
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithConstraints" ).put( "TEST_PROPERTY_WITH_REGULAR_EXPRESSION",
-                        new TypeToken<StaticConstraintProperty<String, DefaultRegularExpressionConstraint, DefaultCharacteristic>>() {
+                        new TypeToken<StaticConstraintProperty<String, DefaultCharacteristic>>() {
                         } ).put( "TEST_PROPERTY_WITH_DECIMAL_MIN_DECIMAL_MAX_RANGE_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<BigDecimal, DefaultRangeConstraint, DefaultMeasurement>>() {
+                        new TypeToken<StaticConstraintProperty<BigDecimal, DefaultMeasurement>>() {
                         } ).put( "TEST_PROPERTY_WITH_DECIMAL_MAX_RANGE_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<BigDecimal, DefaultRangeConstraint, DefaultMeasurement>>() {
+                        new TypeToken<StaticConstraintProperty<BigDecimal, DefaultMeasurement>>() {
                         } ).put( "TEST_PROPERTY_WITH_MIN_MAX_RANGE_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<Integer, DefaultRangeConstraint, DefaultMeasurement>>() {
+                        new TypeToken<StaticConstraintProperty<Integer, DefaultMeasurement>>() {
                         } ).put( "TEST_PROPERTY_WITH_MIN_RANGE_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<Integer, DefaultRangeConstraint, DefaultMeasurement>>() {
+                        new TypeToken<StaticConstraintProperty<Integer, DefaultMeasurement>>() {
                         } ).put( "TEST_PROPERTY_RANGE_CONSTRAINT_WITH_FLOAT_TYPE",
-                        new TypeToken<StaticConstraintProperty<Float, DefaultRangeConstraint, DefaultMeasurement>>() {
+                        new TypeToken<StaticConstraintProperty<Float, DefaultMeasurement>>() {
                         } ).put( "TEST_PROPERTY_RANGE_CONSTRAINT_WITH_DOUBLE_TYPE",
-                        new TypeToken<StaticConstraintProperty<Double, DefaultRangeConstraint, DefaultMeasurement>>() {
+                        new TypeToken<StaticConstraintProperty<Double, DefaultMeasurement>>() {
                         } ).put( "TEST_PROPERTY_WITH_MIN_MAX_LENGTH_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<String, DefaultLengthConstraint, DefaultCharacteristic>>() {
+                        new TypeToken<StaticConstraintProperty<String, DefaultCharacteristic>>() {
                         } ).put( "TEST_PROPERTY_WITH_MIN_LENGTH_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<BigInteger, DefaultLengthConstraint, DefaultCharacteristic>>() {
+                        new TypeToken<StaticConstraintProperty<BigInteger, DefaultCharacteristic>>() {
                         } ).put( "TEST_PROPERTY_COLLECTION_LENGTH_CONSTRAINT",
-                        new TypeToken<StaticConstraintContainerProperty<BigInteger, List<BigInteger>, DefaultLengthConstraint, DefaultList>>() {
+                        new TypeToken<StaticConstraintContainerProperty<BigInteger, List<BigInteger>, DefaultList>>() {
                         } ).build(), new HashMap<>() );
    }
 
@@ -361,7 +357,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertFields( "MetaAspectWithFixedPoint",
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithFixedPoint" )
-                  .put( "TEST_PROPERTY", new TypeToken<StaticConstraintProperty<BigDecimal, DefaultFixedPointConstraint, DefaultMeasurement>>() {
+                  .put( "TEST_PROPERTY", new TypeToken<StaticConstraintProperty<BigDecimal, DefaultMeasurement>>() {
                   } ).build(), new HashMap<>() );
    }
 
