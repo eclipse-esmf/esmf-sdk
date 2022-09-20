@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.aspect.to;
 import java.io.IOException;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.aas.AspectModelAASGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
@@ -56,12 +57,15 @@ public class AspectToAasCommand extends AbstractCommand {
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
+   @CommandLine.Mixin
+   private ExternalResolverMixin customResolver;
+
    @Override
    public void run() {
       final AspectModelAASGenerator generator = new AspectModelAASGenerator();
       final Aspect aspect =
             AspectModelLoader.fromVersionedModelUnchecked(
-                  loadModelOrFail( parentCommand.parentCommand.getInput() ) );
+                  loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
       try {
          // we intentionally override the name of the generated artifact here to the name explicitly
          // desired by the user (outputFilePath), as opposed to what the model thinks it should be
