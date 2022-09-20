@@ -43,6 +43,7 @@ import com.google.common.collect.ImmutableList;
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.UnsupportedVersionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException;
+import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidVersionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
@@ -130,14 +131,14 @@ public class AspectModelValidator {
                   if ( report.getProperty( SH.conforms ).getObject().asLiteral().getBoolean() ) {
                      // The SHACL validation succeeded. But to catch false positives, also try to load the model
                      final Try<Aspect> aspects = AspectModelLoader.fromVersionedModel( model );
-                     if ( aspects.isFailure() ) {
+                     if ( aspects.isFailure() && !(aspects.getCause() instanceof InvalidRootElementCountException) ) {
                         return new ValidationReportBuilder()
                               .withValidationErrors( List.of( new ValidationError.Processing(
-                                          "Validation succeeded, but an error was found while processing the model. "
-                                                + "This indicates an error in the model validation; please consider reporting this issue including the model "
-                                                + "at https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues -- "
-                                                + buildCauseMessage( aspects.getCause() ) ) ) )
-                                    .buildInvalidReport();
+                                    "Validation succeeded, but an error was found while processing the model. "
+                                          + "This indicates an error in the model validation; please consider reporting this issue including the model "
+                                          + "at https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues -- "
+                                          + buildCauseMessage( aspects.getCause() ) ) ) )
+                              .buildInvalidReport();
                      }
                      return new ValidationReportBuilder().buildValidReport();
                   }
