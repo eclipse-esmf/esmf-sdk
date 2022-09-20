@@ -13,13 +13,15 @@
 
 package io.openmanufacturing.sds.staticmetamodel.constraint;
 
+import java.util.List;
+
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Constraint;
 
-public interface ConstraintProperty<C extends Constraint, C2 extends Characteristic> {
+public interface ConstraintProperty<C extends Characteristic> {
 
-   C getConstraint();
+   List<Constraint> getConstraints();
 
-   C2 getBaseCharacteristic();
+   C getBaseCharacteristic();
 }
 

@@ -38,32 +38,38 @@ The available options and their meaning can also be seen in the help text of the
 | help                                  | Get overview of all commands                                   | `bamm help`
 | help <subcommand>                     | Get help for a specific subcommand                             | `bamm help aspect`
 | aspect help <aspect subcommand>       | Get help for `aspect` subcommands                              | `bamm aspect help validate`
-| aspect <model> validate               | Validate Aspect Model                                          | `bamm aspect AspectModel.ttl validate`
+.2+| aspect <model> validate            | Validate Aspect Model                                          | `bamm aspect AspectModel.ttl validate`
+| _--custom-resolver_ : use an external resolver for the resolution of the model elements | `bamm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
 .2+| aspect <model> prettyprint         | Pretty-print Aspect Model                                      | `bamm aspect AspectModel.ttl prettyprint`
-                                        |   _--output, -o_ : the output will be saved to the given file  | `bamm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
+|   _--output, -o_ : the output will be saved to the given file  | `bamm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
 .2+| aspect <model> migrate             | Migrate Aspect Model to the latest BAMM version                | `bamm aspect AspectModel.ttl migrate AspectModel.ttl`
-                                        |    _--output, -o_ : the output will be saved to the given file | `bamm aspect AspectModel.ttl migrate AspectModel.ttl -o c:\Results\MigratedModel.ttl`
-.4+| aspect <model> to html             | Generate HTML documentation for an Aspect Model                | `bamm aspect AspectModel.ttl to html`
-                                        |    _--output, -o_ : the output will be saved to the given file | `bamm aspect AspectModel.ttl to html -o c:\Model.html`
-                                        |    _--css, -c_ : CSS file with custom styles to be included in the generated HTML documentation | `bamm aspect AspectModel.ttl to html -c c:\styles.css`
-                                        |    _--language, -l_ : The language from the model for which the HTML should be generated (default: en) | `bamm aspect AspectModel.ttl to html -l de`
-.3+| aspect <model> to png              | Generate PNG diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to png`
-                                        |    _--output, -o_ : output file path (default: stdout); as PNG is a binary format, it is strongly recommended to output the result to a file by using the -o option or the console redirection operator '>')|
+|    _--output, -o_ : the output will be saved to the given file | `bamm aspect AspectModel.ttl migrate AspectModel.ttl -o c:\Results\MigratedModel.ttl`
+.5+| aspect <model> to html             | Generate HTML documentation for an Aspect Model                | `bamm aspect AspectModel.ttl to html`
+|    _--output, -o_ : the output will be saved to the given file | `bamm aspect AspectModel.ttl to html -o c:\Model.html`
+|    _--css, -c_ : CSS file with custom styles to be included in the generated HTML documentation | `bamm aspect AspectModel.ttl to html -c c:\styles.css`
+|    _--language, -l_ : The language from the model for which the HTML should be generated (default: en) | `bamm aspect AspectModel.ttl to html -l de`
+| _--custom-resolver_ : use an external resolver for the resolution of the model elements | `bamm aspect AspectModel.ttl to html --custom-resolver myresolver.bat`
+.4+| aspect <model> to png              | Generate PNG diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to png`
+|    _--output, -o_ : output file path (default: stdout); as PNG is a binary format, it is strongly recommended to output the result to a file by using the -o option or the console redirection operator '>')|
                                         |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
-.3+| aspect <model> to svg              | Generate SVG diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to svg`
+| _--custom-resolver_ : use an external resolver for the resolution of the model elements | `bamm aspect AspectModel.ttl to png --custom-resolver resolver.jar`
+.4+| aspect <model> to svg              | Generate SVG diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to svg`
                                         |    _--output, -o_ : the output will be saved to the given file |
                                         |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
-.3+| aspect <model> to dot              | Generate https://graphviz.org/doc/info/lang.html[DOT] diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to dot`
+| _--custom-resolver_ : use an external resolver for the resolution of the model elements | `bamm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
+.4+| aspect <model> to dot              | Generate https://graphviz.org/doc/info/lang.html[DOT] diagram for Aspect Model                          | `bamm aspect AspectModel.ttl to dot`
                                         |    _--output, -o_ : output file path (default: stdout)         |
                                         |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
-.7+| aspect <model> to java             | Generate Java classes from an Aspect Model                     | `bamm aspect AspectModel.ttl to java`
+| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.8+| aspect <model> to java             | Generate Java classes from an Aspect Model                     | `bamm aspect AspectModel.ttl to java`
                                         |  _--output-directory, -d_ : output directory to write files to (default: current directory)|
                                         |  _--package-name, -pn_ : package to use for generated Java classes| `bamm aspect AspectModel.ttl to java -pn org.company.product`
                                         |  _--no-jackson, -nj_ : disable https://github.com/FasterXML/jackson[Jackson] annotation generation in generated Java classes|
                                         |  _--template-library-file, -tlf_ : the path and name of the https://velocity.apache.org/[Velocity] template file containing the macro library|
                                         |  _--execute-library-macros, -elm_ : Execute the macros provided in the https://velocity.apache.org/[Velocity] macro library|
                                         |  _--static, -s_ : generate Java domain classes for a Static Meta Model|
-.12+| aspect <model> to openapi         | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model             | `bamm aspect AspectModel.ttl to openapi -j`
+| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.13+| aspect <model> to openapi         | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model             | `bamm aspect AspectModel.ttl to openapi -j`
                                         |  _--output, -o_ : output file path (default: stdout)           |
                                         |  _--api-base-url, -b_ : the base url for the Aspect API used in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification| `bamm aspect AspectModel.ttl to openapi -j -b \http://mysite.de`
                                         |  _--json, -j_ : generate a JSON specification for an Aspect Model (default format is YAML)|
@@ -75,14 +81,28 @@ The available options and their meaning can also be seen in the help text of the
                                         |  _--paging-cursor-based, -pc_ : in case there is more than one paging possibility, it has to be cursor based paging|
                                         |  _--paging-offset-based, -po_ : in case there is more than one paging possibility, it has to be offset based paging|
                                         |  _--paging-time-based, -pt_ : in case there is more than one paging possibility, it has to be time based paging|
-.2+| aspect <model> to json             | Generate OpenAPI JSON specification for an Aspect Model        | `bamm aspect AspectModel.ttl to json`
+| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.3+| aspect <model> to json             | Generate OpenAPI JSON specification for an Aspect Model        | `bamm aspect AspectModel.ttl to json`
                                         |  _--output, -o_ : output file path (default: stdout)           |
-.2+| aspect <model> to schema           | Generate JSON schema for an Aspect Model                       | `bamm aspect AspectModel.ttl to schema`
+| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.3+| aspect <model> to schema           | Generate JSON schema for an Aspect Model                       | `bamm aspect AspectModel.ttl to schema`
                                         |  _--output, -o_ : output file path (default: stdout)           |
-.3+| aspect <model> to aas              | Generate Asset Administration Shell (AAS) submodel template for an Aspect Model  | `bamm aspect AspectModel.ttl to aas`
+| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.4+| aspect <model> to aas              | Generate Asset Administration Shell (AAS) submodel template for an Aspect Model  | `bamm aspect AspectModel.ttl to aas`
                                         |  _--output, -o_ : output file path (default: stdout)           |
                                         |  _--format, -f_ : output file format (xml or aasx, default: xml)|
+| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 |===
+
+=== Custom model resolver
+
+To allow the users to provide their own custom implementations of a model resolver, `--custom-resolver` command-line switch can be used.
+The value of the switch can be any command which is directly executable by the underlying operating system (such as a batch script on Windows or a shell script on Linux/Unix).
+When a model element needs to be resolved, this command is executed with the URN of the element to resolve passed as the last parameter.
+The command can provide other parameters as well, the element URN will be added automatically as the last one by bamm-cli.
+The resolved model definition is expected to be output to the stdout in Turtle format.
+From there, it is read by the bamm-cli and passed on to the internal processing pipeline.
+In this way the extension can be flexibly done in any programming language/script language, including complex logic if necessary.
 
 == Using the CLI to create a JSON OpenAPI Specification
 

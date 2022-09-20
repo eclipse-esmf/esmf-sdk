@@ -67,15 +67,15 @@
     #if( $util.hasContainerType( $property ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintContainerProperty )
         #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
-        #propertyDeclaration() StaticConstraintContainerProperty<$containedType, $propertyType, #getConstraintClassName(), #getCharacteristicClassName()>
+        #propertyDeclaration() StaticConstraintContainerProperty<$containedType, $propertyType, #getCharacteristicClassName()>
           $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
     #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
         $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintUnitProperty )
         $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
-        #propertyDeclaration() StaticConstraintUnitProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>
+        #propertyDeclaration() StaticConstraintUnitProperty<$propertyType, #getCharacteristicClassName()>
           $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
     #else
-        #propertyDeclaration() StaticConstraintProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>
+        #propertyDeclaration() StaticConstraintProperty<$propertyType, #getCharacteristicClassName()>
           $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
     #end
 #else
@@ -108,14 +108,13 @@
         #if( $util.hasContainerType( $property ) )
             $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintContainerProperty )
             #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
-            new StaticConstraintContainerProperty<$containedType, $propertyType, #getConstraintClassName(),
-            #getCharacteristicClassName()>(
+            new StaticConstraintContainerProperty<$containedType, $propertyType, #getCharacteristicClassName()>(
         #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
             $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintUnitProperty )
             $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
-            new StaticConstraintUnitProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>(
+            new StaticConstraintUnitProperty<$propertyType, #getCharacteristicClassName()>(
         #else
-            new StaticConstraintProperty<$propertyType, #getConstraintClassName(), #getCharacteristicClassName()>(
+            new StaticConstraintProperty<$propertyType, #getCharacteristicClassName()>(
         #end
     #else
         #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
@@ -149,8 +148,8 @@ Optional.of("$property.getPayloadName()"),
     ## Body
     #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
     @Override
-    public #getConstraintClassName() getConstraint() {
-    return (#getConstraintClassName())((Trait)getCharacteristic().get()).getConstraints().iterator().next();
+    public List<Constraint> getConstraints() {
+    return ((Trait)getCharacteristic().get()).getConstraints();
     }
 
     @Override

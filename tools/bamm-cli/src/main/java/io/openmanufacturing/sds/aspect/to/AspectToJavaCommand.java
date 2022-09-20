@@ -17,6 +17,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.java.JavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
@@ -57,9 +58,12 @@ public class AspectToJavaCommand extends AbstractCommand {
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
+   @CommandLine.Mixin
+   private ExternalResolverMixin customResolver;
+
    @Override
    public void run() {
-      final VersionedModel model = loadModelOrFail( parentCommand.parentCommand.getInput() );
+      final VersionedModel model = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
       final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses ? getStaticModelGenerator( model ) : getModelGenerator( model );
       javaGenerator.generate( artifact -> {
          final String path = artifact.getPackageName();

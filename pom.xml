@@ -118,7 +118,7 @@
       <maven-site-plugin-version>3.9.1</maven-site-plugin-version>
       <maven-enforcer-plugin-version>3.0.0</maven-enforcer-plugin-version>
       <build-helper-maven-plugin-version>3.2.0</build-helper-maven-plugin-version>
-      <maven-jar-plugin-version>3.2.0</maven-jar-plugin-version>
+      <maven-jar-plugin-version>3.2.2</maven-jar-plugin-version>
       <git-commit-id-plugin-version>4.0.5</git-commit-id-plugin-version>
 
       <!-- General settings -->
@@ -251,91 +251,91 @@
 
          <!-- Third party dependencies -->
          <dependency>
-             <groupId>org.springframework.boot</groupId>
-             <artifactId>spring-boot-dependencies</artifactId>
-             <version>${spring-boot-version}</version>
-             <type>pom</type>
-             <scope>import</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>${spring-boot-version}</version>
+            <type>pom</type>
+            <scope>import</scope>
          </dependency>
          <dependency>
-             <groupId>com.google.guava</groupId>
-             <artifactId>guava</artifactId>
-             <version>${guava-version}</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava-version}</version>
          </dependency>
          <dependency>
-             <groupId>net.jqwik</groupId>
-             <artifactId>jqwik</artifactId>
-             <version>${jqwik-version}</version>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik</artifactId>
+            <version>${jqwik-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.apache.jena</groupId>
-             <artifactId>jena-core</artifactId>
-             <version>${jena-version}</version>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
+            <version>${jena-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.topbraid</groupId>
-             <artifactId>shacl</artifactId>
-             <version>${shacl-version}</version>
+            <groupId>org.topbraid</groupId>
+            <artifactId>shacl</artifactId>
+            <version>${shacl-version}</version>
          </dependency>
          <dependency>
-             <groupId>io.vavr</groupId>
-             <artifactId>vavr</artifactId>
-             <version>${vavr-version}</version>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>${vavr-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.assertj</groupId>
-             <artifactId>assertj-vavr</artifactId>
-             <version>${assertj-vavr-version}</version>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-vavr</artifactId>
+            <version>${assertj-vavr-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.mozilla</groupId>
-             <artifactId>rhino</artifactId>
-             <version>${rhino-version}</version>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>${rhino-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.apache.velocity</groupId>
-             <artifactId>velocity-engine-core</artifactId>
-             <version>${velocity-version}</version>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-engine-core</artifactId>
+            <version>${velocity-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.jboss.forge.roaster</groupId>
-             <artifactId>roaster-jdt</artifactId>
-             <version>${roaster-version}</version>
+            <groupId>org.jboss.forge.roaster</groupId>
+            <artifactId>roaster-jdt</artifactId>
+            <version>${roaster-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.jboss.forge.roaster</groupId>
-             <artifactId>roaster-api</artifactId>
-             <version>${roaster-version}</version>
+            <groupId>org.jboss.forge.roaster</groupId>
+            <artifactId>roaster-api</artifactId>
+            <version>${roaster-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.jeasy</groupId>
-             <artifactId>easy-random-core</artifactId>
-             <version>${easy-random-version}</version>
+            <groupId>org.jeasy</groupId>
+            <artifactId>easy-random-core</artifactId>
+            <version>${easy-random-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.apache.jena</groupId>
-             <artifactId>jena-arq</artifactId>
-             <version>${jena-version}</version>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>${jena-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.apache.commons</groupId>
-             <artifactId>commons-text</artifactId>
-             <version>${commons-text-version}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${commons-text-version}</version>
          </dependency>
          <dependency>
-             <groupId>guru.nidi</groupId>
-             <artifactId>graphviz-java-all-j2v8</artifactId>
-             <version>${graphviz-version}</version>
+            <groupId>guru.nidi</groupId>
+            <artifactId>graphviz-java-all-j2v8</artifactId>
+            <version>${graphviz-version}</version>
          </dependency>
          <dependency>
-             <groupId>com.github.curious-odd-man</groupId>
-             <artifactId>rgxgen</artifactId>
-             <version>${rgxgen-version}</version>
+            <groupId>com.github.curious-odd-man</groupId>
+            <artifactId>rgxgen</artifactId>
+            <version>${rgxgen-version}</version>
          </dependency>
          <dependency>
-             <groupId>com.google.inject</groupId>
-             <artifactId>guice</artifactId>
-             <version>${guice-version}</version>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice-version}</version>
          </dependency>
          <dependency>
             <groupId>com.github.javaparser</groupId>
@@ -343,30 +343,30 @@
             <version>${javaparser-version}</version>
          </dependency>
          <dependency>
-             <groupId>com.github.stefanbirkner</groupId>
-             <artifactId>system-lambda</artifactId>
-             <version>${system-lambda-version}</version>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-lambda</artifactId>
+            <version>${system-lambda-version}</version>
          </dependency>
          <dependency>
-             <groupId>io.github.classgraph</groupId>
-             <artifactId>classgraph</artifactId>
-             <version>${classgraph-version}</version>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>${classgraph-version}</version>
          </dependency>
          <dependency>
-             <groupId>io.admin-shell.aas</groupId>
-             <artifactId>model</artifactId>
-             <version>${io-admin-shell-aas-model}</version>
+            <groupId>io.admin-shell.aas</groupId>
+            <artifactId>model</artifactId>
+            <version>${io-admin-shell-aas-model}</version>
          </dependency>
          <dependency>
-             <groupId>io.admin-shell.aas</groupId>
-             <artifactId>dataformat-xml</artifactId>
-             <version>${io-admin-shell-aas-serializer}</version>
-             <exclusions>
-                 <exclusion>
-                     <groupId>org.slf4j</groupId>
-                     <artifactId>slf4j-simple</artifactId>
-                 </exclusion>
-             </exclusions>
+            <groupId>io.admin-shell.aas</groupId>
+            <artifactId>dataformat-xml</artifactId>
+            <version>${io-admin-shell-aas-serializer}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-simple</artifactId>
+               </exclusion>
+            </exclusions>
          </dependency>
          <dependency>
             <groupId>io.admin-shell.aas</groupId>
@@ -399,11 +399,11 @@
    <build>
       <pluginManagement>
          <plugins>
-             <plugin>
+            <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-resources-plugin</artifactId>
                <version>${maven-resources-plugin-version}</version>
-             </plugin>
+            </plugin>
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-clean-plugin</artifactId>

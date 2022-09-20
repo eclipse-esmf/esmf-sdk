@@ -24,6 +24,8 @@ construct {
   #process Properties defined in the Aspect Model being processed
   {
     ?property bamm:refines?/rdf:type bamm:Property .
+    #exclude properties from our shared name-space
+    filter ( ! strstarts( str( ?property ), str ( bamm-e: ) ) )
 
     ?property bamm:name ?propertyName .
     ?property bamm:characteristic ?characteristic .
