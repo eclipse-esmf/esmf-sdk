@@ -1,6 +1,6 @@
 name: sds-developer-guide
 title: SDS SDK Developer Guide
-version: '2.0.5'
+version: '2.0.6'
 start_page: ROOT:index.adoc
 nav:
   - modules/getting-started-guide/nav.adoc
