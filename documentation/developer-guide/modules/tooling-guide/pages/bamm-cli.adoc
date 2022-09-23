@@ -7,6 +7,8 @@ The BAMM CLI is a command line tool for the validation of Aspect models and the 
 
 TIP: Download latest version: icon:download[] https://github.com/OpenManufacturingPlatform/sds-sdk/releases/download/v{sds-sdk-version}/bamm-cli-{sds-sdk-version}.jar[bamm-cli-{sds-sdk-version}.jar]
 
+NOTE: At least Java version 11 is required to successfully run the tool.
+
 [[bamm-cli-getting-started]]
 == Running the BAMM CLI
 
