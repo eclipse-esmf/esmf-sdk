@@ -13,8 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.generator.docu;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.BufferedWriter;
@@ -79,6 +78,8 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       assertThat( htmlResult ).contains( "<h1 id=\"AspectWithCollectionOfSimpleType\">Aspect Model AspectWithCollectionOfSimpleType</h1>" );
       assertThat( htmlResult ).contains(
             "<h3 id=\"io-openmanufacturing-test-AspectWithCollectionOfSimpleType-io-openmanufacturing-test-testList-property\">testList</h3>" );
+      // example value
+      assertThat( htmlResult ).containsIgnoringWhitespaces( "<div class=\"w-80\">Example</div><div class=\"w-full\">35</div>" );
    }
 
    @ParameterizedTest
