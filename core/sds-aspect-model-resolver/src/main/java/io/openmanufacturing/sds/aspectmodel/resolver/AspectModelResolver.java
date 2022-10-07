@@ -157,21 +157,26 @@ public class AspectModelResolver {
 
          // Merge the resolved model into the target if it was not already merged before.
          // It could have been merged before when the model contains another model definition that was already resolved
-         if ( !mergedModels.contains( model ) ) {
+         if ( !modelAlreadyResolved( model, mergedModels ) ) {
             mergeModels( result, model );
             mergedModels.add( model );
-         }
-         for ( final String element : getAllUrnsInModel( model ) ) {
-            if ( !result.contains( model.createResource( element ), RDF.type, (RDFNode) null )
-                  // Backwards compatibility with BAMM 1.0.0
-                  && !result.contains( model.createResource( element ), refines, (RDFNode) null )
-                  && !unresolvedUrns.contains( element ) ) {
-               unresolvedUrns.push( element );
+
+            for ( final String element : getAllUrnsInModel( model ) ) {
+               if ( !result.contains( model.createResource( element ), RDF.type, (RDFNode) null )
+                     // Backwards compatibility with BAMM 1.0.0
+                     && !result.contains( model.createResource( element ), refines, (RDFNode) null )
+                     && !unresolvedUrns.contains( element ) ) {
+                  unresolvedUrns.push( element );
+               }
             }
          }
       }
 
       return Try.success( result );
+   }
+
+   private boolean modelAlreadyResolved( final Model model, final Set<Model> resolvedModels ) {
+      return resolvedModels.stream().anyMatch( model::isIsomorphicWith );
    }
 
    private final Model EMPTY_MODEL = ModelFactory.createDefaultModel();
