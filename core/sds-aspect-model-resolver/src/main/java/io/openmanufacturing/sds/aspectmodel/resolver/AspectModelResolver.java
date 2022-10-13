@@ -68,7 +68,7 @@ public class AspectModelResolver {
 
          return Stream.of( subjectUri, propertyUri, objectUri )
                .flatMap( Function.identity() )
-               .map(AspectModelResolver::resolveBammUrn)
+               .map( AspectModelResolver::resolveBammUrn )
                .flatMap( Value::toJavaStream );
       } ) ).flatMap( Function.identity() ).collect( Collectors.toSet() );
    }
