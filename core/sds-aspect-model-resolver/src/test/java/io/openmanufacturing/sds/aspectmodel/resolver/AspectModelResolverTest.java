@@ -16,7 +16,6 @@ package io.openmanufacturing.sds.aspectmodel.resolver;
 import static org.assertj.vavr.api.VavrAssertions.assertThat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -371,5 +370,28 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final BAMM bamm = new BAMM( metaModelVersion );
       final List<Statement> propertiesAssertions = model.listStatements( primaryAspect, bamm.properties(), (RDFNode) null ).toList();
       Assertions.assertThat( propertiesAssertions.size() ).isEqualTo( 1 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testMultiReferenceSameSource( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      final File aspectModelsRootDirectory = new File(
+            AspectModelResolverTest.class.getClassLoader()
+                  .getResource( metaModelVersion.toString().toLowerCase() )
+                  .toURI()
+                  .getPath() );
+
+      final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing.test:1.0.0#VehicleInstance" );
+
+      final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
+      final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
+      assertThat( result ).isSuccess();
+
+      // make sure the source file for the definitions of ModelYear and ModelCode (ModelDef.ttl) is only loaded once
+      final Model model = result.get().getModel();
+      final Resource entity = model.createResource( "urn:bamm:io.openmanufacturing.test:1.0.0#SomeOtherNonRelatedEntity" );
+      final BAMM bamm = new BAMM( metaModelVersion );
+      final List<Statement> properties = model.listStatements( entity, bamm.properties(), (RDFNode) null ).toList();
+      Assertions.assertThat( properties.size() ).isEqualTo( 1 );
    }
 }
