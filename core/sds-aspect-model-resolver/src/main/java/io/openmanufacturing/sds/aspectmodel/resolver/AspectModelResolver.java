@@ -40,6 +40,7 @@ import io.openmanufacturing.sds.aspectmodel.urn.UrnSyntaxException;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorFactory;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorService;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorServiceLoader;
+import io.vavr.Value;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 
@@ -66,8 +67,25 @@ public class AspectModelResolver {
                Stream.of( statement.getObject().asResource().getURI() ) : Stream.empty();
 
          return Stream.of( subjectUri, propertyUri, objectUri )
-               .flatMap( Function.identity() );
+               .flatMap( Function.identity() )
+               .map( AspectModelResolver::resolveBammUrn )
+               .flatMap( Value::toJavaStream );
       } ) ).flatMap( Function.identity() ).collect( Collectors.toSet() );
+   }
+
+   /**
+    * Tries to resolve the given Bamm URN {@link AspectModelUrn}
+    *
+    * @param urn The Aspect (meta) model URN
+    * @return The {@link String} if it is resolvable, an {@link UrnSyntaxException} otherwise
+    */
+   private static Try<String> resolveBammUrn( final String urn ) {
+      try {
+         AspectModelUrn.fromUrn( urn );
+         return Try.success( urn );
+      } catch ( final UrnSyntaxException exception ) {
+         return Try.failure( exception );
+      }
    }
 
    /**
