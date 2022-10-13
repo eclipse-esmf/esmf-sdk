@@ -40,6 +40,7 @@ import io.openmanufacturing.sds.aspectmodel.urn.UrnSyntaxException;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorFactory;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorService;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorServiceLoader;
+import io.vavr.Value;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 
@@ -66,8 +67,25 @@ public class AspectModelResolver {
                Stream.of( statement.getObject().asResource().getURI() ) : Stream.empty();
 
          return Stream.of( subjectUri, propertyUri, objectUri )
-               .flatMap( Function.identity() );
+               .flatMap( Function.identity() )
+               .map( AspectModelResolver::resolveBammUrn )
+               .flatMap( Value::toJavaStream );
       } ) ).flatMap( Function.identity() ).collect( Collectors.toSet() );
+   }
+
+   /**
+    * Tries to resolve the given Bamm URN {@link AspectModelUrn}
+    *
+    * @param urn The Aspect (meta) model URN
+    * @return The {@link String} if it is resolvable, an {@link UrnSyntaxException} otherwise
+    */
+   private static Try<String> resolveBammUrn( final String urn ) {
+      try {
+         AspectModelUrn.fromUrn( urn );
+         return Try.success( urn );
+      } catch ( final UrnSyntaxException exception ) {
+         return Try.failure( exception );
+      }
    }
 
    /**
@@ -157,21 +175,26 @@ public class AspectModelResolver {
 
          // Merge the resolved model into the target if it was not already merged before.
          // It could have been merged before when the model contains another model definition that was already resolved
-         if ( !mergedModels.contains( model ) ) {
+         if ( !modelAlreadyResolved( model, mergedModels ) ) {
             mergeModels( result, model );
             mergedModels.add( model );
-         }
-         for ( final String element : getAllUrnsInModel( model ) ) {
-            if ( !result.contains( model.createResource( element ), RDF.type, (RDFNode) null )
-                  // Backwards compatibility with BAMM 1.0.0
-                  && !result.contains( model.createResource( element ), refines, (RDFNode) null )
-                  && !unresolvedUrns.contains( element ) ) {
-               unresolvedUrns.push( element );
+
+            for ( final String element : getAllUrnsInModel( model ) ) {
+               if ( !result.contains( model.createResource( element ), RDF.type, (RDFNode) null )
+                     // Backwards compatibility with BAMM 1.0.0
+                     && !result.contains( model.createResource( element ), refines, (RDFNode) null )
+                     && !unresolvedUrns.contains( element ) ) {
+                  unresolvedUrns.push( element );
+               }
             }
          }
       }
 
       return Try.success( result );
+   }
+
+   private boolean modelAlreadyResolved( final Model model, final Set<Model> resolvedModels ) {
+      return resolvedModels.stream().anyMatch( model::isIsomorphicWith );
    }
 
    private final Model EMPTY_MODEL = ModelFactory.createDefaultModel();
