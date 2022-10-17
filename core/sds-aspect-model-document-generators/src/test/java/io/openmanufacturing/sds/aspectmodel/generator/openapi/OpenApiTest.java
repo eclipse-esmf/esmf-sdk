@@ -16,6 +16,8 @@ package io.openmanufacturing.sds.aspectmodel.generator.openapi;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -68,12 +70,14 @@ public class OpenApiTest extends MetaModelVersions {
    private final static Optional<String> testResourcePathWithParameter = Optional.of( "my-test-aspect/{test-Id}" );
    private final static Optional<String> testResourcePathWithInvalidParameter = Optional.of( "my-test-aspect/{test-\\Id}" );
    private final static Optional<JsonNode> testInvalidParameter = Optional.of( JsonNodeFactory.instance.objectNode().put( "unitId", "unitId" ) );
+   private final static List<String> UNSUPPORTED_KEYWORDS = List.of( "$schema", "additionalItems", "cost", "contains", "dependencies", "$id",
+         "patternProperties", "propertyNames" );
    private final AspectModelOpenApiGenerator apiJsonGenerator = new AspectModelOpenApiGenerator();
    private final Configuration config = Configuration.defaultConfiguration().addOptions( Option.SUPPRESS_EXCEPTIONS );
 
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
-   public void testGeneration( final TestAspect testAspect ) {
+   public void testGeneration( final TestAspect testAspect ) throws IOException {
       final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );
       final JsonNode json = apiJsonGenerator.applyForJson( aspect, false, testBaseUrl, testResourcePath,
             Optional.empty(), false, Optional.empty() );
@@ -364,8 +368,9 @@ public class OpenApiTest extends MetaModelVersions {
             .doesNotContainKey( "params" );
    }
 
-   private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect ) {
-      validateUnsupportedKeywords( json );
+   private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect )
+       throws IOException {
+      validateUnsupportedKeywords( jsonNode );
 
       final SwaggerParseResult result = new OpenAPIParser().readContents( json, null, null );
       assertThat( result.getMessages().size() ).isZero();
@@ -433,15 +438,13 @@ public class OpenApiTest extends MetaModelVersions {
             .matches( "-?(#/components/responses/" + name + ")" );
    }
 
-   private void validateUnsupportedKeywords( final String json ) {
-      assertThat( json ).doesNotContain( "$schema" );
-      assertThat( json ).doesNotContain( "additionalItems" );
-      assertThat( json ).doesNotContain( "cost" );
-      assertThat( json ).doesNotContain( "contains" );
-      assertThat( json ).doesNotContain( "dependencies" );
-      assertThat( json ).doesNotContain( "$id" );
-      assertThat( json ).doesNotContain( "patternProperties" );
-      assertThat( json ).doesNotContain( "propertyNames" );
+   private void validateUnsupportedKeywords( final JsonNode jsonNode ) throws IOException {
+      final JsonParser jsonParser = jsonNode.traverse();
+      while ( !jsonParser.isClosed() ) {
+         if ( jsonParser.nextToken() == JsonToken.FIELD_NAME ) {
+            assertThat( jsonParser.currentName() ).isNotIn( UNSUPPORTED_KEYWORDS );
+         }
+      }
    }
 
    private void validateOperation( final OpenAPI openAPI ) {

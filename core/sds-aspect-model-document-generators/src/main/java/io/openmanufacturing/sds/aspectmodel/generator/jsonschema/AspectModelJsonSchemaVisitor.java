@@ -13,10 +13,13 @@
 
 package io.openmanufacturing.sds.aspectmodel.generator.jsonschema;
 
+import com.google.common.base.Strings;
+import io.openmanufacturing.sds.metamodel.IsDescribed;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -138,6 +141,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    private final Map<Resource, Map<String, JsonNode>> typeData;
 
    static final String JSON_SCHEMA_VERSION = "http://json-schema.org/draft-04/schema";
+   private final Locale locale;
 
    private enum JsonType {
       NUMBER,
@@ -188,12 +192,18 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    private final ObjectNode rootNode = factory.objectNode();
    private final Map<Base, JsonNode> hasVisited = new HashMap<>();
 
-   public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes ) {
+   public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes, final Locale locale ) {
       if ( useExtendedTypes ) {
          typeData = extendedTypeData;
       } else {
          typeData = openApiTypeData;
       }
+
+      this.locale = locale;
+   }
+
+   public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes ) {
+      this( useExtendedTypes, Locale.ENGLISH );
    }
 
    public ObjectNode getRootNode() {
@@ -206,12 +216,14 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    public JsonNode visitAspectForOpenApi( final Aspect aspect ) {
+      addDescription( rootNode, aspect, locale );
       return visitHasProperties( aspect, rootNode );
    }
 
    @Override
    public JsonNode visitAspect( final Aspect aspect, final ObjectNode context ) {
       rootNode.put( "$schema", JSON_SCHEMA_VERSION );
+      addDescription( rootNode, aspect, locale );
       return visitHasProperties( aspect, rootNode );
    }
 
@@ -266,6 +278,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    @SuppressWarnings( "squid:S2250" )
    //Amount of elements in list is in regard to amount of properties in aspect model. Even in bigger aspects this should not lead to performance issues
    public JsonNode visitProperty( final Property property, final ObjectNode context ) {
+      final ObjectNode propertyNode = addDescription( factory.objectNode(), property, locale );
       final Characteristic characteristic = determineCharacteristic( property );
       final String referenceNodeName;
       if ( characteristic instanceof SingleEntity ) {
@@ -278,12 +291,12 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       }
 
       if ( processedProperties.contains( property ) ) {
-         return factory.objectNode().put( "$ref", "#/components/schemas/" + referenceNodeName );
+         return propertyNode.put( "$ref", "#/components/schemas/" + referenceNodeName );
       }
       processedProperties.add( property );
       final JsonNode characteristicSchema = characteristic.accept( this, context );
       setNodeInRootSchema( characteristicSchema, referenceNodeName );
-      return factory.objectNode().put( "$ref", "#/components/schemas/" + referenceNodeName );
+      return propertyNode.put( "$ref", "#/components/schemas/" + referenceNodeName );
    }
 
    private AspectModelJsonSchemaVisitor.JsonType getSchemaTypeForAspectType( final Resource type ) {
@@ -314,6 +327,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    @Override
    public JsonNode visitCollection( final Collection collection, final ObjectNode context ) {
       final ObjectNode collectionNode = factory.objectNode();
+      addDescription( collectionNode, collection, locale );
       collectionNode.put( "type", "array" );
       final Optional<Characteristic> characteristic = collection.getElementCharacteristic();
       if ( characteristic.isPresent() ) {
@@ -338,16 +352,19 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    @Override
    public JsonNode visitTrait( final Trait trait, final ObjectNode context ) {
       final ObjectNode propertyNode = (ObjectNode) trait.getBaseCharacteristic().accept( this, context );
+      addDescription( propertyNode, trait, locale );
       return Stream.ofAll( trait.getConstraints() ).foldLeft( propertyNode, ( node, constraint ) -> ((ObjectNode) (constraint.accept( this, node ))) );
    }
 
    @Override
    public JsonNode visitConstraint( final Constraint constraint, final ObjectNode context ) {
+      addDescription( context, constraint, locale );
       return context;
    }
 
    @Override
    public JsonNode visitLengthConstraint( final LengthConstraint lengthConstraint, final ObjectNode context ) {
+      addDescription( context, lengthConstraint, locale );
       final String itemsOrLength = "array".equals( context.get( "type" ).asText() ) ? "Items" : "Length";
       lengthConstraint.getMaxValue().ifPresent( maxValue -> context.put( "max" + itemsOrLength, maxValue ) );
       lengthConstraint.getMinValue().ifPresent( minValue -> context.put( "min" + itemsOrLength, minValue ) );
@@ -365,12 +382,14 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    @Override
    public JsonNode visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint,
          final ObjectNode context ) {
+      addDescription( context, regularExpressionConstraint, locale );
       context.set( "pattern", factory.textNode( regularExpressionConstraint.getValue() ) );
       return context;
    }
 
    @Override
    public JsonNode visitRangeConstraint( final RangeConstraint rangeConstraint, final ObjectNode context ) {
+      addDescription( context, rangeConstraint, locale );
       rangeConstraint.getMaxValue().map( maxValue -> maxValue.accept( this, context ) ).ifPresent( value -> {
          if ( value instanceof NumericNode ) {
             context.set( "maximum", value );
@@ -401,7 +420,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       properties.set( "left", either.getLeft().accept( this, properties ) );
       properties.set( "right", either.getRight().accept( this, properties ) );
 
-      return factory.objectNode()
+      return addDescription( factory.objectNode(),  either , locale)
             .put( "additionalProperties", false )
             .<ObjectNode> set( "properties", properties )
             .set( "oneOf",
@@ -411,9 +430,12 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    @Override
-   public JsonNode visitCharacteristic( final Characteristic characteristic, final ObjectNode context ) {
-      return characteristic.getDataType().map( type -> type.accept( this, context ) ).orElseThrow( () ->
-            new DocumentGenerationException( "Characteristic " + characteristic + " is missing a dataType" ) );
+   public JsonNode visitCharacteristic( final Characteristic characteristic,
+       final ObjectNode context ) {
+      final JsonNode dataTypeNode = characteristic.getDataType().map( type -> type.accept( this, context ) )
+            .orElseThrow( () -> new DocumentGenerationException( "Characteristic " + characteristic + " is missing a dataType" ) );
+
+      return addDescription( ( ObjectNode ) dataTypeNode, characteristic, locale );
    }
 
    private void setNodeInRootSchema( final JsonNode node, final String name ) {
@@ -435,6 +457,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final ObjectNode complexTypeNode = factory.objectNode();
       hasVisited.put( complexType, complexTypeNode );
 
+      addDescription( complexTypeNode, complexType, locale );
       // visitHasProperties needs to be called before accept() on the supertype:
       // This Entity's Properties could be extending an AbstractProperty on the supertype,
       // in order to know the corresponding Characteristic this must be visited first
@@ -526,6 +549,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final ObjectNode enumNode = type.getUrn().equals( RDF.langString.getURI() ) ?
             factory.objectNode().put( "type", "object" ) :
             (ObjectNode) type.accept( this, context );
+      addDescription( enumNode, enumeration, locale );
       enumeration.getValues().stream()
             .map( value -> value.accept( this, enumNode ) )
             .forEach( valuesNode::add );
@@ -535,6 +559,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    private JsonNode createEnumNodeWithComplexValues( final Enumeration enumeration, final BAMM bamm ) {
       final ObjectNode enumNode = factory.objectNode();
+      addDescription( enumNode, enumeration, locale );
       enumNode.put( "type", "object" );
       final ArrayNode enumValueReferences = factory.arrayNode();
       enumeration.getValues().stream()
@@ -559,6 +584,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final ObjectNode enumEntityInstanceNode = factory.objectNode();
       final ArrayNode required = factory.arrayNode();
       final ObjectNode properties = factory.objectNode();
+      addDescription(enumEntityInstanceNode, entityInstance, locale);
       enumEntityInstanceNode.put( "type", "object" );
 
       final Entity entity = entityInstance.getEntityType();
@@ -592,6 +618,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       }
       if ( characteristic.is( Collection.class ) ) {
          final ObjectNode propertyInstanceNode = factory.objectNode();
+         addDescription( propertyInstanceNode, property, locale );
          propertyInstanceNode.put( "type", "array" );
          final ObjectNode arrayPropertyInstanceNode = factory.objectNode();
          arrayPropertyInstanceNode.set( "type", schemaType.toJsonNode() );
@@ -603,8 +630,19 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
          return propertyInstanceNode;
       }
       final ObjectNode propertyInstanceNode = factory.objectNode();
+      addDescription( propertyInstanceNode, property, locale );
       propertyInstanceNode.set( "type", schemaType.toJsonNode() );
       propertyInstanceNode.set( "enum", factory.arrayNode().add( valueForProperty.accept( this, propertyInstanceNode ) ) );
       return propertyInstanceNode;
+   }
+
+   private static ObjectNode addDescription( final ObjectNode node,
+         final IsDescribed describedElement, final Locale locale ) {
+      final String description = describedElement.getDescription( locale );
+
+      if ( !Strings.isNullOrEmpty( description ) ) {
+         node.put( "description", description );
+      }
+      return node;
    }
 }

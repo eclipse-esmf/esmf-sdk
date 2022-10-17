@@ -18,8 +18,8 @@
    bamm:name "AspectWithEnglishAndGermanDescription" ;
    bamm:preferredName "Test Aspect"@en ;
    bamm:preferredName "Testaspekt"@de ;
-   bamm:description "Test Aspect"@en ;
-   bamm:description "Testaspekt"@de ;
+   bamm:description "Aspect With Multilingual Descriptions"@en ;
+   bamm:description "Aspekt mit mehrsprachigen Beschreibungen"@de ;
    bamm:properties ( :testString ) ;
    bamm:operations ( ) .
 
@@ -27,8 +27,8 @@
    bamm:name "testString" ;
    bamm:preferredName "testString"@en ;
    bamm:preferredName "testString"@de ;
-   bamm:description "testString"@en ;
-   bamm:description "testString"@de ;
+   bamm:description "This is a test string"@en ;
+   bamm:description "Es ist ein Test-String"@de ;
    bamm:exampleValue "Example Value Test" ;
    bamm:characteristic bamm-c:Text .
 

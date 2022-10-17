@@ -15,6 +15,7 @@ package io.openmanufacturing.sds.aspectmodel;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -46,7 +47,8 @@ public class GenerateJsonSchema extends AspectModelMojo {
       try {
          for ( final VersionedModel aspectModel : aspectModels ) {
             final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( aspectModel );
-            final JsonNode schema = generator.apply( aspect );
+            //TODO to extend so that language can be selected as in bamm-cli
+            final JsonNode schema = generator.apply( aspect, Locale.ENGLISH );
 
             final OutputStream out = getStreamForFile( aspect.getName() + ".schema.json", outputDirectory );
             final ObjectMapper objectMapper = new ObjectMapper();
