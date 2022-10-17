@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
@@ -90,6 +91,10 @@ public class AspectToOpenapiCommand extends AbstractCommand {
    @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path" )
    private String outputFilePath = "-";
 
+   @CommandLine.Option( names = { "--language", "-l" },
+         description = "The language from the model for which the OpenAPI specification should be generated (default: en)" )
+   private String language = "en";
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -98,19 +103,20 @@ public class AspectToOpenapiCommand extends AbstractCommand {
 
    @Override
    public void run() {
+      final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
       final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
       if ( generateJsonOpenApiSpec ) {
-         generateJson( generator, aspect );
+         generateJson( generator, aspect, locale );
       } else {
-         generateYaml( generator, aspect );
+         generateYaml( generator, aspect, locale );
       }
    }
 
-   private void generateYaml( final AspectModelOpenApiGenerator generator, final Aspect aspect ) {
+   private void generateYaml( final AspectModelOpenApiGenerator generator, final Aspect aspect, final Locale locale ) {
       try {
-         final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl,
-               Optional.ofNullable( aspectResourcePath ), getFileAsString( aspectParameterFile ), includeQueryApi, getPaging() );
+         final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
+               getFileAsString( aspectParameterFile ), includeQueryApi, getPaging(), locale );
          final OutputStream out = getStreamForFile( outputFilePath );
          out.write( yamlSpec.getBytes() );
          out.close();
@@ -119,7 +125,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       }
    }
 
-   private void generateJson( final AspectModelOpenApiGenerator generator, final Aspect aspect ) {
+   private void generateJson( final AspectModelOpenApiGenerator generator, final Aspect aspect, final Locale locale ) {
       JsonNode result = JsonNodeFactory.instance.objectNode();
       final Optional<String> res = getFileAsString( aspectParameterFile );
       final ObjectMapper objectMapper = new ObjectMapper();
@@ -131,7 +137,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
          }
       }
       final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
-            Optional.of( result ), includeQueryApi, getPaging() );
+            Optional.of( result ), includeQueryApi, getPaging(), locale );
 
       final OutputStream out = getStreamForFile( outputFilePath );
       try {
