@@ -1845,6 +1845,51 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       assertThat( violation.message() ).isNotEmpty();
    }
 
+   @Test
+   public void testXoneConstraint() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix : <http://example.com#> .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:targetClass :TestClass ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                 sh:path :testProperty ;
+                 sh:xone (
+                   [ sh:nodeKind sh:Literal ]
+                 ) ;
+               ] .
+            """ );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            :Foo a :TestClass ;
+              :testProperty [
+                 :testProperty2 42 ;
+              ] .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      final Violation finding = violations.get( 0 );
+      assertThat( finding ).isInstanceOf( NodeKindViolation.class );
+      final NodeKindViolation violation = (NodeKindViolation) finding;
+      assertThat( violation.context().element() ).isEqualTo( element );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
+      assertThat( violation.elementName() ).isEqualTo( ":Foo" );
+      assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
+      assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
+      assertThat( violation.message() ).isNotEmpty();
+   }
+
    private Model model( final String ttlRepresentation ) {
       final Model model = ModelFactory.createDefaultModel();
       final InputStream in = new ByteArrayInputStream( ttlRepresentation.getBytes( StandardCharsets.UTF_8 ) );

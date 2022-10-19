@@ -66,6 +66,7 @@ import io.openmanufacturing.sds.aspectmodel.shacl.constraint.OrConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.PatternConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.SparqlConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.UniqueLangConstraint;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.XoneConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.AlternativePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.InversePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.OneOrMorePath;
@@ -103,20 +104,9 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
          .put( SHACLM.lessThan, statement -> new LessThanConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
          .put( SHACLM.lessThanOrEquals, statement -> new LessThanOrEqualsConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
          .put( SHACLM.not, statement -> new NotConstraint( constraints( statement.getObject().asResource() ).get( 0 ) ) )
-         .put( SHACLM.and, statement -> new AndConstraint( statement.getObject().as( RDFList.class ).asJavaList().stream()
-               .filter( RDFNode::isResource )
-               .map( RDFNode::asResource )
-               .flatMap( resource -> resource.isURIResource()
-                     ? nodeShape( resource ).attributes().constraints().stream()
-                     : shapeAttributes( resource ).constraints().stream() )
-               .collect( Collectors.toList() ) ) )
-         .put( SHACLM.or, statement -> new OrConstraint( statement.getObject().as( RDFList.class ).asJavaList().stream()
-               .filter( RDFNode::isResource )
-               .map( RDFNode::asResource )
-               .flatMap( resource -> resource.isURIResource()
-                     ? nodeShape( resource ).attributes().constraints().stream()
-                     : shapeAttributes( resource ).constraints().stream() )
-               .collect( Collectors.toList() ) ) )
+         .put( SHACLM.and, statement -> new AndConstraint( nestedConstraintList( statement ) ) )
+         .put( SHACLM.or, statement -> new OrConstraint( nestedConstraintList( statement ) ) )
+         .put( SHACLM.xone, statement -> new XoneConstraint( nestedConstraintList( statement ) ) )
          .put( SHACLM.node, statement -> new NodeConstraint( nodeShape( statement.getObject().asResource() ) ) )
          .put( SHACLM.in, statement -> new AllowedValuesConstraint( statement.getResource().as( RDFList.class ).asJavaList() ) )
          .put( SHACLM.closed, statement -> {
@@ -141,6 +131,16 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
             return new SparqlConstraint( message, sparqlQuery( constraintNode ) );
          } )
          .build();
+
+   private List<Constraint> nestedConstraintList( final Statement statement ) {
+      return statement.getObject().as( RDFList.class ).asJavaList().stream()
+            .filter( RDFNode::isResource )
+            .map( RDFNode::asResource )
+            .flatMap( resource -> resource.isURIResource()
+                  ? nodeShape( resource ).attributes().constraints().stream()
+                  : shapeAttributes( resource ).constraints().stream() )
+            .toList();
+   }
 
    /**
     * Builds a {@link Pattern} from a pattern string and a flags string as specified in
