@@ -62,6 +62,7 @@ import io.openmanufacturing.sds.aspectmodel.shacl.constraint.MinLengthConstraint
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.NodeConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.NodeKindConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.NotConstraint;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.OrConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.PatternConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.SparqlConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.UniqueLangConstraint;
@@ -103,6 +104,13 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
          .put( SHACLM.lessThanOrEquals, statement -> new LessThanOrEqualsConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
          .put( SHACLM.not, statement -> new NotConstraint( constraints( statement.getObject().asResource() ).get( 0 ) ) )
          .put( SHACLM.and, statement -> new AndConstraint( statement.getObject().as( RDFList.class ).asJavaList().stream()
+               .filter( RDFNode::isResource )
+               .map( RDFNode::asResource )
+               .flatMap( resource -> resource.isURIResource()
+                     ? nodeShape( resource ).attributes().constraints().stream()
+                     : shapeAttributes( resource ).constraints().stream() )
+               .collect( Collectors.toList() ) ) )
+         .put( SHACLM.or, statement -> new OrConstraint( statement.getObject().as( RDFList.class ).asJavaList().stream()
                .filter( RDFNode::isResource )
                .map( RDFNode::asResource )
                .flatMap( resource -> resource.isURIResource()
