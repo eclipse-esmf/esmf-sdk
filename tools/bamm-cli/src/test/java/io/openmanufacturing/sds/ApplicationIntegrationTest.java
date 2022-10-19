@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -29,11 +30,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -158,6 +161,15 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
+   public void testSvgGenToFileWithDefLanguageAndExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      final File outputDir = outputDirectory.toFile();
+      createValidArgsExecution( metaModelVersion, "to", "svg", "-o", getPathForArtifact( "AspectWithEntity.svg" ),
+            "--custom-resolver", getResolverCommand( metaModelVersion ) );
+      validateFile( outputDir, "AspectWithEntity.svg" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
    public void testPngGenToFileWithDefLanguage( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "to", "png", "-o", getPathForArtifact( "AspectWithEntity.png" ) );
@@ -178,6 +190,15 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
       assertThatThrownBy( () -> executeExpectException( metaModelVersion, "to", "png", "-o", getPathForArtifact( "AspectWithEntity.png" ), "-l", "de" ) )
             .isInstanceOf( CommandException.class )
             .hasMessageContaining( "The model does not contain the desired language" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testPngGenToFileWithDefLanguageAndExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      final File outputDir = outputDirectory.toFile();
+      createValidArgsExecution( metaModelVersion, "to", "png", "-o", getPathForArtifact( "AspectWithEntity.png" ),
+            "--custom-resolver", getResolverCommand( metaModelVersion ) );
+      validateFile( outputDir, "AspectWithEntity.png" );
    }
 
    @ParameterizedTest
@@ -213,6 +234,15 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
+   public void testDotGenToFileWithDefLanguageAndExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      final File outputDir = outputDirectory.toFile();
+      createValidArgsExecution( metaModelVersion, "to", "dot", "-o", getPathForArtifact( "AspectWithEntity.dot" ),
+            "--custom-resolver", getResolverCommand( metaModelVersion ) );
+      validateFile( outputDir, "AspectWithEntity.dot" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
    public void testJsonToFile( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
       createValidArgsExecution( metaModelVersion, "to", "json", "-o", getPathForArtifact( "AspectWithEntity.json" ) );
@@ -224,6 +254,15 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    public void testJsonToStdout( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "to", "json" );
       assertThat( stdoutBuffer.toString( StandardCharsets.UTF_8 ) ).startsWith( "{" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testJsonToFileWithExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      final File outputDir = outputDirectory.toFile();
+      createValidArgsExecution( metaModelVersion, "to", "json", "-o", getPathForArtifact( "AspectWithEntity.json" ),
+            "--custom-resolver", getResolverCommand( metaModelVersion ) );
+      validateFile( outputDir, "AspectWithEntity.json" );
    }
 
    @ParameterizedTest
@@ -243,10 +282,34 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
+   public void testJsonSchemaToFileWithExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      final File outputDir = outputDirectory.toFile();
+      createValidArgsExecution( metaModelVersion, "to", "schema", "-o", getPathForArtifact( "AspectWithEntity.schema.json" ),
+            "--custom-resolver", getResolverCommand( metaModelVersion ) );
+      validateFile( outputDir, "AspectWithEntity.schema.json" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
    public void testGenerateAspectModelJavaClassWithDefaultPackageName( final KnownVersion metaModelVersion ) {
       final File outputDir = outputDirectory.toFile();
 
       createValidArgsExecution( metaModelVersion, "to", "java", "-d", outputDirectory.toString() );
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" ).toFile();
+      assertThat( directory ).exists();
+      assertThat( directory ).isDirectory();
+
+      validateFile( directory, "AspectWithEntity.java" );
+      validateFile( directory, "TestEntity.java" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGenerateAspectModelJavaClassWithDefaultPackageNameAndExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      final File outputDir = outputDirectory.toFile();
+
+      createValidArgsExecution( metaModelVersion, "to", "java", "-d", outputDirectory.toString(),
+            "--custom-resolver", getResolverCommand( metaModelVersion ) );
       final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectory();
@@ -274,6 +337,12 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testValidation( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "validate" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testValidationWithCustomResolver( final KnownVersion metaModelVersion ) throws IOException, URISyntaxException {
+      createValidArgsExecution( metaModelVersion, "validate", "--custom-resolver", getResolverCommand( metaModelVersion ) );
    }
 
    @ParameterizedTest
@@ -368,6 +437,13 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateOpenApiSpecWithResourcePath( final KnownVersion metaModelVersion ) {
       createValidArgsExecution( metaModelVersion, "to", "openapi", "-j", "-b", "https://test.example.com", "-r", "my-aspect" );
+   }
+   
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGenerateOpenApiSpecWithResourcePathAndExternalModelResolver( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      createValidArgsExecution( metaModelVersion, "to", "openapi", "-j", "-b", "https://test.example.com", "-r", "my-aspect",
+            "--custom-resolver", getResolverCommand( metaModelVersion ) );
    }
 
    private void createValidArgsExecution( final KnownVersion testedVersion, final String... args ) {
@@ -482,5 +558,22 @@ public class ApplicationIntegrationTest extends MetaModelVersions {
 
    private String getPathForArtifact( final String artifactName ) {
       return outputDirectory.toFile().getAbsolutePath() + File.separator + artifactName;
+   }
+
+   private Path findTestsJar( final Path searchDirectory ) throws IOException {
+      try ( final Stream<Path> files = Files.walk( searchDirectory, 1 ) ) {
+         return files
+               .filter( f -> f.getFileName().toString().endsWith( "-tests.jar" ) )
+               .findFirst()
+               .get();
+      }
+   }
+
+   private String getResolverCommand( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      final Path targetDirectory = Paths.get( getClass().getResource( "/" ).toURI() ).getParent();
+      final Path testClasses = Paths.get( targetDirectory.toString(), "test-classes" );
+      final Path modelsRoot = Paths.get( targetDirectory.toString(), "classes", "valid" );
+      final String scriptName = OS.WINDOWS.isCurrentOs() ? "\\model_resolver.bat " : "/model_resolver.sh ";
+      return testClasses + scriptName + modelsRoot + " " + metaModelVersion.toString().toLowerCase();
    }
 }

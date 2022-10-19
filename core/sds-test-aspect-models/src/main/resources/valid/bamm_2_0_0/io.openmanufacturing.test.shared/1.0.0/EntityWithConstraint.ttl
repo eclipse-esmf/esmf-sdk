@@ -16,7 +16,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :EntityWithConstraint a bamm:Entity ;
-   bamm:name "EntityWithConstraint" ;
    bamm:properties ( :stringLcProperty :doubleRcProperty :intRcProperty :bigIntRcProperty :floatRcProperty :stringRegexcProperty ) ;
    bamm:operations ( ) .
 

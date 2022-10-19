@@ -18,6 +18,7 @@ import java.io.File;
 import org.topbraid.shacl.util.FailureLog;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
@@ -39,6 +40,9 @@ public class AspectValidateCommand extends AbstractCommand {
    @CommandLine.ParentCommand
    private AspectCommand parentCommand;
 
+   @CommandLine.Mixin
+   private ExternalResolverMixin customResolver;
+
    @Override
    public void run() {
       FailureLog.set( new FailureLog() {
@@ -48,7 +52,7 @@ public class AspectValidateCommand extends AbstractCommand {
          }
       } );
 
-      final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( parentCommand.getInput() ) );
+      final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( parentCommand.getInput() ), customResolver );
       final AspectModelValidator validator = new AspectModelValidator();
       final ValidationReport report = validator.validate( versionedModel );
 

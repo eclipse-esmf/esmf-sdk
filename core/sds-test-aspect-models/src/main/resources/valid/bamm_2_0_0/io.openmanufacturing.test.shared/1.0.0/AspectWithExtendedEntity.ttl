@@ -9,16 +9,14 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix :       <urn:bamm:io.openmanufacturing.test.shared:1.0.0#> .
-@prefix bamm:   <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix : <urn:bamm:io.openmanufacturing.test.shared:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 @prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#> .
-@prefix unit:   <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
-@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithExtendedEntity
-    a               bamm:Aspect ;
-    bamm:name       "AspectWithExtendedEntity" ;
+:AspectWithExtendedEntity a bamm:Aspect ;
     bamm:properties ( :testProperty ) ;
     bamm:operations ( ) .
 
@@ -28,38 +26,25 @@
               bamm:see <http://example.com/omp> ;
               bamm:see <http://example.com/me> ;
               bamm:characteristic [ a             bamm-c:SortedSet ;
-                                    bamm:name     "AspectWithExtendedEntity" ;
                                     bamm:dataType :TestEntity ] .
 
-:TestEntity
-    a               bamm:Entity ;
-    bamm:extends    :ParentTestEntity ;
-    bamm:name       "TestEntity" ;
+:TestEntity a bamm:Entity ;
+    bamm:extends :ParentTestEntity ;
     bamm:properties ( ) .
 
-:ParentTestEntity
-    a               bamm:AbstractEntity ;
-    bamm:extends    :ParentOfParentEntity ;
-    bamm:name       "ParentTestEntity" ;
+:ParentTestEntity a bamm:AbstractEntity ;
+    bamm:extends :ParentOfParentEntity ;
     bamm:properties ( :parentString ) .
 
-:ParentOfParentEntity
-    a               bamm:AbstractEntity ;
-    bamm:name       "ParentOfParentEntity" ;
+:ParentOfParentEntity a bamm:AbstractEntity ;
     bamm:properties ( :booleanProperty ) .
 
-:StringCode
-    a             bamm-c:Code ;
-    bamm:name     "StringCode" ;
+:StringCode a bamm-c:Code ;
     bamm:dataType xsd:string .
 
-:parentString
-    a                   bamm:Property ;
-    bamm:name           "parentString" ;
+:parentString a bamm:Property ;
     bamm:characteristic :StringCode .
 
-:parentOfParentString
-    a                   bamm:Property ;
-    bamm:name           "parentOfParentString" ;
+:parentOfParentString a bamm:Property ;
     bamm:characteristic :StringCode .
 

@@ -7,7 +7,7 @@ Maven::
 ----
 <dependency>
     <groupId>io.openmanufacturing</groupId>
-    <artifactId>aspect-meta-model</artifactId>
+    <artifactId>sds-aspect-meta-model</artifactId>
     <version>{aspect-meta-model-version}</version>
 </dependency>
 ----
@@ -17,7 +17,7 @@ Gradle Groovy DSL::
 --
 [source,gradle,subs=attributes+]
 ----
-implementation 'io.openmanufacturing:aspect-meta-model:{aspect-meta-model-version}'
+implementation 'io.openmanufacturing:sds-aspect-meta-model:{aspect-meta-model-version}'
 ----
 --
 Gradle Kotlin DSL::
@@ -25,7 +25,7 @@ Gradle Kotlin DSL::
 --
 [source,gradle,subs=attributes+]
 ----
-implementation("io.openmanufacturing:aspect-meta-model:{aspect-meta-model-version}")
+implementation("io.openmanufacturing:sds-aspect-meta-model:{aspect-meta-model-version}")
 ----
 --
 ====

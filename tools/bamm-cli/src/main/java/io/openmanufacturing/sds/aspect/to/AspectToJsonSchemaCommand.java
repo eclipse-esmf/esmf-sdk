@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
@@ -43,10 +44,13 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
+   @CommandLine.Mixin
+   private ExternalResolverMixin customResolver;
+
    @Override
    public void run() {
       final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
-      final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( loadModelOrFail( parentCommand.parentCommand.getInput() ) );
+      final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
       final JsonNode schema = generator.apply( aspect );
 
       withOutputStream( outputFilePath, outputStream -> {

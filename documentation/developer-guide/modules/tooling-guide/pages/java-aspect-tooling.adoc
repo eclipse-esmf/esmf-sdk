@@ -376,7 +376,7 @@ include::sds-developer-guide:ROOT:partial$sds-aspect-meta-model-version-migrator
 == Accessing the BAMM programmatically
 
 In order to access the source RDF files that describe the BAMM vocabulary, shared Characteristics and Entities as well
-as Units, you can add a dependency to the `aspect-meta-model` artifact. Note that this artifact does not contain any
+as Units, you can add a dependency to the `sds-aspect-meta-model` artifact. Note that this artifact does not contain any
 Java classes.
 
 include::sds-developer-guide:ROOT:partial$aspect-meta-model-artifact.adoc[]

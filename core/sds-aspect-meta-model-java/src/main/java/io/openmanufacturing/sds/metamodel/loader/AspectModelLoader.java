@@ -77,7 +77,7 @@ public class AspectModelLoader {
          final Aspect aspect = modelElementFactory.create( Aspect.class, iterator.nextStatement().getSubject() );
          return Try.success( aspect );
       } catch ( final RuntimeException exception ) {
-         return Try.failure( new InvalidModelException( "Could not load Aspect model, please make sure the model is valid.", exception ) );
+         return Try.failure( new InvalidModelException( "Could not load Aspect model, please make sure the model is valid", exception ) );
       }
    }
 

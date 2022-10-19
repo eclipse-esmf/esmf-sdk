@@ -58,6 +58,15 @@ public abstract class AbstractCommand implements Runnable {
             new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ) );
    }
 
+   protected Try<VersionedModel> loadAndResolveModel( final File input, final ExternalResolverMixin resolverConfig ) {
+      if ( resolverConfig.commandLine.isBlank() ) {
+         return loadAndResolveModel( input );
+      }
+      final File inputFile = input.getAbsoluteFile();
+      final AspectModelUrn urn = fileToUrn( inputFile );
+      return new AspectModelResolver().resolveAspectModel( new ExternalResolverStrategy( resolverConfig.commandLine ), urn );
+   }
+
    protected Try<Path> getModelRoot( final File inputFile ) {
       return Option.of( Paths.get( inputFile.getParent(), "..", ".." ) )
             .map( Path::toFile )
@@ -98,9 +107,9 @@ public abstract class AbstractCommand implements Runnable {
       }
    }
 
-   protected VersionedModel loadModelOrFail( final String modelFileName ) {
+   protected VersionedModel loadModelOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig ) {
       final File inputFile = new File( modelFileName );
-      final Try<VersionedModel> versionedModel = loadAndResolveModel( inputFile );
+      final Try<VersionedModel> versionedModel = loadAndResolveModel( inputFile, resolverConfig );
       return versionedModel.recover( throwable -> {
          // Model can not be loaded, root cause e.g. File not found
          if ( throwable instanceof IllegalArgumentException ) {
@@ -124,8 +133,8 @@ public abstract class AbstractCommand implements Runnable {
    }
 
    protected void generateDiagram( final String inputFileName, final AspectModelDiagramGenerator.Format targetFormat, final String outputFileName,
-         final String languageTag ) throws IOException {
-      final VersionedModel model = loadModelOrFail( inputFileName );
+         final String languageTag, final ExternalResolverMixin resolverConfig ) throws IOException {
+      final VersionedModel model = loadModelOrFail( inputFileName, resolverConfig );
       final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( model );
       final Set<AspectModelDiagramGenerator.Format> targetFormats = new HashSet<>();
       targetFormats.add( targetFormat );

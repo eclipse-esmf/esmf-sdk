@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.aspect.to;
 import java.io.IOException;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
@@ -42,10 +43,13 @@ public class AspectToPngCommand extends AbstractCommand {
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
+   @CommandLine.Mixin
+   private ExternalResolverMixin customResolver;
+
    @Override
    public void run() {
       try {
-         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.PNG, outputFilePath, language );
+         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.PNG, outputFilePath, language, customResolver );
       } catch ( final IOException e ) {
          throw new CommandException( e );
       }

@@ -21,6 +21,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
@@ -49,10 +50,14 @@ public class AspectToHtmlCommand extends AbstractCommand {
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
+   @CommandLine.Mixin
+   private ExternalResolverMixin customResolver;
+
    @Override
    public void run() {
       try {
-         final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( loadModelOrFail( parentCommand.parentCommand.getInput() ) );
+         final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator(
+               loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
          final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
          generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );
          if ( customCSSFile != null ) {
