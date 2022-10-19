@@ -16,7 +16,6 @@ package io.openmanufacturing.sds.staticmetamodel.constraint;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Quantifiable;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
@@ -30,8 +29,8 @@ import io.openmanufacturing.sds.staticmetamodel.UnitProperty;
  * Only {@link Quantifiable} properties that actually carry a {@code Unit} will be represented by a {@code
  * StaticConstraintUnitProperty}, however in practice this will be the case for most quantifiables.
  */
-public abstract class StaticConstraintUnitProperty<T, C extends Constraint, C2 extends Characteristic>
-      extends StaticConstraintProperty<T, C, C2> implements UnitProperty {
+public abstract class StaticConstraintUnitProperty<T, C extends Characteristic>
+      extends StaticConstraintProperty<T, C> implements UnitProperty {
 
    public StaticConstraintUnitProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,

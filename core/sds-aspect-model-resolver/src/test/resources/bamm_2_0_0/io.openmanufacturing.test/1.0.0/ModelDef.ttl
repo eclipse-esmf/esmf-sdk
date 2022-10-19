@@ -9,22 +9,19 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix : <urn:bamm:io.openmanufacturing.test.shared:1.0.0#> .
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
 
-:EntityWithEither a bamm:Entity ;
-   bamm:properties ( :testPropertyWithEither ) ;
-   bamm:operations ( ) .
+:ModelCode a bamm-c:Code ;
+   bamm:dataType xsd:string .
 
-:testPropertyWithEither a bamm:Property ;
-   bamm:characteristic :TestEither .
+:ModelYear a bamm-c:Code ;
+   bamm:dataType xsd:nonNegativeInteger .
 
-:TestEither a bamm-c:Either ;
-   bamm:preferredName "Test Either"@en ;
-   bamm:description "This is a test Either."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm-c:left bamm-c:Text ;
-   bamm-c:right bamm-c:Boolean .
+:SomeOtherNonRelatedEntity a bamm:Entity ;
+   bamm:properties ( :name ) .
+
+:name a bamm:Property ;
+   bamm:characteristic bamm-c:Text .

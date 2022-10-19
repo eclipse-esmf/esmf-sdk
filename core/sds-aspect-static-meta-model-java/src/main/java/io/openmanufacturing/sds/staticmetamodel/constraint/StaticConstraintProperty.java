@@ -16,7 +16,6 @@ package io.openmanufacturing.sds.staticmetamodel.constraint;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
@@ -26,8 +25,8 @@ import io.openmanufacturing.sds.staticmetamodel.StaticProperty;
 /**
  * Extends the BAMM {@link DefaultProperty} definition with a concrete type and a constraint.
  */
-public abstract class StaticConstraintProperty<T, C extends Constraint, C2 extends Characteristic>
-      extends StaticProperty<T> implements ConstraintProperty<C, C2> {
+public abstract class StaticConstraintProperty<T, C extends Characteristic>
+      extends StaticProperty<T> implements ConstraintProperty<C> {
 
    public StaticConstraintProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,

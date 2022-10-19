@@ -184,7 +184,7 @@ class GenerationResult {
             bodyStatements.stream().map( Node::toString ).collect( Collectors.joining() ) );
    }
 
-   void assertMethodBody( final String className, final String methodName, final boolean override, final PrimitiveType expectedReturnType,
+   void assertMethodBody( final String className, final String methodName, final boolean override, final Optional<PrimitiveType> expectedReturnType,
          final int expectedNumberOfParameters, final List<String> expectedMethodBody ) {
       final Optional<MethodDeclaration> possibleMethodDeclaration = compilationUnits.get( className )
             .findAll( MethodDeclaration.class ).stream()
@@ -194,7 +194,7 @@ class GenerationResult {
 
       final MethodDeclaration methodDeclaration = possibleMethodDeclaration.get();
       assertThat( methodDeclaration.isPublic() ).isTrue();
-      assertThat( methodDeclaration.getType() ).isEqualTo( expectedReturnType );
+      expectedReturnType.ifPresent(returnType -> assertThat( methodDeclaration.getType() ).isEqualTo( returnType ));
       assertThat( methodDeclaration.getParameters() ).hasSize( expectedNumberOfParameters );
       assertThat( methodDeclaration.getBody() ).isPresent();
       if ( override ) {
