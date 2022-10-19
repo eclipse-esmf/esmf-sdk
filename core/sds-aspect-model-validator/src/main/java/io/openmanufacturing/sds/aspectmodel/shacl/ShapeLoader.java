@@ -41,6 +41,7 @@ import com.google.common.collect.Streams;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.AllowedLanguagesConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.AllowedValuesConstraint;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.AndConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.ClassConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.ClosedConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.Constraint;
@@ -101,6 +102,13 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
          .put( SHACLM.lessThan, statement -> new LessThanConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
          .put( SHACLM.lessThanOrEquals, statement -> new LessThanOrEqualsConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
          .put( SHACLM.not, statement -> new NotConstraint( constraints( statement.getObject().asResource() ).get( 0 ) ) )
+         .put( SHACLM.and, statement -> new AndConstraint( statement.getObject().as( RDFList.class ).asJavaList().stream()
+               .filter( RDFNode::isResource )
+               .map( RDFNode::asResource )
+               .flatMap( resource -> resource.isURIResource()
+                     ? nodeShape( resource ).attributes().constraints().stream()
+                     : shapeAttributes( resource ).constraints().stream() )
+               .collect( Collectors.toList() ) ) )
          .put( SHACLM.node, statement -> new NodeConstraint( nodeShape( statement.getObject().asResource() ) ) )
          .put( SHACLM.in, statement -> new AllowedValuesConstraint( statement.getResource().as( RDFList.class ).asJavaList() ) )
          .put( SHACLM.closed, statement -> {
