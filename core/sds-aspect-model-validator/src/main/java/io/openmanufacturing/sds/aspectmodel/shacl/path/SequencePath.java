@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel.shacl.path;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Resource;
 
@@ -25,5 +26,10 @@ public record SequencePath(List<Path> subPaths) implements Path {
    @Override
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitSequencePath( resource, this );
+   }
+
+   @Override
+   public String toString() {
+      return subPaths.stream().map( Path::toString ).collect( Collectors.joining( "/" ) );
    }
 }

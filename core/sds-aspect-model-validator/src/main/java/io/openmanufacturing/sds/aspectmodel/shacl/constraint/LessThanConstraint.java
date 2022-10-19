@@ -22,8 +22,8 @@ import org.apache.jena.rdf.model.RDFNode;
 import io.openmanufacturing.sds.aspectmodel.shacl.LiteralComparator;
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LessThanViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#LessThanConstraintComponent">sh:lessThan</a>
@@ -54,5 +54,10 @@ public record LessThanConstraint(Property otherProperty) implements Constraint {
       return new LiteralComparator().compare( actual, otherValue ) < 0 ?
             List.of() :
             List.of( new LessThanViolation( context, otherProperty, otherValue, actual ) );
+   }
+
+   @Override
+   public String name() {
+      return "sh:lessThan";
    }
 }

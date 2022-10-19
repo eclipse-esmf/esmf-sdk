@@ -20,7 +20,8 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 
 /**
- * From a {@link Path}, retrieves the first actual RDF property
+ * From a {@link Path}, retrieves the first reachable RDF property. In certain cases (e.g. for an {@link AlternativePath}),
+ * this can actually mean more than one property, which is why the result is a list.
  */
 public class FirstEffectiveProperty implements Path.Visitor<List<Property>> {
    @Override

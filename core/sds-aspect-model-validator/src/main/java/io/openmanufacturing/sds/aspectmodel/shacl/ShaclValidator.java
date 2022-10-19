@@ -119,7 +119,7 @@ public class ShaclValidator {
 
    /**
     * Returns the shapes that apply to the element because the element has a type (or the type has a transitive supertype) that
-    * is given as sh:targetClass allowed the shape
+    * is given as sh:targetClass
     * @param element a model element
     * @return the stream of shapes
     */
@@ -131,7 +131,7 @@ public class ShaclValidator {
    }
 
    /**
-    * Returns the shapes that apply to the element because the element uses a property which is given as sh:targetSubjectsOf allowed the shape
+    * Returns the shapes that apply to the element because the element uses a property which is given as sh:targetSubjectsOf
     * @param element a model element
     * @return the stream of shapes
     */

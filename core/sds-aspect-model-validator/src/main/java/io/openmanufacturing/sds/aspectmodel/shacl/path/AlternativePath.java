@@ -25,4 +25,9 @@ public record AlternativePath(Path path1, Path path2) implements Path {
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitAlternativePath( resource, this );
    }
+
+   @Override
+   public String toString() {
+      return String.format( "%s|%s", path1, path2 );
+   }
 }

@@ -18,8 +18,8 @@ import java.util.List;
 import org.apache.jena.rdf.model.RDFNode;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidValueViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#HasValueConstraintComponent">sh:hasValue</a>
@@ -31,5 +31,10 @@ public record HasValueConstraint(RDFNode allowedValue) implements Constraint {
       return rdfNode.equals( allowedValue ) ?
             List.of() :
             List.of( new InvalidValueViolation( context, allowedValue, rdfNode ) );
+   }
+
+   @Override
+   public String name() {
+      return "sh:hasValue";
    }
 }

@@ -47,4 +47,9 @@ public record MinCountConstraint(int minCount) implements Constraint {
       }
       return List.of();
    }
+
+   @Override
+   public String name() {
+      return "sh:minCount";
+   }
 }

@@ -24,4 +24,9 @@ public record InversePath(Path path) implements Path {
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitInversePath( resource, this );
    }
+
+   @Override
+   public String toString() {
+      return "^" + path;
+   }
 }

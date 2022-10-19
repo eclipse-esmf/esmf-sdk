@@ -25,4 +25,9 @@ public record PredicatePath(Property predicate) implements Path {
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitPredicatePath( resource, this );
    }
+
+   @Override
+   public String toString() {
+      return predicate.getModel().shortForm( predicate.getURI() );
+   }
 }

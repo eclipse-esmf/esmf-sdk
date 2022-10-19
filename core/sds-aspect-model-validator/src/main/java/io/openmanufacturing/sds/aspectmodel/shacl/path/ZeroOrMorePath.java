@@ -24,4 +24,9 @@ public record ZeroOrMorePath(Path path) implements Path {
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitZeroOrMorePath( resource, this );
    }
+
+   @Override
+   public String toString() {
+      return path + "*";
+   }
 }

@@ -24,4 +24,10 @@ public record OneOrMorePath(Path path) implements Path {
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitOneOrMorePath( resource, this );
    }
+
+   @Override
+   public String toString() {
+      final String p = path.toString();
+      return String.format( "%s/%s+", p, p );
+   }
 }

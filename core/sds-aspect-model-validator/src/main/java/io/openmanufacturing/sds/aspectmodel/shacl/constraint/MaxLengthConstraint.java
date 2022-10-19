@@ -40,4 +40,9 @@ public record MaxLengthConstraint(int maxLength) implements Constraint {
             List.of() :
             List.of( new MaxLengthViolation( context, maxLength, value.length() ) );
    }
+
+   @Override
+   public String name() {
+      return "sh:maxLength";
+   }
 }

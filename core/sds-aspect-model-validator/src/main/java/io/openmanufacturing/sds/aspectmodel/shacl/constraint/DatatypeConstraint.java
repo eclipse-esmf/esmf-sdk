@@ -19,10 +19,10 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.DatatypeViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.NodeKindViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#DatatypeConstraintComponent">sh:datatype</a>
@@ -39,5 +39,10 @@ public record DatatypeConstraint(String allowedTypeUri) implements Constraint {
       return actualTypeUri.endsWith( allowedTypeUri ) ?
             List.of() :
             List.of( new DatatypeViolation( context, allowedTypeUri, actualTypeUri ) );
+   }
+
+   @Override
+   public String name() {
+      return "sh:datatype";
    }
 }

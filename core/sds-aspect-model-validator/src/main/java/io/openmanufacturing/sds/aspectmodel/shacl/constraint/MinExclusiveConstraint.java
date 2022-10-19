@@ -46,4 +46,9 @@ public record MinExclusiveConstraint(Literal minValue) implements Constraint {
          return List.of( new DatatypeViolation( context, minValue.getDatatypeURI(), actual.getDatatypeURI() ) );
       }
    }
+
+   @Override
+   public String name() {
+      return "sh:minExclusive";
+   }
 }

@@ -39,11 +39,6 @@ import org.apache.jena.vocabulary.RDF;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
 
-import io.openmanufacturing.sds.aspectmodel.shacl.path.InversePath;
-import io.openmanufacturing.sds.aspectmodel.shacl.path.Path;
-import io.openmanufacturing.sds.aspectmodel.shacl.path.PredicatePath;
-import io.openmanufacturing.sds.aspectmodel.shacl.path.SequencePath;
-import io.openmanufacturing.sds.aspectmodel.shacl.path.ZeroOrMorePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.AllowedLanguagesConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.AllowedValuesConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.ClassConstraint;
@@ -65,11 +60,17 @@ import io.openmanufacturing.sds.aspectmodel.shacl.constraint.MinInclusiveConstra
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.MinLengthConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.NodeConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.NodeKindConstraint;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.NotConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.PatternConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.SparqlConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.UniqueLangConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.AlternativePath;
+import io.openmanufacturing.sds.aspectmodel.shacl.path.InversePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.OneOrMorePath;
+import io.openmanufacturing.sds.aspectmodel.shacl.path.Path;
+import io.openmanufacturing.sds.aspectmodel.shacl.path.PredicatePath;
+import io.openmanufacturing.sds.aspectmodel.shacl.path.SequencePath;
+import io.openmanufacturing.sds.aspectmodel.shacl.path.ZeroOrMorePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.ZeroOrOnePath;
 
 public class ShapeLoader implements Function<Model, List<Shape.Node>> {
@@ -99,6 +100,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
          .put( SHACLM.disjoint, statement -> new DisjointConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
          .put( SHACLM.lessThan, statement -> new LessThanConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
          .put( SHACLM.lessThanOrEquals, statement -> new LessThanOrEqualsConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
+         .put( SHACLM.not, statement -> new NotConstraint( constraints( statement.getObject().asResource() ).get( 0 ) ) )
          .put( SHACLM.node, statement -> new NodeConstraint( nodeShape( statement.getObject().asResource() ) ) )
          .put( SHACLM.in, statement -> new AllowedValuesConstraint( statement.getResource().as( RDFList.class ).asJavaList() ) )
          .put( SHACLM.closed, statement -> {

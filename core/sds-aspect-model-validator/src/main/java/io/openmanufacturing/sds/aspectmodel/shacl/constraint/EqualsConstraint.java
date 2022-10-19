@@ -39,4 +39,9 @@ public record EqualsConstraint(Property otherProperty) implements Constraint {
             List.of() :
             List.of( new EqualsViolation( context, otherProperty, otherValue, rdfNode ) );
    }
+
+   @Override
+   public String name() {
+      return "sh:equals";
+   }
 }

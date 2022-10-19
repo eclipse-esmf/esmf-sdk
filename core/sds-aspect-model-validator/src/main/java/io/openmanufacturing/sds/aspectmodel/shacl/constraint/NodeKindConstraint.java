@@ -19,8 +19,8 @@ import org.apache.jena.rdf.model.RDFNode;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.NodeKindViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#NodeKindConstraintComponent">sh:nodeKind</a>
@@ -45,5 +45,10 @@ public record NodeKindConstraint(Shape.NodeKind allowedNodeKind) implements Cons
          return List.of();
       }
       return List.of( new NodeKindViolation( context, allowedNodeKind, actualNodeKind ) );
+   }
+
+   @Override
+   public String name() {
+      return "sh:nodeKind";
    }
 }

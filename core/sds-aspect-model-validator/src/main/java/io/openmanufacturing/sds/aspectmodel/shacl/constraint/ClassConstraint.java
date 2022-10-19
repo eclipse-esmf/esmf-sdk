@@ -21,13 +21,13 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 
-import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 import io.openmanufacturing.sds.aspectmodel.shacl.RdfTypes;
+import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ClassTypeViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.MissingTypeViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.NodeKindViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#ClassConstraintComponent">sh:class</a>
@@ -56,5 +56,10 @@ public record ClassConstraint(Resource allowedClass) implements Constraint {
       return RdfTypes.typesOfElement( resource ).contains( allowedClass ) ?
             List.of() :
             List.of( new ClassTypeViolation( context, allowedClass, actualClass ) );
+   }
+
+   @Override
+   public String name() {
+      return "sh:class";
    }
 }

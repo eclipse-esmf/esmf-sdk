@@ -29,6 +29,8 @@ public interface Constraint extends BiFunction<RDFNode, EvaluationContext, List<
    default boolean canBeUsedOnNodeShapes() {
       return true;
    }
+
+   String name();
 }
 
 // not

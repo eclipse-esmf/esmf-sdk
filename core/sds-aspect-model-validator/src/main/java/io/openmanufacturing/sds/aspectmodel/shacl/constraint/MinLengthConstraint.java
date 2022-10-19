@@ -40,4 +40,9 @@ public record MinLengthConstraint(int minLength) implements Constraint {
             List.of() :
             List.of( new MinLengthViolation( context, minLength, value.length() ) );
    }
+
+   @Override
+   public String name() {
+      return "sh:minLength";
+   }
 }

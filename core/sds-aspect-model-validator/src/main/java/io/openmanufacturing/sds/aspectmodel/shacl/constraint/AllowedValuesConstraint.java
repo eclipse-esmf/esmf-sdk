@@ -18,8 +18,8 @@ import java.util.List;
 import org.apache.jena.rdf.model.RDFNode;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ValueFromListViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#InConstraintComponent">sh:in</a> *
@@ -31,5 +31,10 @@ public record AllowedValuesConstraint(List<RDFNode> allowedValues) implements Co
       return allowedValues.contains( rdfNode ) ?
             List.of() :
             List.of( new ValueFromListViolation( context, allowedValues, rdfNode ) );
+   }
+
+   @Override
+   public String name() {
+      return "sh:in";
    }
 }

@@ -56,4 +56,9 @@ public record UniqueLangConstraint() implements Constraint {
             List.of() :
             List.of( new UniqueLanguageViolation( context, seen ) );
    }
+
+   @Override
+   public String name() {
+      return "sh:uniqueLang";
+   }
 }

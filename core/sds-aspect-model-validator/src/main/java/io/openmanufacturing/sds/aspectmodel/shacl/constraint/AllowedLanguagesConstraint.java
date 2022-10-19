@@ -39,4 +39,9 @@ public record AllowedLanguagesConstraint(List<String> allowedLanguages) implemen
             List.of() :
             List.of( new LanguageFromListViolation( context, allowedLanguages, language ) );
    }
+
+   @Override
+   public String name() {
+      return "sh:languageIn";
+   }
 }

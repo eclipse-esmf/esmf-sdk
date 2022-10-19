@@ -15,39 +15,30 @@ package io.openmanufacturing.sds.aspectmodel.shacl.constraint;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.NotViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.MaxCountViolation;
 
 /**
- * Implements <a href="https://www.w3.org/TR/shacl/#MaxCountConstraintComponent">sh:maxCount</a>
- * @param maxCount the max count
+ * Implements <a href="https://www.w3.org/TR/shacl/#NotConstraintComponent">sh:not</a>
  */
-public record MaxCountConstraint(int maxCount) implements Constraint {
-   @Override
-   public boolean canBeUsedOnNodeShapes() {
-      return false;
-   }
-
+public record NotConstraint(Constraint constraint) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
-      if ( context.property().isEmpty() ) {
-         return List.of();
+      final List<Violation> violations = constraint.apply( rdfNode, context );
+
+      // If the wrapped constrained has _no_ violations, we return a violation
+      if ( violations.isEmpty() ) {
+         return List.of( new NotViolation( context, constraint ) );
       }
-      final Property property = context.property().get();
-      final int count = property.getModel().listStatements( context.element(), null, (RDFNode) null )
-            .filterKeep( statement -> statement.getPredicate().equals( property ) ).toList().size();
-      if ( count > maxCount ) {
-         return List.of( new MaxCountViolation( context, maxCount, count ) );
-      }
+      // If the wrapped constraint has violations, ignore them
       return List.of();
    }
 
    @Override
    public String name() {
-      return "sh:maxCount";
+      return "sh:not";
    }
 }

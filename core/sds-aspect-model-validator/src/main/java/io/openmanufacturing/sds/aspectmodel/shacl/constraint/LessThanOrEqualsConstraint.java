@@ -22,9 +22,13 @@ import org.apache.jena.rdf.model.RDFNode;
 import io.openmanufacturing.sds.aspectmodel.shacl.LiteralComparator;
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LessThanOrEqualsViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
+/**
+ * Implements <a href="https://www.w3.org/TR/shacl/#LessThanOrEqualsConstraintComponent">sh:lessThanOrEquals</a>
+ * @param otherProperty the other property to compare with
+ */
 public record LessThanOrEqualsConstraint(Property otherProperty) implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
@@ -50,5 +54,10 @@ public record LessThanOrEqualsConstraint(Property otherProperty) implements Cons
       return new LiteralComparator().compare( actual, otherValue ) <= 0 ?
             List.of() :
             List.of( new LessThanOrEqualsViolation( context, otherProperty, otherValue, actual ) );
+   }
+
+   @Override
+   public String name() {
+      return "sh:lessThanOrEquals";
    }
 }

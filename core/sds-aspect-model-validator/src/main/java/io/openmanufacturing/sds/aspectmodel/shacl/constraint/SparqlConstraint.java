@@ -34,6 +34,11 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
+/**
+ * Implements <a href="https://www.w3.org/TR/shacl/#sparql-constraints">sh:sparql</a>
+ * @param message the message returned by the SPARQL query
+ * @param query the query
+ */
 public record SparqlConstraint(String message, Query query) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
@@ -51,5 +56,10 @@ public record SparqlConstraint(String message, Query query) implements Constrain
          }
       }
       return results;
+   }
+
+   @Override
+   public String name() {
+      return "sh:sparql";
    }
 }

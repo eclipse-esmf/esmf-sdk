@@ -46,4 +46,9 @@ public record MaxExclusiveConstraint(Literal maxValue) implements Constraint {
          return List.of( new DatatypeViolation( context, maxValue.getDatatypeURI(), actual.getDatatypeURI() ) );
       }
    }
+
+   @Override
+   public String name() {
+      return "sh:maxExclusive";
+   }
 }

@@ -127,6 +127,10 @@ public interface Violation {
       default T visitClosedViolation( final ClosedViolation violation ) {
          return visit( violation );
       }
+
+      default T visitNotViolation( final NotViolation violation ) {
+         return visit( violation );
+      }
    }
 
    default AppliesTo appliesTo() {

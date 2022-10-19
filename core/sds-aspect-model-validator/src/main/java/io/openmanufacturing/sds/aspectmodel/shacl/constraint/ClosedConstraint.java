@@ -25,11 +25,15 @@ import org.apache.jena.rdf.model.Statement;
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.FirstEffectiveProperty;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.PathNodeRetriever;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ClosedViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.NodeKindViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
+/**
+ * Implements <a href="https://www.w3.org/TR/shacl/#ClosedConstraintComponent">sh:closed</a>
+ * @param ignoredProperties allowed ignored properties
+ */
 public record ClosedConstraint(Set<Property> ignoredProperties) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
@@ -58,4 +62,8 @@ public record ClosedConstraint(Set<Property> ignoredProperties) implements Const
             .toList();
    }
 
+   @Override
+   public String name() {
+      return "sh:closed";
+   }
 }

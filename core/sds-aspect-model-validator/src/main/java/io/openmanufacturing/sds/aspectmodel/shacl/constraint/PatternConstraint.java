@@ -42,4 +42,9 @@ public record PatternConstraint(Pattern pattern) implements Constraint {
             List.of() :
             List.of( new PatternViolation( context, value, pattern.toString() ) );
    }
+
+   @Override
+   public String name() {
+      return "sh:pattern";
+   }
 }

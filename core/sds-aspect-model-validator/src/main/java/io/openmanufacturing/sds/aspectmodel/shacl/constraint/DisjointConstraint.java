@@ -18,9 +18,9 @@ import java.util.List;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.DisjointViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.DisjointViolation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#DisjointConstraintComponent">sh:disjoint</a>
@@ -38,5 +38,10 @@ public record DisjointConstraint(Property otherProperty) implements Constraint {
       return !rdfNode.equals( otherValue ) ?
             List.of() :
             List.of( new DisjointViolation( context, otherProperty, otherValue ) );
+   }
+
+   @Override
+   public String name() {
+      return "sh:disjoint";
    }
 }

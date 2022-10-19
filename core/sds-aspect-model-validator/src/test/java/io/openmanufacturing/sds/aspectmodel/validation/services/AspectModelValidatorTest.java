@@ -44,6 +44,7 @@ import io.openmanufacturing.sds.aspectmodel.shacl.ShaclValidator;
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.DatatypeConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.MinCountConstraint;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.NodeKindConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.PredicatePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ClassTypeViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ClosedViolation;
@@ -63,6 +64,7 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinExclusiveViolatio
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinInclusiveViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinLengthViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.NodeKindViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.NotViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.PatternViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.UniqueLanguageViolation;
@@ -375,7 +377,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -416,7 +418,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -432,13 +434,13 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-                        
+
             :MySuperType a :TestClass2 .
             :MyType rdfs:subClassOf :MySuperType .
-                        
+
             :Bar a :TestClass ;
               :testProperty [ a :MyType ] .
-              
+
             :Foo a :TestClass ;
               :testProperty [ a :SomethingElse ] .
             """ );
@@ -466,7 +468,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -508,7 +510,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -549,7 +551,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -586,7 +588,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -625,7 +627,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -665,7 +667,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -706,7 +708,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -746,7 +748,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -786,7 +788,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -826,7 +828,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -866,7 +868,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -883,7 +885,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "y" .
-              
+
             :Bar a :TestClass ;
               :testProperty "X" .
             """ );
@@ -910,7 +912,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -926,7 +928,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "non valide"@fr .
-              
+
             :Bar a :TestClass ;
               :testProperty "valid"@en .
             """ );
@@ -953,7 +955,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -970,7 +972,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             :Foo a :TestClass ;
               :testProperty "some value" ;
               :anotherTestProperty "a different value" .
-              
+
             :Bar a :TestClass ;
               :testProperty "some value" ;
               :anotherTestProperty "some value" .
@@ -998,7 +1000,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1015,7 +1017,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             :Foo a :TestClass ;
               :testProperty "some value" ;
               :anotherTestProperty "some value" .
-              
+
             :Bar a :TestClass ;
               :testProperty "some value" ;
               :anotherTestProperty "a different value" .
@@ -1042,7 +1044,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1059,7 +1061,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             :Foo a :TestClass ;
               :testProperty 10 ;
               :anotherTestProperty 5 .
-              
+
             :Bar a :TestClass ;
               :testProperty 10 ;
               :anotherTestProperty 20 .
@@ -1087,7 +1089,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1104,7 +1106,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             :Foo a :TestClass ;
               :testProperty 10 ;
               :anotherTestProperty 5 .
-              
+
             :Bar a :TestClass ;
               :testProperty 10 ;
               :anotherTestProperty 10 .
@@ -1132,7 +1134,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1149,7 +1151,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             :Foo a :TestClass ;
               :testProperty "hello"@en ;
               :testProperty "hello again"@en .
-              
+
             :Bar a :TestClass ;
               :testProperty "hello"@en ;
               :testProperty "hallo"@de .
@@ -1176,7 +1178,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1192,7 +1194,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "hello" .
-              
+
             :Bar a :TestClass ;
               :testProperty 42 .
             """ );
@@ -1219,7 +1221,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1259,14 +1261,14 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                        
+
             :AnotherNodeShape
               a sh:NodeShape ;
               sh:property [
                 sh:path :testProperty ;
                 sh:hasValue "foo" ;
               ] .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1303,21 +1305,21 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                        
+
             :SomeNodeShape
               a sh:NodeShape ;
               sh:property [
                 sh:path :testProperty ;
                 sh:minInclusive 5 ;
               ] .
-                        
+
             :AnotherNodeShape
               a sh:NodeShape ;
               sh:property [
                 sh:path :testProperty ;
                 sh:minInclusive 10 ;
               ] .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1354,7 +1356,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                        
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1397,13 +1399,13 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
-                        
+
             :prefixDeclarations
                sh:declare [
                   sh:prefix "" ;
                   sh:namespace "http://example.com#"^^xsd:anyURI ;
                ] .
-                          
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1433,7 +1435,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
               :testProperty "foo" .
-              
+
             :Bar a :TestClass ;
               :testProperty "secret valid value" .
             """ );
@@ -1458,7 +1460,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1500,7 +1502,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1541,7 +1543,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1582,7 +1584,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1626,7 +1628,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1670,7 +1672,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
-                       
+
             :MyShape
                a sh:NodeShape ;
                sh:targetClass :TestClass ;
@@ -1704,6 +1706,50 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
       assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
+      assertThat( violation.message() ).isNotEmpty();
+   }
+
+   @Test
+   public void testNotConstraint() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix : <http://example.com#> .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:targetClass :TestClass ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                 sh:path ( :testProperty ) ;
+                 sh:not [
+                   sh:nodeKind sh:BlankNode  ;
+                 ] ;
+               ] .
+            """ );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            :Foo a :TestClass ;
+              :testProperty [
+                 :testProperty2 23 ;
+               ] .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      final Violation finding = violations.get( 0 );
+      assertThat( finding ).isInstanceOf( NotViolation.class );
+      final NotViolation violation = (NotViolation) finding;
+      assertThat( violation.context().element() ).isEqualTo( element );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
+      assertThat( violation.elementName() ).isEqualTo( ":Foo" );
+      final NodeKindConstraint nestedConstraint = (NodeKindConstraint) violation.negatedConstraint();
+      assertThat( nestedConstraint.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
       assertThat( violation.message() ).isNotEmpty();
    }
 
