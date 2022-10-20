@@ -32,6 +32,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.riot.RiotException;
+import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.shacl.validation.ValidationEngineFactory;
@@ -39,6 +40,7 @@ import org.topbraid.shacl.validation.ValidationUtil;
 import org.topbraid.shacl.vocabulary.SH;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.UnsupportedVersionException;
@@ -48,6 +50,7 @@ import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidVersionEx
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.shacl.ShaclValidator;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationError;
 import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
@@ -103,11 +106,65 @@ public class AspectModelValidator {
          } );
 
    public AspectModelValidator() {
+      this( KnownVersion.getLatest() );
+   }
+
+   public AspectModelValidator( final KnownVersion metaModelVersion ) {
       ARQ.init();
       aspectMetaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
       ValidationEngineFactory.set( new BammValidationEngineFactory() );
-      shaclValidator = new ShaclValidator( aspectMetaModelResourceResolver.loadShapesModel( KnownVersion.getLatest() )
+      shaclValidator = new ShaclValidator( aspectMetaModelResourceResolver.loadShapesModel( metaModelVersion )
             .getOrElseThrow( () -> new RuntimeException( "Could not load meta model shapes" ) ) );
+   }
+
+   /**
+    * Validates an Aspect Model that is provided as a {@link VersionedModel}.
+    * @param versionedModel the Aspect Model
+    * @return a list of {@link Violation}s. An empty list indicates that the model is valid.
+    */
+   public List<Violation> validateModel( final VersionedModel versionedModel ) {
+      return validateModel( Try.success( versionedModel ) );
+   }
+
+   /**
+    * Validates an Aspect Model that is provided as a {@link Try} of a {@link VersionedModel} that can
+    * contain either a syntactically valid (but semantically invalid) Aspect model, or a Throwable
+    * if an error during parsing or resolution occured.
+    * @param versionedModel the Aspect Model or the corresonding error
+    * @return a list of {@link Violation}s. An empty list indicates that the model is valid.
+    */
+   public List<Violation> validateModel( final Try<VersionedModel> versionedModel ) {
+      if ( versionedModel.isFailure() ) {
+         return List.of( new ProcessingViolation( versionedModel.getCause().getMessage(), versionedModel.getCause() ) );
+      }
+      final VersionedModel model = versionedModel.get();
+      final List<Violation> result = Streams.stream( model.getRawModel().listStatements( null, RDF.type, (RDFNode) null ) )
+            .map( Statement::getSubject )
+            .filter( Resource::isURIResource )
+            .map( Resource::getURI )
+            .map( uri -> model.getModel().createResource( uri ) )
+            .flatMap( element -> shaclValidator.validateElement( element ).stream() )
+            .toList();
+
+      if ( result.isEmpty() ) {
+         // The SHACL validation succeeded. But to catch false positives, also try to load the model
+         final Try<Aspect> aspects = AspectModelLoader.fromVersionedModel( model );
+         if ( aspects.isFailure() && !(aspects.getCause() instanceof InvalidRootElementCountException) ) {
+            return List.of( new ProcessingViolation( buildCauseMessage( aspects.getCause() ), aspects.getCause() ) );
+         }
+      }
+
+      return result;
+   }
+
+   /**
+    * Validates a single model element.
+    * @param element the aspect model element to validate. The element MUST be part of the fully resolved model (i.e., element.getModel() should return
+    *                the same value as versionedModel.getModel())
+    * @return the list of violations
+    */
+   public List<Violation> validateElement( final Resource element ) {
+      return shaclValidator.validateElement( element );
    }
 
    /**
@@ -119,7 +176,9 @@ public class AspectModelValidator {
     * @return Either a {@link ValidationReport.ValidReport} if the model is syntactically correct and conforms to the
     *       Aspect Meta Model semantics or a {@link ValidationReport.InvalidReport} that provides a number of
     *       {@link ValidationError}s that describe all validation violations.
+    * @deprecated use {@link #validateModel(VersionedModel)} or {@link #validateModel(Try)} instead
     */
+   @Deprecated( forRemoval = true )
    public ValidationReport validate( final Try<VersionedModel> versionedModel ) {
       return versionedModel.flatMap( model -> {
          final Model dataModel = model.getModel();
@@ -156,19 +215,6 @@ public class AspectModelValidator {
             riotExceptionHandler, invalidVersionExceptionHandler, unsupportedVersionExceptionHandler,
             modelResolutionExceptionHandler )
       ).get();
-   }
-
-   /**
-    * Validates a single model element
-    * @param element the aspect model element to validate
-    * @return the list of violations
-    */
-   public List<Violation> validateElement( final Resource element ) {
-      return shaclValidator.validateElement( element );
-   }
-
-   public List<Violation> validateElements( final List<Resource> elements ) {
-      return shaclValidator.validateElements( elements );
    }
 
    private String buildCauseMessage( final Throwable throwable ) {
