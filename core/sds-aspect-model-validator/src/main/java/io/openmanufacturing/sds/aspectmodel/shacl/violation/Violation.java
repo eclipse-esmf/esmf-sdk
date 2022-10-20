@@ -20,6 +20,12 @@ import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.fix.Fix;
 
+/**
+ * Represents a single violation raised by one or more SHACL shapes against an RDF model.
+ * A human-readable representation of the violation is available via {@link #message()} while details about the context in which the violation
+ * occured (such as offending model element, RDF statements and the SHACL shape that raised the violation) are available via {@link #context()}.
+ * To handle information specific to each type of violation, implement {@link Visitor} and call {@link #accept(Visitor)} on the violation(s).
+ */
 public interface Violation {
    String errorCode();
 
@@ -35,6 +41,10 @@ public interface Violation {
 
    interface Visitor<T> {
       T visit( final Violation violation );
+
+      default T visitProcessingViolation( final ProcessingViolation violation ) {
+         return visit( violation );
+      }
 
       default T visitClassTypeViolation( final ClassTypeViolation violation ) {
          return visit( violation );
