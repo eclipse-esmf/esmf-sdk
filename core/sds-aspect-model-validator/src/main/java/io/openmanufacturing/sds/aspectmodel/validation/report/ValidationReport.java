@@ -18,10 +18,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import io.vavr.control.Try;
+
 /**
  * Describes the results of an Aspect Model validation.
+ *
+ * @deprecated Since {@link io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator#validate(Try)} is deprecated, no method will provide
+ * a ValidationReport any more; the logical replacement is a {@link java.util.List} of {@link io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation}.
  */
 @SuppressWarnings( { "squid:S1610", "This should not be converted into an interface, because it is a sealed class." } )
+@Deprecated( forRemoval = true )
 public abstract class ValidationReport {
    private ValidationReport() {
    }
@@ -35,6 +41,7 @@ public abstract class ValidationReport {
          return true;
       }
 
+      @Override
       public String toString() {
          return "Validation report: Input model is valid";
       }
