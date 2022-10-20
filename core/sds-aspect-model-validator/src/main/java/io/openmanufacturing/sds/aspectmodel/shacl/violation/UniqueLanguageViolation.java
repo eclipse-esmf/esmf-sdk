@@ -16,9 +16,11 @@ package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 import java.util.Set;
 
 public record UniqueLanguageViolation(EvaluationContext context, Set<String> duplicates) implements Violation {
+   public static final String ERROR_CODE = "ERR_DUPLICATE_LANGUAGE";
+
    @Override
    public String errorCode() {
-      return "ERR_DUPLICATE_LANGUAGE";
+      return ERROR_CODE;
    }
 
    @Override

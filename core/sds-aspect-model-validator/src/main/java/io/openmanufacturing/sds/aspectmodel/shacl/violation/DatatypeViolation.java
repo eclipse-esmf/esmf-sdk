@@ -28,9 +28,11 @@ import io.openmanufacturing.sds.aspectmodel.shacl.fix.Fix;
 import io.openmanufacturing.sds.aspectmodel.shacl.fix.ReplaceValue;
 
 public record DatatypeViolation(EvaluationContext context, String allowedTypeUri, String actualTypeUri) implements Violation {
+   public static final String ERROR_CODE = "ERR_TYPE";
+
    @Override
    public String errorCode() {
-      return "ERR_TYPE";
+      return ERROR_CODE;
    }
 
    @Override
@@ -79,7 +81,7 @@ public record DatatypeViolation(EvaluationContext context, String allowedTypeUri
                if ( oldValue == null ) {
                   return Stream.of();
                }
-               Literal newValue = context.element().getModel().createLiteral( oldValue.getLexicalForm() );
+               final Literal newValue = context.element().getModel().createLiteral( oldValue.getLexicalForm() );
                return Stream.of( new ReplaceValue( context, oldValue, newValue,
                      Optional.of( "Remove language tag from value" ) ) );
             } )

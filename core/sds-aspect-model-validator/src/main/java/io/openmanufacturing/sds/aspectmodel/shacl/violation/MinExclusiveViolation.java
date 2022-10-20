@@ -16,9 +16,11 @@ package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 import org.apache.jena.rdf.model.Literal;
 
 public record MinExclusiveViolation(EvaluationContext context, Literal min, Literal actual) implements Violation {
+   public static final String ERROR_CODE = "ERR_MIN_EXCLUSIVE";
+
    @Override
    public String errorCode() {
-      return "ERR_MIN_EXCLUSIVE";
+      return ERROR_CODE;
    }
 
    @Override
@@ -28,7 +30,7 @@ public record MinExclusiveViolation(EvaluationContext context, Literal min, Lite
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitMinExclusiveViolation( this );
    }
 }

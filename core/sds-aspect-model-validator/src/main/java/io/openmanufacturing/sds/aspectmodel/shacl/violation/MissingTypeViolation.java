@@ -14,9 +14,11 @@
 package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 
 public record MissingTypeViolation(EvaluationContext context) implements Violation {
+   public static final String ERROR_CODE = "ERR_NO_TYPE";
+
    @Override
    public String errorCode() {
-      return "ERR_NO_TYPE";
+      return ERROR_CODE;
    }
 
    @Override
@@ -25,7 +27,7 @@ public record MissingTypeViolation(EvaluationContext context) implements Violati
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitMissingTypeViolation( this );
    }
 }

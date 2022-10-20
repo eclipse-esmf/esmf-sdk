@@ -17,9 +17,11 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 
 public record LessThanOrEqualsViolation(EvaluationContext context, Property otherProperty, Literal otherValue, Literal actualValue) implements Violation {
+   public static final String ERROR_CODE = "ERR_LESS_THAN_OR_EQUALS";
+
    @Override
    public String errorCode() {
-      return "ERR_LESS_THAN_OR_EQUALS";
+      return ERROR_CODE;
    }
 
    @Override

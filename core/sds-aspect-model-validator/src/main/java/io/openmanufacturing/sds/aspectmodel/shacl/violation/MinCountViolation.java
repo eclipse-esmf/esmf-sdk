@@ -14,9 +14,11 @@
 package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 
 public record MinCountViolation(EvaluationContext context, int allowed, int actual) implements Violation {
+   public static final String ERROR_CODE = "ERR_MIN_COUNT";
+
    @Override
    public String errorCode() {
-      return "ERR_MIN_COUNT";
+      return ERROR_CODE;
    }
 
    @Override
@@ -28,7 +30,7 @@ public record MinCountViolation(EvaluationContext context, int allowed, int actu
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitMinCountViolation( this );
    }
 }

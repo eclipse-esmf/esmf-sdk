@@ -18,9 +18,11 @@ import java.util.function.Function;
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 
 public record NodeKindViolation(EvaluationContext context, Shape.NodeKind allowedNodeKind, Shape.NodeKind actualNodeKind) implements Violation {
+   public static final String ERROR_CODE = "ERR_NODEKIND";
+
    @Override
    public String errorCode() {
-      return "ERR_NODEKIND";
+      return ERROR_CODE;
    }
 
    @Override
@@ -46,7 +48,7 @@ public record NodeKindViolation(EvaluationContext context, Shape.NodeKind allowe
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitNodeKindViolation( this );
    }
 

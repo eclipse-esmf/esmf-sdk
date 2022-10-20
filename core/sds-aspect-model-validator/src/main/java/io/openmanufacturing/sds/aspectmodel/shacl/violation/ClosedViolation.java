@@ -21,9 +21,11 @@ import org.apache.jena.rdf.model.Property;
 
 public record ClosedViolation(EvaluationContext context, Set<Property> allowedProperties, Set<Property> ignoredProperties, Property actual)
       implements Violation {
+   public static final String ERROR_CODE = "ERR_CLOSED";
+
    @Override
    public String errorCode() {
-      return "ERR_CLOSED";
+      return ERROR_CODE;
    }
 
    @Override

@@ -20,12 +20,14 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 
 public record SparqlConstraintViolation(EvaluationContext context, String constraintMessage, Map<String, RDFNode> bindings) implements Violation {
+   public static final String ERROR_CODE = "ERR_UNSPECIFIED_SPARQL_CONSTRAINT_VIOLATION";
+
    @Override
    public String errorCode() {
       return Optional.ofNullable( bindings.get( "code" ) )
             .map( RDFNode::asLiteral )
             .map( Literal::getString )
-            .orElse( "ERR_UNSPECIFIED_SPARQL_CONSTRAINT_VIOLATION" );
+            .orElse( ERROR_CODE );
    }
 
    @Override
@@ -39,7 +41,7 @@ public record SparqlConstraintViolation(EvaluationContext context, String constr
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitSparqlConstraintViolation( this );
    }
 }

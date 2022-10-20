@@ -16,9 +16,11 @@ package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 import org.apache.jena.rdf.model.Literal;
 
 public record MaxInclusiveViolation(EvaluationContext context, Literal max, Literal actual) implements Violation {
+   public static final String ERROR_CODE = "ERR_MAX_INCLUSIVE";
+
    @Override
    public String errorCode() {
-      return "ERR_MAX_INCLUSIVE";
+      return ERROR_CODE;
    }
 
    @Override
@@ -28,7 +30,7 @@ public record MaxInclusiveViolation(EvaluationContext context, Literal max, Lite
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitMaxInclusiveViolation( this );
    }
 }

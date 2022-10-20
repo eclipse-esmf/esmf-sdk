@@ -14,9 +14,11 @@
 package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 
 public record PatternViolation(EvaluationContext context, String actual, String pattern) implements Violation {
+   public static final String ERROR_CODE = "ERR_PATTERN";
+
    @Override
    public String errorCode() {
-      return "ERR_PATTERN";
+      return ERROR_CODE;
    }
 
    @Override
@@ -26,7 +28,7 @@ public record PatternViolation(EvaluationContext context, String actual, String 
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitPatternViolation( this );
    }
 }

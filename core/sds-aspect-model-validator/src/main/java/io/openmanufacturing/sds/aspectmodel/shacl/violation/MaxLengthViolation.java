@@ -14,9 +14,11 @@
 package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 
 public record MaxLengthViolation(EvaluationContext context, int max, int actual) implements Violation {
+   public static final String ERROR_CODE = "ERR_MAX_LENGTH";
+
    @Override
    public String errorCode() {
-      return "ERR_MAX_LENGTH";
+      return ERROR_CODE;
    }
 
    @Override
@@ -26,7 +28,7 @@ public record MaxLengthViolation(EvaluationContext context, int max, int actual)
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitMaxLengthViolation( this );
    }
 }

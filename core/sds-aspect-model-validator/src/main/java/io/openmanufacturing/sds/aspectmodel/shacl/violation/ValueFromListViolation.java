@@ -18,9 +18,11 @@ import java.util.List;
 import org.apache.jena.rdf.model.RDFNode;
 
 public record ValueFromListViolation(EvaluationContext context, List<RDFNode> allowed, RDFNode actual) implements Violation {
+   public static final String ERROR_CODE = "ERR_VALUE_FROM_LIST";
+
    @Override
    public String errorCode() {
-      return "ERR_VALUE_FROM_LIST";
+      return ERROR_CODE;
    }
 
    @Override
@@ -30,7 +32,7 @@ public record ValueFromListViolation(EvaluationContext context, List<RDFNode> al
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitValueFromListViolation( this );
    }
 

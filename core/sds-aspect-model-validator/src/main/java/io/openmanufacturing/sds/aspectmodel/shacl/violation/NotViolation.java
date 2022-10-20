@@ -16,9 +16,11 @@ package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.Constraint;
 
 public record NotViolation(EvaluationContext context, Constraint negatedConstraint) implements Violation {
+   public static final String ERROR_CODE = "ERR_NOT";
+
    @Override
    public String errorCode() {
-      return "ERR_NOT";
+      return ERROR_CODE;
    }
 
    @Override

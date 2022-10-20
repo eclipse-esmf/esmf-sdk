@@ -14,9 +14,11 @@
 package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 
 public record MinLengthViolation(EvaluationContext context, int min, int actual) implements Violation {
+   public static final String ERROR_CODE = "ERR_MIN_LENGTH";
+
    @Override
    public String errorCode() {
-      return "ERR_MIN_LENGTH";
+      return ERROR_CODE;
    }
 
    @Override
@@ -26,7 +28,7 @@ public record MinLengthViolation(EvaluationContext context, int min, int actual)
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitMinLengthViolation( this );
    }
 }

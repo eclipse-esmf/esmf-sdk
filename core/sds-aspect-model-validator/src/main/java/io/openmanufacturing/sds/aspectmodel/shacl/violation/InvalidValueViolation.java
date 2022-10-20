@@ -16,9 +16,11 @@ package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 import org.apache.jena.rdf.model.RDFNode;
 
 public record InvalidValueViolation(EvaluationContext context, RDFNode allowed, RDFNode actual) implements Violation {
+   public static final String ERROR_CODE = "ERR_VALUE";
+
    @Override
    public String errorCode() {
-      return "ERR_VALUE";
+      return ERROR_CODE;
    }
 
    @Override
@@ -28,7 +30,7 @@ public record InvalidValueViolation(EvaluationContext context, RDFNode allowed, 
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitInvalidValueViolation( this );
    }
 }

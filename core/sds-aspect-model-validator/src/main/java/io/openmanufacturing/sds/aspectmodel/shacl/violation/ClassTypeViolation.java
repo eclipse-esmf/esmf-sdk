@@ -16,9 +16,11 @@ package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 import org.apache.jena.rdf.model.Resource;
 
 public record ClassTypeViolation(EvaluationContext context, Resource allowedClass, Resource actualClass) implements Violation {
+   public static final String ERROR_CODE = "ERR_CLASS_TYPE";
+
    @Override
    public String errorCode() {
-      return "ERR_CLASS_TYPE";
+      return ERROR_CODE;
    }
 
    @Override
@@ -28,7 +30,7 @@ public record ClassTypeViolation(EvaluationContext context, Resource allowedClas
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitClassTypeViolation( this );
    }
 }

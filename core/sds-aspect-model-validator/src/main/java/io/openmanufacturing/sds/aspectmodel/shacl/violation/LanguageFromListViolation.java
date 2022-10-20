@@ -16,9 +16,11 @@ package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 import java.util.List;
 
 public record LanguageFromListViolation(EvaluationContext context, List<String> allowed, String actual) implements Violation {
+   public static final String ERROR_CODE = "ERR_LANGUAGE";
+
    @Override
    public String errorCode() {
-      return "ERR_LANGUAGE";
+      return ERROR_CODE;
    }
 
    @Override
@@ -28,7 +30,7 @@ public record LanguageFromListViolation(EvaluationContext context, List<String> 
    }
 
    @Override
-   public <T> T accept( Visitor<T> visitor ) {
+   public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitLanguageFromListViolation( this );
    }
 }
