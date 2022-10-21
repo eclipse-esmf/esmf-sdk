@@ -26,7 +26,7 @@ public class CommandExecutor {
    public static String executeCommand( String command ) {
       // convenience: if just the name of the jar is given, expand to the proper java invocation command
       if ( isJarInvocation( command ) ) {
-         command = "java -jar " + command;
+         command = String.format( "%s -jar %s", ProcessHandle.current().info().command().orElse( "java" ), command );
       }
 
       try {
