@@ -58,6 +58,9 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.UniqueLanguageViolat
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ValueFromListViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
+/**
+ * This class tests the internal of the {@link ShaclValidator}
+ */
 public class ShaclValidatorTest {
    private final String namespace = "http://example.com#";
 
@@ -1620,5 +1623,4 @@ public class ShaclValidatorTest {
       model.read( in, "", RDFLanguages.strLangTurtle );
       return model;
    }
-
 }
