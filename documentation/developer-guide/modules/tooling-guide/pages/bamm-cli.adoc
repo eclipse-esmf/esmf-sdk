@@ -83,12 +83,14 @@ The available options and their meaning can also be seen in the help text of the
                                         |  _--paging-cursor-based, -pc_ : in case there is more than one paging possibility, it has to be cursor based paging|
                                         |  _--paging-offset-based, -po_ : in case there is more than one paging possibility, it has to be offset based paging|
                                         |  _--paging-time-based, -pt_ : in case there is more than one paging possibility, it has to be time based paging|
+                                        |  _--language, -l_ : The language from the model for which an OpenAPI specification should be generated (default: en) |  `bamm aspect AspectModel.ttl to openapi -l de`|
 | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .3+| aspect <model> to json             | Generate OpenAPI JSON specification for an Aspect Model        | `bamm aspect AspectModel.ttl to json`
                                         |  _--output, -o_ : output file path (default: stdout)           |
 | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .3+| aspect <model> to schema           | Generate JSON schema for an Aspect Model                       | `bamm aspect AspectModel.ttl to schema`
                                         |  _--output, -o_ : output file path (default: stdout)           |
+                                        |  _--language, -l_ : The language from the model for which a JSON schema should be generated (default: en) |  `bamm aspect AspectModel.ttl to schema -l de`|
 | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .4+| aspect <model> to aas              | Generate Asset Administration Shell (AAS) submodel template for an Aspect Model  | `bamm aspect AspectModel.ttl to aas`
                                         |  _--output, -o_ : output file path (default: stdout)           |

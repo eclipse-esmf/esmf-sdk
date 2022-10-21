@@ -194,6 +194,7 @@ Configuration Properties:
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON Schema will be written to. | `String` | none | {ok}
+| `language` | The language from the model for which a JSON Schema should be generated. | `String` | en | {nok}
 |===
 
 == Generate an OpenAPI Specification from an Aspect Model
@@ -248,6 +249,7 @@ Configuration Properties:
 | `aspectOffsetBasedPaging` | Set the used paging strategy as offset-based paging. | `Boolean` | `false` | {nok}
 | `aspectTimeBasedPaging` | Set the used paging strategy as time-based paging. | `Boolean` | `false` | {nok}
 | `outputFormat` | The format of the resulting OpenAPI Specification. May be either JSON or YAML. | `String` | none | {ok}
+| `language` | The language from the model for which an OpenAPI specification should be generated. | `String` | en | {nok}
 |===
 
 == Generate Documentation for an Aspect Model
