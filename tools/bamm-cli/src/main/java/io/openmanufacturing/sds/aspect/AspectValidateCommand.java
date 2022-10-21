@@ -20,10 +20,10 @@ import org.topbraid.shacl.util.FailureLog;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
-import io.openmanufacturing.sds.ViolationFormatter;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
+import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
 import io.vavr.control.Try;
 import picocli.CommandLine;
 

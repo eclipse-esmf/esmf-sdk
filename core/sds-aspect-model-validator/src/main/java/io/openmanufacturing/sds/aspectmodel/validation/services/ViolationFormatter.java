@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds;
+package io.openmanufacturing.sds.aspectmodel.validation.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +26,8 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
- * Formats one or multiple {@link Violation}s in a human-readable way
+ * Formats one or multiple {@link Violation}s in a human-readable way. Note that this is intended only for places with raw textual output,
+ * such as a text console. For a more sensible representation of violations in other contexts, implement {@link Violation.Visitor}.
  */
 public class ViolationFormatter implements Function<List<Violation>, String>, Violation.Visitor<String> {
    @Override
