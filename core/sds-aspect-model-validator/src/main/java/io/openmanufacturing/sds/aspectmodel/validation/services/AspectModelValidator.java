@@ -148,12 +148,14 @@ public class AspectModelValidator {
             if ( matcher.find() ) {
                final long line = Long.parseLong( matcher.group( 1 ) );
                final long column = Long.parseLong( matcher.group( 2 ) );
-               return List.of( new InvalidSyntaxViolation( exception.getMessage(), exception.getSourceDocument(), line, column ) );
+               final String message = matcher.group( 3 );
+               return List.of( new InvalidSyntaxViolation( message, exception.getSourceDocument(), line, column ) );
             }
          }
 
          return List.of( new ProcessingViolation( versionedModel.getCause().getMessage(), versionedModel.getCause() ) );
       }
+      // Determine violations for all model elements
       final VersionedModel model = versionedModel.get();
       final List<Violation> result = Streams.stream( model.getRawModel().listStatements( null, RDF.type, (RDFNode) null ) )
             .map( Statement::getSubject )
@@ -163,11 +165,15 @@ public class AspectModelValidator {
             .flatMap( element -> shaclValidator.validateElement( element ).stream() )
             .toList();
 
+      // The SHACL validation succeeded. But to catch false positives, also try to load the model
       if ( result.isEmpty() ) {
-         // The SHACL validation succeeded. But to catch false positives, also try to load the model
          final Try<Aspect> aspects = AspectModelLoader.fromVersionedModel( model );
          if ( aspects.isFailure() && !(aspects.getCause() instanceof InvalidRootElementCountException) ) {
-            return List.of( new ProcessingViolation( buildCauseMessage( aspects.getCause() ), aspects.getCause() ) );
+            return List.of( new ProcessingViolation(
+                  "Validation succeeded, but an error was found while processing the model. "
+                        + "This indicates an error in the model validation; please consider reporting this issue including the model "
+                        + "at https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues -- "
+                        + buildCauseMessage( aspects.getCause() ), aspects.getCause() ) );
          }
       }
 
