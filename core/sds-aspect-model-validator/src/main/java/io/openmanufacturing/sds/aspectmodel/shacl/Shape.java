@@ -19,7 +19,6 @@ import java.util.Optional;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.shacl.validation.Severity;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.path.Path;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.Constraint;
@@ -64,6 +63,10 @@ public interface Shape {
          Severity severity,
          List<Constraint> constraints
    ) {
+   }
+
+   enum Severity {
+      INFO, WARNING, VIOLATION
    }
 
    record Node(

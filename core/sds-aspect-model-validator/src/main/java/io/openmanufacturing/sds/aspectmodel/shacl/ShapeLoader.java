@@ -31,8 +31,6 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.shacl.validation.Severity;
-import org.apache.jena.shacl.vocabulary.SHACLM;
 import org.apache.jena.util.PrintUtil;
 import org.apache.jena.vocabulary.RDF;
 
@@ -77,44 +75,47 @@ import io.openmanufacturing.sds.aspectmodel.shacl.path.ZeroOrMorePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.ZeroOrOnePath;
 
 public class ShapeLoader implements Function<Model, List<Shape.Node>> {
+   private static final SHACL SHACL = new SHACL();
+
    /**
     * Encodes the logic of how to build an instance of {@link Constraint} from given RDF predicates on the value node
     */
    private final Map<Property, Function<Statement, Constraint>> constraintLoaders = ImmutableMap.<Property, Function<Statement, Constraint>> builder()
-         .put( SHACLM.class_, statement -> new ClassConstraint( statement.getResource() ) )
-         .put( SHACLM.datatype, statement -> new DatatypeConstraint( statement.getResource().getURI() ) )
-         .put( SHACLM.nodeKind, statement -> new NodeKindConstraint( Shape.NodeKind.valueOf( statement.getResource().getLocalName() ) ) )
-         .put( SHACLM.minCount, statement -> new MinCountConstraint( statement.getLiteral().getInt() ) )
-         .put( SHACLM.maxCount, statement -> new MaxCountConstraint( statement.getLiteral().getInt() ) )
-         .put( SHACLM.minExclusive, statement -> new MinExclusiveConstraint( statement.getLiteral() ) )
-         .put( SHACLM.minInclusive, statement -> new MinInclusiveConstraint( statement.getLiteral() ) )
-         .put( SHACLM.maxExclusive, statement -> new MaxExclusiveConstraint( statement.getLiteral() ) )
-         .put( SHACLM.maxInclusive, statement -> new MaxInclusiveConstraint( statement.getLiteral() ) )
-         .put( SHACLM.minLength, statement -> new MinLengthConstraint( statement.getLiteral().getInt() ) )
-         .put( SHACLM.maxLength, statement -> new MaxLengthConstraint( statement.getLiteral().getInt() ) )
-         .put( SHACLM.pattern, statement -> {
-            String flagsString = Optional.ofNullable( statement.getSubject().getProperty( SHACLM.flags ) ).map( Statement::getString ).orElse( "" );
+         .put( SHACL.class_(), statement -> new ClassConstraint( statement.getResource() ) )
+         .put( SHACL.datatype(), statement -> new DatatypeConstraint( statement.getResource().getURI() ) )
+         .put( SHACL.nodeKind(), statement -> new NodeKindConstraint( Shape.NodeKind.valueOf( statement.getResource().getLocalName() ) ) )
+         .put( SHACL.minCount(), statement -> new MinCountConstraint( statement.getLiteral().getInt() ) )
+         .put( SHACL.maxCount(), statement -> new MaxCountConstraint( statement.getLiteral().getInt() ) )
+         .put( SHACL.minExclusive(), statement -> new MinExclusiveConstraint( statement.getLiteral() ) )
+         .put( SHACL.minInclusive(), statement -> new MinInclusiveConstraint( statement.getLiteral() ) )
+         .put( SHACL.maxExclusive(), statement -> new MaxExclusiveConstraint( statement.getLiteral() ) )
+         .put( SHACL.maxInclusive(), statement -> new MaxInclusiveConstraint( statement.getLiteral() ) )
+         .put( SHACL.minLength(), statement -> new MinLengthConstraint( statement.getLiteral().getInt() ) )
+         .put( SHACL.maxLength(), statement -> new MaxLengthConstraint( statement.getLiteral().getInt() ) )
+         .put( SHACL.pattern(), statement -> {
+            String flagsString = Optional.ofNullable( statement.getSubject().getProperty( SHACL.flags() ) ).map( Statement::getString ).orElse( "" );
             return new PatternConstraint( buildPattern( statement.getLiteral().getString(), flagsString ) );
          } )
-         .put( SHACLM.languageIn, statement ->
+         .put( SHACL.languageIn(), statement ->
                new AllowedLanguagesConstraint( statement.getResource().as( RDFList.class ).mapWith( rdfNode -> rdfNode.asLiteral().getString() ).toList() ) )
-         .put( SHACLM.uniqueLang, statement -> new UniqueLangConstraint() )
-         .put( SHACLM.equals, statement -> new EqualsConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
-         .put( SHACLM.disjoint, statement -> new DisjointConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
-         .put( SHACLM.lessThan, statement -> new LessThanConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
-         .put( SHACLM.lessThanOrEquals, statement -> new LessThanOrEqualsConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
-         .put( SHACLM.not, statement -> new NotConstraint( constraints( statement.getObject().asResource() ).get( 0 ) ) )
-         .put( SHACLM.and, statement -> new AndConstraint( nestedConstraintList( statement ) ) )
-         .put( SHACLM.or, statement -> new OrConstraint( nestedConstraintList( statement ) ) )
-         .put( SHACLM.xone, statement -> new XoneConstraint( nestedConstraintList( statement ) ) )
-         .put( SHACLM.node, statement -> new NodeConstraint( nodeShape( statement.getObject().asResource() ) ) )
-         .put( SHACLM.in, statement -> new AllowedValuesConstraint( statement.getResource().as( RDFList.class ).asJavaList() ) )
-         .put( SHACLM.closed, statement -> {
+         .put( SHACL.uniqueLang(), statement -> new UniqueLangConstraint() )
+         .put( SHACL.equals(), statement -> new EqualsConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
+         .put( SHACL.disjoint(), statement -> new DisjointConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
+         .put( SHACL.lessThan(), statement -> new LessThanConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
+         .put( SHACL.lessThanOrEquals(),
+               statement -> new LessThanOrEqualsConstraint( statement.getModel().createProperty( statement.getResource().getURI() ) ) )
+         .put( SHACL.not(), statement -> new NotConstraint( constraints( statement.getObject().asResource() ).get( 0 ) ) )
+         .put( SHACL.and(), statement -> new AndConstraint( nestedConstraintList( statement ) ) )
+         .put( SHACL.or(), statement -> new OrConstraint( nestedConstraintList( statement ) ) )
+         .put( SHACL.xone(), statement -> new XoneConstraint( nestedConstraintList( statement ) ) )
+         .put( SHACL.node(), statement -> new NodeConstraint( nodeShape( statement.getObject().asResource() ) ) )
+         .put( SHACL.in(), statement -> new AllowedValuesConstraint( statement.getResource().as( RDFList.class ).asJavaList() ) )
+         .put( SHACL.closed(), statement -> {
             boolean closed = statement.getBoolean();
             if ( !closed ) {
                throw new RuntimeException();
             }
-            Set<Property> ignoredProperties = statement.getSubject().getProperty( SHACLM.ignoredProperties ).getResource()
+            Set<Property> ignoredProperties = statement.getSubject().getProperty( SHACL.ignoredProperties() ).getResource()
                   .as( RDFList.class )
                   .asJavaList()
                   .stream()
@@ -124,10 +125,10 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
                   .collect( Collectors.toSet() );
             return new ClosedConstraint( ignoredProperties );
          } )
-         .put( SHACLM.hasValue, statement -> new HasValueConstraint( statement.getObject() ) )
-         .put( SHACLM.sparql, statement -> {
+         .put( SHACL.hasValue(), statement -> new HasValueConstraint( statement.getObject() ) )
+         .put( SHACL.sparql(), statement -> {
             final Resource constraintNode = statement.getResource();
-            final String message = Optional.ofNullable( constraintNode.getProperty( SHACLM.message ) ).map( Statement::getString ).orElse( "" );
+            final String message = Optional.ofNullable( constraintNode.getProperty( SHACL.message() ) ).map( Statement::getString ).orElse( "" );
             return new SparqlConstraint( message, sparqlQuery( constraintNode ) );
          } )
          .build();
@@ -168,7 +169,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
 
    @Override
    public List<Shape.Node> apply( final Model model ) {
-      return Streams.stream( model.listStatements( null, RDF.type, SHACLM.NodeShape ) )
+      return Streams.stream( model.listStatements( null, RDF.type, SHACL.NodeShape() ) )
             .map( Statement::getSubject )
             .map( this::nodeShape )
             .toList();
@@ -176,27 +177,27 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
 
    private Shape.Attributes shapeAttributes( final Resource shapeNode ) {
       final Optional<String> uri = Optional.ofNullable( shapeNode.getURI() );
-      final Optional<Resource> targetNode = Optional.ofNullable( shapeNode.getProperty( SHACLM.targetNode ) ).map( Statement::getResource );
-      final Optional<Resource> targetClass = Optional.ofNullable( shapeNode.getProperty( SHACLM.targetClass ) ).map( Statement::getResource );
-      final Optional<Property> targetObjectsOf = Optional.ofNullable( shapeNode.getProperty( SHACLM.targetObjectsOf ) )
+      final Optional<Resource> targetNode = Optional.ofNullable( shapeNode.getProperty( SHACL.targetNode() ) ).map( Statement::getResource );
+      final Optional<Resource> targetClass = Optional.ofNullable( shapeNode.getProperty( SHACL.targetClass() ) ).map( Statement::getResource );
+      final Optional<Property> targetObjectsOf = Optional.ofNullable( shapeNode.getProperty( SHACL.targetObjectsOf() ) )
             .map( Statement::getResource )
             .map( Resource::getURI )
             .map( propertyUri -> shapeNode.getModel().createProperty( propertyUri ) );
-      final Optional<Property> targetSubjectsOf = Optional.ofNullable( shapeNode.getProperty( SHACLM.targetSubjectsOf ) )
+      final Optional<Property> targetSubjectsOf = Optional.ofNullable( shapeNode.getProperty( SHACL.targetSubjectsOf() ) )
             .map( Statement::getResource )
             .map( Resource::getURI )
             .map( propertyUri -> shapeNode.getModel().createProperty( propertyUri ) );
-      final Optional<Query> targetSparql = Optional.ofNullable( shapeNode.getProperty( SHACLM.target ) )
+      final Optional<Query> targetSparql = Optional.ofNullable( shapeNode.getProperty( SHACL.target() ) )
             .map( Statement::getResource )
             .map( this::sparqlQuery );
-      final Optional<String> name = Optional.ofNullable( shapeNode.getProperty( SHACLM.name ) ).map( Statement::getString );
-      final Optional<String> description = Optional.ofNullable( shapeNode.getProperty( SHACLM.description ) ).map( Statement::getString );
-      final Optional<Integer> order = Optional.ofNullable( shapeNode.getProperty( SHACLM.order ) ).map( Statement::getInt );
-      final Optional<String> group = Optional.ofNullable( shapeNode.getProperty( SHACLM.group ) ).map( Statement::getString );
-      final Optional<RDFNode> defaultValue = Optional.ofNullable( shapeNode.getProperty( SHACLM.defaultValue ) ).map( Statement::getObject );
-      final boolean deactivated = Optional.ofNullable( shapeNode.getProperty( SHACLM.deactivated ) ).map( Statement::getBoolean ).orElse( false );
-      final Optional<String> message = Optional.ofNullable( shapeNode.getProperty( SHACLM.message ) ).map( Statement::getString );
-      final Severity severity = severity( shapeNode );
+      final Optional<String> name = Optional.ofNullable( shapeNode.getProperty( SHACL.name() ) ).map( Statement::getString );
+      final Optional<String> description = Optional.ofNullable( shapeNode.getProperty( SHACL.description() ) ).map( Statement::getString );
+      final Optional<Integer> order = Optional.ofNullable( shapeNode.getProperty( SHACL.order() ) ).map( Statement::getInt );
+      final Optional<String> group = Optional.ofNullable( shapeNode.getProperty( SHACL.group() ) ).map( Statement::getString );
+      final Optional<RDFNode> defaultValue = Optional.ofNullable( shapeNode.getProperty( SHACL.defaultValue() ) ).map( Statement::getObject );
+      final boolean deactivated = Optional.ofNullable( shapeNode.getProperty( SHACL.deactivated() ) ).map( Statement::getBoolean ).orElse( false );
+      final Optional<String> message = Optional.ofNullable( shapeNode.getProperty( SHACL.message() ) ).map( Statement::getString );
+      final Shape.Severity severity = severity( shapeNode );
       final List<Constraint> constraints = constraints( shapeNode );
       return new Shape.Attributes( uri, targetNode, targetClass, targetObjectsOf, targetSubjectsOf, targetSparql, name, description, order, group,
             defaultValue, deactivated, message, severity, constraints );
@@ -204,7 +205,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
 
    private Shape.Node nodeShape( final Resource shapeNode ) {
       final Shape.Attributes attributes = shapeAttributes( shapeNode );
-      final List<Shape.Property> properties = Streams.stream( shapeNode.listProperties( SHACLM.property ) )
+      final List<Shape.Property> properties = Streams.stream( shapeNode.listProperties( SHACL.property() ) )
             .map( Statement::getResource )
             .map( this::propertyShape ).toList();
       return new Shape.Node( attributes, properties );
@@ -212,7 +213,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
 
    private Shape.Property propertyShape( final Resource shapeNode ) {
       final Shape.Attributes attributes = shapeAttributes( shapeNode );
-      final Path path = path( shapeNode.getProperty( SHACLM.path ).getResource() );
+      final Path path = path( shapeNode.getProperty( SHACL.path() ).getResource() );
       return new Shape.Property( attributes, path );
    }
 
@@ -235,28 +236,28 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
       }
 
       // pathNode is a blank node but not RDF list
-      final Statement alternativeStatement = pathNode.getProperty( SHACLM.alternativePath );
+      final Statement alternativeStatement = pathNode.getProperty( SHACL.alternativePath() );
       if ( alternativeStatement != null ) {
          final List<Path> alternatives = pathList( alternativeStatement.getResource() );
          return new AlternativePath( alternatives.get( 0 ), alternatives.get( 1 ) );
       }
 
-      final Statement inverseStatement = pathNode.getProperty( SHACLM.inversePath );
+      final Statement inverseStatement = pathNode.getProperty( SHACL.inversePath() );
       if ( inverseStatement != null ) {
          return new InversePath( path( inverseStatement.getResource() ) );
       }
 
-      final Statement zeroOrMoreStatement = pathNode.getProperty( SHACLM.zeroOrMorePath );
+      final Statement zeroOrMoreStatement = pathNode.getProperty( SHACL.zeroOrMorePath() );
       if ( zeroOrMoreStatement != null ) {
          return new ZeroOrMorePath( path( zeroOrMoreStatement.getResource() ) );
       }
 
-      final Statement oneOrMoreStatement = pathNode.getProperty( SHACLM.oneOrMorePath );
+      final Statement oneOrMoreStatement = pathNode.getProperty( SHACL.oneOrMorePath() );
       if ( oneOrMoreStatement != null ) {
          return new OneOrMorePath( path( oneOrMoreStatement.getResource() ) );
       }
 
-      final Statement zeroOrOneStatement = pathNode.getProperty( SHACLM.zeroOrOnePath );
+      final Statement zeroOrOneStatement = pathNode.getProperty( SHACL.zeroOrOnePath() );
       if ( zeroOrOneStatement != null ) {
          return new ZeroOrOnePath( path( zeroOrOneStatement.getResource() ) );
       }
@@ -281,20 +282,27 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
             .collect( Collectors.toList() );
    }
 
-   private Severity severity( final Resource shapeNode ) {
-      return Optional.ofNullable( shapeNode.getProperty( SHACLM.severity ) )
+   private Shape.Severity severity( final Resource shapeNode ) {
+      return Optional.ofNullable( shapeNode.getProperty( SHACL.severity() ) )
             .map( Statement::getResource )
-            .map( Resource::asNode )
-            .map( Severity::create )
-            .orElse( Severity.Violation );
+            .map( severity -> {
+               if ( severity.equals( SHACL.Info() ) ) {
+                  return Shape.Severity.INFO;
+               }
+               if ( severity.equals( SHACL.Warning() ) ) {
+                  return Shape.Severity.WARNING;
+               }
+               return Shape.Severity.VIOLATION;
+            } )
+            .orElse( Shape.Severity.VIOLATION );
    }
 
    private Query sparqlQuery( final Resource target ) {
-      final Map<String, String> prefixMap = Optional.ofNullable( target.getProperty( SHACLM.prefixes ) )
+      final Map<String, String> prefixMap = Optional.ofNullable( target.getProperty( SHACL.prefixes() ) )
             .map( Statement::getResource )
             .map( this::prefixDeclarations )
             .orElse( Map.of() );
-      final String queryString = target.getProperty( SHACLM.select ).getString();
+      final String queryString = target.getProperty( SHACL.select() ).getString();
       final ParameterizedSparqlString parameterizedSparqlString = new ParameterizedSparqlString();
       parameterizedSparqlString.setCommandText( queryString );
       parameterizedSparqlString.setNsPrefixes( prefixMap );
@@ -305,11 +313,11 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
 
    private Map<String, String> prefixDeclarations( final Resource prefixDeclarations ) {
       final Map<String, String> result = new HashMap<>();
-      for ( final StmtIterator it = prefixDeclarations.getModel().listStatements( prefixDeclarations, SHACLM.declare, (RDFNode) null ); it.hasNext(); ) {
+      for ( final StmtIterator it = prefixDeclarations.getModel().listStatements( prefixDeclarations, SHACL.declare(), (RDFNode) null ); it.hasNext(); ) {
          final Statement statement = it.next();
          final Resource declaration = statement.getResource();
-         final String prefix = declaration.getProperty( SHACLM.prefix ).getString();
-         final String namespace = declaration.getProperty( SHACLM.namespace ).getLiteral().getLexicalForm();
+         final String prefix = declaration.getProperty( SHACL.prefix() ).getString();
+         final String namespace = declaration.getProperty( SHACL.namespace() ).getLiteral().getLexicalForm();
          result.put( prefix, namespace );
       }
       return result;
