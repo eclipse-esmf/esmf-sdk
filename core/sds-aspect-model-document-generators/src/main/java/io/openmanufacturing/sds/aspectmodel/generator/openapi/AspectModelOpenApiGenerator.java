@@ -79,7 +79,7 @@ public class AspectModelOpenApiGenerator {
    private static final String NOT_FOUND_ERROR = "NotFoundError";
    private static final String OPERATIONS_SERVER_PATH = "/rpc-api/%s";
    private static final String TENANT_ID = "/{tenant-id}";
-   private static final String OPERATIONS_ENDPOINT_PATH = TENANT_ID + "/%s/operations";
+   private static final String OPERATIONS_ENDPOINT_PATH = "%s/operations";
    private static final String PARAMETER_CONVENTION = "^[a-zA-Z][a-zA-Z0-9-_]*";
    private static final String QUERY_SERVER_PATH = "/query-api/%s";
    private static final String READ_SERVER_PATH = "/api/%s";
@@ -348,21 +348,25 @@ public class AspectModelOpenApiGenerator {
          final Optional<JsonNode> jsonProperties, final boolean includeQueryApi, final Optional<PagingOption> selectedPagingOption ) throws IOException {
       final ObjectNode endpointPathsNode = factory.objectNode();
       final ObjectNode pathNode = factory.objectNode();
-      final String finalResourcePath = resourcePath.orElse( deriveResourcePathFromAspectName( aspect.getName() ) );
       final ObjectNode propertiesNode = getPropertiesNode( resourcePath, jsonProperties );
-      endpointPathsNode.set( TENANT_ID + "/" + finalResourcePath, pathNode );
+      // If resource path is provided then use it as the complete path and don't prefix tenant-id to it.
+      final String finalResourcePath = resourcePath
+            .map( path -> path.startsWith( "/" ) ? path : "/" + path )
+            .orElse( TENANT_ID + "/" + deriveResourcePathFromAspectName( aspect.getName() ) );
+
+      endpointPathsNode.set( finalResourcePath, pathNode );
 
       if ( includePaging( aspect, selectedPagingOption ) ) {
          pagingGenerator.setPagingProperties( aspect, selectedPagingOption, propertiesNode );
       }
 
-      pathNode.set( FIELD_GET, getRequestEndpointsRead( aspect, propertiesNode ) );
+      pathNode.set( FIELD_GET, getRequestEndpointsRead( aspect, propertiesNode, resourcePath ) );
 
       if ( includeQueryApi ) {
-         pathNode.set( FIELD_POST, getRequestEndpointFilter( aspect, propertiesNode, baseUrl, apiVersion ) );
+         pathNode.set( FIELD_POST, getRequestEndpointFilter( aspect, propertiesNode, baseUrl, apiVersion, resourcePath ) );
       }
 
-      final Optional<ObjectNode> operationsNode = getRequestEndpointOperations( aspect, propertiesNode, baseUrl, apiVersion );
+      final Optional<ObjectNode> operationsNode = getRequestEndpointOperations( aspect, propertiesNode, baseUrl, apiVersion, resourcePath );
       operationsNode.ifPresent(
             jsonNodes -> endpointPathsNode
                   .set( String.format( OPERATIONS_ENDPOINT_PATH, finalResourcePath ), jsonNodes ) );
@@ -374,14 +378,14 @@ public class AspectModelOpenApiGenerator {
    }
 
    private Optional<ObjectNode> getRequestEndpointOperations( final Aspect aspect, final ObjectNode parameterNode, final String baseUrl,
-         final String apiVersion ) {
+         final String apiVersion, final Optional<String> resourcePath ) {
       if ( !aspect.getOperations().isEmpty() ) {
          final ObjectNode postNode = factory.objectNode();
          final ObjectNode objectNode = factory.objectNode();
          setServers( objectNode, baseUrl, apiVersion, OPERATIONS_SERVER_PATH );
          objectNode.set( "tags", factory.arrayNode().add( aspect.getName() ) );
          objectNode.put( FIELD_OPERATION_ID, FIELD_POST + FIELD_OPERATION + aspect.getName() );
-         objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode ) );
+         objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, resourcePath.isEmpty() ) );
          objectNode.set( "requestBody", factory.objectNode().put( REF, COMPONENTS_REQUESTS + FIELD_OPERATION ) );
          final ObjectNode responseNode = factory.objectNode();
          objectNode.set( FIELD_RESPONSES, responseNode );
@@ -445,12 +449,13 @@ public class AspectModelOpenApiGenerator {
       return schemaNode;
    }
 
-   private ObjectNode getRequestEndpointFilter( final Aspect aspect, final ObjectNode parameterNode, final String baseUrl, final String apiVersion ) {
+   private ObjectNode getRequestEndpointFilter( final Aspect aspect, final ObjectNode parameterNode, final String baseUrl, final String apiVersion,
+         final Optional<String> resourcePath ) {
       final ObjectNode objectNode = factory.objectNode();
       setServers( objectNode, baseUrl, apiVersion, QUERY_SERVER_PATH );
       objectNode.set( "tags", factory.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, FIELD_POST + aspect.getName() );
-      objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode ) );
+      objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, resourcePath.isEmpty() ) );
       objectNode.set( "requestBody", getRequestBodyForFilter() );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
@@ -460,11 +465,11 @@ public class AspectModelOpenApiGenerator {
       return factory.objectNode().put( REF, COMPONENTS_REQUESTS + FIELD_FILTER );
    }
 
-   private ObjectNode getRequestEndpointsRead( final Aspect aspect, final ObjectNode parameterNode ) {
+   private ObjectNode getRequestEndpointsRead( final Aspect aspect, final ObjectNode parameterNode, final Optional<String> resourcePath ) {
       final ObjectNode objectNode = factory.objectNode();
       objectNode.set( "tags", factory.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, FIELD_GET + aspect.getName() );
-      objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode ) );
+      objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, resourcePath.isEmpty() ) );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
    }
@@ -491,9 +496,11 @@ public class AspectModelOpenApiGenerator {
       return factory.objectNode().put( REF, COMPONENTS_RESPONSES + aspect.getName() );
    }
 
-   private ArrayNode getRequiredParameters( final ObjectNode parameterNode ) {
+   private ArrayNode getRequiredParameters( final ObjectNode parameterNode, final boolean includeTenantIdNode ) {
       final ArrayNode parameters = factory.arrayNode();
-      parameters.add( getTenantIdNode() );
+      if(includeTenantIdNode) {
+         parameters.add( getTenantIdNode() );
+      }
       parameterNode.forEach( parameters::add );
       return parameters;
    }
