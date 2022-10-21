@@ -13,7 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 
@@ -22,7 +22,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Test;
 
 public class ValidateTest extends AspectModelMojoTest {
-
    @Test
    public void testValidateValidAspectModel() throws Exception {
       final File testPom = getTestFile( "src/test/resources/validate-pom-valid-aspect-model.xml" );
@@ -37,7 +36,6 @@ public class ValidateTest extends AspectModelMojoTest {
       final Mojo validate = lookupMojo( "validate", testPom );
       assertThatCode( validate::execute )
             .isInstanceOf( MojoFailureException.class )
-            .hasMessage( "Validation report: Validation failed: \nThe Aspect Model contains invalid syntax at line number 17 and column number 2." );
+            .hasMessageContaining( "Syntax error in line 17, column 2" );
    }
-
 }

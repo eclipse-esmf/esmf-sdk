@@ -13,6 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel;
 
+import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -23,11 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
+import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
 import io.vavr.control.Try;
 
-@Mojo( name = "validate", defaultPhase =  LifecyclePhase.VALIDATE )
+@Mojo( name = "validate", defaultPhase = LifecyclePhase.VALIDATE )
 public class Validate extends AspectModelMojo {
 
    private final Logger logger = LoggerFactory.getLogger( Validate.class );
@@ -39,9 +41,9 @@ public class Validate extends AspectModelMojo {
 
       final Set<Try<VersionedModel>> resolvedModels = loadAndResolveModels();
       for ( final Try<VersionedModel> versionedModel : resolvedModels ) {
-         final ValidationReport report = validator.validate( versionedModel );
-         if ( !report.conforms() ) {
-            throw new MojoFailureException( report.toString() );
+         final List<Violation> violations = validator.validateModel( versionedModel );
+         if ( !violations.isEmpty() ) {
+            throw new MojoFailureException( new ViolationFormatter().apply( violations ) );
          }
       }
       logger.info( "Aspect Models are valid." );
