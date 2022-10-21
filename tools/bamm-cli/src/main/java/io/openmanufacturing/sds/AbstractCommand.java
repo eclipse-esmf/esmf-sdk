@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -39,8 +40,8 @@ import io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
-import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
 import io.openmanufacturing.sds.exception.CommandException;
 import io.vavr.CheckedFunction1;
@@ -121,12 +122,9 @@ public abstract class AbstractCommand implements Runnable {
          }
 
          // Another exception, e.g. syntax error. Let the validator handle this
-         final AspectModelValidator validator = new AspectModelValidator();
-         final ValidationReport report = validator.validate( versionedModel );
+         final List<Violation> violations = new AspectModelValidator().validateModel( versionedModel );
+         System.out.println( new ViolationFormatter().apply( violations ) );
 
-         if ( LOG.isWarnEnabled() ) {
-            LOG.warn( report.toString() );
-         }
          System.exit( 1 );
          return null;
       } ).get();

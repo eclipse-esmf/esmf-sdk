@@ -14,13 +14,15 @@
 package io.openmanufacturing.sds.aspect;
 
 import java.io.File;
+import java.util.List;
 
 import org.topbraid.shacl.util.FailureLog;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
+import io.openmanufacturing.sds.ViolationFormatter;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
 import io.vavr.control.Try;
 import picocli.CommandLine;
@@ -54,13 +56,11 @@ public class AspectValidateCommand extends AbstractCommand {
 
       final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( parentCommand.getInput() ), customResolver );
       final AspectModelValidator validator = new AspectModelValidator();
-      final ValidationReport report = validator.validate( versionedModel );
 
-      if ( LOG.isWarnEnabled() ) {
-         LOG.warn( report.toString() );
-      }
+      final List<Violation> violations = validator.validateModel( versionedModel );
+      System.out.println( new ViolationFormatter().apply( violations ) );
 
-      if ( !report.conforms() ) {
+      if ( !violations.isEmpty() ) {
          System.exit( 1 );
       }
    }
