@@ -46,6 +46,10 @@ public interface Violation {
          return visit( violation );
       }
 
+      default T visitInvalidSyntaxViolation( final InvalidSyntaxViolation violation ) {
+         return visit( violation );
+      }
+
       default T visitClassTypeViolation( final ClassTypeViolation violation ) {
          return visit( violation );
       }

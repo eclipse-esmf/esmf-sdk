@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.jena.query.ARQ;
 import org.apache.jena.rdf.model.Model;
@@ -47,9 +49,11 @@ import io.openmanufacturing.sds.aspectmodel.UnsupportedVersionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidVersionException;
+import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.ParserException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.shacl.ShaclValidator;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationError;
@@ -135,6 +139,19 @@ public class AspectModelValidator {
     */
    public List<Violation> validateModel( final Try<VersionedModel> versionedModel ) {
       if ( versionedModel.isFailure() ) {
+         final Throwable cause = versionedModel.getCause();
+         if ( cause instanceof ParserException exception ) {
+            // RiotExeception's message looks like this:
+            // [line: 17, col: 2 ] Triples not terminated by DOT
+            final Pattern pattern = Pattern.compile( "\\[\s*line:\s*(\\d+),\s*col:\s*(\\d+)\s*]\s*(.*)" );
+            final Matcher matcher = pattern.matcher( cause.getMessage() );
+            if ( matcher.find() ) {
+               final long line = Long.parseLong( matcher.group( 1 ) );
+               final long column = Long.parseLong( matcher.group( 2 ) );
+               return List.of( new InvalidSyntaxViolation( exception.getMessage(), exception.getSourceDocument(), line, column ) );
+            }
+         }
+
          return List.of( new ProcessingViolation( versionedModel.getCause().getMessage(), versionedModel.getCause() ) );
       }
       final VersionedModel model = versionedModel.get();
