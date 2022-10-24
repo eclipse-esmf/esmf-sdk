@@ -20,8 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -93,6 +95,26 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    }
 
    @ParameterizedTest
+   @MethodSource( "invalidTestModels" )
+   public void testValidateInvalidTestAspectModel( final InvalidTestAspect testModel, final KnownVersion metaModelVersion ) {
+      final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
+      final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
+      assertThat( violations ).isNotEmpty();
+   }
+
+   private static Stream<Arguments> invalidTestModels() {
+      return Arrays.stream( InvalidTestAspect.values() )
+            .flatMap( testModel -> KnownVersion.getVersions().stream().flatMap( metaModelVersion -> {
+               // Filter the arguments: Aspects missing bamm:named and/or bamm:properties is only invalid in BAMM 1.0.0
+               if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 )
+                     && (testModel == InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES || testModel == InvalidTestAspect.ASPECT_MISSING_PROPERTIES) ) {
+                  return Stream.of();
+               }
+               return Stream.of( Arguments.of( testModel, metaModelVersion ) );
+            } ) );
+   }
+
+   @ParameterizedTest
    @MethodSource( value = "versionsUpToIncluding1_0_0" )
    public void testInvalidAspectMissingProperties( final KnownVersion metaModelVersion ) {
       final BAMM bamm = new BAMM( metaModelVersion );
@@ -115,12 +137,14 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
       assertThat( violations ).hasSize( 2 );
-      final MinCountViolation violation2 = (MinCountViolation) violations.get( 0 );
-      assertThat( violation2.context().property() ).hasValue( bamm.property( "name" ) );
-      assertThat( violation2.context().element().getURI() ).isEqualTo( testModel.getUrn().toString() );
-      final MinCountViolation violation1 = (MinCountViolation) violations.get( 1 );
-      assertThat( violation1.context().property() ).hasValue( bamm.properties() );
-      assertThat( violation1.context().element().getURI() ).isEqualTo( testModel.getUrn().toString() );
+
+      assertThat( violations )
+            .anyMatch( v -> v instanceof MinCountViolation
+                  && v.context().property().map( p -> p.equals( bamm.properties() ) ).orElse( false )
+                  && v.context().element().getURI().equals( testModel.getUrn().toString() ) )
+            .anyMatch( v -> v instanceof MinCountViolation
+                  && v.context().property().map( p -> p.equals( bamm.property( "name" ) ) ).orElse( false )
+                  && v.context().element().getURI().equals( testModel.getUrn().toString() ) );
    }
 
    @ParameterizedTest
