@@ -23,7 +23,8 @@ public enum InvalidTestAspect implements TestModel {
    ASPECT_WITH_INVALID_VERSION,
    ASPECT_WITH_RECURSIVE_PROPERTY,
    INVALID_SYNTAX,
-   MISSING_ASPECT_DECLARATION;
+   MISSING_ASPECT_DECLARATION,
+   INVALID_DATATYPE;
 
    @Override
    public String getName() {
