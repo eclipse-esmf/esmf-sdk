@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
@@ -95,10 +94,16 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
     */
    @Override
    public String visitInvalidSyntaxViolation( final InvalidSyntaxViolation violation ) {
+      final StringBuilder builder = new StringBuilder();
+      builder.append( String.format( "Syntax error in line %d, column %d: %s%n%n", violation.line(), violation.column(), violation.message() ) );
       final String[] lines = violation.source().split( "\n" );
-      final String highlightedSource = IntStream.range( 0, lines.length )
-            .mapToObj( i -> String.format( "%2s%3d: %s\n", (i + 1 == violation.line() ? "->" : ""), i + 1, lines[i] ) )
-            .collect( Collectors.joining() );
-      return String.format( "Syntax error in line %d, column %d: %s%n%n%s%n", violation.line(), violation.column(), violation.message(), highlightedSource );
+      final int linesBeforeAndAfter = 5;
+      final int lowerIndex = violation.line() > linesBeforeAndAfter ? (int) (violation.line() - linesBeforeAndAfter - 1) : 0;
+      final int upperIndex = violation.line() + linesBeforeAndAfter + 1 < lines.length ? (int) (violation.line() + linesBeforeAndAfter - 1) : lines.length - 1;
+      for ( int i = lowerIndex; i <= upperIndex; i++ ) {
+         builder.append( String.format( "%2s%3d: %s%n", (i + 1 == violation.line() ? "->" : ""), i + 1, lines[i] ) );
+      }
+      builder.append( "\n" );
+      return builder.toString();
    }
 }
