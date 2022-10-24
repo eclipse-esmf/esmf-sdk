@@ -14,7 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 
 /**
- * Meta violation: The semantic validation could not be started, for example because the model could not be loaded or not be resolved.
+ * Meta violation: The validation was unsuccessful, for example because the model could not be loaded or not be resolved
  * @param cause the cause
  */
 public record ProcessingViolation(String message, Throwable cause) implements Violation {

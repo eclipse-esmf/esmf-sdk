@@ -85,7 +85,7 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
     */
    @Override
    public String visitProcessingViolation( final ProcessingViolation violation ) {
-      return String.format( "Semantic validation could not be started:%n%s%n", violation.message() );
+      return String.format( "Validation failed:%n%s%n", violation.message() );
    }
 
    /**

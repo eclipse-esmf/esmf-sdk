@@ -30,7 +30,7 @@ public class MojoConfigTest extends AspectModelMojoTest {
       final Mojo validate = lookupMojo( "validate", testPom );
       assertThatCode( validate::execute )
             .isInstanceOf( MojoFailureException.class )
-            .hasMessageContaining( "Semantic validation could not be started" );
+            .hasMessageContaining( "Validation failed" );
    }
 
    @Test
