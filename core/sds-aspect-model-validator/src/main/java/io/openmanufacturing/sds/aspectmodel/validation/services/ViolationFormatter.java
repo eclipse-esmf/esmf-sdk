@@ -40,24 +40,32 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
       return processSemanticViolations( violations );
    }
 
-   private String processNonSemanticViolation( final List<Violation> violations ) {
+   protected String processNonSemanticViolation( final List<Violation> violations ) {
       return violations.stream().map( violation -> violation.accept( this ) ).collect( Collectors.joining( "\n\n" ) );
    }
 
-   private String processSemanticViolations( final List<Violation> violations ) {
-      final Map<String, List<Violation>> violationsByElement = new HashMap<>();
+   protected Map<String, List<Violation>> violationsByElement( final List<Violation> violations ) {
+      final Map<String, List<Violation>> result = new HashMap<>();
       for ( final Violation violation : violations ) {
          final String elementName = violation.elementName();
-         final List<Violation> elementViolations = violationsByElement.computeIfAbsent( elementName, ( element ) -> new ArrayList<>() );
+         final List<Violation> elementViolations = result.computeIfAbsent( elementName, ( element ) -> new ArrayList<>() );
          elementViolations.add( violation );
       }
+      return result;
+   }
 
+   protected String processSemanticViolations( final List<Violation> violations ) {
+      if ( violations.isEmpty() ) {
+         return String.format( "Input model is valid%n" );
+      }
+
+      final Map<String, List<Violation>> violationsByElement = violationsByElement( violations );
       final StringBuilder builder = new StringBuilder();
       builder.append( String.format( "Semantic violations were found:%n%n" ) );
       for ( final Map.Entry<String, List<Violation>> entry : violationsByElement.entrySet() ) {
          final String elementName = entry.getKey();
          final List<Violation> elementViolations = entry.getValue();
-         builder.append( String.format( "> %s:%n", elementName ) );
+         builder.append( String.format( "> %s :%n", elementName ) );
          for ( final Violation violation : elementViolations ) {
             builder.append( String.format( "  %s%n", violation.accept( this ) ) );
          }
