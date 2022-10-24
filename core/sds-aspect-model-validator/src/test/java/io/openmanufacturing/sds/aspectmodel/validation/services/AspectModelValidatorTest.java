@@ -38,6 +38,7 @@ import io.openmanufacturing.sds.test.InvalidTestAspect;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestModel;
+import io.openmanufacturing.sds.test.TestProperty;
 import io.openmanufacturing.sds.test.TestResources;
 import io.vavr.control.Try;
 
@@ -90,6 +91,15 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    public void testValidateTestAspectModel( final TestAspect testAspect ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
       final Try<VersionedModel> tryModel = TestResources.getModel( testAspect, metaModelVersion );
+      final List<Violation> violations = service.get( metaModelVersion ).validateModel( tryModel );
+      assertThat( violations ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @EnumSource( value = TestProperty.class )
+   public void testValidateProperty( final TestProperty testProperty ) {
+      final KnownVersion metaModelVersion = KnownVersion.getLatest();
+      final Try<VersionedModel> tryModel = TestResources.getModel( testProperty, metaModelVersion );
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( tryModel );
       assertThat( violations ).isEmpty();
    }
