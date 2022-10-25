@@ -44,4 +44,9 @@ public record AllowedLanguagesConstraint(List<String> allowedLanguages) implemen
    public String name() {
       return "sh:languageIn";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitAllowedLanguagesConstraint( this );
+   }
 }

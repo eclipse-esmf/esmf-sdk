@@ -45,4 +45,9 @@ public record MinLengthConstraint(int minLength) implements Constraint {
    public String name() {
       return "sh:minLength";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitMinLengthConstraint( this );
+   }
 }

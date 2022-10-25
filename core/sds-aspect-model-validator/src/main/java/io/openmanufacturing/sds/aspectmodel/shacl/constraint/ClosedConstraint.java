@@ -66,4 +66,9 @@ public record ClosedConstraint(Set<Property> ignoredProperties) implements Const
    public String name() {
       return "sh:closed";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitClosedConstraint( this );
+   }
 }

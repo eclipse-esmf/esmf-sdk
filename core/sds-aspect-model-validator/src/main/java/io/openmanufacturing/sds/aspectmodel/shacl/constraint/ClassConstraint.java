@@ -62,4 +62,9 @@ public record ClassConstraint(Resource allowedClass) implements Constraint {
    public String name() {
       return "sh:class";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitClassConstraint( this );
+   }
 }

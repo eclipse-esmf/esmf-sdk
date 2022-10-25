@@ -44,4 +44,9 @@ public record DisjointConstraint(Property otherProperty) implements Constraint {
    public String name() {
       return "sh:disjoint";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitDisjointConstraint( this );
+   }
 }

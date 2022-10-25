@@ -35,4 +35,9 @@ public record NodeConstraint(Shape.Node shape) implements Constraint {
    public String name() {
       return "sh:node";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitNodeConstraint( this );
+   }
 }

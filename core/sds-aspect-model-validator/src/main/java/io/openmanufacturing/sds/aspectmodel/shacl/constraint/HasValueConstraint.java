@@ -37,4 +37,9 @@ public record HasValueConstraint(RDFNode allowedValue) implements Constraint {
    public String name() {
       return "sh:hasValue";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitHasValueConstraint( this );
+   }
 }

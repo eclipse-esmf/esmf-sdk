@@ -21,8 +21,8 @@ import org.apache.jena.rdf.model.RDFNode;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.PatternViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#PatternConstraintComponent">sh:pattern</a>
@@ -46,5 +46,10 @@ public record PatternConstraint(Pattern pattern) implements Constraint {
    @Override
    public String name() {
       return "sh:pattern";
+   }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitPatternConstraint( this );
    }
 }

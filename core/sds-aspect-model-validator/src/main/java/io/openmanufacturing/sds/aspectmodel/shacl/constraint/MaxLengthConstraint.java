@@ -19,8 +19,8 @@ import org.apache.jena.rdf.model.RDFNode;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.MaxLengthViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#MaxLengthConstraintComponent">sh:maxLength</a>
@@ -44,5 +44,10 @@ public record MaxLengthConstraint(int maxLength) implements Constraint {
    @Override
    public String name() {
       return "sh:maxLength";
+   }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitMaxLengthConstraint( this );
    }
 }

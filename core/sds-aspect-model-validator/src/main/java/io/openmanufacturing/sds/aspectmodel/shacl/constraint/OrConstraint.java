@@ -42,4 +42,9 @@ public record OrConstraint(List<Constraint> constraints) implements Constraint {
    public String name() {
       return "sh:or";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitOrConstraint( this );
+   }
 }

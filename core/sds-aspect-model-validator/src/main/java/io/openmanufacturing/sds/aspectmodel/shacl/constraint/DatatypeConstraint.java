@@ -45,4 +45,9 @@ public record DatatypeConstraint(String allowedTypeUri) implements Constraint {
    public String name() {
       return "sh:datatype";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitDatatypeConstraint( this );
+   }
 }

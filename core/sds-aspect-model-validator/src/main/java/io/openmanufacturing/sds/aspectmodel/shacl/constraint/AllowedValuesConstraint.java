@@ -37,4 +37,9 @@ public record AllowedValuesConstraint(List<RDFNode> allowedValues) implements Co
    public String name() {
       return "sh:in";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitAllowedValuesConstraint( this );
+   }
 }

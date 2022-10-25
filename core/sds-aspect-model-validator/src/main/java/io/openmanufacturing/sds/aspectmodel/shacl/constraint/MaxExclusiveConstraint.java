@@ -20,10 +20,10 @@ import org.apache.jena.rdf.model.RDFNode;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.LiteralComparator;
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.DatatypeViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.MaxExclusiveViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.DatatypeViolation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#MaxExclusiveConstraintComponent">sh:maxExclusive</a>
@@ -50,5 +50,10 @@ public record MaxExclusiveConstraint(Literal maxValue) implements Constraint {
    @Override
    public String name() {
       return "sh:maxExclusive";
+   }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitMaxExclusiveConstraint( this );
    }
 }

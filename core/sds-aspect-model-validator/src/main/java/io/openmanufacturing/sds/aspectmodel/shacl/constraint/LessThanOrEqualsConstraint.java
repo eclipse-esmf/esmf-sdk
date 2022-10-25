@@ -60,4 +60,9 @@ public record LessThanOrEqualsConstraint(Property otherProperty) implements Cons
    public String name() {
       return "sh:lessThanOrEquals";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitLessThanOrEqualsConstraint( this );
+   }
 }

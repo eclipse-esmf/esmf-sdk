@@ -19,8 +19,8 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.MaxCountViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#MaxCountConstraintComponent">sh:maxCount</a>
@@ -49,5 +49,10 @@ public record MaxCountConstraint(int maxCount) implements Constraint {
    @Override
    public String name() {
       return "sh:maxCount";
+   }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitMaxCountConstraint( this );
    }
 }

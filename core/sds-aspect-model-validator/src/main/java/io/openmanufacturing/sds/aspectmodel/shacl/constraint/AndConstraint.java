@@ -34,4 +34,9 @@ public record AndConstraint(List<Constraint> constraints) implements Constraint 
    public String name() {
       return "sh:and";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitAndConstraint( this );
+   }
 }

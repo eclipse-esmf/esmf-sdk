@@ -41,4 +41,9 @@ public record NotConstraint(Constraint constraint) implements Constraint {
    public String name() {
       return "sh:not";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitNotConstraint( this );
+   }
 }

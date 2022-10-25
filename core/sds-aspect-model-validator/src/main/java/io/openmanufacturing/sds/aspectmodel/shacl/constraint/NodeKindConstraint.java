@@ -51,4 +51,9 @@ public record NodeKindConstraint(Shape.NodeKind allowedNodeKind) implements Cons
    public String name() {
       return "sh:nodeKind";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitNodeKindConstraint( this );
+   }
 }

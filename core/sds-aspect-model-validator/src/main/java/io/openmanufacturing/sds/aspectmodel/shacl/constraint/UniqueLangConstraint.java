@@ -61,4 +61,9 @@ public record UniqueLangConstraint() implements Constraint {
    public String name() {
       return "sh:uniqueLang";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitUniqueLangConstraint( this );
+   }
 }

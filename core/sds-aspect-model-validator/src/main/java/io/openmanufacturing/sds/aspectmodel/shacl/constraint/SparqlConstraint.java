@@ -62,4 +62,9 @@ public record SparqlConstraint(String message, Query query) implements Constrain
    public String name() {
       return "sh:sparql";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitSparqlConstraint( this );
+   }
 }

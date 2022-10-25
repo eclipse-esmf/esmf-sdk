@@ -40,4 +40,9 @@ public record XoneConstraint(List<Constraint> constraints) implements Constraint
    public String name() {
       return "sh:xone";
    }
+
+   @Override
+   public <T> T accept( final Visitor<T> visitor ) {
+      return visitor.visitXoneConstraint( this );
+   }
 }
