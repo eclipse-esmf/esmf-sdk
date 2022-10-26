@@ -23,6 +23,7 @@ import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
+import io.openmanufacturing.sds.aspectmodel.validation.services.DetailedViolationFormatter;
 import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
 import io.vavr.control.Try;
 import picocli.CommandLine;
@@ -45,6 +46,9 @@ public class AspectValidateCommand extends AbstractCommand {
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;
 
+   @CommandLine.Option( names = { "--details", "-d" }, description = "Print detailed reports about violations" )
+   private boolean details = false;
+
    @Override
    public void run() {
       FailureLog.set( new FailureLog() {
@@ -58,7 +62,11 @@ public class AspectValidateCommand extends AbstractCommand {
       final AspectModelValidator validator = new AspectModelValidator();
 
       final List<Violation> violations = validator.validateModel( versionedModel );
-      System.out.println( new ViolationFormatter().apply( violations ) );
+      if ( details ) {
+         System.out.println( new DetailedViolationFormatter().apply( violations ) );
+      } else {
+         System.out.println( new ViolationFormatter().apply( violations ) );
+      }
 
       if ( !violations.isEmpty() ) {
          System.exit( 1 );

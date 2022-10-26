@@ -13,8 +13,6 @@
 
 package io.openmanufacturing.sds.aspectmodel.validation.services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -94,14 +92,18 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
    public String visitInvalidSyntaxViolation( final InvalidSyntaxViolation violation ) {
       final StringBuilder builder = new StringBuilder();
       builder.append( String.format( "Syntax error in line %d, column %d: %s%n%n", violation.line(), violation.column(), violation.message() ) );
+      printSyntaxViolationSource( violation, builder, "" );
+      return builder.toString();
+   }
+
+   protected void printSyntaxViolationSource( final InvalidSyntaxViolation violation, final StringBuilder builder, final String additionalIndentation ) {
       final String[] lines = violation.source().split( "\n" );
       final int linesBeforeAndAfter = 5;
       final int lowerIndex = violation.line() > linesBeforeAndAfter ? (int) (violation.line() - linesBeforeAndAfter - 1) : 0;
       final int upperIndex = violation.line() + linesBeforeAndAfter + 1 < lines.length ? (int) (violation.line() + linesBeforeAndAfter - 1) : lines.length - 1;
       for ( int i = lowerIndex; i <= upperIndex; i++ ) {
-         builder.append( String.format( "%2s%3d: %s%n", (i + 1 == violation.line() ? "->" : ""), i + 1, lines[i] ) );
+         builder.append( String.format( "%s%2s%3d: %s%n", additionalIndentation, (i + 1 == violation.line() ? "->" : ""), i + 1, lines[i] ) );
       }
       builder.append( "\n" );
-      return builder.toString();
    }
 }
