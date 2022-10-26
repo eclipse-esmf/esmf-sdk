@@ -245,8 +245,10 @@ public class AspectModelValidator {
       Throwable t = throwable;
       while ( t != null ) {
          builder.append( t.getMessage() );
-         builder.append( ": " );
          t = t.getCause();
+         if ( t != null ) {
+            builder.append( ": " );
+         }
       }
       return builder.toString();
    }

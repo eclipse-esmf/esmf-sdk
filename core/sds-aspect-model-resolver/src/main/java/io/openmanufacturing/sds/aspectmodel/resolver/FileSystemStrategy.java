@@ -90,6 +90,6 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
                   .getOrElse( false ) )
             .findFirst()
             .orElse( Try.failure( new FileNotFoundException(
-                  "The model file " + aspectModelUrn.toString() + " could not be found in directory: " + directory ) ) );
+                  "No model file containing " + aspectModelUrn.toString() + " could be found in directory: " + directory ) ) );
    }
 }

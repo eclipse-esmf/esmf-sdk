@@ -101,7 +101,7 @@ public class AspectModelResolver {
 
       if ( mergedModel.isFailure() ) {
          if ( mergedModel.getCause() instanceof FileNotFoundException ) {
-            return Try.failure( new ModelResolutionException( "While trying to resolve " + input + ": " + mergedModel.getCause() ) );
+            return Try.failure( new ModelResolutionException( "Could not resolve " + input, mergedModel.getCause() ) );
          }
          return Try.failure( mergedModel.getCause() );
       }
