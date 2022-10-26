@@ -24,6 +24,8 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 /**
  * Represents a SHACL constraint component as a function that takes the <a href="https://www.w3.org/TR/shacl/#value-nodes">value node</a> as input
  * and returns a (possibly empty) list of violations.
+ *
+ * Not implemented: sh:qualifiedValueShape, sh:qualifiedMinCount, sh:qualifiedMaxCount
  */
 public interface Constraint extends BiFunction<RDFNode, EvaluationContext, List<Violation>> {
    default boolean canBeUsedOnNodeShapes() {
@@ -144,8 +146,9 @@ public interface Constraint extends BiFunction<RDFNode, EvaluationContext, List<
       default T visitXoneConstraint( final XoneConstraint constraint ) {
          return visit( constraint );
       }
+
+      default T visitJsConstraint( final JsConstraint constraint ) {
+         return visit( constraint );
+      }
    }
 }
-
-// sh:qualifiedValueShape, sh:qualifiedMinCount, sh:qualifiedMaxCount
-

@@ -47,6 +47,7 @@ import io.openmanufacturing.sds.aspectmodel.shacl.constraint.DatatypeConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.DisjointConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.EqualsConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.HasValueConstraint;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.JsConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.LessThanConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.LessThanOrEqualsConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.MaxCountConstraint;
@@ -131,7 +132,16 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
             final String message = Optional.ofNullable( constraintNode.getProperty( SHACL.message() ) ).map( Statement::getString ).orElse( "" );
             return new SparqlConstraint( message, sparqlQuery( constraintNode ) );
          } )
+         .put( SHACL.js(), statement -> {
+            Resource constraintNode = statement.getResource();
+            JsLibrary library = jsLibrary( constraintNode.getProperty( SHACL.jsLibrary() ).getResource() );
+            String functionName = constraintNode.getProperty( SHACL.jsFunctionName() ).getString();
+            final String message = Optional.ofNullable( constraintNode.getProperty( SHACL.message() ) ).map( Statement::getString ).orElse( "" );
+            return new JsConstraint( message, library, functionName );
+         } )
          .build();
+
+   private final Map<Resource, JsLibrary> jsLibraries = new HashMap<>();
 
    private List<Constraint> nestedConstraintList( final Statement statement ) {
       return statement.getObject().as( RDFList.class ).asJavaList().stream()
@@ -309,6 +319,15 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
       // Although the SPARQLTarget's query returns a variable "$this" do NOT parameterizedSparqlString.setIRI() for "$this" here.
       // See https://www.w3.org/TR/shacl-af/#SPARQLTarget
       return parameterizedSparqlString.asQuery();
+   }
+
+   private JsLibrary jsLibrary( final Resource target ) {
+      return jsLibraries.computeIfAbsent( target, resource -> {
+         final List<String> jsLibraryUrls = target.listProperties( SHACL.jsLibraryURL() ).mapWith( Statement::getString ).toList();
+         final List<JsLibrary> includedLibraries = target.listProperties( SHACL.jsLibrary() ).mapWith( Statement::getResource ).mapWith( this::jsLibrary )
+               .toList();
+         return new JsLibrary( Optional.ofNullable( target.getURI() ), jsLibraryUrls, includedLibraries );
+      } );
    }
 
    private Map<String, String> prefixDeclarations( final Resource prefixDeclarations ) {

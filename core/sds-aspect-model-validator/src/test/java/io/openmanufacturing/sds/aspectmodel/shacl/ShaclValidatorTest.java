@@ -39,6 +39,7 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.DatatypeViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.DisjointViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EqualsViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidValueViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.JsViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LanguageFromListViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LessThanOrEqualsViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LessThanViolation;
@@ -1170,6 +1171,58 @@ public class ShaclValidatorTest {
       assertThat( violation.message() ).isNotEmpty();
       assertThat( violation.message() ).isEqualTo( "Constraint was violated on :Foo, value was foo" );
       assertThat( violation.errorCode() ).isEqualTo( "ERR_CUSTOM" );
+   }
+
+   @Test
+   public void testJsConstraintEvaluation() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix : <http://example.com#> .
+
+            :MyJavaScriptLibrary
+               a sh:JSLibrary ;
+               sh:jsLibraryURL "$RESOURCE_URL"^^xsd:anyURI .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:targetClass :TestClass ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                  sh:path :testProperty ;
+                  sh:datatype xsd:string ;
+                  sh:js [
+                     a sh:JSConstraint ;
+                     sh:message "JavaScript constraint violation failed" ;
+                     sh:jsLibrary :MyJavaScriptLibrary ;
+                     sh:jsFunctionName "isRegularExpression" ;
+                  ] ;
+               ] .
+            """.replace( "$RESOURCE_URL", getClass().getClassLoader()
+            .getResource( "JsConstraintTest.js" ).toString() ) );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            :Foo a :TestClass ;
+              :testProperty "(((" .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      final Violation finding = violations.get( 0 );
+      assertThat( finding ).isInstanceOf( JsViolation.class );
+      final JsViolation violation = (JsViolation) finding;
+      assertThat( violation.context().element() ).isEqualTo( element );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.elementName() ).isEqualTo( ":Foo" );
+      assertThat( violation.message() ).isNotEmpty();
+      assertThat( violation.message() ).isEqualTo( "JavaScript constraint violation failed" );
+      assertThat( violation.errorCode() ).isEqualTo( "ERR_JAVASCRIPT" );
    }
 
    @Test

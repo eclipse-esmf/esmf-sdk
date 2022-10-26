@@ -145,6 +145,10 @@ public interface Violation {
       default T visitNotViolation( final NotViolation violation ) {
          return visit( violation );
       }
+
+      default T visitJsViolation( final JsViolation violation ) {
+         return visit( violation );
+      }
    }
 
    default AppliesTo appliesTo() {

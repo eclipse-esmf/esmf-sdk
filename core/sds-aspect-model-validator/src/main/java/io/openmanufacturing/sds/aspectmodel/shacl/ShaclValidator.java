@@ -28,12 +28,12 @@ import org.apache.jena.rdf.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.Constraint;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.MinCountConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.PathNodeRetriever;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.PredicatePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
-import io.openmanufacturing.sds.aspectmodel.shacl.constraint.Constraint;
-import io.openmanufacturing.sds.aspectmodel.shacl.constraint.MinCountConstraint;
 
 /**
  * Implementation of a SHACL engine that allows validation on a per-element basis: {@link #validateElement(Resource)} can be used to retrieve validation
@@ -43,12 +43,14 @@ public class ShaclValidator {
    private static final Logger LOG = LoggerFactory.getLogger( ShaclValidator.class );
    private final List<Shape.Node> shapes;
    private final Map<Resource, List<Shape.Node>> shapesWithClassTargets;
+   private final Model shapesModel;
 
    /**
     * Constructor to provide a custom RDF model containing SHACL shapes
     * @param shapesModel the shapes model
     */
    public ShaclValidator( final Model shapesModel ) {
+      this.shapesModel = shapesModel;
       shapes = new ShapeLoader().apply( shapesModel );
       final Set<Resource> distinctTargetResources = shapes.stream()
             .flatMap( shape -> shape.attributes().targetClass().stream() )
@@ -144,5 +146,9 @@ public class ShaclValidator {
 
    public List<Shape.Node> getShapes() {
       return shapes;
+   }
+
+   public Model getShapesModel() {
+      return shapesModel;
    }
 }

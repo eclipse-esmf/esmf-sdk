@@ -32,6 +32,13 @@ public record SparqlConstraintViolation(EvaluationContext context, String constr
 
    @Override
    public String message() {
+      if ( constraintMessage().isEmpty() ) {
+         if ( context.property().isPresent() ) {
+            return String.format( "Property %s on %s is invalid", propertyName(), elementName() );
+         }
+         return String.format( "%s is invalid", elementName() );
+      }
+
       String interpolatedMessage = constraintMessage();
       for ( final Map.Entry<String, RDFNode> entry : bindings.entrySet() ) {
          final String value = entry.getValue().isURIResource() ? shortUri( entry.getValue().asResource().getURI() ) : entry.getValue().toString();
