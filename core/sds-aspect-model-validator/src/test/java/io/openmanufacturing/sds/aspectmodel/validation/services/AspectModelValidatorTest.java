@@ -22,6 +22,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -32,6 +34,7 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinCountViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.test.InvalidTestAspect;
@@ -122,6 +125,29 @@ public class AspectModelValidatorTest extends MetaModelVersions {
                }
                return Stream.of( Arguments.of( testModel, metaModelVersion ) );
             } ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testValidateValidModelElement( final KnownVersion metaModelVersion ) {
+      final VersionedModel testModel = TestResources.getModel( TestAspect.ASPECT_WITH_BOOLEAN, metaModelVersion ).get();
+      final Resource element = testModel.getModel().createResource( TestAspect.TEST_NAMESPACE + "BooleanTestCharacteristic" );
+      final List<Violation> violations = service.get( metaModelVersion ).validateElement( element );
+      assertThat( violations ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testValidateInvalidModelElement( final KnownVersion metaModelVersion ) {
+      final VersionedModel testModel = TestResources.getModel( InvalidTestAspect.INVALID_DATATYPE, metaModelVersion ).get();
+      final Resource element = testModel.getModel().createResource( TestAspect.TEST_NAMESPACE + "stringProperty" );
+      final List<Violation> violations = service.get( metaModelVersion ).validateElement( element );
+      assertThat( violations ).hasSize( 1 );
+      final SparqlConstraintViolation violation = (SparqlConstraintViolation) violations.get( 0 );
+      final BAMM bamm = new BAMM( metaModelVersion );
+      assertThat( violation.context().element() ).isEqualTo( element );
+      assertThat( violation.context().property().get() ).isEqualTo( bamm.exampleValue() );
+      assertThat( violation.bindings().get( "value" ).asLiteral().getString() ).isEqualTo( XSD.xint.getURI() );
    }
 
    @ParameterizedTest
