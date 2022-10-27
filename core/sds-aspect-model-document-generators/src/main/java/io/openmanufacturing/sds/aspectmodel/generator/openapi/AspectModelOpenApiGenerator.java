@@ -498,7 +498,7 @@ public class AspectModelOpenApiGenerator {
 
    private ArrayNode getRequiredParameters( final ObjectNode parameterNode, final boolean includeTenantIdNode ) {
       final ArrayNode parameters = factory.arrayNode();
-      if(includeTenantIdNode) {
+      if ( includeTenantIdNode ) {
          parameters.add( getTenantIdNode() );
       }
       parameterNode.forEach( parameters::add );
