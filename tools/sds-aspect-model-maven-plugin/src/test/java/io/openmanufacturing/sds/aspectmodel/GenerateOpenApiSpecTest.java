@@ -33,6 +33,20 @@ public class GenerateOpenApiSpecTest extends AspectModelMojoTest {
       deleteGeneratedFile( "Aspect.oai.json" );
    }
 
+   /**
+    * Verify that a preferred language can be chosen during open api specification generation from the given aspect model.
+    * @throws Exception in case of any error during execution of the test.
+    */
+   @Test
+   public void testGenerateOpenApiSpecJsonValidAspectModelWithLanguageParameter() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-openapi-spec-json-pom-valid-aspect-model-language.xml" );
+      final Mojo generateOpenApiSpec = lookupMojo( "generateOpenApiSpec", testPom );
+      assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
+
+      assertGeneratedFileExists( "AspectWithEnglishAndGermanDescription.oai.json" );
+      deleteGeneratedFile( "AspectWithEnglishAndGermanDescription.oai.json" );
+   }
+
    @Test
    public void testGenerateOpenApiSpecYamlValidAspectModel() throws Exception {
       final File testPom = getTestFile( "src/test/resources/generate-openapi-spec-yaml-pom-valid-aspect-model.xml" );

@@ -15,12 +15,15 @@ package io.openmanufacturing.sds.aspectmodel;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,15 +41,19 @@ public class GenerateJsonSchema extends AspectModelMojo {
    private final Logger logger = LoggerFactory.getLogger( GenerateJsonSchema.class );
    private final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
 
-   @Override
+   @Parameter( defaultValue = "en" )
+   private String language;
+
+      @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
       final Set<VersionedModel> aspectModels = loadModelsOrFail();
+      final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       try {
          for ( final VersionedModel aspectModel : aspectModels ) {
             final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( aspectModel );
-            final JsonNode schema = generator.apply( aspect );
+            final JsonNode schema = generator.apply( aspect, locale );
 
             final OutputStream out = getStreamForFile( aspect.getName() + ".schema.json", outputDirectory );
             final ObjectMapper objectMapper = new ObjectMapper();

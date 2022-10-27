@@ -25,6 +25,8 @@ import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJson
 import io.openmanufacturing.sds.exception.CommandException;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
+import java.util.Locale;
+import java.util.Optional;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToJsonSchemaCommand.COMMAND_NAME,
@@ -41,6 +43,10 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
    @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path (default: stdout)" )
    private String outputFilePath = "-";
 
+   @CommandLine.Option( names = { "--language", "-l" },
+         description = "The language from the model for which the OpenAPI specification should be generated (default: en)" )
+   private String language = "en";
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -51,7 +57,8 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
    public void run() {
       final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
       final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
-      final JsonNode schema = generator.apply( aspect );
+      final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
+      final JsonNode schema = generator.apply( aspect, locale );
 
       withOutputStream( outputFilePath, outputStream -> {
          final ObjectMapper objectMapper = new ObjectMapper();
