@@ -10,7 +10,7 @@ final Aspect aspect = ...
 
 // Generate the JSON Schema
 final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
-final JsonNode jsonSchema = generator.apply( aspect );
+final JsonNode jsonSchema = generator.apply( aspect, Locale.ENGLISH );
 
 // If needed, print or pretty print it into a string
 final ByteArrayOutputStream out = new ByteArrayOutputStream();

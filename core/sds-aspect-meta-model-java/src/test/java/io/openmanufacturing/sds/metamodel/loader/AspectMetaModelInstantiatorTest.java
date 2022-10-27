@@ -199,7 +199,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       final AbstractEntity abstractEntity = (AbstractEntity) aspect.getProperties().get( 0 ).getCharacteristic().get().getDataType().get();
       assertThat( abstractEntity.getExtends() ).isEmpty();
-      assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity", "AbstractTestEntity", null );
+      assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity", "AbstractTestEntity", "This is an abstract test entity" );
       final List<ComplexType> extendingElements = abstractEntity.getExtendingElements();
       assertThat( extendingElements ).hasSize( 1 );
    }

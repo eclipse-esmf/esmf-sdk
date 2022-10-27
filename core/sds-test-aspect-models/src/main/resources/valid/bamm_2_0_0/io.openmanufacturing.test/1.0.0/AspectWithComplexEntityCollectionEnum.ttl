@@ -24,6 +24,7 @@
    bamm:characteristic :MyEnumerationOne .
 
 :MyEnumerationOne a bamm-c:Enumeration ;
+   bamm:description "This is my enumeration one"@en ;
    bamm:dataType :MyEntityOne ;
    bamm-c:values ( :entityInstanceOne ) .
 
