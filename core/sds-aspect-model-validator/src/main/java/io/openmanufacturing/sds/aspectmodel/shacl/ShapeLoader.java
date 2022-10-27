@@ -322,12 +322,17 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
    }
 
    private JsLibrary jsLibrary( final Resource target ) {
-      return jsLibraries.computeIfAbsent( target, resource -> {
-         final List<String> jsLibraryUrls = target.listProperties( SHACL.jsLibraryURL() ).mapWith( Statement::getString ).toList();
-         final List<JsLibrary> includedLibraries = target.listProperties( SHACL.jsLibrary() ).mapWith( Statement::getResource ).mapWith( this::jsLibrary )
-               .toList();
-         return new JsLibrary( Optional.ofNullable( target.getURI() ), jsLibraryUrls, includedLibraries );
-      } );
+      final JsLibrary jsLibrary = jsLibraries.get( target );
+      if ( jsLibrary != null ) {
+         return jsLibrary;
+      }
+
+      final List<String> jsLibraryUrls = target.listProperties( SHACL.jsLibraryURL() ).mapWith( Statement::getString ).toList();
+      final List<JsLibrary> includedLibraries = target.listProperties( SHACL.jsLibrary() ).mapWith( Statement::getResource ).mapWith( this::jsLibrary )
+            .toList();
+      final JsLibrary result = new JsLibrary( Optional.ofNullable( target.getURI() ), jsLibraryUrls, includedLibraries );
+      jsLibraries.put( target, result );
+      return result;
    }
 
    private Map<String, String> prefixDeclarations( final Resource prefixDeclarations ) {
