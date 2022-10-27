@@ -14,8 +14,8 @@
 /**
  * Checks if a given value is a regular expression.
  *
- * @param $this The context of the Constraint, i.e. the focus node
- * @param $value The value that can be reached from the focus node following the Shape's sh:path
+ * @param $this the focus node
+ * @param $value the value
  */
 function isRegularExpression($this, $value) {
     if (!$value.isLiteral()) {
@@ -30,4 +30,22 @@ function isRegularExpression($this, $value) {
     }
 
     return isValid;
+}
+
+/**
+ * Test function for accessing TermFactory, data graph and returning message objects
+ */
+function testTermFactoryAndMessageResult($this) {
+    var ex = "http://example.com#";
+    var testProperty = TermFactory.namedNode(ex + "testProperty");
+    var iterator = $data.find($this, testProperty, null);
+    var object = iterator.next().object;
+    if (object == null || !object.isLiteral()) {
+        return null;
+    }
+    var theValue = object.lex;
+    if (theValue != "secret valid value") {
+        return { message: "Invalid value: {$value} on {$property}", value: theValue, property: testProperty };
+    }
+    return true;
 }

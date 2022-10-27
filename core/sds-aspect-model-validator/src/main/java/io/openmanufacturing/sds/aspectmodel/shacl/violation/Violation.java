@@ -146,7 +146,7 @@ public interface Violation {
          return visit( violation );
       }
 
-      default T visitJsViolation( final JsViolation violation ) {
+      default T visitJsViolation( final JsConstraintViolation violation ) {
          return visit( violation );
       }
    }

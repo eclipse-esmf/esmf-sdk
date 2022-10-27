@@ -13,8 +13,11 @@
 
 package io.openmanufacturing.sds.aspectmodel.shacl.constraint;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.script.Bindings;
 import javax.script.Invocable;
@@ -28,11 +31,20 @@ import org.apache.jena.rdf.model.RDFNode;
 import io.openmanufacturing.sds.aspectmodel.shacl.JsLibrary;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.js.JsFactory;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.js.JsGraph;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.js.JsTerm;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.js.TermFactory;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.JsViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.JsConstraintViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
+/**
+ * Represents a SHACL JavaScript constraint as specified by the <a href="https://www.w3.org/TR/shacl-js/">SHACL JavaScript Extensions</a>.
+ * The given JavaScript function can refer to the variables "TermFactory" (see {@link TermFactory}), "$data" (the data graph) and "$shapes" (the shapes graph).
+ * It can return either a boolean (with true indicating successfull validation and false a validation error) or a JavaScript object with context information;
+ * every key in the object must be a string.
+ * The JavaScript object can contain a key "message" which, if present, overrides the sh:message defined in the shape.
+ */
 public class JsConstraint implements Constraint {
    private final ScriptEngine engine;
    private final String message;
@@ -44,15 +56,22 @@ public class JsConstraint implements Constraint {
       this.jsLibrary = jsLibrary;
       this.jsFunctionName = jsFunctionName;
 
+      // The guest application (i.e., the JavaScript) can only be compiled at runtime if either the host application runs via GraalVM
+      // or, on a regular JVMCI-enabled JDK, the Graal Compiler is set up (additional JIT compilers are added). Otherwise, the script runs
+      // in interpreted mode, which will be slower and print a corresponding warning. Since in the SHACL validation only very little JavaScript
+      // code is executed, this is not a problem. The following the property disables the corresponding warning.
+      // See https://www.graalvm.org/22.3/reference-manual/js/FAQ/#warning-implementation-does-not-support-runtime-compilation
+      System.setProperty( "polyglot.engine.WarnInterpreterOnly", "false" );
       engine = new ScriptEngineManager().getEngineByName( "JavaScript" );
       final Bindings bindings = engine.getBindings( ScriptContext.ENGINE_SCOPE );
+      // The following settings are required to allow the script to access methods and fields on the injected objects
       bindings.put( "polyglot.js.allowHostAccess", true );
       bindings.put( "polyglot.js.allowHostClassLookup", (Predicate<String>) s -> true );
-      bindings.put( "TermFactory", null );
+      bindings.put( "TermFactory", new TermFactory() );
       try {
          engine.eval( jsLibrary.javaScriptCode() );
-      } catch ( final ScriptException e ) {
-         throw new RuntimeException( e );
+      } catch ( final ScriptException exception ) {
+         throw new RuntimeException( exception );
       }
    }
 
@@ -63,19 +82,34 @@ public class JsConstraint implements Constraint {
       bindings.put( "$shapes", new JsGraph( context.validator().getShapesModel().getGraph() ) );
 
       try {
-         final Object _$this = JsFactory.asJsTerm( context.element().asNode() );
-         final Object _$value = JsFactory.asJsTerm( rdfNode.asNode() );
-         final Object result = ((Invocable) engine).invokeFunction( jsFunctionName, _$this, _$value );
+         final Object this_ = JsFactory.asJsTerm( context.element().asNode() );
+         final Object value = JsFactory.asJsTerm( rdfNode.asNode() );
+         final Object result = ((Invocable) engine).invokeFunction( jsFunctionName, this_, value );
+         if ( result == null ) {
+            return List.of( new JsConstraintViolation( context, "JavaScript evaluation of " + jsFunctionName() + " returned null",
+                  jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );
+         }
          if ( result instanceof Boolean booleanResult ) {
             if ( booleanResult ) {
                return List.of();
             }
-            return List.of( new JsViolation( context, message(), jsLibrary(), jsFunctionName() ) );
+            return List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );
          }
-         // TODO: Handle { message: ..., value: ... } results from JavaScript functions
-         throw new RuntimeException( "Unexpected result " + result );
-      } catch ( final ScriptException | NoSuchMethodException exception ) {
-         return List.of( new ProcessingViolation( "JavaScript evaluation failed", exception ) );
+         if ( result instanceof Map<?, ?> map ) {
+            final Map<String, Object> resultMap = map.entrySet().stream()
+                  .filter( entry -> entry.getKey() instanceof String )
+                  .collect( Collectors.toMap(
+                        entry -> (String) entry.getKey(),
+                        entry -> entry.getValue() instanceof JsTerm term ? term.getNode() : entry.getValue() ) );
+            return List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), resultMap ) );
+         }
+
+         return List.of( new ProcessingViolation( "JavaScript evaluation of " + jsFunctionName() + " returned an invalid result",
+               new IllegalArgumentException() ) );
+      } catch ( final ScriptException exception ) {
+         return List.of( new ProcessingViolation( "JavaScript evaluation of " + jsFunctionName() + " failed", exception ) );
+      } catch ( final NoSuchMethodException exception ) {
+         return List.of( new ProcessingViolation( "JavaScript function " + jsFunctionName() + " was not found", exception ) );
       }
    }
 

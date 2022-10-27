@@ -21,8 +21,10 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.apache.jena.graph.Node_URI;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.RDFLanguages;
@@ -39,7 +41,7 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.DatatypeViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.DisjointViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EqualsViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidValueViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.JsViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.JsConstraintViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LanguageFromListViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LessThanOrEqualsViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LessThanViolation;
@@ -60,7 +62,7 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.ValueFromListViolati
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 /**
- * This class tests the internal of the {@link ShaclValidator}
+ * This class tests the internals of the {@link ShaclValidator}
  */
 public class ShaclValidatorTest {
    private final String namespace = "http://example.com#";
@@ -1174,7 +1176,7 @@ public class ShaclValidatorTest {
    }
 
    @Test
-   public void testJsConstraintEvaluation() {
+   public void testBooleanJsConstraintEvaluation() {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -1194,7 +1196,7 @@ public class ShaclValidatorTest {
                   sh:datatype xsd:string ;
                   sh:js [
                      a sh:JSConstraint ;
-                     sh:message "JavaScript constraint violation failed" ;
+                     sh:message "JavaScript constraint validation failed" ;
                      sh:jsLibrary :MyJavaScriptLibrary ;
                      sh:jsFunctionName "isRegularExpression" ;
                   ] ;
@@ -1215,14 +1217,70 @@ public class ShaclValidatorTest {
 
       assertThat( violations.size() ).isEqualTo( 1 );
       final Violation finding = violations.get( 0 );
-      assertThat( finding ).isInstanceOf( JsViolation.class );
-      final JsViolation violation = (JsViolation) finding;
+      assertThat( finding ).isInstanceOf( JsConstraintViolation.class );
+      final JsConstraintViolation violation = (JsConstraintViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
       assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.message() ).isNotEmpty();
-      assertThat( violation.message() ).isEqualTo( "JavaScript constraint violation failed" );
+      assertThat( violation.message() ).isEqualTo( "JavaScript constraint validation failed" );
       assertThat( violation.errorCode() ).isEqualTo( "ERR_JAVASCRIPT" );
+   }
+
+   @Test
+   public void testMessageObjectJsConstraintEvaluation() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix : <http://example.com#> .
+
+            :MyJavaScriptLibrary
+               a sh:JSLibrary ;
+               sh:jsLibraryURL "$RESOURCE_URL"^^xsd:anyURI .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:targetClass :TestClass ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                  sh:path :testProperty ;
+                  sh:datatype xsd:string ;
+                  sh:js [
+                     a sh:JSConstraint ;
+                     sh:message "JavaScript constraint validation failed" ;
+                     sh:jsLibrary :MyJavaScriptLibrary ;
+                     sh:jsFunctionName "testTermFactoryAndMessageResult" ;
+                  ] ;
+               ] .
+            """.replace( "$RESOURCE_URL", getClass().getClassLoader()
+            .getResource( "JsConstraintTest.js" ).toString() ) );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            :Foo a :TestClass ;
+              :testProperty "some value" .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      final Violation finding = violations.get( 0 );
+      assertThat( finding ).isInstanceOf( JsConstraintViolation.class );
+      final JsConstraintViolation violation = (JsConstraintViolation) finding;
+      assertThat( violation.context().element() ).isEqualTo( element );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.elementName() ).isEqualTo( ":Foo" );
+      assertThat( violation.message() ).isNotEmpty();
+      // Note that the message given in the shape is overridden in the JavaScript function
+      assertThat( violation.message() ).isEqualTo( "Invalid value: some value on :testProperty" );
+      assertThat( violation.errorCode() ).isEqualTo( "ERR_JAVASCRIPT" );
+      assertThat( violation.bindings().get( "value" ) ).isEqualTo( "some value" );
+      final Property testProperty = dataModel.createProperty( "http://example.com#testProperty" );
+      assertThat( (Node_URI) violation.bindings().get( "property" ) ).isEqualTo( testProperty.asNode() );
    }
 
    @Test

@@ -61,7 +61,7 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.DisjointViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EqualsViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidValueViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.JsViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.JsConstraintViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LanguageFromListViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LessThanOrEqualsViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.LessThanViolation;
@@ -333,7 +333,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
    }
 
    @Override
-   public String visitJsViolation( final JsViolation violation ) {
+   public String visitJsViolation( final JsConstraintViolation violation ) {
       return String.format( "js-library: %s%n", violation.library().uri().map( violation::shortUri ).orElse( "anonymous element" ) )
             + String.format( "js-function: %s%n", violation.functionName() );
    }

@@ -17,21 +17,15 @@ import org.apache.jena.graph.Triple;
 
 public class JsTriple {
    private final Triple triple;
+   public final JsTerm subject;
+   public final JsTerm predicate;
+   public final JsTerm object;
 
    JsTriple( final Triple triple ) {
       this.triple = triple;
-   }
-
-   public JsTerm getObject() {
-      return JsFactory.asJsTerm( triple.getObject() );
-   }
-
-   public JsTerm getPredicate() {
-      return JsFactory.asJsTerm( triple.getPredicate() );
-   }
-
-   public JsTerm getSubject() {
-      return JsFactory.asJsTerm( triple.getSubject() );
+      subject = JsFactory.asJsTerm( triple.getObject() );
+      predicate = JsFactory.asJsTerm( triple.getPredicate() );
+      object = JsFactory.asJsTerm( triple.getObject() );
    }
 
    @Override
