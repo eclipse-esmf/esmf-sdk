@@ -75,6 +75,9 @@ import io.openmanufacturing.sds.aspectmodel.shacl.path.SequencePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.ZeroOrMorePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.ZeroOrOnePath;
 
+/**
+ * Takes an RDF model describing one or more SHACL shapes as input and parses them into {@link Shape}s
+ */
 public class ShapeLoader implements Function<Model, List<Shape.Node>> {
    private static final SHACL SHACL = new SHACL();
 

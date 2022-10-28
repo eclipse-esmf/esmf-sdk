@@ -18,6 +18,9 @@ import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.aspectmodel.vocabulary.Namespace;
 
+/**
+ * Vocabulary for the Shapes Constraint Language (SHACL)
+ */
 public class SHACL implements Namespace {
    public final String NS = "http://www.w3.org/ns/shacl#";
 

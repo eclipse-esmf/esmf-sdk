@@ -17,6 +17,9 @@ import java.util.Comparator;
 
 import org.apache.jena.rdf.model.Literal;
 
+/**
+ * A {@link Comparator} for RDF {@link Literal}s that takes into account their type
+ */
 public class LiteralComparator implements Comparator<Literal> {
    @Override
    public int compare( final Literal literal1, final Literal literal2 ) {

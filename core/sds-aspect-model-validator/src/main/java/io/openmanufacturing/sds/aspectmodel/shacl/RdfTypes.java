@@ -25,6 +25,9 @@ import org.apache.jena.vocabulary.RDFS;
 
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Provides functions to find out information about the types of resources
+ */
 public class RdfTypes {
    public static List<Resource> superTypesOfType( final Resource type ) {
       final List<Resource> types = new ArrayList<>();

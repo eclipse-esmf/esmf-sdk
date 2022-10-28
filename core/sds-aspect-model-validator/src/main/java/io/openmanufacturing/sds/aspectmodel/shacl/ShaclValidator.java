@@ -67,7 +67,7 @@ public class ShaclValidator {
     * Validates a model element using the SHACL shapes the validator was initialized with.
     * {@link Resource#getModel()} on the element must not return null, i.e., the resource may not be created using
     * {@link org.apache.jena.rdf.model.ResourceFactory#createProperty(String)}, but instead must be created via {@link Model#createResource(String)}.
-    * @param element the element to validated
+    * @param element the element to be validated
     * @return the list of {@link Violation}s if there are violations
     */
    public List<Violation> validateElement( final Resource element ) {
@@ -99,7 +99,7 @@ public class ShaclValidator {
             }
 
             // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints >= 1
-            // exists, a violation must be emitted even no value for the property exists
+            // exists, a violation must be emitted even though no value for the property exists
             if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint && property.path() instanceof PredicatePath predicatePath ) {
                final Property rdfProperty = model.createProperty( predicatePath.predicate().getURI() );
                final EvaluationContext context = new EvaluationContext( element, shape, Optional.of( rdfProperty ), List.of(), this );

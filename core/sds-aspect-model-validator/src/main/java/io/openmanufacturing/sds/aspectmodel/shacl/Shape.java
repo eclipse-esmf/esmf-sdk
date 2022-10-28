@@ -24,11 +24,14 @@ import io.openmanufacturing.sds.aspectmodel.shacl.path.Path;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.Constraint;
 
 /**
- * Implements <code>sh:NodeShape</code>
+ * Implements <a href="https://www.w3.org/TR/shacl/#node-shapes">sh:NodeShape</a>
  */
 public interface Shape {
    Attributes attributes();
 
+   /**
+    * Implements the valid values for <a href="https://www.w3.org/TR/shacl/#NodeKindConstraintComponent">sh:nodeKind</a>
+    */
    enum NodeKind {
       BlankNode, IRI, Literal, BlankNodeOrIRI, BlankNodeOrLiteral, IRIOrLiteral;
 
