@@ -50,6 +50,10 @@
             <artifactId>jena-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
         </dependency>
@@ -84,7 +88,6 @@
             <artifactId>lombok</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
