@@ -35,7 +35,7 @@ import io.openmanufacturing.sds.test.TestResources;
 import io.vavr.control.Try;
 
 public class AspectModelValidatorTest extends MetaModelVersions {
-   private static final String MISSING_PROPERTY_MESSAGE = "Property needs to have at least 1 values, but found 0";
+   private static final String MISSING_PROPERTY_MESSAGE = "Property needs to have at least 1 value";
 
    private final AspectModelValidator service = new AspectModelValidator();
 
