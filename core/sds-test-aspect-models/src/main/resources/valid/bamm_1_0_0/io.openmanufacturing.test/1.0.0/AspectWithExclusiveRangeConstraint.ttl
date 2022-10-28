@@ -44,6 +44,7 @@
    bamm:name "FloatRange" ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
+      bamm:description "This is a floating range constraint"@en ;
       bamm-c:minValue "12.3"^^xsd:float ;
       bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
       bamm-c:maxValue "23.45"^^xsd:float ;
@@ -59,6 +60,7 @@
    bamm:name "DoubleRange" ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
+      bamm:description "This is a double range constraint"@en ;
       bamm-c:minValue "12.3"^^xsd:double ;
       bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
       bamm-c:maxValue "23.45"^^xsd:double ;
@@ -74,6 +76,7 @@
    bamm:name "DecimalRange" ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
+      bamm:description "This is a decimal range constraint"@en ;
       bamm-c:minValue "12.3"^^xsd:decimal ;
       bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
       bamm-c:maxValue "23.45"^^xsd:decimal ;
@@ -89,6 +92,7 @@
    bamm:name "IntegerRange" ;
    bamm-c:constraint [
       a bamm-c:RangeConstraint ;
+      bamm:description "This is a integer range constraint"@en ;
       bamm-c:minValue "12"^^xsd:integer ;
       bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
       bamm-c:maxValue "23"^^xsd:integer ;

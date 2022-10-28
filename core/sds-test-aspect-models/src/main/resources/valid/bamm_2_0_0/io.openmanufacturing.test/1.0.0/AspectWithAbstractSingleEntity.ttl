@@ -33,6 +33,7 @@
    bamm:characteristic bamm-c:Text .
 
 :AbstractTestEntity a bamm:AbstractEntity ;
+   bamm:description "This is an abstract test entity"@en ;
    bamm:properties ( :abstractTestProperty ).
 
 :abstractTestProperty a bamm:Property ;

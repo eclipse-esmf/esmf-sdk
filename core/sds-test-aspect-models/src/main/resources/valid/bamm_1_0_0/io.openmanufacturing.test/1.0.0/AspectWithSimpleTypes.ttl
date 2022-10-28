@@ -158,6 +158,7 @@
    bamm:characteristic [
       a bamm:Characteristic ;
       bamm:name "SomeByte" ;
+      bamm:description "This is a byteProperty characteristic."@en ;
       bamm:dataType xsd:byte
    ] .
 
@@ -263,6 +264,7 @@
    bamm:characteristic [
       a bamm:Characteristic ;
       bamm:name "Base64BinaryValue" ;
+      bamm:description "This is a base64Binary characteristic."@en ;
       bamm:dataType xsd:base64Binary
    ] .
 
@@ -271,6 +273,7 @@
    bamm:characteristic [
       a bamm:Characteristic ;
       bamm:name "SomeAnyUri" ;
+      bamm:description "This is an anyURI characteristic."@en ;
       bamm:dataType xsd:anyURI
    ] .
 

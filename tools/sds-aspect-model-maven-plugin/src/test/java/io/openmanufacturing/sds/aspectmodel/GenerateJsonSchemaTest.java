@@ -32,4 +32,17 @@ public class GenerateJsonSchemaTest extends AspectModelMojoTest {
       deleteGeneratedFile( "Aspect.schema.json" );
    }
 
+   /**
+    * Verify that a preferred language can be chosen during json schema generation from the given aspect model.
+    * @throws Exception in case of any error during execution of the test.
+    */
+   @Test
+   public void testGenerateOpenApiSpecJsonValidAspectModelWithLanguageParameter() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-schema-json-pom-valid-aspect-model-language.xml" );
+      final Mojo generateOpenApiSpec = lookupMojo( "generateJsonSchema", testPom );
+      assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
+
+      assertGeneratedFileExists( "AspectWithEnglishAndGermanDescription.schema.json" );
+      deleteGeneratedFile( "AspectWithEnglishAndGermanDescription.schema.json" );
+   }
 }

@@ -20,10 +20,12 @@
    bamm:operations ( ) .
 
 :testProperty a bamm:Property ;
-   bamm:characteristic :EntityCollectionCharacteristic .
+   bamm:characteristic :EntityCollectionCharacteristic ;
+   bamm:description "This is an test property"@en .
 
 :EntityCollectionCharacteristic a bamm-c:Collection ;
-   bamm:dataType :AbstractTestEntity .
+   bamm:dataType :AbstractTestEntity ;
+   bamm:description "This is an entity collection characteristic"@en .
 
 :ExtendingTestEntity a bamm:Entity ;
    bamm:extends :AbstractTestEntity ;
@@ -33,9 +35,11 @@
    bamm:characteristic bamm-c:Text .
 
 :AbstractTestEntity a bamm:AbstractEntity ;
+   bamm:description "This is an abstract test entity"@en ;
    bamm:properties ( :abstractTestProperty ).
 
 :abstractTestProperty a bamm:Property ;
+   bamm:description "This is an abstract test property"@en ;
    bamm:characteristic [
       a bamm:Characteristic ;
       bamm:dataType xsd:integer

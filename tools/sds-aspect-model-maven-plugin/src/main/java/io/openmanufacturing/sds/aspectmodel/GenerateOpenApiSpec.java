@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -80,18 +81,22 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
    @Parameter( required = true )
    private String outputFormat = "";
 
+   @Parameter( defaultValue = "en" )
+   private String language;
+
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
       final Set<VersionedModel> aspectModels = loadModelsOrFail();
+      final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       try {
          final OpenApiFormat format = OpenApiFormat.valueOf( outputFormat.toUpperCase() );
          if ( format.equals( OpenApiFormat.JSON ) ) {
-            generateOpenApiSpecJson( aspectModels );
+            generateOpenApiSpecJson( aspectModels, locale );
             return;
          }
-         generateOpenApiSpecYaml( aspectModels );
+         generateOpenApiSpecYaml( aspectModels, locale );
          logger.info( "Successfully generated OpenAPI specification for Aspect Models." );
       } catch ( final IllegalArgumentException exception ) {
          throw new MojoExecutionException( "Invalid output format.", exception );
@@ -109,7 +114,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       super.validateParameters();
    }
 
-   private void generateOpenApiSpecJson( final Set<VersionedModel> aspectModels ) throws MojoExecutionException {
+   private void generateOpenApiSpecJson( final Set<VersionedModel> aspectModels, final Locale locale ) throws MojoExecutionException {
       for ( final VersionedModel aspectModel : aspectModels ) {
          final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( aspectModel );
          JsonNode result = JsonNodeFactory.instance.objectNode();
@@ -122,7 +127,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
             }
          }
          final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
-               Optional.of( result ), includeQueryApi, getPagingFromArgs() );
+               Optional.of( result ), includeQueryApi, getPagingFromArgs(), locale );
 
          final OutputStream out = getStreamForFile( aspect.getName() + ".oai.json", outputDirectory );
          try {
@@ -134,12 +139,12 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       }
    }
 
-   private void generateOpenApiSpecYaml( final Set<VersionedModel> aspectModels ) throws MojoExecutionException {
+   private void generateOpenApiSpecYaml( final Set<VersionedModel> aspectModels, final Locale locale ) throws MojoExecutionException {
       for ( final VersionedModel aspectModel : aspectModels ) {
          final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( aspectModel );
          try {
             final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
-                  getFileAsString( aspectParameterFile ), includeQueryApi, getPagingFromArgs() );
+                  getFileAsString( aspectParameterFile ), includeQueryApi, getPagingFromArgs(), locale );
             final OutputStream out = getStreamForFile( aspect.getName() + ".oai.yaml", outputDirectory );
             out.write( yamlSpec.getBytes() );
             out.flush();

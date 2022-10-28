@@ -501,12 +501,13 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertNumberOfFiles( 6 );
 
       final String expectedTestPropertyCharacteristicConstructorCall =
-            "new DefaultCollection(MetaModelBaseAttributes.from(KnownVersion.BAMM_2_0_0, AspectModelUrn"
-                  + ".fromUrn(NAMESPACE + \"EntityCollectionCharacteristic\"), \"EntityCollectionCharacteristic\"), Optional"
-                  + ".of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes"
-                  + ".from(KnownVersion.BAMM_2_0_0, AspectModelUrn.fromUrn(NAMESPACE + \"AbstractTestEntity\"),"
-                  + " \"AbstractTestEntity\"), MetaAbstractTestEntity.INSTANCE.getProperties(), Optional.empty(), "
-                  + "List.of(AspectModelUrn.fromUrn(\"urn:bamm:io.openmanufacturing.test:1.0.0#ExtendingTestEntity\")))), " + "Optional.empty())";
+            "new DefaultCollection(MetaModelBaseAttributes.builderFor(\"EntityCollectionCharacteristic\").withMetaModelVersion(KnownVersion.BAMM_2_0_0)" 
+                  + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCollectionCharacteristic\")).withDescription(Locale.forLanguageTag(\"en\"), " 
+                  + "\"This is an entity collection characteristic\").build(), Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(" 
+                  + "MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion.BAMM_2_0_0).withUrn(" 
+                  + "AspectModelUrn.fromUrn(NAMESPACE + \"AbstractTestEntity\")).withDescription(Locale.forLanguageTag(\"en\"), " 
+                  + "\"This is an abstract test entity\").build(), MetaAbstractTestEntity.INSTANCE.getProperties(), Optional.empty(), " 
+                  + "List.of(AspectModelUrn.fromUrn(\"urn:bamm:io.openmanufacturing.test:1.0.0#ExtendingTestEntity\")))), Optional.empty())";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithCollectionWithAbstractEntity",
             ImmutableMap.<String, String> builder().put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall ).build(), 1 );
