@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import io.openmanufacturing.sds.aspectmodel.shacl.fix.Fix;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
@@ -70,7 +71,12 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
     */
    @Override
    public String visit( final Violation violation ) {
-      return violation.message();
+      final StringBuilder builder = new StringBuilder();
+      builder.append( violation.message() );
+      for ( final Fix possibleFix : violation.fixes() ) {
+         builder.append( String.format( "%n  > Possible fix: %s", possibleFix.description() ) );
+      }
+      return builder.toString();
    }
 
    /**

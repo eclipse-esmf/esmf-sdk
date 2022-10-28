@@ -54,6 +54,7 @@ import io.openmanufacturing.sds.aspectmodel.shacl.constraint.OrConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.PatternConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.SparqlConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.XoneConstraint;
+import io.openmanufacturing.sds.aspectmodel.shacl.fix.Fix;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ClassTypeViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ClosedViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.DatatypeViolation;
@@ -130,6 +131,12 @@ public class DetailedViolationFormatter extends ViolationFormatter {
                builder.append( String.format( "  context-property: %s%n", violation.shortUri( property.getURI() ) ) );
                builder.append( String.format( "  context-property-full: %s%n", property.getURI() ) );
             } );
+            if ( violation.fixes().size() > 0 ) {
+               builder.append( String.format( "  possible-fixes:%n" ) );
+               for ( final Fix fix : violation.fixes() ) {
+                  builder.append( String.format( "  - %s%n", fix.description() ) );
+               }
+            }
 
             for ( final String line : violation.accept( this ).split( "\n" ) ) {
                builder.append( String.format( "  %s%n", line ) );

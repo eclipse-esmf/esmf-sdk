@@ -31,6 +31,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.shacl.fix.Fix;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.DatatypeViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinCountViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
@@ -113,6 +115,19 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
       assertThat( violations ).isNotEmpty();
+   }
+
+   @ParameterizedTest
+   @MethodSource( "versionsStartingWith2_0_0" )
+   public void testGetFixForInvalidTestAspectModel( final KnownVersion metaModelVersion ) {
+      final TestModel testModel = InvalidTestAspect.INVALID_PREFERRED_NAME_DATATYPE;
+      final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
+      final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
+      assertThat( violations ).isNotEmpty();
+      final DatatypeViolation violation = (DatatypeViolation) violations.get( 0 );
+      assertThat( violation.fixes() ).isNotEmpty();
+      final Fix fix = violation.fixes().get( 0 );
+      assertThat( fix.description() ).isEqualTo( "Add default @en language tag to value" );
    }
 
    private static Stream<Arguments> invalidTestModels() {
