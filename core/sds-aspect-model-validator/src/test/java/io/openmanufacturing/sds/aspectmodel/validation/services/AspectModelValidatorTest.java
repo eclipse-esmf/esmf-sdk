@@ -139,7 +139,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
    public void testValidateInvalidModelElement( final KnownVersion metaModelVersion ) {
-      final VersionedModel testModel = TestResources.getModel( InvalidTestAspect.INVALID_DATATYPE, metaModelVersion ).get();
+      final VersionedModel testModel = TestResources.getModel( InvalidTestAspect.INVALID_EXAMPLE_VALUE_DATATYPE, metaModelVersion ).get();
       final Resource element = testModel.getModel().createResource( TestAspect.TEST_NAMESPACE + "stringProperty" );
       final List<Violation> violations = service.get( metaModelVersion ).validateElement( element );
       assertThat( violations ).hasSize( 1 );
