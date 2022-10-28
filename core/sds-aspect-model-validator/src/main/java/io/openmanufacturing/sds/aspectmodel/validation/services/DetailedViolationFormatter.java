@@ -128,7 +128,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
                   Optional.ofNullable( violation.context().element().getURI() ).orElse( "anonymous element" ) ) );
             violation.context().property().ifPresent( property -> {
                builder.append( String.format( "  context-property: %s%n", violation.shortUri( property.getURI() ) ) );
-               builder.append( String.format( "  context-property-full: <%s>%n", property.getURI() ) );
+               builder.append( String.format( "  context-property-full: %s%n", property.getURI() ) );
             } );
 
             for ( final String line : violation.accept( this ).split( "\n" ) ) {
