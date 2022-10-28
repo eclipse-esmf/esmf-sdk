@@ -16,8 +16,6 @@ package io.openmanufacturing.sds.aspect;
 import java.io.File;
 import java.util.List;
 
-import org.topbraid.shacl.util.FailureLog;
-
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
@@ -51,13 +49,6 @@ public class AspectValidateCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      FailureLog.set( new FailureLog() {
-         @Override
-         public void logFailure( final String message ) {
-            // Do not log SHACL-internal errors
-         }
-      } );
-
       final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( parentCommand.getInput() ), customResolver );
       final AspectModelValidator validator = new AspectModelValidator();
 
