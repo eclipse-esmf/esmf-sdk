@@ -106,8 +106,7 @@ public class OpenApiTest extends MetaModelVersions {
             testResourcePath, Optional.empty(), true, Optional.empty() );
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openAPI = result.getOpenAPI();
-
-      assertThat( openAPI.getPaths().get( "/{tenant-id}/" + testResourcePath.get() ).getPost().getServers().get( 0 ).getUrl() )
+      assertThat( openAPI.getPaths().get( "/" + testResourcePath.get() ).getPost().getServers().get( 0 ).getUrl() )
             .isEqualTo( "https://test-aspect.example.com/query-api/v1.0.0" );
    }
 
@@ -120,7 +119,7 @@ public class OpenApiTest extends MetaModelVersions {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openAPI = result.getOpenAPI();
 
-      assertThat( openAPI.getPaths().keySet() ).allMatch( path -> path.endsWith( "/aspect-without-see-attribute" ) );
+      assertThat( openAPI.getPaths().keySet() ).allMatch( path -> path.equals( "/{tenant-id}/aspect-without-see-attribute" ) );
    }
 
    @ParameterizedTest
@@ -131,6 +130,17 @@ public class OpenApiTest extends MetaModelVersions {
             .applyForJson( aspect, true, testBaseUrl, testResourcePathWithParameter, Optional.empty(),
                   true, Optional.empty() );
       assertThat( json ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testWithValidResourcePath( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+      final JsonNode json = apiJsonGenerator.applyForJson( aspect, true, testBaseUrl, testResourcePath, Optional.empty(), true, Optional.empty() );
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openAPI = result.getOpenAPI();
+
+      assertThat( openAPI.getPaths().keySet() ).allMatch( path -> path.equals( "/" + testResourcePath.get() ) );
    }
 
    @ParameterizedTest
@@ -155,11 +165,11 @@ public class OpenApiTest extends MetaModelVersions {
 
       final OpenAPI openAPI = result.getOpenAPI();
       assertThat( openAPI.getPaths() ).hasSize( 1 );
-      assertThat( openAPI.getPaths().keySet() ).contains( "/{tenant-id}/my-test-aspect/{test-Id}" );
+      assertThat( openAPI.getPaths().keySet() ).contains( "/my-test-aspect/{test-Id}" );
       openAPI.getPaths().forEach( ( key, value ) -> {
          final List<String> params = value.getGet().getParameters().stream().map( Parameter::getName )
                .collect( Collectors.toList() );
-         assertThat( params ).contains( "tenant-id" );
+         assertThat( params ).doesNotContain( "tenant-id" );
          assertThat( params ).contains( "test-Id" );
       } );
    }
@@ -400,7 +410,7 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openAPI.getPaths().keySet() ).noneMatch( path -> path.contains( "/query-api" ) );
       openAPI.getPaths().entrySet().stream().filter( item -> !item.getKey().contains( "/operations" ) )
             .forEach( path -> {
-               assertThat( path.getKey() ).startsWith( "/{tenant-id}/" + testResourcePath.get() );
+               assertThat( path.getKey() ).startsWith( "/" + testResourcePath.get() );
                path.getValue().readOperations()
                      .forEach( operation -> validateSuccessfulResponse( aspect.getName(), operation ) );
             } );
