@@ -50,10 +50,6 @@
             <artifactId>jena-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.topbraid</groupId>
-            <artifactId>shacl</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
         </dependency>
