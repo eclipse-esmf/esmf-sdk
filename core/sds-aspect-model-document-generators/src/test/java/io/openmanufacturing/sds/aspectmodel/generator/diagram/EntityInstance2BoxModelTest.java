@@ -21,6 +21,7 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
@@ -76,7 +77,12 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
 
       assertTestEntityInstanceBox( queryResult, context, 2 );
       assertThat( queryResult.listStatements( context.selector( "* :title testList" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( "* :text 1;2;3" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "* :text *" ) )
+            .mapWith( Statement::getObject )
+            .filterKeep( RDFNode::isLiteral )
+            .mapWith( RDFNode::asLiteral )
+            .mapWith( Literal::getString )
+            .toList() ).contains( "3" );
    }
 
    @ParameterizedTest
