@@ -13,11 +13,14 @@
 
 package io.openmanufacturing.sds.metamodel.loader;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
@@ -29,6 +32,7 @@ import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.UnsupportedVersionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidModelException;
+import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidNamespaceException;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidVersionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
@@ -73,9 +77,12 @@ public class AspectModelLoader {
       final BAMM bamm = new BAMM( metaModelVersion.get() );
       final StmtIterator iterator = model.listStatements( null, RDF.type, bamm.Aspect() );
       try {
+         validateNamespaceOfCustomUnits( bamm, versionedModel.getRawModel() );
          final ModelElementFactory modelElementFactory = new ModelElementFactory( metaModelVersion.get(), model );
          final Aspect aspect = modelElementFactory.create( Aspect.class, iterator.nextStatement().getSubject() );
          return Try.success( aspect );
+      } catch ( final InvalidNamespaceException exception ) {
+         return Try.failure( exception );
       } catch ( final RuntimeException exception ) {
          return Try.failure( new InvalidModelException( "Could not load Aspect model, please make sure the model is valid", exception ) );
       }
@@ -112,6 +119,21 @@ public class AspectModelLoader {
 
                return load( migratedModel );
             } );
+   }
+
+   private static void validateNamespaceOfCustomUnits( final BAMM bamm, final Model rawModel ) {
+      final List<String> customUnitsWithBammNamespace = new ArrayList<>();
+      rawModel.listStatements( null, RDF.type, bamm.Unit() )
+            .mapWith( Statement::getSubject )
+            .filterKeep( subject -> subject.getNameSpace().equals( bamm.getNamespace() ) )
+            .mapWith( Resource::getLocalName )
+            .forEach( customUnitsWithBammNamespace::add );
+
+      if ( !customUnitsWithBammNamespace.isEmpty() ) {
+         throw new InvalidNamespaceException(
+               String.format( "Aspect model contains unit(s) %s not specified in the unit catalog but referred with bamm namespace",
+                     customUnitsWithBammNamespace ) );
+      }
    }
 
    private static List<Try<AspectModelUrn>> getUrns( final VersionedModel migratedModel, final KnownVersion version ) {
