@@ -25,7 +25,7 @@ public record ClassTypeViolation(EvaluationContext context, Resource allowedClas
 
    @Override
    public String message() {
-      return String.format( "Property %s on %s has type %s, but only %s is allowed",
+      return String.format( "Property %s on %s has type %s, but only %s is allowed.",
             propertyName(), elementName(), shortUri( actualClass().getURI() ), shortUri( allowedClass().getURI() ) );
    }
 

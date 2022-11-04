@@ -34,7 +34,7 @@ public record ClosedViolation(EvaluationContext context, Set<Property> allowedPr
             .map( Property::getURI )
             .map( this::shortUri )
             .collect( Collectors.toSet() );
-      return String.format( "%s is used on %s. It is not allowed there; allowed are only %s",
+      return String.format( "%s is used on %s. It is not allowed there; allowed are only %s.",
             shortUri( actual.getURI() ), elementName(), allowed );
    }
 

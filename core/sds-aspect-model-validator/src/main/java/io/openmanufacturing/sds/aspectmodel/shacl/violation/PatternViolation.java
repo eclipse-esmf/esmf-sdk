@@ -23,7 +23,7 @@ public record PatternViolation(EvaluationContext context, String actual, String 
 
    @Override
    public String message() {
-      return String.format( "Property %s on %s has value %s, this must match the pattern %s but it does not",
+      return String.format( "Property %s on %s has value %s, which does not match the required pattern %s.",
             propertyName(), elementName(), actual, pattern );
    }
 

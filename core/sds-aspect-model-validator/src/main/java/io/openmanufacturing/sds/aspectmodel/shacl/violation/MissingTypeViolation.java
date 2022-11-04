@@ -23,7 +23,7 @@ public record MissingTypeViolation(EvaluationContext context) implements Violati
 
    @Override
    public String message() {
-      return String.format( "Could not determine type of %s", elementName() );
+      return String.format( "Could not determine type of %s.", elementName() );
    }
 
    @Override

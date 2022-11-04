@@ -36,14 +36,14 @@ public record NodeKindViolation(EvaluationContext context, Shape.NodeKind allowe
          case IRIOrLiteral -> "a named element or a value";
       };
       if ( context.property().isPresent() ) {
-         return String.format( "Property %s on %s is %s, but it must be %s",
+         return String.format( "Property %s on %s is %s, but it must be %s.",
                propertyName(), context.element().isAnon() ? "the element" : elementName(),
                nodeKindString.apply( actualNodeKind ), nodeKindString.apply( allowedNodeKind ) );
       }
       return context.element().isAnon() ?
-            String.format( "The element is %s, but it must be %s",
+            String.format( "The element is %s, but it must be %s.",
                   nodeKindString.apply( actualNodeKind ), nodeKindString.apply( allowedNodeKind ) ) :
-            String.format( "Element %s is %s, but it must be %s",
+            String.format( "Element %s is %s, but it must be %s.",
                   elementName(), nodeKindString.apply( actualNodeKind ), nodeKindString.apply( allowedNodeKind ) );
    }
 

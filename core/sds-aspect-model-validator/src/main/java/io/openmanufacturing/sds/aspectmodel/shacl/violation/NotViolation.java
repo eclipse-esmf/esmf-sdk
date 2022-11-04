@@ -26,8 +26,8 @@ public record NotViolation(EvaluationContext context, Constraint negatedConstrai
    @Override
    public String message() {
       return context.property().isPresent() ?
-            String.format( "Expected violation of constraint %s on %s on %s, but did not occur", negatedConstraint.name(), propertyName(), elementName() ) :
-            String.format( "Expected violation of constraint %s on element %s, but did not occur", negatedConstraint.name(), elementName() );
+            String.format( "Expected violation of constraint %s on %s on %s, but it did not occur.", negatedConstraint.name(), propertyName(), elementName() ) :
+            String.format( "Expected violation of constraint %s on element %s, but it did not occur.", negatedConstraint.name(), elementName() );
    }
 
    @Override

@@ -30,7 +30,7 @@ public record OrConstraint(List<Constraint> constraints) implements Constraint {
       final List<Violation> result = new ArrayList<>();
       for ( final Constraint constraint : constraints ) {
          final List<Violation> violations = constraint.apply( rdfNode, context );
-         if ( violations.isEmpty() && result.isEmpty() ) {
+         if ( violations.isEmpty() ) {
             return List.of();
          }
          result.addAll( violations );

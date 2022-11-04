@@ -34,9 +34,9 @@ public record SparqlConstraintViolation(EvaluationContext context, String constr
    public String message() {
       if ( constraintMessage().isEmpty() ) {
          if ( context.property().isPresent() ) {
-            return String.format( "Property %s on %s is invalid", propertyName(), elementName() );
+            return String.format( "Property %s on %s is invalid.", propertyName(), elementName() );
          }
-         return String.format( "%s is invalid", elementName() );
+         return String.format( "%s is invalid.", elementName() );
       }
 
       String interpolatedMessage = constraintMessage();

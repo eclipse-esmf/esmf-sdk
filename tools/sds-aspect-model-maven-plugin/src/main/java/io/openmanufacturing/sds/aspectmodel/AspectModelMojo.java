@@ -41,6 +41,7 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
+import io.openmanufacturing.sds.aspectmodel.validation.services.DetailedViolationFormatter;
 import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
 import io.vavr.control.Try;
 
@@ -54,6 +55,9 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
    @Parameter
    protected String outputDirectory = "";
+
+   @Parameter( defaultValue = "false" )
+   protected boolean detailedValidationMessages;
 
    protected void validateParameters() throws MojoExecutionException {
       if ( includes == null || includes.isEmpty() ) {
@@ -96,7 +100,10 @@ public abstract class AspectModelMojo extends AbstractMojo {
       // Another exception, e.g. syntax error. Let the validator handle this
       final AspectModelValidator validator = new AspectModelValidator();
       final List<Violation> violations = validator.validateModel( failedModel );
-      throw new MojoExecutionException( new ViolationFormatter().apply( violations ), loadModelFailureCause );
+      final String errorMessage = detailedValidationMessages
+            ? new DetailedViolationFormatter().apply( violations )
+            : new ViolationFormatter().apply( violations );
+      throw new MojoExecutionException( errorMessage, loadModelFailureCause );
    }
 
    protected Map<AspectModelUrn, VersionedModel> loadButNotResolveModels() throws MojoExecutionException {

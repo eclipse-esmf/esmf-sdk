@@ -16,6 +16,9 @@ package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.fix.Fix;
@@ -156,7 +159,9 @@ public interface Violation {
    }
 
    default String shortUri( final String uri ) {
-      return context().element().getModel().shortForm( uri );
+      final String shortened = context().element().getModel().shortForm( uri );
+      return shortened.equals( uri ) ?
+            context().validator().getShapesModel().shortForm( uri ) : shortened;
    }
 
    default String elementName() {
@@ -167,6 +172,24 @@ public interface Violation {
 
    default String propertyName() {
       return context().property().map( Resource::getURI ).map( this::shortUri ).orElse( elementName() );
+   }
+
+   default String value( final Property property ) {
+      return shortUri( property.getURI() );
+   }
+
+   default String value( final RDFNode node ) {
+      if ( node.isLiteral() ) {
+         return value( node.asLiteral() );
+      }
+      if ( node.isURIResource() ) {
+         return shortUri( node.asResource().getURI() );
+      }
+      return "anonymous element";
+   }
+
+   default String value( final Literal literal ) {
+      return literal.getLexicalForm();
    }
 
    default List<Fix> fixes() {

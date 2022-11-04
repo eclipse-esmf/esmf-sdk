@@ -25,8 +25,8 @@ public record MinInclusiveViolation(EvaluationContext context, Literal min, Lite
 
    @Override
    public String message() {
-      return String.format( "Property %s on %s has value %s, but it must be greater than or equal to %s",
-            propertyName(), elementName(), actual, min );
+      return String.format( "Property %s on %s has value %s, but it must be greater than or equal to %s.",
+            propertyName(), elementName(), value( actual ), value( min ) );
    }
 
    @Override

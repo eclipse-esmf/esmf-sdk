@@ -39,12 +39,12 @@ public record DatatypeViolation(EvaluationContext context, String allowedTypeUri
    public String message() {
       if ( context.property().isPresent() ) {
          return allowedTypeUri.equals( RDF.langString.getURI() ) && actualTypeUri.equals( XSD.xstring.getURI() ) ?
-               String.format( "Property %s on %s is missing a language tag",
+               String.format( "Property %s on %s is missing a language tag.",
                      propertyName(), elementName() ) :
-               String.format( "Property %s on %s uses data type %s, but only %s is allowed",
+               String.format( "Property %s on %s uses data type %s, but only %s is allowed.",
                      propertyName(), elementName(), shortUri( actualTypeUri ), shortUri( allowedTypeUri ) );
       }
-      return String.format( "%s uses data type %s, but only %s is allowed",
+      return String.format( "%s uses data type %s, but only %s is allowed.",
             elementName(), shortUri( actualTypeUri ), shortUri( allowedTypeUri ) );
    }
 

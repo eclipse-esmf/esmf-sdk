@@ -23,7 +23,7 @@ public record MaxLengthViolation(EvaluationContext context, int max, int actual)
 
    @Override
    public String message() {
-      return String.format( "Property %s on %s has length %s, but its length must be less than or equal to %s",
+      return String.format( "Property %s on %s has length %s, but its length must be less than or equal to %s.",
             propertyName(), elementName(), actual, max );
    }
 

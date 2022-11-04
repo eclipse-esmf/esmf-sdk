@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.RDFNode;
 
@@ -27,8 +28,8 @@ public record ValueFromListViolation(EvaluationContext context, List<RDFNode> al
 
    @Override
    public String message() {
-      return String.format( "Property %s on %s has value %s which is not in the list of allowed values: %s",
-            propertyName(), elementName(), actual, allowed );
+      return String.format( "Property %s on %s has value %s which is not in the list of allowed values: %s.",
+            propertyName(), elementName(), value( actual ), allowed.stream().map( this::value ).collect( Collectors.joining( ", ", "[", "]" ) ) );
    }
 
    @Override

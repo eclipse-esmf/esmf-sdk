@@ -24,8 +24,8 @@ public record MaxCountViolation(EvaluationContext context, int allowed, int actu
    @Override
    public String message() {
       return allowed == 0 ?
-            String.format( "Property %s may not be used on %s", propertyName(), elementName() ) :
-            String.format( "Property %s is used %d time%s on %s, but may only be used %d time%s",
+            String.format( "Property %s may not be used on %s.", propertyName(), elementName() ) :
+            String.format( "Property %s is used %d time%s on %s, but may only be used %d time%s.",
                   propertyName(), actual, actual > 1 ? "s" : "", elementName(), allowed, allowed > 1 ? "s" : "" );
    }
 

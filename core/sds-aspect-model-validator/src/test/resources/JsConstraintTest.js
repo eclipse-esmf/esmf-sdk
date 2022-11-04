@@ -45,7 +45,7 @@ function testTermFactoryAndMessageResult($this) {
     }
     var theValue = object.lex;
     if (theValue != "secret valid value") {
-        return { message: "Invalid value: {$value} on {$property}", value: theValue, property: testProperty };
+        return { message: "Invalid value: {$value} on {$property}.", value: theValue, property: testProperty };
     }
     return true;
 }
