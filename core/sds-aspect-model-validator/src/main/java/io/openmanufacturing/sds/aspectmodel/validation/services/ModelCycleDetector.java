@@ -39,9 +39,8 @@ import org.apache.jena.vocabulary.RDF;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationError;
-import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
-import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReportBuilder;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 
 /**
@@ -72,12 +71,12 @@ public class ModelCycleDetector {
    private BAMM bamm;
    private Model model;
 
-   List<ValidationError.Semantic> cycleReports = new ArrayList<>();
+   List<Violation> cycleDetectionReport = new ArrayList<>();
 
-   public ValidationReport validateModel( final VersionedModel versionedModel ) {
+   public List<Violation> validateModel( final VersionedModel versionedModel ) {
       discovered.clear();
       finished.clear();
-      cycleReports.clear();
+      cycleDetectionReport.clear();
 
       model = versionedModel.getModel();
       final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getVersion().toString() );
@@ -98,10 +97,8 @@ public class ModelCycleDetector {
             }
          }
       }
-      
-      return cycleReports.isEmpty() ?
-            new ValidationReport.ValidReport() :
-            new ValidationReportBuilder().withValidationErrors( cycleReports ).buildInvalidReport();
+
+      return cycleDetectionReport;
    }
 
    private void depthFirstTraversal( final Resource currentProperty, final BiConsumer<String, Set<String>> cycleHandler ) {
@@ -188,7 +185,7 @@ public class ModelCycleDetector {
    }
 
    private void reportCycle( final String cyclePath ) {
-      cycleReports.add( new ValidationError.Semantic( String.format( ERR_CYCLE_DETECTED, cyclePath ), "", "", "ERROR", "" ) );
+      cycleDetectionReport.add( new ProcessingViolation( String.format( ERR_CYCLE_DETECTED, cyclePath ), null ) );
    }
 
    private void initializeQuery( final KnownVersion metaModelVersion ) {
