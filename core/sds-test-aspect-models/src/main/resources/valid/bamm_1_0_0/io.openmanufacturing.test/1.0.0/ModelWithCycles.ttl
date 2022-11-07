@@ -160,10 +160,13 @@
    bamm:name "NTimeSeries" ;
    bamm:dataType :NTimeSeriesEntity .
 
-:NTimeSeriesEntity a bamm:Entity ;
+:NTimeSeriesEntity bamm:refines bamm-e:TimeSeriesEntity ;
    bamm:name "NTimeSeriesEntity" ;
-   bamm:extends bamm-e:TimeSeriesEntity ;
-   bamm:properties ( [ bamm:extends bamm-e:value ; bamm:characteristic :oCharacteristic ] ) .
+   bamm:properties ( :refinedValue ) .
+
+:refinedValue bamm:refines bamm-e:value ;
+   bamm:name "refinedValue" ;
+   bamm:characteristic :oCharacteristic .
 
 :oCharacteristic a bamm:Characteristic;
    bamm:name "mCharacteristic" ;

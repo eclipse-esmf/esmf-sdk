@@ -15,7 +15,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :ModelWithBrokenCycles a bamm:Aspect ;
-   bamm:name "" ;
+   bamm:name "ModelWithBrokenCycles" ;
    bamm:properties ( :a :e :h ) ;
    bamm:operations ( ) .
 
