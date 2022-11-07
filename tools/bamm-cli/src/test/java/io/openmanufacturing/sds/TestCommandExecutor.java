@@ -49,7 +49,8 @@ public class TestCommandExecutor {
    void testJavaExecution() throws IOException, URISyntaxException {
       final Path targetDirectory = Paths.get( getClass().getResource( "/" ).toURI() ).getParent();
       final Path testsJar = findTestsJar( targetDirectory );
-      final String result = CommandExecutor.executeCommand( "java -jar " + testsJar );
+      final String java = ProcessHandle.current().info().command().orElse( "java" );
+      final String result = CommandExecutor.executeCommand( java + " -jar " + testsJar );
       assertEquals( "Result", result );
    }
 

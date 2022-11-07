@@ -17,10 +17,11 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 
-import org.apache.jena.riot.RiotException;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
+
+import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.ParserException;
 
 public class PrettyPrintTest extends AspectModelMojoTest {
 
@@ -41,9 +42,9 @@ public class PrettyPrintTest extends AspectModelMojoTest {
       assertThatCode( prettyPrint::execute )
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Failed to load Aspect Model InvalidSyntax." )
-            .hasCauseInstanceOf( RiotException.class )
+            .hasCauseInstanceOf( ParserException.class )
             .getCause()
-            .hasMessage( "[line: 17, col: 2 ] Triples not terminated by DOT" );
+            .hasMessageContaining( "Triples not terminated by DOT" );
       assertGeneratedFileDoesNotExist( "Aspect.ttl" );
    }
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,9 +12,14 @@
  */
 package io.openmanufacturing.sds.aspectmodel.resolver.services;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -25,6 +30,7 @@ import org.apache.jena.riot.RiotException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.ParserException;
 import io.vavr.control.Try;
 
 public final class TurtleLoader {
@@ -47,8 +53,13 @@ public final class TurtleLoader {
          return Try.failure( new IllegalArgumentException() );
       }
 
+      final String modelContent = new BufferedReader(
+            new InputStreamReader( inputStream, StandardCharsets.UTF_8 ) )
+            .lines()
+            .collect( Collectors.joining( "\n" ) );
+
       final Model streamModel = ModelFactory.createDefaultModel();
-      try ( final InputStream turtleInputStream = inputStream ) {
+      try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes() ) ) {
          streamModel.read( turtleInputStream, "", RDFLanguages.TURTLE.getName() );
          return Try.success( streamModel );
       } catch ( final IllegalArgumentException exception ) {
@@ -57,8 +68,10 @@ public final class TurtleLoader {
          final String formattedErrorMessage = String
                .format( incorrectDataTypeDefinitionMessage, exception.getMessage() );
          return Try.failure( new IllegalArgumentException( formattedErrorMessage ) );
-      } catch ( final IOException | RiotException exception ) {
+      } catch ( final IOException exception ) {
          return Try.failure( exception );
+      } catch ( final RiotException exception ) {
+         return Try.failure( new ParserException( exception, modelContent ) );
       }
    }
 

@@ -25,12 +25,12 @@ import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
-import org.topbraid.shacl.vocabulary.SH;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
@@ -165,7 +165,8 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
     * @return the tuples of the original statement to replace and the replacement statement
     */
    private Set<Tuple2<Statement, Statement>> determineBammUrlsToReplace( final Model model ) {
-      return Streams.stream( model.listStatements( null, SH.jsLibraryURL, (RDFNode) null ) )
+      final Property shaclJsLibraryUrl = ResourceFactory.createProperty( "http://www.w3.org/ns/shacl#jsLibraryURL" );
+      return Streams.stream( model.listStatements( null, shaclJsLibraryUrl, (RDFNode) null ) )
             .filter( statement -> statement.getObject().isLiteral() )
             .filter( statement -> statement.getObject().asLiteral().getString().startsWith( "bamm://" ) )
             .flatMap( statement -> rewriteBammUrl( statement.getObject().asLiteral().getString() )

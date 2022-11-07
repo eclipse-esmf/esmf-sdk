@@ -30,7 +30,7 @@ public class MojoConfigTest extends AspectModelMojoTest {
       final Mojo validate = lookupMojo( "validate", testPom );
       assertThatCode( validate::execute )
             .isInstanceOf( MojoFailureException.class )
-            .hasMessageContaining( "Validation report: Validation failed" );
+            .hasMessageContaining( "Validation failed" );
    }
 
    @Test

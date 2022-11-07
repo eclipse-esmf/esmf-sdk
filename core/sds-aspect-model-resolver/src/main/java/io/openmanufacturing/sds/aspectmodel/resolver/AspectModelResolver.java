@@ -101,7 +101,7 @@ public class AspectModelResolver {
 
       if ( mergedModel.isFailure() ) {
          if ( mergedModel.getCause() instanceof FileNotFoundException ) {
-            return Try.failure( new ModelResolutionException( "While trying to resolve " + input + ": " + mergedModel.getCause() ) );
+            return Try.failure( new ModelResolutionException( "Could not resolve " + input, mergedModel.getCause() ) );
          }
          return Try.failure( mergedModel.getCause() );
       }
@@ -219,7 +219,8 @@ public class AspectModelResolver {
          }
          return resolutionStrategy.apply( aspectModelUrn ).flatMap( model -> {
             if ( !model.contains( model.createResource( urn ), RDF.type, (RDFNode) null ) ) {
-               return Try.failure( new ModelResolutionException( "Resolution strategy returned a model which does contain element definition for " + urn ) );
+               return Try.failure(
+                     new ModelResolutionException( "Resolution strategy returned a model which does not contain element definition for " + urn ) );
             }
             return Try.success( model );
          } );

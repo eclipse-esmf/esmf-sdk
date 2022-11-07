@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,8 +24,11 @@ import lombok.Value;
 /**
  * Provides the different types of validation errors that can occur. Uses the visitor pattern to dispatch to one
  * of the  implementations.
+ *
+ * @deprecated Replaced by {@link io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation}
  */
 @SuppressWarnings( { "squid:S1610", "This should not be converted into an interface, because it is a sealed class." } )
+@Deprecated( forRemoval = true )
 public abstract class ValidationError {
    public static final String MESSAGE_COULD_NOT_RETRIEVE_BAMM_VERSION = "Could not retrieve the version of the BAMM the Aspect is referring to";
    public static final String MESSAGE_BAMM_VERSION_NOT_SUPPORTED = "The used meta model version is not supported";
@@ -93,8 +96,8 @@ public abstract class ValidationError {
          final String locationInfoPart = originalExceptionMessage
                .substring( originalExceptionMessage.indexOf( '[' ) + 1, originalExceptionMessage.indexOf( ']' ) );
          final Map<String, String> locationInfo = Splitter.on( "," ).trimResults()
-                                                          .withKeyValueSeparator( Splitter.on( ":" ).trimResults() )
-                                                          .split( locationInfoPart );
+               .withKeyValueSeparator( Splitter.on( ":" ).trimResults() )
+               .split( locationInfoPart );
 
          lineNumber = Integer.parseInt( locationInfo.get( "line" ) );
          columnNumber = Integer.parseInt( locationInfo.get( "col" ) );

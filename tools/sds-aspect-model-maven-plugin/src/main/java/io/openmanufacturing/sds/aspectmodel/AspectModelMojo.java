@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,21 +38,26 @@ import io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
-import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
+import io.openmanufacturing.sds.aspectmodel.validation.services.DetailedViolationFormatter;
+import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
 import io.vavr.control.Try;
 
 public abstract class AspectModelMojo extends AbstractMojo {
 
    @Parameter( defaultValue = "${basedir}/src/main/resources/aspects" )
-   private String modelsRootDirectory = System.getProperty("user.dir") + "/src/main/resources/aspects";
+   private final String modelsRootDirectory = System.getProperty( "user.dir" ) + "/src/main/resources/aspects";
 
    @Parameter( required = true, property = "include" )
    private Set<String> includes;
 
    @Parameter
    protected String outputDirectory = "";
+
+   @Parameter( defaultValue = "false" )
+   protected boolean detailedValidationMessages;
 
    protected void validateParameters() throws MojoExecutionException {
       if ( includes == null || includes.isEmpty() ) {
@@ -93,12 +99,15 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
       // Another exception, e.g. syntax error. Let the validator handle this
       final AspectModelValidator validator = new AspectModelValidator();
-      final ValidationReport report = validator.validate( failedModel );
-      throw new MojoExecutionException( report.toString(), loadModelFailureCause );
+      final List<Violation> violations = validator.validateModel( failedModel );
+      final String errorMessage = detailedValidationMessages
+            ? new DetailedViolationFormatter().apply( violations )
+            : new ViolationFormatter().apply( violations );
+      throw new MojoExecutionException( errorMessage, loadModelFailureCause );
    }
 
-   protected Map<AspectModelUrn,VersionedModel> loadButNotResolveModels() throws MojoExecutionException {
-      final Map<AspectModelUrn,VersionedModel> versionedModels = new HashMap<>();
+   protected Map<AspectModelUrn, VersionedModel> loadButNotResolveModels() throws MojoExecutionException {
+      final Map<AspectModelUrn, VersionedModel> versionedModels = new HashMap<>();
       for ( final String urn : includes ) {
          final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( urn );
          final String aspectModelFilePath = String.format( "%s/%s/%s/%s.ttl", modelsRootDirectory, aspectModelUrn.getNamespace(), aspectModelUrn.getVersion(),

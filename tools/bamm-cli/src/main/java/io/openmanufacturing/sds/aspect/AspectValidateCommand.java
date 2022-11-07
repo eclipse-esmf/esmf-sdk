@@ -14,14 +14,15 @@
 package io.openmanufacturing.sds.aspect;
 
 import java.io.File;
-
-import org.topbraid.shacl.util.FailureLog;
+import java.util.List;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
+import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
+import io.openmanufacturing.sds.aspectmodel.validation.services.DetailedViolationFormatter;
+import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
 import io.vavr.control.Try;
 import picocli.CommandLine;
 
@@ -43,24 +44,22 @@ public class AspectValidateCommand extends AbstractCommand {
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;
 
+   @CommandLine.Option( names = { "--details", "-d" }, description = "Print detailed reports about violations" )
+   private boolean details = false;
+
    @Override
    public void run() {
-      FailureLog.set( new FailureLog() {
-         @Override
-         public void logFailure( final String message ) {
-            // Do not log SHACL-internal errors
-         }
-      } );
-
       final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( parentCommand.getInput() ), customResolver );
       final AspectModelValidator validator = new AspectModelValidator();
-      final ValidationReport report = validator.validate( versionedModel );
 
-      if ( LOG.isWarnEnabled() ) {
-         LOG.warn( report.toString() );
+      final List<Violation> violations = validator.validateModel( versionedModel );
+      if ( details ) {
+         System.out.println( new DetailedViolationFormatter().apply( violations ) );
+      } else {
+         System.out.println( new ViolationFormatter().apply( violations ) );
       }
 
-      if ( !report.conforms() ) {
+      if ( !violations.isEmpty() ) {
          System.exit( 1 );
       }
    }
