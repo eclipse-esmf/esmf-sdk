@@ -267,7 +267,6 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    void testCycleDetection( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> versionedModel = TestResources.getModel( TestAspect.MODEL_WITH_CYCLES, metaModelVersion );
       final List<Violation> report = service.get( metaModelVersion ).validateModel( versionedModel );
-      report.forEach( System.out::println );
       assertThat( report.size() ).isEqualTo( 6 );
       assertThat( report ).containsAll( cycles(
             ":a -> :b -> :a",
@@ -284,7 +283,6 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    void testCycleDetectionWithCycleBreakers( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> versionedModel = TestResources.getModel( TestAspect.MODEL_WITH_BROKEN_CYCLES, metaModelVersion );
       final List<Violation> report = service.get( metaModelVersion ).validateModel( versionedModel );
-      report.forEach( System.out::println );
       assertThat( report.isEmpty() ).isTrue();
    }
 
