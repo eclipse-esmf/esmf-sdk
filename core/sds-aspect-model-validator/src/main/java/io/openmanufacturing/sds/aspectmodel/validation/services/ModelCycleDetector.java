@@ -33,6 +33,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.binding.Binding;
 import org.apache.jena.vocabulary.RDF;
@@ -84,16 +85,27 @@ public class ModelCycleDetector {
       initializeQuery( metaModelVersion.get() );
 
       // we only want to investigate properties that are directly reachable from an Aspect
-      final Statement aspect = model.listStatements( null, RDF.type, bamm.Aspect() ).nextStatement();
-      final Statement properties = aspect.getSubject().getProperty( bamm.properties() );
-      if ( properties != null ) {
-         final Iterator<RDFNode> aspectProperties = properties.getList().iterator();
-         while ( aspectProperties.hasNext() ) {
-            final RDFNode propRef = aspectProperties.next();
-            final Statement property = model.listStatements( propRef.asResource(), RDF.type, bamm.Property() ).nextStatement();
-            final String propertyName = getUniqueName( property.getSubject() );
-            if ( !discovered.contains( propertyName ) && !finished.contains( propertyName ) ) {
-               depthFirstTraversal( property.getSubject(), this::reportCycle );
+      final StmtIterator aspects = model.listStatements( null, RDF.type, bamm.Aspect() );
+      if ( aspects.hasNext() ) {
+         final Statement aspect = aspects.nextStatement();
+         final Statement properties = aspect.getSubject().getProperty( bamm.properties() );
+         if ( properties != null ) {
+            final Iterator<RDFNode> aspectProperties = properties.getList().iterator();
+            while ( aspectProperties.hasNext() ) {
+               final RDFNode propRef = aspectProperties.next();
+               final Resource property;
+               if ( propRef.isAnon() ) {
+                  if ( isOptionalProperty( propRef.asResource() ) ) {
+                     continue;
+                  }
+                  property = resolvePropertyReference( propRef.asResource() );
+               } else {
+                  property = propRef.asResource();
+               }
+               final String propertyName = getUniqueName( property );
+               if ( !discovered.contains( propertyName ) && !finished.contains( propertyName ) ) {
+                  depthFirstTraversal( property, this::reportCycle );
+               }
             }
          }
       }
@@ -134,19 +146,14 @@ public class ModelCycleDetector {
    }
 
    private void investigateProperty( Resource propertyNode, final BiConsumer<String, Set<String>> cycleHandler ) {
-      // property usage of the type "[ bamm:property :propName ; bamm:optional value ; ]"
       if ( propertyNode.isAnon() ) {
-         final Statement optional = propertyNode.getProperty( bamm.optional() );
-         if ( (optional != null) && optional.getBoolean() ) {
+         // [ bamm:property :propName ; bamm:optional value ; ]
+         if ( isOptionalProperty( propertyNode ) ) {
             // presence of bamm:optional = true; no need to continue on this path, the potential cycle would be broken by the optional property anyway
             return;
          }
 
-         // resolve property reference
-         final Statement prop = propertyNode.getProperty( bamm.property() );
-         if ( prop != null ) {
-            propertyNode = prop.getObject().asResource();
-         }
+         propertyNode = resolvePropertyReference( propertyNode );
       }
 
       final String propertyName = getUniqueName( propertyNode );
@@ -157,6 +164,19 @@ public class ModelCycleDetector {
       } else if ( !finished.contains( propertyName ) ) {
          depthFirstTraversal( propertyNode, cycleHandler );
       }
+   }
+
+   private Resource resolvePropertyReference( final Resource propertyNode ) {
+      final Statement prop = propertyNode.getProperty( bamm.property() );
+      if ( prop != null ) {
+         return prop.getObject().asResource();
+      }
+      return propertyNode;
+   }
+
+   private boolean isOptionalProperty( final Resource propertyNode ) {
+      final Statement optional = propertyNode.getProperty( bamm.optional() );
+      return (optional != null) && optional.getBoolean();
    }
 
    private String getUniqueName( final Resource property ) {
@@ -175,6 +195,7 @@ public class ModelCycleDetector {
 
    private String findExtendingEntityName( final Resource extendsProperty ) {
       return model.listSubjectsWithProperty( bamm._extends() )
+            .filterKeep( entity -> entity.getProperty( bamm.properties() ) != null )
             .filterKeep( entity -> entity.getProperty( bamm.properties() ).getList().contains( extendsProperty ) )
             .mapWith( resource -> model.shortForm( resource.getURI() ) )
             .nextOptional().orElse( extendsProperty.toString() );

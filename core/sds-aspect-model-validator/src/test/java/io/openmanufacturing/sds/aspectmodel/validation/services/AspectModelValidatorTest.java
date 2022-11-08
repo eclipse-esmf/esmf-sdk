@@ -92,7 +92,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
          "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_INCL_BOUND_DEFINITION", // uses bamm-c:OPEN
          "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE", // uses bamm-c:OPEN
          "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND", // uses bamm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND_INCL_BOUND_DEFINITION" // uses bamm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND_INCL_BOUND_DEFINITION", // uses bamm-c:OPEN
+         "MODEL_WITH_CYCLES" // contains cycles
    } )
    public void testValidateTestAspectModel( final TestAspect testAspect ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
