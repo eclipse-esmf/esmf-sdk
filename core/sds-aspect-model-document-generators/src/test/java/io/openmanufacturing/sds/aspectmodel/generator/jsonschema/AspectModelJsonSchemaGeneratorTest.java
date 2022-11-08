@@ -996,6 +996,28 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity" );
    }
 
+   /**
+    * Test to validate the json schema generated from the given aspect model containing an abstract property.
+    *
+    * @param metaModelVersion the used meta model version.
+    */
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractProperty( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ABSTRACT_PROPERTY, metaModelVersion );
+      final JsonNode schema = buildJsonSchema( aspect );
+
+      assertThat( schema.at( "/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity/"
+            + "description" ).asText() )
+            .isEqualTo( "This is a test entity" );
+      assertThat( schema.at( "/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity/"
+            + "properties/abstractTestProperty/description" ).asText() )
+            .isEqualTo( "This is an abstract test property" );
+      assertThat( schema.at( "/components/schemas/urn_bamm_io.openmanufacturing.test_1.0.0_ExtendingTestEntity/"
+            + "properties/abstractTestProperty/$ref" ).asText() )
+            .isEqualTo( "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" );
+   }
+
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
    public void testAspectWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion ) {
