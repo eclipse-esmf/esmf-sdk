@@ -47,6 +47,7 @@ import com.google.common.collect.Streams;
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.UnsupportedVersionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.ModelResolutionException;
+import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidNamespaceException;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidVersionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.ParserException;
@@ -193,9 +194,9 @@ public class AspectModelValidator {
    /**
     * Validates an Aspect Model that is provided as a {@link Try} of a {@link VersionedModel} that can
     * contain either a syntactically valid (but semantically invalid) Aspect model, or a
-    * {@link RiotException} if a parser error occured.
+    * {@link RiotException} if a parser error occurred.
     *
-    * @param versionedModel The Aspect Model or the corresonding parser error
+    * @param versionedModel The Aspect Model or the corresponding parser error
     * @return Either a {@link ValidationReport.ValidReport} if the model is syntactically correct and conforms to the
     *       Aspect Meta Model semantics or a {@link ValidationReport.InvalidReport} that provides a number of
     *       {@link ValidationError}s that describe all validation violations.
@@ -219,13 +220,7 @@ public class AspectModelValidator {
                      // The SHACL validation succeeded. But to catch false positives, also try to load the model
                      final Try<Aspect> aspects = AspectModelLoader.fromVersionedModel( model );
                      if ( aspects.isFailure() && !(aspects.getCause() instanceof InvalidRootElementCountException) ) {
-                        return new ValidationReportBuilder()
-                              .withValidationErrors( List.of( new ValidationError.Processing(
-                                    "Validation succeeded, but an error was found while processing the model. "
-                                          + "This indicates an error in the model validation; please consider reporting this issue including the model "
-                                          + "at https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues -- "
-                                          + buildCauseMessage( aspects.getCause() ) ) ) )
-                              .buildInvalidReport();
+                        return getInvalidReport( aspects.getCause() );
                      }
                      return new ValidationReportBuilder().buildValidReport();
                   }
@@ -240,7 +235,24 @@ public class AspectModelValidator {
       ).get();
    }
 
-   private String buildCauseMessage( final Throwable throwable ) {
+   private static ValidationReport getInvalidReport( final Throwable cause ) {
+      final String errorMessage;
+
+      if ( cause instanceof InvalidNamespaceException ) {
+         errorMessage = buildCauseMessage( cause );
+      } else {
+         errorMessage = "Validation succeeded, but an error was found while processing the model. "
+               + "This indicates an error in the model validation; please consider reporting this issue including the model "
+               + "at https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues -- "
+               + buildCauseMessage( cause );
+      }
+
+      return new ValidationReportBuilder()
+            .withValidationErrors( List.of( new ValidationError.Processing( errorMessage ) ) )
+            .buildInvalidReport();
+   }
+
+   private static String buildCauseMessage( final Throwable throwable ) {
       final StringBuilder builder = new StringBuilder();
       Throwable t = throwable;
       while ( t != null ) {

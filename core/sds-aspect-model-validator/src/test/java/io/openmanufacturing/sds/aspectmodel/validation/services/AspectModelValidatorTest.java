@@ -224,6 +224,24 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       assertThat( violation.message() ).contains( "Not implemented (formulae, graph literals)" );
    }
 
+   /**
+    * Verify that validation of the given aspect model containing a unit not specified in the unit catalog
+    * and referred with bamm namespace fails.
+    */
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testAspectWithBammNamespaceForCustomUnit( final KnownVersion metaModelVersion ) {
+      final Try<VersionedModel> invalidAspectModel = TestResources
+            .getModel( InvalidTestAspect.ASPECT_WITH_BAMM_NAMESPACE_FOR_CUSTOM_UNIT, metaModelVersion );
+
+      final ValidationReport report = service.validate( invalidAspectModel );
+      assertThat( report.conforms() ).isFalse();
+
+      final Collection<? extends ValidationError> errors = report.getValidationErrors();
+      assertThat( errors ).hasSize( 1 );
+      assertThat( report.getValidationErrors().iterator().next() ).isOfAnyClassIn( ValidationError.Processing.class );
+   }
+
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testAspectWithInvalidMetaModelVersion( final KnownVersion metaModelVersion ) {
