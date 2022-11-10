@@ -27,11 +27,16 @@ if (o == null || getClass() != o.getClass()) {
         }
     #end
 #end
-final $element.getName() that = ($element.getName())o;
-    return
-    #if( $element.getProperties().isEmpty() ) true
+
+    #if( $element.getProperties().isEmpty() ) return true
     #else
-        ${util.objectEqualsExpression( $element )}
+        #set( $objectEqualsExpression = $util.objectEqualsExpression( $element ) )
+        #if( $objectEqualsExpression && !$objectEqualsExpression.empty )
+            final $element.getName() that = ($element.getName())o;
+            return $objectEqualsExpression
+        #else
+            return true
+        #end
     #end;
 }
 #end

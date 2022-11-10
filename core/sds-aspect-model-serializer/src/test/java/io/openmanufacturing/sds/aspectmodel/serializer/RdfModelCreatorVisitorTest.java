@@ -56,7 +56,8 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
          "ASPECT_WITHOUT_PROPERTIES_AND_OPERATIONS",
          "ASPECT_WITH_ENUM_ONLY_ONE_SEE",
          "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
-         "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY"
+         "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
+         "ASPECT_WITH_ABSTRACT_PROPERTY"
    } )
    public void testRdfModelCreatorVisitor( final TestAspect aspect ) {
       testRdfCreation( aspect, KnownVersion.getLatest() );
