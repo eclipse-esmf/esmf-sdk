@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.metamodel.State;
+import io.openmanufacturing.sds.characteristic.State;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;

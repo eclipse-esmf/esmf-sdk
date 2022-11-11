@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.metamodel.StructuredValue;
+import io.openmanufacturing.sds.characteristic.StructuredValue;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;

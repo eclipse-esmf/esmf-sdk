@@ -20,7 +20,7 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
-import io.openmanufacturing.sds.metamodel.LengthConstraint;
+import io.openmanufacturing.sds.constraint.LengthConstraint;
 import io.openmanufacturing.sds.metamodel.impl.DefaultLengthConstraint;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;

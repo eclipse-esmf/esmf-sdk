@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,9 +11,11 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.metamodel;
+package io.openmanufacturing.sds.characteristic;
 
 import java.util.Optional;
+
+import io.openmanufacturing.sds.metamodel.Characteristic;
 
 /**
  * A group of values which may be either of a simple or complex type. The values may be duplicated and are not ordered.

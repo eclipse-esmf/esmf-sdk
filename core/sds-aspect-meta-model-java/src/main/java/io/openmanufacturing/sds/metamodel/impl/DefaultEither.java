@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Either;
+import io.openmanufacturing.sds.characteristic.Either;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,9 +11,11 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.metamodel;
+package io.openmanufacturing.sds.characteristic;
 
 import java.util.List;
+
+import io.openmanufacturing.sds.metamodel.Characteristic;
 
 /**
  * @since BAMM 1.0.0

@@ -52,7 +52,7 @@ import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.StructureElement;
-import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 

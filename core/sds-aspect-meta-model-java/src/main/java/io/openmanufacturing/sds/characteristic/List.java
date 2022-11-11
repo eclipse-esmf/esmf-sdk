@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,12 +11,12 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.metamodel;
+package io.openmanufacturing.sds.characteristic;
 
 /**
- * A collection containing values with the exact point in time when the values where recorded.
+ * A collection which may contain duplicates and is ordered.
  *
  * @since BAMM 1.0.0
  */
-public interface TimeSeries extends SortedSet {
+public interface List extends Collection {
 }

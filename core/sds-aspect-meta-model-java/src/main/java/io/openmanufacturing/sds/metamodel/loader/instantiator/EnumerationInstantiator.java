@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.metamodel.Enumeration;
+import io.openmanufacturing.sds.characteristic.Enumeration;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEnumeration;

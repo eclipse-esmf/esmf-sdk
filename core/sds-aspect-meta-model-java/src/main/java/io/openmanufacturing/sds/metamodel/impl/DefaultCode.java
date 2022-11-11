@@ -16,7 +16,7 @@ package io.openmanufacturing.sds.metamodel.impl;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.metamodel.Code;
+import io.openmanufacturing.sds.characteristic.Code;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;

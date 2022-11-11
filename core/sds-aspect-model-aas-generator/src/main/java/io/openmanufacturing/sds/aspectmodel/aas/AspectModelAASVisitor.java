@@ -74,21 +74,21 @@ import io.adminshell.aas.v3.model.impl.DefaultValueReferencePair;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Code;
-import io.openmanufacturing.sds.metamodel.Collection;
-import io.openmanufacturing.sds.metamodel.Duration;
-import io.openmanufacturing.sds.metamodel.Either;
+import io.openmanufacturing.sds.characteristic.Code;
+import io.openmanufacturing.sds.characteristic.Collection;
+import io.openmanufacturing.sds.characteristic.Duration;
+import io.openmanufacturing.sds.characteristic.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
-import io.openmanufacturing.sds.metamodel.Enumeration;
+import io.openmanufacturing.sds.characteristic.Enumeration;
 import io.openmanufacturing.sds.metamodel.IsDescribed;
-import io.openmanufacturing.sds.metamodel.Measurement;
+import io.openmanufacturing.sds.characteristic.Measurement;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.Quantifiable;
+import io.openmanufacturing.sds.characteristic.Quantifiable;
 import io.openmanufacturing.sds.metamodel.SingleEntity;
-import io.openmanufacturing.sds.metamodel.SortedSet;
-import io.openmanufacturing.sds.metamodel.State;
-import io.openmanufacturing.sds.metamodel.StructuredValue;
-import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.characteristic.SortedSet;
+import io.openmanufacturing.sds.characteristic.State;
+import io.openmanufacturing.sds.characteristic.StructuredValue;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
@@ -465,7 +465,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
 
    @Override
    public AssetAdministrationShellEnvironment visitList(
-         final io.openmanufacturing.sds.metamodel.List list, final Context context ) {
+         final io.openmanufacturing.sds.characteristic.List list, final Context context ) {
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementCollection.Builder()
@@ -481,7 +481,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
 
    @Override
    public AssetAdministrationShellEnvironment visitSet(
-         final io.openmanufacturing.sds.metamodel.Set set, final Context context ) {
+         final io.openmanufacturing.sds.characteristic.Set set, final Context context ) {
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementCollection.Builder()

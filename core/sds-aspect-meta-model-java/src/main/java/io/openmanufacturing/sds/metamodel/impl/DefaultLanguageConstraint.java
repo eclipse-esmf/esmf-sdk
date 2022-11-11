@@ -16,7 +16,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.metamodel.LanguageConstraint;
+import io.openmanufacturing.sds.constraint.LanguageConstraint;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 

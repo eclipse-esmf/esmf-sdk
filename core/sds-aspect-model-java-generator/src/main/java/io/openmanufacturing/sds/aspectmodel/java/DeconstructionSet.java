@@ -16,7 +16,7 @@ package io.openmanufacturing.sds.aspectmodel.java;
 import java.util.List;
 
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.StructuredValue;
+import io.openmanufacturing.sds.characteristic.StructuredValue;
 
 /**
  * Encapsulates a {@link Property} and, if it uses a {@link StructuredValue} characteristic, the corresponding

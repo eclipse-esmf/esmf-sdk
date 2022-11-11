@@ -18,7 +18,7 @@ import java.util.Optional;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
-import io.openmanufacturing.sds.metamodel.Quantifiable;
+import io.openmanufacturing.sds.characteristic.Quantifiable;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.impl.DefaultQuantifiable;

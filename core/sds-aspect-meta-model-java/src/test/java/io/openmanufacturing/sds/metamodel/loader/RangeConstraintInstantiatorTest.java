@@ -21,8 +21,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.IsDescribed;
-import io.openmanufacturing.sds.metamodel.RangeConstraint;
-import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.constraint.RangeConstraint;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 import io.openmanufacturing.sds.test.TestAspect;
 

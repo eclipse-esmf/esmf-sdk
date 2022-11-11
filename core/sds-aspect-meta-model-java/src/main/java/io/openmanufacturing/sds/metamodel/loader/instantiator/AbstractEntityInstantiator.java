@@ -23,6 +23,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Entity;
@@ -53,7 +54,7 @@ public class AbstractEntityInstantiator extends Instantiator<AbstractEntity> {
     * The list of references between an {@link AbstractEntity} and all {@link ComplexType}s extending the
     * {@link AbstractEntity} has been implemented to ensure that all extending {@link ComplexType}s are loaded into the
     * {@link io.openmanufacturing.sds.metamodel.Aspect} whether they are directly linked to that Aspect or not. This
-    * scenario may occur for example when the Aspect Model contains a {@link io.openmanufacturing.sds.metamodel.Collection}
+    * scenario may occur for example when the Aspect Model contains a {@link Collection}
     * with an {@link AbstractEntity} as its data type with multiple Entities extending the {@link AbstractEntity}.
     *
     * In order to prevent processing elements in this circular dependency more than once, causing an infinite loop,

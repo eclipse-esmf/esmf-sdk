@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.SortedSet;
+import io.openmanufacturing.sds.characteristic.SortedSet;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;

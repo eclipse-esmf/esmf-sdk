@@ -15,7 +15,7 @@ package io.openmanufacturing.sds.metamodel.loader.instantiator;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.metamodel.FixedPointConstraint;
+import io.openmanufacturing.sds.constraint.FixedPointConstraint;
 import io.openmanufacturing.sds.metamodel.impl.DefaultFixedPointConstraint;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;

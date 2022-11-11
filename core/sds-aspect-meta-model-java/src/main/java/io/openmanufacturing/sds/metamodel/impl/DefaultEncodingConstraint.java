@@ -16,7 +16,7 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.metamodel.EncodingConstraint;
+import io.openmanufacturing.sds.constraint.EncodingConstraint;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 

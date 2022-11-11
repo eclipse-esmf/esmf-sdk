@@ -11,12 +11,18 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.metamodel;
+package io.openmanufacturing.sds.constraint;
 
-import java.util.Collection;
+import io.openmanufacturing.sds.metamodel.Constraint;
 
-public interface CollectionValue extends Value {
-   io.openmanufacturing.sds.characteristic.Collection.CollectionType getCollectionType();
+/**
+ * Defines the scale as well as the number of integral digits for a fixed point number.
+ *
+ * @since BAMM 1.0.0
+ */
+public interface FixedPointConstraint extends Constraint {
 
-   Collection<Value> getValues();
+   Integer getScale();
+
+   Integer getInteger();
 }

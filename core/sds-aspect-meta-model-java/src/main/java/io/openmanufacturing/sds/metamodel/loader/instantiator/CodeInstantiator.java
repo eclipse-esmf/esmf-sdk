@@ -15,7 +15,7 @@ package io.openmanufacturing.sds.metamodel.loader.instantiator;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.metamodel.Code;
+import io.openmanufacturing.sds.characteristic.Code;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCode;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;

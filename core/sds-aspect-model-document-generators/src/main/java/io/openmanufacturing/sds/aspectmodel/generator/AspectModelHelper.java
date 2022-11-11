@@ -30,7 +30,7 @@ import io.openmanufacturing.sds.metamodel.IsDescribed;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.SingleEntity;
-import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 

@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,7 +11,10 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.metamodel;
+package io.openmanufacturing.sds.characteristic;
+
+import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.Value;
 
 @SuppressWarnings( { "squid:S1150", "This is not java.util.Enumeration." } )
 /**

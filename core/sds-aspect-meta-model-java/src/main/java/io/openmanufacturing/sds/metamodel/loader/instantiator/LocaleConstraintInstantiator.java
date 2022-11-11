@@ -17,7 +17,7 @@ import java.util.Locale;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.metamodel.LocaleConstraint;
+import io.openmanufacturing.sds.constraint.LocaleConstraint;
 import io.openmanufacturing.sds.metamodel.impl.DefaultLocaleConstraint;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;

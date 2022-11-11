@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.aspectmodel.validation.services;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -38,6 +39,8 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinCountViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
+import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationError;
+import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.test.InvalidTestAspect;
 import io.openmanufacturing.sds.test.MetaModelVersions;
@@ -234,7 +237,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Try<VersionedModel> invalidAspectModel = TestResources
             .getModel( InvalidTestAspect.ASPECT_WITH_BAMM_NAMESPACE_FOR_CUSTOM_UNIT, metaModelVersion );
 
-      final ValidationReport report = service.validate( invalidAspectModel );
+      final ValidationReport report = service.get( metaModelVersion ).validate( invalidAspectModel );
       assertThat( report.conforms() ).isFalse();
 
       final Collection<? extends ValidationError> errors = report.getValidationErrors();

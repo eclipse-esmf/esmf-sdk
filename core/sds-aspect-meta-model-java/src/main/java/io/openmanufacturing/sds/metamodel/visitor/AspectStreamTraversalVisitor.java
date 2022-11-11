@@ -22,15 +22,15 @@ import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.ComplexType;
-import io.openmanufacturing.sds.metamodel.Either;
+import io.openmanufacturing.sds.characteristic.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.Quantifiable;
+import io.openmanufacturing.sds.characteristic.Quantifiable;
 import io.openmanufacturing.sds.metamodel.QuantityKind;
 import io.openmanufacturing.sds.metamodel.StructureElement;
-import io.openmanufacturing.sds.metamodel.StructuredValue;
-import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.characteristic.StructuredValue;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Unit;
 
 /**

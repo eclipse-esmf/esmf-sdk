@@ -18,7 +18,7 @@ import java.util.Optional;
 import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Set;
+import io.openmanufacturing.sds.characteristic.Set;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.impl.DefaultSet;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;

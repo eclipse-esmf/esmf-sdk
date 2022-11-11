@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
@@ -54,14 +55,14 @@ public interface IsDescribed {
    /**
     * @return a {@link Set} containing language specific names for the Aspect Model element.
     */
-   default java.util.Set<LangString> getPreferredNames() {
+   default Set<LangString> getPreferredNames() {
       return Collections.emptySet();
    }
 
    /**
     * @return a {@link Set} containing language specific descriptions for the Aspect Model element.
     */
-   default java.util.Set<LangString> getDescriptions() {
+   default Set<LangString> getDescriptions() {
       return Collections.emptySet();
    }
 

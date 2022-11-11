@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.HasProperties;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.StructuredValue;
+import io.openmanufacturing.sds.characteristic.StructuredValue;
 import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 

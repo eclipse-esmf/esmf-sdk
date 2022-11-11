@@ -19,8 +19,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.FixedPointConstraint;
-import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.constraint.FixedPointConstraint;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.test.TestAspect;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;

@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.metamodel.RangeConstraint;
+import io.openmanufacturing.sds.constraint.RangeConstraint;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;

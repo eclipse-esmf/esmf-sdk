@@ -28,7 +28,7 @@ import io.openmanufacturing.sds.metamodel.IsDescribed;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.QuantityKind;
-import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 

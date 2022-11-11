@@ -16,7 +16,7 @@ package io.openmanufacturing.sds.metamodel.impl;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.metamodel.FixedPointConstraint;
+import io.openmanufacturing.sds.constraint.FixedPointConstraint;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 

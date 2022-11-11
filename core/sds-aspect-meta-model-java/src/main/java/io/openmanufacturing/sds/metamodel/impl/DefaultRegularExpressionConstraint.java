@@ -15,7 +15,7 @@ package io.openmanufacturing.sds.metamodel.impl;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.metamodel.RegularExpressionConstraint;
+import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
