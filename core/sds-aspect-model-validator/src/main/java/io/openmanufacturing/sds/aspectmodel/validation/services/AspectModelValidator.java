@@ -132,8 +132,8 @@ public class AspectModelValidator {
    /**
     * Validates an Aspect Model that is provided as a {@link Try} of a {@link VersionedModel} that can
     * contain either a syntactically valid (but semantically invalid) Aspect model, or a Throwable
-    * if an error during parsing or resolution occured.
-    * @param versionedModel the Aspect Model or the corresonding error
+    * if an error during parsing or resolution occurred.
+    * @param versionedModel the Aspect Model or the corresponding error
     * @return a list of {@link Violation}s. An empty list indicates that the model is valid.
     */
    public List<Violation> validateModel( final Try<VersionedModel> versionedModel ) {
@@ -198,7 +198,7 @@ public class AspectModelValidator {
    /**
     * Validates an Aspect Model that is provided as a {@link Try} of a {@link VersionedModel} that can
     * contain either a syntactically valid (but semantically invalid) Aspect model, or a
-    * {@link RiotException} if a parser error occured.
+    * {@link RiotException} if a parser error occurred.
     *
     * @param versionedModel The Aspect Model or the corresonding parser error
     * @return Either a {@link ValidationReport.ValidReport} if the model is syntactically correct and conforms to the
