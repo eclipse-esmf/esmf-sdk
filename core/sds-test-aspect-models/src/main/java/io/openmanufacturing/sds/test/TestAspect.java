@@ -183,7 +183,10 @@ public enum TestAspect implements TestModel {
    ENTITY_INSTANCE_TEST3,
    ENTITY_INSTANCE_TEST4,
    ASPECT_WITH_ENUM_ONLY_ONE_SEE,
-   MOVEMENT;
+   MOVEMENT,
+   MODEL_WITH_CYCLES,
+   MODEL_WITH_BROKEN_CYCLES;
+
 
    @Override
    public String getName() {

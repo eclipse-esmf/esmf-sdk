@@ -15,6 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.validation.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
          "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_INCL_BOUND_DEFINITION", // uses bamm-c:OPEN
          "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE", // uses bamm-c:OPEN
          "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND", // uses bamm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND_INCL_BOUND_DEFINITION" // uses bamm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND_INCL_BOUND_DEFINITION", // uses bamm-c:OPEN
+         "MODEL_WITH_CYCLES" // contains cycles
    } )
    public void testValidateTestAspectModel( final TestAspect testAspect ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
@@ -234,12 +236,9 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Try<VersionedModel> invalidAspectModel = TestResources
             .getModel( InvalidTestAspect.ASPECT_WITH_BAMM_NAMESPACE_FOR_CUSTOM_UNIT, metaModelVersion );
 
-      final ValidationReport report = service.validate( invalidAspectModel );
-      assertThat( report.conforms() ).isFalse();
-
-      final Collection<? extends ValidationError> errors = report.getValidationErrors();
-      assertThat( errors ).hasSize( 1 );
-      assertThat( report.getValidationErrors().iterator().next() ).isOfAnyClassIn( ValidationError.Processing.class );
+      final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
+      assertThat( violations ).hasSize( 1 );
+      assertThat( violations.get( 0 ) ).isOfAnyClassIn( ProcessingViolation.class );
    }
 
    @ParameterizedTest
@@ -277,5 +276,35 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( model );
       assertThat( violations ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testCycleDetection( final KnownVersion metaModelVersion ) {
+      final Try<VersionedModel> versionedModel = TestResources.getModel( TestAspect.MODEL_WITH_CYCLES, metaModelVersion );
+      final List<Violation> report = service.get( metaModelVersion ).validateModel( versionedModel );
+      assertThat( report.size() ).isEqualTo( 6 );
+      assertThat( report ).containsAll( cycles(
+            ":a -> :b -> :a",
+            ":e -> :f -> :g -> :e",
+            ":h -> :h",
+            ":h -> :i -> :h",
+            ":l -> :l",
+            // TimeSeries are handled differently between v1 and v2 meta models.
+            metaModelVersion.isOlderThan( KnownVersion.BAMM_2_0_0 ) ? ":n -> :refinedValue -> :n" : ":n -> :NTimeSeriesEntity|bamm-e:value -> :n" ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testCycleDetectionWithCycleBreakers( final KnownVersion metaModelVersion ) {
+      final Try<VersionedModel> versionedModel = TestResources.getModel( TestAspect.MODEL_WITH_BROKEN_CYCLES, metaModelVersion );
+      final List<Violation> report = service.get( metaModelVersion ).validateModel( versionedModel );
+      assertThat( report.isEmpty() ).isTrue();
+   }
+
+   private List<Violation> cycles( final String... cycles ) {
+      final List<Violation> errors = new ArrayList<>();
+      Arrays.stream( cycles ).forEach( cycle -> errors.add( new ProcessingViolation( String.format( ModelCycleDetector.ERR_CYCLE_DETECTED, cycle ), null ) ) );
+      return errors;
    }
 }

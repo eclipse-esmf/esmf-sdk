@@ -64,7 +64,6 @@ public class PropertyInstantiator extends Instantiator<Property> {
 
       if ( resourcePropertyMap.containsKey( property ) ) {
          final Property propertyInstance = resourcePropertyMap.get( property );
-         resourcePropertyMap.remove( property );
          return propertyInstance;
       }
       resourcePropertyMap.put( property, defaultPropertyWrapper );

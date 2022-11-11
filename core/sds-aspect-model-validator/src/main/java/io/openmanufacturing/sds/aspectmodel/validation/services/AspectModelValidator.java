@@ -13,9 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.validation.services;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
+import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 import java.io.FileNotFoundException;
@@ -166,8 +164,14 @@ public class AspectModelValidator {
             .flatMap( element -> shaclValidator.validateElement( element ).stream() )
             .toList();
 
-      // The SHACL validation succeeded. But to catch false positives, also try to load the model
       if ( result.isEmpty() ) {
+         // The SHACL validation succeeded, check for cycles in the model.
+         final List<Violation> cycleDetectionReport = new ModelCycleDetector().validateModel( model );
+         if ( !cycleDetectionReport.isEmpty() ) {
+            return cycleDetectionReport;
+         }
+
+         // To catch false positives, also try to load the model
          final Try<Aspect> aspects = AspectModelLoader.fromVersionedModel( model );
          if ( aspects.isFailure() && !(aspects.getCause() instanceof InvalidRootElementCountException) ) {
             return List.of( new ProcessingViolation(
@@ -194,9 +198,9 @@ public class AspectModelValidator {
    /**
     * Validates an Aspect Model that is provided as a {@link Try} of a {@link VersionedModel} that can
     * contain either a syntactically valid (but semantically invalid) Aspect model, or a
-    * {@link RiotException} if a parser error occurred.
+    * {@link RiotException} if a parser error occured.
     *
-    * @param versionedModel The Aspect Model or the corresponding parser error
+    * @param versionedModel The Aspect Model or the corresonding parser error
     * @return Either a {@link ValidationReport.ValidReport} if the model is syntactically correct and conforms to the
     *       Aspect Meta Model semantics or a {@link ValidationReport.InvalidReport} that provides a number of
     *       {@link ValidationError}s that describe all validation violations.
