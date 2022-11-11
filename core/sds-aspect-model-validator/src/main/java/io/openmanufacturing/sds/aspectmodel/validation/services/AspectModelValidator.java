@@ -200,7 +200,7 @@ public class AspectModelValidator {
     * contain either a syntactically valid (but semantically invalid) Aspect model, or a
     * {@link RiotException} if a parser error occurred.
     *
-    * @param versionedModel The Aspect Model or the corresonding parser error
+    * @param versionedModel The Aspect Model or the corresponding parser error
     * @return Either a {@link ValidationReport.ValidReport} if the model is syntactically correct and conforms to the
     *       Aspect Meta Model semantics or a {@link ValidationReport.InvalidReport} that provides a number of
     *       {@link ValidationError}s that describe all validation violations.
