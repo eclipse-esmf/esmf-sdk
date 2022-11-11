@@ -153,7 +153,7 @@
                         </goals>
                         <configuration>
                             <url>
-                                https://raw.githubusercontent.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/159ced3e69e5d694e5158f2942cb3182941cf032/src/main/resources/bamm/meta-model/2.0.0/aspect-meta-model-shapes.ttl
+                                https://raw.githubusercontent.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/5c097dd7357b129ba1771985a9ab1d29fcc32bcd/src/main/resources/bamm/meta-model/2.0.0/aspect-meta-model-shapes.ttl
                             </url>
                             <outputFileName>aspect-meta-model-shapes.ttl</outputFileName>
                             <outputDirectory>${project.build.directory}/classes/bamm/meta-model/2.0.0</outputDirectory>
@@ -167,7 +167,7 @@
                         </goals>
                         <configuration>
                             <url>
-                                https://raw.githubusercontent.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/159ced3e69e5d694e5158f2942cb3182941cf032/src/main/resources/bamm/characteristic/2.0.0/characteristic-shapes.ttl
+                                https://raw.githubusercontent.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/5c097dd7357b129ba1771985a9ab1d29fcc32bcd/src/main/resources/bamm/characteristic/2.0.0/characteristic-shapes.ttl
                             </url>
                             <outputFileName>characteristic-shapes.ttl</outputFileName>
                             <outputDirectory>${project.build.directory}/classes/bamm/characteristic/2.0.0</outputDirectory>
