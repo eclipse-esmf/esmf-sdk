@@ -45,7 +45,6 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
@@ -212,15 +211,15 @@ public abstract class Instantiator<T extends Base> extends AttributeValueRetriev
       if ( characteristicResource.isPresent() ) {
          final Resource characteristic = characteristicResource.get();
          final Optional<Resource> elementCharacteristic = optionalAttributeValue( characteristic, bammc.elementCharacteristic() ).map( Statement::getResource );
-         Collection.CollectionType collectionType = null;
+         CollectionValue.CollectionType collectionType = null;
          if ( isTypeOfOrSubtypeOf( characteristic, bammc.Set() ) ) {
-            collectionType = Collection.CollectionType.SET;
+            collectionType = CollectionValue.CollectionType.SET;
          } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.SortedSet() ) ) {
-            collectionType = Collection.CollectionType.SORTEDSET;
+            collectionType = CollectionValue.CollectionType.SORTEDSET;
          } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.List() ) ) {
-            collectionType = Collection.CollectionType.LIST;
+            collectionType = CollectionValue.CollectionType.LIST;
          } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.Collection() ) ) {
-            collectionType = Collection.CollectionType.COLLECTION;
+            collectionType = CollectionValue.CollectionType.COLLECTION;
          }
          if ( collectionType != null ) {
             return buildCollectionValue( node.as( RDFList.class ), collectionType, elementCharacteristic, type );
@@ -258,7 +257,7 @@ public abstract class Instantiator<T extends Base> extends AttributeValueRetriev
             .orElseThrow( () -> new AspectLoadingException( "Literal can not be parsed: " + literal ) );
    }
 
-   private CollectionValue buildCollectionValue( final RDFList list, final Collection.CollectionType collectionType,
+   private CollectionValue buildCollectionValue( final RDFList list, final CollectionValue.CollectionType collectionType,
          final Optional<Resource> elementCharacteristic, final Type elementType ) {
       final java.util.Collection<Value> values = createEmptyCollectionForType( collectionType );
       list.asJavaList().forEach( element -> values.add( buildValue( element, elementCharacteristic, elementType ) ) );
@@ -288,11 +287,11 @@ public abstract class Instantiator<T extends Base> extends AttributeValueRetriev
       return new DefaultEntityInstance( baseAttributes, assertions, type );
    }
 
-   private java.util.Collection<Value> createEmptyCollectionForType( final Collection.CollectionType collectionType ) {
-      if ( collectionType == Collection.CollectionType.SORTEDSET ) {
+   private java.util.Collection<Value> createEmptyCollectionForType( final CollectionValue.CollectionType collectionType ) {
+      if ( collectionType == CollectionValue.CollectionType.SORTEDSET ) {
          return new LinkedHashSet<>();
       }
-      if ( collectionType == Collection.CollectionType.SET ) {
+      if ( collectionType == CollectionValue.CollectionType.SET ) {
          return new HashSet<>();
       }
       return new ArrayList<>();

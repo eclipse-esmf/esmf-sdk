@@ -25,10 +25,10 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
 public class DefaultCollectionValue implements CollectionValue {
    private final Collection<Value> values;
-   private final io.openmanufacturing.sds.characteristic.Collection.CollectionType collectionType;
+   private final CollectionType collectionType;
    private final Type elementType;
 
-   public DefaultCollectionValue( final Collection<Value> values, final io.openmanufacturing.sds.characteristic.Collection.CollectionType collectionType,
+   public DefaultCollectionValue( final Collection<Value> values, final CollectionType collectionType,
          final Type elementType ) {
       this.values = values;
       this.collectionType = collectionType;
@@ -46,7 +46,7 @@ public class DefaultCollectionValue implements CollectionValue {
    }
 
    @Override
-   public io.openmanufacturing.sds.characteristic.Collection.CollectionType getCollectionType() {
+   public CollectionType getCollectionType() {
       return collectionType;
    }
 

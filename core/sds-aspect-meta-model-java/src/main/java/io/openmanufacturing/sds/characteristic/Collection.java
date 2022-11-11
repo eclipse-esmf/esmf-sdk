@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.characteristic;
 import java.util.Optional;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.metamodel.CollectionValue;
 
 /**
  * A group of values which may be either of a simple or complex type. The values may be duplicated and are not ordered.
@@ -23,9 +24,6 @@ import io.openmanufacturing.sds.metamodel.Characteristic;
  * @since BAMM 1.0.0
  */
 public interface Collection extends Characteristic {
-   enum CollectionType {
-      COLLECTION, SET, SORTEDSET, LIST
-   }
 
    /**
     * @return a {@link boolean} which determines whether the elements in the collection are ordered.
@@ -46,5 +44,5 @@ public interface Collection extends Characteristic {
       return Optional.empty();
    }
 
-   CollectionType getCollectionType();
+   CollectionValue.CollectionType getCollectionType();
 }

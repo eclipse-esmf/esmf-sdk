@@ -137,7 +137,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       result.append( "}}" );
       result.append( "," );
       // Collection.CollectionType collectionType
-      result.append( "io.openmanufacturing.sds.metamodel.Collection.CollectionType." );
+      result.append( CollectionValue.CollectionType.class.getName().replace( "$", "." ) ).append( "." );
       result.append( collection.getCollectionType() ).append( "," );
       // Type element
       result.append( collection.getType().accept( this, context ) );

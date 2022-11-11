@@ -18,6 +18,7 @@ import java.util.StringJoiner;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.characteristic.Collection;
+import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
@@ -71,8 +72,8 @@ public class DefaultCollection extends DefaultCharacteristic implements Collecti
    }
 
    @Override
-   public CollectionType getCollectionType() {
-      return CollectionType.COLLECTION;
+   public CollectionValue.CollectionType getCollectionType() {
+      return CollectionValue.CollectionType.COLLECTION;
    }
 
    /**

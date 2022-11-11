@@ -16,7 +16,11 @@ package io.openmanufacturing.sds.metamodel;
 import java.util.Collection;
 
 public interface CollectionValue extends Value {
-   io.openmanufacturing.sds.characteristic.Collection.CollectionType getCollectionType();
+   enum CollectionType {
+      COLLECTION, SET, SORTEDSET, LIST
+   }
+
+   CollectionType getCollectionType();
 
    Collection<Value> getValues();
 }
