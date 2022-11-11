@@ -87,7 +87,7 @@
 #* @vtlvariable name="ResourceFactory" type="org.apache.jena.rdf.model.ResourceFactory" *#
 #* @vtlvariable name="Scalar" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Scalar>" *#
 #* @vtlvariable name="Set" type="java.lang.Class<io.openmanufacturing.sds.characteristic.Set>" *#
-#* @vtlvariable name="SingleEntity" type="java.lang.Class<io.openmanufacturing.sds.metamodel.SingleEntity>" *#
+#* @vtlvariable name="SingleEntity" type="java.lang.Class<io.openmanufacturing.sds.characteristic.SingleEntity>" *#
 #* @vtlvariable name="SortedSet" type="java.lang.Class<io.openmanufacturing.sds.characteristic.SortedSet>" *#
 #* @vtlvariable name="State" type="java.lang.Class<io.openmanufacturing.sds.characteristic.State>" *#
 #* @vtlvariable name="StaticConstraintContainerProperty" type="java.lang.Class<io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintContainerProperty>" *#

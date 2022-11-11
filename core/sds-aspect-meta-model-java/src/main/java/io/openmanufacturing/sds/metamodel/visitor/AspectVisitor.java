@@ -14,7 +14,7 @@ package io.openmanufacturing.sds.metamodel.visitor;
 
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.characteristic.Code;
 import io.openmanufacturing.sds.characteristic.Collection;
@@ -44,7 +44,7 @@ import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.characteristic.Set;
-import io.openmanufacturing.sds.metamodel.SingleEntity;
+import io.openmanufacturing.sds.characteristic.SingleEntity;
 import io.openmanufacturing.sds.characteristic.SortedSet;
 import io.openmanufacturing.sds.characteristic.State;
 import io.openmanufacturing.sds.metamodel.StructureElement;
@@ -62,7 +62,7 @@ import io.openmanufacturing.sds.metamodel.Value;
  * @param <C> The context of the computation
  */
 public interface AspectVisitor<T, C> {
-   T visitBase( Base base, C context );
+   T visitBase( ModelElement modelElement, C context );
 
    default T visitStructureElement( final StructureElement structureElement, final C context ) {
       return visitBase( structureElement, context );

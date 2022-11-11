@@ -65,7 +65,7 @@ import io.openmanufacturing.sds.constraint.RangeConstraint;
 import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.characteristic.Set;
-import io.openmanufacturing.sds.metamodel.SingleEntity;
+import io.openmanufacturing.sds.characteristic.SingleEntity;
 import io.openmanufacturing.sds.characteristic.SortedSet;
 import io.openmanufacturing.sds.characteristic.State;
 import io.openmanufacturing.sds.metamodel.StructureElement;

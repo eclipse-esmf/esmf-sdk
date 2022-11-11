@@ -33,37 +33,37 @@ import io.openmanufacturing.sds.aspectmodel.java.AspectModelJavaUtil;
 import io.openmanufacturing.sds.aspectmodel.java.ValueExpressionVisitor;
 import io.openmanufacturing.sds.aspectmodel.java.ValueInitializer;
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
-import io.openmanufacturing.sds.metamodel.AbstractEntity;
-import io.openmanufacturing.sds.metamodel.Base;
-import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.characteristic.Code;
 import io.openmanufacturing.sds.characteristic.Collection;
-import io.openmanufacturing.sds.metamodel.CollectionValue;
-import io.openmanufacturing.sds.metamodel.ComplexType;
-import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.characteristic.Duration;
-import io.openmanufacturing.sds.constraint.EncodingConstraint;
-import io.openmanufacturing.sds.metamodel.Entity;
-import io.openmanufacturing.sds.metamodel.EntityInstance;
 import io.openmanufacturing.sds.characteristic.Enumeration;
-import io.openmanufacturing.sds.constraint.FixedPointConstraint;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
-import io.openmanufacturing.sds.constraint.LanguageConstraint;
-import io.openmanufacturing.sds.constraint.LengthConstraint;
-import io.openmanufacturing.sds.constraint.LocaleConstraint;
 import io.openmanufacturing.sds.characteristic.Measurement;
-import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.characteristic.Quantifiable;
-import io.openmanufacturing.sds.metamodel.QuantityKind;
-import io.openmanufacturing.sds.metamodel.QuantityKinds;
-import io.openmanufacturing.sds.constraint.RangeConstraint;
-import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
-import io.openmanufacturing.sds.metamodel.Scalar;
-import io.openmanufacturing.sds.metamodel.ScalarValue;
-import io.openmanufacturing.sds.metamodel.SingleEntity;
+import io.openmanufacturing.sds.characteristic.SingleEntity;
 import io.openmanufacturing.sds.characteristic.State;
 import io.openmanufacturing.sds.characteristic.StructuredValue;
 import io.openmanufacturing.sds.characteristic.Trait;
+import io.openmanufacturing.sds.constraint.EncodingConstraint;
+import io.openmanufacturing.sds.constraint.FixedPointConstraint;
+import io.openmanufacturing.sds.constraint.LanguageConstraint;
+import io.openmanufacturing.sds.constraint.LengthConstraint;
+import io.openmanufacturing.sds.constraint.LocaleConstraint;
+import io.openmanufacturing.sds.constraint.RangeConstraint;
+import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
+import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.metamodel.CollectionValue;
+import io.openmanufacturing.sds.metamodel.ComplexType;
+import io.openmanufacturing.sds.metamodel.Constraint;
+import io.openmanufacturing.sds.metamodel.Entity;
+import io.openmanufacturing.sds.metamodel.EntityInstance;
+import io.openmanufacturing.sds.metamodel.ModelElement;
+import io.openmanufacturing.sds.metamodel.NamedElement;
+import io.openmanufacturing.sds.metamodel.Property;
+import io.openmanufacturing.sds.metamodel.QuantityKind;
+import io.openmanufacturing.sds.metamodel.QuantityKinds;
+import io.openmanufacturing.sds.metamodel.Scalar;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.Units;
@@ -103,7 +103,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    private final Supplier<CodeGenerationException> noTypeException = () -> new CodeGenerationException( "Characteristic is missing its dataType" );
 
    @Override
-   public String visitBase( final Base base, final StaticCodeGenerationContext context ) {
+   public String visitBase( final ModelElement modelElement, final StaticCodeGenerationContext context ) {
       throw new UnsupportedOperationException();
    }
 
@@ -539,7 +539,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       return getMetaModelBaseAttributes( property, context );
    }
 
-   public <T extends IsDescribed & Base> String getMetaModelBaseAttributes( final T element, final StaticCodeGenerationContext context ) {
+   public <T extends NamedElement & ModelElement> String getMetaModelBaseAttributes( final T element, final StaticCodeGenerationContext context ) {
       if ( element.getPreferredNames().isEmpty() && element.getDescriptions().isEmpty() && element.getSee().isEmpty() ) {
          return "MetaModelBaseAttributes.from(" + "KnownVersion." + element.getMetaModelVersion().toString() + ", " + elementUrn( element, context ) + ", "
                + "\"" + element.getName() + "\" )";
@@ -562,7 +562,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       return builder.toString();
    }
 
-   public String elementUrn( final IsDescribed element, final StaticCodeGenerationContext context ) {
+   public String elementUrn( final NamedElement element, final StaticCodeGenerationContext context ) {
       if ( element.getAspectModelUrn().isEmpty() ) {
          return "null";
       }

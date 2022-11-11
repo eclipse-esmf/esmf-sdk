@@ -18,7 +18,7 @@ package io.openmanufacturing.sds.metamodel;
  *
  * @since BAMM 1.0.0
  */
-public interface QuantityKind extends Base, IsDescribed {
+public interface QuantityKind extends NamedElement {
    /**
     * Returns the quantity kind's human-readable name
     */

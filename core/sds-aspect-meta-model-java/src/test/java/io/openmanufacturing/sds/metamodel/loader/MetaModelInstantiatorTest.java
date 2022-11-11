@@ -22,8 +22,7 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorService;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
@@ -42,7 +41,7 @@ public abstract class MetaModelInstantiatorTest extends MetaModelVersions {
       return aspect.getOrElseThrow( () -> new RuntimeException( aspect.getCause() ) );
    }
 
-   <T extends Base & IsDescribed> void assertBaseAttributes( final T base,
+   void assertBaseAttributes( final NamedElement base,
          final AspectModelUrn expectedAspectModelUrn,
          final String expectedName, final String expectedPreferredName, final String expectedDescription,
          final String... expectedSee ) {
@@ -52,7 +51,7 @@ public abstract class MetaModelInstantiatorTest extends MetaModelVersions {
       assertBaseAttributes( base, expectedPreferredName, expectedDescription, expectedSee );
    }
 
-   <T extends Base & IsDescribed> void assertBaseAttributes( final T base,
+   void assertBaseAttributes( final NamedElement base,
          final String expectedPreferredName, final String expectedDescription,
          final String... expectedSee ) {
 

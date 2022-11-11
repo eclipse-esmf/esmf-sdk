@@ -19,8 +19,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.constraint.RangeConstraint;
 import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
@@ -145,7 +144,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
       assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( BoundDefinition.AT_MOST );
    }
 
-   private <T extends Base & IsDescribed> void assertBaseAttributes( final T base ) {
+   private void assertBaseAttributes( final NamedElement base ) {
       assertBaseAttributes( base,
             "Test Range Constraint",
             "This is a test range constraint.",

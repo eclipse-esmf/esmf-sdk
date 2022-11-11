@@ -50,7 +50,7 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.Namespace;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.characteristic.Code;
 import io.openmanufacturing.sds.characteristic.Collection;
@@ -65,7 +65,7 @@ import io.openmanufacturing.sds.characteristic.Enumeration;
 import io.openmanufacturing.sds.metamodel.Event;
 import io.openmanufacturing.sds.constraint.FixedPointConstraint;
 import io.openmanufacturing.sds.metamodel.HasProperties;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.constraint.LanguageConstraint;
 import io.openmanufacturing.sds.constraint.LengthConstraint;
 import io.openmanufacturing.sds.constraint.LocaleConstraint;
@@ -79,7 +79,7 @@ import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.characteristic.Set;
-import io.openmanufacturing.sds.metamodel.SingleEntity;
+import io.openmanufacturing.sds.characteristic.SingleEntity;
 import io.openmanufacturing.sds.characteristic.SortedSet;
 import io.openmanufacturing.sds.characteristic.State;
 import io.openmanufacturing.sds.characteristic.StructuredValue;
@@ -93,18 +93,18 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 /**
  * AspectVisitor that translates an {@link Aspect} into the corresponding {@link Model}.
  *
- * The usual usage is calling {@link #visitAspect(Aspect, Base)}.
+ * The usual usage is calling {@link #visitAspect(Aspect, ModelElement)}.
  * The context (i.e., the second argument of the visit methods) refers to the parent element in the model graph
  * traversal.
  */
 @SuppressWarnings( "squid:S3655" ) // Optional<AspectModelUrn> is checked with isEmpty()
-public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisitor.ElementModel, Base>, Function<Aspect, Model> {
+public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisitor.ElementModel, ModelElement>, Function<Aspect, Model> {
    private final BAMM bamm;
    private final BAMMC bammc;
    private final BAMME bamme;
    private final UNIT unitNamespace;
    private final Namespace namespace;
-   private final Map<IsDescribed, Resource> anonymousResources = new HashMap<>();
+   private final Map<NamedElement, Resource> anonymousResources = new HashMap<>();
    private final List<Resource> resourceList = new LinkedList<>();
    private final List<ComplexType> hasVisited = new LinkedList<>();
 
@@ -151,19 +151,19 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       return ResourceFactory.createTypedLiteral( value );
    }
 
-   private boolean isLocalElement( final IsDescribed element ) {
+   private boolean isLocalElement( final NamedElement element ) {
       return element.getAspectModelUrn().isEmpty()
             || element.getAspectModelUrn().get().getUrnPrefix().equals( namespace.getNamespace() );
    }
 
-   private Resource getElementResource( final IsDescribed element ) {
+   private Resource getElementResource( final NamedElement element ) {
       if ( element.getAspectModelUrn().isEmpty() ) {
          return anonymousResources.computeIfAbsent( element, key -> createResource() );
       }
       return createResource( element.getAspectModelUrn().get().toString() );
    }
 
-   private Model serializeDescriptions( final Resource elementResource, final IsDescribed element ) {
+   private Model serializeDescriptions( final Resource elementResource, final NamedElement element ) {
       final Model model = ModelFactory.createDefaultModel();
       element.getSee().forEach( seeValue -> model.add( elementResource, bamm.see(), ResourceFactory.createResource( seeValue ) ) );
       element.getPreferredNames().stream().map( this::serializeLocalizedString ).forEach( preferredName ->
@@ -254,7 +254,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitBase( final Base base, final Base context ) {
+   public ElementModel visitBase( final ModelElement modelElement, final ModelElement context ) {
       return new ElementModel( ModelFactory.createDefaultModel(), Optional.empty() );
    }
 
@@ -283,7 +283,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitCollection( final Collection collection, final Base context ) {
+   public ElementModel visitCollection( final Collection collection, final ModelElement context ) {
       final Model model = createCollectionModel( collection );
       final Resource resource = getElementResource( collection );
       model.add( resource, RDF.type, bammc.Collection() );
@@ -291,7 +291,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitList( final io.openmanufacturing.sds.characteristic.List list, final Base context ) {
+   public ElementModel visitList( final io.openmanufacturing.sds.characteristic.List list, final ModelElement context ) {
       final Model model = createCollectionModel( list );
       final Resource resource = getElementResource( list );
       model.add( resource, RDF.type, bammc.List() );
@@ -299,7 +299,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitSet( final Set set, final Base context ) {
+   public ElementModel visitSet( final Set set, final ModelElement context ) {
       final Model model = createCollectionModel( set );
       final Resource resource = getElementResource( set );
       model.add( resource, RDF.type, bammc.Set() );
@@ -307,7 +307,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitSortedSet( final SortedSet sortedSet, final Base context ) {
+   public ElementModel visitSortedSet( final SortedSet sortedSet, final ModelElement context ) {
       final Model model = createCollectionModel( sortedSet );
       final Resource resource = getElementResource( sortedSet );
       model.add( resource, RDF.type, bammc.SortedSet() );
@@ -315,7 +315,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitTimeSeries( final TimeSeries timeSeries, final Base context ) {
+   public ElementModel visitTimeSeries( final TimeSeries timeSeries, final ModelElement context ) {
       final Model model = createCollectionModel( timeSeries );
       final Resource resource = getElementResource( timeSeries );
       model.add( resource, RDF.type, bammc.TimeSeries() );
@@ -323,7 +323,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitConstraint( final Constraint constraint, final Base context ) {
+   public ElementModel visitConstraint( final Constraint constraint, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       if ( !isLocalElement( constraint ) ) {
          return new ElementModel( model, Optional.empty() );
@@ -334,7 +334,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitEncodingConstraint( final EncodingConstraint encodingConstraint, final Base context ) {
+   public ElementModel visitEncodingConstraint( final EncodingConstraint encodingConstraint, final ModelElement context ) {
       final Model model = visitConstraint( encodingConstraint, null ).getModel();
       final Resource resource = getElementResource( encodingConstraint );
       model.add( resource, RDF.type, bammc.EncodingConstraint() );
@@ -344,7 +344,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitLanguageConstraint( final LanguageConstraint languageConstraint, final Base context ) {
+   public ElementModel visitLanguageConstraint( final LanguageConstraint languageConstraint, final ModelElement context ) {
       final Model model = visitConstraint( languageConstraint, null ).getModel();
       final Resource resource = getElementResource( languageConstraint );
       model.add( resource, RDF.type, bammc.LanguageConstraint() );
@@ -353,7 +353,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitLocaleConstraint( final LocaleConstraint localeConstraint, final Base context ) {
+   public ElementModel visitLocaleConstraint( final LocaleConstraint localeConstraint, final ModelElement context ) {
       final Model model = visitConstraint( localeConstraint, null ).getModel();
       final Resource resource = getElementResource( localeConstraint );
       model.add( resource, RDF.type, bammc.LocaleConstraint() );
@@ -362,7 +362,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitLengthConstraint( final LengthConstraint lengthConstraint, final Base context ) {
+   public ElementModel visitLengthConstraint( final LengthConstraint lengthConstraint, final ModelElement context ) {
       final Model model = visitConstraint( lengthConstraint, null ).getModel();
       final Resource resource = getElementResource( lengthConstraint );
       lengthConstraint.getMinValue().stream().map( minValue ->
@@ -376,7 +376,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitRangeConstraint( final RangeConstraint rangeConstraint, final Base context ) {
+   public ElementModel visitRangeConstraint( final RangeConstraint rangeConstraint, final ModelElement context ) {
       final Model model = visitConstraint( rangeConstraint, null ).getModel();
       final Resource resource = getElementResource( rangeConstraint );
       model.add( resource, RDF.type, bammc.RangeConstraint() );
@@ -396,7 +396,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint, final Base context ) {
+   public ElementModel visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint, final ModelElement context ) {
       final Model model = visitConstraint( regularExpressionConstraint, null ).getModel();
       final Resource resource = getElementResource( regularExpressionConstraint );
       model.add( resource, RDF.type, bammc.RegularExpressionConstraint() );
@@ -405,7 +405,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitFixedPointConstraint( final FixedPointConstraint fixedPointConstraint, final Base context ) {
+   public ElementModel visitFixedPointConstraint( final FixedPointConstraint fixedPointConstraint, final ModelElement context ) {
       final Model model = visitConstraint( fixedPointConstraint, null ).getModel();
       final Resource resource = getElementResource( fixedPointConstraint );
       model.add( resource, RDF.type, bammc.FixedPointConstraint() );
@@ -417,7 +417,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitCode( final Code code, final Base context ) {
+   public ElementModel visitCode( final Code code, final ModelElement context ) {
       final Model model = createCharacteristicsModel( code );
       final Resource resource = getElementResource( code );
       model.add( resource, RDF.type, bammc.Code() );
@@ -425,7 +425,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitDuration( final Duration duration, final Base context ) {
+   public ElementModel visitDuration( final Duration duration, final ModelElement context ) {
       final Model model = createCharacteristicsModel( duration );
       final Resource resource = getElementResource( duration );
       model.add( resource, RDF.type, bammc.Duration() );
@@ -436,7 +436,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitEither( final Either either, final Base context ) {
+   public ElementModel visitEither( final Either either, final ModelElement context ) {
       final Model model = createCharacteristicsModel( either );
       final Resource resource = getElementResource( either );
       model.add( resource, RDF.type, bammc.Either() );
@@ -450,7 +450,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitEnumeration( final Enumeration enumeration, final Base context ) {
+   public ElementModel visitEnumeration( final Enumeration enumeration, final ModelElement context ) {
       final Model model = createCharacteristicsModel( enumeration );
       final Resource resource = getElementResource( enumeration );
       if ( !(enumeration.is( State.class )) ) {
@@ -467,7 +467,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitEntityInstance( final EntityInstance instance, final Base context ) {
+   public ElementModel visitEntityInstance( final EntityInstance instance, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       final Resource resource = getElementResource( instance );
       model.add( resource, RDF.type, getElementResource( instance.getEntityType() ) );
@@ -481,7 +481,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitScalarValue( final ScalarValue value, final Base context ) {
+   public ElementModel visitScalarValue( final ScalarValue value, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       final Type type = value.getType();
       if ( type.getUrn().equals( RDF.langString.getURI() ) ) {
@@ -499,7 +499,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitCollectionValue( final CollectionValue collection, final Base context ) {
+   public ElementModel visitCollectionValue( final CollectionValue collection, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       final List<RDFNode> elements = collection.getValues().stream().flatMap( value -> {
          final ElementModel valueElementModel = value.accept( this, collection );
@@ -511,7 +511,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitState( final State state, final Base context ) {
+   public ElementModel visitState( final State state, final ModelElement context ) {
       final Model model = visitEnumeration( state, null ).getModel();
       final Resource resource = getElementResource( state );
       model.add( resource, RDF.type, bammc.State() );
@@ -523,14 +523,14 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    private Optional<Statement> getUnitStatement( final Quantifiable elementWithUnit, final Resource targetResource ) {
       return elementWithUnit.getUnit()
-            .flatMap( IsDescribed::getAspectModelUrn )
+            .flatMap( NamedElement::getAspectModelUrn )
             .map( AspectModelUrn::toString )
             .map( unitUrn -> createStatement( targetResource, bammc.unit(),
                   createResource( unitUrn ) ) );
    }
 
    @Override
-   public ElementModel visitMeasurement( final Measurement measurement, final Base context ) {
+   public ElementModel visitMeasurement( final Measurement measurement, final ModelElement context ) {
       final Model model = createCharacteristicsModel( measurement );
       final Resource resource = getElementResource( measurement );
       model.add( resource, RDF.type, bammc.Measurement() );
@@ -541,7 +541,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitQuantifiable( final Quantifiable quantifiable, final Base context ) {
+   public ElementModel visitQuantifiable( final Quantifiable quantifiable, final ModelElement context ) {
       final Model model = createCharacteristicsModel( quantifiable );
       final Resource resource = getElementResource( quantifiable );
       model.add( resource, RDF.type, bammc.Quantifiable() );
@@ -552,7 +552,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitSingleEntity( final SingleEntity singleEntity, final Base context ) {
+   public ElementModel visitSingleEntity( final SingleEntity singleEntity, final ModelElement context ) {
       final Model model = createCharacteristicsModel( singleEntity );
       final Resource resource = getElementResource( singleEntity );
       model.add( resource, RDF.type, bammc.SingleEntity() );
@@ -560,7 +560,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitStructuredValue( final StructuredValue structuredValue, final Base context ) {
+   public ElementModel visitStructuredValue( final StructuredValue structuredValue, final ModelElement context ) {
       final Model model = createCharacteristicsModel( structuredValue );
       final Resource resource = getElementResource( structuredValue );
       model.add( resource, RDF.type, bammc.StructuredValue() );
@@ -581,7 +581,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitTrait( final Trait trait, final Base context ) {
+   public ElementModel visitTrait( final Trait trait, final ModelElement context ) {
       final Model model = createCharacteristicsModel( trait, true );
       final Resource resource = getElementResource( trait );
       model.add( resource, RDF.type, bammc.Trait() );
@@ -599,7 +599,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitAspect( final Aspect aspect, final Base context ) {
+   public ElementModel visitAspect( final Aspect aspect, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       final Resource resource = getElementResource( aspect );
       model.add( resource, RDF.type, bamm.Aspect() );
@@ -618,7 +618,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @SuppressWarnings( "squid:S3655" )
    @Override
-   public ElementModel visitProperty( final Property property, final Base context ) {
+   public ElementModel visitProperty( final Property property, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       if ( property.getExtends().isPresent() ) {
          final Property superProperty = property.getExtends().get();
@@ -664,7 +664,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitOperation( final Operation operation, final Base context ) {
+   public ElementModel visitOperation( final Operation operation, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       final Resource resource = getElementResource( operation );
       model.add( resource, RDF.type, bamm.Operation() );
@@ -678,7 +678,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitEvent( final Event event, final Base context ) {
+   public ElementModel visitEvent( final Event event, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       final Resource resource = getElementResource( event );
       model.add( resource, RDF.type, bamm.Event() );
@@ -688,7 +688,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitCharacteristic( final Characteristic characteristic, final Base context ) {
+   public ElementModel visitCharacteristic( final Characteristic characteristic, final ModelElement context ) {
       if ( !isLocalElement( characteristic ) ) {
          return new ElementModel( ModelFactory.createDefaultModel(), characteristic.getAspectModelUrn().map( urn -> createResource( urn.toString() ) ) );
       }
@@ -699,7 +699,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitComplexType( final ComplexType complexType, final Base context ) {
+   public ElementModel visitComplexType( final ComplexType complexType, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       if ( hasVisited.contains( complexType ) ) {
          return new ElementModel( model, Optional.empty() );
@@ -726,7 +726,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitAbstractEntity( final AbstractEntity abstractEntity, final Base context ) {
+   public ElementModel visitAbstractEntity( final AbstractEntity abstractEntity, final ModelElement context ) {
       if ( abstractEntity.getUrn().startsWith( bamme.getNamespace() ) ) {
          return new ElementModel( ModelFactory.createDefaultModel(),
                abstractEntity.getAspectModelUrn().map( urn -> ResourceFactory.createResource( urn.toString() ) ) );
@@ -737,7 +737,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitUnit( final Unit unit, final Base context ) {
+   public ElementModel visitUnit( final Unit unit, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       final String unitUrn = unit.getAspectModelUrn().map( AspectModelUrn::toString )
             .orElseThrow( () -> new InvalidModelException( "Invalid unit without URN." ) );
@@ -755,7 +755,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitQuantityKind( final QuantityKind quantityKind, final Base context ) {
+   public ElementModel visitQuantityKind( final QuantityKind quantityKind, final ModelElement context ) {
       return new ElementModel( ModelFactory.createDefaultModel(), Optional.empty() );
    }
 

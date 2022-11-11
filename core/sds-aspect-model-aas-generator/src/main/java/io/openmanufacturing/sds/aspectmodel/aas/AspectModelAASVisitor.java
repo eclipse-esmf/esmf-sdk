@@ -72,7 +72,7 @@ import io.adminshell.aas.v3.model.impl.DefaultSubmodelElementCollection;
 import io.adminshell.aas.v3.model.impl.DefaultValueList;
 import io.adminshell.aas.v3.model.impl.DefaultValueReferencePair;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.characteristic.Code;
 import io.openmanufacturing.sds.characteristic.Collection;
@@ -80,11 +80,11 @@ import io.openmanufacturing.sds.characteristic.Duration;
 import io.openmanufacturing.sds.characteristic.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.characteristic.Enumeration;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.characteristic.Measurement;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.characteristic.Quantifiable;
-import io.openmanufacturing.sds.metamodel.SingleEntity;
+import io.openmanufacturing.sds.characteristic.SingleEntity;
 import io.openmanufacturing.sds.characteristic.SortedSet;
 import io.openmanufacturing.sds.characteristic.State;
 import io.openmanufacturing.sds.characteristic.StructuredValue;
@@ -137,7 +137,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    private final Set<Property> recursiveProperty = new HashSet<>();
 
    @Override
-   public AssetAdministrationShellEnvironment visitBase( final Base base, final Context context ) {
+   public AssetAdministrationShellEnvironment visitBase( final ModelElement modelElement, final Context context ) {
       return new DefaultAssetAdministrationShellEnvironment.Builder().build();
    }
 
@@ -262,7 +262,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
             .build();
    }
 
-   private Identifier extractIdentifier( final IsDescribed element ) {
+   private Identifier extractIdentifier( final NamedElement element ) {
       return new DefaultIdentifier.Builder()
             .identifier( determineIdentifierFor( element ) )
             .idType( IdentifierType.CUSTOM )
@@ -341,11 +341,11 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return new DefaultReference.Builder().key( key ).build();
    }
 
-   private String determineIdentifierFor( final IsDescribed isDescribed ) {
-      if ( isDescribed.getAspectModelUrn().isPresent() ) {
-         return isDescribed.getAspectModelUrn().get().toString();
+   private String determineIdentifierFor( final NamedElement namedElement ) {
+      if ( namedElement.getAspectModelUrn().isPresent() ) {
+         return namedElement.getAspectModelUrn().get().toString();
       } else {
-         return isDescribed.getName();
+         return namedElement.getName();
       }
    }
 

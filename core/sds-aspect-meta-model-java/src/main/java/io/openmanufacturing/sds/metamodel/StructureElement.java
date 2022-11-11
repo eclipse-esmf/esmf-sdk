@@ -16,5 +16,5 @@ package io.openmanufacturing.sds.metamodel;
 /**
  * Represents structural model elements, i.e. that are named and have {@link Property}s
  */
-public interface StructureElement extends Base, IsDescribed, HasProperties {
+public interface StructureElement extends NamedElement, HasProperties {
 }

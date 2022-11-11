@@ -23,7 +23,7 @@ import io.openmanufacturing.sds.characteristic.Trait;
  *
  * @since BAMM 1.0.0
  */
-public interface Property extends Base, IsDescribed {
+public interface Property extends NamedElement {
 
    /**
     * @return the {@link Characteristic} describing this Property. This can be empty when the Property is abstract.

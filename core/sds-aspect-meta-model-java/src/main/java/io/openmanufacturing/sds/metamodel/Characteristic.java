@@ -20,7 +20,7 @@ import java.util.Optional;
  *
  * @since BAMM 1.0.0
  */
-public interface Characteristic extends Base, IsDescribed {
+public interface Characteristic extends NamedElement {
 
    /**
     * The data type of the {@link Property} described by this {@link Characteristic}.

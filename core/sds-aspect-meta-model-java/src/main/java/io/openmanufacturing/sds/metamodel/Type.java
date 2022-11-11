@@ -16,7 +16,7 @@ package io.openmanufacturing.sds.metamodel;
 /**
  * Marker interface which defines types to be used as data type of a {@link Characteristic}.
  */
-public interface Type extends Base {
+public interface Type extends ModelElement {
    /**
     * @return the URN which identifies the type
     */

@@ -15,7 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.generator;
 
 import java.util.function.BiFunction;
 
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 
 /**
  * A generator that can take an Aspect model element (e.g. an Aspect or an Enumeration) as input and generate an {@link
@@ -27,6 +27,6 @@ import io.openmanufacturing.sds.metamodel.Base;
  * @param <C> the configuration for the generation
  * @param <R> the result type
  */
-public interface ArtifactGenerator<I, T, E extends Base, C extends GenerationConfig, R extends Artifact<I, T>>
+public interface ArtifactGenerator<I, T, E extends ModelElement, C extends GenerationConfig, R extends Artifact<I, T>>
       extends BiFunction<E, C, R> {
 }

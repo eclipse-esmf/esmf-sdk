@@ -25,7 +25,7 @@ import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 /**
  * Represents model elements that have human-readable names and descriptions
  */
-public interface IsDescribed {
+public interface NamedElement extends ModelElement {
    /**
     * @return the URN which identifies an Aspect Model element.
     */

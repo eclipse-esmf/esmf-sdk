@@ -26,7 +26,7 @@
 #* @vtlvariable name="either" type="io.openmanufacturing.sds.characteristic.Either" *#
 #* @vtlvariable name="scalar" type="io.openmanufacturing.sds.metamodel.Scalar" *#
 #* @vtlvariable name="entity" type="io.openmanufacturing.sds.metamodel.Entity" *#
-#* @vtlvariable name="singleEntity" type="io.openmanufacturing.sds.metamodel.SingleEntity" *#
+#* @vtlvariable name="singleEntity" type="io.openmanufacturing.sds.characteristic.SingleEntity" *#
 #* @vtlvariable name="map" type="java.util.HashMap<java.lang.String,Object>" *#
 #* @vtlvariable name="timeSeries" type="io.openmanufacturing.sds.characteristic.TimeSeries" *#
 #* @vtlvariable name="localeConstraint" type="io.openmanufacturing.sds.constraint.LocaleConstraint" *#

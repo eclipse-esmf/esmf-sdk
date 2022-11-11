@@ -20,15 +20,15 @@ import java.util.Set;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
-import io.openmanufacturing.sds.metamodel.Base;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.ModelElement;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 
 /**
  * The base implemenation of all model elements.
  */
-public abstract class BaseImpl implements Base, IsDescribed, Comparable<BaseImpl> {
+public abstract class ModelElementImpl implements ModelElement, NamedElement, Comparable<ModelElementImpl> {
    private final KnownVersion metaModelVersion;
    private final Optional<AspectModelUrn> urn;
    private final String name;
@@ -37,7 +37,7 @@ public abstract class BaseImpl implements Base, IsDescribed, Comparable<BaseImpl
    private final List<String> see;
    private final boolean hasSyntheticName;
 
-   BaseImpl( final MetaModelBaseAttributes metaModelBaseAttributes ) {
+   ModelElementImpl( final MetaModelBaseAttributes metaModelBaseAttributes ) {
       metaModelVersion = metaModelBaseAttributes.getMetaModelVersion();
       urn = metaModelBaseAttributes.getUrn();
       name = metaModelBaseAttributes.getName();
@@ -113,7 +113,7 @@ public abstract class BaseImpl implements Base, IsDescribed, Comparable<BaseImpl
       if ( o == null || getClass() != o.getClass() ) {
          return false;
       }
-      final BaseImpl base = (BaseImpl) o;
+      final ModelElementImpl base = (ModelElementImpl) o;
       return Objects.equals( urn, base.urn ) &&
             Objects.equals( name, base.name );
    }
@@ -124,13 +124,13 @@ public abstract class BaseImpl implements Base, IsDescribed, Comparable<BaseImpl
    }
 
    @Override
-   public int compareTo( BaseImpl o ) {
+   public int compareTo( ModelElementImpl o ) {
       if ( this.urn.isPresent() && o.urn.isPresent() )
          return this.urn.get().compareTo( o.urn.get() );
       return Comparator
-            .comparing( BaseImpl::getMetaModelVersion )
-            .thenComparing( BaseImpl::getName )
-            .thenComparing( BaseImpl::hasSyntheticName )
+            .comparing( ModelElementImpl::getMetaModelVersion )
+            .thenComparing( ModelElementImpl::getName )
+            .thenComparing( ModelElementImpl::hasSyntheticName )
             .compare( this, o );
    }
 }

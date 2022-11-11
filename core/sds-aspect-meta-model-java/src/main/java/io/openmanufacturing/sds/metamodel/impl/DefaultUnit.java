@@ -24,7 +24,7 @@ import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultUnit extends BaseImpl implements Unit {
+public class DefaultUnit extends ModelElementImpl implements Unit {
    private final Optional<String> symbol;
    private final Optional<String> code;
    private final Optional<String> referenceUnit;

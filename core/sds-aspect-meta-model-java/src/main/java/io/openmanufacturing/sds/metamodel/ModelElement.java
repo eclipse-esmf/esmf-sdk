@@ -19,7 +19,7 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 /**
  * The Base interface provides all facilities that all Aspect Model elements have.
  */
-public interface Base {
+public interface ModelElement {
    /**
     * @return the version of the Aspect Meta Model on which the Aspect Model is based.
     */
@@ -27,11 +27,11 @@ public interface Base {
 
    <T, C> T accept( AspectVisitor<T, C> visitor, C context );
 
-   default <T extends Base> boolean is( final Class<T> class_ ) {
+   default <T extends ModelElement> boolean is( final Class<T> class_ ) {
       return class_.isAssignableFrom( getClass() );
    }
 
-   default <T extends Base> T as( final Class<T> class_ ) {
+   default <T extends ModelElement> T as( final Class<T> class_ ) {
       return class_.cast( this );
    }
 }

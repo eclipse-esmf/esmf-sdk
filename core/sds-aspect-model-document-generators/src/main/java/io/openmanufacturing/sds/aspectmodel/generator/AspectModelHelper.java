@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.SingleEntity;
+import io.openmanufacturing.sds.characteristic.SingleEntity;
 import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
@@ -114,19 +114,19 @@ public class AspectModelHelper {
       return number + 1;
    }
 
-   private static String namespaceAnchorPart( final IsDescribed modelElement ) {
+   private static String namespaceAnchorPart( final NamedElement modelElement ) {
       return Optional.ofNullable( modelElement )
-            .flatMap( IsDescribed::getAspectModelUrn )
+            .flatMap( NamedElement::getAspectModelUrn )
             .map( urn -> urn.getNamespace().replace( ".", "-" ) ).orElse( "" );
    }
 
-   public static String buildAnchor( final IsDescribed modelElement, final IsDescribed parentElement, final String suffix ) {
+   public static String buildAnchor( final NamedElement modelElement, final NamedElement parentElement, final String suffix ) {
       final String parentNamespaceAnchorPart = namespaceAnchorPart( parentElement );
       final String parentPart = suffix.equals( "property" ) ? parentNamespaceAnchorPart + "-"
-            + Optional.ofNullable( parentElement ).map( IsDescribed::getName ).orElse( "" ) + "-" : "";
+            + Optional.ofNullable( parentElement ).map( NamedElement::getName ).orElse( "" ) + "-" : "";
 
-      if ( ((Base) modelElement).is( Property.class ) ) {
-         final Property property = ((Base) modelElement).as( Property.class );
+      if ( ((ModelElement) modelElement).is( Property.class ) ) {
+         final Property property = ((ModelElement) modelElement).as( Property.class );
          if ( property.getExtends().isPresent() ) {
             // The Property actually extends another (possibly Abstract) Property, so it won't have an Aspect Model URN on its own.
             // Use the parent element's namespace for the anchor.
