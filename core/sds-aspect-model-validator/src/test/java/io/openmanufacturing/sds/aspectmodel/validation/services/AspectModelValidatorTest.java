@@ -61,23 +61,6 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       assertThat( violations ).isEmpty();
    }
 
-   /**
-    * Test for a model that passes validation via BAMM's SHACL shapes but is actually invalid and can not be loaded using
-    * {@link io.openmanufacturing.sds.metamodel.loader.AspectModelLoader#fromVersionedModel(VersionedModel)}.
-    * This method and the corresponding test model should be removed once
-    * <a href="https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues/173">BAMM-173</a> has been addressed
-    * @param metaModelVersion the meta model version
-    */
-   @ParameterizedTest
-   @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testFalsePositiveValidation( final KnownVersion metaModelVersion ) {
-      final TestModel testModel = InvalidTestAspect.ASPECT_WITH_FALSE_POSITIVE_VALIDATION;
-      final Try<VersionedModel> aspectModel = TestResources.getModel( testModel, metaModelVersion );
-      final List<Violation> violations = service.get( metaModelVersion ).validateModel( aspectModel );
-      assertThat( violations ).isNotEmpty();
-      assertThat( violations.get( 0 ) ).isOfAnyClassIn( ProcessingViolation.class );
-   }
-
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_CONSTRAINTS",
