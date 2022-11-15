@@ -28,6 +28,10 @@
     <name>SDS Aspect Meta Model Resolver</name>
     <packaging>jar</packaging>
 
+    <properties>
+        <bamm-revision>https://raw.githubusercontent.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/5c097dd7357b129ba1771985a9ab1d29fcc32bcd</bamm-revision>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.openmanufacturing</groupId>
@@ -126,10 +130,10 @@
                                     <artifactId>sds-aspect-meta-model</artifactId>
                                     <version>${aspect-meta-model-version}</version>
                                     <type>jar</type>
-                                    <overWrite>true</overWrite>
+                                    <overWrite>false</overWrite>
                                     <outputDirectory>${project.build.directory}/classes</outputDirectory>
                                     <excludes>
-                                        bamm/meta-model/2.0.0/aspect-meta-model-shapes.ttl,bamm/characteristic/2.0.0/characteristic-shapes.ttl
+                                        bamm/meta-model/1.0.0/aspect-meta-model-shapes.ttl,bamm/characteristic/1.0.0/characteristic-shapes.ttl,bamm/meta-model/2.0.0/aspect-meta-model-shapes.ttl,bamm/characteristic/2.0.0/characteristic-shapes.ttl
                                     </excludes>
                                 </artifactItem>
                             </artifactItems>
@@ -146,31 +150,71 @@
                 <version>${download-maven-plugin-version}</version>
                 <executions>
                     <execution>
-                        <id>download-meta-model-shapes</id>
+                        <id>download-meta-model-shapes-1-0-0</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>wget</goal>
                         </goals>
                         <configuration>
                             <url>
-                                https://raw.githubusercontent.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/5c097dd7357b129ba1771985a9ab1d29fcc32bcd/src/main/resources/bamm/meta-model/2.0.0/aspect-meta-model-shapes.ttl
+                                ${bamm-revision}/src/main/resources/bamm/meta-model/1.0.0/aspect-meta-model-shapes.ttl
                             </url>
                             <outputFileName>aspect-meta-model-shapes.ttl</outputFileName>
-                            <outputDirectory>${project.build.directory}/classes/bamm/meta-model/2.0.0</outputDirectory>
+                            <outputDirectory>${project.build.directory}/classes/bamm/meta-model/1.0.0</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <followRedirects>true</followRedirects>
+                            <skipCache>true</skipCache>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>download-characteristics-shapes</id>
+                        <id>download-meta-model-shapes-2-0-0</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>wget</goal>
                         </goals>
                         <configuration>
                             <url>
-                                https://raw.githubusercontent.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/5c097dd7357b129ba1771985a9ab1d29fcc32bcd/src/main/resources/bamm/characteristic/2.0.0/characteristic-shapes.ttl
+                                ${bamm-revision}/src/main/resources/bamm/meta-model/2.0.0/aspect-meta-model-shapes.ttl
+                            </url>
+                            <outputFileName>aspect-meta-model-shapes.ttl</outputFileName>
+                            <outputDirectory>${project.build.directory}/classes/bamm/meta-model/2.0.0</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <followRedirects>true</followRedirects>
+                            <skipCache>true</skipCache>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-characteristics-shapes-1-0-0</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>
+                                ${bamm-revision}/src/main/resources/bamm/characteristic/1.0.0/characteristic-shapes.ttl
+                            </url>
+                            <outputFileName>characteristic-shapes.ttl</outputFileName>
+                            <outputDirectory>${project.build.directory}/classes/bamm/characteristic/1.0.0</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <followRedirects>true</followRedirects>
+                            <skipCache>true</skipCache>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>download-characteristics-shapes-2-0-0</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>
+                                ${bamm-revision}/src/main/resources/bamm/characteristic/2.0.0/characteristic-shapes.ttl
                             </url>
                             <outputFileName>characteristic-shapes.ttl</outputFileName>
                             <outputDirectory>${project.build.directory}/classes/bamm/characteristic/2.0.0</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <followRedirects>true</followRedirects>
+                            <skipCache>true</skipCache>
                         </configuration>
                     </execution>
                 </executions>
