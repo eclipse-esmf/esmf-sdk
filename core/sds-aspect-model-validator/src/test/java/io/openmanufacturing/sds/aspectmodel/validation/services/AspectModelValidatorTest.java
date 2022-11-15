@@ -219,12 +219,9 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Try<VersionedModel> invalidAspectModel = TestResources
             .getModel( InvalidTestAspect.ASPECT_WITH_BAMM_NAMESPACE_FOR_CUSTOM_UNIT, metaModelVersion );
 
-      final ValidationReport report = service.validate( invalidAspectModel );
-      assertThat( report.conforms() ).isFalse();
-
-      final Collection<? extends ValidationError> errors = report.getValidationErrors();
+      final List<Violation> errors = service.get( metaModelVersion ).validateModel( invalidAspectModel );
       assertThat( errors ).hasSize( 1 );
-      assertThat( report.getValidationErrors().iterator().next() ).isOfAnyClassIn( ValidationError.Processing.class );
+      assertThat( errors.get( 0 ) ).isOfAnyClassIn( ProcessingViolation.class );
    }
 
    @ParameterizedTest
