@@ -12,9 +12,7 @@
  */
 package io.openmanufacturing.sds.aspectmodel.aas;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -227,7 +225,9 @@ class AspectModelAASGeneratorTest {
          value = TestAspect.class,
          mode = EnumSource.Mode.EXCLUDE,
          names = {
-               "ASPECT_WITH_STRING_ENUMERATION"
+               "ASPECT_WITH_STRING_ENUMERATION",
+               "MODEL_WITH_CYCLES",
+               "MODEL_WITH_BROKEN_CYCLES"
          } )
    // anonymous enumeration in test has no urn for enum values but is required for Concept
    // Description referencing
