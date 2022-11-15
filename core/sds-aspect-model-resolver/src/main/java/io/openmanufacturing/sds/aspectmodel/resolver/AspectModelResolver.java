@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.aspectmodel.resolver;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -97,11 +98,23 @@ public class AspectModelResolver {
     * @return The resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolver, final AspectModelUrn input ) {
-      final Try<Model> mergedModel = resolve( input.toString(), resolver );
+      return resolveAspectModel( resolver, List.of( input ) );
+   }
+
+   /**
+    * Method to resolve multiple {@link AspectModelUrn}s using a suitable {@link ResolutionStrategy}.
+    * This creates the closure (merged model) of all referenced models and the corresponding meta model.
+    *
+    * @param resolver The strategy to resolve input URNs to RDF models
+    * @param input The input to be resolved by the strategy
+    * @return The resolved model on success
+    */
+   public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolver, final List<AspectModelUrn> input ) {
+      final Try<Model> mergedModel = resolve( input.stream().map( AspectModelUrn::toString ).toList(), resolver );
 
       if ( mergedModel.isFailure() ) {
          if ( mergedModel.getCause() instanceof FileNotFoundException ) {
-            return Try.failure( new ModelResolutionException( "While trying to resolve " + input + ": " + mergedModel.getCause() ) );
+            return Try.failure( new ModelResolutionException( "Could not resolve " + input, mergedModel.getCause() ) );
          }
          return Try.failure( mergedModel.getCause() );
       }
@@ -151,18 +164,20 @@ public class AspectModelResolver {
    }
 
    /**
-    * The main model resolution method that takes an Aspect Model element URN and a resolution strategy as input.
-    * The strategy is applied to the URN to load a model, and then repeated for all URNs in the loaded model that
+    * The main model resolution method that takes Aspect Model element URNs and a resolution strategy as input.
+    * The strategy is applied to the URNs to load a model, and then repeated for all URNs in the loaded model that
     * have not yet been loaded.
-    * @param urn the Aspect Model element URN
+    * @param urns the Aspect Model element URNs
     * @param resolutionStrategy the resolution strategy that knowns how to turn a URN into a Model
     * @return the fully resolved model, or a failure if one of the transitively referenced elements can't be found
     */
-   private Try<Model> resolve( final String urn, final ResolutionStrategy resolutionStrategy ) {
+   private Try<Model> resolve( final List<String> urns, final ResolutionStrategy resolutionStrategy ) {
       final Model result = ModelFactory.createDefaultModel();
       final Stack<String> unresolvedUrns = new Stack<>();
       final Set<Model> mergedModels = new HashSet<>();
-      unresolvedUrns.push( urn );
+      for ( final String urn : urns ) {
+         unresolvedUrns.push( urn );
+      }
 
       while ( !unresolvedUrns.isEmpty() ) {
          final String urnToResolve = unresolvedUrns.pop();
@@ -219,7 +234,8 @@ public class AspectModelResolver {
          }
          return resolutionStrategy.apply( aspectModelUrn ).flatMap( model -> {
             if ( !model.contains( model.createResource( urn ), RDF.type, (RDFNode) null ) ) {
-               return Try.failure( new ModelResolutionException( "Resolution strategy returned a model which does contain element definition for " + urn ) );
+               return Try.failure(
+                     new ModelResolutionException( "Resolution strategy returned a model which does not contain element definition for " + urn ) );
             }
             return Try.success( model );
          } );

@@ -13,7 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 
@@ -38,7 +38,7 @@ public class GenerateDocumentationTest extends AspectModelMojoTest {
       final Mojo generateDocumentation = lookupMojo( "generateDocumentation", testPom );
       assertThatCode( generateDocumentation::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessage( "Validation report: Validation failed: \nThe Aspect Model contains invalid syntax at line number 17 and column number 2." );
+            .hasMessageContaining( "Syntax error in line 17, column 2" );
       assertGeneratedFileDoesNotExist( "Aspect_en.html" );
    }
 

@@ -173,6 +173,6 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
                   .getOrElse( false ) )
             .findFirst()
             .orElse( Try.failure( new FileNotFoundException(
-                  "The model file " + aspectModelUrn + " could not be found in directory: " + directory ) ) );
+                  "No model file containing " + aspectModelUrn + " could be found in directory: " + directory ) ) );
    }
 }
