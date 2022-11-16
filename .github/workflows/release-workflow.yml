@@ -91,6 +91,9 @@ jobs:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
+          # Workaround for https://issues.sonatype.org/browse/OSSRH-66257
+          # as described in https://stackoverflow.com/a/70157413
+          MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
 
       # milestone-build
       - name: Create GitHub release
