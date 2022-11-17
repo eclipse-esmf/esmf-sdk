@@ -67,7 +67,7 @@ jobs:
             git push origin ${{ env.release_branch_name }}
           fi
       - name: Run tests and build
-        run: mvn -B clean install
+        run: mvn -B clean install -Dgpg.skip=true
 
       # release-build
       - name: Create GitHub release
