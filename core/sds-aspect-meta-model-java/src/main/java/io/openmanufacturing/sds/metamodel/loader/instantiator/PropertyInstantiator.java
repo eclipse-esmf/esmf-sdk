@@ -59,17 +59,16 @@ public class PropertyInstantiator extends Instantiator<Property> {
       final boolean isAbstract = property.getModel().contains( property, RDF.type, bamm.AbstractProperty() );
 
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( property );
-      final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper( metaModelBaseAttributes);
+      final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper( metaModelBaseAttributes );
 
       if ( resourcePropertyMap.containsKey( property ) ) {
          final Property propertyInstance = resourcePropertyMap.get( property );
-         resourcePropertyMap.remove( property );
          return propertyInstance;
       }
       resourcePropertyMap.put( property, defaultPropertyWrapper );
-      DefaultProperty defProperty;
+      final DefaultProperty defProperty;
       if ( isAbstract ) {
-         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( fallbackCharacteristic), Optional.empty(), isOptional,
+         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( fallbackCharacteristic ), Optional.empty(), isOptional,
                isNotInPayload, payloadName, isAbstract, extends_ );
       } else {
          final Resource characteristicResource = attributeValue( property, bamm.characteristic() ).getResource();
@@ -90,7 +89,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
                         return new DefaultScalarValue( value, type );
                      } ) );
 
-         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( characteristic), exampleValue, isOptional,
+         defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, isOptional,
                isNotInPayload, payloadName, isAbstract, extends_ );
       }
       defaultPropertyWrapper.setProperty( defProperty );

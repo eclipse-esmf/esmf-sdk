@@ -1,0 +1,183 @@
+# Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:ModelWithCycles a bamm:Aspect ;
+   bamm:name "ModelWithCycles" ;
+   bamm:properties ( :a :e :h :l :n ) ;
+   bamm:operations ( ) .
+
+#####################################
+# direct cycle between two properties
+#####################################
+:a a bamm:Property;
+   bamm:name "a" ;
+   bamm:characteristic :aCharacteristic.
+
+:aCharacteristic a bamm:Characteristic;
+   bamm:name "aCharacteristic" ;
+   bamm:dataType :AEntity.
+
+:AEntity a bamm:Entity;
+    bamm:name "AEntity" ;
+    bamm:properties ( :b ) .
+
+:b a bamm:Property;
+   bamm:name "b" ;
+   bamm:characteristic :bCharacteristic.
+
+:bCharacteristic a bamm:Characteristic;
+   bamm:name "bCharacteristic" ;
+   bamm:dataType :BEntity.
+
+:BEntity a bamm:Entity;
+   bamm:name "BEntity" ;
+   bamm:properties ( :a ) .
+
+#############################################
+# indirect cycle via an intermediate property
+#############################################
+:e a bamm:Property;
+   bamm:name "e" ;
+   bamm:characteristic :eCharacteristic.
+
+:eCharacteristic a bamm:Characteristic;
+   bamm:name "eCharacteristic" ;
+   bamm:dataType :EEntity.
+
+:EEntity a bamm:Entity;
+   bamm:name "EEntity" ;
+   bamm:properties ( :f ) .
+
+:f a bamm:Property;
+   bamm:name "f" ;
+   bamm:characteristic :fCharacteristic.
+
+:fCharacteristic a bamm:Characteristic;
+   bamm:name "fCharacteristic" ;
+   bamm:dataType :FEntity.
+
+:FEntity a bamm:Entity;
+    bamm:name "FEntity" ;
+    bamm:properties ( :g ) .
+
+:g a bamm:Property;
+   bamm:name "g" ;
+   bamm:characteristic :gCharacteristic.
+
+:gCharacteristic a bamm:Characteristic;
+   bamm:name "gCharacteristic" ;
+   bamm:dataType :GEntity.
+
+:GEntity a bamm:Entity;
+    bamm:name "GEntity" ;
+    bamm:properties ( :e ) .
+
+##############################################
+# cycle via both branches of bamm-c:Either
+##############################################
+:h a bamm:Property;
+   bamm:name "h" ;
+   bamm:characteristic :hCharacteristic.
+
+:hCharacteristic a bamm-c:Either;
+    bamm:name "hCharacteristic" ;
+    bamm-c:left :leftCharacteristic ;
+    bamm-c:right :rightCharacteristic.
+
+:leftCharacteristic a bamm:Characteristic;
+   bamm:name "leftCharacteristic" ;
+   bamm:dataType :LeftEntity.
+
+:rightCharacteristic a bamm:Characteristic;
+   bamm:name "rightCharacteristic" ;
+   bamm:dataType :RightEntity.
+
+:LeftEntity a bamm:Entity;
+    bamm:name "LeftEntity" ;
+    bamm:properties ( :h ) . # direct cycle
+
+:RightEntity a bamm:Entity;
+    bamm:name "RightEntity" ;
+    bamm:properties ( :i ) . # cycle via an intermediary property
+
+:i a bamm:Property;
+   bamm:name "i" ;
+   bamm:characteristic :iCharacteristic.
+
+:iCharacteristic a bamm:Characteristic;
+   bamm:name "iCharacteristic" ;
+   bamm:dataType :IEntity.
+
+:IEntity a bamm:Entity;
+    bamm:name "IEntity" ;
+    bamm:properties ( :h ) .
+
+#############################################
+# cycle via bamm-c:baseCharacteristic
+#############################################
+:l a bamm:Property;
+   bamm:name "l" ;
+   bamm:characteristic :lCharacteristic .
+
+:lCharacteristic a bamm-c:Trait;
+   bamm:name "lCharacteristic" ;
+   bamm-c:baseCharacteristic :MEntityList ;
+   bamm-c:constraint [
+      a bamm-c:LengthConstraint ;
+      bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+   ] .
+
+:MEntityList a bamm-c:List ;
+   bamm:name "MEntityList" ;
+   bamm:dataType :MEntity .
+
+:MEntity a bamm:Entity;
+    bamm:name "MEntity" ;
+    bamm:properties ( :l ) .
+
+####################################################
+# cycle via bamm-e:TimeSeriesEntity and bamm:extends
+####################################################
+:n a bamm:Property ;
+   bamm:name "n" ;
+   bamm:characteristic :NTimeSeries .
+
+:NTimeSeries a bamm-c:TimeSeries ;
+   bamm:name "NTimeSeries" ;
+   bamm:dataType :NTimeSeriesEntity .
+
+:NTimeSeriesEntity bamm:refines bamm-e:TimeSeriesEntity ;
+   bamm:name "NTimeSeriesEntity" ;
+   bamm:properties ( :refinedValue ) .
+
+:refinedValue bamm:refines bamm-e:value ;
+   bamm:name "refinedValue" ;
+   bamm:characteristic :oCharacteristic .
+
+:oCharacteristic a bamm:Characteristic;
+   bamm:name "mCharacteristic" ;
+   bamm:dataType :OEntity.
+
+:OEntity a bamm:Entity;
+    bamm:name "MEntity" ;
+    bamm:properties ( :n ) .
+
+
+
+
+
+

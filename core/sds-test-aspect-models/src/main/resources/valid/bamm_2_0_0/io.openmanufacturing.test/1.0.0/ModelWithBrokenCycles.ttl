@@ -1,0 +1,120 @@
+# Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:ModelWithBrokenCycles a bamm:Aspect ;
+   bamm:properties ( :a :e :h ) .
+
+#############################################################
+# direct cycle between two properties broken by bamm:optional
+#############################################################
+
+:a a bamm:Property;
+   bamm:characteristic :aCharacteristic.
+
+:aCharacteristic a bamm:Characteristic;
+   bamm:dataType :AEntity.
+
+:AEntity a bamm:Entity;
+    bamm:properties ( :b ) .
+
+:b a bamm:Property;
+   bamm:characteristic :bCharacteristic.
+
+:bCharacteristic a bamm:Characteristic;
+   bamm:dataType :BEntity.
+
+:BEntity a bamm:Entity;
+    bamm:properties ( [ bamm:property :a ; bamm:optional true ; ] ) .
+
+#####################################################################
+# indirect cycle via an intermediate property broken by bamm:optional
+#####################################################################
+
+:e a bamm:Property;
+   bamm:characteristic :eCharacteristic.
+
+:eCharacteristic a bamm:Characteristic;
+   bamm:dataType :EEntity.
+
+:EEntity a bamm:Entity;
+    bamm:properties ( :f ) .
+
+:f a bamm:Property;
+   bamm:characteristic :fCharacteristic.
+
+:fCharacteristic a bamm:Characteristic;
+   bamm:dataType :FEntity.
+
+:FEntity a bamm:Entity;
+    bamm:properties ( :g ) .
+
+:g a bamm:Property;
+   bamm:characteristic :gCharacteristic.
+
+:gCharacteristic a bamm:Characteristic;
+   bamm:dataType :GEntity.
+
+:GEntity a bamm:Entity;
+    bamm:properties ( [ bamm:property :e ; bamm:optional true ; ] ) .
+
+########################################################
+# cycle but only in one of the branches of bamm-c:Either
+########################################################
+:h a bamm:Property;
+   bamm:characteristic :hCharacteristic.
+
+:hCharacteristic a bamm-c:Either;
+    bamm-c:left :leftCharacteristic ;
+    bamm-c:right :rightCharacteristic.
+
+:leftCharacteristic a bamm:Characteristic;
+   bamm:dataType :LeftEntity.
+
+:rightCharacteristic a bamm:Characteristic;
+   bamm:dataType :RightEntity.
+
+:LeftEntity a bamm:Entity;
+    bamm:properties ( :h ) . # direct cycle
+
+:RightEntity a bamm:Entity;
+    bamm:properties ( :i ) . # no cycle
+
+:i a bamm:Property;
+   bamm:characteristic :iCharacteristic.
+
+:iCharacteristic a bamm:Characteristic;
+   bamm:dataType xsd:string.
+
+#############################################################
+# a cycle, but the properties are not referenced by an Aspect
+#############################################################
+:j a bamm:Property;
+   bamm:characteristic :jCharacteristic.
+
+:jCharacteristic a bamm:Characteristic;
+   bamm:dataType :JEntity.
+
+:JEntity a bamm:Entity;
+    bamm:properties ( :k ) .
+
+:k a bamm:Property;
+   bamm:characteristic :kCharacteristic.
+
+:kCharacteristic a bamm:Characteristic;
+   bamm:dataType :KEntity.
+
+:KEntity a bamm:Entity;
+    bamm:properties ( :j ) .

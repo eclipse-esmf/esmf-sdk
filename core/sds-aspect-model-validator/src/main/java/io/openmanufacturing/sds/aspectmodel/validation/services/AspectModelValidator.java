@@ -13,9 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.validation.services;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
+import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 import java.io.FileNotFoundException;
@@ -167,8 +165,14 @@ public class AspectModelValidator {
             .flatMap( element -> shaclValidator.validateElement( element ).stream() )
             .toList();
 
-      // The SHACL validation succeeded. But to catch false positives, also try to load the model
       if ( result.isEmpty() ) {
+         // The SHACL validation succeeded, check for cycles in the model.
+         final List<Violation> cycleDetectionReport = new ModelCycleDetector().validateModel( model );
+         if ( !cycleDetectionReport.isEmpty() ) {
+            return cycleDetectionReport;
+         }
+
+         // To catch false positives, also try to load the model
          final Try<List<ModelElement>> modelElements = AspectModelLoader.getElements( model );
          if ( modelElements.isFailure() && !(modelElements.getCause() instanceof InvalidRootElementCountException) ) {
             return List.of( new ProcessingViolation(
@@ -218,7 +222,7 @@ public class AspectModelValidator {
                   final Resource report = ValidationUtil.validateModel( dataModel, shapesModel, false );
 
                   if ( report.getProperty( SH.conforms ).getObject().asLiteral().getBoolean() ) {
-                     // The SHACL validation succeeded. But to catch false positives, also try to load the model
+                     // To catch false positives, also try to load the model.
                      final Try<Aspect> aspects = AspectModelLoader.getSingleAspect( model );
                      if ( aspects.isFailure() && !(aspects.getCause() instanceof InvalidRootElementCountException) ) {
                         return getInvalidReport( aspects.getCause() );
