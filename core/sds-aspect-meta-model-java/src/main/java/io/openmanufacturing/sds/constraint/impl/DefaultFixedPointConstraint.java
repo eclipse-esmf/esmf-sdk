@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,32 +10,37 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-package io.openmanufacturing.sds.metamodel.impl;
+
+package io.openmanufacturing.sds.constraint.impl;
 
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
+import io.openmanufacturing.sds.constraint.FixedPointConstraint;
+import io.openmanufacturing.sds.metamodel.impl.DefaultConstraint;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultRegularExpressionConstraint extends DefaultConstraint implements RegularExpressionConstraint {
-   private final String value;
+public class DefaultFixedPointConstraint extends DefaultConstraint implements FixedPointConstraint {
 
-   public DefaultRegularExpressionConstraint( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final String value ) {
+   private final Integer scale;
+   private final Integer integer;
+
+   public DefaultFixedPointConstraint( final MetaModelBaseAttributes metaModelBaseAttributes, final Integer scale,
+         final Integer integer ) {
       super( metaModelBaseAttributes );
-      this.value = value;
+      this.scale = scale;
+      this.integer = integer;
    }
 
-   /**
-    * Constrains the lexical value of a property.
-    *
-    * @return the value.
-    */
    @Override
-   public String getValue() {
-      return value;
+   public Integer getScale() {
+      return scale;
+   }
+
+   @Override
+   public Integer getInteger() {
+      return integer;
    }
 
    /**
@@ -47,13 +52,14 @@ public class DefaultRegularExpressionConstraint extends DefaultConstraint implem
     */
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
-      return visitor.visitRegularExpressionConstraint( this, context );
+      return visitor.visitFixedPointConstraint( this, context );
    }
 
    @Override
    public String toString() {
-      return new StringJoiner( ", ", DefaultRegularExpressionConstraint.class.getSimpleName() + "[", "]" )
-            .add( "value='" + value + "'" )
+      return new StringJoiner( ", ", DefaultFixedPointConstraint.class.getSimpleName() + "[", "]" )
+            .add( "scale=" + scale )
+            .add( "integer=" + integer )
             .toString();
    }
 
@@ -68,12 +74,13 @@ public class DefaultRegularExpressionConstraint extends DefaultConstraint implem
       if ( !super.equals( o ) ) {
          return false;
       }
-      final DefaultRegularExpressionConstraint that = (DefaultRegularExpressionConstraint) o;
-      return Objects.equals( value, that.value );
+      final DefaultFixedPointConstraint that = (DefaultFixedPointConstraint) o;
+      return Objects.equals( scale, that.scale ) &&
+            Objects.equals( integer, that.integer );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( super.hashCode(), value );
+      return Objects.hash( super.hashCode(), scale, integer );
    }
 }

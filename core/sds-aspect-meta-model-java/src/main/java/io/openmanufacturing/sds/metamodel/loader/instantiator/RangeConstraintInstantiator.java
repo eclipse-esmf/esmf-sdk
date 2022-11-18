@@ -23,7 +23,7 @@ import org.apache.jena.rdf.model.Statement;
 import io.openmanufacturing.sds.constraint.RangeConstraint;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
-import io.openmanufacturing.sds.metamodel.impl.DefaultRangeConstraint;
+import io.openmanufacturing.sds.constraint.impl.DefaultRangeConstraint;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;

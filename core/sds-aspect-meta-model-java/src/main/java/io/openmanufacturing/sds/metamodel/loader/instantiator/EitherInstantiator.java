@@ -19,7 +19,7 @@ import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.characteristic.Either;
-import io.openmanufacturing.sds.metamodel.impl.DefaultEither;
+import io.openmanufacturing.sds.characteristic.impl.DefaultEither;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;

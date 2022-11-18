@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,28 +11,28 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.metamodel.impl;
+package io.openmanufacturing.sds.characteristic.impl;
 
 import java.util.Optional;
 import java.util.StringJoiner;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.characteristic.SortedSet;
+import io.openmanufacturing.sds.characteristic.List;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultSortedSet extends DefaultCollection implements SortedSet {
+public class DefaultList extends DefaultCollection implements List {
 
-   public DefaultSortedSet( final MetaModelBaseAttributes metaModelBaseAttributes,
+   public DefaultList( final MetaModelBaseAttributes metaModelBaseAttributes,
          final Optional<Type> dataType, final Optional<Characteristic> elementCharacteristic ) {
-      super( metaModelBaseAttributes, dataType, false, true, elementCharacteristic );
+      super( metaModelBaseAttributes, dataType, true, true, elementCharacteristic );
    }
 
    @Override
    public CollectionValue.CollectionType getCollectionType() {
-      return CollectionValue.CollectionType.SORTEDSET;
+      return CollectionValue.CollectionType.LIST;
    }
 
    /**
@@ -44,12 +44,12 @@ public class DefaultSortedSet extends DefaultCollection implements SortedSet {
     */
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
-      return visitor.visitSortedSet( this, context );
+      return visitor.visitList( this, context );
    }
 
    @Override
    public String toString() {
-      return new StringJoiner( ", ", DefaultSortedSet.class.getSimpleName() + "[", "]" )
+      return new StringJoiner( ", ", DefaultList.class.getSimpleName() + "[", "]" )
             .toString();
    }
 }

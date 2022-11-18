@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,32 +10,33 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-package io.openmanufacturing.sds.metamodel.impl;
+package io.openmanufacturing.sds.constraint.impl;
 
-import java.nio.charset.Charset;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.constraint.EncodingConstraint;
+import io.openmanufacturing.sds.constraint.LanguageConstraint;
+import io.openmanufacturing.sds.metamodel.impl.DefaultConstraint;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultEncodingConstraint extends DefaultConstraint implements EncodingConstraint {
-   private final Charset value;
+public class DefaultLanguageConstraint extends DefaultConstraint implements LanguageConstraint {
+   private final Locale languageCode;
 
-   public DefaultEncodingConstraint( final MetaModelBaseAttributes metaModelBaseAttributes, final Charset value ) {
+   public DefaultLanguageConstraint( final MetaModelBaseAttributes metaModelBaseAttributes, final Locale languageCode ) {
       super( metaModelBaseAttributes );
-      this.value = value;
+      this.languageCode = languageCode;
    }
 
    /**
-    * Constrains the encoding (character set) of a property.
+    * An ISO 639-1 language code for the language of the value of the constrained Property
     *
-    * @return the value.
+    * @return the languageCode.
     */
    @Override
-   public Charset getValue() {
-      return value;
+   public Locale getLanguageCode() {
+      return languageCode;
    }
 
    /**
@@ -47,13 +48,13 @@ public class DefaultEncodingConstraint extends DefaultConstraint implements Enco
     */
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
-      return visitor.visitEncodingConstraint( this, context );
+      return visitor.visitLanguageConstraint( this, context );
    }
 
    @Override
    public String toString() {
-      return new StringJoiner( ", ", DefaultEncodingConstraint.class.getSimpleName() + "[", "]" )
-            .add( "value=" + value )
+      return new StringJoiner( ", ", DefaultLanguageConstraint.class.getSimpleName() + "[", "]" )
+            .add( "languageCode=" + languageCode )
             .toString();
    }
 
@@ -68,12 +69,12 @@ public class DefaultEncodingConstraint extends DefaultConstraint implements Enco
       if ( !super.equals( o ) ) {
          return false;
       }
-      final DefaultEncodingConstraint that = (DefaultEncodingConstraint) o;
-      return Objects.equals( value, that.value );
+      final DefaultLanguageConstraint that = (DefaultLanguageConstraint) o;
+      return Objects.equals( languageCode, that.languageCode );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( super.hashCode(), value );
+      return Objects.hash( super.hashCode(), languageCode );
    }
 }

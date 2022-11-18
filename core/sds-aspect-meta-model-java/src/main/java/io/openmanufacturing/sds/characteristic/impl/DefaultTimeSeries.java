@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,20 +11,22 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.metamodel.impl;
+package io.openmanufacturing.sds.characteristic.impl;
 
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.characteristic.Code;
+import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.characteristic.TimeSeries;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultCode extends DefaultCharacteristic implements Code {
+public class DefaultTimeSeries extends DefaultSortedSet implements TimeSeries {
 
-   public DefaultCode( final MetaModelBaseAttributes metaModelBaseAttributes, final Type dataType ) {
-      super( metaModelBaseAttributes, Optional.of( dataType ) );
+   public DefaultTimeSeries( final MetaModelBaseAttributes metaModelBaseAttributes,
+         final Optional<Type> dataType, final Optional<Characteristic> elementCharacteristic ) {
+      super( metaModelBaseAttributes, dataType, elementCharacteristic );
    }
 
    /**
@@ -36,12 +38,12 @@ public class DefaultCode extends DefaultCharacteristic implements Code {
     */
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
-      return visitor.visitCode( this, context );
+      return visitor.visitTimeSeries( this, context );
    }
 
    @Override
    public String toString() {
-      return new StringJoiner( ", ", DefaultCode.class.getSimpleName() + "[", "]" )
+      return new StringJoiner( ", ", DefaultTimeSeries.class.getSimpleName() + "[", "]" )
             .toString();
    }
 }

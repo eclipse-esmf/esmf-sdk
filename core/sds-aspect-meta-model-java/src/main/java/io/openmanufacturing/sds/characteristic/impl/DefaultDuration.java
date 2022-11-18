@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,23 +10,21 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-
-package io.openmanufacturing.sds.metamodel.impl;
+package io.openmanufacturing.sds.characteristic.impl;
 
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.characteristic.TimeSeries;
+import io.openmanufacturing.sds.characteristic.Duration;
 import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultTimeSeries extends DefaultSortedSet implements TimeSeries {
+public class DefaultDuration extends DefaultQuantifiable implements Duration {
 
-   public DefaultTimeSeries( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final Optional<Type> dataType, final Optional<Characteristic> elementCharacteristic ) {
-      super( metaModelBaseAttributes, dataType, elementCharacteristic );
+   public DefaultDuration( final MetaModelBaseAttributes metaModelBaseAttributes, final Type dataType, final Optional<Unit> unit ) {
+      super( metaModelBaseAttributes, dataType, unit );
    }
 
    /**
@@ -38,12 +36,12 @@ public class DefaultTimeSeries extends DefaultSortedSet implements TimeSeries {
     */
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
-      return visitor.visitTimeSeries( this, context );
+      return visitor.visitDuration( this, context );
    }
 
    @Override
    public String toString() {
-      return new StringJoiner( ", ", DefaultTimeSeries.class.getSimpleName() + "[", "]" )
+      return new StringJoiner( ", ", DefaultDuration.class.getSimpleName() + "[", "]" )
             .toString();
    }
 }

@@ -31,7 +31,7 @@ import io.openmanufacturing.sds.characteristic.Set;
 import io.openmanufacturing.sds.characteristic.SortedSet;
 import io.openmanufacturing.sds.characteristic.TimeSeries;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
-import io.openmanufacturing.sds.metamodel.impl.DefaultTrait;
+import io.openmanufacturing.sds.characteristic.impl.DefaultTrait;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestModel;
 

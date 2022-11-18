@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,36 +10,34 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
+package io.openmanufacturing.sds.characteristic.impl;
 
-package io.openmanufacturing.sds.metamodel.impl;
-
+import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.constraint.FixedPointConstraint;
+import io.openmanufacturing.sds.characteristic.State;
+import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultFixedPointConstraint extends DefaultConstraint implements FixedPointConstraint {
+public class DefaultState extends DefaultEnumeration implements State {
+   private final Value defaultValue;
 
-   private final Integer scale;
-   private final Integer integer;
-
-   public DefaultFixedPointConstraint( final MetaModelBaseAttributes metaModelBaseAttributes, final Integer scale,
-         final Integer integer ) {
-      super( metaModelBaseAttributes );
-      this.scale = scale;
-      this.integer = integer;
+   public DefaultState( final MetaModelBaseAttributes metaModelBaseAttributes, final Type dataType, final List<Value> values, final Value defaultValue ) {
+      super( metaModelBaseAttributes, dataType, values );
+      this.defaultValue = defaultValue;
    }
 
+   /**
+    * The default value for this state
+    *
+    * @return the defaultValue.
+    */
    @Override
-   public Integer getScale() {
-      return scale;
-   }
-
-   @Override
-   public Integer getInteger() {
-      return integer;
+   public Value getDefaultValue() {
+      return defaultValue;
    }
 
    /**
@@ -51,14 +49,13 @@ public class DefaultFixedPointConstraint extends DefaultConstraint implements Fi
     */
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
-      return visitor.visitFixedPointConstraint( this, context );
+      return visitor.visitState( this, context );
    }
 
    @Override
    public String toString() {
-      return new StringJoiner( ", ", DefaultFixedPointConstraint.class.getSimpleName() + "[", "]" )
-            .add( "scale=" + scale )
-            .add( "integer=" + integer )
+      return new StringJoiner( ", ", DefaultState.class.getSimpleName() + "[", "]" )
+            .add( "defaultValue=" + defaultValue )
             .toString();
    }
 
@@ -73,13 +70,12 @@ public class DefaultFixedPointConstraint extends DefaultConstraint implements Fi
       if ( !super.equals( o ) ) {
          return false;
       }
-      final DefaultFixedPointConstraint that = (DefaultFixedPointConstraint) o;
-      return Objects.equals( scale, that.scale ) &&
-            Objects.equals( integer, that.integer );
+      final DefaultState that = (DefaultState) o;
+      return Objects.equals( defaultValue, that.defaultValue );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( super.hashCode(), scale, integer );
+      return Objects.hash( super.hashCode(), defaultValue );
    }
 }

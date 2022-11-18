@@ -22,7 +22,7 @@ import org.apache.jena.rdf.model.Resource;
 import io.openmanufacturing.sds.characteristic.State;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
-import io.openmanufacturing.sds.metamodel.impl.DefaultState;
+import io.openmanufacturing.sds.characteristic.impl.DefaultState;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;

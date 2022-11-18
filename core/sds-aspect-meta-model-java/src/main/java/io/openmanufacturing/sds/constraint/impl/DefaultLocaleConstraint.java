@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -10,13 +10,14 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-package io.openmanufacturing.sds.metamodel.impl;
+package io.openmanufacturing.sds.constraint.impl;
 
 import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 import io.openmanufacturing.sds.constraint.LocaleConstraint;
+import io.openmanufacturing.sds.metamodel.impl.DefaultConstraint;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 

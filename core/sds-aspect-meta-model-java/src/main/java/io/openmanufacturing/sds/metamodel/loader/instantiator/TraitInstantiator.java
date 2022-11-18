@@ -22,7 +22,7 @@ import org.apache.jena.rdf.model.Statement;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.characteristic.Trait;
-import io.openmanufacturing.sds.metamodel.impl.DefaultTrait;
+import io.openmanufacturing.sds.characteristic.impl.DefaultTrait;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;

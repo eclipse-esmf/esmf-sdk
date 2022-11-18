@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -10,34 +10,33 @@
  *
  * SPDX-License-Identifier: MPL-2.0
  */
-package io.openmanufacturing.sds.metamodel.impl;
+package io.openmanufacturing.sds.constraint.impl;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.characteristic.Quantifiable;
-import io.openmanufacturing.sds.metamodel.Type;
-import io.openmanufacturing.sds.metamodel.Unit;
+import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
+import io.openmanufacturing.sds.metamodel.impl.DefaultConstraint;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultQuantifiable extends DefaultCharacteristic implements Quantifiable {
-   private final Optional<Unit> unit;
+public class DefaultRegularExpressionConstraint extends DefaultConstraint implements RegularExpressionConstraint {
+   private final String value;
 
-   public DefaultQuantifiable( final MetaModelBaseAttributes metaModelBaseAttributes, final Type dataType, final Optional<Unit> unit ) {
-      super( metaModelBaseAttributes, Optional.of( dataType ) );
-      this.unit = unit;
+   public DefaultRegularExpressionConstraint( final MetaModelBaseAttributes metaModelBaseAttributes,
+         final String value ) {
+      super( metaModelBaseAttributes );
+      this.value = value;
    }
 
    /**
-    * The Unit of the Quantifiable.
+    * Constrains the lexical value of a property.
     *
-    * @return the unit.
+    * @return the value.
     */
    @Override
-   public Optional<Unit> getUnit() {
-      return unit;
+   public String getValue() {
+      return value;
    }
 
    /**
@@ -49,13 +48,13 @@ public class DefaultQuantifiable extends DefaultCharacteristic implements Quanti
     */
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
-      return visitor.visitQuantifiable( this, context );
+      return visitor.visitRegularExpressionConstraint( this, context );
    }
 
    @Override
    public String toString() {
-      return new StringJoiner( ", ", DefaultQuantifiable.class.getSimpleName() + "[", "]" )
-            .add( "unit=" + unit )
+      return new StringJoiner( ", ", DefaultRegularExpressionConstraint.class.getSimpleName() + "[", "]" )
+            .add( "value='" + value + "'" )
             .toString();
    }
 
@@ -70,12 +69,12 @@ public class DefaultQuantifiable extends DefaultCharacteristic implements Quanti
       if ( !super.equals( o ) ) {
          return false;
       }
-      final DefaultQuantifiable that = (DefaultQuantifiable) o;
-      return Objects.equals( unit, that.unit );
+      final DefaultRegularExpressionConstraint that = (DefaultRegularExpressionConstraint) o;
+      return Objects.equals( value, that.value );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( super.hashCode(), unit );
+      return Objects.hash( super.hashCode(), value );
    }
 }

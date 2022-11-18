@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,20 +11,28 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.metamodel.impl;
+package io.openmanufacturing.sds.characteristic.impl;
 
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import io.openmanufacturing.sds.characteristic.SingleEntity;
+import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.characteristic.SortedSet;
+import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultSingleEntity extends DefaultCharacteristic implements SingleEntity {
+public class DefaultSortedSet extends DefaultCollection implements SortedSet {
 
-   public DefaultSingleEntity( final MetaModelBaseAttributes metaModelBaseAttributes, final Type dataType ) {
-      super( metaModelBaseAttributes, Optional.of( dataType ) );
+   public DefaultSortedSet( final MetaModelBaseAttributes metaModelBaseAttributes,
+         final Optional<Type> dataType, final Optional<Characteristic> elementCharacteristic ) {
+      super( metaModelBaseAttributes, dataType, false, true, elementCharacteristic );
+   }
+
+   @Override
+   public CollectionValue.CollectionType getCollectionType() {
+      return CollectionValue.CollectionType.SORTEDSET;
    }
 
    /**
@@ -36,12 +44,12 @@ public class DefaultSingleEntity extends DefaultCharacteristic implements Single
     */
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
-      return visitor.visitSingleEntity( this, context );
+      return visitor.visitSortedSet( this, context );
    }
 
    @Override
    public String toString() {
-      return new StringJoiner( ", ", DefaultSingleEntity.class.getSimpleName() + "[", "]" )
+      return new StringJoiner( ", ", DefaultSortedSet.class.getSimpleName() + "[", "]" )
             .toString();
    }
 }

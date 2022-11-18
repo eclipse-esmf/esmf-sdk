@@ -18,7 +18,7 @@ import java.nio.charset.Charset;
 import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.constraint.EncodingConstraint;
-import io.openmanufacturing.sds.metamodel.impl.DefaultEncodingConstraint;
+import io.openmanufacturing.sds.constraint.impl.DefaultEncodingConstraint;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
