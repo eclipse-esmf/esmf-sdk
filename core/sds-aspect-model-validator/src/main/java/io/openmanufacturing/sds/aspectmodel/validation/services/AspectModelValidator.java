@@ -208,9 +208,9 @@ public class AspectModelValidator {
          final Model dataModel = model.getModel();
 
          final Try<KnownVersion> metaModelVersion = KnownVersion
-               .fromVersionString( model.getVersion().toString() )
+               .fromVersionString( model.getMetaModelVersion().toString() )
                .map( Try::success )
-               .orElse( Try.failure( new UnsupportedVersionException( model.getVersion() ) ) );
+               .orElse( Try.failure( new UnsupportedVersionException( model.getMetaModelVersion() ) ) );
 
          return metaModelVersion
                .flatMap( aspectMetaModelResourceResolver::loadShapesModel ).map( shapesModel -> {

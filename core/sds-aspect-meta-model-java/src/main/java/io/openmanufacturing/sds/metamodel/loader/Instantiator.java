@@ -156,23 +156,6 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
             .orElseGet( () -> resource.getProperty( bamm.dataType() ) );
    }
 
-   protected Optional<Unit> findOrCreateUnit( final Resource unitResource ) {
-      if ( unit.getNamespace().equals( unitResource.getNameSpace() ) ) {
-         final AspectModelUrn unitUrn = AspectModelUrn.fromUrn( unitResource.getURI() );
-         return Units.fromName( unitUrn.getName(), metaModelVersion );
-      }
-
-      return Optional.of( new DefaultUnit(
-            MetaModelBaseAttributes.fromModelElement( metaModelVersion, unitResource, model, bamm ),
-            optionalAttributeValue( unitResource, bamm.symbol() ).map( Statement::getString ),
-            optionalAttributeValue( unitResource, bamm.commonCode() ).map( Statement::getString ),
-            optionalAttributeValue( unitResource, bamm.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
-            optionalAttributeValue( unitResource, bamm.conversionFactor() ).map( Statement::getString ),
-            Streams.stream( model.listStatements( unitResource, bamm.quantityKind(), (RDFNode) null ) )
-                  .flatMap( quantityKindStatement -> QuantityKinds.fromName( quantityKindStatement.getObject().asResource().getLocalName() ).stream() )
-                  .collect( Collectors.toSet() ) ) );
-   }
-
    protected Optional<Characteristic> getElementCharacteristic( final Resource collection ) {
       return optionalAttributeValue( collection, bammc.elementCharacteristic() )
             .map( Statement::getResource )
@@ -264,7 +247,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
       return new DefaultCollectionValue( values, collectionType, elementType );
    }
 
-   private EntityInstance buildEntityInstance( final Resource entityInstance, final Entity type ) {
+   protected EntityInstance buildEntityInstance( final Resource entityInstance, final Entity type ) {
       final Map<Property, Value> assertions = new HashMap<>();
       type.getAllProperties().forEach( property -> {
          final AspectModelUrn propertyUrn = property.getAspectModelUrn()

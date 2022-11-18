@@ -30,7 +30,6 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
    public RangeConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, RangeConstraint.class );

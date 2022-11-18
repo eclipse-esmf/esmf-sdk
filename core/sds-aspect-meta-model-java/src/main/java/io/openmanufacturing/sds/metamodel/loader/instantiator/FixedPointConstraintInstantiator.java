@@ -21,7 +21,6 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class FixedPointConstraintInstantiator extends Instantiator<FixedPointConstraint> {
    public FixedPointConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, FixedPointConstraint.class );

@@ -64,7 +64,7 @@ public class MigratorTest extends MetaModelVersions {
       final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
 
-      assertThat( rewrittenModel.getVersion() ).isEqualTo( VersionNumber.parse( KnownVersion.getLatest().toVersionString() ) );
+      assertThat( rewrittenModel.getMetaModelVersion() ).isEqualTo( VersionNumber.parse( KnownVersion.getLatest().toVersionString() ) );
       final Model model = rewrittenModel.getRawModel();
       assertThat( model.getNsPrefixURI( "bamm" ) ).contains( KnownVersion.getLatest().toVersionString() );
 

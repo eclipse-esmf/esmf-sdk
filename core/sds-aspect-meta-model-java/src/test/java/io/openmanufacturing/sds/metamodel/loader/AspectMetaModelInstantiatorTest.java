@@ -27,16 +27,16 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.characteristic.Code;
+import io.openmanufacturing.sds.characteristic.Either;
+import io.openmanufacturing.sds.characteristic.SingleEntity;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.characteristic.Code;
 import io.openmanufacturing.sds.metamodel.ComplexType;
-import io.openmanufacturing.sds.characteristic.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
-import io.openmanufacturing.sds.characteristic.SingleEntity;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEntity;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestModel;
@@ -281,7 +281,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testMetaModelBaseAttributesFactoryMethod( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:aspect-model:TestAspect:1.0.0" );
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:1.0.0#TestAspect" );
       final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.from( metaModelVersion, urn, "someName" );
 
       assertThat( baseAttributes.getUrn() ).contains( urn );
@@ -294,7 +294,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testMetaModelBaseAttributesBuilder( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:aspect-model:TestAspect:1.0.0" );
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:1.0.0#TestAspect" );
       final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builderFor( "someName" )
             .withMetaModelVersion( metaModelVersion )
             .withUrn( urn )

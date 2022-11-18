@@ -28,7 +28,6 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class StructuredValueInstantiator extends Instantiator<StructuredValue> {
    public StructuredValueInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, StructuredValue.class );

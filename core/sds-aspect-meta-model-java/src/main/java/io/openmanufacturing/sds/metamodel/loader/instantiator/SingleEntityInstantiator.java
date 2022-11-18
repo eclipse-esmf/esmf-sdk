@@ -22,7 +22,6 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class SingleEntityInstantiator extends Instantiator<SingleEntity> {
    public SingleEntityInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, SingleEntity.class );

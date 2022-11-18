@@ -26,7 +26,6 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class DurationInstantiator extends Instantiator<Duration> {
    public DurationInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Duration.class );
@@ -38,7 +37,7 @@ public class DurationInstantiator extends Instantiator<Duration> {
       final Type type = getType( duration );
       final Optional<Unit> unit = optionalAttributeValue( duration, bammc.unit() )
             .map( Statement::getResource )
-            .flatMap( this::findOrCreateUnit );
+            .map( modelElementFactory::findOrCreateUnit );
       return new DefaultDuration( metaModelBaseAttributes, type, unit );
    }
 }

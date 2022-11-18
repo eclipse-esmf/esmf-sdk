@@ -23,7 +23,6 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class LanguageConstraintInstantiator extends Instantiator<LanguageConstraint> {
    public LanguageConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, LanguageConstraint.class );

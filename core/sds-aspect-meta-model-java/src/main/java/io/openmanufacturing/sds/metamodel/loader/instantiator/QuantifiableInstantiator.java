@@ -26,7 +26,6 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class QuantifiableInstantiator extends Instantiator<Quantifiable> {
    public QuantifiableInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Quantifiable.class );
@@ -38,7 +37,7 @@ public class QuantifiableInstantiator extends Instantiator<Quantifiable> {
       final Type type = getType( quantifiable );
       final Optional<Unit> unit = optionalAttributeValue( quantifiable, bammc.unit() )
             .map( Statement::getResource )
-            .flatMap( this::findOrCreateUnit );
+            .map( modelElementFactory::findOrCreateUnit );
       return new DefaultQuantifiable( metaModelBaseAttributes, type, unit );
    }
 }

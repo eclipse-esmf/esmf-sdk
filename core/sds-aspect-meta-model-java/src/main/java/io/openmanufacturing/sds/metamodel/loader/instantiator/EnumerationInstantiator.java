@@ -27,7 +27,6 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class EnumerationInstantiator extends Instantiator<Enumeration> {
    public EnumerationInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Enumeration.class );
