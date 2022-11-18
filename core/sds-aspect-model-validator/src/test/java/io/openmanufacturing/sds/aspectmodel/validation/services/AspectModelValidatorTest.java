@@ -76,7 +76,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
          "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE", // uses bamm-c:OPEN
          "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND", // uses bamm-c:OPEN
          "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND_INCL_BOUND_DEFINITION", // uses bamm-c:OPEN
-         "MODEL_WITH_CYCLES" // contains cycles
+         "MODEL_WITH_CYCLES",
+         "MODEL_WITH_BROKEN_CYCLES"// contains cycles
    } )
    public void testValidateTestAspectModel( final TestAspect testAspect ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
@@ -147,7 +148,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final BAMM bamm = new BAMM( metaModelVersion );
       assertThat( violation.context().element() ).isEqualTo( element );
       assertThat( violation.context().property().get() ).isEqualTo( bamm.exampleValue() );
-      assertThat( violation.bindings().get( "value" ).asResource().getURI() ).isEqualTo( XSD.xint.getURI() );
+      assertThat( violation.bindings().get( "value" ).asLiteral().getString() ).isEqualTo( XSD.xint.getURI() );
    }
 
    @ParameterizedTest
