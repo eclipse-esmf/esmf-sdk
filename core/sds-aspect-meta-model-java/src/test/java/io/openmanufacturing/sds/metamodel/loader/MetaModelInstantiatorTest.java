@@ -37,7 +37,7 @@ public abstract class MetaModelInstantiatorTest extends MetaModelVersions {
 
       final Try<Aspect> aspect = migratorService
             .updateMetaModelVersion( versionedModel )
-            .flatMap( AspectModelLoader::fromVersionedModel );
+            .flatMap( AspectModelLoader::getSingleAspect );
       return aspect.getOrElseThrow( () -> new RuntimeException( aspect.getCause() ) );
    }
 

@@ -476,7 +476,7 @@ public class OpenApiTest extends MetaModelVersions {
 
    private Aspect loadAspect( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
       final VersionedModel versionedModel = TestResources.getModel( testAspect, metaModelVersion ).get();
-      return AspectModelLoader.fromVersionedModel( versionedModel ).get();
+      return AspectModelLoader.getSingleAspect( versionedModel ).get();
    }
 
    private JsonNode getTestParameter() throws IOException {

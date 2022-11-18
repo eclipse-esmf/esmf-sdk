@@ -74,7 +74,8 @@ public class AspectModelLoader {
     * @return A {@link Try} containing the {@link Aspect} on success and an {@link InvalidRootElementCountException}
     *       (when the Aspect model does not contain exactly one Aspect) or {@link InvalidVersionException}
     *       (when the meta model version is not supported by the Aspect loader) on failure
-    * @deprecated Use {@link #getSingleAspect(VersionedModel)} instead
+    * @deprecated Use {@link #getSingleAspect(VersionedModel)} instead to retain the same semantics, but better use {@link #getElements(VersionedModel)}
+    * instead to also properly handle models that contain not exactly one Aspect
     *
     * @see AspectModelResolver
     */
@@ -103,7 +104,8 @@ public class AspectModelLoader {
     *
     * @param versionedModel The RDF model representation of the Aspect model
     * @return The Aspect *
-    * @deprecated use {@link #getSingleAspectUnchecked(VersionedModel)} instead
+    * @deprecated use {@link #getSingleAspectUnchecked(VersionedModel)} instead to retain the same semantics, but better use
+    * {@link #getElementsUnchecked(VersionedModel)} instead to also properly handle models that contain not exactly one Aspect
     * @see #fromVersionedModel(VersionedModel)
     */
    @Deprecated
@@ -218,7 +220,7 @@ public class AspectModelLoader {
 
    /**
     * Convenience method to load the single Aspect from a model, when the model contains exactly one Aspect.
-    * 
+    *
     * <b>Caution:</b> The method handles this special case. Aspect Models are allowed to contain any number of Aspects (including zero),
     * so for the general case you should use {@link #getElements(VersionedModel)} instead.
     *
