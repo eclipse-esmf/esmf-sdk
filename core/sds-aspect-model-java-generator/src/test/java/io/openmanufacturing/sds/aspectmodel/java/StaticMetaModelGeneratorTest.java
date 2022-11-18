@@ -25,7 +25,6 @@ import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
 import io.openmanufacturing.sds.test.TestSharedAspect;
-import io.openmanufacturing.sds.test.TestSharedModel;
 
 abstract class StaticMetaModelGeneratorTest extends MetaModelVersions {
 

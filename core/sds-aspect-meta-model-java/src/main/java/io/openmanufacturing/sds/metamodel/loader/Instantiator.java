@@ -34,8 +34,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
-import com.google.common.collect.Streams;
-
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.ExtendedXsdDataType;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
@@ -43,25 +41,21 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
-import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.QuantityKinds;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Type;
-import io.openmanufacturing.sds.metamodel.Unit;
-import io.openmanufacturing.sds.metamodel.Units;
 import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCollectionValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEntityInstance;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
-import io.openmanufacturing.sds.metamodel.impl.DefaultUnit;
 
 public abstract class Instantiator<T extends ModelElement> extends AttributeValueRetriever implements Function<Resource, T> {
    protected final ModelElementFactory modelElementFactory;

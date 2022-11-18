@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -40,8 +39,6 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinCountViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ProcessingViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
-import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationError;
-import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.test.InvalidTestAspect;
 import io.openmanufacturing.sds.test.MetaModelVersions;
