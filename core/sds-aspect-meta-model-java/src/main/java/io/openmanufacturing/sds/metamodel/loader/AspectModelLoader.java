@@ -156,7 +156,7 @@ public class AspectModelLoader {
          return Try.failure( updatedModel.getCause() );
       }
 
-      final BAMM bamm = new BAMM( metaModelVersion.get() );
+      final BAMM bamm = new BAMM( KnownVersion.getLatest() );
 
       try {
          validateNamespaceOfCustomUnits( bamm, versionedModel.getRawModel() );
@@ -166,7 +166,7 @@ public class AspectModelLoader {
 
       try {
          final VersionedModel model = updatedModel.get();
-         final ModelElementFactory modelElementFactory = new ModelElementFactory( metaModelVersion.get(), model.getModel(), Map.of() );
+         final ModelElementFactory modelElementFactory = new ModelElementFactory( KnownVersion.getLatest(), model.getModel(), Map.of() );
          // List element definitions (... rdf:type ...) from the raw model (i.e. the actual aspect model to load)
          // but then load them from the resolved model, because it contains all necessary context (e.g. unit definitions)
          return Try.success( model.getRawModel().listStatements( null, RDF.type, (RDFNode) null ).toList().stream()
