@@ -22,13 +22,13 @@ import java.util.stream.Stream;
 import com.google.common.collect.Sets;
 
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Entity;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.QuantityKind;
-import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 
@@ -37,11 +37,11 @@ import io.openmanufacturing.sds.metamodel.datatypes.LangString;
  */
 public class LanguageCollectorModelVisitor implements AspectVisitor<Set<Locale>, Set<Locale>> {
    @Override
-   public Set<Locale> visitBase( final Base base, final Set<Locale> context ) {
+   public Set<Locale> visitBase( final ModelElement modelElement, final Set<Locale> context ) {
       return context;
    }
 
-   public Set<Locale> visitIsDescribed( final IsDescribed element, final Set<Locale> context ) {
+   public Set<Locale> visitIsDescribed( final NamedElement element, final Set<Locale> context ) {
       return Stream.concat(
             element.getPreferredNames().stream().map( LangString::getLanguageTag ),
             element.getDescriptions().stream().map( LangString::getLanguageTag ) ).collect( Collectors.toSet() );

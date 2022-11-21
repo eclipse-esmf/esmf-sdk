@@ -18,14 +18,13 @@ import java.util.Optional;
 import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.metamodel.Type;
-import io.openmanufacturing.sds.metamodel.impl.DefaultCollection;
+import io.openmanufacturing.sds.characteristic.impl.DefaultCollection;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class CollectionInstantiator extends Instantiator<Collection> {
    public CollectionInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Collection.class );

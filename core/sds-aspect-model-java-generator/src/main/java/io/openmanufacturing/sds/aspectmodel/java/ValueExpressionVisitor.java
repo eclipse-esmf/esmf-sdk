@@ -23,7 +23,7 @@ import org.apache.jena.vocabulary.RDF;
 
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
@@ -53,8 +53,8 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
    }
 
    @Override
-   public String visitBase( final Base base, final Context context ) {
-      throw new UnsupportedOperationException( "Can't create value expression for model element: " + base );
+   public String visitBase( final ModelElement modelElement, final Context context ) {
+      throw new UnsupportedOperationException( "Can't create value expression for model element: " + modelElement );
    }
 
    @Override

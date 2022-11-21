@@ -34,8 +34,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
-import com.google.common.collect.Streams;
-
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.ExtendedXsdDataType;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
@@ -43,28 +41,23 @@ import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.UNIT;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
-import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Collection;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.QuantityKinds;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Type;
-import io.openmanufacturing.sds.metamodel.Unit;
-import io.openmanufacturing.sds.metamodel.Units;
 import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCollectionValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEntityInstance;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
-import io.openmanufacturing.sds.metamodel.impl.DefaultUnit;
 
-public abstract class Instantiator<T extends Base> extends AttributeValueRetriever implements Function<Resource, T> {
+public abstract class Instantiator<T extends ModelElement> extends AttributeValueRetriever implements Function<Resource, T> {
    protected final ModelElementFactory modelElementFactory;
    protected Class<T> targetClass;
    protected BAMMC bammc;
@@ -157,23 +150,6 @@ public abstract class Instantiator<T extends Base> extends AttributeValueRetriev
             .orElseGet( () -> resource.getProperty( bamm.dataType() ) );
    }
 
-   protected Optional<Unit> findOrCreateUnit( final Resource unitResource ) {
-      if ( unit.getNamespace().equals( unitResource.getNameSpace() ) ) {
-         final AspectModelUrn unitUrn = AspectModelUrn.fromUrn( unitResource.getURI() );
-         return Units.fromName( unitUrn.getName(), metaModelVersion );
-      }
-
-      return Optional.of( new DefaultUnit(
-            MetaModelBaseAttributes.fromModelElement( metaModelVersion, unitResource, model, bamm ),
-            optionalAttributeValue( unitResource, bamm.symbol() ).map( Statement::getString ),
-            optionalAttributeValue( unitResource, bamm.commonCode() ).map( Statement::getString ),
-            optionalAttributeValue( unitResource, bamm.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
-            optionalAttributeValue( unitResource, bamm.conversionFactor() ).map( Statement::getString ),
-            Streams.stream( model.listStatements( unitResource, bamm.quantityKind(), (RDFNode) null ) )
-                  .flatMap( quantityKindStatement -> QuantityKinds.fromName( quantityKindStatement.getObject().asResource().getLocalName() ).stream() )
-                  .collect( Collectors.toSet() ) ) );
-   }
-
    protected Optional<Characteristic> getElementCharacteristic( final Resource collection ) {
       return optionalAttributeValue( collection, bammc.elementCharacteristic() )
             .map( Statement::getResource )
@@ -212,15 +188,15 @@ public abstract class Instantiator<T extends Base> extends AttributeValueRetriev
       if ( characteristicResource.isPresent() ) {
          final Resource characteristic = characteristicResource.get();
          final Optional<Resource> elementCharacteristic = optionalAttributeValue( characteristic, bammc.elementCharacteristic() ).map( Statement::getResource );
-         Collection.CollectionType collectionType = null;
+         CollectionValue.CollectionType collectionType = null;
          if ( isTypeOfOrSubtypeOf( characteristic, bammc.Set() ) ) {
-            collectionType = Collection.CollectionType.SET;
+            collectionType = CollectionValue.CollectionType.SET;
          } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.SortedSet() ) ) {
-            collectionType = Collection.CollectionType.SORTEDSET;
+            collectionType = CollectionValue.CollectionType.SORTEDSET;
          } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.List() ) ) {
-            collectionType = Collection.CollectionType.LIST;
+            collectionType = CollectionValue.CollectionType.LIST;
          } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.Collection() ) ) {
-            collectionType = Collection.CollectionType.COLLECTION;
+            collectionType = CollectionValue.CollectionType.COLLECTION;
          }
          if ( collectionType != null ) {
             return buildCollectionValue( node.as( RDFList.class ), collectionType, elementCharacteristic, type );
@@ -258,14 +234,14 @@ public abstract class Instantiator<T extends Base> extends AttributeValueRetriev
             .orElseThrow( () -> new AspectLoadingException( "Literal can not be parsed: " + literal ) );
    }
 
-   private CollectionValue buildCollectionValue( final RDFList list, final Collection.CollectionType collectionType,
+   private CollectionValue buildCollectionValue( final RDFList list, final CollectionValue.CollectionType collectionType,
          final Optional<Resource> elementCharacteristic, final Type elementType ) {
       final java.util.Collection<Value> values = createEmptyCollectionForType( collectionType );
       list.asJavaList().forEach( element -> values.add( buildValue( element, elementCharacteristic, elementType ) ) );
       return new DefaultCollectionValue( values, collectionType, elementType );
    }
 
-   private EntityInstance buildEntityInstance( final Resource entityInstance, final Entity type ) {
+   protected EntityInstance buildEntityInstance( final Resource entityInstance, final Entity type ) {
       final Map<Property, Value> assertions = new HashMap<>();
       type.getAllProperties().forEach( property -> {
          final AspectModelUrn propertyUrn = property.getAspectModelUrn()
@@ -288,11 +264,11 @@ public abstract class Instantiator<T extends Base> extends AttributeValueRetriev
       return new DefaultEntityInstance( baseAttributes, assertions, type );
    }
 
-   private java.util.Collection<Value> createEmptyCollectionForType( final Collection.CollectionType collectionType ) {
-      if ( collectionType == Collection.CollectionType.SORTEDSET ) {
+   private java.util.Collection<Value> createEmptyCollectionForType( final CollectionValue.CollectionType collectionType ) {
+      if ( collectionType == CollectionValue.CollectionType.SORTEDSET ) {
          return new LinkedHashSet<>();
       }
-      if ( collectionType == Collection.CollectionType.SET ) {
+      if ( collectionType == CollectionValue.CollectionType.SET ) {
          return new HashSet<>();
       }
       return new ArrayList<>();

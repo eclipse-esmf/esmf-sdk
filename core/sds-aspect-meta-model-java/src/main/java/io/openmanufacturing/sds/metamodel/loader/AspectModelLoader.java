@@ -15,13 +15,15 @@ package io.openmanufacturing.sds.metamodel.loader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +38,19 @@ import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidNamespace
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import io.openmanufacturing.sds.aspectmodel.resolver.exceptions.InvalidVersionException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorService;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.ModelElement;
+import io.openmanufacturing.sds.metamodel.ModelNamespace;
+import io.openmanufacturing.sds.metamodel.NamedElement;
+import io.openmanufacturing.sds.metamodel.impl.DefaultModelNamespace;
 import io.vavr.control.Try;
 
 /**
  * Provides functionality to load an Aspect Model from a {@link VersionedModel} and use the correct BAMM resources to
- * instantiate it.
+ * instantiate it. To load a regular Aspect Model, use {@link #getElements(VersionedModel)} or {@link #getElementsUnchecked(VersionedModel)}.
+ * To load elements from an RDF model that might contain elements from multiple namespaces, use {@link #getNamespaces(VersionedModel)}.
  *
  * Instances of {@code VersionedModel} are gained through an {@link AspectModelResolver}.
  */
@@ -62,63 +68,20 @@ public class AspectModelLoader {
    }
 
    /**
-    * Processes a {@link Model model} and creates an {@link Aspect}.
-    *
-    * @param versionedModel the Aspect Model to be processed
-    * @return A {@link Try} containing the {@link Aspect} for the {@link Model} on success
-    *       and an {@link UnsupportedOperationException} when the Aspect model does not contain exactly one Aspect.
-    */
-   private static Try<Aspect> load( final VersionedModel versionedModel ) {
-      final Model model = versionedModel.getModel();
-      final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getVersion().toString() );
-      if ( metaModelVersion.isEmpty() ) {
-         return Try.failure( new UnsupportedVersionException( versionedModel.getVersion() ) );
-      }
-      final BAMM bamm = new BAMM( metaModelVersion.get() );
-      final StmtIterator iterator = model.listStatements( null, RDF.type, bamm.Aspect() );
-      try {
-         validateNamespaceOfCustomUnits( bamm, versionedModel.getRawModel() );
-         final ModelElementFactory modelElementFactory = new ModelElementFactory( metaModelVersion.get(), model );
-         final Aspect aspect = modelElementFactory.create( Aspect.class, iterator.nextStatement().getSubject() );
-         return Try.success( aspect );
-      } catch ( final InvalidNamespaceException exception ) {
-         return Try.failure( exception );
-      } catch ( final RuntimeException exception ) {
-         return Try.failure( new InvalidModelException( "Could not load Aspect model, please make sure the model is valid", exception ) );
-      }
-   }
-
-   /**
     * Creates an {@link Aspect} instance from a Turtle input model.
     *
     * @param versionedModel The RDF model representation of the Aspect model
     * @return A {@link Try} containing the {@link Aspect} on success and an {@link InvalidRootElementCountException}
     *       (when the Aspect model does not contain exactly one Aspect) or {@link InvalidVersionException}
     *       (when the meta model version is not supported by the Aspect loader) on failure
+    * @deprecated Use {@link #getSingleAspect(VersionedModel)} instead to retain the same semantics, but better use {@link #getElements(VersionedModel)}
+    * instead to also properly handle models that contain not exactly one Aspect
     *
     * @see AspectModelResolver
     */
+   @Deprecated
    public static Try<Aspect> fromVersionedModel( final VersionedModel versionedModel ) {
-      return migratorService
-            .updateMetaModelVersion( versionedModel )
-            .flatMap( migratedModel -> {
-               final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( migratedModel.getVersion().toString() );
-               if ( metaModelVersion.isEmpty() ) {
-                  return Try.failure( new UnsupportedVersionException( migratedModel.getVersion() ) );
-               }
-
-               final KnownVersion version = metaModelVersion.get();
-               if ( !supportedVersions.contains( version ) ) {
-                  return Try.failure( new InvalidVersionException( "No Aspect loader is known to support BAMM version " + version.toVersionString() ) );
-               }
-
-               final List<Try<AspectModelUrn>> list = getUrns( migratedModel, version );
-               if ( list.size() != 1 ) {
-                  return Try.failure( new InvalidRootElementCountException( "Aspect model does not contain exactly one Aspect" ) );
-               }
-
-               return load( migratedModel );
-            } );
+      return getSingleAspect( versionedModel );
    }
 
    private static void validateNamespaceOfCustomUnits( final BAMM bamm, final Model rawModel ) {
@@ -136,26 +99,156 @@ public class AspectModelLoader {
       }
    }
 
-   private static List<Try<AspectModelUrn>> getUrns( final VersionedModel migratedModel, final KnownVersion version ) {
-      final BAMM bamm = new BAMM( version );
-      return migratedModel.getModel().listStatements( null, RDF.type, bamm.Aspect() ).mapWith( statement ->
-            migratorService.getSdsMigratorFactory().createAspectMetaModelResourceResolver().getAspectModelUrn( statement.getSubject().getURI() ) ).toList();
-   }
-
    /**
     * Creates an {@link Aspect} instance from a Turtle input model.
     *
     * @param versionedModel The RDF model representation of the Aspect model
-    * @return The Aspect
-    *
-    * @throws AspectLoadingException with a cause of either {@link UnsupportedOperationException}
-    *       (when the Aspect model does not contain exactly one Aspect) or {@link InvalidVersionException}
-    *       (when the meta model version is not supported by the Aspect loader)
+    * @return The Aspect *
+    * @deprecated use {@link #getSingleAspectUnchecked(VersionedModel)} instead to retain the same semantics, but better use
+    * {@link #getElementsUnchecked(VersionedModel)} instead to also properly handle models that contain not exactly one Aspect
     * @see #fromVersionedModel(VersionedModel)
     */
+   @Deprecated
    public static Aspect fromVersionedModelUnchecked( final VersionedModel versionedModel ) {
       return fromVersionedModel( versionedModel ).getOrElseThrow( cause -> {
          LOG.error( "Could not load Aspect", cause );
+         throw new AspectLoadingException( cause );
+      } );
+   }
+
+   /**
+    * Loads elements from an RDF model that possibly contains multiple namespaces, and organize the result into a
+    * collection of {@link ModelNamespace}. Use this method only when you expect the RDF model to contain more than
+    * one namespace (which is not the case when aspect models contain the usual element definitions with one namespace per file),
+    * otherwise use {@link #getElements(VersionedModel)}.
+    * @param versionedModel The RDF model representation of the Aspect model
+    * @return the list of namespaces
+    */
+   public static Try<List<ModelNamespace>> getNamespaces( final VersionedModel versionedModel ) {
+      return getElements( versionedModel ).map( elements ->
+            elements.stream()
+                  .filter( element -> element.is( NamedElement.class ) && element.as( NamedElement.class ).getAspectModelUrn().isPresent() )
+                  .collect( Collectors.groupingBy( namedElement -> {
+                     final String urn = namedElement.as( NamedElement.class ).getAspectModelUrn().orElseThrow().toString();
+                     return urn.substring( 0, urn.indexOf( "#" ) );
+                  } ) )
+                  .entrySet()
+                  .stream()
+                  .map( entry -> DefaultModelNamespace.from( entry.getKey(), entry.getValue() ) )
+                  .toList()
+      );
+   }
+
+   /**
+    * Creates Java instances for model element classes from the RDF input model
+    * @param versionedModel The RDF model representation of the Aspect model
+    * @return the list of loaded model elements on success
+    */
+   public static Try<List<ModelElement>> getElements( final VersionedModel versionedModel ) {
+      final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() );
+      if ( metaModelVersion.isEmpty() || !supportedVersions.contains( metaModelVersion.get() ) ) {
+         return Try.failure( new UnsupportedVersionException( versionedModel.getMetaModelVersion() ) );
+      }
+
+      final Try<VersionedModel> updatedModel = metaModelVersion.get().isOlderThan( KnownVersion.getLatest() ) ?
+            migratorService.updateMetaModelVersion( versionedModel ) : Try.success( versionedModel );
+      if ( updatedModel.isFailure() ) {
+         return Try.failure( updatedModel.getCause() );
+      }
+
+      final BAMM bamm = new BAMM( KnownVersion.getLatest() );
+
+      try {
+         validateNamespaceOfCustomUnits( bamm, versionedModel.getRawModel() );
+      } catch ( final InvalidNamespaceException exception ) {
+         return Try.failure( exception );
+      }
+
+      try {
+         final VersionedModel model = updatedModel.get();
+         final ModelElementFactory modelElementFactory = new ModelElementFactory( KnownVersion.getLatest(), model.getModel(), Map.of() );
+         // List element definitions (... rdf:type ...) from the raw model (i.e. the actual aspect model to load)
+         // but then load them from the resolved model, because it contains all necessary context (e.g. unit definitions)
+         return Try.success( model.getRawModel().listStatements( null, RDF.type, (RDFNode) null ).toList().stream()
+               .map( Statement::getSubject )
+               .filter( RDFNode::isURIResource )
+               .map( resource -> model.getModel().createResource( resource.getURI() ) )
+               .map( resource -> modelElementFactory.create( ModelElement.class, resource ) )
+               .toList() );
+      } catch ( final RuntimeException exception ) {
+         return Try.failure( new InvalidModelException( "Could not load Aspect model, please make sure the model is valid", exception ) );
+      }
+   }
+
+   /**
+    * Does the same as {@link #getElements(VersionedModel)} but throws an exception in case of failures.
+    * @param versionedModel The RDF model representation of the Aspect model
+    * @throws AspectLoadingException when elements can not be loaded
+    * @return the list of model elements
+    */
+   public static List<ModelElement> getElementsUnchecked( final VersionedModel versionedModel ) {
+      return getElements( versionedModel ).getOrElseThrow( cause -> {
+         LOG.error( "Could not load elements", cause );
+         throw new AspectLoadingException( cause );
+      } );
+   }
+
+   /**
+    * Convenience method that does the same as {@link #getElements(VersionedModel)} except it will return only the aspects contained in the model.
+    * @param versionedModel The RDF model representation of the Aspect model
+    * @return the list of model aspects
+    */
+   public static Try<List<Aspect>> getAspects( final VersionedModel versionedModel ) {
+      return getElements( versionedModel ).map( elements ->
+            elements.stream().filter( element -> element.is( Aspect.class ) )
+                  .map( element -> element.as( Aspect.class ) )
+                  .toList() );
+   }
+
+   /**
+    * Does the same as {@link #getAspects(VersionedModel)} but throws an exception in case of failures.
+    * @param versionedModel The RDF model representation of the Aspect model
+    * @throws AspectLoadingException when elements can not be loaded
+    * @return the list of model aspects
+    */
+   public static List<Aspect> getAspectsUnchecked( final VersionedModel versionedModel ) {
+      return getAspects( versionedModel ).getOrElseThrow( cause -> {
+         LOG.error( "Could not load aspects", cause );
+         throw new AspectLoadingException( cause );
+      } );
+   }
+
+   /**
+    * Convenience method to load the single Aspect from a model, when the model contains exactly one Aspect.
+    *
+    * <b>Caution:</b> The method handles this special case. Aspect Models are allowed to contain any number of Aspects (including zero),
+    * so for the general case you should use {@link #getElements(VersionedModel)} instead.
+    *
+    * @param versionedModel The RDF model representation of the Aspect model
+    * @return the single Aspect contained in the model
+    */
+   public static Try<Aspect> getSingleAspect( final VersionedModel versionedModel ) {
+      return getAspects( versionedModel ).flatMap( aspects -> {
+         if ( aspects.size() != 1 ) {
+            return Try.failure( new InvalidRootElementCountException( "Aspect model does not contain exactly one Aspect" ) );
+         }
+         return Try.success( aspects.get( 0 ) );
+      } );
+   }
+
+   /**
+    * Convenience method to load the single Aspect from a model, when the model contains exactly one Aspect. Does the same as
+    * {@link #getSingleAspect(VersionedModel)} but throws an exception on failure.
+    *
+    * <b>Caution:</b> The method handles this special case. Aspect Models are allowed to contain any number of Aspects (including zero),
+    * so for the general case you should use {@link #getElementsUnchecked(VersionedModel)} instead.
+    *
+    * @param versionedModel The RDF model representation of the Aspect model
+    * @return the single Aspect contained in the model
+    */
+   public static Aspect getSingleAspectUnchecked( final VersionedModel versionedModel ) {
+      return getSingleAspect( versionedModel ).getOrElseThrow( cause -> {
+         LOG.error( "Could not load aspect", cause );
          throw new AspectLoadingException( cause );
       } );
    }

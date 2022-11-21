@@ -20,7 +20,7 @@ import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultEvent extends BaseImpl implements Event {
+public class DefaultEvent extends ModelElementImpl implements Event {
    private final List<Property> properties;
 
    public DefaultEvent( final MetaModelBaseAttributes metaModelBaseAttributes,

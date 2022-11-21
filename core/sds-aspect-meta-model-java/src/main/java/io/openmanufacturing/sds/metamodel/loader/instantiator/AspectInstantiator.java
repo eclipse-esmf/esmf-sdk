@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.metamodel.Event;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;

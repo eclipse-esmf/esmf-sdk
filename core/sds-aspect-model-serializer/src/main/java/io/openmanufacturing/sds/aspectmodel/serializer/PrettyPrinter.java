@@ -81,8 +81,8 @@ public class PrettyPrinter {
     */
    public PrettyPrinter( final VersionedModel versionedModel, final AspectModelUrn rootElementUrn, final PrintWriter writer ) {
       model = versionedModel.getRawModel();
-      final KnownVersion metaModelVersion = KnownVersion.fromVersionString( versionedModel.getVersion().toString() )
-            .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getVersion() ) );
+      final KnownVersion metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() )
+            .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getMetaModelVersion() ) );
       this.writer = writer;
       this.rootElementUrn = rootElementUrn;
 

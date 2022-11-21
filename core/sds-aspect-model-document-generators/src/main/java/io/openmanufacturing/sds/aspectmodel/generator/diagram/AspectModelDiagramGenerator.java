@@ -139,8 +139,8 @@ public class AspectModelDiagramGenerator {
 
       ARQ.init();
       model = versionedModel.getModel();
-      bammVersion = KnownVersion.fromVersionString( versionedModel.getVersion().toString() )
-            .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getVersion() ) );
+      bammVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() )
+            .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getMetaModelVersion() ) );
       boxmodelToDotQuery = QueryFactory.create( getInputStreamAsString( "boxmodel2dot.sparql" ) );
       boxModelNamespace = new BoxModel( bammVersion );
 

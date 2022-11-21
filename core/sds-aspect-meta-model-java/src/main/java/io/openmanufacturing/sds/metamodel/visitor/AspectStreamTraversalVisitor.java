@@ -19,40 +19,40 @@ import java.util.stream.Stream;
 
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.ComplexType;
-import io.openmanufacturing.sds.metamodel.Either;
+import io.openmanufacturing.sds.characteristic.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.Quantifiable;
+import io.openmanufacturing.sds.characteristic.Quantifiable;
 import io.openmanufacturing.sds.metamodel.QuantityKind;
 import io.openmanufacturing.sds.metamodel.StructureElement;
-import io.openmanufacturing.sds.metamodel.StructuredValue;
-import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.characteristic.StructuredValue;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Unit;
 
 /**
  * Aspect Meta Model visitor that recursively traverses all elements of the model
  */
-public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>, Void> {
+public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<ModelElement>, Void> {
 
-   private final List<Base> hasVisited = new LinkedList<>();
+   private final List<ModelElement> hasVisited = new LinkedList<>();
 
    @Override
-   public Stream<Base> visitBase( final Base base, final Void context ) {
-      return Stream.of( base );
+   public Stream<ModelElement> visitBase( final ModelElement modelElement, final Void context ) {
+      return Stream.of( modelElement );
    }
 
    @Override
-   public Stream<Base> visitStructureElement( final StructureElement structureElement, final Void context ) {
+   public Stream<ModelElement> visitStructureElement( final StructureElement structureElement, final Void context ) {
       return Stream.concat( Stream.of( structureElement ),
             structureElement.getProperties().stream().flatMap( property -> property.accept( this, null ) ) );
    }
 
    @Override
-   public Stream<Base> visitAspect( final Aspect aspect, final Void context ) {
+   public Stream<ModelElement> visitAspect( final Aspect aspect, final Void context ) {
       return Stream.concat(
             visitStructureElement( aspect, null ),
             aspect.getOperations().stream().flatMap( operation -> operation.accept( this, null ) ) );
@@ -61,28 +61,28 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
    @SuppressWarnings( "squid:S2250" )
    //Amount of elements in list is in regard to amount of properties in aspect model. Even in bigger aspects this should not lead to performance issues
    @Override
-   public Stream<Base> visitProperty( final Property property, final Void context ) {
+   public Stream<ModelElement> visitProperty( final Property property, final Void context ) {
       if ( hasVisited.contains( property ) ) {
-         return Stream.<Base> of( property );
+         return Stream.<ModelElement> of( property );
       }
       hasVisited.add( property );
-      final Stream<Base> characteristicResult = property.getCharacteristic().stream().flatMap( characteristic ->
+      final Stream<ModelElement> characteristicResult = property.getCharacteristic().stream().flatMap( characteristic ->
             characteristic.accept( this, null ) );
-      final Stream<Base> extendsResult = property.getExtends().stream().flatMap( superProperty -> superProperty.accept( this, null ) );
-      return Stream.of( Stream.<Base> of( property ), characteristicResult, extendsResult
+      final Stream<ModelElement> extendsResult = property.getExtends().stream().flatMap( superProperty -> superProperty.accept( this, null ) );
+      return Stream.of( Stream.<ModelElement> of( property ), characteristicResult, extendsResult
       ).flatMap( Function.identity() );
    }
 
    @Override
-   public Stream<Base> visitOperation( final Operation operation, final Void context ) {
-      return Stream.of( Stream.<Base> of( operation ),
+   public Stream<ModelElement> visitOperation( final Operation operation, final Void context ) {
+      return Stream.of( Stream.<ModelElement> of( operation ),
                   operation.getInput().stream().flatMap( property -> property.accept( this, null ) ),
                   operation.getOutput().stream().flatMap( property -> property.accept( this, null ) ) )
             .reduce( Stream.empty(), Stream::concat );
    }
 
    @Override
-   public Stream<Base> visitEither( final Either either, final Void context ) {
+   public Stream<ModelElement> visitEither( final Either either, final Void context ) {
       return Stream.of(
             either.getLeft().accept( this, null ),
             either.getRight().accept( this, null ),
@@ -91,18 +91,18 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
    }
 
    @Override
-   public Stream<Base> visitUnit( final Unit unit, final Void context ) {
+   public Stream<ModelElement> visitUnit( final Unit unit, final Void context ) {
       return Stream.concat( Stream.of( unit ),
             unit.getQuantityKinds().stream().flatMap( quantityKind -> quantityKind.accept( this, null ) ) );
    }
 
    @Override
-   public Stream<Base> visitQuantityKind( final QuantityKind quantityKind, final Void context ) {
+   public Stream<ModelElement> visitQuantityKind( final QuantityKind quantityKind, final Void context ) {
       return Stream.of( quantityKind );
    }
 
    @Override
-   public Stream<Base> visitQuantifiable( final Quantifiable quantifiable, final Void context ) {
+   public Stream<ModelElement> visitQuantifiable( final Quantifiable quantifiable, final Void context ) {
       return Stream.concat(
             quantifiable.getUnit().stream().flatMap( unit -> unit.accept( this, null ) ),
             visitCharacteristic( quantifiable, null )
@@ -110,20 +110,20 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
    }
 
    @Override
-   public Stream<Base> visitTrait( final Trait trait, final Void context ) {
+   public Stream<ModelElement> visitTrait( final Trait trait, final Void context ) {
       return Stream.concat(
             visitCharacteristic( trait.getBaseCharacteristic(), null ),
             trait.getConstraints().stream().flatMap( constraint -> constraint.accept( this, null ) ) );
    }
 
    @Override
-   public Stream<Base> visitCharacteristic( final Characteristic characteristic, final Void context ) {
+   public Stream<ModelElement> visitCharacteristic( final Characteristic characteristic, final Void context ) {
       return Stream.concat( Stream.of( characteristic ),
             characteristic.getDataType().stream().flatMap( type -> type.accept( this, null ) ) );
    }
 
    @Override
-   public Stream<Base> visitStructuredValue( final StructuredValue structuredValue, final Void context ) {
+   public Stream<ModelElement> visitStructuredValue( final StructuredValue structuredValue, final Void context ) {
       return Stream.concat( Stream.of( structuredValue ),
             structuredValue.getElements().stream().filter( Property.class::isInstance )
                   .map( Property.class::cast )
@@ -131,18 +131,18 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
    }
 
    @Override
-   public Stream<Base> visitEntity( final Entity entity, final Void context ) {
+   public Stream<ModelElement> visitEntity( final Entity entity, final Void context ) {
       if ( hasVisited.contains( entity ) ) {
-         return Stream.<Base> of( entity );
+         return Stream.<ModelElement> of( entity );
       }
       hasVisited.add( entity );
       return visitComplexType( entity, context );
    }
 
    @Override
-   public Stream<Base> visitAbstractEntity( final AbstractEntity abstractEntity, final Void context ) {
+   public Stream<ModelElement> visitAbstractEntity( final AbstractEntity abstractEntity, final Void context ) {
       if ( hasVisited.contains( abstractEntity ) ) {
-         return Stream.<Base> of( abstractEntity );
+         return Stream.<ModelElement> of( abstractEntity );
       }
       hasVisited.add( abstractEntity );
       return Stream.concat(
@@ -153,8 +153,8 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<Base>,
    }
 
    @Override
-   public Stream<Base> visitComplexType( final ComplexType complexType, final Void context ) {
-      final Stream<Base> complexTypeWithPropertiesStream = Stream.concat( Stream.of( complexType ),
+   public Stream<ModelElement> visitComplexType( final ComplexType complexType, final Void context ) {
+      final Stream<ModelElement> complexTypeWithPropertiesStream = Stream.concat( Stream.of( complexType ),
             complexType.getProperties().stream().flatMap( property -> property.accept( this, null ) ) );
 
       if ( complexType.getExtends().isPresent() ) {

@@ -22,7 +22,7 @@ import java.util.Optional;
  *
  * @since BAMM 1.0.0
  */
-public interface Operation extends Base, IsDescribed {
+public interface Operation extends NamedElement {
 
    /**
     * @return a {@link List} of {@link Property}(ies) which define the input parameters for the Operation.

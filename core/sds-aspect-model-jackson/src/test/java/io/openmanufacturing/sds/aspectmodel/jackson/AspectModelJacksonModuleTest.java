@@ -260,7 +260,7 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
 
    private Object generateInstance( final Tuple2<TestAspect, String> modelNameAndPayloadName, final KnownVersion knownVersion ) throws IOException {
       final VersionedModel versionedModel = TestResources.getModel( modelNameAndPayloadName._1(), knownVersion ).get();
-      final Class<?> pojo = AspectModelLoader.fromVersionedModel( versionedModel ).map( this::generatePojo ).get();
+      final Class<?> pojo = AspectModelLoader.getSingleAspect( versionedModel ).map( this::generatePojo ).get();
       final String jsonPayload = loadJsonPayload( modelNameAndPayloadName._1(), knownVersion,
             modelNameAndPayloadName._2() );
       return parseJson( jsonPayload, pojo );

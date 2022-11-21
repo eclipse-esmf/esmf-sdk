@@ -57,7 +57,7 @@ public class LanguageCollectorTest extends MetaModelVersions {
    public void testAspectModelEnglishAndGermanInProperty( final KnownVersion metaModelVersion ) {
       final VersionedModel model = TestResources
             .getModel( TestAspect.ASPECT_WITH_DESCRIPTION_IN_PROPERTY, metaModelVersion ).get();
-      final Aspect aspect = AspectModelLoader.fromVersionedModel( model ).get();
+      final Aspect aspect = AspectModelLoader.getSingleAspect( model ).get();
       final Set<Locale> languages = LanguageCollector.collectUsedLanguages( aspect );
       assertThat( languages )
             .containsExactlyInAnyOrder( Locale.forLanguageTag( "en" ), Locale.forLanguageTag( "de" ) );
@@ -68,7 +68,7 @@ public class LanguageCollectorTest extends MetaModelVersions {
    public void testAspectModelOnlyEnglish( final KnownVersion metaModelVersion ) {
       final VersionedModel model = TestResources
             .getModel( TestAspect.ASPECT_WITH_ENGLISH_DESCRIPTION, metaModelVersion ).get();
-      final Aspect aspect = AspectModelLoader.fromVersionedModel( model ).get();
+      final Aspect aspect = AspectModelLoader.getSingleAspect( model ).get();
       final Set<Locale> languages = LanguageCollector.collectUsedLanguages( aspect );
       assertThat( languages ).containsExactly( Locale.forLanguageTag( "en" ) );
    }
@@ -89,7 +89,7 @@ public class LanguageCollectorTest extends MetaModelVersions {
    public void testAspectModelEnglishAndGerman( final KnownVersion metaModelVersion ) {
       final VersionedModel model = TestResources
             .getModel( TestAspect.ASPECT_WITH_ENGLISH_AND_GERMAN_DESCRIPTION, metaModelVersion ).get();
-      final Aspect aspect = AspectModelLoader.fromVersionedModel( model ).get();
+      final Aspect aspect = AspectModelLoader.getSingleAspect( model ).get();
       final Set<Locale> languages = LanguageCollector.collectUsedLanguages( aspect );
       assertThat( languages )
             .containsExactlyInAnyOrder( Locale.forLanguageTag( "en" ), Locale.forLanguageTag( "de" ) );
@@ -99,7 +99,7 @@ public class LanguageCollectorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testAspectModelWithBlankNodeEnglishAndGerman( final KnownVersion metaModelVersion ) {
       final VersionedModel model = TestResources.getModel( TestAspect.ASPECT_WITH_BLANK_NODE, metaModelVersion ).get();
-      final Aspect aspect = AspectModelLoader.fromVersionedModel( model ).get();
+      final Aspect aspect = AspectModelLoader.getSingleAspect( model ).get();
       final Set<Locale> languages = LanguageCollector.collectUsedLanguages( aspect );
       assertThat( languages )
             .containsExactlyInAnyOrder( Locale.forLanguageTag( "en" ), Locale.forLanguageTag( "de" ) );

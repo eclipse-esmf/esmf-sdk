@@ -36,7 +36,6 @@ import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class PropertyInstantiator extends Instantiator<Property> {
    private final Characteristic fallbackCharacteristic;
    private final Map<Resource, Property> resourcePropertyMap = new HashMap<>();

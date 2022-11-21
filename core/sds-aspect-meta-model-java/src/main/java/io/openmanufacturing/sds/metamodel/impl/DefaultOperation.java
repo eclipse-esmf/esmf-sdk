@@ -22,7 +22,7 @@ import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultOperation extends BaseImpl implements Operation {
+public class DefaultOperation extends ModelElementImpl implements Operation {
    private final List<Property> input;
    private final Optional<Property> output;
 

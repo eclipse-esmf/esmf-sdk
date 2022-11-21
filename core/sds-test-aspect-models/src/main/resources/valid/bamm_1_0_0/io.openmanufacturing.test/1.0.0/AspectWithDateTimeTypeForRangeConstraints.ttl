@@ -44,7 +44,7 @@
     a             bamm-c:Measurement ;
     bamm:name     "Measurement" ;
     bamm:dataType xsd:dateTime ;
-    bamm-c:unit   unit:time .
+    bamm-c:unit   unit:secondUnitOfTime .
 
 :testPropertyWithDateTimeStamp
     a                   bamm:Property ;
@@ -69,4 +69,4 @@
     a             bamm-c:Measurement ;
     bamm:name     "Measurement" ;
     bamm:dataType xsd:dateTimeStamp ;
-    bamm-c:unit   unit:time .
+    bamm-c:unit   unit:secondUnitOfTime .

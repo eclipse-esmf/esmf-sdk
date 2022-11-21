@@ -71,7 +71,7 @@ public class MigratorService {
     */
    public Try<VersionedModel> updateMetaModelVersion( final VersionedModel versionedModel ) {
       final VersionNumber targetVersion = VersionNumber.parse( KnownVersion.getLatest().toVersionString() );
-      VersionNumber sourceVersion = versionedModel.getVersion();
+      VersionNumber sourceVersion = versionedModel.getMetaModelVersion();
       Model migrationModel = versionedModel.getRawModel();
 
       if ( migratorFactory.isPresent() ) {

@@ -20,13 +20,12 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
-import io.openmanufacturing.sds.metamodel.LengthConstraint;
-import io.openmanufacturing.sds.metamodel.impl.DefaultLengthConstraint;
+import io.openmanufacturing.sds.constraint.LengthConstraint;
+import io.openmanufacturing.sds.constraint.impl.DefaultLengthConstraint;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class LengthConstraintInstantiator extends Instantiator<LengthConstraint> {
    public LengthConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, LengthConstraint.class );

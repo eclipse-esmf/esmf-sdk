@@ -15,13 +15,12 @@ package io.openmanufacturing.sds.metamodel.loader.instantiator;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.metamodel.RegularExpressionConstraint;
-import io.openmanufacturing.sds.metamodel.impl.DefaultRegularExpressionConstraint;
+import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
+import io.openmanufacturing.sds.constraint.impl.DefaultRegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class RegularExpressionConstraintInstantiator extends Instantiator<RegularExpressionConstraint> {
    public RegularExpressionConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, RegularExpressionConstraint.class );

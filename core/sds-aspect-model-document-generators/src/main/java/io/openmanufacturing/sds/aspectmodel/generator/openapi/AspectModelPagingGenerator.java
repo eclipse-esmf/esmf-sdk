@@ -34,12 +34,12 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.metamodel.HasProperties;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.TimeSeries;
+import io.openmanufacturing.sds.characteristic.TimeSeries;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 import io.vavr.collection.Stream;
 
@@ -184,7 +184,7 @@ class AspectModelPagingGenerator {
       }
 
       @Override
-      public Set<PagingOption> visitBase( final Base base, final Object context ) {
+      public Set<PagingOption> visitBase( final ModelElement modelElement, final Object context ) {
          return Set.of();
       }
 

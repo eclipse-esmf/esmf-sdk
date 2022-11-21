@@ -18,7 +18,7 @@ import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultConstraint extends BaseImpl implements Constraint {
+public class DefaultConstraint extends ModelElementImpl implements Constraint {
 
    public DefaultConstraint( final MetaModelBaseAttributes metaModelBaseAttributes ) {
       super( metaModelBaseAttributes );

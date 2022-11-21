@@ -21,7 +21,7 @@ import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.ImmutableMap;
 
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
 import io.openmanufacturing.sds.metamodel.Property;
@@ -37,7 +37,7 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
  */
 public class ValueToPayloadStructure implements AspectVisitor<Object, Void> {
    @Override
-   public Object visitBase( final Base base, final Void context ) {
+   public Object visitBase( final ModelElement modelElement, final Void context ) {
       throw new UnsupportedOperationException();
    }
 

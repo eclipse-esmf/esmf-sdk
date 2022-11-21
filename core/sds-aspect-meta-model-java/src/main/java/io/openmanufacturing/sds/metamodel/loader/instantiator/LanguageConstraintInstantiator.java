@@ -17,13 +17,12 @@ import java.util.Locale;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.metamodel.LanguageConstraint;
-import io.openmanufacturing.sds.metamodel.impl.DefaultLanguageConstraint;
+import io.openmanufacturing.sds.constraint.LanguageConstraint;
+import io.openmanufacturing.sds.constraint.impl.DefaultLanguageConstraint;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class LanguageConstraintInstantiator extends Instantiator<LanguageConstraint> {
    public LanguageConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, LanguageConstraint.class );

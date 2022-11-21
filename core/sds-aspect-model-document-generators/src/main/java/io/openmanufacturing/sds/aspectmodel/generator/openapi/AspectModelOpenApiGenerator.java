@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.metamodel.Operation;
 import io.openmanufacturing.sds.metamodel.Property;
 
@@ -295,12 +295,12 @@ public class AspectModelOpenApiGenerator {
       if ( !operations.isEmpty() ) {
          if ( operations.size() == 1 ) {
             aspect.getOperations().stream()
-                  .collect( Collectors.toMap( IsDescribed::getName, Operation::getInput ) )
+                  .collect( Collectors.toMap( NamedElement::getName, Operation::getInput ) )
                   .entrySet().stream()
                   .findFirst()
                   .ifPresent( entry -> schemas.set( FIELD_OPERATION, getRequestBodyForPropertyList( entry ) ) );
             aspect.getOperations().stream()
-                  .collect( Collectors.toMap( IsDescribed::getName, Operation::getOutput ) )
+                  .collect( Collectors.toMap( NamedElement::getName, Operation::getOutput ) )
                   .entrySet().stream()
                   .findFirst().ifPresent(
                   entry -> schemas.set( FIELD_OPERATION_RESPONSE, getResponseSchemaForOperation( entry.getValue() ) ) );
@@ -308,7 +308,7 @@ public class AspectModelOpenApiGenerator {
             final ArrayNode arrayNode = factory.arrayNode();
             schemas.set( FIELD_OPERATION, factory.objectNode().set( "oneOf", arrayNode ) );
             aspect.getOperations().stream()
-                  .collect( Collectors.toMap( IsDescribed::getName, Operation::getInput ) )
+                  .collect( Collectors.toMap( NamedElement::getName, Operation::getInput ) )
                   .entrySet().forEach( entry -> {
                schemas.set( entry.getKey(), getRequestBodyForPropertyList( entry ) );
                arrayNode.add( factory.objectNode().put( REF, COMPONENTS_SCHEMAS + entry.getKey() ) );
@@ -316,7 +316,7 @@ public class AspectModelOpenApiGenerator {
             final ArrayNode responseArrayNode = factory.arrayNode();
             schemas.set( FIELD_OPERATION_RESPONSE, factory.objectNode().set( "oneOf", responseArrayNode ) );
             aspect.getOperations().stream()
-                  .collect( Collectors.toMap( IsDescribed::getName, Operation::getOutput ) )
+                  .collect( Collectors.toMap( NamedElement::getName, Operation::getOutput ) )
                   .forEach( ( key, value ) -> {
                      schemas.set( key + "Response", getResponseSchemaForOperation( value ) );
                      responseArrayNode.add( factory.objectNode().put( REF, COMPONENTS_SCHEMAS + key + "Response" ) );
@@ -472,7 +472,7 @@ public class AspectModelOpenApiGenerator {
       objectNode.put( FIELD_TYPE, FIELD_OBJECT );
       objectNode.set( FIELD_REQUIRED, requiredNode );
       objectNode.set( FIELD_PROPERTIES, propertyNode );
-      property.stream().map( IsDescribed::getName ).distinct().forEach( requiredNode::add );
+      property.stream().map( NamedElement::getName ).distinct().forEach( requiredNode::add );
       property.forEach(
             prop -> propertyNode.set( prop.getName(), schemaVisitor.visitProperty( prop, factory.objectNode() ) ) );
       return objectNode;

@@ -59,6 +59,7 @@ import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationError;
 import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReport;
 import io.openmanufacturing.sds.aspectmodel.validation.report.ValidationReportBuilder;
 import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.vavr.control.Try;
 
@@ -172,13 +173,13 @@ public class AspectModelValidator {
          }
 
          // To catch false positives, also try to load the model
-         final Try<Aspect> aspects = AspectModelLoader.fromVersionedModel( model );
-         if ( aspects.isFailure() && !(aspects.getCause() instanceof InvalidRootElementCountException) ) {
+         final Try<List<ModelElement>> modelElements = AspectModelLoader.getElements( model );
+         if ( modelElements.isFailure() && !(modelElements.getCause() instanceof InvalidRootElementCountException) ) {
             return List.of( new ProcessingViolation(
                   "Validation succeeded, but an error was found while processing the model. "
                         + "This indicates an error in the model validation; please consider reporting this issue including the model "
                         + "at https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues -- "
-                        + buildCauseMessage( aspects.getCause() ), aspects.getCause() ) );
+                        + buildCauseMessage( modelElements.getCause() ), modelElements.getCause() ) );
          }
       }
 
@@ -212,9 +213,9 @@ public class AspectModelValidator {
          final Model dataModel = model.getModel();
 
          final Try<KnownVersion> metaModelVersion = KnownVersion
-               .fromVersionString( model.getVersion().toString() )
+               .fromVersionString( model.getMetaModelVersion().toString() )
                .map( Try::success )
-               .orElse( Try.failure( new UnsupportedVersionException( model.getVersion() ) ) );
+               .orElse( Try.failure( new UnsupportedVersionException( model.getMetaModelVersion() ) ) );
 
          return metaModelVersion
                .flatMap( aspectMetaModelResourceResolver::loadShapesModel ).map( shapesModel -> {
@@ -222,7 +223,7 @@ public class AspectModelValidator {
 
                   if ( report.getProperty( SH.conforms ).getObject().asLiteral().getBoolean() ) {
                      // To catch false positives, also try to load the model.
-                     final Try<Aspect> aspects = AspectModelLoader.fromVersionedModel( model );
+                     final Try<Aspect> aspects = AspectModelLoader.getSingleAspect( model );
                      if ( aspects.isFailure() && !(aspects.getCause() instanceof InvalidRootElementCountException) ) {
                         return getInvalidReport( aspects.getCause() );
                      }

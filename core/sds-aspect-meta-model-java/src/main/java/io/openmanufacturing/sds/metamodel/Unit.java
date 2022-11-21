@@ -21,7 +21,7 @@ import java.util.Set;
  *
  * @since BAMM 1.0.0
  */
-public interface Unit extends Base, IsDescribed {
+public interface Unit extends NamedElement {
    /**
     * Returns the unit's symbol
     */

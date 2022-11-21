@@ -17,13 +17,12 @@ import java.nio.charset.Charset;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.metamodel.EncodingConstraint;
-import io.openmanufacturing.sds.metamodel.impl.DefaultEncodingConstraint;
+import io.openmanufacturing.sds.constraint.EncodingConstraint;
+import io.openmanufacturing.sds.constraint.impl.DefaultEncodingConstraint;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class EncodingConstraintInstantiator extends Instantiator<EncodingConstraint> {
    public EncodingConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, EncodingConstraint.class );

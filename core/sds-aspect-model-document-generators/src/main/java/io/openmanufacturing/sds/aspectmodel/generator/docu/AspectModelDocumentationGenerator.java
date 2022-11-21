@@ -42,7 +42,7 @@ import io.openmanufacturing.sds.aspectmodel.generator.TemplateEngine;
 import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
@@ -320,8 +320,8 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
 
    private void logMissingTranslations( final Aspect aspectMetaModel, final Locale locale ) {
       aspectMetaModel.accept( new AspectStreamTraversalVisitor(), null )
-            .filter( element -> element instanceof IsDescribed )
-            .map( element -> (IsDescribed) element )
+            .filter( element -> element instanceof NamedElement )
+            .map( element -> (NamedElement) element )
             .forEach( modelElement -> {
                final boolean hasPreferredNameWithLocale = modelElement.getPreferredNames().stream()
                      .anyMatch( preferredName -> preferredName.getLanguageTag().equals( locale ) );
