@@ -148,7 +148,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final BAMM bamm = new BAMM( metaModelVersion );
       assertThat( violation.context().element() ).isEqualTo( element );
       assertThat( violation.context().property().get() ).isEqualTo( bamm.exampleValue() );
-      assertThat( violation.bindings().get( "value" ).asLiteral().getString() ).isEqualTo( XSD.xint.getURI() );
+      assertThat( violation.bindings().get( "value" ).asResource().getURI() ).isEqualTo( XSD.xint.getURI() );
    }
 
    @ParameterizedTest
