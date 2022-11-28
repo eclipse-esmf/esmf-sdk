@@ -59,7 +59,8 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
          "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
          "ASPECT_WITH_ABSTRACT_PROPERTY",
          "MODEL_WITH_CYCLES",
-         "MODEL_WITH_BROKEN_CYCLES"
+         "MODEL_WITH_BROKEN_CYCLES",
+         "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES"
    } )
    public void testRdfModelCreatorVisitor( final TestAspect aspect ) {
       testRdfCreation( aspect, KnownVersion.getLatest() );
