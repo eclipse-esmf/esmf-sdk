@@ -31,6 +31,18 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.graph.BlankNodeId;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.NodeVisitor;
+import org.apache.jena.graph.Node_ANY;
+import org.apache.jena.graph.Node_Blank;
+import org.apache.jena.graph.Node_Graph;
+import org.apache.jena.graph.Node_Literal;
+import org.apache.jena.graph.Node_Triple;
+import org.apache.jena.graph.Node_URI;
+import org.apache.jena.graph.Node_Variable;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -39,7 +51,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.util.PrintUtil;
+import org.apache.jena.rdf.model.impl.Util;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
@@ -72,6 +84,8 @@ public class PrettyPrinter {
    private final Map<String, String> prefixMap;
    private final BAMM bamm;
 
+   private final PrintVisitor printVisitor;
+
    /**
     * Constructor.
     *
@@ -85,6 +99,7 @@ public class PrettyPrinter {
             .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getMetaModelVersion() ) );
       this.writer = writer;
       this.rootElementUrn = rootElementUrn;
+      printVisitor = new PrintVisitor( model );
 
       bamm = new BAMM( metaModelVersion );
       final BAMMC bammc = new BAMMC( metaModelVersion );
@@ -92,8 +107,6 @@ public class PrettyPrinter {
       prefixMap = new HashMap<>( Namespace.createPrefixMap( metaModelVersion ) );
       prefixMap.putAll( versionedModel.getModel().getNsPrefixMap() );
       prefixMap.put( "", rootElementUrn.getUrnPrefix() );
-
-      PrintUtil.registerPrefixMap( prefixMap );
       model.setNsPrefixes( prefixMap );
 
       propertyOrder = createPredefinedPropertyOrder( bammc );
@@ -240,7 +253,7 @@ public class PrettyPrinter {
          return serializeLiteral( rdfNode, indentationLevel );
       }
 
-      return PrintUtil.print( rdfNode ).replace( '\'', '"' );
+      return print( rdfNode ).replace( '\'', '"' );
    }
 
    private String quoteValue( final String value ) {
@@ -331,7 +344,7 @@ public class PrettyPrinter {
       final Resource resource = rdfNode.asResource();
 
       if ( processedResources.contains( resource ) ) {
-         return PrintUtil.print( resource );
+         return print( resource );
       }
 
       if ( (resource.isURIResource() && resource.getURI().equals( RDF.nil.getURI() ))
@@ -344,7 +357,7 @@ public class PrettyPrinter {
             resourceQueue.add( resource );
          }
 
-         return PrintUtil.print( resource );
+         return print( resource );
       }
 
       return processElement( resource, indentationLevel + 1 );
@@ -391,6 +404,62 @@ public class PrettyPrinter {
             return firstPart;
          }
          return String.format( (indentationLevel >= 1 ? "%s ;%n" : "%s .%n%n"), firstPart );
+      }
+   }
+
+   private String print( final RDFNode node ) {
+      if ( node == null ) {
+         return "null";
+      }
+      return (String) node.asNode().visitWith( printVisitor );
+   }
+
+   record PrintVisitor(Model model) implements NodeVisitor {
+      
+      @Override
+      public Object visitAny( final Node_ANY it ) {
+         return "*";
+      }
+
+      @Override
+      public Object visitBlank( final Node_Blank it, final BlankNodeId id ) {
+         return it.toString();
+      }
+
+      @Override
+      public Object visitLiteral( final Node_Literal it, final LiteralLabel lit ) {
+         String lf = it.getLiteralLexicalForm();
+         final String singleQuote = "'";
+         if ( lf.contains( singleQuote ) ) {
+            lf = lf.replace( singleQuote, "\\'" );
+         }
+         // RDF 1.1 : Print xsd:string without ^^xsd:string
+         return singleQuote + lf + singleQuote + (Util.isSimpleString( it ) ? "" : "^^" + it.getLiteralDatatypeURI());
+      }
+
+      @Override
+      public Object visitURI( final Node_URI it, final String uri ) {
+         final String suri = model.shortForm( uri );
+         if ( uri.equals( suri ) ) {
+            return "<" + uri + ">";
+         } else {
+            return suri;
+         }
+      }
+
+      @Override
+      public Object visitVariable( final Node_Variable it, final String name ) {
+         return it.toString();
+      }
+
+      @Override
+      public Object visitTriple( final Node_Triple it, final Triple triple ) {
+         return it.toString();
+      }
+
+      @Override
+      public Object visitGraph( final Node_Graph it, final Graph graph ) {
+         return it.toString();
       }
    }
 }
