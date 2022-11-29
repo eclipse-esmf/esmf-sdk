@@ -13,8 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.serializer;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,7 +37,9 @@ import io.openmanufacturing.sds.test.TestResources;
 public class PrettyPrinterTest extends MetaModelVersions {
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class )
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
+         "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES" // contains blank nodes which are not referenced from an aspect and therefore not pretty-printed
+   } )
    public void testPrettyPrinter( final TestAspect testAspect ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
       final Model originalModel = TestResources
