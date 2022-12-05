@@ -140,6 +140,214 @@ The full command would result in:
 java -jar bamm-cli-{sds-sdk-version}.jar aspect _AspectModel.ttl_ to openapi -b "https://www.example.org" -r "/resources/\{resourceId}" -p _fileLocation_
 ----
 
+=== Mapping between the Aspect models and the OpenAPI Specification
+
+In this section, a detailed description of the mapping between individual Aspect elements and the OpenAPI specification is given.
+To make it easier to follow, the mapping is explained based on a concrete example, divided into logically coherent blocks. Please bear in mind
+that these blocks are snippets or fragments of a larger whole; viewed in isolation they do not necessarily form a valid or meaningful aspect model or OpenAPI specification.
+
+==== Naming and versioning
+
+Please consider the following model fragment, with the attention focused on the numbered elements:
+
+----
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>.
+@prefix : <urn:bamm:test:2.0.0#>. <1>
+
+:Test a bamm:Aspect;
+    bamm:name "Test"; <3>
+    bamm:preferredName "TestAspect"@en ; <2>
+    bamm:preferredName "TestAspekt"@de .
+----
+<1> full URN of :Test Aspect
+<2> the preferred name of the Aspect in language of user's choice
+<3> the name of the Aspect
+
+For the generated OpenAPI Specification, the following mapping would apply:
+
+[source,JSON]
+----
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "title" : "TestAspect", // <2> <3>
+    "version" : "v2" // <1>
+  }
+}
+----
+<1> depending on parameters used when generating the specification, this is either the major version of the full Aspect URN (*2*.0.0),
+or it can be the full version (`v2.0.0`), if using `-sv` (semantic version) command line switch
+<2> if present, `bamm:preferredName` is used as the value for the `title` element of the specification
+<3> as `bamm:preferredName` is an optional element, in cases when it is missing the value of `bamm:name` is used instead
+
+The version information as described above is also used in the url definitions of the `servers` block of the specification:
+
+[source,JSON]
+----
+{
+ "servers" : [ {
+    "url" : "http://mysite/api/v2", // <1>
+    "variables" : {
+      "api-version" : {
+        "default" : "v2" // <1>
+      }
+    }
+  } ]
+}
+----
+
+The name of the Aspect is used to generate several important OpenAPI artifacts, like the path definitions for the API:
+
+[source,JSON]
+----
+{
+ "paths" : {
+    "/{tenant-id}/test" : { // <3>
+      "get" : {
+        "tags" : [ "Test" ], // <3>
+        "operationId" : "getTest" // <3>
+      }
+    }
+  }
+}
+----
+
+and the definitions for request bodies and responses in the corresponding blocks (`requestBodies` and `responses`) of the OpenAPI specification (example omitted for simplicity).
+
+==== Mapping of Aspect and its properties
+
+For each Aspect in the model, an entry in the `components/schemas` part of the OpenAPI specification is generated.
+For an example Aspect from the following fragment:
+
+----
+:Test a bamm:Aspect; <1>
+    bamm:properties (
+		:prop1 <2>
+		[ bamm:property :prop2; bamm:payloadName "givenName"; ] <3>
+		[ bamm:property :prop3; bamm:optional true; ] ). <4>
+
+:prop1 a bamm:Property;
+    bamm:name "property1";
+    bamm:description "Description of Property1"@en; <5>
+    bamm:characteristic :Enum. <6>
+----
+
+an entry like the one given in the following JSON will be generated:
+
+[source,JSON]
+----
+"Test" : { // <1>
+    "type" : "object",
+    "properties" : {
+      "prop1" : { // <2>
+        "description" : "Description of Property1", // <5>
+        "$ref" : "#/components/schemas/urn_bamm_test_2.0.0_Enum" // <6>
+      },
+      "givenName" : { // <3>
+        "$ref" : "#/components/schemas/urn_bamm_test_2.0.0_EntityChar"
+      },
+      "prop3" : { // <4>
+        "$ref" : "#/components/schemas/urn_bamm_test_2.0.0_StringCharacteristic"
+      }
+    },
+    "required" : [ "prop1", "givenName" ] // <2> <3>
+  }
+----
+<1> the name of the Aspect is used to name the schema object for the aspect
+<2> with plain property references, the name of the property is used to name the property definition
+<3> in cases where a payload name is defined on a specific property, it is used in preference to the plain property name
+<4> if the property use is also defined as optional, the property will not be included in the list of the required properties
+<5> the values of `bamm:description` elements in property definitions are included in the generated JSON
+<6> for each of the properties characteristics an entry in `components/schemas` is generated and referenced here; if the characteristic is of complex type,
+the whole procedure is applied recursively to the complex type's properties
+
+
+==== Mapping of Aspect's operations
+
+If the Aspect also has a non-empty list of operations defined, like the one in the following example:
+
+----
+:AspectWithOperation a bamm:Aspect ;
+   bamm:properties ( ) ;
+   bamm:operations ( :testOperation ) .
+
+:testOperation a bamm:Operation ;
+   bamm:input ( :input ) ; <1>
+   bamm:output :output . <2>
+
+:output a bamm:Property ;
+   bamm:characteristic bamm-c:Text . <3>
+
+:input a bamm:Property ;
+   bamm:characteristic bamm-c:Text . <4>
+----
+
+then additional entries are added to the generated OpenAPI specification.
+First, there is an additional entry in the `paths` section of the specification: `/{tenant-id}/aspect-with-operation/*operations*`.
+The available operations are then added to the `components/schemas` part:
+
+[source,JSON]
+----
+{
+ "Operation" : {
+    "allOf" : [ {
+      "$ref" : "#/components/schemas/JsonRpc"
+    }, {
+      "properties" : {
+        "params" : {
+          "type" : "object",
+          "required" : [ "input" ], // <1>
+          "properties" : {
+            "input" : { // <1>
+              "$ref" : "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" // <3>
+            }
+          }
+        },
+        "method" : {
+          "type" : "string",
+          "description" : "The method name",
+          "example" : "testOperation"
+        }
+      }
+    } ]
+  },
+ "OperationResponse" : {
+    "allOf" : [ {
+      "$ref" : "#/components/schemas/JsonRpc"
+    }, {
+      "properties" : {
+        "result" : {
+          "type" : "object",
+          "required" : [ "output" ], // <2>
+          "properties" : {
+            "output" : { // <2>
+              "$ref" : "#/components/schemas/urn_bamm_io.openmanufacturing_characteristic_2.0.0_Text" // <4>
+            }
+          }
+        }
+      }
+    } ]
+  }
+}
+----
+<1> the names of the input
+<2> and output parameters are reflected in the properties generated for the request/response objects
+<3> the characteristics are generated
+<4> and referenced as described in the point 6 of the section "Mapping of Aspect and its properties"
+
+As usual, corresponding entries referencing the definitions above are added to the `requestBodies` and `responses` sections (examples omitted for simplicity).
+For technical reasons, there may be a slight variation in the generated JSON depending on whether the aspect has one or more operations defined.
+
+==== Mapping of Collections
+
+There are some additional JSON entries generated for complex types related to various types of collections to facilitate
+access to the individual elements of these collections via paging. As these entries are rather of static character
+without direct references to any aspect elements, it suffices here to give a short overview about which kind of paging
+is available for which type of collection:
+
+* a general Collection - cursor and/or offset based paging
+* TimeSeries - cursor, offset and/or time based paging
+
 [[models-directory-structure]]
 == Understanding the models directory structure
 
