@@ -29,8 +29,6 @@
 
    <properties>
       <main.class>io.openmanufacturing.sds.BammCli</main.class>
-      <picocli-version>4.6.3</picocli-version>
-      <jansi-version>1.18</jansi-version>
    </properties>
 
    <dependencies>
@@ -53,12 +51,10 @@
       <dependency>
          <groupId>info.picocli</groupId>
          <artifactId>picocli</artifactId>
-         <version>${picocli-version}</version>
       </dependency>
       <dependency>
          <groupId>org.fusesource.jansi</groupId>
          <artifactId>jansi</artifactId>
-         <version>${jansi-version}</version>
       </dependency>
 
       <!-- Test dependencies -->
