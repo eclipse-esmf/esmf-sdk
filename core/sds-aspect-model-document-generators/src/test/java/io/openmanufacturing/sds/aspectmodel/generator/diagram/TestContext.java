@@ -34,6 +34,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Selector;
 import org.apache.jena.rdf.model.SimpleSelector;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.function.FunctionRegistry;
 import org.apache.jena.vocabulary.RDF;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
@@ -45,6 +46,7 @@ public class TestContext {
    private final AspectModelDiagramGenerator service;
    private final KnownVersion version;
    private final BoxModel boxModel;
+   private final GetElementNameFunctionFactory getElementNameFunctionFactory;
 
    public TestContext( final TestModel model, final KnownVersion version ) {
       this.version = version;
@@ -52,6 +54,7 @@ public class TestContext {
       service = new AspectModelDiagramGenerator( versionedModel );
       boxModel = new BoxModel( version );
       service.model.setNsPrefix( "", boxModel.getNamespace() );
+      getElementNameFunctionFactory = new GetElementNameFunctionFactory( versionedModel.getModel() );
    }
 
    /**
@@ -70,14 +73,14 @@ public class TestContext {
             null : ResourceFactory.createResource( resolve( parts[0] ) );
       final Property predicate;
       switch ( parts[1] ) {
-         case "*":
-            predicate = null;
-            break;
-         case "a":
-            predicate = RDF.type;
-            break;
-         default:
-            predicate = ResourceFactory.createProperty( resolve( parts[1] ) );
+      case "*":
+         predicate = null;
+         break;
+      case "a":
+         predicate = RDF.type;
+         break;
+      default:
+         predicate = ResourceFactory.createProperty( resolve( parts[1] ) );
       }
 
       if ( parts[2].contains( ":" ) ) {
@@ -109,13 +112,7 @@ public class TestContext {
          final int totalNumberOfExpectedEntries,
          final int indexOfExpectedEntry, final String expectedTitle, final String expectedValue ) {
 
-      final Query query = QueryFactory.create( getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
-
+      final Model queryResult = executeQuery( sparqlQueryFileName );
       assertThat( queryResult.listStatements( selector( boxSelectorStatement ) ).toList() ).hasSizeGreaterThanOrEqualTo( 1 );
 
       final List<RDFNode> entries = queryResult
@@ -129,13 +126,7 @@ public class TestContext {
          final String boxSelectorStatement, final String entriesSelectorStatement,
          final int totalNumberOfExpectedEntries, final int indexOfExpectedEntry ) {
 
-      final Query query = QueryFactory.create( service.getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, service.model ) ) {
-         qexec.execConstruct( queryResult );
-      }
-
+      final Model queryResult = executeQuery( sparqlQueryFileName );
       assertThat( queryResult.listStatements( selector( boxSelectorStatement ) ).toList() ).hasSize( 1 );
 
       final List<RDFNode> entries = queryResult
@@ -147,6 +138,16 @@ public class TestContext {
       assertThat( entryText ).isNull();
    }
 
+   public Model executeQuery( final String sparqlQueryFileName ) {
+      final Query query = QueryFactory.create( getInputStreamAsString( sparqlQueryFileName ) );
+      final Model queryResult = ModelFactory.createDefaultModel();
+      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model() ) ) {
+         FunctionRegistry.get( qexec.getContext() ).put( AspectModelDiagramGenerator.GET_ELEMENT_NAME_FUNC, getElementNameFunctionFactory );
+         qexec.execConstruct( queryResult );
+      }
+      return queryResult;
+   }
+
    public void assertEntry( final List<RDFNode> entries, final int totalNumberOfExpectedEntries,
          final int indexOfExpectedEntry, final String expectedTitle, final String expectedValue ) {
       assertThat( entries ).hasSize( totalNumberOfExpectedEntries );
@@ -155,10 +156,10 @@ public class TestContext {
             .isEqualTo( boxModel.entry() );
       assertThat(
             entries.get( indexOfExpectedEntry ).asResource().getProperty( boxModel.title() ).getObject().asLiteral()
-                   .getString() ).isEqualTo( expectedTitle );
+                  .getString() ).isEqualTo( expectedTitle );
 
       final String entryText = entries.get( indexOfExpectedEntry ).asResource().getProperty( boxModel.text() )
-                                      .getObject().asLiteral().getString();
+            .getObject().asLiteral().getString();
       assertThat( entryText ).isEqualTo( expectedValue );
    }
 
