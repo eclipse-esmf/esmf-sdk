@@ -3,7 +3,7 @@
 [[bamm-cli]]
 = BAMM CLI
 
-The BAMM CLI is a command line tool for the validation of Aspect models and the generation of artifacts, such as documentation or code, from Aspect models.
+The BAMM CLI is a command line tool for the validation of Aspect Models and the generation of artifacts, such as documentation or code, from Aspect Models.
 
 TIP: Download latest version: icon:download[] https://github.com/OpenManufacturingPlatform/sds-sdk/releases/download/v{sds-sdk-version}/bamm-cli-{sds-sdk-version}.jar[bamm-cli-{sds-sdk-version}.jar]
 
@@ -140,11 +140,11 @@ The full command would result in:
 java -jar bamm-cli-{sds-sdk-version}.jar aspect _AspectModel.ttl_ to openapi -b "https://www.example.org" -r "/resources/\{resourceId}" -p _fileLocation_
 ----
 
-=== Mapping between the Aspect models and the OpenAPI Specification
+=== Mapping between the Aspect Models and the OpenAPI Specification
 
 In this section, a detailed description of the mapping between individual Aspect elements and the OpenAPI specification is given.
-To make it easier to follow, the mapping is explained based on a concrete example, divided into logically coherent blocks. Please bear in mind
-that these blocks are snippets or fragments of a larger whole; viewed in isolation they do not necessarily form a valid or meaningful aspect model or OpenAPI specification.
+To make it easier to follow, the mapping is explained based on a concrete example, divided into logically coherent blocks.
+Please bear in mind that these blocks are snippets or fragments of a larger whole; viewed in isolation they do not necessarily form a valid or meaningful Aspect Model or OpenAPI specification.
 
 ==== Naming and versioning
 
@@ -154,12 +154,12 @@ Please consider the following model fragment, with the attention focused on the 
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>.
 @prefix : <urn:bamm:test:2.0.0#>. <1>
 
-:Test a bamm:Aspect;
-    bamm:name "Test"; <3>
+:Test a bamm:Aspect; <3>
     bamm:preferredName "TestAspect"@en ; <2>
     bamm:preferredName "TestAspekt"@de .
 ----
-<1> full URN of :Test Aspect
+
+<1> prefix used to build the full URN of :Test Aspect
 <2> the preferred name of the Aspect in language of user's choice
 <3> the name of the Aspect
 
@@ -175,12 +175,12 @@ For the generated OpenAPI Specification, the following mapping would apply:
   }
 }
 ----
-<1> depending on parameters used when generating the specification, this is either the major version of the full Aspect URN (*2*.0.0),
-or it can be the full version (`v2.0.0`), if using `-sv` (semantic version) command line switch
-<2> if present, `bamm:preferredName` is used as the value for the `title` element of the specification
-<3> as `bamm:preferredName` is an optional element, in cases when it is missing the value of `bamm:name` is used instead
 
-The version information as described above is also used in the url definitions of the `servers` block of the specification:
+<1> depending on parameters used when generating the specification, this is either the major version of the full Aspect URN (*2*.0.0), or it can be the full version (`v2.0.0`), if using `-sv` (semantic version) command line switch
+<2> if present, `bamm:preferredName` is used as the value for the `title` element of the specification
+<3> as `bamm:preferredName` is an optional element, in cases when it is missing the name of the Aspect is used instead
+
+The version information as described above is also used in the URL definitions of the `servers` block of the specification:
 
 [source,JSON]
 ----
@@ -222,12 +222,11 @@ For an example Aspect from the following fragment:
 ----
 :Test a bamm:Aspect; <1>
     bamm:properties (
-		:prop1 <2>
-		[ bamm:property :prop2; bamm:payloadName "givenName"; ] <3>
-		[ bamm:property :prop3; bamm:optional true; ] ). <4>
+        :prop1 <2>
+        [ bamm:property :prop2; bamm:payloadName "givenName"; ] <3>
+        [ bamm:property :prop3; bamm:optional true; ] ). <4>
 
 :prop1 a bamm:Property;
-    bamm:name "property1";
     bamm:description "Description of Property1"@en; <5>
     bamm:characteristic :Enum. <6>
 ----
@@ -237,7 +236,7 @@ an entry like the one given in the following JSON will be generated:
 [source,JSON]
 ----
 "Test" : { // <1>
-    "type" : "object",
+  "type" : "object",
     "properties" : {
       "prop1" : { // <2>
         "description" : "Description of Property1", // <5>
@@ -251,16 +250,15 @@ an entry like the one given in the following JSON will be generated:
       }
     },
     "required" : [ "prop1", "givenName" ] // <2> <3>
-  }
+}
 ----
+
 <1> the name of the Aspect is used to name the schema object for the aspect
 <2> with plain property references, the name of the property is used to name the property definition
 <3> in cases where a payload name is defined on a specific property, it is used in preference to the plain property name
 <4> if the property use is also defined as optional, the property will not be included in the list of the required properties
 <5> the values of `bamm:description` elements in property definitions are included in the generated JSON
-<6> for each of the properties characteristics an entry in `components/schemas` is generated and referenced here; if the characteristic is of complex type,
-the whole procedure is applied recursively to the complex type's properties
-
+<6> for each of the properties characteristics an entry in `components/schemas` is generated and referenced here; if the characteristic is of complex type, the whole procedure is applied recursively to the complex type's properties
 
 ==== Mapping of Aspect's operations
 
@@ -330,6 +328,7 @@ The available operations are then added to the `components/schemas` part:
   }
 }
 ----
+
 <1> the names of the input
 <2> and output parameters are reflected in the properties generated for the request/response objects
 <3> the characteristics are generated
@@ -340,10 +339,8 @@ For technical reasons, there may be a slight variation in the generated JSON dep
 
 ==== Mapping of Collections
 
-There are some additional JSON entries generated for complex types related to various types of collections to facilitate
-access to the individual elements of these collections via paging. As these entries are rather of static character
-without direct references to any aspect elements, it suffices here to give a short overview about which kind of paging
-is available for which type of collection:
+There are some additional JSON entries generated for complex types related to various types of collections to facilitate access to the individual elements of these collections via paging.
+As these entries are rather of static character without direct references to any aspect elements, it suffices here to give a short overview about which kind of paging is available for which type of collection:
 
 * a general Collection - cursor and/or offset based paging
 * TimeSeries - cursor, offset and/or time based paging
@@ -351,7 +348,7 @@ is available for which type of collection:
 [[models-directory-structure]]
 == Understanding the models directory structure
 
-An Aspect model file can contain an Aspect definition as well as other model elements that are defined in the same versioned namespace, as described in the xref:bamm-specification:ROOT:namespaces.adoc[Namespaces section of the
+An Aspect Model file can contain an Aspect definition as well as other model elements that are defined in the same versioned namespace, as described in the xref:bamm-specification:ROOT:namespaces.adoc[Namespaces section of the
 specification].
 Additionally, it is possible to split one versioned namespace across multiple files, for example to define a Characteristic that is usable in multiple Aspects into its own file.
 In order for BAMM CLI to be able to resolve references to such externally defined model elements, the model files must be organized in a directory structure as follows:
