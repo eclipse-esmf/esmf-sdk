@@ -345,6 +345,177 @@ As these entries are rather of static character without direct references to any
 * a general Collection - cursor and/or offset based paging
 * TimeSeries - cursor, offset and/or time based paging
 
+For all these paging mechanisms, an additional entry with the name `PagingSchema` is generated in the `components/schemas` part of the specification,
+which is then used as the main response schema for the Aspect. Basically, instead of a single Aspect, a collection of Aspects is returned,
+together with optional total number of Aspects available in the collection:
+
+[source,JSON]
+----
+"PagingSchema" : {
+  "type" : "object",
+  "properties" : {
+    "items" : {
+      "type" : "array",
+      "items" : {
+        "$ref" : "#/components/schemas/Test"
+      }
+    },
+    "totalItems" : {
+      "type" : "number"
+    }
+  }
+}
+----
+
+Depending on the concrete paging model selected, there can be additional properties in the `PagingSchema` object.
+For cursor based paging, the `cursor` object denotes the position of the returned Aspects in relation to some other
+uniquely identifiable Aspect (`before` or `after` it):
+
+[source,JSON]
+----
+"cursor" : {
+  "type" : "object",
+  "properties" : {
+    "before" : {
+      "type" : "string",
+      "format" : "uuid"
+    },
+    "after" : {
+      "type" : "string",
+      "format" : "uuid"
+    }
+  }
+},
+----
+
+For offset and time based paging, the data is returned in batches of requested size ("pages"), described using the following properties (the meaning of which is self explanatory):
+
+[source,JSON]
+----
+"totalPages" : {
+  "type" : "number"
+},
+"pageSize" : {
+  "type" : "number"
+},
+"currentPage" : {
+  "type" : "number"
+}
+----
+
+In addition to the `PagingSchema` object, also several new parameters are added to the request parameters section of the generated document,
+with the help of which the size and/or the relative position of the returned data can be controlled.
+All paging mechanisms have the following parameters in common, the meaning of which can be discerned from their descriptions:
+
+[source,JSON]
+----
+{
+  "name" : "count",
+  "in" : "query",
+  "description" : "Number of items to return per call.",
+  "required" : false,
+  "schema" : {
+    "type" : "number"
+  }
+},
+{
+  "name" : "totalItemCount",
+  "in" : "query",
+  "description" : "Flag that indicates that the total counts should be returned.",
+  "required" : false,
+  "schema" : {
+    "type" : "boolean"
+  }
+}
+----
+
+Depending on the exact paging model selected, additional paging specific parameters are available.
+For offset based paging:
+[source,JSON]
+----
+"name" : "start",
+"in" : "query",
+"description" : "Starting index which is starting by 0",
+"required" : false,
+"schema" : {
+  "type" : "number"
+}
+----
+
+For cusrsor based paging:
+[source,JSON]
+----
+{
+  "name" : "previous",
+  "in" : "query",
+  "description" : "URL to request the previous items. An empty value indicates there are no previous items.",
+  "required" : false,
+  "schema" : {
+    "type" : "string",
+    "format" : "uri"
+  }
+},{
+  "name" : "next",
+  "in" : "query",
+  "description" : "URL to request the next items. An empty value indicates there are no other items.",
+  "required" : false,
+  "schema" : {
+    "type" : "string",
+    "format" : "uri"
+    }
+}, {
+  "name" : "before",
+  "in" : "query",
+  "description" : "The cursor that points to the start of the page of items that has been returned.",
+  "required" : false,
+  "schema" : {
+   "type" : "string",
+    "format" : "uuid"
+  }
+}, {
+  "name" : "after",
+  "in" : "query",
+  "description" : "The cursor that points to the end of items that has been returned.",
+  "required" : false,
+  "schema" : {
+    "type" : "string",
+    "format" : "uuid"
+  }
+}
+----
+
+And finally for the time based paging:
+[source,JSON]
+----
+{
+  "name" : "since",
+  "in" : "query",
+  "description" : "A timestamp that points to the start of the time-based data.",
+  "required" : false,
+  "schema" : {
+    "type" : "string",
+    "format" : "date-time"
+  }
+}, {
+  "name" : "until",
+  "in" : "query",
+  "description" : "A timestamp that points to the end of the time-based data.",
+  "required" : false,
+  "schema" : {
+    "type" : "string",
+    "format" : "date-time"
+  }
+}, {
+  "name" : "limit",
+  "in" : "query",
+  "description" : "Number of items to return per call.",
+  "required" : false,
+    "schema" : {
+    "type" : "number"
+  }
+}
+----
+
 [[models-directory-structure]]
 == Understanding the models directory structure
 
