@@ -28,7 +28,12 @@
    <packaging>jar</packaging>
 
    <properties>
-      <main.class>io.openmanufacturing.sds.BammCli</main.class>
+      <packaging-type>jar</packaging-type>
+      <main-class>io.openmanufacturing.sds.BammCli</main-class>
+      <binary-name>bamm</binary-name>
+      <graalvm-config-path>${project.build.directory}/classes/META-INF/native-image/${project.groupId}/${project.artifactId}</graalvm-config-path>
+      <skip.maven.surefire>false</skip.maven.surefire>
+      <skip.maven.surefire.report.plugin>false</skip.maven.surefire.report.plugin>
    </properties>
 
    <dependencies>
@@ -55,6 +60,12 @@
       <dependency>
          <groupId>org.fusesource.jansi</groupId>
          <artifactId>jansi</artifactId>
+      </dependency>
+      <!-- Required for GraalVM build: Annotations for substitution classes -->
+      <dependency>
+         <groupId>org.graalvm.nativeimage</groupId>
+         <artifactId>svm</artifactId>
+         <scope>provided</scope>
       </dependency>
 
       <!-- Test dependencies -->
@@ -99,15 +110,49 @@
             </includes>
          </resource>
       </resources>
+
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>org.graalvm.nativeimage</groupId>
+               <artifactId>native-image-maven-plugin</artifactId>
+               <version>${graal-version}</version>
+               <configuration>
+                  <imageName>${binary-name}</imageName>
+                  <mainClass>${main-class}</mainClass>
+                  <buildArgs>
+                     <buildArg>--no-fallback</buildArg>
+                     <buildArg>-cp ${project.build.directory}/${project.artifactId}-${project.version}.jar
+                     </buildArg>
+                     <buildArg>-Djava.awt.headless=true</buildArg>
+                  </buildArgs>
+               </configuration>
+            </plugin>
+
+         </plugins>
+      </pluginManagement>
+
       <plugins>
-         <!-- Disable surefire report plugin. The report is created in the sds-sdk-test-report module -->
+         <!-- Configure maven surefire plugin (execution of unit tests) -->
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-report-plugin</artifactId>
-            <version>${maven-surefire-plugin-version}</version>
+            <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-               <skipFailsafeReport>true</skipFailsafeReport>
-               <skipSurefireReport>true</skipSurefireReport>
+               <systemPropertyVariables>
+                  <packaging-type>${packaging-type}</packaging-type>
+                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar
+                  </executableJar>
+                  <binary>${project.build.directory}/${binary-name}</binary>
+                  <graalVmConfigPath>${graalvm-config-path}</graalVmConfigPath>
+                  <forkCount>1</forkCount>
+                  <reuseForks>true</reuseForks>
+                  <argLine>-Xmx4096m</argLine>
+               </systemPropertyVariables>
+               <skip>${skip.maven.surefire}</skip>
+               <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
+               <includes>
+                  <include>**/*UnitTest.java</include>
+               </includes>
             </configuration>
          </plugin>
 
@@ -124,33 +169,76 @@
 
          <!-- Build fat jar -->
          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
             <executions>
                <execution>
+                  <id>default-shade</id>
+                  <phase>package</phase>
                   <goals>
-                     <goal>repackage</goal>
-                     <!-- Triggers generation of build-info.properties which will be available via /info -->
-                     <goal>build-info</goal>
+                     <goal>shade</goal>
                   </goals>
+                  <configuration>
+                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                     <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                           <manifestEntries>
+                              <Main-Class>${main-class}</Main-Class>
+                           </manifestEntries>
+                        </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                     </transformers>
+                     <filters>
+                        <!-- Required to prevent overlapping resources -->
+                        <filter>
+                           <artifact>*:*</artifact>
+                           <excludes>
+                              <exclude>module-info.class</exclude>
+                              <exclude>META-INF/*</exclude>
+                              <exclude>META-INF.versions*/**</exclude>
+                              <exclude>META-INF/versions*/**</exclude>
+                              <exclude>META-INF/maven/**</exclude>
+                              <exclude>git.properties</exclude>
+                              <exclude>plugin.xml</exclude>
+                              <exclude>about.html</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- Required to override the excludes above -->
+                        <filter>
+                           <artifact>${project.groupId}:${project.artifactId}</artifact>
+                           <includes>
+                              <include>**</include>
+                              <include>META-INF/**</include>
+                              <include>git.properties</include>
+                           </includes>
+                        </filter>
+                        <!-- Required to have Model Instantiators available -->
+                        <filter>
+                           <artifact>io.openmanufacturing:sds-aspect-meta-model-java</artifact>
+                           <includes>
+                              <include>**</include>
+                           </includes>
+                        </filter>
+                        <!-- Prevent overlapping classes from javax modules -->
+                        <filter>
+                           <artifact>jakarta.activation:jakarta.activation-api</artifact>
+                           <excludes>
+                              <exclude>**</exclude>
+                           </excludes>
+                        </filter>
+                     </filters>
+                  </configuration>
                </execution>
             </executions>
-            <configuration>
-               <mainClass>${main.class}</mainClass>
-               <requiresUnpack>
-                  <dependency>
-                     <groupId>org.asciidoctor</groupId>
-                     <artifactId>asciidoctorj</artifactId>
-                  </dependency>
-               </requiresUnpack>
-            </configuration>
          </plugin>
+
          <plugin>
             <groupId>pl.project13.maven</groupId>
             <artifactId>git-commit-id-plugin</artifactId>
             <executions>
                <execution>
                   <id>get-the-git-infos</id>
+                  <phase>compile</phase>
                   <goals>
                      <goal>revision</goal>
                   </goals>
@@ -191,6 +279,7 @@
                </execution>
             </executions>
          </plugin>
+
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -212,26 +301,67 @@
             </configuration>
          </plugin>
 
-         <!-- for testing of the command executor, we need a test JAR file -->
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <configuration>
-               <archive>
-                  <manifest>
-                     <mainClass>io.openmanufacturing.sds.JavaCmdLine</mainClass>
-                  </manifest>
-               </archive>
-            </configuration>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${maven-failsafe-plugin-version}</version>
             <executions>
                <execution>
                   <goals>
-                     <goal>test-jar</goal>
+                     <goal>integration-test</goal>
+                     <goal>verify</goal>
                   </goals>
                </execution>
             </executions>
+            <configuration>
+               <systemPropertyVariables>
+                  <packaging-type>${packaging-type}</packaging-type>
+                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar
+                  </executableJar>
+                  <binary>${project.build.directory}/${binary-name}</binary>
+                  <graalVmConfigPath>${graalvm-config-path}</graalVmConfigPath>
+                  <forkCount>1</forkCount>
+                  <reuseForks>true</reuseForks>
+                  <argLine>-Xmx4096m</argLine>
+               </systemPropertyVariables>
+               <includes>
+                  <include>**/*IntegrationTest.java</include>
+               </includes>
+            </configuration>
          </plugin>
-
       </plugins>
    </build>
+
+   <profiles>
+      <profile>
+         <id>native</id>
+         <properties>
+            <packaging-type>native</packaging-type>
+            <skip.maven.surefire>true</skip.maven.surefire>
+         </properties>
+         <build>
+            <plugins>
+               <plugin>
+                  <groupId>org.graalvm.buildtools</groupId>
+                  <artifactId>native-maven-plugin</artifactId>
+                  <extensions>true</extensions>
+                  <executions>
+                     <execution>
+                        <id>build-native</id>
+                        <goals>
+                           <goal>build</goal>
+                        </goals>
+                        <phase>package</phase>
+                     </execution>
+                  </executions>
+                  <configuration>
+                     <mainClass>${main-class}</mainClass>
+                     <imageName>${binary-name}</imageName>
+                  </configuration>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
+
+   </profiles>
 </project>
