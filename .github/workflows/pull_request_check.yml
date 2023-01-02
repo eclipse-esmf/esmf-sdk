@@ -16,4 +16,4 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
     - name: Run tests
-      run: mvn -B clean install -Dgpg.skip=true
+      run: mvn -B clean install
