@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
@@ -37,7 +38,6 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectToJsonSchemaCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "schema";
 
    @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path (default: stdout)" )
@@ -49,6 +49,9 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;

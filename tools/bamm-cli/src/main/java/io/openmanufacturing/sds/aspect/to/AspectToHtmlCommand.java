@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
@@ -35,7 +36,6 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectToHtmlCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "html";
 
    @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path (default: stdout)" )
@@ -49,6 +49,9 @@ public class AspectToHtmlCommand extends AbstractCommand {
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;

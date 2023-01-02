@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspect;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.exception.SubCommandException;
 import picocli.CommandLine;
 
@@ -33,8 +34,10 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "aspect";
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @CommandLine.Parameters( paramLabel = "INPUT", description = "Input file name of the Aspect Model .ttl file", arity = "1", index = "0" )
    private String input;

@@ -18,6 +18,7 @@ import java.nio.file.Path;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.java.JavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
@@ -33,7 +34,6 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectToJavaCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "java";
 
    @CommandLine.Option( names = { "--no-jackson", "-nj" }, description = "Disable Jackson annotation generation in generated Java classes." )
@@ -57,6 +57,9 @@ public class AspectToJavaCommand extends AbstractCommand {
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;

@@ -33,12 +33,15 @@ import picocli.CommandLine;
 )
 @SuppressWarnings( "squid:S1147" ) // System.exit is really required here, this is a CLI tool
 public class BammCli extends AbstractCommand {
-
    public static final String COMMAND_NAME = "bamm";
 
    private final CommandLine commandLine = new CommandLine( this )
          .addSubcommand( new AspectCommand() )
-         .setCaseInsensitiveEnumValuesAllowed( true );
+         .setCaseInsensitiveEnumValuesAllowed( true )
+         .setExecutionStrategy( LoggingMixin::executionStrategy );
+
+   @CommandLine.Mixin
+   LoggingMixin loggingMixin;
 
    @CommandLine.Option( names = { "--version" }, description = "Show current version" )
    private boolean version;

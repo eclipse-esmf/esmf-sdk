@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
 import io.openmanufacturing.sds.aspectmodel.generator.openapi.PagingOption;
@@ -47,7 +48,6 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectToOpenapiCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "openapi";
 
    @CommandLine.Option( names = { "--api-base-url", "-b" }, description = "The base url for the Aspect API used in the OpenAPI specification.",
@@ -97,6 +97,9 @@ public class AspectToOpenapiCommand extends AbstractCommand {
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;

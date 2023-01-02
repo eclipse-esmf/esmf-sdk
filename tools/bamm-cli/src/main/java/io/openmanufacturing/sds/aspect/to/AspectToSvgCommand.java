@@ -17,6 +17,7 @@ import java.io.IOException;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
@@ -30,7 +31,6 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectToSvgCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "svg";
 
    @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path" )
@@ -44,6 +44,9 @@ public class AspectToSvgCommand extends AbstractCommand {
 
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @Override
    public void run() {
