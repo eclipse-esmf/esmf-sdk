@@ -86,7 +86,7 @@ public class JsConstraint implements Constraint {
 
    /**
     * Globally enables or disables evaluation of JavaScript constraints.
-    * @param doEvaluate
+    * @param doEvaluate configure whether to evaluate JavaScript or not
     */
    public static void setEvaluateJavaScript( final boolean doEvaluate ) {
       LOG.debug( String.format( "Globally %sabled JavaScript constraint evaluation", doEvaluate ? "en" : "dis" ) );
