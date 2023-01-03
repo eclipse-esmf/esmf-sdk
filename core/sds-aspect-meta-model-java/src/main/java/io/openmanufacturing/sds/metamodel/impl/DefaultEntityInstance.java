@@ -24,7 +24,7 @@ import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultEntityInstance extends BaseImpl implements EntityInstance {
+public class DefaultEntityInstance extends ModelElementImpl implements EntityInstance {
    private final Map<Property, Value> assertions;
    private final Entity type;
 

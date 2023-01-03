@@ -19,7 +19,7 @@ import java.util.Optional;
 /**
  * Represents model elements that contain {@link Property}s
  */
-public interface HasProperties extends Base {
+public interface HasProperties extends ModelElement {
    /**
     * @return the {@link Property}(ies) defined in the scope of this element.
     */

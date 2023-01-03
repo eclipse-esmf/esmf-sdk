@@ -18,13 +18,12 @@ import java.util.Optional;
 import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Either;
-import io.openmanufacturing.sds.metamodel.impl.DefaultEither;
+import io.openmanufacturing.sds.characteristic.Either;
+import io.openmanufacturing.sds.characteristic.impl.DefaultEither;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class EitherInstantiator extends Instantiator<Either> {
    public EitherInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Either.class );

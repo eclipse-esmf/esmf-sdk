@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.Quantifiable;
+import io.openmanufacturing.sds.characteristic.Quantifiable;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Unit;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;

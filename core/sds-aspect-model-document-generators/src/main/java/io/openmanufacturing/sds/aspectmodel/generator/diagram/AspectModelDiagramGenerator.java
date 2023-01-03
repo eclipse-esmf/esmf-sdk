@@ -80,6 +80,8 @@ public class AspectModelDiagramGenerator {
    private static final String FONT_NAME = "Roboto Condensed";
    private static final String FONT_FILE = "diagram/RobotoCondensed-Regular.ttf";
 
+   static final String GET_ELEMENT_NAME_FUNC = "urn:bamm:io.openmanufacturing:function:2.0.0#getElementName";
+
    private final GetElementNameFunctionFactory getElementNameFunctionFactory;
 
    private final Query boxmodelToDotQuery;
@@ -139,14 +141,12 @@ public class AspectModelDiagramGenerator {
 
       ARQ.init();
       model = versionedModel.getModel();
-      bammVersion = KnownVersion.fromVersionString( versionedModel.getVersion().toString() )
-            .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getVersion() ) );
+      bammVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() )
+            .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getMetaModelVersion() ) );
       boxmodelToDotQuery = QueryFactory.create( getInputStreamAsString( "boxmodel2dot.sparql" ) );
       boxModelNamespace = new BoxModel( bammVersion );
 
       getElementNameFunctionFactory = new GetElementNameFunctionFactory( model );
-      final String getElementNameFunctionUrn = "urn:bamm:io.openmanufacturing:function:2.0.0#getElementName";
-      FunctionRegistry.get().put( getElementNameFunctionUrn, getElementNameFunctionFactory );
    }
 
    InputStream getInputStream( final String resource ) {
@@ -173,6 +173,7 @@ public class AspectModelDiagramGenerator {
    @SuppressWarnings( "squid:S1905" )
    String executeQuery( final Model model, final Query query ) {
       try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model ) ) {
+         FunctionRegistry.get( qexec.getContext() ).put( GET_ELEMENT_NAME_FUNC, getElementNameFunctionFactory );
          return StreamSupport.stream( ((Iterable<QuerySolution>) (qexec::execSelect)).spliterator(), false )
                .map( solution -> solution.getLiteral( "dotStatement" ) )
                .map( Literal::toString )
@@ -260,6 +261,7 @@ public class AspectModelDiagramGenerator {
             .map( QueryFactory::create )
             .forEach( query -> {
                try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model ) ) {
+                  FunctionRegistry.get( qexec.getContext() ).put( GET_ELEMENT_NAME_FUNC, getElementNameFunctionFactory );
                   qexec.execConstruct( targetModel );
                }
             } );

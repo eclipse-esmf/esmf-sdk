@@ -60,23 +60,23 @@ import io.openmanufacturing.sds.aspectmodel.jackson.AspectModelJacksonModule;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+import io.openmanufacturing.sds.characteristic.Collection;
+import io.openmanufacturing.sds.characteristic.Either;
+import io.openmanufacturing.sds.characteristic.Enumeration;
+import io.openmanufacturing.sds.characteristic.State;
+import io.openmanufacturing.sds.characteristic.Trait;
+import io.openmanufacturing.sds.constraint.LengthConstraint;
+import io.openmanufacturing.sds.constraint.RangeConstraint;
+import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Collection;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
-import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
-import io.openmanufacturing.sds.metamodel.Enumeration;
-import io.openmanufacturing.sds.metamodel.LengthConstraint;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.RangeConstraint;
-import io.openmanufacturing.sds.metamodel.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
-import io.openmanufacturing.sds.metamodel.State;
-import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.Curie;
@@ -287,8 +287,14 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return characteristic.as( Enumeration.class ).getValues().get( 0 );
       }
 
+      Optional<Characteristic> elementCharacteristics = Optional.empty();
+      if ( characteristic.is( Collection.class ) ) {
+         elementCharacteristics = ((Collection) characteristic).getElementCharacteristic();
+      }
+      final Characteristic effectiveCharacteristics = elementCharacteristics.orElse( characteristic );
+
       return property.getExampleValue().map( exampleValue ->
-            exampleValue.as( ScalarValue.class ).getValue() ).orElseGet( () -> generateExampleValue( characteristic ) );
+            exampleValue.as( ScalarValue.class ).getValue() ).orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
    }
 
    private Map<String, Object> toMap( final String key, final Object value ) {

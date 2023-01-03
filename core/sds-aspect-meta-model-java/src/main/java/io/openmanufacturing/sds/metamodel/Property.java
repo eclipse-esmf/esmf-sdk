@@ -15,13 +15,15 @@ package io.openmanufacturing.sds.metamodel;
 
 import java.util.Optional;
 
+import io.openmanufacturing.sds.characteristic.Trait;
+
 /**
  * A Property has a name that is unique to its use in an Aspect or an Entity, and a Characteristic (i.e., the
  * description of the Property). It describes a single piece of information in the Aspect or Entity.
  *
  * @since BAMM 1.0.0
  */
-public interface Property extends Base, IsDescribed {
+public interface Property extends NamedElement {
 
    /**
     * @return the {@link Characteristic} describing this Property. This can be empty when the Property is abstract.

@@ -18,15 +18,14 @@ import java.util.Optional;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
-import io.openmanufacturing.sds.metamodel.Duration;
+import io.openmanufacturing.sds.characteristic.Duration;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Unit;
-import io.openmanufacturing.sds.metamodel.impl.DefaultDuration;
+import io.openmanufacturing.sds.characteristic.impl.DefaultDuration;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class DurationInstantiator extends Instantiator<Duration> {
    public DurationInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Duration.class );
@@ -38,7 +37,7 @@ public class DurationInstantiator extends Instantiator<Duration> {
       final Type type = getType( duration );
       final Optional<Unit> unit = optionalAttributeValue( duration, bammc.unit() )
             .map( Statement::getResource )
-            .flatMap( this::findOrCreateUnit );
+            .map( modelElementFactory::findOrCreateUnit );
       return new DefaultDuration( metaModelBaseAttributes, type, unit );
    }
 }

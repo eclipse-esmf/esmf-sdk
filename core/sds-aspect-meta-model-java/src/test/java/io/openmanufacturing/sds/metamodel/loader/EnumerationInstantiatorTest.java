@@ -31,15 +31,15 @@ import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
-import io.openmanufacturing.sds.metamodel.Enumeration;
+import io.openmanufacturing.sds.characteristic.Enumeration;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
-import io.openmanufacturing.sds.metamodel.impl.DefaultSet;
-import io.openmanufacturing.sds.metamodel.impl.DefaultSingleEntity;
+import io.openmanufacturing.sds.characteristic.impl.DefaultSet;
+import io.openmanufacturing.sds.characteristic.impl.DefaultSingleEntity;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestModel;
 

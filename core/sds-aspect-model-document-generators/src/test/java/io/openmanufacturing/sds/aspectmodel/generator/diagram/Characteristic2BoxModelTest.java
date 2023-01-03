@@ -15,12 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.generator.diagram;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -40,12 +35,8 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testOnlyUsedCharacteristicsAreProcessedExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC, metaModelVersion );
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
 
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat( queryResult.listStatements( context.selector( ":UsedTestCharacteristicCharacteristic a :Box" ) ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements( context.selector( ":UnusedTestCharacteristicCharacteristic a :Box" ) ).toList() ).hasSize( 0 );
@@ -84,12 +75,7 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
    public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( "characteristic-entity-edges2boxmodel.sparql" ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "characteristic-entity-edges2boxmodel.sparql" );
 
       assertThat( queryResult
             .listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity a :Edge" ) )
@@ -107,12 +93,7 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
    public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( "characteristic-entity-edges2boxmodel.sparql" ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "characteristic-entity-edges2boxmodel.sparql" );
 
       assertThat( queryResult.listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity a :Edge" ) )
             .toList() ).hasSize( 1 );

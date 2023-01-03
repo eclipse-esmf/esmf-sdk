@@ -15,14 +15,13 @@ package io.openmanufacturing.sds.metamodel.loader.instantiator;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.metamodel.Code;
+import io.openmanufacturing.sds.characteristic.Code;
 import io.openmanufacturing.sds.metamodel.Type;
-import io.openmanufacturing.sds.metamodel.impl.DefaultCode;
+import io.openmanufacturing.sds.characteristic.impl.DefaultCode;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class CodeInstantiator extends Instantiator<Code> {
    public CodeInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Code.class );

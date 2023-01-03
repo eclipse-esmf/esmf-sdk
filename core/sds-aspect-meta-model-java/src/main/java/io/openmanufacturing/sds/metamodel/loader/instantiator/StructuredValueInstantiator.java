@@ -21,14 +21,13 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.StructuredValue;
+import io.openmanufacturing.sds.characteristic.StructuredValue;
 import io.openmanufacturing.sds.metamodel.Type;
-import io.openmanufacturing.sds.metamodel.impl.DefaultStructuredValue;
+import io.openmanufacturing.sds.characteristic.impl.DefaultStructuredValue;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class StructuredValueInstantiator extends Instantiator<StructuredValue> {
    public StructuredValueInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, StructuredValue.class );

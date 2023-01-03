@@ -20,17 +20,16 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
-import io.openmanufacturing.sds.metamodel.RangeConstraint;
+import io.openmanufacturing.sds.constraint.RangeConstraint;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
-import io.openmanufacturing.sds.metamodel.impl.DefaultRangeConstraint;
+import io.openmanufacturing.sds.constraint.impl.DefaultRangeConstraint;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
    public RangeConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, RangeConstraint.class );

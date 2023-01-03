@@ -22,7 +22,7 @@ import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultProperty extends BaseImpl implements Property {
+public class DefaultProperty extends ModelElementImpl implements Property {
    private final Optional<Characteristic> characteristic;
    private final Optional<ScalarValue> exampleValue;
    private final boolean optional;

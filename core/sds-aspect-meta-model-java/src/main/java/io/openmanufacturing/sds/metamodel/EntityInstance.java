@@ -15,7 +15,7 @@ package io.openmanufacturing.sds.metamodel;
 
 import java.util.Map;
 
-public interface EntityInstance extends Base, IsDescribed, Value {
+public interface EntityInstance extends NamedElement, Value {
    Map<Property, Value> getAssertions();
 
    default Entity getEntityType() {

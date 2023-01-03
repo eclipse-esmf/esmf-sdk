@@ -13,7 +13,7 @@ import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
-public class DefaultComplexType extends BaseImpl implements ComplexType {
+public class DefaultComplexType extends ModelElementImpl implements ComplexType {
 
    /**
     * Used to keep track of all {@link ComplexType} instances regardles of whether they are directly or indirectly

@@ -14,6 +14,7 @@ package io.openmanufacturing.sds.aspectmodel.java.pojo;
 
 import java.io.File;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.openmanufacturing.sds.aspectmodel.generator.Artifact;
@@ -23,9 +24,9 @@ import io.openmanufacturing.sds.aspectmodel.java.QualifiedName;
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.characteristic.Enumeration;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.ComplexType;
-import io.openmanufacturing.sds.metamodel.Enumeration;
 import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 
 /**
@@ -58,7 +59,8 @@ public class AspectModelJavaGenerator extends JavaGenerator {
    @Override
    protected Stream<Artifact<QualifiedName, String>> generateArtifacts() {
       return Stream.of( applyTemplate( Aspect.class, new StructureElementJavaArtifactGenerator<>(), config ),
-                  applyTemplate( ComplexType.class, new StructureElementJavaArtifactGenerator<>(), config ),
+                  applyTemplate( ComplexType.class, new StructureElementJavaArtifactGenerator<>(
+                        elements( ComplexType.class ).filter( element -> element.getExtends().isPresent() ).collect( Collectors.toSet() ) ), config ),
                   applyTemplate( Enumeration.class, new EnumerationJavaArtifactGenerator<>(), config ) )
             .flatMap( Function.identity() );
    }

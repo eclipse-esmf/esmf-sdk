@@ -15,12 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.generator.diagram;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -36,12 +31,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    public void testOnlyUsedConstraintsAreProcessedExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_USED_AND_UNUSED_CONSTRAINT, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat( queryResult.listStatements( context.selector( "* a :Box" ) ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() ).hasSize( 5 );
@@ -63,7 +53,8 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             5,
             expectedSeeEntryTitle,
@@ -86,7 +77,8 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_NUMERIC_REGULAR_EXPRESSION_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             4,
             expectedValueEntryTitle, "\\\\d*\\|x" );
@@ -98,11 +90,13 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_FIXED_POINT_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             8, "scale", "5" );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ), entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
             totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
             9, "integer", "3" );
    }

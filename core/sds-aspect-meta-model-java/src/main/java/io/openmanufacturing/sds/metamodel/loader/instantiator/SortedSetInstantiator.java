@@ -18,14 +18,13 @@ import java.util.Optional;
 import org.apache.jena.rdf.model.Resource;
 
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.SortedSet;
+import io.openmanufacturing.sds.characteristic.SortedSet;
 import io.openmanufacturing.sds.metamodel.Type;
-import io.openmanufacturing.sds.metamodel.impl.DefaultSortedSet;
+import io.openmanufacturing.sds.characteristic.impl.DefaultSortedSet;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class SortedSetInstantiator extends Instantiator<SortedSet> {
    public SortedSetInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, SortedSet.class );

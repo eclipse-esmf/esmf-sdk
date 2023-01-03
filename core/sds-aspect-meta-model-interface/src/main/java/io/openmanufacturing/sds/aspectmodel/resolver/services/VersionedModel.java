@@ -46,7 +46,7 @@ public class VersionedModel {
       return model;
    }
 
-   public VersionNumber getVersion() {
+   public VersionNumber getMetaModelVersion() {
       return version;
    }
 

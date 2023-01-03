@@ -26,6 +26,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.Streams;
@@ -197,12 +198,11 @@ public class MetaModelBaseAttributes {
    }
 
    private static String getSyntheticName( final Resource modelElement, final Model model, final BAMM bamm ) {
-      Resource parentModelElement = model.listStatements( null, null, modelElement ).next().getSubject();
-      while ( parentModelElement.isAnon() ) {
-         parentModelElement = model.listStatements( null, null, parentModelElement ).next().getSubject();
+      final Resource namedParent = getNamedParent( modelElement, model );
+      if ( namedParent == null ) {
+         throw new AspectLoadingException( "At least one anonymous node in the model does not have a parent with a regular name." );
       }
-
-      final String parentModelElementUri = parentModelElement.getURI();
+      final String parentModelElementUri = namedParent.getURI();
       final String parentModelElementName = metaModelResourceResolver.getAspectModelUrn( parentModelElementUri )
             .toJavaOptional()
             .map( AspectModelUrn::getName )
@@ -217,6 +217,31 @@ public class MetaModelBaseAttributes {
             .orElse( "" );
 
       return parentModelElementName + modelElementTypeName;
+   }
+
+   // We have to be careful when searching for the parent nodes with a regular name - the "listStatements" API returns the matching nodes
+   // in no particular order; with some very specific models this could lead to non-deterministic behavior.
+   // In the following very simplified example we are looking for ":NumberList" as the parent of "_:blankNode", but could get the anonymous node [] instead.
+   // [
+   //  aux:contains _:blankNode ;
+   // ] .
+   // :NumberList a bamm-c:List ;
+   //    bamm-c:elementCharacteristic _:blankNode .
+   // _:blankNode a bamm-c:Trait ;
+   private static Resource getNamedParent( final Resource modelElement, final Model model ) {
+      final StmtIterator elements = model.listStatements( null, null, modelElement );
+      while ( elements.hasNext() ) {
+         final Resource parentModelElement = elements.next().getSubject();
+         if ( parentModelElement.isAnon() ) {
+            final Resource grandParent = getNamedParent( parentModelElement, model );
+            if ( null != grandParent ) {
+               return grandParent;
+            }
+         } else {
+            return parentModelElement;
+         }
+      }
+      return null; // element has no named parent
    }
 
    private static Resource getModelElementType( final Resource modelElement, final BAMM bamm ) {

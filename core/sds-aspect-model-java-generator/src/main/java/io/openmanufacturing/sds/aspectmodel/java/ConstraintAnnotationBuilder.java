@@ -26,10 +26,10 @@ import io.openmanufacturing.sds.aspectmodel.java.rangeconstraint.AnnotationExpre
 import io.openmanufacturing.sds.aspectmodel.java.rangeconstraint.AnnotationFactory;
 import io.openmanufacturing.sds.aspectmodel.java.rangeconstraint.AnnotationTypeMapping;
 import io.openmanufacturing.sds.metamodel.Constraint;
-import io.openmanufacturing.sds.metamodel.FixedPointConstraint;
-import io.openmanufacturing.sds.metamodel.LengthConstraint;
-import io.openmanufacturing.sds.metamodel.RangeConstraint;
-import io.openmanufacturing.sds.metamodel.RegularExpressionConstraint;
+import io.openmanufacturing.sds.constraint.FixedPointConstraint;
+import io.openmanufacturing.sds.constraint.LengthConstraint;
+import io.openmanufacturing.sds.constraint.RangeConstraint;
+import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 

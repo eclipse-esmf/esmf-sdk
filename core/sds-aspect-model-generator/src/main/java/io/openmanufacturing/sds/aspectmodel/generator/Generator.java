@@ -21,8 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 
 /**
@@ -39,7 +38,7 @@ public abstract class Generator<I, T> {
       this.aspectModel = aspectModel;
    }
 
-   private static <B extends Base & IsDescribed> Comparator<B> uniqueByModelElementIdentifier() {
+   private static Comparator<NamedElement> uniqueByModelElementIdentifier() {
       return ( modelElementOne, modelElementTwo ) -> {
          final String modelElementOneIdentifier = modelElementOne
                .getAspectModelUrn()
@@ -59,7 +58,7 @@ public abstract class Generator<I, T> {
             "GeneratedElementId_" + generatedModelElementIdentifiers.size() );
    }
 
-   protected <E extends Base & IsDescribed> Stream<E> elements( final Class<E> clazz ) {
+   protected <E extends NamedElement> Stream<E> elements( final Class<E> clazz ) {
       return aspectModel.accept( new AspectStreamTraversalVisitor(), null )
                         .filter( clazz::isInstance )
                         .map( clazz::cast )
@@ -67,7 +66,7 @@ public abstract class Generator<I, T> {
                         .distinct();
    }
 
-   protected <E extends Base & IsDescribed, C extends GenerationConfig, R extends Artifact<I, T>> Stream<R> applyTemplate(
+   protected <E extends NamedElement, C extends GenerationConfig, R extends Artifact<I, T>> Stream<R> applyTemplate(
          final Class<E> clazz, final ArtifactGenerator<I, T, E, C, R> artifactGenerator, final C config ) {
       return elements( clazz ).map( element -> artifactGenerator.apply( element, config ) );
    }

@@ -18,15 +18,14 @@ import java.util.Optional;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
-import io.openmanufacturing.sds.metamodel.Measurement;
+import io.openmanufacturing.sds.characteristic.Measurement;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Unit;
-import io.openmanufacturing.sds.metamodel.impl.DefaultMeasurement;
+import io.openmanufacturing.sds.characteristic.impl.DefaultMeasurement;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class MeasurementInstantiator extends Instantiator<Measurement> {
    public MeasurementInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Measurement.class );
@@ -38,7 +37,7 @@ public class MeasurementInstantiator extends Instantiator<Measurement> {
       final Type type = getType( measurement );
       final Optional<Unit> unit = optionalAttributeValue( measurement, bammc.unit() )
             .map( Statement::getResource )
-            .flatMap( this::findOrCreateUnit );
+            .map( modelElementFactory::findOrCreateUnit );
       return new DefaultMeasurement( metaModelBaseAttributes, type, unit );
    }
 }

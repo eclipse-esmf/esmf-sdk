@@ -21,10 +21,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Duration;
-import io.openmanufacturing.sds.metamodel.Measurement;
+import io.openmanufacturing.sds.characteristic.Duration;
+import io.openmanufacturing.sds.characteristic.Measurement;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.Quantifiable;
+import io.openmanufacturing.sds.characteristic.Quantifiable;
 import io.openmanufacturing.sds.metamodel.QuantityKinds;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.Unit;

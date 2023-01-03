@@ -17,10 +17,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.HasProperties;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.StructuredValue;
+import io.openmanufacturing.sds.characteristic.StructuredValue;
 import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
@@ -51,7 +51,7 @@ public class StructuredValuePropertiesDeconstructor {
     * @return the list of {@link DeconstructionSet}s
     */
    private List<DeconstructionSet> deconstructProperties( final HasProperties element ) {
-      final AspectVisitor<Stream<Base>, Void> visitor = new AspectStreamTraversalVisitor();
+      final AspectVisitor<Stream<ModelElement>, Void> visitor = new AspectStreamTraversalVisitor();
       return element.getProperties().stream().flatMap( property ->
                   visitor.visitProperty( property, null )
                         .filter( StructuredValue.class::isInstance )

@@ -15,7 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.java;
 
 import java.util.regex.Pattern;
 
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
@@ -26,7 +26,7 @@ import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
  */
 public class ValueToEnumKeyVisitor implements AspectVisitor<String, Void> {
    @Override
-   public String visitBase( final Base base, final Void context ) {
+   public String visitBase( final ModelElement modelElement, final Void context ) {
       throw new UnsupportedOperationException();
    }
 

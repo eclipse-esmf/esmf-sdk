@@ -14,7 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel.generator.jsonschema;
 
 import com.google.common.base.Strings;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -43,27 +43,27 @@ import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Collection;
+import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
-import io.openmanufacturing.sds.metamodel.Either;
+import io.openmanufacturing.sds.characteristic.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
-import io.openmanufacturing.sds.metamodel.Enumeration;
+import io.openmanufacturing.sds.characteristic.Enumeration;
 import io.openmanufacturing.sds.metamodel.HasProperties;
-import io.openmanufacturing.sds.metamodel.LengthConstraint;
+import io.openmanufacturing.sds.constraint.LengthConstraint;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.RangeConstraint;
-import io.openmanufacturing.sds.metamodel.RegularExpressionConstraint;
+import io.openmanufacturing.sds.constraint.RangeConstraint;
+import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
-import io.openmanufacturing.sds.metamodel.Set;
-import io.openmanufacturing.sds.metamodel.SingleEntity;
-import io.openmanufacturing.sds.metamodel.SortedSet;
-import io.openmanufacturing.sds.metamodel.Trait;
+import io.openmanufacturing.sds.characteristic.Set;
+import io.openmanufacturing.sds.characteristic.SingleEntity;
+import io.openmanufacturing.sds.characteristic.SortedSet;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
@@ -190,7 +190,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
          .build();
 
    private final ObjectNode rootNode = factory.objectNode();
-   private final Map<Base, JsonNode> hasVisited = new HashMap<>();
+   private final Map<ModelElement, JsonNode> hasVisited = new HashMap<>();
 
    public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes, final Locale locale ) {
       if ( useExtendedTypes ) {
@@ -211,7 +211,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    @Override
-   public JsonNode visitBase( final Base base, final ObjectNode context ) {
+   public JsonNode visitBase( final ModelElement modelElement, final ObjectNode context ) {
       return factory.objectNode();
    }
 
@@ -637,7 +637,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    private static ObjectNode addDescription( final ObjectNode node,
-         final IsDescribed describedElement, final Locale locale ) {
+         final NamedElement describedElement, final Locale locale ) {
       final String description = describedElement.getDescription( locale );
 
       if ( !Strings.isNullOrEmpty( description ) ) {

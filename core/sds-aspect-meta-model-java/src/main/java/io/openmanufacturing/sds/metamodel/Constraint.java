@@ -18,5 +18,5 @@ package io.openmanufacturing.sds.metamodel;
  *
  * @since BAMM 1.0.0
  */
-public interface Constraint extends Base, IsDescribed {
+public interface Constraint extends NamedElement {
 }

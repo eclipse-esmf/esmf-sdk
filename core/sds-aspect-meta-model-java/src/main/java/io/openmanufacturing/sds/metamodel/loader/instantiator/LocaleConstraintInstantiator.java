@@ -17,13 +17,12 @@ import java.util.Locale;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.metamodel.LocaleConstraint;
-import io.openmanufacturing.sds.metamodel.impl.DefaultLocaleConstraint;
+import io.openmanufacturing.sds.constraint.LocaleConstraint;
+import io.openmanufacturing.sds.constraint.impl.DefaultLocaleConstraint;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class LocaleConstraintInstantiator extends Instantiator<LocaleConstraint> {
    public LocaleConstraintInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, LocaleConstraint.class );

@@ -80,7 +80,7 @@ public class ModelCycleDetector {
       cycleDetectionReport.clear();
 
       model = versionedModel.getModel();
-      final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getVersion().toString() );
+      final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() );
       bamm = new BAMM( metaModelVersion.get() );
       initializeQuery( metaModelVersion.get() );
 

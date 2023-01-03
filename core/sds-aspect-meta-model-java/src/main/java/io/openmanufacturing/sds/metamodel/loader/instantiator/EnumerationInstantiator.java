@@ -19,15 +19,14 @@ import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.metamodel.Enumeration;
+import io.openmanufacturing.sds.characteristic.Enumeration;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
-import io.openmanufacturing.sds.metamodel.impl.DefaultEnumeration;
+import io.openmanufacturing.sds.characteristic.impl.DefaultEnumeration;
 import io.openmanufacturing.sds.metamodel.loader.Instantiator;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.loader.ModelElementFactory;
 
-@SuppressWarnings( "unused" ) // Instantiator is constructured via reflection from ModelElementFactory
 public class EnumerationInstantiator extends Instantiator<Enumeration> {
    public EnumerationInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Enumeration.class );

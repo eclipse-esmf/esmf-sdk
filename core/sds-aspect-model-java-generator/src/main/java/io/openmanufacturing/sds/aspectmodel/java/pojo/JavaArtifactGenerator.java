@@ -17,7 +17,7 @@ import io.openmanufacturing.sds.aspectmodel.generator.Artifact;
 import io.openmanufacturing.sds.aspectmodel.generator.ArtifactGenerator;
 import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig;
 import io.openmanufacturing.sds.aspectmodel.java.QualifiedName;
-import io.openmanufacturing.sds.metamodel.Base;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 
 /**
  * A {@link ArtifactGenerator} specific to Java code: The type identifying artifacts is {@link QualifiedName} and
@@ -25,6 +25,6 @@ import io.openmanufacturing.sds.metamodel.Base;
  *
  * @param <E> the model element type to generate code for
  */
-public interface JavaArtifactGenerator<E extends Base>
+public interface JavaArtifactGenerator<E extends ModelElement>
       extends ArtifactGenerator<QualifiedName, String, E, JavaCodeGenerationConfig, Artifact<QualifiedName, String>> {
 }

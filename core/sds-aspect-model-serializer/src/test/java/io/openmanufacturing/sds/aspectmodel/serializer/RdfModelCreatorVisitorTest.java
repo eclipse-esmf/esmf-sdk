@@ -59,7 +59,8 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
          "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
          "ASPECT_WITH_ABSTRACT_PROPERTY",
          "MODEL_WITH_CYCLES",
-         "MODEL_WITH_BROKEN_CYCLES"
+         "MODEL_WITH_BROKEN_CYCLES",
+         "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES"
    } )
    public void testRdfModelCreatorVisitor( final TestAspect aspect ) {
       testRdfCreation( aspect, KnownVersion.getLatest() );
@@ -68,7 +69,7 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
    private void testRdfCreation( final TestAspect testAspect, final KnownVersion knownVersion ) {
       final VersionedModel versionedModel = TestResources.getModel( testAspect, knownVersion ).get();
 
-      final Try<Aspect> tryAspect = AspectModelLoader.fromVersionedModel( versionedModel );
+      final Try<Aspect> tryAspect = AspectModelLoader.getSingleAspect( versionedModel );
       final Aspect aspect = tryAspect.getOrElseThrow( () -> new RuntimeException( tryAspect.getCause() ) );
 
       final Namespace namespace = () -> aspect.getAspectModelUrn().get().getUrnPrefix();

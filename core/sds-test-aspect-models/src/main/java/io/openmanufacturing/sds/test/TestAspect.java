@@ -186,7 +186,9 @@ public enum TestAspect implements TestModel {
    MOVEMENT,
 
    MODEL_WITH_CYCLES,
-   MODEL_WITH_BROKEN_CYCLES;
+   MODEL_WITH_BROKEN_CYCLES,
+
+   MODEL_WITH_BLANK_AND_ADDITIONAL_NODES;
 
    @Override
    public String getName() {
