@@ -188,6 +188,15 @@
                         </transformer>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                      </transformers>
+                     <artifactSet>
+                        <excludes>
+                           <!-- Exclude meta model dependency, because meta model resources are already contained in the
+                                meta model resolver package -->
+                           <exclude>io.openmanufacturing:sds-aspect-meta-model</exclude>
+                           <!-- Duplicate annotations that are already contained in javax.annotation-api -->
+                           <exclude>javax.annotation:jsr250-api</exclude>
+                        </excludes>
+                     </artifactSet>
                      <filters>
                         <!-- Required to prevent overlapping resources -->
                         <filter>
@@ -195,10 +204,11 @@
                            <excludes>
                               <exclude>module-info.class</exclude>
                               <exclude>META-INF/*</exclude>
+                              <exclude>META-INF/sisu/javax.inject.Named</exclude>
+                              <exclude>META-INF/plexus/components.xml</exclude>
                               <exclude>META-INF.versions*/**</exclude>
                               <exclude>META-INF/versions*/**</exclude>
                               <exclude>META-INF/maven/**</exclude>
-                              <exclude>git.properties</exclude>
                               <exclude>plugin.xml</exclude>
                               <exclude>about.html</exclude>
                            </excludes>
@@ -206,6 +216,7 @@
                         <!-- Required to override the excludes above -->
                         <filter>
                            <artifact>${project.groupId}:${project.artifactId}</artifact>
+                           <excludeDefaults>false</excludeDefaults>
                            <includes>
                               <include>**</include>
                               <include>META-INF/**</include>
