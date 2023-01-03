@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -40,19 +41,19 @@ import com.google.common.base.Converter;
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
+import io.openmanufacturing.sds.characteristic.Collection;
+import io.openmanufacturing.sds.characteristic.Either;
+import io.openmanufacturing.sds.characteristic.Enumeration;
+import io.openmanufacturing.sds.characteristic.Quantifiable;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.metamodel.ComplexType;
-import io.openmanufacturing.sds.characteristic.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
-import io.openmanufacturing.sds.characteristic.Enumeration;
 import io.openmanufacturing.sds.metamodel.HasProperties;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.characteristic.Quantifiable;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.StructureElement;
-import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
@@ -207,7 +208,8 @@ public class AspectModelJavaUtil {
       return classDefinitionBuilder.toString();
    }
 
-   public static String generateAbstractEntityClassAnnotations( final ComplexType element, final JavaCodeGenerationConfig codeGenerationConfig ) {
+   public static String generateAbstractEntityClassAnnotations( final ComplexType element, final JavaCodeGenerationConfig codeGenerationConfig,
+         final Set<ComplexType> extendingEntities ) {
       final StringBuilder classAnnotationBuilder = new StringBuilder();
       if ( element.isAbstractEntity() ) {
          codeGenerationConfig.getImportTracker().importExplicit( JsonTypeInfo.class );
@@ -216,7 +218,7 @@ public class AspectModelJavaUtil {
          final AbstractEntity abstractEntity = (AbstractEntity) element;
          classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)" );
          classAnnotationBuilder.append( "@JsonSubTypes({" );
-         final Iterator<ComplexType> extendingComplexTypeIterator = abstractEntity.getExtendingElements().iterator();
+         final Iterator<ComplexType> extendingComplexTypeIterator = getExtendingClosure( abstractEntity, extendingEntities ).iterator();
          while ( extendingComplexTypeIterator.hasNext() ) {
             final ComplexType extendingComplexType = extendingComplexTypeIterator.next();
             classAnnotationBuilder.append( "@JsonSubTypes.Type(value = " );
@@ -231,6 +233,13 @@ public class AspectModelJavaUtil {
          classAnnotationBuilder.append( "})" );
       }
       return classAnnotationBuilder.toString();
+   }
+
+   private static Stream<ComplexType> getExtendingClosure( final ComplexType element, final Set<ComplexType> extendingEntities ) {
+      return Stream.concat( extendingEntities.stream().filter( entity -> element.equals( entity.getExtends().get() ) ),
+            extendingEntities.stream()
+                  .filter( entity -> element.equals( entity.getExtends().get() ) )
+                  .flatMap( extendingElement -> getExtendingClosure( extendingElement, extendingEntities ) ) );
    }
 
    private static String determineCollectionType( final Collection collection, final boolean inclValidation,

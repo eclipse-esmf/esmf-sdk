@@ -15,19 +15,13 @@ package io.openmanufacturing.sds.aspectmodel.generator.diagram;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
-
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 
 public class QuantifiableUnitEdges2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "quantifiable-unit-edges2boxmodel.sparql";
@@ -36,14 +30,7 @@ public class QuantifiableUnitEdges2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testQuantifiableHasNoUnitExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITHOUT_UNIT, metaModelVersion );
-
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
-
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
       assertQuantifiableUnitEdgeModel( context, queryResult, 0 );
    }
 
@@ -51,14 +38,7 @@ public class QuantifiableUnitEdges2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testQuantifiableHasUnitExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT, metaModelVersion );
-
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
-
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
       assertQuantifiableUnitEdgeModel( context, queryResult, 1 );
    }
 
@@ -86,20 +66,15 @@ public class QuantifiableUnitEdges2BoxModelTest extends MetaModelVersions {
    public void testMeasurementHasUnitExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_MEASUREMENT_WITH_UNIT, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat( queryResult
             .listStatements( context.selector( ":TestMeasurementCharacteristic_To_PercentUnit :to :PercentUnit" ) )
             .toList() )
             .hasSize( 1 );
       assertThat( queryResult.listStatements( context
-            .selector( ":TestMeasurementCharacteristic_To_PercentUnit :from :TestMeasurementCharacteristic" ) )
-                             .toList() )
+                  .selector( ":TestMeasurementCharacteristic_To_PercentUnit :from :TestMeasurementCharacteristic" ) )
+            .toList() )
             .hasSize( 1 );
       assertThat( queryResult
             .listStatements( context.selector( ":TestMeasurementCharacteristic_To_PercentUnit :title *" ) )

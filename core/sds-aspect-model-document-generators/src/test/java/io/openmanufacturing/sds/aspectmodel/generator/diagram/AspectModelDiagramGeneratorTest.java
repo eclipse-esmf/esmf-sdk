@@ -14,12 +14,14 @@
 package io.openmanufacturing.sds.aspectmodel.generator.diagram;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -53,5 +55,14 @@ public class AspectModelDiagramGeneratorTest extends MetaModelVersions {
             .containsOnlyOnce( "TestEntityEntity -> testPropertyProperty [label=\"property (optional)\"]" );
       assertThat( result ).containsOnlyOnce(
             "AspectWithRecursivePropertyWithOptionalAspect -> testPropertyProperty [label=\"property\"]" );
+   }
+
+   @Test
+   void testNoStaticFunctionRegistryIsUsed() {
+      // the calculation of synthetic names (which involves function registry) is only done when blank nodes are present in the model
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_BLANK_NODE, KnownVersion.BAMM_2_0_0 );
+      // if static (global) registry was used, this second context would overwrite it with a different model
+      final TestContext context2 = new TestContext( TestAspect.ASPECT_WITH_BLANK_NODE, KnownVersion.BAMM_2_0_0 );
+      assertDoesNotThrow( () -> context.service().generateDiagrams( AspectModelDiagramGenerator.Format.SVG, ( path ) -> new ByteArrayOutputStream() ) );
    }
 }

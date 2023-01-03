@@ -15,12 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.generator.diagram;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -68,15 +63,10 @@ public class Entity2BoxModelTest extends MetaModelVersions {
    public void testSeeAttributeIsPresentOnSharedEntityExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestEntity.SHARED_ENTITY_WITH_SEE_ATTRIBUTE, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
-
-      assertThat( queryResult.listStatements( context.selector( ":SharedEntityWithSeeAttributeEntity a :Box" ) ).toList() ) .hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( "bamm-e:SharedEntityEntity a :Box" ) ).toList() ) .hasSize( 0 );
+      assertThat( queryResult.listStatements( context.selector( ":SharedEntityWithSeeAttributeEntity a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "bamm-e:SharedEntityEntity a :Box" ) ).toList() ).hasSize( 0 );
    }
 
    @ParameterizedTest
@@ -84,12 +74,7 @@ public class Entity2BoxModelTest extends MetaModelVersions {
    public void testEntityWithOptionalAndNotInPayloadProperty( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestEntity.ENTITY_WITH_OPTIONAL_AND_NOT_IN_PAYLOAD_PROPERTY, metaModelVersion );
 
-      final Query query = QueryFactory .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
       assertThat(
             queryResult.listStatements( context.selector(
@@ -124,12 +109,7 @@ public class Entity2BoxModelTest extends MetaModelVersions {
    public void testEntityWithOptionalProperty( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestEntity.ENTITY_WITH_OPTIONAL_PROPERTY, metaModelVersion );
 
-      final Query query = QueryFactory .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
       assertThat(
             queryResult.listStatements( context.selector(
@@ -146,12 +126,7 @@ public class Entity2BoxModelTest extends MetaModelVersions {
    public void testEntityWithOptionalPropertyWithPayloadName( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestEntity.ENTITY_WITH_OPTIONAL_PROPERTY_WITH_PAYLOAD_NAME, metaModelVersion );
 
-      final Query query = QueryFactory .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
       assertThat(
             queryResult.listStatements( context.selector(
@@ -168,12 +143,7 @@ public class Entity2BoxModelTest extends MetaModelVersions {
    public void testEntityWithPropertyWithPayloadName( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestEntity.ENTITY_WITH_PROPERTY_WITH_PAYLOAD_NAME, metaModelVersion );
 
-      final Query query = QueryFactory .create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
       assertThat(
             queryResult.listStatements( context.selector(
@@ -208,24 +178,16 @@ public class Entity2BoxModelTest extends MetaModelVersions {
 
    private void testExtendingEntity( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( testAspect, metaModelVersion );
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
 
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
-      assertThat( queryResult.listStatements( context.selector( ":ExtendingTestEntityEntity a :Box" ) ).toList() ) .hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( ":ExtendingTestEntityEntity a :Box" ) ).toList() ).hasSize( 1 );
    }
 
    private void testExtendingEntityEdges( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( testAspect, metaModelVersion );
-      final Query query = QueryFactory.create( context.getInputStreamAsString( "entity-abstractentity-edges2boxmodel.sparql" ) );
 
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "entity-abstractentity-edges2boxmodel.sparql" );
 
       assertThat( queryResult.listStatements(
             context.selector( ":ExtendingTestEntityEntity_To_AbstractTestEntityAbstractEntity a :Edge" )
