@@ -1065,4 +1065,18 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertCopyright( "EvaluationResults", expectedCopyright );
       result.assertCopyright( "EvaluationResult", expectedCopyright );
    }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testGenerateAspectWithMultipleInheritance( final KnownVersion metaModelVersion ) throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENTITY;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+      result.assertNumberOfFiles( 4 );
+      result.assertClassDeclaration( "ParentOfParentEntity", Collections.singletonList( Modifier.abstractModifier() ),
+            Collections.emptyList(), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+                  "@JsonSubTypes({ @JsonSubTypes.Type(value = ParentTestEntity.class, name = \"ParentTestEntity\"), @JsonSubTypes.Type(value = TestEntity.class, name = \"TestEntity\") })" ) );
+      result.assertClassDeclaration( "ParentTestEntity", Collections.singletonList( Modifier.abstractModifier() ),
+            Collections.singletonList( "ParentOfParentEntity" ), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+                  "@JsonSubTypes({ @JsonSubTypes.Type(value = TestEntity.class, name = \"TestEntity\") })" ) );
+   }
 }
