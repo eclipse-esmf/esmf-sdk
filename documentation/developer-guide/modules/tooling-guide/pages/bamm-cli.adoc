@@ -442,7 +442,7 @@ For offset based paging:
 }
 ----
 
-For cusrsor based paging:
+For cursor based paging:
 [source,JSON]
 ----
 {
