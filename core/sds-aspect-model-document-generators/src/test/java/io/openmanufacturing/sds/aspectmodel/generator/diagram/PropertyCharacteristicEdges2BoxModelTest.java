@@ -15,12 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.generator.diagram;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -38,12 +33,8 @@ public class PropertyCharacteristicEdges2BoxModelTest extends MetaModelVersions 
       // v1.0 sparql queries were not properly filtering out some properties from shared bamm-e namespace
       // https://github.com/OpenManufacturingPlatform/sds-sdk/issues/196
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUM_ONLY_ONE_SEE, metaModelVersion );
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
 
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat( queryResult.listStatements( context.selector( ":timestampProperty_To_TimestampCharacteristic a :Edge" ) ).toList() ).isEmpty();
    }

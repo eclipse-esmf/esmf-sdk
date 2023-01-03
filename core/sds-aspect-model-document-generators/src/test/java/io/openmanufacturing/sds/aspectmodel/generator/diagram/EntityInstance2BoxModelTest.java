@@ -17,13 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -49,12 +44,7 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENTITY_INSTANCE_WITH_SCALAR_PROPERTIES,
             metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertTestEntityInstanceBox( queryResult, context, 2 );
       assertThat( queryResult.listStatements( context.selector( "* :title description" ) ).toList() ).hasSize( 1 );
@@ -67,12 +57,7 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENTITY_INSTANCE_WITH_SCALAR_LIST_PROPERTY,
             metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertTestEntityInstanceBox( queryResult, context, 2 );
       assertThat( queryResult.listStatements( context.selector( "* :title testList" ) ).toList() ).hasSize( 1 );
@@ -91,12 +76,7 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext(
             TestAspect.ASPECT_WITH_ENTITY_INSTANCE_WITH_NESTED_ENTITY_LIST_PROPERTY, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertTestEntityInstanceBox( queryResult, context, 1 );
 
@@ -110,12 +90,7 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENTITY_INSTANCE_WITH_NESTED_ENTITY_PROPERTY,
             metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertTestEntityInstanceBox( queryResult, context, 1 );
       assertNestedEntityInstanceBox( queryResult, context, "NestedEntityInstanceEntityInstance", "bar" );
@@ -153,13 +128,7 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENTITY_INSTANCE_WITH_NESTED_ENTITY_PROPERTY,
             metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( entityInstance2EntityInstanceEdgesSparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( entityInstance2EntityInstanceEdgesSparqlQueryFileName );
 
       assertEdge( queryResult, context, "TestEntityInstanceEntityInstance", "NestedEntityInstanceEntityInstance",
             "nestedEntity value" );
@@ -171,13 +140,7 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext(
             TestAspect.ASPECT_WITH_ENTITY_INSTANCE_WITH_NESTED_ENTITY_LIST_PROPERTY, metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( entityInstance2EntityInstanceEdgesSparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( entityInstance2EntityInstanceEdgesSparqlQueryFileName );
 
       assertEdge( queryResult, context, "TestEntityInstanceEntityInstance", "NestedEntityInstanceEntityInstance",
             "testList value" );
@@ -191,13 +154,7 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENTITY_INSTANCE_WITH_NESTED_ENTITY_PROPERTY,
             metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( entityInstance2EntityEdgesSparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( entityInstance2EntityEdgesSparqlQueryFileName );
 
       assertEdge( queryResult, context, "TestEntityInstanceEntityInstance", "TestEntityEntity", "is a" );
       assertEdge( queryResult, context, "NestedEntityInstanceEntityInstance", "NestedEntityEntity", "is a" );
@@ -209,13 +166,7 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext(
             TestAspect.ASPECT_WITH_ENTITY_INSTANCE_WITH_NESTED_ENTITY_LIST_PROPERTY, metaModelVersion );
 
-      final Query query = QueryFactory
-            .create( context.getInputStreamAsString( entityInstance2EntityEdgesSparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( entityInstance2EntityEdgesSparqlQueryFileName );
 
       assertEdge( queryResult, context, "TestEntityInstanceEntityInstance", "TestEntityEntity", "is a" );
       assertEdge( queryResult, context, "NestedEntityInstanceEntityInstance", "NestedEntityEntity", "is a" );
