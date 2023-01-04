@@ -89,6 +89,11 @@
          <artifactId>sds-aspect-model-aas-generator</artifactId>
          <scope>compile</scope>
       </dependency>
+      <dependency>
+         <groupId>org.apache.tika</groupId>
+         <artifactId>tika-core</artifactId>
+         <scope>test</scope>
+      </dependency>
    </dependencies>
 
    <build>

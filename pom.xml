@@ -95,6 +95,7 @@
       <shacl-version>1.4.2</shacl-version>
       <spring-boot-version>2.6.7</spring-boot-version>
       <swagger-parser-version>2.0.32</swagger-parser-version>
+      <tika-version>2.6.0</tika-version>
       <vavr-version>0.10.4</vavr-version>
       <!-- TODO remember to update the link to the Velocity engine user guide in the 'java-aspect-tooling.adoc' page -->
       <velocity-version>2.3</velocity-version>
@@ -351,6 +352,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>${commons-text-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>${tika-version}</version>
          </dependency>
          <dependency>
             <groupId>guru.nidi</groupId>
