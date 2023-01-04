@@ -80,10 +80,6 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>com.github.stefanbirkner</groupId>
-         <artifactId>system-lambda</artifactId>
-      </dependency>
-      <dependency>
          <groupId>io.openmanufacturing</groupId>
          <artifactId>sds-test-aspect-models</artifactId>
          <scope>test</scope>
