@@ -18,7 +18,9 @@ import java.util.Properties;
 
 import org.fusesource.jansi.AnsiConsole;
 
+import guru.nidi.graphviz.engine.Graphviz;
 import io.openmanufacturing.sds.aspect.AspectCommand;
+import io.openmanufacturing.sds.substitution.GraalVmJsGraphvizEngine;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = BammCli.COMMAND_NAME,
@@ -81,12 +83,17 @@ public class BammCli extends AbstractCommand {
    }
 
    public static void main( final String[] argv ) {
+      setupGraphvizJava();
       AnsiConsole.systemInstall();
 
       final BammCli command = new BammCli();
       final int exitCode = command.commandLine.execute( argv );
       AnsiConsole.systemUninstall();
       System.exit( exitCode );
+   }
+
+   private static void setupGraphvizJava() {
+      Graphviz.useEngine( new GraalVmJsGraphvizEngine() );
    }
 
    protected String format( final String string ) {
