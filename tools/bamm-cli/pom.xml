@@ -151,7 +151,7 @@
                <skip>${skip.maven.surefire}</skip>
                <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
                <includes>
-                  <include>**/*UnitTest.java</include>
+                  <include>**/BammCliTest.java</include>
                </includes>
             </configuration>
          </plugin>
@@ -336,7 +336,7 @@
                   <argLine>-Xmx4096m</argLine>
                </systemPropertyVariables>
                <includes>
-                  <include>**/*IntegrationTest.java</include>
+                  <include>**/BammCliIntegrationTest.java</include>
                </includes>
             </configuration>
          </plugin>

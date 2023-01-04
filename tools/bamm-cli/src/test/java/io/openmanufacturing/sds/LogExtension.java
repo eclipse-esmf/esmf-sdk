@@ -38,7 +38,7 @@ public class LogExtension implements BeforeTestExecutionCallback, AfterTestExecu
       if ( executionException.isPresent() ) {
          LOG.info( "Exception was thrown in test {}", context.getDisplayName(), executionException.get() );
       } else {
-         LOG.info( "        {}: success", context.getDisplayName() );
+         LOG.info( "{}: success", context.getDisplayName() );
       }
    }
 }

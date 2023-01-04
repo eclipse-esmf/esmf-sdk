@@ -15,17 +15,24 @@ package io.openmanufacturing.sds;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * The CLI integration tests can either run against the executable jar (using the {@link ExecutableJarLauncher} or against the native image (binary)
- * (using the {@link BinaryLauncher)}. Which one is executed is determined using the system property "packaging-type" which can be "jar" or "native".
+ * The CLI integration tests that are executed by Maven Failsafe.
+ * The tests either execute the CLI's executable jar (using the {@link ExecutableJarLauncher}) or the CLI's native binary (using the {@link BinaryLauncher}).
+ * Which one is executed is determined using the system property "packaging-type" which can be "jar" or "native". See the documentation of the respective
+ * launchers on how they are configured.
  */
 @ExtendWith( LogExtension.class )
-public class BammCliIntegrationTest extends SharedTestCode {
-   public BammCliIntegrationTest() {
-      super( Optional.ofNullable( System.getProperty( "packaging-type" ) ).orElse( "jar" ).equals( "jar" ) ?
+@TestInstance( TestInstance.Lifecycle.PER_CLASS )
+public class BammCliIntegrationTest extends BammCliTest {
+   @BeforeAll
+   @Override
+   public void setup() {
+      bammCli = Optional.ofNullable( System.getProperty( "packaging-type" ) ).orElse( "jar" ).equals( "jar" ) ?
             new ExecutableJarLauncher() :
-            new BinaryLauncher() );
+            new BinaryLauncher();
    }
 }
