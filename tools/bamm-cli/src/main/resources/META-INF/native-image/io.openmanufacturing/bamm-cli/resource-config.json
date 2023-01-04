@@ -2,6 +2,7 @@
   "resources":[
     {"pattern":"\\Qapplication.properties\\E"},
     {"pattern":"\\Qgit.properties\\E"},
+    {"pattern":"\\Qpom.properties\\E"},
     {"pattern":"\\QMETA-INF/services/com.oracle.truffle.api.TruffleLanguage$Provider\\E"},
     {"pattern":"\\QMETA-INF/services/com.oracle.truffle.api.instrumentation.TruffleInstrument$Provider\\E"},
     {"pattern":"\\QMETA-INF/services/javax.script.ScriptEngineFactory\\E"},
