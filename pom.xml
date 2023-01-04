@@ -71,6 +71,7 @@
       <!-- Versions of third party dependencies -->
       <aspect-meta-model-version>2.0.0</aspect-meta-model-version>
       <assertj-vavr-version>0.4.2</assertj-vavr-version>
+      <batik-version>1.14</batik-version>
       <classgraph-version>4.8.146</classgraph-version>
       <commons-text-version>1.10.0</commons-text-version>
       <easy-random-version>5.0.0</easy-random-version>
@@ -97,7 +98,7 @@
       <vavr-version>0.10.4</vavr-version>
       <!-- TODO remember to update the link to the Velocity engine user guide in the 'java-aspect-tooling.adoc' page -->
       <velocity-version>2.3</velocity-version>
-
+      <viz-js-graphviz-java-version>2.1.3</viz-js-graphviz-java-version>
 
       <!-- Versions of plugins -->
       <build-helper-maven-plugin-version>3.2.0</build-helper-maven-plugin-version>
@@ -353,8 +354,24 @@
          </dependency>
          <dependency>
             <groupId>guru.nidi</groupId>
-            <artifactId>graphviz-java-all-j2v8</artifactId>
+            <artifactId>graphviz-java-min-deps</artifactId>
             <version>${graphviz-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>viz.js-graphviz-java</artifactId>
+            <version>${viz-js-graphviz-java-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-rasterizer</artifactId>
+            <version>${batik-version}</version>
+            <exclusions>
+               <exclusion>
+                  <groupId>commons-logging</groupId>
+                  <artifactId>commons-logging</artifactId>
+               </exclusion>
+            </exclusions>
          </dependency>
          <dependency>
             <groupId>com.github.curious-odd-man</groupId>
