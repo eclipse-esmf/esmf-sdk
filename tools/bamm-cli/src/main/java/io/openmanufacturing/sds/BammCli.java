@@ -35,10 +35,30 @@ import picocli.CommandLine;
 public class BammCli extends AbstractCommand {
    public static final String COMMAND_NAME = "bamm";
 
-   private final CommandLine commandLine = new CommandLine( this )
-         .addSubcommand( new AspectCommand() )
-         .setCaseInsensitiveEnumValuesAllowed( true )
-         .setExecutionStrategy( LoggingMixin::executionStrategy );
+   private final CommandLine commandLine;
+
+   public BammCli() {
+      final CommandLine initialCommandLine = new CommandLine( this )
+            .addSubcommand( new AspectCommand() )
+            .setCaseInsensitiveEnumValuesAllowed( true )
+            .setExecutionStrategy( LoggingMixin::executionStrategy );
+      final CommandLine.IExecutionExceptionHandler defaultExecutionExceptionHandler = initialCommandLine.getExecutionExceptionHandler();
+      commandLine = initialCommandLine.setExecutionExceptionHandler( new CommandLine.IExecutionExceptionHandler() {
+         @Override
+         public int handleExecutionException( final Exception exception, final CommandLine commandLine, final CommandLine.ParseResult parseResult )
+               throws Exception {
+            if ( exception.getClass().getName()
+                  .equals( String.format( "%s.MainClassProcessLauncher$SystemExitCaptured", BammCli.class.getPackageName() ) ) ) {
+               // If the exception we encounter is a SystemExitCaptured, this is part of the security manager in the test suite that
+               // captures System.exit() calls and throws an exception there. We don't want PicoCli to do anything further with that
+               // (i.e., serialize the stacktrace to stderr), so we'll just return here.
+               return 1;
+            }
+            // Delegate to the default execution exception handler
+            return defaultExecutionExceptionHandler.handleExecutionException( exception, commandLine, parseResult );
+         }
+      } );
+   }
 
    @CommandLine.Mixin
    LoggingMixin loggingMixin;

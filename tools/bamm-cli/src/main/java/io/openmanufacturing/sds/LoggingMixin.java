@@ -33,7 +33,7 @@ public class LoggingMixin {
    private boolean[] verbosity = new boolean[0];
 
    private static LoggingMixin getTopLevelCommandLoggingMixin( final CommandLine.Model.CommandSpec commandSpec ) {
-      return ( (BammCli) commandSpec.root().userObject() ).loggingMixin;
+      return ((BammCli) commandSpec.root().userObject()).loggingMixin;
    }
 
    public static int executionStrategy( final CommandLine.ParseResult parseResult ) {
@@ -55,19 +55,26 @@ public class LoggingMixin {
    public Level calcLogLevel() {
       return switch ( getVerbosity().length ) {
          case 0:
-            yield Level.WARN;
+            yield Level.OFF;
          case 1:
             yield Level.INFO;
          case 2:
             yield Level.DEBUG;
          default:
-            yield Level.TRACE;
+            yield Level.OFF;
       };
    }
 
    public void configureLoggers() {
       final Level level = getTopLevelCommandLoggingMixin( mixee ).calcLogLevel();
       final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+      final Logger root = loggerContext.getLogger( Logger.ROOT_LOGGER_NAME );
+      root.detachAndStopAllAppenders();
+      root.setLevel( level );
+
+      if ( level == Level.OFF ) {
+         return;
+      }
 
       final ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
       appender.setName( "ConsoleLogger" );
@@ -87,9 +94,6 @@ public class LoggingMixin {
       appender.setEncoder( layoutEncoder );
       appender.start();
 
-      final Logger root = loggerContext.getLogger( Logger.ROOT_LOGGER_NAME );
-      root.detachAndStopAllAppenders();
-      root.setLevel( level );
       root.addAppender( appender );
    }
 }
