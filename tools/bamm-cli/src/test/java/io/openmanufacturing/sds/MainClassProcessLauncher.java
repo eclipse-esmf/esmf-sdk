@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.security.Permission;
 import java.util.stream.Collectors;
 
@@ -75,10 +76,10 @@ public class MainClassProcessLauncher extends ProcessLauncher {
          System.setProperty( "user.dir", context.workingDirectory().getAbsolutePath() );
          final Method method = mainClass.getMethod( "main", String[].class );
          method.invoke( null, (Object) context.arguments().toArray( new String[0] ) );
-      } catch ( final InvocationTargetException e ) {
+      } catch ( final InvocationTargetException exception ) {
          // Ignore System.exit
-         if ( !e.getCause().getClass().equals( SystemExitCaptured.class ) ) {
-            fail( e );
+         if ( !exception.getCause().getClass().equals( SystemExitCaptured.class ) ) {
+            fail( exception );
          }
       } catch ( final NoSuchMethodException | IllegalAccessException e ) {
          fail( e );
@@ -92,7 +93,10 @@ public class MainClassProcessLauncher extends ProcessLauncher {
          System.setProperty( "user.dir", originalUserDir );
       }
 
-      return new ExecutionResult( securityManager.getExitCode(), stdoutBuffer.toString(), stderrBuffer.toString() );
+      final byte[] stdoutRaw = stdoutBuffer.toByteArray();
+      final byte[] stderrRaw = stderrBuffer.toByteArray();
+      return new ExecutionResult( securityManager.getExitCode(), new String( stdoutRaw, StandardCharsets.UTF_8 ),
+            new String( stderrRaw, StandardCharsets.UTF_8 ), stdoutRaw, stderrRaw );
    }
 
    private static class CaptureSystemExit extends SecurityManager {

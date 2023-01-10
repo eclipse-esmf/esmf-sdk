@@ -34,7 +34,8 @@ public abstract class ProcessLauncher implements Function<ProcessLauncher.Execut
    }
 
    public ExecutionResult runAndExpectSuccess( final String... arguments ) {
-      final ExecutionResult result = apply( new ExecutionContext( Arrays.asList( arguments ), Optional.empty(), new File( System.getProperty( "user.dir" ) ) ) );
+      final ExecutionResult result = apply(
+            new ExecutionContext( Arrays.asList( arguments ), Optional.empty(), new File( System.getProperty( "user.dir" ) ) ) );
       if ( result.exitStatus() != 0 ) {
          System.out.printf( "Execution failed (status %d):%n", result.exitStatus() );
          System.out.println( "stdout:" );
@@ -50,6 +51,6 @@ public abstract class ProcessLauncher implements Function<ProcessLauncher.Execut
    public static record ExecutionContext(List<String> arguments, Optional<byte[]> stdin, File workingDirectory) {
    }
 
-   public static record ExecutionResult(int exitStatus, String stdout, String stderr) {
+   public static record ExecutionResult(int exitStatus, String stdout, String stderr, byte[] stdoutRaw, byte[] stderrRaw) {
    }
 }
