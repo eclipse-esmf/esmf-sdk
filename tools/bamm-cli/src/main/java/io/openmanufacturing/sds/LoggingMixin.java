@@ -61,7 +61,7 @@ public class LoggingMixin {
          case 2:
             yield Level.DEBUG;
          default:
-            yield Level.OFF;
+            yield Level.TRACE;
       };
    }
 

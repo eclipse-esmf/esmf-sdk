@@ -108,6 +108,7 @@
                <include>**/*.js</include>
                <include>**/*.txt</include>
                <include>**/*.xml</include>
+               <include>**/*.json</include>
             </includes>
          </resource>
       </resources>
@@ -117,7 +118,7 @@
             <plugin>
                <groupId>org.graalvm.nativeimage</groupId>
                <artifactId>native-image-maven-plugin</artifactId>
-               <version>${graal-version}</version>
+               <version>${graalvm-version}</version>
                <configuration>
                   <imageName>${binary-name}</imageName>
                   <mainClass>${main-class}</mainClass>
@@ -223,6 +224,20 @@
                               <include>META-INF/**</include>
                               <include>git.properties</include>
                            </includes>
+                        </filter>
+                        <!-- Clashes with the files from xml-apis-ext -->
+                        <filter>
+                           <artifact>xml-apis:xml-apis</artifact>
+                           <excludes>
+                              <exclude>license/**</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- Clashes with the same file from batik-rasterizer -->
+                        <filter>
+                           <artifact>org.apache.xmlgraphics:batik-svgrasterizer</artifact>
+                           <excludes>
+                              <exclude>org/apache/batik/apps/rasterizer/resources/rasterizer.policy</exclude>
+                           </excludes>
                         </filter>
                         <!-- Required to have Model Instantiators available -->
                         <filter>
@@ -350,6 +365,7 @@
          <properties>
             <packaging-type>native</packaging-type>
             <skip.maven.surefire>true</skip.maven.surefire>
+            <maven.resources.skip>true</maven.resources.skip>
          </properties>
          <build>
             <plugins>

@@ -85,6 +85,16 @@
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-rasterizer</artifactId>
         </dependency>
+        <!-- Required by graphviz-java -->
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+        </dependency>
+        <!-- Required by graphviz-java -->
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js-scriptengine</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.github.curious-odd-man</groupId>
             <artifactId>rgxgen</artifactId>
