@@ -34,7 +34,7 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 /**
- * This is a GraalVM substitution class (see https://blog.frankel.ch/coping-incompatible-code-graalvm-compilation/#substitutions)
+ * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
  * for {@link ASTMethod}.
  * Reason: This class augments the Apache Velocity core class {@link ASTMethod} which is responsible for calling methods from
  * templates. It adds logging (with log level TRACE) to be able to understand which methods in which templates are called.

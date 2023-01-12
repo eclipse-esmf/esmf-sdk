@@ -19,7 +19,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 import guru.nidi.graphviz.engine.GraphvizLoader;
 
 /**
- * This is a GraalVM substitution class (see https://blog.frankel.ch/coping-incompatible-code-graalvm-compilation/#substitutions)
+ * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
  * for {@link GraphvizLoader}.
  * Reason: The <pre>isOnClassPath</pre> method is used to check availability of dependencies at runtime using resource lookup. However, this won't work in
  * the native image build, instead, dependencies are wired at build time, so we can provide the relevant information statically.

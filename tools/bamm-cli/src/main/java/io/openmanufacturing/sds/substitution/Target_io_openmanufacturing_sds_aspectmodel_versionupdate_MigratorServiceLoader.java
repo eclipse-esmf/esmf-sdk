@@ -21,7 +21,7 @@ import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorService;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorServiceLoader;
 
 /**
- * This is a GraalVM substitution class (see https://blog.frankel.ch/coping-incompatible-code-graalvm-compilation/#substitutions)
+ * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
  * for {@link MigratorServiceLoader}.
  * Reason: The original class uses the classgraph library, which does runtime classpath scanning. This is not supported as such
  * in GraalVM. If in the future a known MigratorFactory should be supported by the CLI, this can be added in the substitution method.

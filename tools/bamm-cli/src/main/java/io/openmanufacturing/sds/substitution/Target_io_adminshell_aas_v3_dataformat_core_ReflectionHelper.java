@@ -30,7 +30,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 import io.adminshell.aas.v3.dataformat.core.ReflectionHelper;
 
 /**
- * This is a GraalVM substitution class (see https://blog.frankel.ch/coping-incompatible-code-graalvm-compilation/#substitutions)
+ * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
  * for {@link ReflectionHelper}, the central point of reflection information of the io.admin-shell.aas library. The original ReflectionHelper
  * has a static constructor that initializes several maps and collections (using ClassGraph scans) that hold information about implementations
  * of interfaces etc.. For the build of the native image, this logic is replaced by the following logic:
