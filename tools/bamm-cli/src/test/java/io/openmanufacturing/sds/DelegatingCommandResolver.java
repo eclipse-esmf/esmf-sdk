@@ -28,7 +28,6 @@ import io.vavr.control.Try;
  * and serializes the result to stdout, as expected of the external custom resolver.
  */
 public class DelegatingCommandResolver {
-
    public static void main( final String[] args ) throws URISyntaxException {
       final Path target = Paths.get( DelegatingCommandResolver.class.getResource( "/" ).toURI() ).getParent();
       final Path modelsRoot = Paths.get( target.toString(), "classes", "valid", args[0] );

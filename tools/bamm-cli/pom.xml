@@ -153,8 +153,10 @@
                </systemPropertyVariables>
                <skip>${skip.maven.surefire}</skip>
                <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
+               <!-- Do NOT wildcard include *Test.java, because then we would also run the BammCliIntegrationTest -->
                <includes>
                   <include>**/BammCliTest.java</include>
+                  <include>**/CommandExecutorTest.java</include>
                </includes>
             </configuration>
          </plugin>
@@ -338,9 +340,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
-               <!-- Uncomment to enable incremental compilation -->
-               <!-- <useIncrementalCompilation>false</useIncrementalCompilation> -->
-
                <annotationProcessorPaths combine.children="append">
                   <path>
                      <groupId>info.picocli</groupId>
@@ -355,6 +354,7 @@
             </configuration>
          </plugin>
 
+         <!-- Configure maven failsave plugin (execution of integration tests) -->
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
@@ -382,6 +382,28 @@
                   <include>**/BammCliIntegrationTest.java</include>
                </includes>
             </configuration>
+         </plugin>
+
+         <!-- for testing of the command executor, we need a test JAR file -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+               <archive>
+                  <manifest>
+                     <mainClass>io.openmanufacturing.sds.JavaCmdLine</mainClass>
+                  </manifest>
+               </archive>
+            </configuration>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>test-jar</goal>
+                  </goals>
+                  <!-- Make sure the plugin is built before maven surefire runs -->
+                  <phase>pre-test</phase>
+               </execution>
+            </executions>
          </plugin>
       </plugins>
    </build>
