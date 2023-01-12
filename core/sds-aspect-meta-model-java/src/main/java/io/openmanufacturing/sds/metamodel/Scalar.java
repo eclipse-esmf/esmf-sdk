@@ -17,4 +17,8 @@ package io.openmanufacturing.sds.metamodel;
  * Defines the data type of a {@link Characteristic} as being a scalar value.
  */
 public interface Scalar extends Type {
+   @Override
+   default boolean isScalar() {
+      return true;
+   }
 }
