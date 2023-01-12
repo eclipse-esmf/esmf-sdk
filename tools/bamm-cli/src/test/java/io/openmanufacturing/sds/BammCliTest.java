@@ -708,14 +708,17 @@ public class BammCliTest extends MetaModelVersions {
    }
 
    private String resolverCommand() {
+      // Note that the following code must not use .class/.getClass()/.getClassLoader() but only operate on the file system level,
+      // since otherwise it will break when running the test suite from the maven build (where tests are run from the jar and resources
+      // are not resolved to the file system but to the jar)
       try {
-         final Path targetDirectory = Paths.get( getClass().getResource( "/" ).toURI() ).getParent();
-         final Path testClasses = Paths.get( targetDirectory.toString(), "test-classes" );
-         final Path modelsRoot = Path.of( TestModel.class.getClassLoader().getResource( "valid" ).toURI() );
-         final String scriptName = OS.WINDOWS.isCurrentOs() ? "\\model_resolver.bat" : "/model_resolver.sh";
-         return testClasses + scriptName + " " + modelsRoot + " " + KnownVersion.getLatest().toString().toLowerCase();
-      } catch ( final URISyntaxException e ) {
-         throw new RuntimeException( e );
+         final String resolverScript = new File(
+               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + (OS.WINDOWS.isCurrentOs() ? ".bat" : ".sh") ).getCanonicalPath();
+         final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
+         final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
+         return resolverScript + " " + modelsRoot + " " + metaModelVersion;
+      } catch ( final IOException exception ) {
+         throw new RuntimeException( exception );
       }
    }
 }
