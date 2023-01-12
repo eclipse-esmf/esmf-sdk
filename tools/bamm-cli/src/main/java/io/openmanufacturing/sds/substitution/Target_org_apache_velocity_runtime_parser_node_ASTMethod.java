@@ -14,9 +14,8 @@
 package io.openmanufacturing.sds.substitution;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
+import org.apache.velocity.Template;
 import org.apache.velocity.context.InternalContextAdapter;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.VelocityException;
@@ -28,13 +27,28 @@ import org.apache.velocity.util.ClassUtils;
 import org.apache.velocity.util.introspection.Info;
 import org.apache.velocity.util.introspection.IntrospectionCacheData;
 import org.apache.velocity.util.introspection.VelMethod;
+import org.slf4j.Logger;
 
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
+/**
+ * This is a GraalVM substitution class (see https://blog.frankel.ch/coping-incompatible-code-graalvm-compilation/#substitutions)
+ * for {@link ASTMethod}.
+ * Reason: This class augments the Apache Velocity core class {@link ASTMethod} which is responsible for calling methods from
+ * templates. It adds logging (with log level TRACE) to be able to understand which methods in which templates are called.
+ */
 @TargetClass( ASTMethod.class )
+@SuppressWarnings( {
+      "unused",
+      "squid:S00101" // Class name uses GraalVM substitution class naming schema, see
+      // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
+} )
 public final class Target_org_apache_velocity_runtime_parser_node_ASTMethod {
+   @Alias
+   protected Logger log;
+
    @Alias
    private static Class<?>[] EMPTY_CLASS_ARRAY;
 
@@ -57,42 +71,41 @@ public final class Target_org_apache_velocity_runtime_parser_node_ASTMethod {
    private boolean logOnInvalid;
 
    @Alias
-   public native Node jjtGetChild( final int i );
+   protected Node[] children;
+
+   @Alias
+   protected Template template;
+
+   @Alias
+   protected int line;
+
+   @Alias
+   protected int column;
 
    @Alias
    private native Object handleInvocationException( final Object o, final InternalContextAdapter context, final Throwable t );
 
+   /**
+    * This method is largely adopted from {@link ASTMethod#execute(Object, InternalContextAdapter)} and just augmented with
+    * additional logging. Several calls to methods from ASTMethod's super class are replaced with direct access to the @Alias'ed
+    * fields, because only methods from the same class can be @Alias'ed.
+    */
    @Substitute
    public Object execute( final Object o, final InternalContextAdapter context ) throws MethodInvocationException {
       try {
-         //         rsvc.getLogContext().pushLogContext( this, uberInfo );
-
-         /*
-          *  new strategy (strategery!) for introspection. Since we want
-          *  to be thread- as well as context-safe, we *must* do it now,
-          *  at execution time.  There can be no in-node caching,
-          *  but if we are careful, we can do it in the context.
-          */
+         rsvc.getLogContext().pushLogContext( (SimpleNode) (Object) this, uberInfo );
          final Object[] params = new Object[paramCount];
-
-         /*
-          * sadly, we do need recalc the values of the args, as this can
-          * change from visit to visit
-          */
-         final Class<?>[] paramClasses =
-               paramCount > 0 ? new Class[paramCount] : EMPTY_CLASS_ARRAY;
+         final Class<?>[] paramClasses = paramCount > 0 ? new Class[paramCount] : EMPTY_CLASS_ARRAY;
 
          for ( int j = 0; j < paramCount; j++ ) {
-            params[j] = jjtGetChild( j + 1 ).value( context );
+            params[j] = children[j + 1].value( context );
             if ( params[j] != null ) {
                paramClasses[j] = params[j].getClass();
             }
          }
 
-         final VelMethod method = ClassUtils.getMethod( methodName, params, paramClasses,
-               o, context, (SimpleNode) (Object) this, strictRef );
+         final VelMethod method = ClassUtils.getMethod( methodName, params, paramClasses, o, context, (SimpleNode) (Object) this, strictRef );
 
-         // warn if method wasn't found (if strictRef is true, then ClassUtils did throw an exception)
          if ( o != null && method == null && logOnInvalid ) {
             final StringBuilder plist = new StringBuilder();
             for ( int i = 0; i < params.length; i++ ) {
@@ -102,16 +115,10 @@ public final class Target_org_apache_velocity_runtime_parser_node_ASTMethod {
                   plist.append( ", " );
                }
             }
-            //            log.debug( "Object '{}' does not contain method {}({}) (or several ambiguous methods) at {}[line {}, column {}]", o.getClass()
-            //            .getName(),
-            //                  methodName, plist, getTemplateName(), getLine(), getColumn() );
+            log.debug( "Object '{}' does not contain method {}({}) (or several ambiguous methods) at {}[line {}, column {}]",
+                  o.getClass().getName(), methodName, plist, template.getName(), line, column );
          }
 
-         /*
-          * The parent class (typically ASTReference) uses the icache entry
-          * under 'this' key to distinguish a valid null result from a non-existent method.
-          * So update this dummy cache value if necessary.
-          */
          final IntrospectionCacheData prevICD = context.icacheGet( this );
          if ( method == null ) {
             if ( prevICD != null ) {
@@ -119,22 +126,14 @@ public final class Target_org_apache_velocity_runtime_parser_node_ASTMethod {
             }
             return null;
          } else if ( prevICD == null ) {
-            context.icachePut( this, new IntrospectionCacheData() ); // no need to fill in its members
+            context.icachePut( this, new IntrospectionCacheData() );
          }
 
          try {
-            /*
-             *  get the returned object.  It may be null, and that is
-             *  valid for something declared with a void return type.
-             *  Since the caller is expecting something to be returned,
-             *  as long as things are peachy, we can return an empty
-             *  String so ASTReference() correctly figures out that
-             *  all is well.
-             */
-
             final Object obj = method.invoke( o, params );
-            System.err.printf( "=== Invoking velocity method: %s:%s(%s)%n", method.getMethodName(), method.getReturnType().getName(),
-                  Arrays.asList( params ).stream().map( Object::toString ).collect( Collectors.joining( "," ) ) );
+            // Logging statement added to comprehend which template methods are called
+            log.trace( "Invoking template method: template:{} method:{} returntype:{}", template.getName(), method.getMethodName(),
+                  method.getReturnType().getName() );
 
             if ( obj == null ) {
                if ( method.getReturnType() == Void.TYPE ) {
@@ -145,20 +144,13 @@ public final class Target_org_apache_velocity_runtime_parser_node_ASTMethod {
             return obj;
          } catch ( final InvocationTargetException ite ) {
             return handleInvocationException( o, context, ite.getTargetException() );
-         }
-
-         /* Can also be thrown by method invocation */ catch ( final IllegalArgumentException t ) {
+         } catch ( final IllegalArgumentException t ) {
             return handleInvocationException( o, context, t );
-         }
-
-         /*
-          * pass through application level runtime exceptions
-          */ catch ( final RuntimeException e ) {
+         } catch ( final RuntimeException e ) {
             throw e;
          } catch ( final Exception e ) {
-            final String msg = "ASTMethod.execute() : exception invoking method '"
-                  + methodName + "' in " + o.getClass();
-            //            log.error( msg, e );
+            final String msg = "ASTMethod.execute() : exception invoking method '" + methodName + "' in " + o.getClass();
+            log.error( msg, e );
             throw new VelocityException( msg, e, rsvc.getLogContext().getStackTrace() );
          }
       } finally {
