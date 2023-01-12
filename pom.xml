@@ -104,6 +104,7 @@
       <!-- Versions of plugins -->
       <build-helper-maven-plugin-version>3.2.0</build-helper-maven-plugin-version>
       <download-maven-plugin-version>1.6.8</download-maven-plugin-version>
+      <exec-maven-plugin-version>3.1.0</exec-maven-plugin-version>
       <git-commit-id-plugin-version>4.0.5</git-commit-id-plugin-version>
       <groovy-maven-plugin-version>2.1.1</groovy-maven-plugin-version>
       <jacoco-maven-plugin-version>0.8.7</jacoco-maven-plugin-version>
@@ -476,6 +477,11 @@
                <groupId>org.codehaus.mojo</groupId>
                <artifactId>build-helper-maven-plugin</artifactId>
                <version>${build-helper-maven-plugin-version}</version>
+            </plugin>
+            <plugin>
+               <groupId>org.codehaus.mojo</groupId>
+               <artifactId>exec-maven-plugin</artifactId>
+               <version>${exec-maven-plugin-version}</version>
             </plugin>
             <plugin>
                <groupId>org.codehaus.mojo</groupId>
