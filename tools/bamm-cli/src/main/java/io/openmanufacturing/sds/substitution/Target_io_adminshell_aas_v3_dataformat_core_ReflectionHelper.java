@@ -16,24 +16,18 @@ package io.openmanufacturing.sds.substitution;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ClassUtils;
-
-import com.google.common.reflect.TypeToken;
 import com.oracle.svm.core.annotate.Alias;
+import com.oracle.svm.core.annotate.KeepOriginal;
 import com.oracle.svm.core.annotate.RecomputeFieldValue;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 import io.adminshell.aas.v3.dataformat.core.ReflectionHelper;
-import io.adminshell.aas.v3.dataformat.core.util.MostSpecificTypeTokenComparator;
 
 /**
  * This is a GraalVM substitution class (see https://blog.frankel.ch/coping-incompatible-code-graalvm-compilation/#substitutions)
@@ -48,17 +42,22 @@ import io.adminshell.aas.v3.dataformat.core.util.MostSpecificTypeTokenComparator
  *    <li>The original ReflectionHelper is substituted by this class. The fields holding the information are initialized with the
  *    values read from the .properties file.</li>
  * </ol>
- *
+ * <p>
  * Unfortunately, the ClassGraph logic in the ReflectionHelper is part of its static constructor, which means it can't be overridden by a
  * regular substitution method. For this reason, the whole class must be substituted which means that (1) all public static fields need to
- * be aliased and (2) all methods with public interfaces need to be duplicated here.
+ * be aliased and (2) all methods with public interfaces need to be mentioned explicitly with @KeepOriginal.
  */
 @Substitute
 @TargetClass( ReflectionHelper.class )
+@SuppressWarnings( {
+      "unused",
+      "squid:S00101" // Class name uses GraalVM substitution class naming schema, see
+      // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
+} )
 public final class Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper {
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
-   private static String ROOT_PACKAGE_NAME = "io.adminshell.aas.v3";
+   private static final String ROOT_PACKAGE_NAME = "io.adminshell.aas.v3";
 
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
@@ -116,124 +115,33 @@ public final class Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper 
       }
    }
 
-   @Substitute
-   public static boolean isModelInterface( final Class<?> type ) {
-      return type.isInterface() && MODEL_PACKAGE_NAME.equals( type.getPackageName() );
-   }
+   @KeepOriginal
+   public static native boolean isModelInterface( final Class<?> type );
 
-   @Substitute
-   public static boolean isDefaultImplementation( final Class<?> type ) {
-      return DEFAULT_IMPLEMENTATIONS.stream().anyMatch( x -> Objects.equals( x.getImplementationType(), type ) );
-   }
+   @KeepOriginal
+   public static native boolean isDefaultImplementation( final Class<?> type );
 
-   @Substitute
-   public static boolean hasDefaultImplementation( final Class<?> interfaceType ) {
-      return DEFAULT_IMPLEMENTATIONS.stream().anyMatch( x -> x.getInterfaceType().equals( interfaceType ) );
-   }
+   @KeepOriginal
+   public static native boolean hasDefaultImplementation( final Class<?> interfaceType );
 
-   @Substitute
-   public static <T> Class<? extends T> getDefaultImplementation( final Class<T> interfaceType ) {
-      if ( isDefaultImplementation( interfaceType ) ) {
-         return interfaceType;
-      }
-      if ( hasDefaultImplementation( interfaceType ) ) {
-         return DEFAULT_IMPLEMENTATIONS.stream()
-               .filter( x -> x.getInterfaceType().equals( interfaceType ) )
-               .findFirst().get()
-               .getImplementationType();
-      }
-      return null;
-   }
+   @KeepOriginal
+   public static native <T> Class<? extends T> getDefaultImplementation( final Class<T> interfaceType );
 
-   @Substitute
-   public static boolean isModelInterfaceOrDefaultImplementation( final Class<?> type ) {
-      return isModelInterface( type ) || isDefaultImplementation( type );
-   }
+   @KeepOriginal
+   public static native boolean isModelInterfaceOrDefaultImplementation( final Class<?> type );
 
-   @Substitute
-   public static Class<?> getAasInterface( final Class<?> type ) {
-      final Set<Class<?>> implementedAasInterfaces = getAasInterfaces( type );
-      if ( implementedAasInterfaces.isEmpty() ) {
-         return null;
-      }
-      if ( implementedAasInterfaces.size() == 1 ) {
-         return implementedAasInterfaces.iterator().next();
-      }
-      //         LOG.warn( "class '{}' implements more than one AAS interface, but only most specific one is returned", type.getName() );
-      return implementedAasInterfaces.stream().map( x -> TypeToken.of( x ) )
-            .sorted( new MostSpecificTypeTokenComparator() )
-            .findFirst().get()
-            .getRawType();
-   }
+   @KeepOriginal
+   public static native Class<?> getAasInterface( final Class<?> type );
 
-   @Substitute
-   public static Set<Class<?>> getAasInterfaces( final Class<?> type ) {
-      final Set<Class<?>> result = new HashSet<>();
-      if ( type != null ) {
-         if ( INTERFACES.contains( type ) ) {
-            result.add( type );
-         }
-         result.addAll( ClassUtils.getAllInterfaces( type ).stream().filter( x -> INTERFACES.contains( x ) ).collect( Collectors.toSet() ) );
-      }
-      return result;
-   }
+   @KeepOriginal
+   public static native Set<Class<?>> getAasInterfaces( final Class<?> type );
 
-   @Substitute
-   public static String getModelType( final Class<?> clazz ) {
-      final Class<?> type = getMostSpecificTypeWithModelType( clazz );
-      if ( type != null ) {
-         return type.getSimpleName();
-      }
-      for ( final Class<?> interfaceClass : clazz.getInterfaces() ) {
-         final String result = getModelType( interfaceClass );
-         if ( result != null ) {
-            return result;
-         }
-      }
-      final Class<?> superClass = clazz.getSuperclass();
-      if ( superClass != null ) {
-         return getModelType( superClass );
-      }
-      return null;
-   }
+   @KeepOriginal
+   public static native String getModelType( final Class<?> clazz );
 
-   @Substitute
-   public static Class<?> getMostSpecificTypeWithModelType( final Class<?> clazz ) {
-      if ( clazz == null ) {
-         return null;
-      }
-      return TYPES_WITH_MODEL_TYPE.stream()
-            .filter( x -> clazz.isInterface() ? x.equals( clazz ) : x.isAssignableFrom( clazz ) )
-            .sorted( ( Class<?> o1, Class<?> o2 ) -> {
-               // -1: o1 more special than o2
-               // 0: o1 equals o2 or on same samelevel
-               // 1: o2 more special than o1
-               if ( o1.isAssignableFrom( o2 ) ) {
-                  if ( o2.isAssignableFrom( o1 ) ) {
-                     return 0;
-                  }
-                  return 1;
-               }
-               if ( o2.isAssignableFrom( o1 ) ) {
-                  return -1;
-               }
-               return 0;
-            } )
-            .findFirst()
-            .orElse( null );
-   }
+   @KeepOriginal
+   public static native Class<?> getMostSpecificTypeWithModelType( final Class<?> clazz );
 
-   @Substitute
-   public static Set<Class<?>> getSuperTypes( final Class<?> clazz, final boolean recursive ) {
-      final Set<Class<?>> result = SUBTYPES.entrySet().stream()
-            .filter( x -> x.getValue().contains( clazz ) )
-            .map( x -> x.getKey() )
-            .collect( Collectors.toSet() );
-      if ( recursive ) {
-         result.addAll( result.stream()
-               .flatMap( x -> getSuperTypes( x, true ).stream() )
-               .collect( Collectors.toSet() ) );
-      }
-      return result;
-   }
+   @KeepOriginal
+   public static native Set<Class<?>> getSuperTypes( final Class<?> clazz, final boolean recursive );
 }
