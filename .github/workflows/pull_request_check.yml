@@ -18,11 +18,11 @@ jobs:
         with:
           version: '22.3.0'
           java-version: '17'
-          components: 'native-image', 'js'
+          components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
 
-      - name: Build and run HelloWorld.java
+      - name: Build and run tests
         run: |
           mvn -B clean install
           cd tools/bamm-cli
