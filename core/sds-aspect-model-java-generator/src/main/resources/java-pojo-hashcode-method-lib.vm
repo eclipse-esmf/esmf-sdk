@@ -2,7 +2,7 @@
 @Override
 public int hashCode() {
 return Objects.hash(
-    #if ( $element.isComplexType )
+    #if ( $element.isComplexType() )
         #set( $complexElement = $ComplexType.cast( $element ) )
         #if ( $complexElement.getExtends().isPresent() )
         super.hashCode()
