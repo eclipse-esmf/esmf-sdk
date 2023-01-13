@@ -32,13 +32,13 @@ import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 
 import io.openmanufacturing.sds.ProcessLauncher.ExecutionResult;
 import io.openmanufacturing.sds.aspect.AspectValidateCommand;
@@ -59,8 +59,7 @@ public class BammCliTest extends MetaModelVersions {
    protected ProcessLauncher bammCli;
    private final String defaultInputFile = inputFile( TestAspect.ASPECT_WITH_ENTITY ).getAbsolutePath();
 
-   @TempDir
-   Path outputDirectory;
+   Path outputDirectory = null;
 
    @BeforeAll
    public void setup() {
@@ -69,22 +68,28 @@ public class BammCliTest extends MetaModelVersions {
 
    @BeforeEach
    public void beforeEach() throws IOException {
-      // Recursively delete temporary directory
-      try {
-         Files.walk( outputDirectory )
-               .sorted( Comparator.reverseOrder() )
-               .map( Path::toFile )
-               .forEach( file -> {
-                  if ( !file.delete() ) {
-                     throw new RuntimeException();
-                  }
-               } );
-      } catch ( final IOException e ) {
-         throw new RuntimeException( e );
-      }
-      // Create a new empty temporary directory
-      if ( !outputDirectory.toFile().mkdirs() ) {
-         throw new RuntimeException();
+      outputDirectory = Files.createTempDirectory( "junit" );
+   }
+
+   @AfterEach
+   public void afterEach() {
+      if ( outputDirectory != null ) {
+         final File outputDir = outputDirectory.toFile();
+         if ( outputDir.exists() && outputDir.isDirectory() ) {
+            // Recursively delete temporary directory
+            try {
+               Files.walk( outputDirectory )
+                     .sorted( Comparator.reverseOrder() )
+                     .map( Path::toFile )
+                     .forEach( file -> {
+                        if ( !file.delete() ) {
+                           throw new RuntimeException();
+                        }
+                     } );
+            } catch ( final IOException e ) {
+               throw new RuntimeException( e );
+            }
+         }
       }
    }
 
