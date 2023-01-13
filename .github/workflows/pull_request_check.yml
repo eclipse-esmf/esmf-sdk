@@ -4,16 +4,39 @@ on:
     branches:
     - main
 jobs:
-  build-and-test:
-    runs-on: ubuntu-20.04
-    
+  build:
+    name: ${{ matrix.os }} build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2.3.1
-    - name: Set up JDK 17
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-    - name: Run tests
-      run: mvn -B clean install
+      - uses: actions/checkout@v3
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.3.0'
+          java-version: '17'
+          components: 'native-image', 'js'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+
+      - name: Build and run HelloWorld.java
+        run: |
+          mvn -B clean install
+          cd tools/bamm-cli
+          mvn -B -o verify -Pnative
+
+      - name: Upload executable jar
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bamm-cli.jar
+          path: tools/bamm-cli/target/bamm-cli-*.jar
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: helloworld-${{ matrix.os }}
+          path: tools/bamm-cli/target/bamm.?e?x?e?
