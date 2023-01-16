@@ -75,7 +75,7 @@ The available options and their meaning can also be seen in the help text of the
                                         |  _--output, -o_ : output file path (default: stdout)           |
                                         |  _--api-base-url, -b_ : the base url for the Aspect API used in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification| `bamm aspect AspectModel.ttl to openapi -j -b \http://mysite.de`
                                         |  _--json, -j_ : generate a JSON specification for an Aspect Model (default format is YAML)|
-                                        |  _--comment, -c_ : only in combination with the above setting; generates `$comment` OpenAPI 3.1 keyword for all `bamm:see` attributes|
+                                        |  _--comment, -c_ : only in combination with --json; generates `$comment` OpenAPI 3.1 keyword for all `bamm:see` attributes|
                                         |  _--parameter-file, -p_ : the path to a file including the parameter for the Aspect API endpoints| For detailed description, see the section bellow
                                         |  _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the version for the Aspect API|
                                         |  _--resource-path, -r_ : the resource path for the Aspect API endpoints| For detailed description, see the section bellow
