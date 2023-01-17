@@ -149,7 +149,7 @@
                   <graalVmConfigPath>${graalvm-config-path}</graalVmConfigPath>
                   <forkCount>1</forkCount>
                   <reuseForks>true</reuseForks>
-                  <argLine>-Xmx4096</argLine>
+                  <argLine>-Xmx4096m</argLine>
                </systemPropertyVariables>
                <skip>${skip.maven.surefire}</skip>
                <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
