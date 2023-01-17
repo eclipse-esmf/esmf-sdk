@@ -27,6 +27,7 @@ jobs:
 
       - name: Build and run tests
         run: |
+          java --version
           mvn -B clean install
           cd tools/bamm-cli
           mvn -B -o verify -Pnative
