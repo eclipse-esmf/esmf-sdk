@@ -204,6 +204,21 @@
                      <cleanupDaemonThreads>false</cleanupDaemonThreads>
                   </configuration>
                </execution>
+               <!-- Execute adjustments of native configs that were generated during the previous maven build -->
+               <execution>
+                  <id>customize-resource-config</id>
+                  <phase>pre-package</phase>
+                  <goals>
+                     <goal>java</goal>
+                  </goals>
+                  <configuration>
+                     <!-- The main class of your build-time scanning code -->
+                     <mainClass>io.openmanufacturing.sds.buildtime.CustomizeResourceConfig</mainClass>
+                     <!-- Pass the build target file as a commandline param -->
+                     <commandlineArgs>${project.build.outputDirectory}/META-INF/native-image/${project.groupId}/${project.artifactId}/resource-config.json</commandlineArgs>
+                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
+                  </configuration>
+               </execution>
             </executions>
          </plugin>
 
