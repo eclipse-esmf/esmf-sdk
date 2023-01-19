@@ -445,10 +445,9 @@
          <properties>
             <packaging-type>native</packaging-type>
             <skip.maven.surefire>true</skip.maven.surefire>
-            <!-- Skip building the fat jar with -Pnative, because it must have been built in the previous maven run -->
-            <skip.maven.shade>true</skip.maven.shade>
             <maven.resources.skip>true</maven.resources.skip>
          </properties>
+
          <build>
             <plugins>
                <plugin>
