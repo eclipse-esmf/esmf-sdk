@@ -130,10 +130,14 @@ public final class Target_org_apache_velocity_runtime_parser_node_ASTMethod {
          }
 
          try {
-            final Object obj = method.invoke( o, params );
             // Logging statement added to comprehend which template methods are called
-            log.trace( "Invoking template method: template:{} method:{} returntype:{}", template.getName(), method.getMethodName(),
-                  method.getReturnType().getName() );
+            String paramString = "";
+            for ( int i = 0; i < params.length; i++ ) {
+               paramString += String.format( "%d:%s ", i, params[i] );
+            }
+            log.trace( "Invoking template method: template:{} method:{} returntype:{} params:{}", template.getName(), method.getMethodName(),
+                  method.getReturnType().getName(), paramString );
+            final Object obj = method.invoke( o, params );
 
             if ( obj == null ) {
                if ( method.getReturnType() == Void.TYPE ) {
