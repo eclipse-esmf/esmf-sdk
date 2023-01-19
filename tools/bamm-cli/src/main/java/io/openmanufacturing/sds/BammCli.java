@@ -68,6 +68,9 @@ public class BammCli extends AbstractCommand {
    @CommandLine.Option( names = { "--version" }, description = "Show current version" )
    private boolean version;
 
+   @CommandLine.Option( names = { "--disable-color", "-D" }, description = "Disable colored output" )
+   private boolean disableColor;
+
    int run( final String... argv ) {
       return commandLine.execute( argv );
    }
@@ -84,11 +87,24 @@ public class BammCli extends AbstractCommand {
 
    public static void main( final String[] argv ) {
       setupGraphvizJava();
-      AnsiConsole.systemInstall();
+
+      // The disabling color switch needs to be checked before PicoCLI initialization
+      boolean disableColor = false;
+      for ( final String arg : argv ) {
+         if ( arg.equals( "--disable-color" ) || arg.equals( "-D" ) ) {
+            disableColor = true;
+         }
+      }
+
+      if ( !disableColor ) {
+         AnsiConsole.systemInstall();
+      }
 
       final BammCli command = new BammCli();
       final int exitCode = command.commandLine.execute( argv );
-      AnsiConsole.systemUninstall();
+      if ( !disableColor ) {
+         AnsiConsole.systemUninstall();
+      }
       System.exit( exitCode );
    }
 

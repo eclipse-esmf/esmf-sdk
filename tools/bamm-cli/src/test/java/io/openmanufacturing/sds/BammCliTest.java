@@ -95,14 +95,14 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testNoArgs() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess();
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color" );
       assertThat( result.stdout() ).contains( "Usage:" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
    public void testAspectWithoutSubcommand() {
-      final ExecutionResult result = bammCli.apply( "aspect" );
+      final ExecutionResult result = bammCli.apply( "--disable-color", "aspect" );
       assertThat( result.exitStatus() ).isEqualTo( 2 );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).contains( "Missing required parameter" );
@@ -110,7 +110,7 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testWrongArgs() {
-      final ExecutionResult result = bammCli.apply( "-i", "doesnotexist" );
+      final ExecutionResult result = bammCli.apply( "--disable-color", "-i", "doesnotexist" );
       assertThat( result.exitStatus() ).isEqualTo( 2 );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).contains( "Unknown options" );
@@ -118,14 +118,14 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testHelp() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "help" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "help" );
       assertThat( result.stdout() ).contains( "Usage:" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
    public void testVerboseOutput() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "validate", "-vvv" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "-vvv" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).contains( "DEBUG " + AspectValidateCommand.class.getName() );
    }
@@ -134,7 +134,7 @@ public class BammCliTest extends MetaModelVersions {
    public void testAspectMigrateToFile() {
       final File targetFile = outputFile( "output.ttl" );
       final ExecutionResult result =
-            bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "migrate", "-o", targetFile.getAbsolutePath() );
+            bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "migrate", "-o", targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
@@ -143,7 +143,7 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectMigrateToStdout() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "migrate" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "migrate" );
       assertThat( result.stdout() ).contains( "@prefix" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -151,7 +151,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectPrettyPrintToFile() {
       final File targetFile = outputFile( "output.ttl" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "prettyprint", "-o", targetFile.getAbsolutePath() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "prettyprint", "-o",
+            targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
@@ -160,14 +161,14 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectPrettyPrintToStdout() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "prettyprint" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "prettyprint" );
       assertThat( result.stdout() ).contains( "@prefix" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
    public void testAspectValidate() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "validate" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
 
@@ -180,12 +181,12 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectValidateWithDetails() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "validate", "--details" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "--details" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
 
       final File invalidModel = inputFile( InvalidTestAspect.INVALID_SYNTAX );
-      final ExecutionResult result2 = bammCli.apply( "aspect", invalidModel.getAbsolutePath(), "validate", "--details" );
+      final ExecutionResult result2 = bammCli.apply( "--disable-color", "aspect", invalidModel.getAbsolutePath(), "validate", "--details" );
       assertThat( result2.exitStatus() ).isEqualTo( 1 );
       assertThat( result2.stderr() ).isEmpty();
       assertThat( result2.stdout() ).contains( InvalidSyntaxViolation.ERROR_CODE );
@@ -193,7 +194,8 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectValidateWithCustomResolver() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "validate", "--custom-resolver", resolverCommand() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "--custom-resolver",
+            resolverCommand() );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -201,7 +203,7 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToAasXmlToFile() {
       final File targetFile = outputFile( "output.xml" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "aas", "--format", "xml", "-o",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "xml", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -211,7 +213,7 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToAasXmlToStdout() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "aas", "--format", "xml" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "xml" );
       assertThat( result.stdout() ).startsWith( "<?xml" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -219,7 +221,7 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToAasAasxToFile() throws TikaException, IOException {
       final File targetFile = outputFile( "output.aasx" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "aas", "--format", "aasx", "-o",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "aasx", "-o",
             targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -229,7 +231,7 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToAasAasxToStdout() throws TikaException, IOException {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "aas", "--format", "aasx" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "aasx" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.application( "x-tika-ooxml" ) );
    }
@@ -237,7 +239,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToDotWithDefaultLanguage() {
       final File targetFile = outputFile( "output.dot" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "dot", "-o", targetFile.getAbsolutePath() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "dot", "-o",
+            targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
@@ -247,7 +250,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToDotWithGivenLanguage() {
       final File targetFile = outputFile( "output.dot" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "dot", "-o", targetFile.getAbsolutePath(), "--language",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "dot", "-o",
+            targetFile.getAbsolutePath(), "--language",
             "en" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -258,7 +262,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToDotWithNonExistentLanguage() {
       final File targetFile = outputFile( "output.dot" );
-      final ExecutionResult result = bammCli.apply( "aspect", defaultInputFile, "to", "dot", "-o", targetFile.getAbsolutePath(), "--language", "de" );
+      final ExecutionResult result = bammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "dot", "-o", targetFile.getAbsolutePath(),
+            "--language", "de" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).contains( "The model does not contain the desired language" );
@@ -267,14 +272,15 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToDotToStdout() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "dot" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "dot" );
       assertThat( result.stdout() ).startsWith( "digraph AspectModel" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
    public void testAspectToDotWithCustomResolver() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "dot", "--custom-resolver", resolverCommand() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "dot", "--custom-resolver",
+            resolverCommand() );
       assertThat( result.stdout() ).startsWith( "digraph AspectModel" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -282,7 +288,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToHtmlWithDefaultLanguageToFile() {
       final File targetFile = outputFile( "output.html" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "html", "-o", targetFile.getAbsolutePath() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "-o",
+            targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
@@ -292,7 +299,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToHtmlWithGivenLanguageToFile() {
       final File targetFile = outputFile( "output.html" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "html", "-o", targetFile.getAbsolutePath(), "--language",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "-o",
+            targetFile.getAbsolutePath(), "--language",
             "en" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -302,7 +310,7 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToHtmlToStdout() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "html" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html" );
       assertThat( result.stdout() ).contains( "<html" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -312,7 +320,8 @@ public class BammCliTest extends MetaModelVersions {
       final String customCss = "h1 { color: #123456; }";
       final File customCssFile = outputFile( "custom.css" );
       writeToFile( customCssFile, customCss );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "html", "--css", customCssFile.getAbsolutePath() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "--css",
+            customCssFile.getAbsolutePath() );
       assertThat( result.stdout() ).contains( "<html" );
       assertThat( result.stdout() ).contains( customCss );
       assertThat( result.stderr() ).isEmpty();
@@ -321,8 +330,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJavaWithDefaultPackageName() {
       final File outputDir = outputDirectory.toFile();
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "java", "--output-directory",
-            outputDir.getAbsolutePath() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
+            outputDir.getAbsolutePath(), "-vvv" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -338,7 +347,7 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJavaWithCustomPackageName() {
       final File outputDir = outputDirectory.toFile();
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "java", "--output-directory",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--package-name", "com.example.foo" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -351,7 +360,7 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJavaWithoutJacksonAnnotations() {
       final File outputDir = outputDirectory.toFile();
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "java", "--output-directory",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--no-jackson" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -368,7 +377,7 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJavaWithDefaultPackageNameWithCustomResolver() {
       final File outputDir = outputDirectory.toFile();
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "java", "--output-directory",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -388,7 +397,7 @@ public class BammCliTest extends MetaModelVersions {
       final File templateLibraryFile = new File(
             System.getProperty( "user.dir" ) + "/../../core/sds-aspect-model-java-generator/templates/test-macro-lib.vm" );
 
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "java", "--output-directory",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--execute-library-macros", "--template-library-file", templateLibraryFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -405,7 +414,7 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJavaCustomMacroLibraryValidation() {
       final File outputDir = outputDirectory.toFile();
-      final ExecutionResult result = bammCli.apply( "aspect", defaultInputFile, "to", "java", "--output-directory",
+      final ExecutionResult result = bammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--execute-library-macros" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
       assertThat( result.stdout() ).isEmpty();
@@ -415,7 +424,7 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJavaStaticWithDefaultPackageName() {
       final File outputDir = outputDirectory.toFile();
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "java", "--output-directory",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--static" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -433,7 +442,7 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJavaStaticWithCustomPackageName() {
       final File outputDir = outputDirectory.toFile();
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "java", "--output-directory",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--static", "--package-name", "com.example.foo" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -451,7 +460,7 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJavaStaticWithDefaultPackageNameWithCustomResolver() {
       final File outputDir = outputDirectory.toFile();
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "java", "--output-directory",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--static", "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -471,7 +480,7 @@ public class BammCliTest extends MetaModelVersions {
       final File outputDir = outputDirectory.toFile();
       final File templateLibraryFile = new File(
             System.getProperty( "user.dir" ) + "/../../core/sds-aspect-model-java-generator/templates/test-macro-lib.vm" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "java", "--output-directory",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--static", "--execute-library-macros", "--template-library-file", templateLibraryFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -489,7 +498,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJsonToFile() {
       final File targetFile = outputFile( "output.json" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "json", "-o", targetFile.getAbsolutePath() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json", "-o",
+            targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
@@ -498,14 +508,15 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToJsonToStdout() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "json" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json" );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
    public void testAspectToJsonToStdoutWithCustomResolver() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "json", "--custom-resolver", resolverCommand() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json", "--custom-resolver",
+            resolverCommand() );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -513,7 +524,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJsonSchemaToFile() {
       final File targetFile = outputFile( "output.schema.json" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "schema", "-o", targetFile.getAbsolutePath() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "schema", "-o",
+            targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
@@ -522,21 +534,22 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToJsonSchemaToStdout() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "schema" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "schema" );
       assertThat( result.stdout() ).contains( "$schema" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
    public void testAspectToJsonSchemaToFileWithCustomResolver() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "schema", "--custom-resolver", resolverCommand() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "schema", "--custom-resolver",
+            resolverCommand() );
       assertThat( result.stdout() ).contains( "$schema" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
    public void testAspectToOpenapiWithoutBaseUrl() {
-      final ExecutionResult result = bammCli.apply( "aspect", defaultInputFile, "to", "openapi", "--json" );
+      final ExecutionResult result = bammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json" );
       assertThat( result.exitStatus() ).isEqualTo( 2 );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).contains( "Missing required option: '--api-base-url" );
@@ -544,7 +557,7 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToOpenapiWithoutResourcePath() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "openapi", "--json", "--api-base-url",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json", "--api-base-url",
             "https://test.example.com" );
       assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
       assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/api/v1\"" );
@@ -553,7 +566,7 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToOpenApiWithResourcePath() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "openapi", "--json", "--api-base-url",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json", "--api-base-url",
             "https://test.example.com", "--resource-path", "my-aspect" );
       assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
       assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/api/v1\"" );
@@ -563,7 +576,7 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToOpenApiWithResourcePathAndCustomResolver() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "openapi", "--json", "--api-base-url",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json", "--api-base-url",
             "https://test.example.com", "--resource-path", "my-aspect", "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
       assertThat( result.stdout() ).contains( "\"url\" : \"https://test.example.com/api/v1\"" );
@@ -574,7 +587,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToPngWithDefaultLanguage() throws TikaException, IOException {
       final File targetFile = outputFile( "output.png" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "png", "-o", targetFile.getAbsolutePath() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
+            targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
@@ -584,7 +598,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToPngWithGivenLanguage() throws TikaException, IOException {
       final File targetFile = outputFile( "output.png" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "png", "-o", targetFile.getAbsolutePath(),
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
+            targetFile.getAbsolutePath(),
             "--language", "en" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -595,7 +610,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToPngWithNonExistentLanguage() {
       final File targetFile = outputFile( "output.png" );
-      final ExecutionResult result = bammCli.apply( "aspect", defaultInputFile, "to", "png", "-o", targetFile.getAbsolutePath(), "--language", "de" );
+      final ExecutionResult result = bammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o", targetFile.getAbsolutePath(),
+            "--language", "de" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).contains( "The model does not contain the desired language" );
@@ -604,14 +620,15 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToPngToStdout() throws TikaException, IOException {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "png" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.image( "png" ) );
    }
 
    @Test
    public void testAspectToPngWithCustomResolver() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "png", "--custom-resolver", resolverCommand() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "--custom-resolver",
+            resolverCommand() );
       assertThat( result.stderr() ).isEmpty();
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.image( "png" ) );
    }
@@ -619,7 +636,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToSvgWithDefaultLanguage() {
       final File targetFile = outputFile( "output.svg" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "svg", "-o", targetFile.getAbsolutePath() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg", "-o",
+            targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
@@ -629,7 +647,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToSvgWithGivenLanguage() {
       final File targetFile = outputFile( "output.svg" );
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "svg", "-o", targetFile.getAbsolutePath(), "--language",
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg", "-o",
+            targetFile.getAbsolutePath(), "--language",
             "en" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -640,7 +659,8 @@ public class BammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToSvgWithNonExistentLanguage() {
       final File targetFile = outputFile( "output.svg" );
-      final ExecutionResult result = bammCli.apply( "aspect", defaultInputFile, "to", "svg", "-o", targetFile.getAbsolutePath(), "--language",
+      final ExecutionResult result = bammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "svg", "-o", targetFile.getAbsolutePath(),
+            "--language",
             "de" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
       assertThat( result.stdout() ).isEmpty();
@@ -650,14 +670,15 @@ public class BammCliTest extends MetaModelVersions {
 
    @Test
    public void testAspectToSvgToStdout() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "svg" );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg" );
       assertThat( result.stdout() ).contains( "<svg" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
    public void testAspectToSvgWithCustomResolver() {
-      final ExecutionResult result = bammCli.runAndExpectSuccess( "aspect", defaultInputFile, "to", "svg", "--custom-resolver", resolverCommand() );
+      final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg", "--custom-resolver",
+            resolverCommand() );
       assertThat( result.stdout() ).contains( "<svg" );
       assertThat( result.stderr() ).isEmpty();
    }
