@@ -43,28 +43,27 @@
    </scm>
 
    <modules>
-      <module>core/sds-aspect-model-urn</module>
-      <module>core/sds-aspect-meta-model-types</module>
       <module>core/sds-aspect-meta-model-interface</module>
-      <module>core/sds-aspect-meta-model-resolver</module>
-      <module>core/sds-aspect-meta-model-version-migrator</module>
       <module>core/sds-aspect-meta-model-java</module>
-      <module>core/sds-aspect-model-generator</module>
+      <module>core/sds-aspect-meta-model-resolver</module>
+      <module>core/sds-aspect-meta-model-types</module>
+      <module>core/sds-aspect-meta-model-version-migrator</module>
+      <module>core/sds-aspect-model-aas-generator</module>
       <module>core/sds-aspect-model-document-generators</module>
-      <module>core/sds-aspect-model-validator</module>
+      <module>core/sds-aspect-model-generator</module>
+      <module>core/sds-aspect-model-jackson</module>
+      <module>core/sds-aspect-model-java-core</module>
       <module>core/sds-aspect-model-java-generator</module>
-      <module>core/sds-aspect-model-starter</module>
-      <module>core/sds-aspect-static-meta-model-java</module>
       <module>core/sds-aspect-model-resolver</module>
       <module>core/sds-aspect-model-serializer</module>
-      <module>core/sds-aspect-model-java-core</module>
-      <module>core/sds-aspect-model-jackson</module>
+      <module>core/sds-aspect-model-starter</module>
+      <module>core/sds-aspect-model-urn</module>
+      <module>core/sds-aspect-model-validator</module>
+      <module>core/sds-aspect-static-meta-model-java</module>
       <module>core/sds-test-aspect-models</module>
       <module>core/sds-test-resources</module>
-      <module>tools/bamm-cli</module>
       <module>tools/sds-aspect-model-maven-plugin</module>
       <module>sds-sdk-test-report</module>
-      <module>core/sds-aspect-model-aas-generator</module>
    </modules>
 
    <properties>

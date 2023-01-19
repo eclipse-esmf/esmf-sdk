@@ -147,10 +147,10 @@
                   </executableJar>
                   <binary>${project.build.directory}/${binary-name}</binary>
                   <graalVmConfigPath>${graalvm-config-path}</graalVmConfigPath>
-                  <forkCount>1</forkCount>
-                  <reuseForks>true</reuseForks>
-                  <argLine>-Xmx5000m</argLine>
                </systemPropertyVariables>
+               <forkCount>1</forkCount>
+               <reuseForks>false</reuseForks>
+               <argLine>-Xmx4096m</argLine>
                <skip>${skip.maven.surefire}</skip>
                <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
                <!-- Do NOT wildcard include *Test.java, because then we would also run the BammCliIntegrationTest -->
@@ -163,14 +163,14 @@
 
          <!-- Disable jacoco-maven-plugin here due to memory overhead -->
          <plugin>
-             <groupId>org.jacoco</groupId>
-             <artifactId>jacoco-maven-plugin</artifactId>
-             <executions>
-                 <execution>
-                     <id>default-prepare-agent</id>
-                     <phase>none</phase>
-                 </execution>
-             </executions>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>default-prepare-agent</id>
+                  <phase>none</phase>
+               </execution>
+            </executions>
          </plugin>
 
          <!-- Disable maven site plugin. It is not required since the report is created in the
@@ -189,7 +189,9 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <executions>
+               <!-- Generate admin-shell reflection config -->
                <execution>
+                  <id>generate-admin-shell-reflection-config</id>
                   <phase>process-classes</phase>
                   <goals>
                      <goal>java</goal>
@@ -400,20 +402,22 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
-            <configuration>
-               <archive>
-                  <manifest>
-                     <mainClass>io.openmanufacturing.sds.JavaCmdLine</mainClass>
-                  </manifest>
-               </archive>
-            </configuration>
             <executions>
                <execution>
+                  <id>build-test-jar</id>
                   <goals>
                      <goal>test-jar</goal>
                   </goals>
                   <!-- Make sure the plugin is built before maven surefire runs -->
                   <phase>pre-test</phase>
+                  <configuration>
+                     <archive>
+                        <manifest>
+                           <mainClass>io.openmanufacturing.sds.JavaCmdLine</mainClass>
+                        </manifest>
+                     </archive>
+                     <classifier>tests</classifier>
+                  </configuration>
                </execution>
             </executions>
          </plugin>
