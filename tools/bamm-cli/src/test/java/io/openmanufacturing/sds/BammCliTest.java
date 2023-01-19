@@ -61,13 +61,9 @@ public class BammCliTest extends MetaModelVersions {
 
    Path outputDirectory = null;
 
-   @BeforeAll
-   public void setup() {
-      bammCli = new MainClassProcessLauncher( BammCli.class );
-   }
-
    @BeforeEach
    public void beforeEach() throws IOException {
+      bammCli = new MainClassProcessLauncher( BammCli.class );
       outputDirectory = Files.createTempDirectory( "junit" );
    }
 
@@ -91,6 +87,7 @@ public class BammCliTest extends MetaModelVersions {
             }
          }
       }
+      System.gc();
    }
 
    @Test

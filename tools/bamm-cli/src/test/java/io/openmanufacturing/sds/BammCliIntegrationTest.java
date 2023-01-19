@@ -13,9 +13,11 @@
 
 package io.openmanufacturing.sds;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -28,11 +30,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
 public class BammCliIntegrationTest extends BammCliTest {
-   @BeforeAll
+   @BeforeEach
    @Override
-   public void setup() {
+   public void beforeEach() throws IOException {
       bammCli = Optional.ofNullable( System.getProperty( "packaging-type" ) ).orElse( "jar" ).equals( "jar" ) ?
             new ExecutableJarLauncher() :
             new BinaryLauncher();
+      outputDirectory = Files.createTempDirectory( "junit" );
    }
 }

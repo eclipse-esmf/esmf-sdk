@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
@@ -39,13 +40,6 @@ public class MainClassProcessLauncher extends ProcessLauncher {
    private static final Logger LOG = LoggerFactory.getLogger( MainClassProcessLauncher.class );
    private final Class<?> mainClass;
 
-   // JAnsi also does some equilibristics with the System.out and System.err and caches the results, so make sure the debug streams
-   // remain the same throughout the execution of all tests so as to not conflict with these JAnsi cached streams.
-   static private final ByteArrayOutputStream stdoutBuffer = new ByteArrayOutputStream();
-   static private final ByteArrayOutputStream stderrBuffer = new ByteArrayOutputStream();
-   static private final PrintStream testOut = new PrintStream( stdoutBuffer );
-   static private final PrintStream testErr = new PrintStream( stderrBuffer );
-
    public MainClassProcessLauncher( final Class<?> mainClass ) {
       this.mainClass = mainClass;
    }
@@ -57,12 +51,15 @@ public class MainClassProcessLauncher extends ProcessLauncher {
       final CaptureSystemExit securityManager = new CaptureSystemExit( originalSecurityManager );
       System.setSecurityManager( securityManager );
 
+      final ByteArrayOutputStream stdoutBuffer = new ByteArrayOutputStream();
+      final ByteArrayOutputStream stderrBuffer = new ByteArrayOutputStream();
+      final PrintStream testOut = new PrintStream( stdoutBuffer );
+      final PrintStream testErr = new PrintStream( stderrBuffer );
+
       final PrintStream originalStdout = System.out;
       final PrintStream originalStderr = System.err;
       final InputStream originalStdin = System.in;
       final String originalUserDir = System.getProperty( "user.dir" );
-      stdoutBuffer.reset();
-      stderrBuffer.reset();
       LOG.info( "Launch class with args: {} {}", mainClass.getName(), context.arguments().stream()
             .map( argument -> String.format( "\"%s\"", argument ) ).collect( Collectors.joining( " " ) ) );
       System.setOut( testOut );
@@ -95,6 +92,14 @@ public class MainClassProcessLauncher extends ProcessLauncher {
 
       final byte[] stdoutRaw = stdoutBuffer.toByteArray();
       final byte[] stderrRaw = stderrBuffer.toByteArray();
+      try {
+         stdoutBuffer.close();
+         stderrBuffer.close();
+         testOut.close();
+         testErr.close();
+      } catch ( final IOException exception ) {
+         throw new RuntimeException( exception );
+      }
       return new ExecutionResult( securityManager.getExitCode(), new String( stdoutRaw, StandardCharsets.UTF_8 ),
             new String( stderrRaw, StandardCharsets.UTF_8 ), stdoutRaw, stderrRaw );
    }
