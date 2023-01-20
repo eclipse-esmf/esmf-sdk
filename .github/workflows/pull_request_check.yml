@@ -61,14 +61,19 @@ jobs:
           mvn -B verify -Pnative
 
       - name: Upload executable jar
+        # We only need one OS job to upload the jars
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2
         with:
-          name: bamm-cli.jar
+          name: bamm-cli-jar
           path: tools/bamm-cli/target/bamm-cli-*.jar
 
       - name: Upload binary
         uses: actions/upload-artifact@v2
         with:
-          name: helloworld-${{ matrix.os }}
-          path: tools/bamm-cli/target/bamm.?e?x?e?
+          name: bamm-cli-binary-${{ matrix.os }}
+          # We put all the possible binary names in the path,
+          # upload-artifact will upload the one(s) that are actually present
+          path: |
+            tools/bamm-cli/target/bamm
+            tools/bamm-cli/target/bamm.exe
