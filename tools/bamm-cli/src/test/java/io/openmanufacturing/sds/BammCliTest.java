@@ -328,7 +328,7 @@ public class BammCliTest extends MetaModelVersions {
    public void testAspectToJavaWithDefaultPackageName() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
-            outputDir.getAbsolutePath(), "-vvv" );
+            outputDir.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
