@@ -54,7 +54,7 @@ jobs:
       - name: Build and run tests
         run: |
           java --version
-          mvn -B clean install
+          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean install
           cd tools/bamm-cli
           mvn -B clean verify
           mvn -B verify -Pnative
