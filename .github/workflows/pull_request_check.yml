@@ -54,6 +54,7 @@ jobs:
       - name: Build and run tests
         run: |
           java --version
+          export MAVEN_OPTS="-Xmx4096m"
           mvn -B -pl '!io.openmanufacturing:bamm-cli' clean install
           cd tools/bamm-cli
           mvn -B clean verify
