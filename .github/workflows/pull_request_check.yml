@@ -56,8 +56,8 @@ jobs:
           java --version
           mvn -B clean install
           cd tools/bamm-cli
-          mvn -B -o clean verify
-          mvn -B -o verify -Pnative
+          mvn -B clean verify
+          mvn -B verify -Pnative
 
       - name: Upload executable jar
         if: matrix.os == 'ubuntu-latest'
