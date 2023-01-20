@@ -49,7 +49,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: pierotofy/set-swap-space@master
         with:
-          swap-size-gb: 10
+          swap-size-gb: 15
 
       - name: Build and run tests
         run: |
