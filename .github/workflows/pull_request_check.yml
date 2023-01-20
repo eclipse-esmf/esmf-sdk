@@ -58,6 +58,7 @@ jobs:
           cd tools/bamm-cli
           mvn -B clean verify
           mvn -B verify -Pnative
+        shell: bash
 
       - name: Upload executable jar
         # We only need one OS job to upload the jars
