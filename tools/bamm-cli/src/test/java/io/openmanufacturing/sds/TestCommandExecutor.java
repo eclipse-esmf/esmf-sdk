@@ -27,7 +27,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-public class CommandExcecutorTest {
+import io.openmanufacturing.sds.aspectmodel.resolver.CommandExecutor;
+
+public class TestCommandExecutor {
 
    @EnabledOnOs( OS.WINDOWS )
    @Test

@@ -14,8 +14,13 @@
 package io.openmanufacturing.sds.aspectmodel.resolver;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -27,6 +32,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -37,6 +43,7 @@ import org.apache.jena.vocabulary.XSD;
 import com.google.common.collect.Streams;
 
 import io.openmanufacturing.sds.aspectmodel.VersionNumber;
+import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
@@ -45,6 +52,7 @@ import io.openmanufacturing.sds.aspectmodel.urn.UrnSyntaxException;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorFactory;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorService;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorServiceLoader;
+import io.vavr.CheckedFunction1;
 import io.vavr.Value;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -325,5 +333,76 @@ public class AspectModelResolver {
       }
 
       other.listStatements().forEach( target::add );
+   }
+
+   /**
+    * Convenience method for loading an resolving an Aspect Model from a file
+    * @param input the input file
+    * @return the resolved model on success
+    */
+   public static Try<VersionedModel> loadAndResolveModel( final File input ) {
+      final File inputFile = input.getAbsoluteFile();
+      final AspectModelUrn urn = fileToUrn( inputFile );
+      return getModelRoot( inputFile ).flatMap( modelsRoot ->
+            new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ) );
+   }
+
+   /**
+    * From an input Aspect Model file, determines the models root directory if it exists
+    * @param inputFile the input model file
+    * @return the models root directory
+    */
+   public static Try<Path> getModelRoot( final File inputFile ) {
+      return Option.of( Paths.get( inputFile.getParent(), "..", ".." ) )
+            .map( Path::toFile )
+            .flatMap( file -> CheckedFunction1.lift( File::getCanonicalFile ).apply( file ) )
+            .map( File::toPath )
+            .filter( path -> path.toFile().exists() && path.toFile().isDirectory() )
+            .toTry( () -> new ModelResolutionException( "Could not locate models root directory" ) );
+   }
+
+   /**
+    * From an input Aspect Model file, which is assumed to contain a model element definition with the same local name as the file,
+    * determines the URN of this model element. The file is expected to reside in a valid location inside the models root
+    * (see {@link FileSystemStrategy}). Note that the file is not opened or loaded and the method does not check whether an element
+    * with the given URN actually exists in the file.
+    * @param inputFile the input model file
+    * @return the URN of the model element that corresponds to the file name and its location inside the models root
+    */
+   public static AspectModelUrn fileToUrn( final File inputFile ) {
+      final File versionDirectory = inputFile.getParentFile();
+      if ( versionDirectory == null ) {
+         throw new ModelResolutionException( "Could not determine parent directory of " + inputFile );
+      }
+
+      final String version = versionDirectory.getName();
+      final File namespaceDirectory = versionDirectory.getParentFile();
+      if ( namespaceDirectory == null ) {
+         throw new ModelResolutionException( "Could not determine parent directory of " + versionDirectory );
+      }
+
+      final String namespace = namespaceDirectory.getName();
+      final String aspectName = FilenameUtils.removeExtension( inputFile.getName() );
+      final String urn = String.format( "urn:bamm:%s:%s#%s", namespace, version, aspectName );
+      return AspectModelUrn.from( urn ).getOrElse( () -> {
+         throw new ModelResolutionException( "The URN constructed from the input file path is invalid: " + urn );
+      } );
+   }
+
+   /**
+    * Similar to {@link #loadAndResolveModel(File)} except no additional files are loaded. If the input model file contains references
+    * to elements from namespaces not defined in the same file, those references will not be resolved.
+    * @param inputFile the input model file
+    * @return the loaded model file on success, including meta model definitions but not definitions of externally referenced elements
+    */
+   public static Try<VersionedModel> loadButNotResolveModel( final File inputFile ) {
+      try ( final InputStream inputStream = new FileInputStream( inputFile ) ) {
+         final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+         return TurtleLoader.loadTurtle( inputStream ).flatMap( model ->
+               metaModelResourceResolver.getBammVersion( model ).flatMap( metaModelVersion ->
+                     metaModelResourceResolver.mergeMetaModelIntoRawModel( model, metaModelVersion ) ) );
+      } catch ( final IOException exception ) {
+         return Try.failure( exception );
+      }
    }
 }

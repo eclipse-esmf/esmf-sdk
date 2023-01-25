@@ -23,25 +23,32 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig;
+import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import io.openmanufacturing.sds.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 
-@Mojo( name = "generateStaticJavaClasses", defaultPhase =  LifecyclePhase.GENERATE_SOURCES )
+@Mojo( name = "generateStaticJavaClasses", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateStaticJavaClasses extends CodeGenerationMojo {
 
    private final Logger logger = LoggerFactory.getLogger( GenerateStaticJavaClasses.class );
 
    @Override
    public void execute() throws MojoExecutionException {
-      final Set<VersionedModel> aspectModels = loadModelsOrFail();
-      for ( final VersionedModel aspectModel : aspectModels ) {
+      final Set<AspectContext> aspectModels = loadModelsOrFail();
+      for ( final AspectContext context : aspectModels ) {
          final File templateLibFile = Path.of( templateFile ).toFile();
          validateParameters( templateLibFile );
-
-         final StaticMetaModelJavaGenerator staticMetaModelJavaGenerator = packageName.isEmpty() ?
-               new StaticMetaModelJavaGenerator( aspectModel, executeLibraryMacros, templateLibFile ) :
-               new StaticMetaModelJavaGenerator( aspectModel, packageName, executeLibraryMacros, templateLibFile );
-         staticMetaModelJavaGenerator.generate( nameMapper );
+         final String pkg = packageName == null || packageName.isEmpty()
+               ? context.aspect().getAspectModelUrn().map( AspectModelUrn::getNamespace ).orElseThrow()
+               : packageName;
+         final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
+               .packageName( pkg )
+               .executeLibraryMacros( executeLibraryMacros )
+               .templateLibFile( templateLibFile )
+               .build();
+         new StaticMetaModelJavaGenerator( context.aspect(), config ).generate( nameMapper );
       }
       logger.info( "Successfully generated static Java classes for Aspect Models." );
    }

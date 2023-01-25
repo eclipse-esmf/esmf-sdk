@@ -93,7 +93,7 @@ public class AspectModelJavaUtil {
          return "Object";
       }
       final String propertyType = determinePropertyType( property.getCharacteristic(), false, codeGenerationConfig );
-      codeGenerationConfig.getImportTracker().trackPotentiallyParameterizedType( propertyType );
+      codeGenerationConfig.importTracker().trackPotentiallyParameterizedType( propertyType );
       if ( property.isOptional() ) {
          return containerType( Optional.class, propertyType, Optional.empty() );
       }
@@ -157,10 +157,10 @@ public class AspectModelJavaUtil {
       }
 
       if ( characteristic.is( Either.class ) ) {
-         if ( codeGenerationConfig.doEnableJacksonAnnotations() ) {
-            codeGenerationConfig.getImportTracker().importExplicit( "io.openmanufacturing.sds.aspectmodel.jackson.Either" );
+         if ( codeGenerationConfig.enableJacksonAnnotations() ) {
+            codeGenerationConfig.importTracker().importExplicit( "io.openmanufacturing.sds.aspectmodel.jackson.Either" );
          } else {
-            codeGenerationConfig.getImportTracker().importExplicit( io.openmanufacturing.sds.aspectmodel.java.types.Either.class );
+            codeGenerationConfig.importTracker().importExplicit( io.openmanufacturing.sds.aspectmodel.java.types.Either.class );
          }
          final String left = determinePropertyType(
                optionalCharacteristic.map( c -> c.as( Either.class ) ).map( Either::getLeft ), inclValidation, codeGenerationConfig );
@@ -169,18 +169,18 @@ public class AspectModelJavaUtil {
          return String.format( "Either<%s,%s>", left, right );
       }
 
-      return getDataType( dataType, codeGenerationConfig.getImportTracker() );
+      return getDataType( dataType, codeGenerationConfig.importTracker() );
    }
 
    public static String determineCollectionAspectClassDefinition( final StructureElement element, final JavaCodeGenerationConfig codeGenerationConfig ) {
       final Supplier<RuntimeException> error = () -> new CodeGenerationException(
             "Tried to generate a Collection Aspect class definition, but no " + "Property has a Collection Characteristic in " + element.getName() );
-      codeGenerationConfig.getImportTracker().importExplicit( CollectionAspect.class );
+      codeGenerationConfig.importTracker().importExplicit( CollectionAspect.class );
       for ( final Property property : element.getProperties() ) {
          final Characteristic characteristic = property.getEffectiveCharacteristic().orElseThrow( error );
          if ( characteristic instanceof Collection ) {
             final String collectionType = determineCollectionType( (Collection) characteristic, false, codeGenerationConfig );
-            final String dataType = getDataType( characteristic.getDataType(), codeGenerationConfig.getImportTracker() );
+            final String dataType = getDataType( characteristic.getDataType(), codeGenerationConfig.importTracker() );
             return String.format( "public class %s implements CollectionAspect<%s,%s>", element.getName(), collectionType, dataType );
          }
       }
@@ -213,8 +213,8 @@ public class AspectModelJavaUtil {
          final Set<ComplexType> extendingEntities ) {
       final StringBuilder classAnnotationBuilder = new StringBuilder();
       if ( element.isAbstractEntity() ) {
-         codeGenerationConfig.getImportTracker().importExplicit( JsonTypeInfo.class );
-         codeGenerationConfig.getImportTracker().importExplicit( JsonSubTypes.class );
+         codeGenerationConfig.importTracker().importExplicit( JsonTypeInfo.class );
+         codeGenerationConfig.importTracker().importExplicit( JsonSubTypes.class );
 
          final AbstractEntity abstractEntity = (AbstractEntity) element;
          classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)" );
@@ -250,20 +250,20 @@ public class AspectModelJavaUtil {
       final Optional<String> elementConstraint = inclValidation ? buildConstraintForCollectionElements( collection, codeGenerationConfig ) : Optional.empty();
 
       if ( collection.isAllowDuplicates() && collection.isOrdered() ) {
-         codeGenerationConfig.getImportTracker().importExplicit( List.class );
-         return containerType( List.class, getDataType( dataType, codeGenerationConfig.getImportTracker() ), elementConstraint );
+         codeGenerationConfig.importTracker().importExplicit( List.class );
+         return containerType( List.class, getDataType( dataType, codeGenerationConfig.importTracker() ), elementConstraint );
       }
       if ( !collection.isAllowDuplicates() && collection.isOrdered() ) {
-         codeGenerationConfig.getImportTracker().importExplicit( LinkedHashSet.class );
-         return containerType( LinkedHashSet.class, getDataType( dataType, codeGenerationConfig.getImportTracker() ), elementConstraint );
+         codeGenerationConfig.importTracker().importExplicit( LinkedHashSet.class );
+         return containerType( LinkedHashSet.class, getDataType( dataType, codeGenerationConfig.importTracker() ), elementConstraint );
       }
       if ( collection.isAllowDuplicates() && !collection.isOrdered() ) {
-         codeGenerationConfig.getImportTracker().importExplicit( java.util.Collection.class );
-         return containerType( java.util.Collection.class, getDataType( dataType, codeGenerationConfig.getImportTracker() ), elementConstraint );
+         codeGenerationConfig.importTracker().importExplicit( java.util.Collection.class );
+         return containerType( java.util.Collection.class, getDataType( dataType, codeGenerationConfig.importTracker() ), elementConstraint );
       }
       if ( !collection.isAllowDuplicates() && !collection.isOrdered() ) {
-         codeGenerationConfig.getImportTracker().importExplicit( Set.class );
-         return containerType( Set.class, getDataType( dataType, codeGenerationConfig.getImportTracker() ), elementConstraint );
+         codeGenerationConfig.importTracker().importExplicit( Set.class );
+         return containerType( Set.class, getDataType( dataType, codeGenerationConfig.importTracker() ), elementConstraint );
       }
       throw new CodeGenerationException( "Could not determine Java collection type for " + collection.getName() );
    }
@@ -354,7 +354,7 @@ public class AspectModelJavaUtil {
     */
    public static String applyImports( final String body, final JavaCodeGenerationConfig codeGenerationConfig ) {
       String importsApplied = body;
-      for ( final String oneImport : codeGenerationConfig.getImportTracker().getUsedImports() ) {
+      for ( final String oneImport : codeGenerationConfig.importTracker().getUsedImports() ) {
          final String className = oneImport.substring( oneImport.lastIndexOf( '.' ) + 1 );
          importsApplied = importsApplied.replaceAll( oneImport, className );
       }
@@ -363,7 +363,7 @@ public class AspectModelJavaUtil {
 
    public static boolean isPropertyNotInPayload( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
       if ( property.isNotInPayload() ) {
-         codeGenerationConfig.getImportTracker().importExplicit( "com.fasterxml.jackson.annotation.JsonIgnore" );
+         codeGenerationConfig.importTracker().importExplicit( "com.fasterxml.jackson.annotation.JsonIgnore" );
          return true;
       }
       return false;
@@ -371,7 +371,7 @@ public class AspectModelJavaUtil {
 
    public static String buildConstraintsForCharacteristic( final Trait trait, final JavaCodeGenerationConfig codeGenerationConfig ) {
       return trait.getConstraints().stream()
-            .map( constraint -> new ConstraintAnnotationBuilder().setConstraintClass( constraint ).setImportTracker( codeGenerationConfig.getImportTracker() )
+            .map( constraint -> new ConstraintAnnotationBuilder().setConstraintClass( constraint ).setImportTracker( codeGenerationConfig.importTracker() )
                   .build() ).collect( Collectors.joining() );
    }
 
@@ -411,7 +411,7 @@ public class AspectModelJavaUtil {
          final Resource typeResource = ResourceFactory.createResource( type.getUrn() );
          final KnownVersion metaModelVersion = property.getMetaModelVersion();
          final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource, metaModelVersion );
-         codeGenerationConfig.getImportTracker().importExplicit( result );
+         codeGenerationConfig.importTracker().importExplicit( result );
          return valueInitializer.apply( typeResource, value, metaModelVersion );
       } ).orElseThrow( () -> new CodeGenerationException( "The Either Characteristic is not allowed for Properties used as elements in a StructuredValue" ) );
    }
@@ -443,7 +443,7 @@ public class AspectModelJavaUtil {
    public static String getCharacteristicJavaType( final Property property, final JavaCodeGenerationConfig codeGenerationConfig ) {
       final Supplier<RuntimeException> error = () -> new CodeGenerationException( "No data type found for Property " + property.getName() );
       if ( hasContainerType( property ) ) {
-         return getDataType( property.getCharacteristic().orElseThrow( error ).getDataType(), codeGenerationConfig.getImportTracker() );
+         return getDataType( property.getCharacteristic().orElseThrow( error ).getDataType(), codeGenerationConfig.importTracker() );
       }
 
       return property.getEffectiveCharacteristic().flatMap( Characteristic::getDataType ).map( type -> {

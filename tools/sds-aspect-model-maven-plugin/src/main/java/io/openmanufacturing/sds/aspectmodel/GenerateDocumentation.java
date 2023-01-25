@@ -28,24 +28,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.openmanufacturing.sds.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 
-@Mojo( name = "generateDocumentation", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = "generateDocumentation", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDocumentation extends AspectModelMojo {
 
    private final Logger logger = LoggerFactory.getLogger( GenerateDocumentation.class );
 
    @Parameter
-   private String htmlCustomCSSFilePath = "";
+   private final String htmlCustomCSSFilePath = "";
 
    @Override
    public void execute() throws MojoExecutionException {
       validateParameters();
 
       try {
-         final Set<VersionedModel> aspectModels = loadModelsOrFail();
-         for ( final VersionedModel aspectModel : aspectModels ) {
-            final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( aspectModel );
+         final Set<AspectContext> aspectModels = loadModelsOrFail();
+         for ( final AspectContext context : aspectModels ) {
+            final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( context );
             final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
             generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );
             if ( !htmlCustomCSSFilePath.isEmpty() ) {

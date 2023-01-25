@@ -13,7 +13,8 @@
 
 package io.openmanufacturing.sds.aspectmodel.jackson;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -46,6 +47,8 @@ import com.google.common.io.Resources;
 import com.google.common.reflect.TypeToken;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig;
+import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import io.openmanufacturing.sds.aspectmodel.java.QualifiedName;
 import io.openmanufacturing.sds.aspectmodel.java.exception.EnumAttributeNotFoundException;
 import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
@@ -275,7 +278,12 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
    }
 
    private Class<?> generatePojo( final Aspect aspect ) {
-      final AspectModelJavaGenerator codeGenerator = new AspectModelJavaGenerator( aspect, PACKAGE, true, false, null );
+      final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
+            .packageName( PACKAGE )
+            .enableJacksonAnnotations( true )
+            .executeLibraryMacros( false )
+            .build();
+      final AspectModelJavaGenerator codeGenerator = new AspectModelJavaGenerator( aspect, config );
       final Map<QualifiedName, ByteArrayOutputStream> outputs = new LinkedHashMap<>();
       codeGenerator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) );
 
@@ -287,18 +295,18 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       }
 
       final List<String> referencedClasses = Stream
-            .concat( codeGenerator.getConfig().getImportTracker().getUsedImports().stream(),
-                  codeGenerator.getConfig().getImportTracker().getUsedStaticImports().stream() )
+            .concat( codeGenerator.getConfig().importTracker().getUsedImports().stream(),
+                  codeGenerator.getConfig().importTracker().getUsedStaticImports().stream() )
             .collect( Collectors.toList() );
       final Map<QualifiedName, Class<?>> result = JavaCompiler.compile( loadOrder, sources, referencedClasses );
-      return result.get( new QualifiedName( aspect.getName(), codeGenerator.getConfig().getPackageName() ) );
+      return result.get( new QualifiedName( aspect.getName(), codeGenerator.getConfig().packageName() ) );
    }
 
    private <T> T parseJson( final String json, final Class<T> targetClass ) {
       final ObjectMapper mapper = new ObjectMapper();
       mapper.registerModule( new JavaTimeModule() );
       mapper.registerModule( new Jdk8Module() );
-      mapper.registerModule( new AspectModelJacksonModule( ) );
+      mapper.registerModule( new AspectModelJacksonModule() );
       mapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
       try {
          return mapper.readValue( json, targetClass );

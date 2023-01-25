@@ -26,6 +26,7 @@ import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToHtmlCommand.COMMAND_NAME,
@@ -59,8 +60,8 @@ public class AspectToHtmlCommand extends AbstractCommand {
    @Override
    public void run() {
       try {
-         final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator(
-               loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
+         final AspectContext context = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
+         final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( context );
          final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
          generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );
          if ( customCSSFile != null ) {

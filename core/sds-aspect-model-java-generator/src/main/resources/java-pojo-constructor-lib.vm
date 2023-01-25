@@ -14,8 +14,8 @@
 #* Note that in this macro $enableJacksonAnnotations overrides the value given in $codeGenerationConfig *#
 #macro( constructorContent $deconstructionSets $needInitializer $allProperties $codeGenerationConfig $enableJacksonAnnotations $elementProperties )
     #if( $enableJacksonAnnotations )
-        $codeGenerationConfig.getImportTracker().importExplicit( $JsonProperty )
-        $codeGenerationConfig.getImportTracker().importExplicit( $JsonCreator )
+        $codeGenerationConfig.importTracker().importExplicit( $JsonProperty )
+        $codeGenerationConfig.importTracker().importExplicit( $JsonCreator )
         @JsonCreator
     #end
     public ${element.name}(
@@ -49,15 +49,15 @@
 
 #macro( javaPojoConstructor )
 #if ( $deconstructor.isApplicable() )
-    $codeGenerationConfig.getImportTracker().importExplicit( $Matcher )
-    $codeGenerationConfig.getImportTracker().importExplicit( $Pattern )
+    $codeGenerationConfig.importTracker().importExplicit( $Matcher )
+    $codeGenerationConfig.importTracker().importExplicit( $Pattern )
 #end
 #set( $deconstructionSets = $deconstructor.getDeconstructionSets() )
 #set( $needInitializer = $valueInitializer.needInitializationToConstructor( $deconstructionSets ) )
 #if ( $needInitializer )
-    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeConfigurationException )
-    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeConstants )
-    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeFactory )
+    $codeGenerationConfig.importTracker().importExplicit( $DatatypeConfigurationException )
+    $codeGenerationConfig.importTracker().importExplicit( $DatatypeConstants )
+    $codeGenerationConfig.importTracker().importExplicit( $DatatypeFactory )
 #end
 #if ( $element.isComplexType() && $element.getExtends().isPresent() )
 	#set( $allPropertiesInPayload = $util.getAllPropertiesInPayload( $element ) )
@@ -72,8 +72,8 @@
 #end
 #if ( $util.anyPropertyNotInPayload( $element ) )
     #constructorContent( $deconstructionSets $needInitializer $allProperties $codeGenerationConfig false $elementProperties )
-    #constructorContent( $deconstructionSets $needInitializer $allPropertiesInPayload $codeGenerationConfig $codeGenerationConfig.doEnableJacksonAnnotations() $elementPropertiesInPayload )
+    #constructorContent( $deconstructionSets $needInitializer $allPropertiesInPayload $codeGenerationConfig $codeGenerationConfig.enableJacksonAnnotations() $elementPropertiesInPayload )
 #else
-    #constructorContent( $deconstructionSets $needInitializer $allProperties $codeGenerationConfig $codeGenerationConfig.doEnableJacksonAnnotations() $elementProperties )
+    #constructorContent( $deconstructionSets $needInitializer $allProperties $codeGenerationConfig $codeGenerationConfig.enableJacksonAnnotations() $elementProperties )
 #end
 #end

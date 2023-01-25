@@ -15,15 +15,21 @@ package io.openmanufacturing.sds.aspect.to;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
+import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig;
+import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import io.openmanufacturing.sds.aspectmodel.java.JavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.exception.CommandException;
+import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToJavaCommand.COMMAND_NAME,
@@ -66,8 +72,8 @@ public class AspectToJavaCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final VersionedModel model = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
-      final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses ? getStaticModelGenerator( model ) : getModelGenerator( model );
+      final AspectContext context = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
+      final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses ? getStaticModelGenerator( context ) : getModelGenerator( context );
       javaGenerator.generate( artifact -> {
          final String path = artifact.getPackageName();
          final String fileName = artifact.getClassName();
@@ -75,18 +81,25 @@ public class AspectToJavaCommand extends AbstractCommand {
       } );
    }
 
-   private JavaGenerator getStaticModelGenerator( final VersionedModel model ) {
+   private JavaCodeGenerationConfig buildConfig( final Aspect aspect ) {
       final File templateLibFile = Path.of( templateLib ).toFile();
-      return packageName.isEmpty() ?
-            new StaticMetaModelJavaGenerator( model, executeLibraryMacros, templateLibFile ) :
-            new StaticMetaModelJavaGenerator( model, packageName, executeLibraryMacros, templateLibFile );
+      final String pkgName = Optional.ofNullable( packageName )
+            .flatMap( pkg -> pkg.isBlank() ? Optional.empty() : Optional.of( pkg ) )
+            .or( () -> aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ) )
+            .orElseThrow( () -> new CommandException( "Could not determine Aspect's namespace" ) );
+      return JavaCodeGenerationConfigBuilder.builder()
+            .executeLibraryMacros( executeLibraryMacros )
+            .templateLibFile( templateLibFile )
+            .enableJacksonAnnotations( !disableJacksonAnnotations )
+            .packageName( pkgName )
+            .build();
    }
 
-   private JavaGenerator getModelGenerator( final VersionedModel model ) {
-      final boolean enableJacksonAnnotations = !disableJacksonAnnotations;
-      final File templateLibFile = Path.of( templateLib ).toFile();
-      return packageName.isEmpty() ?
-            new AspectModelJavaGenerator( model, enableJacksonAnnotations, executeLibraryMacros, templateLibFile ) :
-            new AspectModelJavaGenerator( model, packageName, enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
+   private JavaGenerator getStaticModelGenerator( final AspectContext context ) {
+      return new StaticMetaModelJavaGenerator( context.aspect(), buildConfig( context.aspect() ) );
+   }
+
+   private JavaGenerator getModelGenerator( final AspectContext context ) {
+      return new AspectModelJavaGenerator( context.aspect(), buildConfig( context.aspect() ) );
    }
 }
