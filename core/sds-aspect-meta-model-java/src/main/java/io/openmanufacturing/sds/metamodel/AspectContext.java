@@ -15,5 +15,11 @@ package io.openmanufacturing.sds.metamodel;
 
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 
+/**
+ * The AspectContext wraps a loaded/resolved Aspect Model and a single Aspect that was instantiated from this model, i.e.,
+ * which must be defined in the RDF model.
+ * @param rdfModel the RDF model
+ * @param aspect the Aspect
+ */
 public record AspectContext(VersionedModel rdfModel, Aspect aspect) {
 }

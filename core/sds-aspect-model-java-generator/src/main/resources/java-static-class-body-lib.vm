@@ -13,7 +13,7 @@
 #parse( "java-static-class-property-lib.vm" )
 
 #macro( javaStaticClassBody )
-$codeGenerationConfig.getImportTracker().importExplicit( "${codeGenerationConfig.getPackageName()}.${element.getName()}" )
+$codeGenerationConfig.importTracker().importExplicit( "${codeGenerationConfig.packageName()}.${element.getName()}" )
 /**
 * Generated class {@link Meta${element.getName()}}.
 */
@@ -26,9 +26,9 @@ private static String CHARACTERISTIC_NAMESPACE = "${characteristicBaseUrn}";
 #propertyDeclaration() Meta${element.getName()} INSTANCE = new Meta${element.getName()}();
 
 #if( $util.isXmlDatatypeFactoryRequired( $element ) )
-    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeConfigurationException )
-    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeConstants )
-    $codeGenerationConfig.getImportTracker().importExplicit( $DatatypeFactory )
+    $codeGenerationConfig.importTracker().importExplicit( $DatatypeConfigurationException )
+    $codeGenerationConfig.importTracker().importExplicit( $DatatypeConstants )
+    $codeGenerationConfig.importTracker().importExplicit( $DatatypeFactory )
 private static DatatypeFactory _datatypeFactory;
 
 static {
@@ -79,10 +79,10 @@ static {
     public List<StaticProperty<?>> getAllProperties() {
     #if( $element.getExtends().isPresent() )
         #set( $extendedElement = $element.getExtends().get() )
-        $codeGenerationConfig.getImportTracker().importExplicit( "java.util.stream.Stream" )
-        $codeGenerationConfig.getImportTracker().importExplicit( "java.util.stream.Collectors" )
-        $codeGenerationConfig.getImportTracker().importExplicit( "java.util.Collection" )
-        $codeGenerationConfig.getImportTracker().importExplicit( "${codeGenerationConfig.getPackageName()}.Meta${extendedElement.getName()}" )
+        $codeGenerationConfig.importTracker().importExplicit( "java.util.stream.Stream" )
+        $codeGenerationConfig.importTracker().importExplicit( "java.util.stream.Collectors" )
+        $codeGenerationConfig.importTracker().importExplicit( "java.util.Collection" )
+        $codeGenerationConfig.importTracker().importExplicit( "${codeGenerationConfig.packageName()}.Meta${extendedElement.getName()}" )
         return Stream.of( getProperties(), Meta${extendedElement.getName()}.INSTANCE.getAllProperties() ).flatMap( Collection::stream ).collect( Collectors.toList() );
     #else
         return getProperties();
@@ -90,9 +90,9 @@ static {
     }
 
 #if( !$element.getPreferredNames().isEmpty() )
-    $codeGenerationConfig.getImportTracker().importExplicit( $LangString )
-    $codeGenerationConfig.getImportTracker().importExplicit( $HashSet )
-    $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
+    $codeGenerationConfig.importTracker().importExplicit( $LangString )
+    $codeGenerationConfig.importTracker().importExplicit( $HashSet )
+    $codeGenerationConfig.importTracker().importExplicit( $Locale )
     @Override
     public java.util.Set<LangString> getPreferredNames() {
        return new HashSet<>() {{
@@ -104,9 +104,9 @@ static {
 #end
 
 #if( !$element.descriptions.isEmpty() )
-    $codeGenerationConfig.getImportTracker().importExplicit( $LangString )
-    $codeGenerationConfig.getImportTracker().importExplicit( $HashSet )
-    $codeGenerationConfig.getImportTracker().importExplicit( $Locale )
+    $codeGenerationConfig.importTracker().importExplicit( $LangString )
+    $codeGenerationConfig.importTracker().importExplicit( $HashSet )
+    $codeGenerationConfig.importTracker().importExplicit( $Locale )
     @Override
     public java.util.Set<LangString> getDescriptions() {
        return new HashSet<>() {{

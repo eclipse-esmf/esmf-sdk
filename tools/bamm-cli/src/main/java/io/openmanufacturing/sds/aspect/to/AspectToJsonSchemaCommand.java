@@ -14,6 +14,8 @@
 package io.openmanufacturing.sds.aspect.to;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,9 +26,6 @@ import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
-import java.util.Locale;
-import java.util.Optional;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToJsonSchemaCommand.COMMAND_NAME,
@@ -37,7 +36,6 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectToJsonSchemaCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "schema";
 
    @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path (default: stdout)" )
@@ -56,7 +54,7 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
    @Override
    public void run() {
       final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
-      final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
+      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final JsonNode schema = generator.apply( aspect, locale );
 

@@ -49,6 +49,7 @@ import io.openmanufacturing.sds.aspectmodel.java.StructuredValuePropertiesDecons
 import io.openmanufacturing.sds.aspectmodel.java.ValueInitializer;
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
@@ -79,7 +80,7 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
    @SuppressWarnings( { "squid:S2440", "InstantiationOfUtilityClass" } )
    @Override
    public JavaArtifact apply( final E element, final JavaCodeGenerationConfig config ) {
-      final ImportTracker importTracker = config.getImportTracker();
+      final ImportTracker importTracker = config.importTracker();
       importTracker.importExplicit( java.util.Optional.class );
       importTracker.importExplicit( java.util.List.class );
       importTracker.importExplicit( java.util.Locale.class );
@@ -125,15 +126,15 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .build();
 
       final Properties engineConfiguration = new Properties();
-      if ( config.doExecuteLibraryMacros() ) {
-         engineConfiguration.put( "velocimacro.library", config.getTemplateLibFile().getName() );
-         engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibFile().getParent() );
+      if ( config.executeLibraryMacros() ) {
+         engineConfiguration.put( "velocimacro.library", config.templateLibFile().getName() );
+         engineConfiguration.put( "file.resource.loader.path", config.templateLibFile().getParent() );
       }
 
       final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-pojo" );
       try {
          return new JavaArtifact( Roaster.format( generatedSource ), element.getName(),
-               config.getPackageName() );
+               config.packageName() );
       } catch ( final Exception exception ) {
          throw new CodeGenerationException( generatedSource, exception );
       }
