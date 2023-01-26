@@ -203,7 +203,7 @@ public class MetaModelBaseAttributes {
          throw new AspectLoadingException( "At least one anonymous node in the model does not have a parent with a regular name." );
       }
       final String parentModelElementUri = namedParent.getURI();
-      final String parentModelElementName = metaModelResourceResolver.getAspectModelUrn( parentModelElementUri )
+      final String parentModelElementName = AspectModelUrn.from( parentModelElementUri )
             .toJavaOptional()
             .map( AspectModelUrn::getName )
             .map( StringUtils::capitalize )
@@ -211,7 +211,7 @@ public class MetaModelBaseAttributes {
 
       final Resource modelElementType = getModelElementType( modelElement, bamm );
       final String modelElementTypeUri = modelElementType.getURI();
-      final String modelElementTypeName = metaModelResourceResolver.getAspectModelUrn( modelElementTypeUri )
+      final String modelElementTypeName = AspectModelUrn.from( modelElementTypeUri )
             .toJavaOptional()
             .map( AspectModelUrn::getName )
             .orElse( "" );

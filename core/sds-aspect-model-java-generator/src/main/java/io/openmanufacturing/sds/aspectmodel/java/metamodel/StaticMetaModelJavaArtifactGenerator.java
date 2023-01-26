@@ -118,7 +118,7 @@ import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintUnitP
 public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> implements JavaArtifactGenerator<E> {
    @Override
    public JavaArtifact apply( final E element, final JavaCodeGenerationConfig config ) {
-      final ImportTracker importTracker = config.getImportTracker();
+      final ImportTracker importTracker = config.importTracker();
       importTracker.importExplicit( java.util.Optional.class );
       importTracker.importExplicit( java.util.List.class );
       importTracker.importExplicit( PropertyContainer.class );
@@ -222,15 +222,15 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .build();
 
       final Properties engineConfiguration = new Properties();
-      if ( config.doExecuteLibraryMacros() ) {
-         engineConfiguration.put( "velocimacro.library", config.getTemplateLibFile().getName() );
-         engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibFile().getParent() );
+      if ( config.executeLibraryMacros() ) {
+         engineConfiguration.put( "velocimacro.library", config.templateLibFile().getName() );
+         engineConfiguration.put( "file.resource.loader.path", config.templateLibFile().getParent() );
       }
 
       final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-static-class" );
       try {
          return new JavaArtifact( Roaster.format( generatedSource ), "Meta" + element.getName(),
-               config.getPackageName() );
+               config.packageName() );
       } catch ( final Exception exception ) {
          throw new CodeGenerationException( generatedSource, exception );
       }

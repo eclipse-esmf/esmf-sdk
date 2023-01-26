@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 
 @Mojo( name = "generateDiagram", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDiagram extends AspectModelMojo {
@@ -39,14 +40,14 @@ public class GenerateDiagram extends AspectModelMojo {
    public void execute() throws MojoExecutionException {
       validateParameters();
 
-      final Set<VersionedModel> aspectModels = loadModelsOrFail();
+      final Set<AspectContext> aspectModels = loadModelsOrFail();
       try {
          final Set<AspectModelDiagramGenerator.Format> formats = targetFormats.stream()
                .map( targetFormat -> AspectModelDiagramGenerator.Format.valueOf( targetFormat.toUpperCase() ) )
                .collect( Collectors.toSet() );
 
-         for ( final VersionedModel aspectModel : aspectModels ) {
-            final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspectModel );
+         for ( final AspectContext aspectModel : aspectModels ) {
+            final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspectModel.rdfModel() );
             generator.generateDiagrams( formats, name -> getStreamForFile( name, outputDirectory ) );
          }
       } catch ( final IOException exception ) {

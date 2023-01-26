@@ -58,7 +58,6 @@ import io.openmanufacturing.sds.aspectmodel.generator.AbstractGenerator;
 import io.openmanufacturing.sds.aspectmodel.generator.NumericTypeTraits;
 import io.openmanufacturing.sds.aspectmodel.jackson.AspectModelJacksonModule;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.characteristic.Either;
@@ -70,6 +69,7 @@ import io.openmanufacturing.sds.constraint.RangeConstraint;
 import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
@@ -81,7 +81,6 @@ import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.Curie;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 
 public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    /**
@@ -102,8 +101,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       this( aspect, new BAMM( aspect.getMetaModelVersion() ), new Random() );
    }
 
-   public AspectModelJsonPayloadGenerator( final VersionedModel versionedModel ) {
-      this( AspectModelLoader.fromVersionedModelUnchecked( versionedModel ) );
+   public AspectModelJsonPayloadGenerator( final AspectContext context ) {
+      this( context.aspect() );
    }
 
    public AspectModelJsonPayloadGenerator( final Aspect aspect, final Random randomStrategy ) {

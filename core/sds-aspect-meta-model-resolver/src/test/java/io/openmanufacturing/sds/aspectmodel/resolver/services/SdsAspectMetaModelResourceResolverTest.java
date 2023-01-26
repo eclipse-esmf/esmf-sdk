@@ -27,8 +27,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import io.openmanufacturing.sds.aspectmodel.VersionNumber;
 import io.openmanufacturing.sds.aspectmodel.MissingMetaModelVersionException;
+import io.openmanufacturing.sds.aspectmodel.VersionNumber;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.vavr.control.Try;
@@ -82,20 +82,18 @@ public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testGetAspectModelUrnExpectSuccess( final KnownVersion metaModelVersion ) {
-      final Try<AspectModelUrn> aspectModelUrn = aspectMetaModelResourceResolver.getAspectModelUrn(
+      final Try<AspectModelUrn> aspectModelUrn = AspectModelUrn.from(
             "urn:bamm:io.openmanufacturing:meta-model:" + metaModelVersion.toVersionString() + "#Aspect" );
       assertThat( aspectModelUrn ).isSuccess();
       org.assertj.core.api.Assertions.assertThat( aspectModelUrn.get().getUrn().toString() )
-                                     .isEqualTo( "urn:bamm:io.openmanufacturing:meta-model:" + metaModelVersion
-                                           .toVersionString() + "#Aspect" );
+            .isEqualTo( "urn:bamm:io.openmanufacturing:meta-model:" + metaModelVersion
+                  .toVersionString() + "#Aspect" );
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testGetAspectModelUrnInvalidUrnExpectFailure( final KnownVersion metaModelVersion ) {
-      final Try<AspectModelUrn> aspectModelUrn = aspectMetaModelResourceResolver
-            .getAspectModelUrn(
-                  "urn:foo:io.openmanufacturing:meta-model:" + metaModelVersion.toVersionString() );
+      final Try<AspectModelUrn> aspectModelUrn = AspectModelUrn.from( "urn:foo:io.openmanufacturing:meta-model:" + metaModelVersion.toVersionString() );
       assertThat( aspectModelUrn ).isFailure();
    }
 
@@ -120,7 +118,7 @@ public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {
       final Model model = aspectMetaModelResourceResolver.loadMetaModel( metaModelVersion ).get();
 
       org.assertj.core.api.Assertions.assertThat( model.contains( ResourceFactory.createResource(
-            "urn:bamm:io.openmanufacturing:meta-model:" + metaModelVersion.toVersionString() + "#value" ),
+                  "urn:bamm:io.openmanufacturing:meta-model:" + metaModelVersion.toVersionString() + "#value" ),
             RDF.type, (RDFNode) null ) ).isTrue();
    }
 }

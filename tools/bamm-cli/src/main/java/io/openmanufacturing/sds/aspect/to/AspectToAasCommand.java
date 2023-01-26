@@ -21,7 +21,6 @@ import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.aas.AspectModelAASGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import picocli.CommandLine;
 
 @CommandLine.Command(
@@ -44,14 +43,7 @@ public class AspectToAasCommand extends AbstractCommand {
 
    @CommandLine.Option(
          names = { "--format", "-f" },
-         description =
-               "The file format the AAS is to be generated. Valid options are \""
-                     + AASX
-                     + "\" and \""
-                     + XML
-                     + "\". Default is \""
-                     + XML
-                     + "\"." )
+         description = "The file format the AAS is to be generated. Valid options are \"" + AASX + "\" and \"" + XML + "\". Default is \"" + XML + "\"." )
    private String format = XML;
 
    @CommandLine.ParentCommand
@@ -63,9 +55,7 @@ public class AspectToAasCommand extends AbstractCommand {
    @Override
    public void run() {
       final AspectModelAASGenerator generator = new AspectModelAASGenerator();
-      final Aspect aspect =
-            AspectModelLoader.fromVersionedModelUnchecked(
-                  loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
+      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
       try {
          // we intentionally override the name of the generated artifact here to the name explicitly
          // desired by the user (outputFilePath), as opposed to what the model thinks it should be

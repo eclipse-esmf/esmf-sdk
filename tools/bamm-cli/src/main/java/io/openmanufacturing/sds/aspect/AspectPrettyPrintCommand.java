@@ -13,6 +13,9 @@
 
 package io.openmanufacturing.sds.aspect;
 
+import static io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver.fileToUrn;
+import static io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver.loadButNotResolveModel;
+
 import java.io.File;
 import java.io.PrintWriter;
 

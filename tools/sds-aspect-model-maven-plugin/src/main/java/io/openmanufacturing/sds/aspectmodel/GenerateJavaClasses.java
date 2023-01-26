@@ -24,10 +24,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig;
+import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 
-@Mojo( name = "generateJavaClasses", defaultPhase =  LifecyclePhase.GENERATE_SOURCES )
+@Mojo( name = "generateJavaClasses", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateJavaClasses extends CodeGenerationMojo {
 
    private final Logger logger = LoggerFactory.getLogger( GenerateJavaClasses.class );
@@ -37,17 +40,20 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
 
    @Override
    public void execute() throws MojoExecutionException {
-      final Set<VersionedModel> aspectModels = loadModelsOrFail();
-      for ( final VersionedModel aspectModel : aspectModels ) {
+      final Set<AspectContext> aspectModels = loadModelsOrFail();
+      for ( final AspectContext context : aspectModels ) {
          final File templateLibFile = Path.of( templateFile ).toFile();
          validateParameters( templateLibFile );
-
-         final boolean enableJacksonAnnotations = !disableJacksonAnnotations;
-         final AspectModelJavaGenerator aspectModelJavaGenerator = packageName.isEmpty() ?
-               new AspectModelJavaGenerator( aspectModel, enableJacksonAnnotations, executeLibraryMacros, templateLibFile ) :
-               new AspectModelJavaGenerator( aspectModel, packageName, enableJacksonAnnotations, executeLibraryMacros, templateLibFile );
-
-         aspectModelJavaGenerator.generate( nameMapper );
+         final String pkg = packageName == null || packageName.isEmpty()
+               ? context.aspect().getAspectModelUrn().map( AspectModelUrn::getNamespace ).orElseThrow()
+               : packageName;
+         final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
+               .enableJacksonAnnotations( !disableJacksonAnnotations )
+               .packageName( pkg )
+               .executeLibraryMacros( executeLibraryMacros )
+               .templateLibFile( templateLibFile )
+               .build();
+         new AspectModelJavaGenerator( context.aspect(), config ).generate( nameMapper );
       }
       logger.info( "Successfully generated Java classes for Aspect Models." );
    }

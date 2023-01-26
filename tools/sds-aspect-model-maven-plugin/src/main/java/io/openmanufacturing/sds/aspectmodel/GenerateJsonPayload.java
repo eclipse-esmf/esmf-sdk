@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -25,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import io.openmanufacturing.sds.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 
 @Mojo( name = "generateJsonPayload", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonPayload extends AspectModelMojo {
@@ -35,10 +38,10 @@ public class GenerateJsonPayload extends AspectModelMojo {
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
-      final Set<VersionedModel> aspectModels = loadModelsOrFail();
+      final Set<AspectContext> aspectModels = loadModelsOrFail();
       try {
-         for ( VersionedModel aspectModel : aspectModels ) {
-            final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( aspectModel );
+         for ( AspectContext context : aspectModels ) {
+            final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context );
             generator.generateJsonPretty( name -> getStreamForFile( name + ".json", outputDirectory ) );
          }
       } catch ( final IOException exception ) {

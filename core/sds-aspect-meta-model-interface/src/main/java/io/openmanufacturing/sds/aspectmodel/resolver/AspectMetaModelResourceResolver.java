@@ -44,20 +44,6 @@ public interface AspectMetaModelResourceResolver {
    Try<VersionedModel> mergeMetaModelIntoRawModel( final Model rawModel, final VersionNumber version );
 
    /**
-    * Parses an Aspect (meta) model URN into an {@link AspectModelUrn}
-    *
-    * @param uri The Aspect (meta) model URN
-    * @return The {@link AspectModelUrn} if parsing succeeds, an {@link UrnSyntaxException} otherwise
-    */
-   default Try<AspectModelUrn> getAspectModelUrn( final String uri ) {
-      try {
-         return Try.success( AspectModelUrn.fromUrn( uri ) );
-      } catch ( final UrnSyntaxException exception ) {
-         return Try.failure( exception );
-      }
-   }
-
-   /**
     * Retrieves the meta model version an Aspect model uses
     *
     * @param model The RDF model containing an Aspect Model

@@ -11,18 +11,18 @@
  ~ SPDX-License-Identifier: MPL-2.0
  *#
 #macro( javaEnumerationClassBody )
-$codeGenerationConfig.importTracker.importExplicit( $Optional )
-$codeGenerationConfig.importTracker.importExplicit( $Arrays )
-#if( $codeGenerationConfig.doEnableJacksonAnnotations() )
-    $codeGenerationConfig.importTracker.importExplicit( $JsonValue )
-    $codeGenerationConfig.importTracker.importExplicit( $JsonFormat )
-    $codeGenerationConfig.importTracker.importExplicit( $JsonCreator )
+$codeGenerationConfig.importTracker().importExplicit( $Optional )
+$codeGenerationConfig.importTracker().importExplicit( $Arrays )
+#if( $codeGenerationConfig.enableJacksonAnnotations() )
+    $codeGenerationConfig.importTracker().importExplicit( $JsonValue )
+    $codeGenerationConfig.importTracker().importExplicit( $JsonFormat )
+    $codeGenerationConfig.importTracker().importExplicit( $JsonCreator )
 #end
 
 /**
 * Generated class {@link ${enumeration.name}}.
 */
-#if( $codeGenerationConfig.doEnableJacksonAnnotations() )@JsonFormat(shape = JsonFormat.Shape.OBJECT) #end
+#if( $codeGenerationConfig.enableJacksonAnnotations() )@JsonFormat(shape = JsonFormat.Shape.OBJECT) #end
 public enum ${enumeration.name} {
 #foreach( $value in $enumeration.values )
     $util.generateEnumKey($value)($util.generateEnumValue($value, $codeGenerationConfig))
@@ -35,12 +35,12 @@ $className($dataType value) {
     this.value = value;
 }
 
-#if( $codeGenerationConfig.doEnableJacksonAnnotations() )@JsonCreator #end
+#if( $codeGenerationConfig.enableJacksonAnnotations() )@JsonCreator #end
 static ${className} enumDeserializationConstructor($dataType value) {
     return fromValue(value).orElseThrow(() -> new EnumAttributeNotFoundException("Tried to parse value \"" + value + "\", but there is no enum field like that in ${className}"));
 }
 
-#if( $codeGenerationConfig.doEnableJacksonAnnotations() )@JsonValue #end
+#if( $codeGenerationConfig.enableJacksonAnnotations() )@JsonValue #end
 public $dataType getValue() {
     return value;
 }
