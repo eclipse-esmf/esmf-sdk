@@ -28,15 +28,15 @@
             <artifactId>sds-aspect-meta-model-java</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.aas4j</groupId>
+            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>model</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.aas4j</groupId>
+            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>dataformat-xml</artifactId>
         </dependency>
        <dependency>
-          <groupId>org.eclipse.aas4j</groupId>
+          <groupId>org.eclipse.digitaltwin.aas4j</groupId>
           <artifactId>dataformat-aasx</artifactId>
        </dependency>
         <dependency>

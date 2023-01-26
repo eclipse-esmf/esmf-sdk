@@ -374,7 +374,7 @@
             <version>${classgraph-version}</version>
          </dependency>
          <dependency>
-             <groupId>org.eclipse.aas4j</groupId>
+             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
              <artifactId>model</artifactId>
              <version>${io-admin-shell-aas-model}</version>
          </dependency>

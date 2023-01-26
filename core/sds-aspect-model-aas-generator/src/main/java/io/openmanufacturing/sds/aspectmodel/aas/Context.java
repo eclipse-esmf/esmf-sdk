@@ -15,11 +15,10 @@ package io.openmanufacturing.sds.aspectmodel.aas;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.aas4j.v3.model.AssetAdministrationShell;
-import org.eclipse.aas4j.v3.model.ConceptDescription;
-import org.eclipse.aas4j.v3.model.Environment;
-import org.eclipse.aas4j.v3.model.Submodel;
-import org.eclipse.aas4j.v3.model.SubmodelElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
+import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 
 import io.openmanufacturing.sds.metamodel.Property;
 
@@ -56,6 +55,10 @@ public class Context {
       return environment;
    }
 
+   public void setEnvironment( Environment environment ) {
+      this.environment = environment;
+   }
+
    public Submodel getSubmodel() {
       return submodel;
    }
@@ -81,9 +84,5 @@ public class Context {
 
    public void setPropertyResult( final SubmodelElement propertyResult ) {
       this.propertyResult = propertyResult;
-   }
-
-   public void setEnvironment( Environment environment ) {
-      this.environment = environment;
    }
 }

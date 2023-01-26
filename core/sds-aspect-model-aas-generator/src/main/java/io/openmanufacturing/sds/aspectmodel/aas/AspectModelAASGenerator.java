@@ -17,10 +17,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.Function;
 
-import org.eclipse.aas4j.v3.dataformat.SerializationException;
-import org.eclipse.aas4j.v3.dataformat.aasx.AASXSerializer;
-import org.eclipse.aas4j.v3.dataformat.xml.XmlSerializer;
-import org.eclipse.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.SerializationException;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXSerializer;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlSerializer;
+import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 
 import io.openmanufacturing.sds.metamodel.Aspect;
 
