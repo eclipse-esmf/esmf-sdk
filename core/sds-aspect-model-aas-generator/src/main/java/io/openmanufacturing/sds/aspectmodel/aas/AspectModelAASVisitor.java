@@ -68,24 +68,24 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
+import io.openmanufacturing.sds.characteristic.Code;
+import io.openmanufacturing.sds.characteristic.Collection;
+import io.openmanufacturing.sds.characteristic.Duration;
+import io.openmanufacturing.sds.characteristic.Either;
+import io.openmanufacturing.sds.characteristic.Enumeration;
+import io.openmanufacturing.sds.characteristic.Measurement;
+import io.openmanufacturing.sds.characteristic.Quantifiable;
+import io.openmanufacturing.sds.characteristic.SingleEntity;
+import io.openmanufacturing.sds.characteristic.SortedSet;
+import io.openmanufacturing.sds.characteristic.State;
+import io.openmanufacturing.sds.characteristic.StructuredValue;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.Base;
 import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Code;
-import io.openmanufacturing.sds.metamodel.Collection;
-import io.openmanufacturing.sds.metamodel.Duration;
-import io.openmanufacturing.sds.metamodel.Either;
 import io.openmanufacturing.sds.metamodel.Entity;
-import io.openmanufacturing.sds.metamodel.Enumeration;
-import io.openmanufacturing.sds.metamodel.IsDescribed;
-import io.openmanufacturing.sds.metamodel.Measurement;
+import io.openmanufacturing.sds.metamodel.ModelElement;
+import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.metamodel.Quantifiable;
-import io.openmanufacturing.sds.metamodel.SingleEntity;
-import io.openmanufacturing.sds.metamodel.SortedSet;
-import io.openmanufacturing.sds.metamodel.State;
-import io.openmanufacturing.sds.metamodel.StructuredValue;
-import io.openmanufacturing.sds.metamodel.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
@@ -171,7 +171,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    private final Set<Property> recursiveProperty = new HashSet<>();
 
    @Override
-   public Environment visitBase( final Base base, final Context context ) {
+   public Environment visitBase( final ModelElement base, final Context context ) {
 
       return context.getEnvironment();
    }
@@ -295,7 +295,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .build();
    }
 
-   private String extractIdentifier( final IsDescribed element ) {
+   private String extractIdentifier( final NamedElement element ) {
       return  determineIdentifierFor( element );
    }
 
@@ -365,7 +365,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return new DefaultReference.Builder().keys( key ).build();
    }
 
-   private String determineIdentifierFor( final IsDescribed isDescribed ) {
+   private String determineIdentifierFor( final NamedElement isDescribed ) {
       if ( isDescribed.getAspectModelUrn().isPresent() ) {
          return isDescribed.getAspectModelUrn().get().toString();
       } else {
@@ -497,7 +497,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    @Override
    public Environment visitList(
-         final io.openmanufacturing.sds.metamodel.List list, final Context context ) {
+         final io.openmanufacturing.sds.characteristic.List list, final Context context ) {
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementList.Builder()
@@ -512,7 +512,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    @Override
    public Environment visitSet(
-         final io.openmanufacturing.sds.metamodel.Set set, final Context context ) {
+         final io.openmanufacturing.sds.characteristic.Set set, final Context context ) {
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementCollection.Builder() //TODO according to the standard document this should be SubmodelEleementStruct. However, this type is not available in AAS4J
