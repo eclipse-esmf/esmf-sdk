@@ -178,5 +178,11 @@
   {
     "name": "ch.qos.logback.classic.pattern.LineSeparatorConverter",
     "allDeclaredConstructors": true
+  },
+  {
+    "name":"io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields":true,
+    "allDeclaredMethods": true
   }
 ]
