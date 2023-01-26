@@ -103,7 +103,8 @@
       <vavr-version>0.10.4</vavr-version>
       <!-- TODO remember to update the link to the Velocity engine user guide in the 'java-aspect-tooling.adoc' page -->
       <velocity-version>2.3</velocity-version>
-
+      <io-admin-shell-aas-model>1.0.0-milestone-01</io-admin-shell-aas-model>
+      <io-admin-shell-aas-serializer>1.0.0-milestone-01</io-admin-shell-aas-serializer>
 
       <!-- Versions of plugins -->
       <build-helper-maven-plugin-version>3.2.0</build-helper-maven-plugin-version>
@@ -373,23 +374,23 @@
             <version>${classgraph-version}</version>
          </dependency>
          <dependency>
-            <groupId>io.admin-shell.aas</groupId>
-            <artifactId>model</artifactId>
-            <version>${io-admin-shell-aas-model}</version>
+             <groupId>org.eclipse.aas4j</groupId>
+             <artifactId>model</artifactId>
+             <version>${io-admin-shell-aas-model}</version>
          </dependency>
          <dependency>
-            <groupId>io.admin-shell.aas</groupId>
-            <artifactId>dataformat-xml</artifactId>
-            <version>${io-admin-shell-aas-serializer}</version>
-            <exclusions>
-               <exclusion>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>slf4j-simple</artifactId>
-               </exclusion>
-            </exclusions>
+             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
+             <artifactId>dataformat-xml</artifactId>
+             <version>${io-admin-shell-aas-serializer}</version>
+             <exclusions>
+                 <exclusion>
+                     <groupId>org.slf4j</groupId>
+                     <artifactId>slf4j-simple</artifactId>
+                 </exclusion>
+             </exclusions>
          </dependency>
          <dependency>
-            <groupId>io.admin-shell.aas</groupId>
+            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>dataformat-aasx</artifactId>
             <version>${io-admin-shell-aas-serializer}</version>
             <exclusions>

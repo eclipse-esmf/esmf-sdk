@@ -28,15 +28,15 @@
             <artifactId>sds-aspect-meta-model-java</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.admin-shell.aas</groupId>
+            <groupId>org.eclipse.aas4j</groupId>
             <artifactId>model</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.admin-shell.aas</groupId>
+            <groupId>org.eclipse.aas4j</groupId>
             <artifactId>dataformat-xml</artifactId>
         </dependency>
        <dependency>
-          <groupId>io.admin-shell.aas</groupId>
+          <groupId>org.eclipse.aas4j</groupId>
           <artifactId>dataformat-aasx</artifactId>
        </dependency>
         <dependency>

@@ -15,33 +15,35 @@ package io.openmanufacturing.sds.aspectmodel.aas;
 import java.util.List;
 import java.util.Optional;
 
-import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
-import io.adminshell.aas.v3.model.ConceptDescription;
-import io.adminshell.aas.v3.model.Submodel;
-import io.adminshell.aas.v3.model.SubmodelElement;
+import org.eclipse.aas4j.v3.model.AssetAdministrationShell;
+import org.eclipse.aas4j.v3.model.ConceptDescription;
+import org.eclipse.aas4j.v3.model.Environment;
+import org.eclipse.aas4j.v3.model.Submodel;
+import org.eclipse.aas4j.v3.model.SubmodelElement;
+
 import io.openmanufacturing.sds.metamodel.Property;
 
 public class Context {
 
-   AssetAdministrationShellEnvironment environment;
+   Environment environment;
    Submodel submodel;
    Property property;
    SubmodelElement propertyResult;
 
-   public Context( AssetAdministrationShellEnvironment environment, Submodel ofInterest ) {
+   public Context( Environment environment, Submodel ofInterest ) {
       this.environment = environment;
       this.submodel = ofInterest;
    }
 
    public boolean hasEnvironmentConceptDescription( final String id ) {
       return getEnvironment().getConceptDescriptions().stream()
-            .anyMatch( x -> x.getIdentification().getIdentifier().equals( id ) );
+            .anyMatch( x -> x.getId().equals( id ) );
    }
 
    public ConceptDescription getConceptDescription( final String id ) {
       final Optional<ConceptDescription> optional =
             getEnvironment().getConceptDescriptions().stream()
-                  .filter( x -> x.getIdentification().getIdentifier().equals( id ) )
+                  .filter( x -> x.getId().equals( id ) )
                   .findFirst();
       if ( optional.isEmpty() ) {
          throw new IllegalArgumentException(
@@ -50,7 +52,7 @@ public class Context {
       return optional.get();
    }
 
-   public AssetAdministrationShellEnvironment getEnvironment() {
+   public Environment getEnvironment() {
       return environment;
    }
 
@@ -79,5 +81,9 @@ public class Context {
 
    public void setPropertyResult( final SubmodelElement propertyResult ) {
       this.propertyResult = propertyResult;
+   }
+
+   public void setEnvironment( Environment environment ) {
+      this.environment = environment;
    }
 }
