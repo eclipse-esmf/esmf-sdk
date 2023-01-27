@@ -13,11 +13,31 @@ respective subsection), _or_ you can use the `aspect-model-starter` artifact tha
 include::sds-developer-guide:ROOT:partial$sds-aspect-model-starter-artifact.adoc[]
 
 The error handling in many APIs is done using the
-`https://javadoc.io/doc/io.vavr/vavr/0.10.3/io/vavr/control/Try.html[Try]` type provided by the Java library _Vavr_. This
-is similar to a `java.lang.Optional` in that a successful result can be processed using `.map()` or `.flatMap()`, but if
-an error occurs, the object can also provide the original exception. Compared with throwing exceptions, using a `Try<T>`
-as a return type instead has the advantage of enabling composable and better readable code. Please see the
-https://www.vavr.io/vavr-docs/[Vavr User Guide] for more information.
+`https://javadoc.io/doc/io.vavr/vavr/0.10.3/io/vavr/control/Try.html[Try]` type provided by the Java
+library _Vavr_. This is similar to a `java.lang.Optional` in that a successful result can be
+processed using `.map()` or `.flatMap()`, but if an error occurs, the object can also provide the
+original exception using the `getCause()` method. Compared with throwing exceptions, using a
+`Try<T>` as a return type instead has the advantage of enabling composable error handling. Please
+see the https://www.vavr.io/vavr-docs/[Vavr User Guide] for more information.
+
+You generally have multiple options for handling `Try<T>` results, similar to dealing with `Optional`:
+
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$HandlingTry.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$HandlingTry.java[tags=handlingTry]
+----
 
 [[versioning]]
 == Getting the right version
@@ -31,11 +51,11 @@ To be able to use the artifacts released in this way in your projects, first the
 ----
 <repositories>
   <repository>
-	 <id>github</id>
-	 <name>OpenManufacturingPlatform SDS-SDK</name>
-	 <url>https://maven.pkg.github.com/OpenManufacturingPlatform/sds-sdk</url>
-	 <releases><enabled>true</enabled></releases>
-	 <snapshots><enabled>true</enabled></snapshots>
+    <id>github</id>
+    <name>OpenManufacturingPlatform SDS-SDK</name>
+    <url>https://maven.pkg.github.com/OpenManufacturingPlatform/sds-sdk</url>
+    <releases><enabled>true</enabled></releases>
+    <snapshots><enabled>true</enabled></snapshots>
   </repository>
 </repositories>
 ----
@@ -64,16 +84,21 @@ Aspect Model validation component require embedded JavaScript execution:
 The `aspect-model-urn` artifact provides a way to parse and validate Aspect model element URNs as described in the
 xref:bamm-specification:ROOT:namespaces.adoc[specification].
 
-[source,java]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
 ----
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+include::example$ParseAspectModelUrn.java[tags=imports]
+----
+++++
+</details>
+++++
 
-final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:bamm:com.example:1.0.0#Example" );
-
-System.out.println( urn.getNamespace() ); // com.example
-System.out.println( urn.getName() );      // Example
-System.out.println( urn.getVersion() );   // 1.0.0
-System.out.println( urn.getUrnPrefix() ); // urn:bamm:com.example:1.0.0#
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$ParseAspectModelUrn.java[tags=parseAspectModelUrn]
 ----
 
 To include the artifact, use the following dependencies:
@@ -127,10 +152,7 @@ type `T` to a `Try` of a RDF model. Several commonly used resolution strategies 
 
 * The `FileSystemStrategy` resolves a `java.nio.file.Path` for a file relative
   to the xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory]
-* The `UrnFileSystemStrategy` resolves a
-  <<parsing-aspect-model-urns,AspectModelUrn>> to a file in the xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory]
-* The `InMemoryStrategy` resolves a model against an already loaded Apache Jena RDF model
-* The `SequenceStrategy` can be used to chain two different strategies of the same type
+* The `ClassPathStrategy` resolves a model from resources in the Java class path
 * The `EitherStrategy` can be used to chain two different strategies of different types
 
 To implement custom resolution strategies (e.g., to resolve models against a different blob storage API), you can base
@@ -142,9 +164,54 @@ examples for the different variants.
 [[loading-an-aspect-model-rdf-level]]
 === Loading an Aspect Model to work on the RDF Level
 
-Consider the following example:
+The following example shows how to use the `AspectModelResolver` to load an Aspect Model
 
-include::sds-developer-guide:ROOT:partial$sample-loading-aspect-model-rdf.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadAspectModelRdf.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromFile]
+----
+
+<1> The file must be located in a directory according to the
+xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory] structure.
+<2> You can check if loading succeeded using `versionedModel.isSuccess()` and
+`versionedModel.isFailure()`. If loading fails, `versionedModel.getCause()` provides more
+information.
+<3> The code inside `forEach` is only executed if the model could be loaded successfully.
+<4> List all statements in the RDF model that declare a `bamm:Aspect`.
+
+If you want to choose which model resolution strategy is used, you use the `resolveAspectModel()`
+method of the `AspectModelResolver`. In this case, you need to provide the resolution strategy and
+and the initial input (`InputStream`, `Model` or a `String` containing RDF/Turtle), or one or more
+URNs of model elements to resolve - have a look at the methods provided by `AspectModelResolver`.
+
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadAspectModelRdf.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromUrn]
+----
 
 To include the model resolver artifact, use the following dependencies:
 
@@ -153,9 +220,27 @@ include::sds-developer-guide:ROOT:partial$sds-aspect-model-resolver-artifact.ado
 [[loading-an-aspect-model-java-model-level]]
 === Loading an Aspect Model to work on the Java Aspect Model Level
 
-Consider the following example:
+If you have retrieved a `Try<VersionedModel>` as shown above, you can use the `AspectModelLoader` to
+turn the RDF graph representation of the Aspect Model into a type-safe Java object. You can use the
+`getElements()` method to get all model elements from the Aspect Model, or, if you expect the model
+to contain exactly one Aspect (for example in unit tests), you can use the `getSingleAspect()` method.
 
-include::sds-developer-guide:ROOT:partial$sample-loading-aspect-model-java.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadAspectModelObjects.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadAspectModelObjects.java[tags=loadModel]
+----
 
 To include the Java Aspect model artifact, use the following dependencies:
 
@@ -168,7 +253,22 @@ There are two serialization components available: One to turn a Java Aspect mode
 operation of what the `AspectModelLoader` does) and one to serialize the resulting Jena RDF model in Turtle syntax,
 formatted according to the guidelines described in the BAMM specification.
 
-include::sds-developer-guide:ROOT:partial$sample-serializing-aspect-model.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$SerializeAspectModel.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$SerializeAspectModel.java[tags=serialize]
+----
 
 To include the serializer artifact, use the following dependencies:
 
@@ -177,9 +277,41 @@ include::sds-developer-guide:ROOT:partial$sds-aspect-model-serializer-artifact.a
 [[validating-aspect-models]]
 == Validating Aspect Models
 
+Aspect Models are validated using the `AspectModelValidator`. Validation returns a list of
+`Violation`&#8203;s. A violation has a human-readable message and a unique error code and provides access
+to the `EvaluationContext` which contains references to the model element that caused the
+violation and the SHACL shape that triggered the violation.
+
+Each possible type of violation is a subtype of the `Violation` interface and provides additional
+context information specific to this type, for example, the `MinLengthViolation` provides `int min`
+(the allowed length) and `int actual` (the length that was encountered in the model).
+
 Consider the following example:
 
-include::sds-developer-guide:ROOT:partial$sample-validating-aspect-model.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$ValidateAspectModel.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$ValidateAspectModel.java[tags=validate]
+----
+
+<1> For an immediate human-readable result of the validation result, use the `ViolationFormatter` or
+the `DetailedViolationFormatter`. Note that those are only intended for text-based interfaces such as
+CLIs.
+<2> Every application dealing with validation results that needs to transform the results into some
+different structure should instead implement the `Violation.Visitor` Interface with a suitable target
+type `(String` used as an example here) and use the visitor to handle the different types of
+Violations in a type-safe way.
 
 To include the model validator, use the following dependencies:
 
@@ -200,12 +332,9 @@ function when calling the generator method, you can control where the output is 
 creates multiple files. For the code examples in the following subsections, we assume that the following method is
 defined for calling the generators:
 
-[source,java]
+[source,java,indent=0,subs="+macros,+quotes"]
 ----
-OutputStream outputStreamForName( final String aspectFileName ) {
-   // Create an OutputStream for the file name, e.g. a FileOutputStream
-   ...
-}
+include::example$AbstractGenerator.java[tags=outputStream]
 ----
 
 [[generating-diagrams]]
@@ -214,7 +343,28 @@ OutputStream outputStreamForName( final String aspectFileName ) {
 Using the `AspectModelDiagramGenerator`, automatically layouted diagrams can be created for Aspect models in the formats
 PNG, SVG and https://www.graphviz.org/[Graphviz/DOT].
 
-include::sds-developer-guide:ROOT:partial$sample-diagram-generation.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateDiagrams.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateDiagrams.java[tags=generate]
+----
+
+<1> The diagram generator is initialized with the loaded model.
+<2> The simple call for one output format and one language (i.e., descriptions and preferredNames of one locale) takes
+one output stream to write the image to.
+<3> It is also possible to generate multiple diagrams, one for each combination of output format and language. For that,
+the set of target formats is given as well as a mapping function.
 
 [[generating-html-documentation]]
 === Generating HTML Documentation
@@ -224,7 +374,27 @@ documentation contains an overview diagram and describes the model elements as s
 names and descriptions in the respective language from the Aspect model are shown in the resulting document as part of
 each model element.
 
-include::sds-developer-guide:ROOT:partial$sample-html-generation.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateHtml.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateHtml.java[tags=generate]
+----
+
+<1> Load and select the Aspect from the loaded model for which generation should be generated.
+<2> The HTML generator is initialized with the context consisting of the loaded RDF model and the
+selected Aspect.
+<3> HTML generation can be controlled via a map of options; using an empty map implies default values.
 
 [[generating-sample-json-payload]]
 === Generating Sample JSON Payload
@@ -235,7 +405,22 @@ xref:bamm-specification:ROOT:payloads.adoc#mapping-to-json[mapping rules] as def
 The generator uses `bamm:exampleValue`&#8203;s of Properties if present, otherwise random values corresponding to the
 respective data types are generated.
 
-include::sds-developer-guide:ROOT:partial$sample-json-payload-generation.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJsonPayload.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJsonPayload.java[tags=generate]
+----
 
 === Generating JSON Schema
 
@@ -243,7 +428,22 @@ The JSON schema generator creates a https://json-schema.org/[JSON Schema] that d
 as it could be returned by an Aspect that implements that Aspect model. Currently, the generated schema corresponds to
 
 
-include::sds-developer-guide:ROOT:partial$sample-json-schema-generation.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJsonSchema.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJsonSchema.java[tags=generate]
+----
 
 === Generating OpenAPI Specification
 
@@ -252,7 +452,29 @@ that specifies an Aspect regarding to the https://github.com/OAI/OpenAPI-Specifi
 The currently used versions corresponds https://json-schema.org/specification-links.html#draft-4[Draft 4] of the JSON Schema specification,
 and https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md[3.0.1].
 
-include::sds-developer-guide:ROOT:partial$sample-openapi-generation.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateOpenApi.java[tags=imports]
+----
+++++
+</details>
+++++
+
+.Generate OpenAPI YAML
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateOpenApi.java[tags=generateYaml]
+----
+
+.Generate OpenAPI JSON
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateOpenApi.java[tags=generateJson]
+----
 
 NOTE: For Enumerations with complex data types, the values are modelled as instances of the Entity defined as the
 Enumeration's data type (see xref:bamm-specification:ROOT:modeling-guidelines.adoc#declaring-enumerations[Declaring
@@ -340,14 +562,44 @@ https://en.wikipedia.org/wiki/Jackson_(API)[Jackson] annotations should be gener
 mapping function passed to the generation method takes a `QualifiedName` instead of a String, so that you can decide how
 to handle the package structure of the class.
 
-include::sds-developer-guide:ROOT:partial$sample-pojo-generation.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJavaPojo.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJavaPojo.java[tags=generate]
+----
 
 [[generating-static-meta-classes]]
 === Generating Static Meta Classes
 
 For the generation of static meta classes, consider the following example:
 
-include::sds-developer-guide:ROOT:partial$sample-static-meta-class-generation.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJavaStaticClass.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateJavaStaticClass.java[tags=generate]
+----
 
 To use the generated static meta classes, you need the following additional dependency:
 
@@ -372,17 +624,39 @@ NOTE: When using custom macros, macros for all sections above must be provided.
 
 Example:
 
-include::sds-developer-guide:ROOT:partial$sample-file-header-template.adoc[]
+[source,indent=0]
+----
+include::example$sample-file-header.vm[]
+----
 
 [[migrate-meta-model-version]]
 == Programmatically migrate the Meta Model Version
 
-The meta model version migrator provides functionality to automatically migrate an Aspect model that uses an older
-version of the Aspect Meta Model to an Aspect model that uses a newer (usually the latest) version of the meta model.
+The meta model version migrator provides functionality to automatically migrate an Aspect model that
+uses an older version of the Aspect Meta Model to an Aspect model that uses a newer (usually the
+latest) version of the meta model. Calling this functionality is _only_ required if you intent to
+work with the raw RDF model (i.e., the `VersionedModel`). If you use the `AspectModelLoader` to load
+a model into `ModelElement`&#8203;s or `Aspect`&#8203;s, calling the `MigratorService` is not
+necessary, as it will be done automatically if necessary.
 
-This is shown in the following sample:
+The following sample shows usage of the migration:
 
-include::sds-developer-guide:ROOT:partial$sample-meta-model-version-migration.adoc[]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$MigrateAspectModel.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$MigrateAspectModel.java[tags=migrate]
+----
 
 To use the meta model version migrator, you need the following dependency:
 
@@ -428,46 +702,44 @@ structure that is present in the artifact:
 TIP: If you use the artifact `aspect-model-resolver` instead (see section <<loading-and-saving>> for infos on the
 dependency) you can directly refer to the RDF files using a resource URL:
 
-[source,java]
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
 ----
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Optional;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.AspectMetaModelResourceResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.MetaModelUrls;
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+include::example$LoadMetaModelRdf.java[tags=imports]
+----
+++++
+</details>
+++++
 
-final KnownVersion metaModelVersion = KnownVersion.BAMM_1_0_0;
-final AspectMetaModelResourceResolver resolver = new AspectMetaModelResourceResolver();
-final Optional<URL> characteristicDefinitionsUrl =
-      MetaModelUrls.url( "characteristic", metaModelVersion, "characteristic-instances.ttl" );
-characteristicDefinitionsUrl.ifPresent( url -> {
-   final InputStream inputStream = resolver.openUrl( url );
-   resolver.loadTurtle( inputStream ).forEach( model -> {
-      // Do something with the org.apache.jena.org.rdf.model.Model
-      final BAMM bamm = new BAMM( metaModelVersion );
-      final int numberOfCharacteristicInstances =
-            model.listStatements( null, RDF.type, bamm.Characteristic() ).toList().size();
-      System.out.println( "Meta Model Version " + metaModelVersion.toVersionString()
-            + " defines " + numberOfCharacteristicInstances + " Characteristic instances" );
-   } );
-} );
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadMetaModelRdf.java[tags=loadMetaModelRdf]
 ----
 
 [[mapping-aas]]
 == Mapping Aspect Models to Asset Administration Shell (AAS) Submodel Templates
-The Asset Administration Shell (AAS) and its https://www.plattform-i40.de/IP/Redaktion/EN/Standardartikel/specification-administrationshell.html[information model] is a widely recognized standard developed by the https://industrialdigitaltwin.org[Industrial Digital Twin Association (IDTA)] to express and handle Digital Twins. Central element of the AAS is
+
+The Asset Administration Shell (AAS) and its
+https://www.plattform-i40.de/IP/Redaktion/EN/Standardartikel/specification-administrationshell.html[information
+model] is a widely recognized standard developed by the https://industrialdigitaltwin.org[Industrial
+Digital Twin Association (IDTA)] to express and handle Digital Twins. Central element of the AAS is
 the concept of Submodels, which describe certain aspects of a Digital Twin.
 
-The BAMM Aspect Meta Model allows to specify aspects of a digital twin and its semantics.
-The AAS Generator module provides mapping implementations to derive AAS Submodels from BAMM Aspect Models. On the one hand, this allows to integrate BAMM models in AAS environments and on the other hand it allows AAS submodels to be described with rich semantics, as it is possible with BAMM.
+The BAMM Aspect Meta Model allows to specify aspects of a digital twin and its semantics. The AAS
+Generator module provides mapping implementations to derive AAS Submodels from BAMM Aspect Models.
+On the one hand, this allows to integrate BAMM models in AAS environments and on the other hand it
+allows AAS submodels to be described with rich semantics, as it is possible with BAMM.
 
 [[details-mapping-aas]]
 === Details of the Mapping Concept
-In the following section, the mapping rules applied by the generator are explained.
-The rules apply to https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/index.html[BAMM v1.0.0] and
-https://www.plattform-i40.de/IP/Redaktion/EN/Downloads/Publikation/Details_of_the_Asset_Administration_Shell_Part1_V3.html[AAS Specification Part 1 V3.0RC01].
+
+In the following section, the mapping rules applied by the generator are explained. The rules apply
+to https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/index.html[BAMM v1.0.0] and
+https://www.plattform-i40.de/IP/Redaktion/EN/Downloads/Publikation/Details_of_the_Asset_Administration_Shell_Part1_V3.html[AAS
+Specification Part 1 V3.0RC01].
 
 [cols="1,1,2"]
 |===
@@ -524,7 +796,6 @@ https://www.plattform-i40.de/IP/Redaktion/EN/Downloads/Publikation/Details_of_th
 | xref:bamm-specification:ROOT:characteristics.adoc#MultiLanguageText[bamm-c:MultiLanguageText]  | aas:MultiLanguageProperty | if a MultiLanguageText is used in BAMM it is mapped to the MultiLanguageProperty in AAS.
 |===
 
-
 === Known Limitations
 The AAS Generator implements a base set of features, which are mapped from BAMM to AAS.
 However, there are still limitations:
@@ -532,3 +803,28 @@ However, there are still limitations:
 * Predefined entity mapping (FileResource would be mapped to aas:File)
 * bamm-c:Either is mapped to aas:SubmodelElementCollection with two entries for left and right side
 * Recursive optional properties of BAMM model are not included in output but dropped straight away
+
+=== Calling AAS generation from Java
+
+The following code demonstrates how the API is used:
+
+++++
+<details>
+<summary>Show used imports</summary>    
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateAas.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateAas.java[tags=generate]
+----
+
+To include the serializer artifact, use the following dependencies:
+
+include::sds-developer-guide:ROOT:partial$sds-aspect-model-aas-generator-artifact.adoc[]
