@@ -47,10 +47,8 @@ public class PrettyPrinterTest extends MetaModelVersions {
 
       final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       final PrintWriter writer = new PrintWriter( buffer, false, StandardCharsets.UTF_8 );
-      new PrettyPrinter( new VersionedModel( ModelFactory.createDefaultModel(),
-            VersionNumber.parse( metaModelVersion.toVersionString() ), originalModel ),
-            testAspect.getUrn(), writer )
-            .print();
+      new PrettyPrinter( new VersionedModel( ModelFactory.createDefaultModel(), metaModelVersion, originalModel ),
+            testAspect.getUrn(), writer ).print();
       writer.flush();
 
       final InputStream bufferInput = new ByteArrayInputStream( buffer.toByteArray() );

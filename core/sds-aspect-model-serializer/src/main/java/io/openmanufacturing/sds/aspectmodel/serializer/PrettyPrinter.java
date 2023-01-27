@@ -45,6 +45,7 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
@@ -87,11 +88,23 @@ public class PrettyPrinter {
    private final PrintVisitor printVisitor;
 
    /**
-    * Constructor.
+    * Constructor that takes a raw RDF {@link Model}
     *
-    * @param versionedModel The model to write
-    * @param rootElementUrn The URN of the root model element
-    * @param writer The writer to write to.
+    * @param model the Aspect Model to write
+    * @param metaModelVersion the meta model version
+    * @param rootElementUrn the URN of the root model element
+    * @param writer the writer to write to
+    */
+   public PrettyPrinter( final Model model, final KnownVersion metaModelVersion, final AspectModelUrn rootElementUrn, final PrintWriter writer ) {
+      this( new VersionedModel( ModelFactory.createDefaultModel(), metaModelVersion, model ), rootElementUrn, writer );
+   }
+
+   /**
+    * Constructor that takes a {@link VersionedModel}
+    *
+    * @param versionedModel the Aspect Model to write
+    * @param rootElementUrn the URN of the root model element
+    * @param writer the writer to write to
     */
    public PrettyPrinter( final VersionedModel versionedModel, final AspectModelUrn rootElementUrn, final PrintWriter writer ) {
       model = versionedModel.getRawModel();
@@ -415,7 +428,7 @@ public class PrettyPrinter {
    }
 
    record PrintVisitor(Model model) implements NodeVisitor {
-      
+
       @Override
       public Object visitAny( final Node_ANY it ) {
          return "*";
