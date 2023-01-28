@@ -260,7 +260,7 @@ class AspectModelAASGeneratorTest {
 
    private Aspect loadAspect( final TestAspect testAspect ) {
       final VersionedModel model = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
-      return AspectModelLoader.fromVersionedModelUnchecked( model );
+      return AspectModelLoader.getSingleAspect( model ).get();
    }
 
    private Environment loadAASX( final ByteArrayOutputStream byteStream ) throws DeserializationException {
