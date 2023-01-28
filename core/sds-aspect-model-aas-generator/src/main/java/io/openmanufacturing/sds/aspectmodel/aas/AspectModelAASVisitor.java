@@ -172,23 +172,19 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    @Override
    public Environment visitBase( final ModelElement base, final Context context ) {
-
       return context.getEnvironment();
    }
 
    @Override
    public Environment visitAspect( final Aspect aspect, Context context ) {
-
       if ( context == null ) {
          final Submodel submodel = new DefaultSubmodel.Builder().build();
          Environment environment = new DefaultEnvironment.Builder().submodels( Collections.singletonList( submodel ) ).build();
-
          context = new Context(environment, submodel );
          context.setEnvironment(environment);
       }
 
       final Submodel submodel = context.getSubmodel();
-
       submodel.setIdShort( aspect.getName() );
       submodel.setSemanticId( buildReferenceToConceptDescription( aspect ) );
       submodel.setDescription( map( aspect.getDescriptions() ) );
@@ -338,6 +334,10 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return createLangString( value, locale.getLanguage() );
    }
 
+   private LangString createLangString(String text, String locale){
+      return new DefaultLangString.Builder().language( locale ).text( text ).build();
+   }
+
    private Reference buildReferenceToEnumValue( final Enumeration enumeration, final Object value ) {
       final Key key =
             new DefaultKey.Builder()
@@ -433,9 +433,6 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .build();
    }
 
-   private LangString createLangString(String text, String locale){
-      return new DefaultLangString.Builder().language( locale ).text( text ).build();
-   }
 
    private DataSpecificationIEC61360 extractDataSpecificationContent( final Aspect aspect ) {
       final List<LangString> definitions = map( aspect.getDescriptions() );
@@ -445,13 +442,6 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .preferredName( map( aspect.getPreferredNames() ) )
             .shortName( createLangString( aspect.getName(), DEFAULT_LOCALE ) )
             .build();
-   }
-
-   private void createSubmodelElement( final SubmodelElementBuilder op, final Context context ) {
-      final Property property = context.getProperty();
-      final SubmodelElement submodelElement = op.build( property );
-      context.setPropertyResult( submodelElement );
-      createConceptDescription( property, context );
    }
 
    private DataTypeIEC61360 mapIEC61360DataType( final Optional<Characteristic> characteristic ) {
@@ -470,6 +460,13 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    private DataTypeDefXsd mapAASXSDataType( final String urn ) {
       final Resource resource = ResourceFactory.createResource( urn );
       return AAS_XSD_TYPE_MAP.getOrDefault( resource, DataTypeDefXsd.STRING );
+   }
+
+   private void createSubmodelElement( final SubmodelElementBuilder op, final Context context ) {
+      final Property property = context.getProperty();
+      final SubmodelElement submodelElement = op.build( property );
+      context.setPropertyResult( submodelElement );
+      createConceptDescription( property, context );
    }
 
    @Override
