@@ -18,7 +18,9 @@ import java.io.OutputStream;
 import java.util.function.Function;
 
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.SerializationException;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.Serializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXSerializer;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonSerializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlSerializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 
@@ -44,7 +46,7 @@ public class AspectModelAASGenerator {
    /**
     * Generates an AAS XML archive file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
     *
-    * @param aspect the Aspect for which an AASX archive shall be generated
+    * @param aspect the Aspect for which an xml file shall be generated
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
     * @throws IOException in case the generation can not properly be executed
     */
@@ -52,6 +54,20 @@ public class AspectModelAASGenerator {
          final Aspect aspect, final Function<String, OutputStream> nameMapper ) throws IOException {
       try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
          output.write( generateXmlOutput( aspect ).toByteArray() );
+      }
+   }
+
+   /**
+    * Generates an AAS JSON file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
+    *
+    * @param aspect the Aspect for which an JSON shall be generated
+    * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
+    * @throws IOException in case the generation can not properly be executed
+    */
+   public void generateAasJsonFile(
+         final Aspect aspect, final Function<String, OutputStream> nameMapper ) throws IOException {
+      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
+         output.write( generateJsonOutput( aspect ).toByteArray() );
       }
    }
 
@@ -69,11 +85,18 @@ public class AspectModelAASGenerator {
    }
 
    protected ByteArrayOutputStream generateXmlOutput( Aspect aspect ) throws IOException {
+      return generate( new XmlSerializer(), aspect );
+   }
+
+   protected ByteArrayOutputStream generateJsonOutput( Aspect aspect ) throws IOException {
+      return generate( new JsonSerializer(), aspect );
+   }
+
+   protected ByteArrayOutputStream generate( Serializer serializer, Aspect aspect ) throws IOException {
       final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
       Environment environment = visitor.visitAspect( aspect, null );
 
       try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
-         XmlSerializer serializer = new XmlSerializer();
          serializer.write( out, environment );
          return out;
       } catch ( SerializationException e ) {
