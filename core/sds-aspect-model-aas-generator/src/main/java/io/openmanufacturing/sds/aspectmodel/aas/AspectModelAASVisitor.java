@@ -275,6 +275,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .displayName( map( entity.getPreferredNames() ) )
             .description( map( entity.getDescriptions() ) )
             .value( submodelElements )
+            .kind( ModelingKind.TEMPLATE)
             .build();
    }
 
@@ -284,7 +285,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .kind( ModelingKind.TEMPLATE )
             .valueType( mapAASXSDataType( property.getCharacteristic().flatMap( Characteristic::getDataType ).map( this::mapType ).orElse( UNKNOWN_TYPE ) )  ) // TODO this might not work and a proper mapping implementation is required
             .displayName( map( property.getPreferredNames() ) )
-            .value( property.getExampleValue().map( Object::toString ).orElse( UNKNOWN_EXAMPLE ) )
+            .value( property.getExampleValue().map( i -> i.getValue().toString() ).orElse( UNKNOWN_EXAMPLE ) )
             .description( map( property.getDescriptions() ) )
             .semanticId( buildReferenceToConceptDescription( property ) ) // this is the link to the conceptDescription containing the details for
             // the Characteristic
@@ -486,6 +487,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                         .displayName( map( property.getPreferredNames() ) )
                         .description( map( property.getDescriptions() ) )
                         .value( Collections.singletonList( decideOnMapping( property, context ) ) )
+                        .kind( ModelingKind.TEMPLATE)
                         .build();
 
       createSubmodelElement( builder, context );
@@ -517,6 +519,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                         .displayName( map( property.getPreferredNames() ) )
                         .description( map( property.getDescriptions() ) )
                         .value( Collections.singletonList( decideOnMapping( property, context ) ) )
+                        .kind( ModelingKind.TEMPLATE)
                         .build();
       createSubmodelElement( builder, context );
       return context.getEnvironment();
@@ -558,6 +561,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                   .displayName( map( either.getPreferredNames() ) )
                   .description( map( either.getDescriptions() ) )
                   .value( submodelElements )
+                  .kind( ModelingKind.TEMPLATE)
                   .build();
       context.setPropertyResult( aasSubModelElementCollection );
       return context.environment;
