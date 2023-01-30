@@ -33,7 +33,6 @@ import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -79,7 +78,7 @@ public class BammCliTest extends MetaModelVersions {
                      .map( Path::toFile )
                      .forEach( file -> {
                         if ( !file.delete() ) {
-                           throw new RuntimeException();
+                           System.err.println( "Could not delete file " + file );
                         }
                      } );
             } catch ( final IOException e ) {
