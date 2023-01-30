@@ -35,11 +35,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.WordUtils;
 import org.apache.jena.query.ARQ;
 import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -47,7 +43,6 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.sparql.function.FunctionRegistry;
 import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.ImmutableList;
@@ -82,13 +77,13 @@ public class AspectModelDiagramGenerator {
 
    static final String GET_ELEMENT_NAME_FUNC = "urn:bamm:io.openmanufacturing:function:2.0.0#getElementName";
 
-   private final GetElementNameFunctionFactory getElementNameFunctionFactory;
-
    private final Query boxmodelToDotQuery;
    private final BoxModel boxModelNamespace;
 
    protected final Model model;
    final KnownVersion bammVersion;
+
+   private final SparqlExecutor sparqlExecutor;
 
    public AspectModelDiagramGenerator( final VersionedModel versionedModel ) {
       final ImmutableList<String> queryFilesForAllBammVersions = ImmutableList.of(
@@ -146,7 +141,7 @@ public class AspectModelDiagramGenerator {
       boxmodelToDotQuery = QueryFactory.create( getInputStreamAsString( "boxmodel2dot.sparql" ) );
       boxModelNamespace = new BoxModel( bammVersion );
 
-      getElementNameFunctionFactory = new GetElementNameFunctionFactory( model );
+      sparqlExecutor = new SparqlExecutor().useCustomFunction( GET_ELEMENT_NAME_FUNC, new GetElementNameFunctionFactory( model ) );
    }
 
    InputStream getInputStream( final String resource ) {
@@ -160,24 +155,6 @@ public class AspectModelDiagramGenerator {
          return scanner.useDelimiter( "\\A" ).next();
       } catch ( final IOException ioException ) {
          throw new UncheckedIOException( ioException );
-      }
-   }
-
-   /**
-    * Executes a SPARQL query that is assumed to generate a flat list of literals
-    *
-    * @param model The model to query against
-    * @param query The query
-    * @return The string resulting by concatenating the result list in to a multi line string
-    */
-   @SuppressWarnings( "squid:S1905" )
-   String executeQuery( final Model model, final Query query ) {
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model ) ) {
-         FunctionRegistry.get( qexec.getContext() ).put( GET_ELEMENT_NAME_FUNC, getElementNameFunctionFactory );
-         return StreamSupport.stream( ((Iterable<QuerySolution>) (qexec::execSelect)).spliterator(), false )
-               .map( solution -> solution.getLiteral( "dotStatement" ) )
-               .map( Literal::toString )
-               .collect( Collectors.joining( "\n" ) );
       }
    }
 
@@ -259,12 +236,7 @@ public class AspectModelDiagramGenerator {
             .map( queryString -> queryString
                   .replace( "\"en\"", "\"" + language.toLanguageTag() + "\"" ) )
             .map( QueryFactory::create )
-            .forEach( query -> {
-               try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model ) ) {
-                  FunctionRegistry.get( qexec.getContext() ).put( GET_ELEMENT_NAME_FUNC, getElementNameFunctionFactory );
-                  qexec.execConstruct( targetModel );
-               }
-            } );
+            .forEach( query -> sparqlExecutor.executeConstruct( model, query, targetModel ) );
 
       breakLongLinesAndEscapeTexts( targetModel );
 
@@ -274,7 +246,7 @@ public class AspectModelDiagramGenerator {
             .map( TurtleLoader::loadTurtle )
             .ifPresent( tryModel -> tryModel.forEach( targetModel::add ) );
 
-      final String queryResult = executeQuery( targetModel, boxmodelToDotQuery );
+      final String queryResult = sparqlExecutor.executeQuery( targetModel, boxmodelToDotQuery, "dotStatement" );
       final String template = getInputStreamAsString( "aspect2dot.mustache" );
       return template.replace( "{{&statements}}", queryResult )
             .replace( "{{&fontname}}", FONT_NAME )

@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -34,7 +32,6 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Selector;
 import org.apache.jena.rdf.model.SimpleSelector;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.sparql.function.FunctionRegistry;
 import org.apache.jena.vocabulary.RDF;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
@@ -46,7 +43,7 @@ public class TestContext {
    private final AspectModelDiagramGenerator service;
    private final KnownVersion version;
    private final BoxModel boxModel;
-   private final GetElementNameFunctionFactory getElementNameFunctionFactory;
+   private final SparqlExecutor sparqlExecutor;
 
    public TestContext( final TestModel model, final KnownVersion version ) {
       this.version = version;
@@ -54,7 +51,9 @@ public class TestContext {
       service = new AspectModelDiagramGenerator( versionedModel );
       boxModel = new BoxModel( version );
       service.model.setNsPrefix( "", boxModel.getNamespace() );
-      getElementNameFunctionFactory = new GetElementNameFunctionFactory( versionedModel.getModel() );
+
+      sparqlExecutor = new SparqlExecutor().useCustomFunction( AspectModelDiagramGenerator.GET_ELEMENT_NAME_FUNC,
+            new GetElementNameFunctionFactory( versionedModel.getModel() ) );
    }
 
    /**
@@ -141,10 +140,7 @@ public class TestContext {
    public Model executeQuery( final String sparqlQueryFileName ) {
       final Query query = QueryFactory.create( getInputStreamAsString( sparqlQueryFileName ) );
       final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model() ) ) {
-         FunctionRegistry.get( qexec.getContext() ).put( AspectModelDiagramGenerator.GET_ELEMENT_NAME_FUNC, getElementNameFunctionFactory );
-         qexec.execConstruct( queryResult );
-      }
+      sparqlExecutor.executeConstruct( model(), query, queryResult );
       return queryResult;
    }
 
@@ -184,7 +180,7 @@ public class TestContext {
    }
 
    public String executeQuery( final Model model, final Query query ) {
-      return service.executeQuery( model, query );
+      return sparqlExecutor.executeQuery( model, query, "dotStatement" );
    }
 
    public AspectModelDiagramGenerator service() {
