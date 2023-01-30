@@ -68,7 +68,18 @@ jobs:
           name: bamm-cli-jar
           path: tools/bamm-cli/target/bamm-cli-*.jar
 
-      - name: Upload binary
+      - name: Upload binary (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v2
+        with:
+          name: bamm-cli-binary-${{ matrix.os }}
+          # We put all the possible binary names in the path,
+          # upload-artifact will upload the one(s) that are actually present
+          path: |
+            tools/bamm-cli/target/bamm.exe
+
+      - name: Upload binary (Linux/Mac)
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v2
         with:
           name: bamm-cli-binary-${{ matrix.os }}
@@ -76,4 +87,3 @@ jobs:
           # upload-artifact will upload the one(s) that are actually present
           path: |
             tools/bamm-cli/target/bamm
-            tools/bamm-cli/target/bamm.exe

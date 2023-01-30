@@ -27,7 +27,11 @@ public class BinaryLauncher extends OsProcessLauncher {
    }
 
    private static String getBinaryName() {
-      final String binary = System.getProperty( "binary" );
+      String binary = System.getProperty( "binary" );
+      if ( System.getProperty( "os.name" ).startsWith( "Windows" ) ) {
+         binary = binary.replace( "/", "\\\\" );
+         binary = binary + ".exe";
+      }
       final File binaryFile = new File( binary );
       if ( binary == null || !binaryFile.exists() ) {
          fail( "Binary " + binary + " not found" );
