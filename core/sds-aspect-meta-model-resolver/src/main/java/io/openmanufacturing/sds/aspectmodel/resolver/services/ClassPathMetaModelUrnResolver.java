@@ -35,6 +35,8 @@ public class ClassPathMetaModelUrnResolver implements Function<KnownVersion, Set
             MetaModelUrls.url( "characteristic", metaModelVersion, "characteristic-definitions.ttl" ),
             MetaModelUrls.url( "characteristic", metaModelVersion, "characteristic-instances.ttl" ),
             MetaModelUrls.url( "entity", metaModelVersion, "TimeSeriesEntity.ttl" ),
+            MetaModelUrls.url( "entity", metaModelVersion, "FileResource.ttl" ),
+            MetaModelUrls.url( "entity", metaModelVersion, "Point3d.ttl" ),
             MetaModelUrls.url( "unit", metaModelVersion, "units.ttl" ),
             Optional.<URL> empty()
       ).filter( Optional::isPresent ).map( Optional::get ).collect( Collectors.toSet() );
