@@ -163,16 +163,19 @@ public class BammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectValidate() {
+   public void testAspectValidateValidModel() {
       final ExecutionResult result = bammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
+   }
 
+   @Test
+   public void testAspectValidateInvalidModel() {
       final File invalidModel = inputFile( InvalidTestAspect.INVALID_SYNTAX );
-      final ExecutionResult result2 = bammCli.apply( "aspect", invalidModel.getAbsolutePath(), "validate" );
-      assertThat( result2.exitStatus() ).isEqualTo( 1 );
-      assertThat( result2.stderr() ).isEmpty();
-      assertThat( result2.stdout() ).contains( "Syntax error" );
+      final ExecutionResult result = bammCli.apply( "aspect", invalidModel.getAbsolutePath(), "validate" );
+      assertThat( result.exitStatus() ).isEqualTo( 1 );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( "Syntax error" );
    }
 
    @Test
