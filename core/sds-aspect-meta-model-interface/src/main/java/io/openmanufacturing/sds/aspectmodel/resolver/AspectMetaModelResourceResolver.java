@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,13 +19,12 @@ import java.util.stream.Stream;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.MissingMetaModelVersionException;
 import io.openmanufacturing.sds.aspectmodel.MultipleMetaModelVersionsException;
 import io.openmanufacturing.sds.aspectmodel.UnsupportedVersionException;
 import io.openmanufacturing.sds.aspectmodel.VersionNumber;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
-import io.openmanufacturing.sds.aspectmodel.urn.UrnSyntaxException;
 import io.vavr.control.Try;
 
 /**
@@ -42,6 +41,10 @@ public interface AspectMetaModelResourceResolver {
     * @return the VersionedModel containing the model, meta model version and raw model
     */
    Try<VersionedModel> mergeMetaModelIntoRawModel( final Model rawModel, final VersionNumber version );
+
+   default Try<VersionedModel> mergeMetaModelIntoRawModel( final Model rawModel, final KnownVersion version ) {
+      return mergeMetaModelIntoRawModel( rawModel, VersionNumber.parse( version.toVersionString() ) );
+   }
 
    /**
     * Retrieves the meta model version an Aspect model uses
