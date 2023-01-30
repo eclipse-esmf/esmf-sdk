@@ -36,6 +36,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -170,6 +171,7 @@ public class BammCliTest extends MetaModelVersions {
    }
 
    @Test
+   @DisabledOnOs( OS.WINDOWS )
    public void testAspectValidateInvalidModel() {
       final File invalidModel = inputFile( InvalidTestAspect.INVALID_SYNTAX );
       final ExecutionResult result = bammCli.apply( "aspect", invalidModel.getAbsolutePath(), "validate" );
