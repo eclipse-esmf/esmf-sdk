@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,11 +49,12 @@ import io.openmanufacturing.sds.aspectmodel.java.StructuredValuePropertiesDecons
 import io.openmanufacturing.sds.aspectmodel.java.ValueInitializer;
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.ComplexType;
 import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.StructureElement;
-import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
 
@@ -64,11 +66,21 @@ import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
  */
 public class StructureElementJavaArtifactGenerator<E extends StructureElement> implements JavaArtifactGenerator<E> {
 
+   private final Set<ComplexType> extendingEntities;
+
+   public StructureElementJavaArtifactGenerator() {
+      extendingEntities = Set.of();
+   }
+
+   public StructureElementJavaArtifactGenerator( final Set<ComplexType> extendingEntitiesInModel ) {
+      extendingEntities = extendingEntitiesInModel;
+   }
+
    // Needs to instantiate XSD in order to use Velocity's FieldMethodizer
    @SuppressWarnings( { "squid:S2440", "InstantiationOfUtilityClass" } )
    @Override
    public JavaArtifact apply( final E element, final JavaCodeGenerationConfig config ) {
-      final ImportTracker importTracker = config.getImportTracker();
+      final ImportTracker importTracker = config.importTracker();
       importTracker.importExplicit( java.util.Optional.class );
       importTracker.importExplicit( java.util.List.class );
       importTracker.importExplicit( java.util.Locale.class );
@@ -110,18 +122,19 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .put( "util", AspectModelJavaUtil.class )
             .put( "valueInitializer", new ValueInitializer() )
             .put( "XSD", new FieldMethodizer( new XSD() ) )
+            .put( "extendingEntities", extendingEntities )
             .build();
 
       final Properties engineConfiguration = new Properties();
-      if ( config.doExecuteLibraryMacros() ) {
-         engineConfiguration.put( "velocimacro.library", config.getTemplateLibFile().getName() );
-         engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibFile().getParent() );
+      if ( config.executeLibraryMacros() ) {
+         engineConfiguration.put( "velocimacro.library", config.templateLibFile().getName() );
+         engineConfiguration.put( "file.resource.loader.path", config.templateLibFile().getParent() );
       }
 
       final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-pojo" );
       try {
          return new JavaArtifact( Roaster.format( generatedSource ), element.getName(),
-               config.getPackageName() );
+               config.packageName() );
       } catch ( final Exception exception ) {
          throw new CodeGenerationException( generatedSource, exception );
       }

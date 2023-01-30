@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,18 +11,17 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds;
+package io.openmanufacturing.sds.aspectmodel.resolver;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-import io.openmanufacturing.sds.exception.CommandException;
-
-// Executes an external resolver via the underlying OS command and returns the stdout from the command as result.
+/**
+ * Executes an external resolver via the underlying OS command and returns the stdout from the command as result.
+ */
 public class CommandExecutor {
-
    public static String executeCommand( String command ) {
       // convenience: if just the name of the jar is given, expand to the proper java invocation command
       if ( isJarInvocation( command ) ) {
@@ -33,11 +32,11 @@ public class CommandExecutor {
          final Process p = Runtime.getRuntime().exec( command );
          final int result = p.waitFor();
          if ( result != 0 ) {
-            throw new CommandException( getOutputFrom( p.getErrorStream() ) );
+            throw new ModelResolutionException( getOutputFrom( p.getErrorStream() ) );
          }
          return getOutputFrom( p.getInputStream() );
       } catch ( final IOException | InterruptedException e ) {
-         throw new CommandException( "The attempt to execute external resolver failed with the error:", e );
+         throw new ModelResolutionException( "The attempt to execute external resolver failed with the error:", e );
       }
    }
 

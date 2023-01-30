@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import io.openmanufacturing.sds.aspectmodel.java.exception.CodeGenerationException;
 
 public class JavaCodeGenerationConfigurationTest {
-
    final String currentWorkingDirectory = System.getProperty( "user.dir" );
    private final File templateLibFile = Path.of( currentWorkingDirectory, "/templates", "/test-macro-lib.vm" ).toFile();
    private final File emptyTemplateLibFile = Path.of( "" ).toFile();
@@ -32,25 +31,45 @@ public class JavaCodeGenerationConfigurationTest {
    @Test
    public void testValidTemplateLibConfig() {
       assertThatCode( () ->
-            new JavaCodeGenerationConfig( true, "", true, templateLibFile )
+            JavaCodeGenerationConfigBuilder.builder()
+                  .enableJacksonAnnotations( true )
+                  .packageName( "" )
+                  .executeLibraryMacros( true )
+                  .templateLibFile( templateLibFile )
+                  .build()
       ).doesNotThrowAnyException();
 
       assertThatCode( () ->
-            new JavaCodeGenerationConfig( true, "", false, emptyTemplateLibFile )
+            JavaCodeGenerationConfigBuilder.builder()
+                  .enableJacksonAnnotations( true )
+                  .packageName( "" )
+                  .executeLibraryMacros( false )
+                  .templateLibFile( emptyTemplateLibFile )
+                  .build()
       ).doesNotThrowAnyException();
    }
 
    @Test
    public void testTemplateLibConfigMissingFile() {
       assertThatCode( () ->
-            new JavaCodeGenerationConfig( true, "", true, emptyTemplateLibFile )
+            JavaCodeGenerationConfigBuilder.builder()
+                  .enableJacksonAnnotations( true )
+                  .packageName( "" )
+                  .executeLibraryMacros( true )
+                  .templateLibFile( emptyTemplateLibFile )
+                  .build()
       ).isExactlyInstanceOf( CodeGenerationException.class ).hasMessage( "Missing configuration. Please provide path to velocity template library file." );
    }
 
    @Test
    public void testTemplateLibConfigNonExistingFile() {
       assertThatCode( () ->
-            new JavaCodeGenerationConfig( true, "", true, nonExistingTemplateLibPath )
+            JavaCodeGenerationConfigBuilder.builder()
+                  .enableJacksonAnnotations( true )
+                  .packageName( "" )
+                  .executeLibraryMacros( true )
+                  .templateLibFile( nonExistingTemplateLibPath )
+                  .build()
       ).isExactlyInstanceOf( CodeGenerationException.class )
             .hasMessage( "Incorrect configuration. Please provide a valid path to the velocity template library file." );
    }

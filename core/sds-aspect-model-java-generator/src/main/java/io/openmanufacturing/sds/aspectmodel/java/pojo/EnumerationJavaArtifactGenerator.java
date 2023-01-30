@@ -47,7 +47,7 @@ import io.openmanufacturing.sds.characteristic.State;
 public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements JavaArtifactGenerator<E> {
    @Override
    public JavaArtifact apply( final E element, final JavaCodeGenerationConfig config ) {
-      final ImportTracker importTracker = config.getImportTracker();
+      final ImportTracker importTracker = config.importTracker();
       importTracker.importExplicit( EnumAttributeNotFoundException.class );
 
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
@@ -55,7 +55,7 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
             .put( "className", element.getName() )
             .put( "codeGenerationConfig", config )
             .put( "currentYear", Year.now() )
-            .put( "dataType", AspectModelJavaUtil.getDataType( element.getDataType(), config.getImportTracker() ) )
+            .put( "dataType", AspectModelJavaUtil.getDataType( element.getDataType(), config.importTracker() ) )
             .put( "Entity", Entity.class )
             .put( "enumeration", element )
             .put( "importTracker", importTracker )
@@ -70,14 +70,14 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
 
       try {
          final Properties engineConfiguration = new Properties();
-         if ( config.doExecuteLibraryMacros() ) {
-            engineConfiguration.put( "velocimacro.library", config.getTemplateLibFile().getName() );
-            engineConfiguration.put( "file.resource.loader.path", config.getTemplateLibFile().getParent() );
+         if ( config.executeLibraryMacros() ) {
+            engineConfiguration.put( "velocimacro.library", config.templateLibFile().getName() );
+            engineConfiguration.put( "file.resource.loader.path", config.templateLibFile().getParent() );
          }
 
          final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-enumeration" );
          return new JavaArtifact( Roaster.format( generatedSource ), element.getName(),
-               config.getPackageName() );
+               config.packageName() );
       } catch ( final Exception e ) {
          throw new CodeGenerationException( e );
       }

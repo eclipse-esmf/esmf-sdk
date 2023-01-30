@@ -94,22 +94,24 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+import io.openmanufacturing.sds.characteristic.Trait;
+import io.openmanufacturing.sds.characteristic.impl.DefaultTrait;
+import io.openmanufacturing.sds.constraint.RangeConstraint;
+import io.openmanufacturing.sds.constraint.impl.DefaultRangeConstraint;
 import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.constraint.RangeConstraint;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
-import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.impl.BoundDefinition;
 import io.openmanufacturing.sds.metamodel.impl.DefaultAspect;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCharacteristic;
 import io.openmanufacturing.sds.metamodel.impl.DefaultProperty;
-import io.openmanufacturing.sds.constraint.impl.DefaultRangeConstraint;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalar;
 import io.openmanufacturing.sds.metamodel.impl.DefaultScalarValue;
-import io.openmanufacturing.sds.characteristic.impl.DefaultTrait;
+import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
@@ -580,7 +582,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    private String generateJsonForModel( final TestAspect model, final KnownVersion testedVersion ) {
       final VersionedModel versionedModel = TestResources.getModel( model, testedVersion ).get();
-      final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( versionedModel );
+      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( versionedModel );
+      final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( new AspectContext( versionedModel, aspect ) );
       try {
          return jsonGenerator.generateJson();
       } catch ( final IOException e ) {

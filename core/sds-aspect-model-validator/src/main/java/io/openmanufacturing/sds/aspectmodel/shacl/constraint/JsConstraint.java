@@ -27,6 +27,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.jena.rdf.model.RDFNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.openmanufacturing.sds.aspectmodel.shacl.JsLibrary;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.js.JsFactory;
@@ -46,6 +48,8 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
  * The JavaScript object can contain a key "message" which, if present, overrides the sh:message defined in the shape.
  */
 public class JsConstraint implements Constraint {
+   private static final Logger LOG = LoggerFactory.getLogger( JsConstraint.class );
+   private static boolean evaluateJavaScript = true;
    private final ScriptEngine engine;
    private final String message;
    private final JsLibrary jsLibrary;
@@ -55,6 +59,11 @@ public class JsConstraint implements Constraint {
       this.message = message;
       this.jsLibrary = jsLibrary;
       this.jsFunctionName = jsFunctionName;
+
+      if ( !evaluateJavaScript ) {
+         engine = null;
+         return;
+      }
 
       // The guest application (i.e., the JavaScript) can only be compiled at runtime if either the host application runs via GraalVM
       // or, on a regular JVMCI-enabled JDK, the Graal Compiler is set up (additional JIT compilers are added). Otherwise, the script runs
@@ -75,8 +84,21 @@ public class JsConstraint implements Constraint {
       }
    }
 
+   /**
+    * Globally enables or disables evaluation of JavaScript constraints.
+    * @param doEvaluate configure whether to evaluate JavaScript or not
+    */
+   public static void setEvaluateJavaScript( final boolean doEvaluate ) {
+      LOG.debug( String.format( "Globally %sabled JavaScript constraint evaluation", doEvaluate ? "en" : "dis" ) );
+      JsConstraint.evaluateJavaScript = doEvaluate;
+   }
+
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
+      if ( !evaluateJavaScript ) {
+         return List.of();
+      }
+
       final Bindings bindings = engine.getBindings( ScriptContext.ENGINE_SCOPE );
       bindings.put( "$data", new JsGraph( rdfNode.getModel().getGraph() ) );
       bindings.put( "$shapes", new JsGraph( context.validator().getShapesModel().getGraph() ) );

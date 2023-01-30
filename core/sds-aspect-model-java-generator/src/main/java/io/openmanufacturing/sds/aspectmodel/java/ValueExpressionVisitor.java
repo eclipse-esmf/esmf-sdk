@@ -69,8 +69,8 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
    private String generateValueExpression( final ScalarValue value, final Context context ) {
       final String typeUri = value.getType().as( Scalar.class ).getUrn();
       if ( typeUri.equals( RDF.langString.getURI() ) ) {
-         context.getCodeGenerationConfig().getImportTracker().importExplicit( LangString.class );
-         context.getCodeGenerationConfig().getImportTracker().importExplicit( Locale.class );
+         context.getCodeGenerationConfig().importTracker().importExplicit( LangString.class );
+         context.getCodeGenerationConfig().importTracker().importExplicit( Locale.class );
          final LangString langStringValue = (LangString) value.as( ScalarValue.class ).getValue();
          return String.format( "new LangString(\"%s\", Locale.forLanguageTag(\"%s\"))", StringEscapeUtils.escapeJava( langStringValue.getValue() ),
                langStringValue.getLanguageTag().toLanguageTag() );
@@ -78,7 +78,7 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
 
       final Resource typeResource = ResourceFactory.createResource( typeUri );
       final Class<?> javaType = DataType.getJavaTypeForMetaModelType( typeResource, value.getMetaModelVersion() );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( javaType );
+      context.getCodeGenerationConfig().importTracker().importExplicit( javaType );
       return valueInitializer.apply( typeResource, javaType, "\"" + StringEscapeUtils.escapeJava( value.getValue().toString() ) + "\"",
             value.getMetaModelVersion() );
    }
@@ -86,7 +86,7 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
    @Override
    public String visitCollectionValue( final CollectionValue collection, final Context context ) {
       final Class<?> collectionClass = collection.getValues().getClass();
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( collectionClass );
+      context.getCodeGenerationConfig().importTracker().importExplicit( collectionClass );
       final StringBuilder result = new StringBuilder();
       result.append( "new " );
       result.append( collectionClass.getSimpleName() );

@@ -15,12 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.generator.diagram;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -68,12 +63,7 @@ public class Property2BoxModelTest extends MetaModelVersions {
    public void testSeeAttributeIsPresentOnSharedPropertyExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.SHARED_PROPERTY_WITH_SEE_ATTRIBUTE, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat(
             queryResult.listStatements( context.selector( ":sharedPropertyWithSeeAttributeProperty a :Box" ) )
@@ -124,12 +114,8 @@ public class Property2BoxModelTest extends MetaModelVersions {
 
    private void testAbstractAndExtendingEntityPropertyBoxes( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( testAspect, metaModelVersion );
-      final Query query = QueryFactory.create( context.getInputStreamAsString( sparqlQueryFileName ) );
 
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat( queryResult.listStatements( context.selector( ":entityPropertyProperty a :Box" ) ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements( context.selector( ":abstractTestPropertyProperty a :Box" ) ).toList() ).hasSize( 1 );
@@ -137,12 +123,8 @@ public class Property2BoxModelTest extends MetaModelVersions {
 
    private void testAbstractAndExtendingEntityPropertyEdges( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( testAspect, metaModelVersion );
-      final Query query = QueryFactory.create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
 
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
       assertThat( queryResult.listStatements(
             context.selector( ":ExtendingTestEntityEntity_To_entityPropertyProperty a :Edge" )

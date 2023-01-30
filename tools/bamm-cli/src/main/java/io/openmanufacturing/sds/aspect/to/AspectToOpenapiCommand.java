@@ -114,7 +114,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
    public void run() {
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
-      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
+      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
       if ( jsonCommandGroup != null && jsonCommandGroup.generateJsonOpenApiSpec ) {
          generateJson( generator, aspect, locale );
       } else {

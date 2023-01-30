@@ -15,12 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.generator.diagram;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -70,12 +65,7 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
    public void testAspectWithProperty( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_PROPERTY, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
       assertThat( queryResult.listStatements( context.selector( ":AspectWithPropertyAspect_To_testPropertyProperty a :Edge" ) ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements( context.selector( ":AspectWithPropertyAspect_To_testPropertyProperty :title property" ) ).toList() ).hasSize( 1 );
@@ -86,12 +76,7 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
    public void testAspectWithOptionalProperty( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
       assertThat( queryResult.listStatements( context.selector( ":AspectWithOptionalPropertyAspect_To_testPropertyProperty a :Edge" ) )
             .toList() ).hasSize( 1 );
@@ -104,12 +89,7 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
    public void testAspectWithPropertyWithPayloadName( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
       assertThat( queryResult.listStatements( context.selector( ":AspectWithPropertyWithPayloadNameAspect_To_testPropertyProperty a :Edge" ) )
             .toList() ).hasSize( 1 );
@@ -122,17 +102,13 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
    public void testAspectWithOptionalPropertyWithPayloadName( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY_WITH_PAYLOAD_NAME, metaModelVersion );
 
-      final Query query = QueryFactory.create( context.getInputStreamAsString( "aspect-property-edges2boxmodel.sparql" ) );
-
-      final Model queryResult = ModelFactory.createDefaultModel();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, context.model() ) ) {
-         qexec.execConstruct( queryResult );
-      }
+      final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
       assertThat( queryResult.listStatements( context.selector( ":AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty a :Edge" ) )
             .toList() ).hasSize( 1 );
       assertThat(
-            queryResult.listStatements( context.selector( ":AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty :title property (optional) (test)" ) )
+            queryResult.listStatements(
+                        context.selector( ":AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty :title property (optional) (test)" ) )
                   .toList() ).hasSize( 1 );
    }
 }

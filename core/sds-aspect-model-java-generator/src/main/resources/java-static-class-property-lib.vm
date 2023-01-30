@@ -26,7 +26,7 @@
         #set( $extendedComplexType = $complexType.getExtends().get() )
         #if ( $Entity.isAssignableFrom( $extendedComplexType.class ) )
             #set( $entityType = $Entity.cast( $extendedComplexType ) )
-            $codeGenerationConfig.getImportTracker().importExplicit( $DefaultEntity )
+            $codeGenerationConfig.importTracker().importExplicit( $DefaultEntity )
             Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
                 $modelVisitor.elementUrn( $entityType, $context ), "$entityType.getName()" ),
             Meta${entityType.getName()}.INSTANCE.getProperties(),
@@ -35,7 +35,7 @@
         )
         #else
             #set( $abstractEntityType = $AbstractEntity.cast( $extendedComplexType ) )
-            $codeGenerationConfig.getImportTracker().importExplicit( $DefaultAbstractEntity )
+            $codeGenerationConfig.importTracker().importExplicit( $DefaultAbstractEntity )
             Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
                 $modelVisitor.elementUrn( $abstractEntityType, $context ), "$abstractEntityType.getName()" ),
             Meta${abstractEntityType.name}.INSTANCE.getProperties(),
@@ -63,15 +63,15 @@
 
 ## public static final $type $property = (definition)
 #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
-    $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintProperty )
+    $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintProperty )
     #if( $util.hasContainerType( $property ) )
-        $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintContainerProperty )
+        $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintContainerProperty )
         #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
         #propertyDeclaration() StaticConstraintContainerProperty<$containedType, $propertyType, #getCharacteristicClassName()>
           $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
     #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
-        $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintUnitProperty )
-        $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
+        $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintUnitProperty )
+        $codeGenerationConfig.importTracker().importExplicit( $Unit )
         #propertyDeclaration() StaticConstraintUnitProperty<$propertyType, #getCharacteristicClassName()>
           $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
     #else
@@ -80,13 +80,13 @@
     #end
 #else
     #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
-        $codeGenerationConfig.getImportTracker().importExplicit( $StaticContainerProperty )
+        $codeGenerationConfig.importTracker().importExplicit( $StaticContainerProperty )
         #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
         #propertyDeclaration() StaticContainerProperty<$containedType, java.util.$propertyType> $util.toConstant( $property.getName() ) =
           #staticProperty( $property $codeGenerationConfig );
     #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
-        $codeGenerationConfig.getImportTracker().importExplicit( $StaticUnitProperty )
-        $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
+        $codeGenerationConfig.importTracker().importExplicit( $StaticUnitProperty )
+        $codeGenerationConfig.importTracker().importExplicit( $Unit )
         #propertyDeclaration() StaticUnitProperty<$propertyType> $util.toConstant( $property.getName() ) =
           #staticProperty( $property $codeGenerationConfig );
     #else
@@ -104,26 +104,26 @@
 
     ## new $type(
     #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
-        $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintProperty )
+        $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintProperty )
         #if( $util.hasContainerType( $property ) )
-            $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintContainerProperty )
+            $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintContainerProperty )
             #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
             new StaticConstraintContainerProperty<$containedType, $propertyType, #getCharacteristicClassName()>(
         #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
-            $codeGenerationConfig.getImportTracker().importExplicit( $StaticConstraintUnitProperty )
-            $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
+            $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintUnitProperty )
+            $codeGenerationConfig.importTracker().importExplicit( $Unit )
             new StaticConstraintUnitProperty<$propertyType, #getCharacteristicClassName()>(
         #else
             new StaticConstraintProperty<$propertyType, #getCharacteristicClassName()>(
         #end
     #else
         #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
-            $codeGenerationConfig.getImportTracker().importExplicit( $StaticContainerProperty )
+            $codeGenerationConfig.importTracker().importExplicit( $StaticContainerProperty )
             #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
         new StaticContainerProperty<$containedType, $propertyType> (
         #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
-            $codeGenerationConfig.getImportTracker().importExplicit( $StaticUnitProperty )
-            $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
+            $codeGenerationConfig.importTracker().importExplicit( $StaticUnitProperty )
+            $codeGenerationConfig.importTracker().importExplicit( $Unit )
         new StaticUnitProperty<$propertyType>(
         #else
         new StaticProperty<$propertyType>(
@@ -165,7 +165,7 @@ Optional.of("$property.getPayloadName()"),
     #set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
 public Class<$propertyType> getPropertyType() {
     #if( $util.hasContainerType( $property ) )
-    return (Class)${codeGenerationConfig.getImportTracker().getRawContainerType( $propertyType )}.class;
+    return (Class)${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}.class;
     #else
         #if( ${propertyType.contains( "Either" )} )
         return (Class)Either.class;
@@ -183,8 +183,8 @@ public Class<$propertyType> getPropertyType() {
     #end
 
     #if( $util.hasUnit( $property.getCharacteristic().get() ) )
-        $codeGenerationConfig.getImportTracker().importExplicit( $Unit )
-        $codeGenerationConfig.getImportTracker().importExplicit( $Units )
+        $codeGenerationConfig.importTracker().importExplicit( $Unit )
+        $codeGenerationConfig.importTracker().importExplicit( $Units )
     public Unit getUnit() {
     return Units.fromName("$Quantifiable.cast( $property.getCharacteristic().get() ).unit.get().getName()")
     .orElseThrow(() -> new RuntimeException("Unknown unit: $Quantifiable.cast( $property.getCharacteristic().get() ).getUnit().get().getName()"));

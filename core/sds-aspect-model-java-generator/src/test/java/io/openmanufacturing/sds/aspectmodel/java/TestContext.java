@@ -51,7 +51,7 @@ public class TestContext {
 
    private static Map<QualifiedName, Class<?>> generateJavaCode( final File tempDirectory, final Collection<JavaGenerator> generators ) throws IOException {
       final File subFolder = new File(
-            tempDirectory.getAbsolutePath() + File.separator + generators.iterator().next().getConfig().getPackageName()
+            tempDirectory.getAbsolutePath() + File.separator + generators.iterator().next().getConfig().packageName()
                   .replace( '.', File.separatorChar ) );
       if ( !subFolder.mkdirs() ) {
          throw new IOException( "Could not create directory: " + subFolder );
@@ -73,8 +73,8 @@ public class TestContext {
       }
 
       final List<String> referencedClasses = generators.stream().flatMap( generator ->
-                  Stream.concat( generator.getConfig().getImportTracker().getUsedImports().stream(),
-                        generator.getConfig().getImportTracker().getUsedStaticImports().stream() ) )
+                  Stream.concat( generator.getConfig().importTracker().getUsedImports().stream(),
+                        generator.getConfig().importTracker().getUsedStaticImports().stream() ) )
             .collect( Collectors.toList() );
 
       return JavaCompiler.compile( loadOrder, sources, referencedClasses );
