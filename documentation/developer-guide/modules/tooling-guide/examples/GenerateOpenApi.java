@@ -60,7 +60,7 @@ public class GenerateOpenApi {
                 type: string
             """ );
 
-      // Should the query API shall be added to the generated specification?
+      // Should the query API be added to the generated specification?
       final boolean includeQueryApi = true;
 
       // The paging Option to be chosen. In case paging is possible:
@@ -117,7 +117,7 @@ public class GenerateOpenApi {
             }
             """ ) );
 
-      // Should the query API shall be added to the generated specification?
+      // Should the query API be added to the generated specification?
       final boolean includeQueryApi = true;
 
       // The paging Option to be chosen. In case paging is possible:

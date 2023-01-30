@@ -193,8 +193,8 @@ information.
 
 If you want to choose which model resolution strategy is used, you use the `resolveAspectModel()`
 method of the `AspectModelResolver`. In this case, you need to provide the resolution strategy and
-and the initial input (`InputStream`, `Model` or a `String` containing RDF/Turtle), or one or more
-URNs of model elements to resolve - have a look at the methods provided by `AspectModelResolver`.
+the initial input (`InputStream`, `Model` or a `String` containing RDF/Turtle), or one or more URNs
+of model elements to resolve - have a look at the methods provided by `AspectModelResolver`.
 
 ++++
 <details>
@@ -305,8 +305,8 @@ include::example$ValidateAspectModel.java[tags=imports]
 include::example$ValidateAspectModel.java[tags=validate]
 ----
 
-<1> For an immediate human-readable result of the validation result, use the `ViolationFormatter` or
-the `DetailedViolationFormatter`. Note that those are only intended for text-based interfaces such as
+<1> To format the validation result into an human-readable form, use the `ViolationFormatter` or the
+`DetailedViolationFormatter`. Note that those are only intended for text-based interfaces such as
 CLIs.
 <2> Every application dealing with validation results that needs to transform the results into some
 different structure should instead implement the `Violation.Visitor` Interface with a suitable target
@@ -425,8 +425,7 @@ include::example$GenerateJsonPayload.java[tags=generate]
 === Generating JSON Schema
 
 The JSON schema generator creates a https://json-schema.org/[JSON Schema] that describes the payload for an Aspect model
-as it could be returned by an Aspect that implements that Aspect model. Currently, the generated schema corresponds to
-
+as it could be returned by an Aspect that implements that Aspect model.
 
 ++++
 <details>
