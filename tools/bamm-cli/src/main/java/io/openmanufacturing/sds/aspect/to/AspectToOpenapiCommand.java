@@ -54,9 +54,18 @@ public class AspectToOpenapiCommand extends AbstractCommand {
          required = true )
    private String aspectApiBaseUrl = "";
 
-   @CommandLine.Option( names = { "--json", "-j" },
-         description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
-   private boolean generateJsonOpenApiSpec = false;
+   @CommandLine.ArgGroup( exclusive = false )
+   private JsonCommandGroup jsonCommandGroup;
+
+   static class JsonCommandGroup {
+      @CommandLine.Option( names = { "--json", "-j" }, required = true,
+            description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
+      boolean generateJsonOpenApiSpec = false;
+
+      @CommandLine.Option( names = { "--comment", "-c" }, required = false,
+            description = "Generate $comment OpenAPI keyword for bamm:see attributes in the model." )
+      boolean generateCommentForSeeAttributes = false;
+   }
 
    @CommandLine.Option( names = { "--parameter-file", "-p" }, description = "The path to a file including the parameter for the Aspect API endpoints." )
    private String aspectParameterFile;
@@ -109,7 +118,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
       final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
-      if ( generateJsonOpenApiSpec ) {
+      if ( jsonCommandGroup != null && jsonCommandGroup.generateJsonOpenApiSpec ) {
          generateJson( generator, aspect, locale );
       } else {
          generateYaml( generator, aspect, locale );
@@ -140,7 +149,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
          }
       }
       final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
-            Optional.of( result ), includeQueryApi, getPaging(), locale );
+            Optional.of( result ), includeQueryApi, getPaging(), locale, jsonCommandGroup.generateCommentForSeeAttributes );
 
       final OutputStream out = getStreamForFile( outputFilePath );
       try {
