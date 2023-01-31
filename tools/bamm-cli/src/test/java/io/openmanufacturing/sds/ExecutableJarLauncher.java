@@ -55,6 +55,6 @@ public class ExecutableJarLauncher extends OsProcessLauncher {
    private static boolean isNativeImageBinaryOnPath() {
       return Stream.of( System.getenv( "PATH" ).split( Pattern.quote( File.pathSeparator ) ) )
             .map( Paths::get )
-            .anyMatch( path -> Files.exists( path.resolve( "native-image" ) ) );
+            .anyMatch( path -> Files.exists( path.resolve( "native-image" ) ) || Files.exists( path.resolve( "native-image.cmd" ) ) );
    }
 }
