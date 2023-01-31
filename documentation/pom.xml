@@ -19,6 +19,7 @@
       <artifactId>sds-sdk-parent</artifactId>
       <groupId>io.openmanufacturing</groupId>
       <version>DEV-SNAPSHOT</version>
+      <relativePath>../pom.xml</relativePath>
    </parent>
    <modelVersion>4.0.0</modelVersion>
 
@@ -118,6 +119,14 @@
                   <phase>none</phase>
                </execution>
             </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <configuration>
+               <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+            </configuration>
          </plugin>
 
          <plugin>
