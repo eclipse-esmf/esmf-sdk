@@ -19,6 +19,7 @@
       <artifactId>sds-sdk-parent</artifactId>
       <groupId>io.openmanufacturing</groupId>
       <version>DEV-SNAPSHOT</version>
+      <relativePath>../pom.xml</relativePath>
    </parent>
    <modelVersion>4.0.0</modelVersion>
 
