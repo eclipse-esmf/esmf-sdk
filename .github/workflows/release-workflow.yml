@@ -54,6 +54,7 @@ jobs:
           git checkout -b $release_branch_name
       - name: Set Maven version
         run: |
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dgpg.skip=true
           mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
           mvn versions:commit
       - name: Set Antora version
