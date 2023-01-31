@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,6 +24,8 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.collect.ImmutableList;
+
+import io.vavr.control.Try;
 
 /**
  * Represents the identifier URN of an Aspect Model.
@@ -131,6 +133,32 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       final String version = getVersion( isBammUrn, urnParts, elementType );
       final String elementName = getName( isBammUrn, urnParts, elementType );
       return new AspectModelUrn( urn, elementName, namespace, elementType, version, isBammUrn );
+   }
+
+   /**
+    * Checked version of {@link #fromUrn(String)}
+    * @param urn the lexical representation of the Aspect Model URN
+    * @return the Aspect Model URN, a {@link URISyntaxException} or a {@link UrnSyntaxException}
+    */
+   public static Try<AspectModelUrn> from( final String urn ) {
+      try {
+         return from( new URI( urn ) );
+      } catch ( final URISyntaxException e ) {
+         throw new UrnSyntaxException( UrnSyntaxException.URN_IS_NO_URI );
+      }
+   }
+
+   /**
+    * Checked version of {@link #fromUrn(URI)}
+    * @param urn the lexical representation of the Aspect Model URN
+    * @return the Aspect Model URN or a {@link UrnSyntaxException}
+    */
+   public static Try<AspectModelUrn> from( final URI uri ) {
+      try {
+         return Try.success( fromUrn( uri ) );
+      } catch ( final UrnSyntaxException exception ) {
+         return Try.failure( exception );
+      }
    }
 
    /**
@@ -353,7 +381,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    @Override
-   public int compareTo( AspectModelUrn o ) {
+   public int compareTo( final AspectModelUrn o ) {
       return urn.compareTo( o.urn );
    }
 }

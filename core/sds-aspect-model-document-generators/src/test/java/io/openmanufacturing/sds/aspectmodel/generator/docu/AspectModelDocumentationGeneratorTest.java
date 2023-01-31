@@ -13,7 +13,8 @@
 
 package io.openmanufacturing.sds.aspectmodel.generator.docu;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.BufferedWriter;
@@ -31,6 +32,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.AspectContext;
+import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
@@ -192,7 +196,9 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
    private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion ) throws IOException {
       final VersionedModel versionedModel = TestResources.getModel( model, testedVersion ).get();
-      final AspectModelDocumentationGenerator aspectModelDocumentationGenerator = new AspectModelDocumentationGenerator( versionedModel );
+      final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
+      final AspectContext context = new AspectContext( versionedModel, aspect );
+      final AspectModelDocumentationGenerator aspectModelDocumentationGenerator = new AspectModelDocumentationGenerator( context );
 
       try ( final ByteArrayOutputStream result = new ByteArrayOutputStream() ) {
          aspectModelDocumentationGenerator.generate( name -> result, Collections.EMPTY_MAP );

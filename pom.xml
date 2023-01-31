@@ -65,7 +65,7 @@
       <module>tools/sds-aspect-model-maven-plugin</module>
       <module>sds-sdk-test-report</module>
       <module>core/sds-aspect-model-aas-generator</module>
-
+      <module>documentation</module>
    </modules>
 
    <properties>
@@ -92,12 +92,13 @@
       <maven-plugin-flatten-version>1.2.7</maven-plugin-flatten-version>
       <maven-plugin-plugin-version>3.6.4</maven-plugin-plugin-version>
       <maven-plugin-testing-harness-version>3.3.0</maven-plugin-testing-harness-version>
+      <record-builder-version>35</record-builder-version>
       <rgxgen-version>1.3</rgxgen-version>
       <rhino-version>1.7.14</rhino-version>
       <roaster-version>2.24.0.Final</roaster-version>
       <shacl-version>1.4.2</shacl-version>
       <spring-boot-version>2.6.7</spring-boot-version>
-      <swagger-parser-version>2.0.32</swagger-parser-version>
+      <swagger-parser-version>2.1.9</swagger-parser-version>
       <system-lambda-version>1.2.1</system-lambda-version>
       <vavr-version>0.10.4</vavr-version>
       <!-- TODO remember to update the link to the Velocity engine user guide in the 'java-aspect-tooling.adoc' page -->
@@ -114,7 +115,9 @@
       <maven-clean-plugin-version>3.1.0</maven-clean-plugin-version>
       <maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
       <maven-dependency-plugin-version>3.3.0</maven-dependency-plugin-version>
+      <maven-deploy-plugin-version>3.0.0</maven-deploy-plugin-version>
       <maven-enforcer-plugin-version>3.0.0</maven-enforcer-plugin-version>
+      <maven-install-plugin-version>3.1.0</maven-install-plugin-version>
       <maven-jar-plugin-version>3.2.2</maven-jar-plugin-version>
       <maven-javadoc-plugin-version>3.3.0</maven-javadoc-plugin-version>
       <maven-resources-plugin-version>3.2.0</maven-resources-plugin-version>
@@ -413,6 +416,11 @@
             <artifactId>json-path</artifactId>
             <version>${json-path-version}</version>
          </dependency>
+         <dependency>
+            <groupId>io.soabase.record-builder</groupId>
+            <artifactId>record-builder-processor</artifactId>
+            <version>${record-builder-version}</version>
+         </dependency>
       </dependencies>
    </dependencyManagement>
    <build>
@@ -457,6 +465,16 @@
                <groupId>org.springframework.boot</groupId>
                <artifactId>spring-boot-maven-plugin</artifactId>
                <version>${spring-boot-version}</version>
+            </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-deploy-plugin</artifactId>
+               <version>${maven-deploy-plugin-version}</version>
+            </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-install-plugin</artifactId>
+               <version>${maven-install-plugin-version}</version>
             </plugin>
          </plugins>
       </pluginManagement>

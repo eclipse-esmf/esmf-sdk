@@ -13,11 +13,8 @@
 
 package io.openmanufacturing.sds.aspectmodel.generator.openapi;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +30,9 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -58,7 +57,8 @@ import io.openmanufacturing.sds.test.TestResources;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.ComposedSchema;
+import io.swagger.v3.oas.models.SpecVersion;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
@@ -354,10 +354,8 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openAPI.getComponents().getSchemas() ).containsKey( "testOperationResponse" );
       assertThat( openAPI.getComponents().getSchemas() ).containsKey( "testOperationTwo" );
       assertThat( openAPI.getComponents().getSchemas() ).containsKey( "testOperationTwoResponse" );
-      assertThat( ((ComposedSchema) openAPI.getComponents().getSchemas().get( "Operation" )).getOneOf().size() )
-            .isEqualTo( 2 );
-      assertThat( ((ComposedSchema) openAPI.getComponents().getSchemas().get( "OperationResponse" )).getOneOf().size() )
-            .isEqualTo( 2 );
+      assertThat( openAPI.getComponents().getSchemas().get( "Operation" ).getOneOf().size() ).isEqualTo( 2 );
+      assertThat( openAPI.getComponents().getSchemas().get( "OperationResponse" ).getOneOf().size() ).isEqualTo( 2 );
    }
 
    @ParameterizedTest
@@ -368,18 +366,29 @@ public class OpenApiTest extends MetaModelVersions {
             Optional.empty(), false, Optional.empty() );
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openAPI = result.getOpenAPI();
-      assertThat(
-            ((ComposedSchema) openAPI.getComponents().getSchemas().get( "testOperation" )).getAllOf().get( 1 )
-                  .getProperties() )
-            .doesNotContainKey( "params" );
-      assertThat(
-            ((ComposedSchema) openAPI.getComponents().getSchemas().get( "testOperationTwo" )).getAllOf().get( 1 )
-                  .getProperties() )
-            .doesNotContainKey( "params" );
+      assertThat( ((Schema) openAPI.getComponents().getSchemas().get( "testOperation" ).getAllOf().get( 1 )).getProperties() ).doesNotContainKey( "params" );
+      assertThat( ((Schema) openAPI.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf().get( 1 )).getProperties() ).doesNotContainKey( "params" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testAspectWithCommentForSeeAttributes( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
+      final JsonNode json = apiJsonGenerator.applyForJson( aspect, false, testBaseUrl, testResourcePath,
+            Optional.empty(), false, Optional.empty(), Locale.ENGLISH, true );
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openAPI = result.getOpenAPI();
+      // $comment keyword is an OpenAPI 3.1 feature
+      assertThat( openAPI.getSpecVersion() ).isEqualTo( SpecVersion.V31 );
+      assertThat( openAPI.getComponents().getSchemas().get( "AspectWithCollection" ).get$comment() ).isEqualTo( "See: http://example.com/omp" );
+      assertThat( ((Schema) openAPI.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties().get( "testProperty" )).get$comment() )
+            .isEqualTo( "See: http://example.com/me, http://example.com/omp" );
+      assertThat( openAPI.getComponents().getSchemas().get( "urn_bamm_io.openmanufacturing.test_1.0.0_TestCollection" ).get$comment() )
+            .isEqualTo( "See: http://example.com/omp" );
    }
 
    private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect )
-       throws IOException {
+         throws IOException {
       validateUnsupportedKeywords( jsonNode );
 
       final SwaggerParseResult result = new OpenAPIParser().readContents( json, null, null );
@@ -390,6 +399,8 @@ public class OpenApiTest extends MetaModelVersions {
 
       final DocumentContext context = JsonPath.parse( json );
       assertThat( context.<Object> read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();
+      // $comment keywords should only be generated on demand, not by default
+      assertThat( context.<Object> read( "$..$comment" ) ).asList().isEmpty();
       if ( !aspect.getOperations().isEmpty() ) {
          validateOperation( openAPI );
       } else {
@@ -399,6 +410,7 @@ public class OpenApiTest extends MetaModelVersions {
    }
 
    private void validateOpenApiSpec( final JsonNode node, final OpenAPI openAPI, final Aspect aspect ) {
+      assertThat( openAPI.getSpecVersion() ).isEqualTo( SpecVersion.V30 );
       assertThat( openAPI.getInfo().getTitle() ).isEqualTo( aspect.getPreferredName( Locale.ENGLISH ) );
 
       final String expectedApiVersion = getExpectedApiVersion( aspect );

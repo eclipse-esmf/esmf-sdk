@@ -220,7 +220,7 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
             .map( RDFNode::asResource )
             .map( Resource::getURI )
             .filter( uri -> uri.startsWith( bammUrnStart ) )
-            .flatMap( uri -> getAspectModelUrn( uri ).toJavaStream() )
+            .flatMap( uri -> AspectModelUrn.from( uri ).toJavaStream() )
             .filter( urn -> (urn.getElementType().equals( ElementType.META_MODEL ) || urn.getElementType().equals( ElementType.CHARACTERISTIC )) )
             .map( AspectModelUrn::getVersion )
             .map( VersionNumber::parse )

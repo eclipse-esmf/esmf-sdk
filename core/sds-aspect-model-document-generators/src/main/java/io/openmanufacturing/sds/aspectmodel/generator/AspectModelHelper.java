@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.ComplexType;
@@ -35,14 +35,14 @@ import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 
 public class AspectModelHelper {
-   private final VersionedModel modelVersion;
+   private final KnownVersion metaModelVersion;
 
-   public AspectModelHelper( final VersionedModel modelVersion ) {
-      this.modelVersion = modelVersion;
+   public AspectModelHelper( final KnownVersion metaModelVersion ) {
+      this.metaModelVersion = metaModelVersion;
    }
 
-   public VersionedModel getModelVersion() {
-      return modelVersion;
+   public KnownVersion getMetaModelVersion() {
+      return metaModelVersion;
    }
 
    public static List<Property> sortPropertiesByPreferredName( final List<Property> properties, final Locale locale ) {

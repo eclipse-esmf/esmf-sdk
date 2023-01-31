@@ -40,11 +40,10 @@ import io.openmanufacturing.sds.aspectmodel.generator.I18nLanguageBundle;
 import io.openmanufacturing.sds.aspectmodel.generator.LanguageCollector;
 import io.openmanufacturing.sds.aspectmodel.generator.TemplateEngine;
 import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.metamodel.Scalar;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.metamodel.visitor.AspectStreamTraversalVisitor;
 
 /**
@@ -76,17 +75,15 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
       }
    }
 
-   private final Aspect aspect;
-   private final VersionedModel versionedModel;
+   private final AspectContext context;
    private Locale selectedLanguage = null;
 
-   public AspectModelDocumentationGenerator( final VersionedModel versionedModel ) {
-      this.versionedModel = versionedModel;
-      aspect = AspectModelLoader.fromVersionedModelUnchecked( versionedModel );
+   public AspectModelDocumentationGenerator( final AspectContext context ) {
+      this.context = context;
    }
 
-   public AspectModelDocumentationGenerator( final String language, final VersionedModel versionedModel ) {
-      this( versionedModel );
+   public AspectModelDocumentationGenerator( final String language, final AspectContext context ) {
+      this( context );
       selectedLanguage = Locale.forLanguageTag( language );
    }
 
@@ -160,7 +157,7 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
    }
 
    private void generateHtmlDocu( final Function<String, OutputStream> nameMapper, final Format format, final Locale desiredLanguage ) {
-      final Set<Locale> languagesInModel = LanguageCollector.collectUsedLanguages( aspect );
+      final Set<Locale> languagesInModel = LanguageCollector.collectUsedLanguages( context.aspect() );
       if ( !languagesInModel.contains( desiredLanguage ) ) {
          throw new RuntimeException( String.format( "The model does not contain the desired language: %s.", desiredLanguage.toString() ) );
       }
@@ -169,15 +166,15 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
    }
 
    private void generateHtmlDocu( final Function<String, OutputStream> nameMapper, final Format format ) {
-      final Set<Locale> languagesInModel = LanguageCollector.collectUsedLanguages( aspect );
+      final Set<Locale> languagesInModel = LanguageCollector.collectUsedLanguages( context.aspect() );
       final Set<Locale> languages = languagesInModel.isEmpty() ? Set.of( Locale.ENGLISH ) : languagesInModel;
       generateHtmlDocu( nameMapper, format, languages );
    }
 
    private void generateHtmlDocu( final Function<String, OutputStream> nameMapper, final Format format, final Set<Locale> languages ) {
-      final Map<String, Object> context = new HashMap<>();
-      context.put( "aspectModel", aspect );
-      context.put( "aspectModelHelper", new AspectModelHelper( versionedModel ) );
+      final Map<String, Object> configuration = new HashMap<>();
+      configuration.put( "aspectModel", context.aspect() );
+      configuration.put( "aspectModelHelper", new AspectModelHelper( context.aspect().getMetaModelVersion() ) );
 
       final Properties engineConfiguration = new Properties();
       engineConfiguration.put( "file.resource.loader.path", ".," + DOCU_TEMPLATE_ROOT_DIR + "/html" );
@@ -194,13 +191,13 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
       final Predicate<Locale> byLanguage = locale -> selectedLanguage == null || locale.getLanguage().equals( selectedLanguage.getLanguage() );
       languages.stream().filter( byLanguage ).forEach( language -> {
 
-         logMissingTranslations( aspect, language );
+         logMissingTranslations( context.aspect(), language );
 
-         context.put( "i18n", new I18nLanguageBundle( language ) );
-         context.put( "Scalar", Scalar.class );
-         final TemplateEngine templateEngine = new TemplateEngine( context, engineConfiguration );
+         configuration.put( "i18n", new I18nLanguageBundle( language ) );
+         configuration.put( "Scalar", Scalar.class );
+         final TemplateEngine templateEngine = new TemplateEngine( configuration, engineConfiguration );
 
-         final String artifactName = getArtifactName( aspect, language );
+         final String artifactName = getArtifactName( context.aspect(), language );
          if ( nameMapper instanceof BufferingNameMapper ) {
             ((BufferingNameMapper) nameMapper).setLanguageForArtifact( artifactName, language );
          }
@@ -244,7 +241,7 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
    }
 
    private String insertAspectModelDiagram( final String html, final Locale language ) throws IOException {
-      final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( versionedModel );
+      final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( context.rdfModel() );
       final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       diagramGenerator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, language, buffer );
       final String encodedImage = "data:image/svg+xml;base64," +

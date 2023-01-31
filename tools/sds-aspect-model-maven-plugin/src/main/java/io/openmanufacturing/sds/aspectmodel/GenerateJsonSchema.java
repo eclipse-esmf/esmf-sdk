@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.aspectmodel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -31,11 +32,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 
-@Mojo( name = "generateJsonSchema", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = "generateJsonSchema", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonSchema extends AspectModelMojo {
 
    private final Logger logger = LoggerFactory.getLogger( GenerateJsonSchema.class );
@@ -44,18 +44,16 @@ public class GenerateJsonSchema extends AspectModelMojo {
    @Parameter( defaultValue = "en" )
    private String language;
 
-      @Override
+   @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
-      final Set<VersionedModel> aspectModels = loadModelsOrFail();
+      final Set<AspectContext> aspectModels = loadModelsOrFail();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       try {
-         for ( final VersionedModel aspectModel : aspectModels ) {
-            final Aspect aspect = AspectModelLoader.fromVersionedModelUnchecked( aspectModel );
-            final JsonNode schema = generator.apply( aspect, locale );
-
-            final OutputStream out = getStreamForFile( aspect.getName() + ".schema.json", outputDirectory );
+         for ( final AspectContext context : aspectModels ) {
+            final JsonNode schema = generator.apply( context.aspect(), locale );
+            final OutputStream out = getStreamForFile( context.aspect().getName() + ".schema.json", outputDirectory );
             final ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, schema );
             out.flush();

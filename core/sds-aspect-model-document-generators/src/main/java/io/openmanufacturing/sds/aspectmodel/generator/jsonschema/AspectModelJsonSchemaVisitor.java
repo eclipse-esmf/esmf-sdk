@@ -13,8 +13,6 @@
 
 package io.openmanufacturing.sds.aspectmodel.generator.jsonschema;
 
-import com.google.common.base.Strings;
-import io.openmanufacturing.sds.metamodel.NamedElement;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -34,6 +32,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
@@ -41,29 +40,30 @@ import io.openmanufacturing.sds.aspectmodel.generator.DocumentGenerationExceptio
 import io.openmanufacturing.sds.aspectmodel.resolver.services.BammDataType;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
-import io.openmanufacturing.sds.metamodel.AbstractEntity;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.ModelElement;
-import io.openmanufacturing.sds.metamodel.Characteristic;
 import io.openmanufacturing.sds.characteristic.Collection;
-import io.openmanufacturing.sds.metamodel.CollectionValue;
-import io.openmanufacturing.sds.metamodel.ComplexType;
-import io.openmanufacturing.sds.metamodel.Constraint;
 import io.openmanufacturing.sds.characteristic.Either;
-import io.openmanufacturing.sds.metamodel.Entity;
-import io.openmanufacturing.sds.metamodel.EntityInstance;
 import io.openmanufacturing.sds.characteristic.Enumeration;
-import io.openmanufacturing.sds.metamodel.HasProperties;
-import io.openmanufacturing.sds.constraint.LengthConstraint;
-import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.constraint.RangeConstraint;
-import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
-import io.openmanufacturing.sds.metamodel.Scalar;
-import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.characteristic.Set;
 import io.openmanufacturing.sds.characteristic.SingleEntity;
 import io.openmanufacturing.sds.characteristic.SortedSet;
 import io.openmanufacturing.sds.characteristic.Trait;
+import io.openmanufacturing.sds.constraint.LengthConstraint;
+import io.openmanufacturing.sds.constraint.RangeConstraint;
+import io.openmanufacturing.sds.constraint.RegularExpressionConstraint;
+import io.openmanufacturing.sds.metamodel.AbstractEntity;
+import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.metamodel.CollectionValue;
+import io.openmanufacturing.sds.metamodel.ComplexType;
+import io.openmanufacturing.sds.metamodel.Constraint;
+import io.openmanufacturing.sds.metamodel.Entity;
+import io.openmanufacturing.sds.metamodel.EntityInstance;
+import io.openmanufacturing.sds.metamodel.HasProperties;
+import io.openmanufacturing.sds.metamodel.ModelElement;
+import io.openmanufacturing.sds.metamodel.NamedElement;
+import io.openmanufacturing.sds.metamodel.Property;
+import io.openmanufacturing.sds.metamodel.Scalar;
+import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
@@ -192,7 +192,17 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    private final ObjectNode rootNode = factory.objectNode();
    private final Map<ModelElement, JsonNode> hasVisited = new HashMap<>();
 
+   private final boolean generateCommentForSeeAttributes;
+
    public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes, final Locale locale ) {
+      this( useExtendedTypes, locale, false );
+   }
+
+   public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes ) {
+      this( useExtendedTypes, Locale.ENGLISH );
+   }
+
+   public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes, final Locale locale, final boolean generateCommentForSeeAttributes ) {
       if ( useExtendedTypes ) {
          typeData = extendedTypeData;
       } else {
@@ -200,10 +210,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       }
 
       this.locale = locale;
-   }
-
-   public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes ) {
-      this( useExtendedTypes, Locale.ENGLISH );
+      this.generateCommentForSeeAttributes = generateCommentForSeeAttributes;
    }
 
    public ObjectNode getRootNode() {
@@ -420,7 +427,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       properties.set( "left", either.getLeft().accept( this, properties ) );
       properties.set( "right", either.getRight().accept( this, properties ) );
 
-      return addDescription( factory.objectNode(),  either , locale)
+      return addDescription( factory.objectNode(), either, locale )
             .put( "additionalProperties", false )
             .<ObjectNode> set( "properties", properties )
             .set( "oneOf",
@@ -431,11 +438,11 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    @Override
    public JsonNode visitCharacteristic( final Characteristic characteristic,
-       final ObjectNode context ) {
+         final ObjectNode context ) {
       final JsonNode dataTypeNode = characteristic.getDataType().map( type -> type.accept( this, context ) )
             .orElseThrow( () -> new DocumentGenerationException( "Characteristic " + characteristic + " is missing a dataType" ) );
 
-      return addDescription( ( ObjectNode ) dataTypeNode, characteristic, locale );
+      return addDescription( (ObjectNode) dataTypeNode, characteristic, locale );
    }
 
    private void setNodeInRootSchema( final JsonNode node, final String name ) {
@@ -584,7 +591,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final ObjectNode enumEntityInstanceNode = factory.objectNode();
       final ArrayNode required = factory.arrayNode();
       final ObjectNode properties = factory.objectNode();
-      addDescription(enumEntityInstanceNode, entityInstance, locale);
+      addDescription( enumEntityInstanceNode, entityInstance, locale );
       enumEntityInstanceNode.put( "type", "object" );
 
       final Entity entity = entityInstance.getEntityType();
@@ -636,13 +643,20 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       return propertyInstanceNode;
    }
 
-   private static ObjectNode addDescription( final ObjectNode node,
-         final NamedElement describedElement, final Locale locale ) {
+   private ObjectNode addDescription( final ObjectNode node, final NamedElement describedElement, final Locale locale ) {
       final String description = describedElement.getDescription( locale );
 
       if ( !Strings.isNullOrEmpty( description ) ) {
          node.put( "description", description );
       }
+
+      if ( generateCommentForSeeAttributes ) {
+         final String sees = String.join( ", ", describedElement.getSee() );
+         if ( !Strings.isNullOrEmpty( sees ) ) {
+            node.put( "$comment", "See: " + sees );
+         }
+      }
+
       return node;
    }
 }

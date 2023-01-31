@@ -43,6 +43,8 @@ import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
 import io.openmanufacturing.sds.aspectmodel.validation.services.DetailedViolationFormatter;
 import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
+import io.openmanufacturing.sds.metamodel.AspectContext;
+import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.vavr.control.Try;
 
 public abstract class AspectModelMojo extends AbstractMojo {
@@ -65,27 +67,27 @@ public abstract class AspectModelMojo extends AbstractMojo {
       }
    }
 
-   protected Set<Try<VersionedModel>> loadAndResolveModels() throws MojoExecutionException {
+   protected Set<Try<AspectContext>> loadAndResolveModels() {
       final Path modelsRoot = Path.of( modelsRootDirectory );
       return includes.stream().map( AspectModelUrn::fromUrn )
-            .map( urn -> new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ) )
+            .map( urn -> new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ).flatMap( versionedModel ->
+                  AspectModelLoader.getSingleAspect( versionedModel, aspect -> aspect.getName().equals( urn.getName() ) )
+                        .map( aspect -> new AspectContext( versionedModel, aspect ) ) ) )
             .collect( Collectors.toSet() );
    }
 
-   protected Set<VersionedModel> loadModelsOrFail() throws MojoExecutionException {
-      final Set<VersionedModel> versionedModels = new HashSet<>();
-      final Set<Try<VersionedModel>> resolvedModels = loadAndResolveModels();
-      for ( final Try<VersionedModel> versionedModel : resolvedModels ) {
-         if ( versionedModel.isSuccess() ) {
-            versionedModels.add( versionedModel.get() );
-            continue;
+   protected Set<AspectContext> loadModelsOrFail() throws MojoExecutionException {
+      final Set<AspectContext> result = new HashSet<>();
+      for ( final Try<AspectContext> context : loadAndResolveModels() ) {
+         if ( context.isFailure() ) {
+            handleFailedModelResolution( context );
          }
-         handleFailedModelResolution( versionedModel );
+         result.add( context.get() );
       }
-      return versionedModels;
+      return result;
    }
 
-   private void handleFailedModelResolution( final Try<VersionedModel> failedModel ) throws MojoExecutionException {
+   private void handleFailedModelResolution( final Try<AspectContext> failedModel ) throws MojoExecutionException {
       final Throwable loadModelFailureCause = failedModel.getCause();
 
       // Model can not be loaded, root cause e.g. File not found
@@ -99,7 +101,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
       // Another exception, e.g. syntax error. Let the validator handle this
       final AspectModelValidator validator = new AspectModelValidator();
-      final List<Violation> violations = validator.validateModel( failedModel );
+      final List<Violation> violations = validator.validateModel( failedModel.map( AspectContext::rdfModel ) );
       final String errorMessage = detailedValidationMessages
             ? new DetailedViolationFormatter().apply( violations )
             : new ViolationFormatter().apply( violations );

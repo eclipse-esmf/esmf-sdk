@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,26 +11,24 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds;
+package io.openmanufacturing.sds.aspectmodel.resolver;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.jena.rdf.model.Model;
 
-import io.openmanufacturing.sds.aspectmodel.resolver.ResolutionStrategy;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.vavr.control.Try;
 
 /**
- * Specialized resolution strategy: use external resolver to resolve the URNs passed as argument into models.
+ * A ResolutionStrategy that executes an external command, which will be executed using a {@link CommandExecutor}.
  */
-class ExternalResolverStrategy implements ResolutionStrategy {
-
+public class ExternalResolverStrategy implements ResolutionStrategy {
    private final String command;
 
-   ExternalResolverStrategy( final String command ) {
+   public ExternalResolverStrategy( final String command ) {
       this.command = command;
    }
 

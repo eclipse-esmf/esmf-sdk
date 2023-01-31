@@ -109,7 +109,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitScalarValue( final ScalarValue value, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultScalarValue.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultScalarValue.class );
       final ValueExpressionVisitor.Context valueContext = new ValueExpressionVisitor.Context( context.getCodeGenerationConfig(), false );
       return "new DefaultScalarValue("
             // Object value
@@ -121,8 +121,8 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    @Override
    public String visitCollectionValue( final CollectionValue collection, final StaticCodeGenerationContext context ) {
       final Class<?> collectionClass = collection.getValues().getClass();
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultCollectionValue.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( collectionClass );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultCollectionValue.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( collectionClass );
       final StringBuilder result = new StringBuilder();
       result.append( "new DefaultCollectionValue(" );
       // Collection<Value> values
@@ -147,11 +147,11 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitEntityInstance( final EntityInstance instance, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultEntityInstance.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( Map.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( HashMap.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( Property.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( Value.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultEntityInstance.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( Map.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( HashMap.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( Property.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( Value.class );
       final Entity entity = instance.getEntityType();
       final StringBuilder builder = new StringBuilder();
       builder.append( "new DefaultEntityInstance(" );
@@ -182,7 +182,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitSingleEntity( final SingleEntity singleEntity, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultSingleEntity.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultSingleEntity.class );
       return "new DefaultSingleEntity("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( singleEntity, context ) + ", "
@@ -208,7 +208,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
          break;
       }
 
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( implementationClass );
+      context.getCodeGenerationConfig().importTracker().importExplicit( implementationClass );
       final String optionalType = collection.getDataType().map( type -> type.accept( this, context ) ).map( type -> "Optional.of(" + type + ")" )
             .orElse( "Optional.empty()" );
       final String optionalElementCharacteristic = collection.getElementCharacteristic().map( characteristic -> characteristic.accept( this, context ) )
@@ -219,7 +219,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitCode( final Code code, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultCode.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultCode.class );
       return "new DefaultCode("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( code, context ) + ","
@@ -243,8 +243,8 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    }
 
    private <T extends Quantifiable> String generateForQuantifiable( final T quantifiable, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( quantifiable.getClass() );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( Units.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( quantifiable.getClass() );
+      context.getCodeGenerationConfig().importTracker().importExplicit( Units.class );
       return "new " + quantifiable.getClass().getSimpleName() + "("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( quantifiable, context ) + ","
@@ -262,13 +262,13 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    public String visitUnit( final Unit unit, final StaticCodeGenerationContext context ) {
       final Optional<Unit> unitFromCatalog = Units.fromName( unit.getName(), unit.getMetaModelVersion() );
       if ( unitFromCatalog.isPresent() ) {
-         context.getCodeGenerationConfig().getImportTracker().importExplicit( Units.class );
+         context.getCodeGenerationConfig().importTracker().importExplicit( Units.class );
          return "Units.fromName(\"" + unit.getName() + "\", KnownVersion." + unit.getMetaModelVersion() + ")";
       }
 
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultUnit.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( HashSet.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( Optional.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultUnit.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( HashSet.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( Optional.class );
       return "Optional.of(new DefaultUnit("
             + getMetaModelBaseAttributes( unit, context ) + ","
             + optionalString( unit.getSymbol() ) + ","
@@ -286,15 +286,15 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitQuantityKind( final QuantityKind quantityKind, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( QuantityKinds.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( QuantityKinds.class );
       return "QuantityKinds." + AspectModelJavaUtil.toConstant( quantityKind.getName() );
    }
 
    @Override
    public String visitState( final State state, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultState.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( ArrayList.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( Value.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultState.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( ArrayList.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( Value.class );
       return "new DefaultState("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( state, context ) + ","
@@ -309,9 +309,9 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitEnumeration( final Enumeration enumeration, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultEnumeration.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( ArrayList.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( Value.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultEnumeration.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( ArrayList.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( Value.class );
       return "new DefaultEnumeration("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( enumeration, context ) + ","
@@ -324,8 +324,8 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitStructuredValue( final StructuredValue structuredValue, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultStructuredValue.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( ArrayList.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultStructuredValue.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( ArrayList.class );
       return "new DefaultStructuredValue("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( structuredValue, context ) + ","
@@ -340,8 +340,8 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitTrait( final Trait trait, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultTrait.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( ArrayList.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultTrait.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( ArrayList.class );
       return "new DefaultTrait("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( trait, context ) + ","
@@ -355,7 +355,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitCharacteristic( final Characteristic characteristic, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultCharacteristic.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultCharacteristic.class );
       return "new DefaultCharacteristic("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( characteristic, context ) + ","
@@ -365,7 +365,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitLengthConstraint( final LengthConstraint lengthConstraint, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultLengthConstraint.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultLengthConstraint.class );
       final Scalar nonNegativeInteger = new DefaultScalar( XSD.nonNegativeInteger.getURI(), lengthConstraint.getMetaModelVersion() );
       return "new DefaultLengthConstraint("
             // MetaModelBaseAttributes
@@ -378,8 +378,8 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitRangeConstraint( final RangeConstraint rangeConstraint, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultRangeConstraint.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( BoundDefinition.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultRangeConstraint.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( BoundDefinition.class );
       final Type characteristicType = context.getCurrentCharacteristic().getDataType().orElseThrow( noTypeException );
       return "new DefaultRangeConstraint("
             // MetaModelBaseAttributes
@@ -396,7 +396,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultRegularExpressionConstraint.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultRegularExpressionConstraint.class );
       return "new DefaultRegularExpressionConstraint("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( regularExpressionConstraint, context ) + ","
@@ -406,8 +406,8 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitEncodingConstraint( final EncodingConstraint encodingConstraint, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultEncodingConstraint.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( Charset.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultEncodingConstraint.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( Charset.class );
       return "new DefaultEncodingConstraint("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( encodingConstraint, context ) + ","
@@ -417,8 +417,8 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitLanguageConstraint( final LanguageConstraint languageConstraint, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultLanguageConstraint.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( Locale.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultLanguageConstraint.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( Locale.class );
       return "new DefaultLanguageConstraint("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( languageConstraint, context ) + ","
@@ -428,8 +428,8 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitLocaleConstraint( final LocaleConstraint localeConstraint, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultLocaleConstraint.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( Locale.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultLocaleConstraint.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( Locale.class );
       return "new DefaultLanguageConstraint("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( localeConstraint, context ) + ","
@@ -439,7 +439,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitFixedPointConstraint( final FixedPointConstraint fixedPointConstraint, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultFixedPointConstraint.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultFixedPointConstraint.class );
       return "new DefaultFixedPointConstraint("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( fixedPointConstraint, context ) + ","
@@ -456,7 +456,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitEntity( final Entity entity, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultEntity.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultEntity.class );
       return "DefaultEntity.createDefaultEntity("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( entity, context ) + ","
@@ -468,7 +468,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitAbstractEntity( final AbstractEntity abstractEntity, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultAbstractEntity.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultAbstractEntity.class );
       return "DefaultAbstractEntity.createDefaultAbstractEntity("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( abstractEntity, context ) + ","
@@ -483,7 +483,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitScalar( final Scalar scalar, final StaticCodeGenerationContext context ) {
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultScalar.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultScalar.class );
       return "new DefaultScalar(\"" + scalar.getUrn() + "\", KnownVersion." + scalar.getMetaModelVersion() + ")";
    }
 
@@ -495,13 +495,13 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       final ComplexType type = complexType.getExtends().get();
       if ( type.is( Entity.class ) ) {
          final Entity entity = type.as( Entity.class );
-         context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultEntity.class );
+         context.getCodeGenerationConfig().importTracker().importExplicit( DefaultEntity.class );
          return "Optional.of(DefaultEntity.createDefaultEntity(" + getMetaModelBaseAttributes( complexType, context ) + "," + "Meta" + entity.getName()
                + ".INSTANCE.getProperties()," + extendsComplexType( entity, context ) + "))";
       }
       // AbstractEntity
       final AbstractEntity abstractEntity = type.as( AbstractEntity.class );
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( DefaultAbstractEntity.class );
+      context.getCodeGenerationConfig().importTracker().importExplicit( DefaultAbstractEntity.class );
       return "Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(" + getMetaModelBaseAttributes( abstractEntity, context ) + "," + "Meta"
             + abstractEntity.getName() + ".INSTANCE.getProperties()," + extendsComplexType( abstractEntity, context ) + "," + "List.of("
             + abstractEntity.getExtendingElements().stream().sorted()
@@ -518,7 +518,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
          return "Optional.of(" + ((ScalarValue) optionalValue.get()).accept( this, context ) + ")";
       }
 
-      context.getCodeGenerationConfig().getImportTracker().importExplicit( AspectModelJavaUtil.getDataTypeClass( type ) );
+      context.getCodeGenerationConfig().importTracker().importExplicit( AspectModelJavaUtil.getDataTypeClass( type ) );
       final Resource xsdType = ResourceFactory.createResource( type.getUrn() );
       String valueExpression = optionalValue.get().toString();
       if ( type.getUrn().endsWith( "#float" ) ) {

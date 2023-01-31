@@ -13,7 +13,8 @@
 
 package io.openmanufacturing.sds.aspectmodel.java;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,28 +53,49 @@ import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.DataType;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.metamodel.Aspect;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
+import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
 
 public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
-   private Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion metaModelVersion, final String customJavaPackageName ) {
-      final VersionedModel model = TestResources.getModel( aspect, metaModelVersion ).get();
-      return List.of(
-            new AspectModelJavaGenerator( model, customJavaPackageName, true, false, null ) );
+   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion metaModelVersion, final String customJavaPackageName ) {
+      final VersionedModel model = TestResources.getModel( testAspect, metaModelVersion ).get();
+      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
+      final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
+            .packageName( customJavaPackageName )
+            .enableJacksonAnnotations( true )
+            .executeLibraryMacros( false )
+            .build();
+      return List.of( new AspectModelJavaGenerator( aspect, config ) );
    }
 
-   private Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion metaModelVersion, final boolean enableJacksonAnnotations,
+   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion metaModelVersion, final boolean enableJacksonAnnotations,
          final boolean executeLibraryMacros, final File templateLibPath ) {
-      final VersionedModel model = TestResources.getModel( aspect, metaModelVersion ).get();
-      return List.of( new AspectModelJavaGenerator( model, enableJacksonAnnotations, executeLibraryMacros, templateLibPath ) );
+      final VersionedModel model = TestResources.getModel( testAspect, metaModelVersion ).get();
+      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
+      final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
+            .enableJacksonAnnotations( enableJacksonAnnotations )
+            .executeLibraryMacros( executeLibraryMacros )
+            .templateLibFile( templateLibPath )
+            .packageName( aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ).get() )
+            .build();
+      return List.of( new AspectModelJavaGenerator( aspect, config ) );
    }
 
-   private Collection<JavaGenerator> getGenerators( final TestAspect aspect, final KnownVersion metaModelVersion ) {
-      final VersionedModel model = TestResources.getModel( aspect, metaModelVersion ).get();
-      return List.of( new AspectModelJavaGenerator( model, true, false, null ) );
+   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
+      final VersionedModel model = TestResources.getModel( testAspect, metaModelVersion ).get();
+      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
+      final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
+            .enableJacksonAnnotations( true )
+            .executeLibraryMacros( false )
+            .packageName( aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ).get() )
+            .build();
+      return List.of( new AspectModelJavaGenerator( aspect, config ) );
    }
 
    /**
@@ -1074,7 +1096,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 4 );
       result.assertClassDeclaration( "ParentOfParentEntity", Collections.singletonList( Modifier.abstractModifier() ),
             Collections.emptyList(), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
-                  "@JsonSubTypes({ @JsonSubTypes.Type(value = ParentTestEntity.class, name = \"ParentTestEntity\"), @JsonSubTypes.Type(value = TestEntity.class, name = \"TestEntity\") })" ) );
+                  "@JsonSubTypes({ @JsonSubTypes.Type(value = ParentTestEntity.class, name = \"ParentTestEntity\"), @JsonSubTypes.Type(value = TestEntity"
+                        + ".class, name = \"TestEntity\") })" ) );
       result.assertClassDeclaration( "ParentTestEntity", Collections.singletonList( Modifier.abstractModifier() ),
             Collections.singletonList( "ParentOfParentEntity" ), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
                   "@JsonSubTypes({ @JsonSubTypes.Type(value = TestEntity.class, name = \"TestEntity\") })" ) );

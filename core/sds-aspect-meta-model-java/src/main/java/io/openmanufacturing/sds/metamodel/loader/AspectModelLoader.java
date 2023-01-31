@@ -13,11 +13,13 @@
 
 package io.openmanufacturing.sds.metamodel.loader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Model;
@@ -41,6 +43,7 @@ import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorService;
 import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.AspectContext;
 import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.ModelNamespace;
 import io.openmanufacturing.sds.metamodel.NamedElement;
@@ -79,7 +82,7 @@ public class AspectModelLoader {
     *
     * @see AspectModelResolver
     */
-   @Deprecated
+   @Deprecated( forRemoval = true )
    public static Try<Aspect> fromVersionedModel( final VersionedModel versionedModel ) {
       return getSingleAspect( versionedModel );
    }
@@ -103,12 +106,12 @@ public class AspectModelLoader {
     * Creates an {@link Aspect} instance from a Turtle input model.
     *
     * @param versionedModel The RDF model representation of the Aspect model
-    * @return The Aspect *
+    * @return The Aspect
     * @deprecated use {@link #getSingleAspectUnchecked(VersionedModel)} instead to retain the same semantics, but better use
     * {@link #getElementsUnchecked(VersionedModel)} instead to also properly handle models that contain not exactly one Aspect
     * @see #fromVersionedModel(VersionedModel)
     */
-   @Deprecated
+   @Deprecated( forRemoval = true )
    public static Aspect fromVersionedModelUnchecked( final VersionedModel versionedModel ) {
       return fromVersionedModel( versionedModel ).getOrElseThrow( cause -> {
          LOG.error( "Could not load Aspect", cause );
@@ -228,12 +231,7 @@ public class AspectModelLoader {
     * @return the single Aspect contained in the model
     */
    public static Try<Aspect> getSingleAspect( final VersionedModel versionedModel ) {
-      return getAspects( versionedModel ).flatMap( aspects -> {
-         if ( aspects.size() != 1 ) {
-            return Try.failure( new InvalidRootElementCountException( "Aspect model does not contain exactly one Aspect" ) );
-         }
-         return Try.success( aspects.get( 0 ) );
-      } );
+      return getSingleAspect( versionedModel, aspect -> true );
    }
 
    /**
@@ -251,5 +249,41 @@ public class AspectModelLoader {
          LOG.error( "Could not load aspect", cause );
          throw new AspectLoadingException( cause );
       } );
+   }
+
+   /**
+    * Similar to {@link #getSingleAspect(VersionedModel)}, except that a predicate can be provided to select which of potentially
+    * multiple aspects should be selected
+    * @param versionedModel the RDF model reprensentation of the Aspect model
+    * @param selector the predicate to select an Aspect
+    * @return the selected Aspect, or a failure if 0 or more than 1 matching Aspects were found
+    */
+   public static Try<Aspect> getSingleAspect( final VersionedModel versionedModel, final Predicate<Aspect> selector ) {
+      return getAspects( versionedModel ).flatMap( allAspects -> {
+         final List<Aspect> aspects = allAspects.stream().filter( selector::test ).toList();
+         return switch ( aspects.size() ) {
+            case 1 -> Try.success( aspects.iterator().next() );
+            case 0 -> Try.failure( new InvalidRootElementCountException( "No Aspects were found in the model" ) );
+            default -> Try.failure( new AspectLoadingException( "Multiple Aspects were found in the resolved model" ) );
+         };
+      } );
+   }
+
+   /**
+    * Convenience method to create an {@link AspectContext} directly from a model file. This method makes the following assumptions:
+    * <ul>
+    *    <li>The model file is located in a directory structure as required by the {@link io.openmanufacturing.sds.aspectmodel.resolver.FileSystemStrategy}</li>
+    *    <li>The closure of the loaded model contains exactly one Aspect</li>
+    *    <li>The Aspect has the same name as the file's basename</li>
+    * </ul>
+    * The method is intended for use in tests and comparable use cases, not as a general replacement for loading Aspect Models, since it does not
+    * handle model files with less or more than one Aspect.
+    * @param input the model file
+    * @return the loaded Aspect Context
+    */
+   public static Try<AspectContext> getAspectContext( final File input ) {
+      return AspectModelResolver.loadAndResolveModel( input ).flatMap( versionedModel ->
+            getSingleAspect( versionedModel, aspect -> aspect.getName().equals( input.getName() ) )
+                  .map( aspect -> new AspectContext( versionedModel, aspect ) ) );
    }
 }

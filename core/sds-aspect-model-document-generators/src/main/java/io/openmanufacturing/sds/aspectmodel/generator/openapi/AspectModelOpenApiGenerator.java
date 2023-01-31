@@ -29,13 +29,6 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
-import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.NamedElement;
-import io.openmanufacturing.sds.metamodel.Operation;
-import io.openmanufacturing.sds.metamodel.Property;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,6 +39,13 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.common.base.CaseFormat;
+
+import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
+import io.openmanufacturing.sds.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
+import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.NamedElement;
+import io.openmanufacturing.sds.metamodel.Operation;
+import io.openmanufacturing.sds.metamodel.Property;
 
 public class AspectModelOpenApiGenerator {
 
@@ -87,6 +87,9 @@ public class AspectModelOpenApiGenerator {
 
    private static final String UNAUTHORIZED = "Unauthorized";
 
+   private static final String V30 = "3.0.3";
+   private static final String V31 = "3.1.0";
+
    private static final JsonNodeFactory factory = JsonNodeFactory.instance;
    private static final AspectModelJsonSchemaGenerator schemaGenerator = new AspectModelJsonSchemaGenerator();
    private static final AspectModelJsonSchemaVisitor schemaVisitor = new AspectModelJsonSchemaVisitor( false );
@@ -113,10 +116,10 @@ public class AspectModelOpenApiGenerator {
     * @return a JsonNode containing the JSON for the given Aspect.
     */
    public JsonNode applyForJson( final Aspect aspect, final boolean useSemanticVersion, final String baseUrl,
-       final Optional<String> resourcePath, final Optional<JsonNode> jsonProperties, final boolean includeQueryApi,
-       final Optional<PagingOption> pagingOption ) {
+         final Optional<String> resourcePath, final Optional<JsonNode> jsonProperties, final boolean includeQueryApi,
+         final Optional<PagingOption> pagingOption ) {
       return applyForJson( aspect, useSemanticVersion, baseUrl, resourcePath, jsonProperties,
-          includeQueryApi, pagingOption, Locale.ENGLISH );
+            includeQueryApi, pagingOption, Locale.ENGLISH );
    }
 
    /**
@@ -139,8 +142,32 @@ public class AspectModelOpenApiGenerator {
    public JsonNode applyForJson( final Aspect aspect, final boolean useSemanticVersion, final String baseUrl,
          final Optional<String> resourcePath, final Optional<JsonNode> jsonProperties, final boolean includeQueryApi,
          final Optional<PagingOption> pagingOption, final Locale locale ) {
+      return applyForJson( aspect, useSemanticVersion, baseUrl, resourcePath, jsonProperties, includeQueryApi, pagingOption, locale, false );
+   }
+
+   /**
+    * Generates an OpenAPI specification for the given Aspect Model in JSON.
+    *
+    * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
+    * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as
+    *       the version of the API. Otherwise only the major part of the Aspect Version is used as the
+    *       version of the API.
+    * @param baseUrl the base URL for the Aspect API
+    * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the
+    *       resource path will be derived from the Aspect name
+    * @param jsonProperties A string containing the needed properties for the resource path, defined in JSON.
+    * @param includeQueryApi if set to true, a path section for the Query API Endpoint of the Aspect API will be
+    *       included in the specification
+    * @param pagingOption if defined, the chosen paging type will be in the JSON.
+    * @param locale the locale for choosing the preferred language for description and preferred name.
+    * @param generateCommentForSeeAttributes generate $comment OpenAPI element for bamm:see attributes in the model
+    * @return a JsonNode containing the JSON for the given Aspect.
+    */
+   public JsonNode applyForJson( final Aspect aspect, final boolean useSemanticVersion, final String baseUrl,
+         final Optional<String> resourcePath, final Optional<JsonNode> jsonProperties, final boolean includeQueryApi,
+         final Optional<PagingOption> pagingOption, final Locale locale, final boolean generateCommentForSeeAttributes ) {
       try {
-         final ObjectNode rootNode = getRootJsonNode();
+         final ObjectNode rootNode = getRootJsonNode( generateCommentForSeeAttributes );
          final String apiVersion = getApiVersion( aspect, useSemanticVersion );
 
          ((ObjectNode) rootNode.get( "info" )).put( "title", aspect.getPreferredName( locale ) );
@@ -149,7 +176,7 @@ public class AspectModelOpenApiGenerator {
          setServers( rootNode, baseUrl, apiVersion, READ_SERVER_PATH );
          final boolean includePaging = includePaging( aspect, pagingOption );
          setOptionalSchemas( aspect, includeQueryApi, includePaging, pagingOption, rootNode );
-         setAspectSchemas( aspect, rootNode, locale );
+         setAspectSchemas( aspect, rootNode, locale, generateCommentForSeeAttributes );
          setRequestBodies( aspect, includeQueryApi, rootNode );
          setResponseBodies( aspect, rootNode, includePaging );
          rootNode.set( "paths", getPathsNode( aspect, baseUrl, apiVersion, resourcePath, jsonProperties, includeQueryApi, pagingOption ) );
@@ -183,7 +210,7 @@ public class AspectModelOpenApiGenerator {
 
       if ( resourcePath.isPresent() ) {
          final List<String> dynamicParameters = Pattern.compile( "[{]\\S+[}]" ).matcher( resourcePath.get() ).results()
-                                                       .map( match -> match.group( 0 ) ).collect( Collectors.toList() );
+               .map( match -> match.group( 0 ) ).collect( Collectors.toList() );
          if ( !dynamicParameters.isEmpty() && !jsonProperties.isPresent() ) {
             final String errorString = String
                   .format( "Resource path contains properties %s, but has no properties map.", dynamicParameters );
@@ -259,7 +286,7 @@ public class AspectModelOpenApiGenerator {
       contentNode.put( FIELD_DESCRIPTION, "The request was successful." );
       if ( !aspect.getOperations().isEmpty() ) {
          final ObjectNode operationResponseNode = factory.objectNode()
-                                                         .put( REF, COMPONENTS_SCHEMAS + FIELD_OPERATION_RESPONSE );
+               .put( REF, COMPONENTS_SCHEMAS + FIELD_OPERATION_RESPONSE );
          final ObjectNode wrappedOperationNode = getApplicationNode( operationResponseNode );
          componentsResponseNode.set( FIELD_OPERATION_RESPONSE, wrappedOperationNode );
          wrappedOperationNode.put( FIELD_DESCRIPTION, "The request was successful." );
@@ -288,9 +315,9 @@ public class AspectModelOpenApiGenerator {
                   factory.objectNode().set( FIELD_SCHEMA, contentNode ) ) );
    }
 
-   private void setAspectSchemas( final Aspect aspect, final ObjectNode jsonNode, final Locale locale ) {
+   private void setAspectSchemas( final Aspect aspect, final ObjectNode jsonNode, final Locale locale, final boolean generateCommentsForSeeAttribute ) {
       final ObjectNode schemas = (ObjectNode) jsonNode.get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS );
-      setAspectSchemaNode( schemas, aspect, locale );
+      setAspectSchemaNode( schemas, aspect, locale, generateCommentsForSeeAttribute );
       final List<Operation> operations = aspect.getOperations();
       if ( !operations.isEmpty() ) {
          if ( operations.size() == 1 ) {
@@ -303,16 +330,16 @@ public class AspectModelOpenApiGenerator {
                   .collect( Collectors.toMap( NamedElement::getName, Operation::getOutput ) )
                   .entrySet().stream()
                   .findFirst().ifPresent(
-                  entry -> schemas.set( FIELD_OPERATION_RESPONSE, getResponseSchemaForOperation( entry.getValue() ) ) );
+                        entry -> schemas.set( FIELD_OPERATION_RESPONSE, getResponseSchemaForOperation( entry.getValue() ) ) );
          } else {
             final ArrayNode arrayNode = factory.arrayNode();
             schemas.set( FIELD_OPERATION, factory.objectNode().set( "oneOf", arrayNode ) );
             aspect.getOperations().stream()
                   .collect( Collectors.toMap( NamedElement::getName, Operation::getInput ) )
                   .entrySet().forEach( entry -> {
-               schemas.set( entry.getKey(), getRequestBodyForPropertyList( entry ) );
-               arrayNode.add( factory.objectNode().put( REF, COMPONENTS_SCHEMAS + entry.getKey() ) );
-            } );
+                     schemas.set( entry.getKey(), getRequestBodyForPropertyList( entry ) );
+                     arrayNode.add( factory.objectNode().put( REF, COMPONENTS_SCHEMAS + entry.getKey() ) );
+                  } );
             final ArrayNode responseArrayNode = factory.arrayNode();
             schemas.set( FIELD_OPERATION_RESPONSE, factory.objectNode().set( "oneOf", responseArrayNode ) );
             aspect.getOperations().stream()
@@ -323,13 +350,16 @@ public class AspectModelOpenApiGenerator {
                   } );
          }
          schemaVisitor.getRootNode().get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS ).fields()
-                      .forEachRemaining( field -> schemas.set( field.getKey(), field.getValue() ) );
+               .forEachRemaining( field -> schemas.set( field.getKey(), field.getValue() ) );
       }
    }
 
-   private ObjectNode getRootJsonNode() throws IOException {
+   private ObjectNode getRootJsonNode( final boolean generateCommentForSeeAttributes ) throws IOException {
       final InputStream inputStream = getClass().getResourceAsStream( "/openapi/OpenApiRootJson.json" );
-      final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8.name() );
+      // at least one important OpenAPI tool (swagger-ui) still does not support v3.1, so for the time being we stay with the version 3.0.3;
+      // only when $comment is explicitly requested (a v3.1 feature) we switch to 3.1.0
+      final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8.name() )
+            .replace( "${OpenApiVer}", generateCommentForSeeAttributes ? V31 : V30 );
       return (ObjectNode) objectMapper.readTree( string );
    }
 
@@ -351,11 +381,11 @@ public class AspectModelOpenApiGenerator {
     * @throws JsonProcessingException in case there was an error during the creation of the YAML.
     */
    public String applyForYaml( final Aspect aspect, final boolean useSemanticVersion, final String baseUrl,
-       final Optional<String> resourcePath, final Optional<String> yamlProperties, final boolean includeQueryApi,
-       final Optional<PagingOption> pagingType )
-       throws JsonProcessingException {
+         final Optional<String> resourcePath, final Optional<String> yamlProperties, final boolean includeQueryApi,
+         final Optional<PagingOption> pagingType )
+         throws JsonProcessingException {
       return applyForYaml( aspect, useSemanticVersion, baseUrl, resourcePath, yamlProperties,
-          includeQueryApi, pagingType, Locale.ENGLISH );
+            includeQueryApi, pagingType, Locale.ENGLISH );
    }
 
    /**
@@ -378,7 +408,7 @@ public class AspectModelOpenApiGenerator {
     */
    public String applyForYaml( final Aspect aspect, final boolean useSemanticVersion, final String baseUrl,
          final Optional<String> resourcePath, final Optional<String> yamlProperties, final boolean includeQueryApi,
-         final Optional<PagingOption> pagingType , final Locale locale)
+         final Optional<PagingOption> pagingType, final Locale locale )
          throws JsonProcessingException {
       Optional<JsonNode> jsonProperties = Optional.of( factory.objectNode() );
       if ( yamlProperties.isPresent() ) {
@@ -568,13 +598,12 @@ public class AspectModelOpenApiGenerator {
       return objectNode;
    }
 
-   private JsonNode getAspectSchemaNode( final Aspect aspect, final Locale locale ) {
-      return schemaGenerator.applyForOpenApi( aspect, locale );
+   private JsonNode getAspectSchemaNode( final Aspect aspect, final Locale locale, final boolean generateCommentsForSeeAttribute ) {
+      return schemaGenerator.applyForOpenApi( aspect, locale, generateCommentsForSeeAttribute );
    }
 
-   private void setAspectSchemaNode( final ObjectNode schemas, final Aspect aspect,
-       final Locale locale ) {
-      final ObjectNode aspectSchema = ( ObjectNode ) getAspectSchemaNode( aspect, locale );
+   private void setAspectSchemaNode( final ObjectNode schemas, final Aspect aspect, final Locale locale, final boolean generateCommentsForSeeAttribute ) {
+      final ObjectNode aspectSchema = (ObjectNode) getAspectSchemaNode( aspect, locale, generateCommentsForSeeAttribute );
       splitSchemaRoot( aspectSchema, aspect, schemas );
    }
 
