@@ -32,7 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Configure Pagefile
+      - name: Configure Pagefile (Windows)
         if: matrix.os == 'windows-latest'
         # Fix for "LINK : fatal error LNK1171: unable to load mspdbcore.dll (error code: 1455)":
         # This seems to be caused by running out of memory; increasing page file
@@ -44,7 +44,7 @@ jobs:
           maximum-size: 16GB
           disk-root: "C:"
 
-      - name: Set Swap Space
+      - name: Set Swap Space (Linux)
         if: matrix.os == 'ubuntu-latest'
         uses: pierotofy/set-swap-space@master
         with:
