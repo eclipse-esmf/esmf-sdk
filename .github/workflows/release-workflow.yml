@@ -87,7 +87,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
       - name: Publish to OSSRH
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
-        run: mvn -B clean -pl '!sds-sdk-test-report,!sds-documentation,!tools/bamm-cli' deploy -DskipTests -Prelease-build
+        run: mvn -B clean -pl '!sds-sdk-test-report,!documentation,!tools/bamm-cli' deploy -DskipTests -Prelease-build
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
@@ -142,7 +142,7 @@ jobs:
           write-mode: overwrite
       - name: Publish to Github
         if: contains( github.event.inputs.release_version, '-M' )
-        run: mvn -s ./settings.xml -B clean -pl '!sds-sdk-test-report,!sds-documentation,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
+        run: mvn -s ./settings.xml -B clean -pl '!sds-sdk-test-report,!documentation,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
