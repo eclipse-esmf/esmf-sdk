@@ -98,7 +98,7 @@
       <roaster-version>2.24.0.Final</roaster-version>
       <shacl-version>1.4.2</shacl-version>
       <spring-boot-version>2.6.7</spring-boot-version>
-      <swagger-parser-version>2.0.32</swagger-parser-version>
+      <swagger-parser-version>2.1.9</swagger-parser-version>
       <system-lambda-version>1.2.1</system-lambda-version>
       <vavr-version>0.10.4</vavr-version>
       <!-- TODO remember to update the link to the Velocity engine user guide in the 'java-aspect-tooling.adoc' page -->
