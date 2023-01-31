@@ -126,6 +126,7 @@
       <maven-source-plugin-version>2.2.1</maven-source-plugin-version>
       <maven-surefire-plugin-version>2.22.2</maven-surefire-plugin-version>
       <maven-surefire-report-plugin-version>2.22.2</maven-surefire-report-plugin-version>
+      <nexus-staging-maven-plugin-version>1.6.9</nexus-staging-maven-plugin-version>
 
       <!-- General settings -->
       <testreports.directory>test-reports</testreports.directory>
@@ -476,6 +477,11 @@
                <artifactId>maven-install-plugin</artifactId>
                <version>${maven-install-plugin-version}</version>
             </plugin>
+            <plugin>
+               <groupId>org.sonatype.plugins</groupId>
+               <artifactId>nexus-staging-maven-plugin</artifactId>
+               <version>${nexus-staging-maven-plugin-version}</version>
+            </plugin>
          </plugins>
       </pluginManagement>
       <plugins>
@@ -664,7 +670,6 @@
                <plugin>
                   <groupId>org.sonatype.plugins</groupId>
                   <artifactId>nexus-staging-maven-plugin</artifactId>
-                  <version>1.6.9</version>
                   <extensions>true</extensions>
                   <configuration>
                      <serverId>ossrh</serverId>
