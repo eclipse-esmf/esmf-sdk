@@ -41,6 +41,7 @@ import com.google.common.collect.Streams;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.Constraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.MinCountConstraint;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.SparqlConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.PathNodeRetriever;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.PredicatePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
@@ -176,6 +177,13 @@ public class ShaclValidator {
             for ( final Statement assertion : reachableNodes ) {
                final EvaluationContext context = new EvaluationContext( element, shape, Optional.of( assertion.getPredicate() ), reachableNodes, this );
                violations.addAll( constraint.apply( assertion.getObject(), context ) );
+            }
+
+            // important detail: Sparql constraints must run independent of whether there are any matches via the sh:path property or not
+            // ( the check could be the verification whether the property exists )
+            if ( reachableNodes.isEmpty() && constraint instanceof SparqlConstraint ) {
+               final EvaluationContext context = new EvaluationContext( element, shape, Optional.empty(), List.of(), this );
+               violations.addAll( constraint.apply( null, context ) );
             }
 
             // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints >= 1

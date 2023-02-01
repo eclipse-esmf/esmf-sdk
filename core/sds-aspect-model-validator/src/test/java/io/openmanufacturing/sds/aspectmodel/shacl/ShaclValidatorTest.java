@@ -1780,7 +1780,7 @@ public class ShaclValidatorTest {
    }
 
    @Test
-   void testSparqlTargetWithSparqlConstraint() {
+   void testSparqlTargetWithShapeSparqlConstraint() {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -1831,6 +1831,71 @@ public class ShaclValidatorTest {
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
               :testProperty "foo" .
+
+            :Bar a :TestClass ;
+              :testProperty "secret valid value" .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      final Violation finding = violations.get( 0 );
+      assertThat( finding ).isInstanceOf( SparqlConstraintViolation.class );
+   }
+
+   @Test
+   void testSparqlTargetWithPropertySparqlConstraint() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix : <http://example.com#> .
+
+            :prefixDeclarations
+               sh:declare [
+                  sh:prefix "" ;
+                  sh:namespace "http://example.com#"^^xsd:anyURI ;
+               ] .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:target [
+                  a sh:SPARQLTarget ;
+                  sh:prefixes :prefixDeclarations ;
+                  sh:select ""\"
+                     select $this
+                     where {
+                        $this a :TestClass .
+                     }
+                  ""\"
+               ] ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                  sh:path :testProperty ;
+                  sh:datatype xsd:string ;
+                  sh:sparql [
+                     a sh:SPARQLConstraint ;
+                     sh:message "Required property 'testProperty' does not exist on {$this}." ;
+                     sh:prefixes :prefixDeclarations ;
+                     sh:select ""\"
+                        select $this ?code
+                        where {
+                          $this a :TestClass .
+                          filter ( not exists { $this :testProperty [] } ) .
+                          bind( "ERR_CUSTOM" as ?code )
+                        }
+                     ""\"
+                  ] ;
+               ] .
+            """ );
+
+      // important detail: ':testProperty' is missing on ':Foo', the SPARQLConstraint must run anyway
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            :Foo a :TestClass.              
 
             :Bar a :TestClass ;
               :testProperty "secret valid value" .
