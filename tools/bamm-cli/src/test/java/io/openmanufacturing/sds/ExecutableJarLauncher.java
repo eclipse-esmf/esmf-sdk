@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.SystemUtils;
+
 /**
  * A {@link ProcessLauncher} that executes an executable jar. The absolute path of the jar must be set using the system property "executableJar".
  * Additionally, if GraalVM's native-binary tool is found on the PATH and the system property "graalVmConfigPath" is set, the execution of the
@@ -43,8 +45,12 @@ public class ExecutableJarLauncher extends OsProcessLauncher {
 
       final List<String> commandWithArguments = new ArrayList<>();
       commandWithArguments.add( ProcessHandle.current().info().command().orElse( "java" ) );
-      if ( isNativeImageBinaryOnPath() && System.getProperty( "graalVmConfigPath" ) != null ) {
-         commandWithArguments.add( "-agentlib:native-image-agent=config-merge-dir=" + System.getProperty( "graalVmConfigPath" ) );
+      String configPath = System.getProperty( "graalVmConfigPath" );
+      if ( isNativeImageBinaryOnPath() && configPath != null ) {
+         if ( SystemUtils.OS_NAME.startsWith( "Windows" ) ) {
+            configPath = configPath.replace( "/", "\\" );
+         }
+         commandWithArguments.add( "-agentlib:native-image-agent=config-merge-dir=" + configPath );
       }
       commandWithArguments.add( "-Djava.awt.headless=true" );
       commandWithArguments.add( "-jar" );
