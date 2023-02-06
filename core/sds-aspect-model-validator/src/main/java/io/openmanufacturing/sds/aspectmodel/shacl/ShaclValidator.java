@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel.shacl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,15 +22,26 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Streams;
+
+import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.Constraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.constraint.MinCountConstraint;
+import io.openmanufacturing.sds.aspectmodel.shacl.constraint.SparqlConstraint;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.PathNodeRetriever;
 import io.openmanufacturing.sds.aspectmodel.shacl.path.PredicatePath;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.EvaluationContext;
@@ -65,12 +77,19 @@ public class ShaclValidator {
 
    /**
     * Validates a model element using the SHACL shapes the validator was initialized with.
+    * If you have more than one element to validate, prefer the method {@link this.validateElements( final List<Resource>  )} to calling this method in a loop
+    * for better performance.
     * {@link Resource#getModel()} on the element must not return null, i.e., the resource may not be created using
     * {@link org.apache.jena.rdf.model.ResourceFactory#createProperty(String)}, but instead must be created via {@link Model#createResource(String)}.
     * @param element the element to be validated
     * @return the list of {@link Violation}s if there are violations
     */
    public List<Violation> validateElement( final Resource element ) {
+      final Map<Resource, List<Shape.Node>> sparqlTargets = findSparqlTargets( element.getModel() );
+      return validateElement( element, sparqlTargets );
+   }
+
+   private List<Violation> validateElement( final Resource element, final Map<Resource, List<Shape.Node>> sparqlTargets ) {
       final List<Violation> violations = new ArrayList<>();
       for ( final Shape.Node shape : targetClassShapesThatApplyToElement( element ) ) {
          violations.addAll( validateShapeForElement( element, shape ) );
@@ -78,11 +97,73 @@ public class ShaclValidator {
       for ( final Shape.Node shape : targetSubjectShapesThatApplyToElement( element ) ) {
          violations.addAll( validateShapeForElement( element, shape ) );
       }
+      for ( final Shape.Node shape : targetObjectShapesThatApplyToElement( element ) ) {
+         violations.addAll( validateShapeForElement( element, shape ) );
+      }
+      for ( final Shape.Node shape : targetNodeShapesThatApplyToElement( element ) ) {
+         violations.addAll( validateShapeForElement( element, shape ) );
+      }
+      if ( sparqlTargets.containsKey( element ) ) {
+         for ( final Shape.Node shape : sparqlTargets.get( element ) ) {
+            violations.addAll( validateShapeForElement( element, shape ) );
+         }
+      }
       return violations;
    }
 
+   /**
+    * Validates a model using the SHACL shapes the validator was initialized with.
+    * @param model the model to be validated
+    * @return the list of {@link Violation}s if there are violations
+    */
+   public List<Violation> validateModel( final VersionedModel model ) {
+      final Map<Resource, List<Shape.Node>> sparqlTargetsWithShapes = findSparqlTargets( model.getModel() );
+      return Streams.stream( model.getRawModel().listStatements( null, RDF.type, (RDFNode) null ) )
+            .map( Statement::getSubject )
+            .filter( Resource::isURIResource )
+            .map( Resource::getURI )
+            .map( uri -> model.getModel().createResource( uri ) )
+            .flatMap( element -> validateElement( element, sparqlTargetsWithShapes ).stream() )
+            .toList();
+   }
+
+   private Map<Resource, List<Shape.Node>> findSparqlTargets( final Model model ) {
+      final Map<Resource, List<Shape.Node>> resourceShapes = new HashMap<>();
+      for ( final Shape.Node shape : targetSparqlShapes() ) {
+         final List<Resource> shapeTargets = querySparqlTargets( model, shape.attributes().targetSparql().get() );
+         for ( final Resource node : shapeTargets ) {
+            addResourceShape( resourceShapes, node, shape );
+         }
+      }
+      return resourceShapes;
+   }
+
+   // single resource can be sparql target to more than one shape
+   private void addResourceShape( final Map<Resource, List<Shape.Node>> map, final Resource resource, final Shape.Node shape ) {
+      if ( map.containsKey( resource ) ) {
+         map.get( resource ).add( shape );
+      } else {
+         final ArrayList<Shape.Node> shapes = new ArrayList<>();
+         shapes.add( shape );
+         map.put( resource, shapes );
+      }
+   }
+
+   private List<Resource> querySparqlTargets( final Model model, final Query query ) {
+      final List<Resource> targets = new ArrayList<>();
+      try ( final QueryExecution queryExecution = QueryExecutionFactory.create( query, model ) ) {
+         final ResultSet resultSet = queryExecution.execSelect();
+         while ( resultSet.hasNext() ) {
+            final QuerySolution solution = resultSet.next();
+            targets.add( solution.getResource( "this" ) );
+         }
+      }
+      return targets;
+   }
+
    public List<Violation> validateElements( final List<Resource> elements ) {
-      return elements.stream().flatMap( element -> validateElement( element ).stream() ).toList();
+      final Map<Resource, List<Shape.Node>> sparqlTargets = elements.size() > 0 ? findSparqlTargets( elements.get( 0 ).getModel() ) : Map.of();
+      return elements.stream().flatMap( element -> validateElement( element, sparqlTargets ).stream() ).toList();
    }
 
    public List<Violation> validateShapeForElement( final Resource element, final Shape.Node shape ) {
@@ -96,6 +177,13 @@ public class ShaclValidator {
             for ( final Statement assertion : reachableNodes ) {
                final EvaluationContext context = new EvaluationContext( element, shape, Optional.of( assertion.getPredicate() ), reachableNodes, this );
                violations.addAll( constraint.apply( assertion.getObject(), context ) );
+            }
+
+            // important detail: Sparql constraints must run independent of whether there are any matches via the sh:path property or not
+            // ( the check could be the verification whether the property exists )
+            if ( reachableNodes.isEmpty() && constraint instanceof SparqlConstraint ) {
+               final EvaluationContext context = new EvaluationContext( element, shape, Optional.empty(), List.of(), this );
+               violations.addAll( constraint.apply( null, context ) );
             }
 
             // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints >= 1
@@ -141,6 +229,26 @@ public class ShaclValidator {
       return shapes.stream()
             .filter( shape ->
                   shape.attributes().targetSubjectsOf().map( property -> element.getProperty( property ) != null ).orElse( false ) )
+            .collect( Collectors.toSet() );
+   }
+
+   private Set<Shape.Node> targetObjectShapesThatApplyToElement( final Resource element ) {
+      return shapes.stream()
+            .filter( shape ->
+                  shape.attributes().targetObjectsOf().map( property -> element.getProperty( property ) != null ).orElse( false ) )
+            .collect( Collectors.toSet() );
+   }
+
+   private Set<Shape.Node> targetNodeShapesThatApplyToElement( final Resource element ) {
+      return shapes.stream()
+            .filter( shape ->
+                  shape.attributes().targetNode().map( element::equals ).orElse( false ) )
+            .collect( Collectors.toSet() );
+   }
+
+   private Set<Shape.Node> targetSparqlShapes() {
+      return shapes.stream()
+            .filter( shape -> shape.attributes().targetSparql().isPresent() )
             .collect( Collectors.toSet() );
    }
 
