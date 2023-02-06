@@ -32,7 +32,6 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.riot.RiotException;
-import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.topbraid.shacl.validation.ValidationEngineFactory;
@@ -40,7 +39,6 @@ import org.topbraid.shacl.validation.ValidationUtil;
 import org.topbraid.shacl.vocabulary.SH;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Streams;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.UnsupportedVersionException;
@@ -157,13 +155,7 @@ public class AspectModelValidator {
       }
       // Determine violations for all model elements
       final VersionedModel model = versionedModel.get();
-      final List<Violation> result = Streams.stream( model.getRawModel().listStatements( null, RDF.type, (RDFNode) null ) )
-            .map( Statement::getSubject )
-            .filter( Resource::isURIResource )
-            .map( Resource::getURI )
-            .map( uri -> model.getModel().createResource( uri ) )
-            .flatMap( element -> shaclValidator.validateElement( element ).stream() )
-            .toList();
+      final List<Violation> result = shaclValidator.validateModel( model );
 
       if ( result.isEmpty() ) {
          // The SHACL validation succeeded, check for cycles in the model.

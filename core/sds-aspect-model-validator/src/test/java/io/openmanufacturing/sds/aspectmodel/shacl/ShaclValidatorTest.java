@@ -1836,6 +1836,333 @@ public class ShaclValidatorTest {
       assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty [", ":testProperty".length() ) );
    }
 
+   @Test
+   void testSparqlTargetWithGenericConstraint() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix : <http://example.com#> .
+                        
+            :prefixDeclarations
+               sh:declare [
+                  sh:prefix "" ;
+                  sh:namespace "http://example.com#"^^xsd:anyURI ;
+               ] .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:target [
+                  a sh:SPARQLTarget ;
+                  sh:prefixes :prefixDeclarations ;
+                  sh:select ""\"
+                     select $this
+                     where {
+                        $this a :TestClass .
+                     }
+                  ""\"
+               ] ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                 sh:path :testProperty ;
+                 sh:xone (
+                   [ sh:nodeKind sh:Literal ]
+                 ) ;
+               ] .
+            """ );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            :Foo a :TestClass ;
+              :testProperty [
+                 :testProperty2 42 ;
+              ] .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      final Violation finding = violations.get( 0 );
+      assertThat( finding ).isInstanceOf( NodeKindViolation.class );
+   }
+
+   @Test
+   void testSparqlTargetWithShapeSparqlConstraint() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix : <http://example.com#> .
+
+            :prefixDeclarations
+               sh:declare [
+                  sh:prefix "" ;
+                  sh:namespace "http://example.com#"^^xsd:anyURI ;
+               ] .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:target [
+                  a sh:SPARQLTarget ;
+                  sh:prefixes :prefixDeclarations ;
+                  sh:select ""\"
+                     select $this
+                     where {
+                        $this a :TestClass .
+                     }
+                  ""\"
+               ] ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                  sh:path :testProperty ;
+                  sh:datatype xsd:string ;
+               ] ;
+               sh:sparql [
+                  a sh:SPARQLConstraint ;
+                  sh:message "Constraint was violated on {$this}, value was {?value}." ;
+                  sh:prefixes :prefixDeclarations ;
+                  sh:select ""\"
+                     select $this ?value ?code
+                     where {
+                       $this a :TestClass .
+                       $this :testProperty ?value .
+                       filter( ?value != "secret valid value" )
+                       bind( "ERR_CUSTOM" as ?code )
+                     }
+                  ""\"
+               ] .
+            """ );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            :Foo a :TestClass ;
+              :testProperty "foo" .
+
+            :Bar a :TestClass ;
+              :testProperty "secret valid value" .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      final Violation finding = violations.get( 0 );
+      assertThat( finding ).isInstanceOf( SparqlConstraintViolation.class );
+   }
+
+   @Test
+   void testSparqlTargetWithPropertySparqlConstraint() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix : <http://example.com#> .
+
+            :prefixDeclarations
+               sh:declare [
+                  sh:prefix "" ;
+                  sh:namespace "http://example.com#"^^xsd:anyURI ;
+               ] .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:target [
+                  a sh:SPARQLTarget ;
+                  sh:prefixes :prefixDeclarations ;
+                  sh:select ""\"
+                     select $this
+                     where {
+                        $this a :TestClass .
+                     }
+                  ""\"
+               ] ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                  sh:path :testProperty ;
+                  sh:datatype xsd:string ;
+                  sh:sparql [
+                     a sh:SPARQLConstraint ;
+                     sh:message "Required property 'testProperty' does not exist on {$this}." ;
+                     sh:prefixes :prefixDeclarations ;
+                     sh:select ""\"
+                        select $this ?code
+                        where {
+                          $this a :TestClass .
+                          filter ( not exists { $this :testProperty [] } ) .
+                          bind( "ERR_CUSTOM" as ?code )
+                        }
+                     ""\"
+                  ] ;
+               ] .
+            """ );
+
+      // important detail: ':testProperty' is missing on ':Foo', the SPARQLConstraint must run anyway
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            :Foo a :TestClass.              
+
+            :Bar a :TestClass ;
+              :testProperty "secret valid value" .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      final Violation finding = violations.get( 0 );
+      assertThat( finding ).isInstanceOf( SparqlConstraintViolation.class );
+   }
+
+   @Test
+   void testMultiElementValidation() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix : <http://example.com#> .
+
+            :prefixDeclarations
+               sh:declare [
+                  sh:prefix "" ;
+                  sh:namespace "http://example.com#"^^xsd:anyURI ;
+               ] .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:target [
+                  a sh:SPARQLTarget ;
+                  sh:prefixes :prefixDeclarations ;
+                  sh:select ""\"
+                     select $this
+                     where {
+                        $this a :TestClass .
+                     }
+                  ""\"
+               ] ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                  sh:path :testProperty ;
+                  sh:datatype xsd:string ;
+               ] ;
+               sh:sparql [
+                  a sh:SPARQLConstraint ;
+                  sh:message "Constraint was violated on {$this}, value was {?value}." ;
+                  sh:prefixes :prefixDeclarations ;
+                  sh:select ""\"
+                     select $this ?value ?code
+                     where {
+                       $this a :TestClass .
+                       $this :testProperty ?value .
+                       filter( ?value != "secret valid value" )
+                       bind( "ERR_CUSTOM" as ?code )
+                     }
+                  ""\"
+               ] .
+            """ );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            :Foo a :TestClass ;
+              :testProperty "foo" .
+
+            :Bar a :TestClass ;
+              :testProperty "bar" .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource foo = dataModel.createResource( namespace + "Foo" );
+      final Resource bar = dataModel.createResource( namespace + "Bar" );
+      final List<Violation> violations = validator.validateElements( List.of( foo, bar ) );
+
+      assertThat( violations.size() ).isEqualTo( 2 );
+      assertThat( violations.get( 0 ) ).isInstanceOf( SparqlConstraintViolation.class );
+      assertThat( violations.get( 1 ) ).isInstanceOf( SparqlConstraintViolation.class );
+   }
+
+   @Test
+   void testTargetObjectsOf() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+            @prefix : <http://example.com#> .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:targetObjectsOf rdf:type ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                  sh:path :testProperty ;
+                  sh:datatype xsd:string ;
+               ] ;
+            """ );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            :Foo a :TestClass ;
+              :testProperty 2 .
+
+            :Bar a :TestClass ;
+              :testProperty 3 .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource foo = dataModel.createResource( namespace + "Foo" );
+      final Resource bar = dataModel.createResource( namespace + "Bar" );
+      final List<Violation> violations = validator.validateElements( List.of( foo, bar ) );
+
+      assertThat( violations.size() ).isEqualTo( 2 );
+      assertThat( violations.get( 0 ) ).isInstanceOf( DatatypeViolation.class );
+      assertThat( violations.get( 1 ) ).isInstanceOf( DatatypeViolation.class );
+   }
+
+   @Test
+   void testNodeTargets() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+            @prefix : <http://example.com#> .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:targetNode :Foo ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                  sh:path :testProperty ;
+                  sh:datatype xsd:string ;
+               ] ;
+            """ );
+
+      final Model dataModel = model( """            
+            @prefix : <http://example.com#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            :Foo a :TestClass ;
+              :testProperty 2 .
+
+            :Bar a :TestClass ;
+              :testProperty 3 .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource foo = dataModel.createResource( namespace + "Foo" );
+      final Resource bar = dataModel.createResource( namespace + "Bar" );
+      final List<Violation> violations = validator.validateElements( List.of( foo, bar ) );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      assertThat( violations.get( 0 ) ).isInstanceOf( DatatypeViolation.class );
+   }
+
    private Model model( final String ttlRepresentation ) {
       final Model model = ModelFactory.createDefaultModel();
       final InputStream in = new ByteArrayInputStream( ttlRepresentation.getBytes( StandardCharsets.UTF_8 ) );
