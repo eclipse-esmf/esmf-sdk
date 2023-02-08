@@ -13,185 +13,249 @@
 
 package io.openmanufacturing.sds.aspectmodel.shacl;
 
-import io.openmanufacturing.sds.aspectmodel.shacl.fix.Fix;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.ClassTypeViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.ClosedViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.DatatypeViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.DisjointViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.EqualsViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.InvalidValueViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.JsConstraintViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.LanguageFromListViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.LessThanOrEqualsViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.LessThanViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.MaxCountViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.MaxExclusiveViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.MaxInclusiveViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.MaxLengthViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinCountViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinExclusiveViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinInclusiveViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.MinLengthViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.MissingTypeViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.NodeKindViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.NotViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.PatternViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.SparqlConstraintViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.UniqueLanguageViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.ValueFromListViolation;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
-import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-public class RustLikeFormatter extends ViolationFormatter {
+import org.apache.jena.graph.AnyNode;
+import org.apache.jena.graph.BlankNode;
+import org.apache.jena.graph.LiteralNode;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.UriNode;
+import org.apache.jena.graph.VariableNode;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFList;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.graph.NodeConst;
+import org.apache.jena.vocabulary.RDF;
 
-   private final MessageFormatter formatter = new MessageFormatter();
+import io.openmanufacturing.sds.aspectmodel.resolver.parser.SmartToken;
 
-   @Override
-   public String visit( final Violation violation ) {
-      final StringBuilder builder = new StringBuilder();
-      builder.append( violation.accept( this ) );
-      for ( final Fix possibleFix : violation.fixes() ) {
-         builder.append( String.format( "%n  > Possible fix: %s", possibleFix.description() ) );
+/**
+ * Rust-like message formatter. Formatted messages look something like the following example:
+ *
+ * ---> Error at line 11 column 20
+ *    |
+ * 11 |   :testProperty [ a :SomethingElse ]
+ *    |                     ^^^^^^^^^^^^^^ Property ':testProperty' on ':Foo' has type ':SomethingElse', but only ':TestClass2' is allowed.
+ *    |
+ */
+public class RustLikeFormatter {
+
+   private StringBuffer buffer;
+   private SmartToken highlightToken;
+   private int currentColumn;
+
+   public String constructDetailedMessage( final RDFNode highlight, final String message ) {
+      currentColumn = 0;
+      highlightToken = extractToken( highlight.asNode() );
+
+      if ( highlightToken == null ) {
+         // without meaningful position information (line/col), we are not able to provide any additional context/details
+         return message;
       }
-      return builder.toString();
+
+      final Model model = highlight.getModel();
+      final List<Statement> statements = model.listStatements()
+            .filterKeep( statement -> spansLine( statement, highlightToken.line() ) )
+            .toList();
+      return formatError( statements, message );
    }
 
-   @Override
-   public String visitClassTypeViolation( final ClassTypeViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actualClass(), violation.message() );
+   private boolean spansLine( final Statement statement, final int lineNumber ) {
+      return isOnLine( statement.getSubject(), lineNumber )
+            || isOnLine( statement.getPredicate(), lineNumber )
+            || isOnLine( statement.getObject(), lineNumber );
    }
 
-   @Override
-   public String visitDatatypeViolation( final DatatypeViolation violation ) {
-      return formatter.constructDetailedMessage(
-            violation.context().property().isPresent() ? violation.context().property().get() : violation.context().element(),
-            violation.message() );
+   private boolean isOnLine( final RDFNode node, final int lineNumber ) {
+      final SmartToken nodePosition = extractToken( node.asNode() );
+      return nodePosition != null && nodePosition.line() == lineNumber;
    }
 
-   @Override
-   public String visitInvalidValueViolation( final InvalidValueViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
+   private String formatError( final List<Statement> statements, final String errorMessage ) {
+      final int prefixWidth = String.valueOf( highlightToken.line() ).length() + 1;
+      final String prefix = " ".repeat( prefixWidth ) + "| ";
+      return String.format( "%s> Error at line %d column %d%n", "-".repeat( prefixWidth ), highlightToken.line(), highlightToken.column() )
+            + prefix + System.lineSeparator()
+            + highlightToken.line() + " | " + formatStatements( statements ) + System.lineSeparator()
+            + prefix + " ".repeat( highlightToken.column() ) + "^".repeat( highlightToken.content().length() ) + " " + errorMessage + System.lineSeparator()
+            + prefix + System.lineSeparator();
    }
 
-   @Override
-   public String visitLanguageFromListViolation( final LanguageFromListViolation violation ) {
-      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
+   private String formatStatements( final List<Statement> statements ) {
+      sortSequentially( statements );
+      buffer = new StringBuffer();
+      for ( int i = 0; i < statements.size(); i++ ) {
+         formatStatement( statements.get( i ), i + 1 < statements.size() ? statements.get( i + 1 ) : null );
+      }
+      return buffer.toString();
    }
 
-   @Override
-   public String visitMaxCountViolation( final MaxCountViolation violation ) {
-      return formatter.constructDetailedMessage(
-            violation.allowed() == 0 ? violation.context().element() : violation.context().property().get(),
-            violation.message() );
+   // model.listStatements() returns the statements in random order, but we want to format them as they appear in the source document,
+   // so reconstruct the original sequence
+   private void sortSequentially( final List<Statement> statements ) {
+      statements.sort( Comparator.comparingInt( s -> firstPositionedNode( (Statement) s ).line() )
+            .thenComparingInt( s -> firstPositionedNode( (Statement) s ).column() )
+      );
    }
 
-   @Override
-   public String visitMaxExclusiveViolation( final MaxExclusiveViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
+   // Several statements can share a subject with the same position, so try to determine the source order based on predicates and objects
+   private SmartToken firstPositionedNode( final Statement statement ) {
+      return Stream.of( statement.getPredicate(), statement.getObject() )
+            .map( part -> extractToken( part.asNode() ) )
+            .filter( Objects::nonNull )
+            .findFirst()
+            .orElse( null );
    }
 
-   @Override
-   public String visitMaxInclusiveViolation( final MaxInclusiveViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
+   private boolean formatStatement( final Statement statement, final Statement followingStatement ) {
+      if ( !formatNode( statement.getSubject().asNode(), statement.getPredicate().asNode() ) ) {
+         return false;
+      }
+      if ( !formatNode( statement.getPredicate().asNode(), statement.getObject().asNode() ) ) {
+         return false;
+      }
+      final RDFNode object = statement.getObject();
+      if ( isList( statement.getModel(), object ) ) {
+         if ( !formatList( object ) ) {
+            return false;
+         }
+      } else if ( object.isAnon() ) {
+         if ( !formatAnonymousNodes( object ) ) {
+            return false;
+         }
+      } else {
+         if ( !formatNode( object.asNode(), null ) ) {
+            return false;
+         }
+      }
+
+      if ( !statement.getSubject().isAnon() ) {
+         spacedIfPossible( isLastSubjectedStatement( statement ) ? "." : ";", null );
+      }
+
+      return true;
    }
 
-   @Override
-   public String visitMaxLengthViolation( final MaxLengthViolation violation ) {
-      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
+   // as the "whitespace" si not preserved by the parser ( in this case ';' and '.' ), we have to reconstruct it by looking at the relative positions of the
+   // statements in the original document
+   private boolean isLastSubjectedStatement( final Statement statement ) {
+      final List<Statement> sameSubject = statement.getModel().listStatements( statement.getSubject(), null, (RDFNode) null ).toList();
+      sortSequentially( sameSubject );
+      return sameSubject.indexOf( statement ) == sameSubject.size() - 1;
    }
 
-   @Override
-   public String visitMinCountViolation( final MinCountViolation violation ) {
-      return formatter.constructDetailedMessage(
-            violation.allowed() == 1 ? violation.context().element() : violation.context().property().get(),
-            violation.message() );
+   private boolean formatNode( final Node node, final Node followingNode ) {
+      final SmartToken nodePosition = extractToken( node );
+      if ( null == nodePosition ) {
+         // ugly special case: Jena replaces the RDF keyword 'a' with 'rdf:type' without position information internally
+         if ( node.equals( NodeConst.nodeRDFType ) ) {
+            spacedIfPossible( "a", followingNode );
+         }
+         return true;
+      }
+
+      // one RDF statement can span multiple lines, we are only interested in parts located on exactly the given line and not rendered yet
+      if ( nodePosition.line() != highlightToken.line() || nodePosition.column() < currentColumn ) {
+         return !(nodePosition.line() > highlightToken.line());
+      }
+
+      // whitespace is swallowed by the lexer, but we can reconstruct the proper positioning from the position information
+      final int colDiff = nodePosition.column() - currentColumn;
+      buffer.append( " ".repeat( colDiff ) );
+      currentColumn += colDiff;
+
+      final String nodeText = nodePosition.content();
+      buffer.append( nodeText );
+      currentColumn += nodeText.length();
+      return true;
    }
 
-   @Override
-   public String visitMinExclusiveViolation( final MinExclusiveViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
+   private boolean isList( final Model model, final RDFNode node ) {
+      return node.equals( RDF.nil ) || (node.isResource() && model.contains( node.asResource(), RDF.rest, (RDFNode) null ));
    }
 
-   @Override
-   public String visitMinInclusiveViolation( final MinInclusiveViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
+   private boolean formatList( final RDFNode listNode ) {
+      final List<RDFNode> elementList = listNode.as( RDFList.class ).asJavaList();
+
+      if ( elementList.isEmpty() ) {
+         spacedIfPossible( "()", null );
+         return true;
+      }
+
+      int index = 0;
+      for ( final RDFNode element : elementList ) {
+         if ( index == 0 && isOnLine( element, highlightToken.line() ) ) {
+            spacedIfPossible( "(", null );
+         }
+         final boolean toContinue = element.isAnon() ? formatAnonymousNodes( element ) : formatNode( element.asNode(), null );
+         if ( !toContinue ) {
+            return false;
+         }
+         index++;
+      }
+
+      spacedIfPossible( ")", null );
+      return true;
    }
 
-   @Override
-   public String visitMinLengthViolation( final MinLengthViolation violation ) {
-      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
+   private boolean formatAnonymousNodes( final RDFNode object ) {
+      final List<Statement> anons = object.getModel().listStatements( object.asResource(), null, (RDFNode) null ).toList();
+      sortSequentially( anons );
+
+      if ( anons.isEmpty() ) {
+         spacedIfPossible( "[]", null );
+         return true;
+      }
+
+      int index = 0;
+      for ( final Statement anon : anons ) {
+         if ( !formatStatement( anon, null ) ) {
+            return false;
+         }
+         if ( index != anons.size() - 1 ) {
+            spacedIfPossible( ";", null );
+         }
+         index++;
+      }
+
+      spacedIfPossible( "]", null );
+      return true;
    }
 
-   @Override
-   public String visitMissingTypeViolation( final MissingTypeViolation violation ) {
-      return formatter.constructDetailedMessage( violation.context().element(), violation.message() );
+   private boolean enoughRoomForSpace( final String content, final Node followingNode ) {
+      if ( followingNode == null ) {
+         return true;
+      }
+      final SmartToken followingToken = extractToken( followingNode );
+      return followingToken.line() != highlightToken.line() || followingToken.column() > (currentColumn + content.length() + 1);
    }
 
-   @Override
-   public String visitNodeKindViolation( final NodeKindViolation violation ) {
-      return formatter.constructDetailedMessage(
-            violation.context().property().isPresent() ? violation.context().property().get() : violation.context().element(),
-            violation.message() );
+   private void spacedIfPossible( final String content, final Node followingNode ) {
+      if ( enoughRoomForSpace( content, followingNode ) ) {
+         buffer.append( ' ' );
+         currentColumn++;
+      }
+      buffer.append( content );
+      currentColumn += content.length();
    }
 
-   @Override
-   public String visitPatternViolation( final PatternViolation violation ) {
-      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
-   }
-
-   @Override
-   public String visitSparqlConstraintViolation( final SparqlConstraintViolation violation ) {
-      return formatter.constructDetailedMessage(
-            violation.bindings().get( "highlight" ) != null ? violation.bindings().get( "highlight" ) : violation.bindings().get( "this" ),
-            violation.message() );
-   }
-
-   @Override
-   public String visitUniqueLanguageViolation( final UniqueLanguageViolation violation ) {
-      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
-   }
-
-   @Override
-   public String visitEqualsViolation( final EqualsViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actualValue(), violation.message() );
-   }
-
-   @Override
-   public String visitDisjointViolation( final DisjointViolation violation ) {
-      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
-   }
-
-   @Override
-   public String visitLessThanViolation( final LessThanViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actualValue(), violation.message() );
-   }
-
-   @Override
-   public String visitLessThanOrEqualsViolation( final LessThanOrEqualsViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actualValue(), violation.message() );
-   }
-
-   @Override
-   public String visitValueFromListViolation( final ValueFromListViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
-   }
-
-   @Override
-   public String visitClosedViolation( final ClosedViolation violation ) {
-      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
-   }
-
-   @Override
-   public String visitNotViolation( final NotViolation violation ) {
-      return formatter.constructDetailedMessage(
-            violation.context().property().isPresent() ? violation.context().property().get() : violation.context().element(),
-            violation.message() );
-   }
-
-   @Override
-   public String visitJsViolation( final JsConstraintViolation violation ) {
-      return formatter.constructDetailedMessage(
-            violation.context().property().isPresent() ? violation.context().property().get() : violation.context().element(),
-            violation.message() );
+   private static SmartToken extractToken( final Node n ) {
+      if ( n instanceof AnyNode an ) {
+         return an.getToken();
+      } else if ( n instanceof BlankNode bn ) {
+         return bn.getToken();
+      } else if ( n instanceof LiteralNode ln ) {
+         return ln.getToken();
+      } else if ( n instanceof UriNode un ) {
+         return un.getToken();
+      } else if ( n instanceof VariableNode vn ) {
+         return vn.getToken();
+      } else {
+         return null;
+      }
    }
 }

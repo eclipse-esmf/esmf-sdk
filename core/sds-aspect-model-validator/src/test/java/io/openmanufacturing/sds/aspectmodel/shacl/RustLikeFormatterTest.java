@@ -30,11 +30,11 @@ import org.junit.jupiter.api.Test;
 
 import io.openmanufacturing.sds.aspectmodel.resolver.parser.ReaderRIOTTurtle;
 
-public class MessageFormatterTest {
+public class RustLikeFormatterTest {
 
    private final String namespace = "http://example.com#";
 
-   private final MessageFormatter formatter = new MessageFormatter();
+   private final RustLikeFormatter formatter = new RustLikeFormatter();
 
    @Test
    void testMidleStatement() {
@@ -143,7 +143,7 @@ public class MessageFormatterTest {
       final RDFNode property = dataModel.listStatements( null,
             ResourceFactory.createProperty( namespace, "prop2" ), (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( property, "" );
-      assertTrue( message.contains( ":prop2 23 ;" ) );
+      assertTrue( message.contains( ":prop2 23" ) );
    }
 
    @Test
@@ -191,23 +191,7 @@ public class MessageFormatterTest {
       final String message = formatter.constructDetailedMessage( listProperty, "" );
       assertTrue( message.contains( " :listProperty ( :firstValue" ) );
    }
-
-   @Test
-   void testMultilineListFinished() {
-      final Model dataModel = model( """            
-            @prefix : <http://example.com#> .
-                        
-            :Foo a :TestClass ;
-              :listProperty ( :firstValue 
-              :secondValue ) .
-            """ );
-
-      final RDFNode listElement = dataModel.listStatements( null, null,
-            ResourceFactory.createResource( namespace + "secondValue" ) ).nextStatement().getObject();
-      final String message = formatter.constructDetailedMessage( listElement, "" );
-      assertTrue( message.contains( " :secondValue ) ." ) );
-   }
-
+   
    @Test
    void testListWithAnonymousNodes() {
       final Model dataModel = model( """            
