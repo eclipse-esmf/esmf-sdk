@@ -121,8 +121,6 @@ public class ShaclValidator {
       return Streams.stream( model.getRawModel().listStatements( null, RDF.type, (RDFNode) null ) )
             .map( Statement::getSubject )
             .filter( Resource::isURIResource )
-            .map( Resource::getURI )
-            .map( uri -> model.getModel().createResource( uri ) )
             .flatMap( element -> validateElement( element, sparqlTargetsWithShapes ).stream() )
             .toList();
    }

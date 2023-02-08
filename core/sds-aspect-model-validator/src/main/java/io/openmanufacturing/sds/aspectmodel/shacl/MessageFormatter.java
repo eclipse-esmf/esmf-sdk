@@ -25,9 +25,11 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.graph.UriNode;
 import org.apache.jena.graph.VariableNode;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.sparql.graph.NodeConst;
+import org.apache.jena.vocabulary.RDF;
 
 import io.openmanufacturing.sds.aspectmodel.resolver.parser.SmartToken;
 
@@ -42,112 +44,125 @@ import io.openmanufacturing.sds.aspectmodel.resolver.parser.SmartToken;
  */
 public class MessageFormatter {
 
-   public static String constructDetailedMessage( final RDFNode highlight, final String message ) {
-      final SmartToken highlightToken = extractToken( highlight.asNode() );
+   private StringBuffer buffer;
+   private SmartToken highlightToken;
+   private int currentColumn;
+
+   public String constructDetailedMessage( final RDFNode highlight, final String message ) {
+      currentColumn = 0;
+      highlightToken = extractToken( highlight.asNode() );
+
       if ( highlightToken == null ) {
          // without meaningful position information (line/col), we are not able to provide any additional context/details
          return message;
       }
+
       final Model model = highlight.getModel();
       final List<Statement> statements = model.listStatements()
-            .filterKeep( statement -> spansLine( statement, highlightToken.line() ) )
+            .filterKeep( statement -> !statement.getSubject().isAnon() && spansLine( statement, highlightToken.line() ) )
             .toList();
-      return formatError( statements, highlightToken, message );
+      return formatError( statements, message );
    }
 
-   private static boolean spansLine( final Statement statement, final int lineNumber ) {
+   private boolean spansLine( final Statement statement, final int lineNumber ) {
       return isOnLine( statement.getSubject(), lineNumber )
             || isOnLine( statement.getPredicate(), lineNumber )
             || isOnLine( statement.getObject(), lineNumber );
    }
 
-   private static boolean isOnLine( final RDFNode node, final int lineNumber ) {
+   private boolean isOnLine( final RDFNode node, final int lineNumber ) {
       final SmartToken nodePosition = extractToken( node.asNode() );
       return nodePosition != null && nodePosition.line() == lineNumber;
    }
 
-   private static String formatError( final List<Statement> statements, final SmartToken highlightToken, final String errorMessage ) {
+   private String formatError( final List<Statement> statements, final String errorMessage ) {
       final int prefixWidth = String.valueOf( highlightToken.line() ).length() + 1;
       final String prefix = " ".repeat( prefixWidth ) + "| ";
       return String.format( "%s> Error at line %d column %d%n", "-".repeat( prefixWidth ), highlightToken.line(), highlightToken.column() )
             + prefix + System.lineSeparator()
-            + highlightToken.line() + " | " + formatStatements( statements, highlightToken ) + System.lineSeparator()
+            + highlightToken.line() + " | " + formatStatements( statements ) + System.lineSeparator()
             + prefix + " ".repeat( highlightToken.column() ) + "^".repeat( highlightToken.content().length() ) + " " + errorMessage + System.lineSeparator()
             + prefix + System.lineSeparator();
    }
 
-   private static SmartToken firstPositionedNode( final Statement statement ) {
-      return Stream.of( statement.getSubject(), statement.getPredicate(), statement.getObject() )
+   private String formatStatements( final List<Statement> statements ) {
+      sortSequentially( statements );
+      buffer = new StringBuffer();
+      for ( int i = 0; i < statements.size(); i++ ) {
+         formatStatement( statements.get( i ), i + 1 < statements.size() ? statements.get( i + 1 ) : null );
+      }
+      return buffer.toString();
+   }
+
+   // model.listStatements() returns the statements in random order, but we want to format them as they appear in the source document,
+   // so reconstruct the original sequence
+   private void sortSequentially( final List<Statement> statements ) {
+      statements.sort( Comparator.comparingInt( s -> firstPositionedNode( (Statement) s ).line() )
+            .thenComparingInt( s -> firstPositionedNode( (Statement) s ).column() )
+      );
+   }
+
+   // Several statements can share a subject with the same position, so try to determine the source order based on predicates and objects
+   private SmartToken firstPositionedNode( final Statement statement ) {
+      return Stream.of( statement.getPredicate(), statement.getObject() )
             .map( part -> extractToken( part.asNode() ) )
             .filter( Objects::nonNull )
             .findFirst()
             .orElse( null );
    }
 
-   private static String formatStatements( final List<Statement> statements, final SmartToken highlightToken ) {
-      // model.listStatements() returns the statements in random order, but we want to format them as they appear in the source document,
-      // so reconstruct the original sequence
-      statements.sort( Comparator.comparingInt( s -> firstPositionedNode( (Statement) s ).line() )
-            .thenComparingInt( s -> firstPositionedNode( (Statement) s ).column() )
-      );
-
-      final StringBuffer buffer = new StringBuffer();
-      int currentColumn = 0;
-      for ( final Statement statement : statements ) {
-         currentColumn = formatStatement( statement, highlightToken, buffer, currentColumn );
+   private boolean formatStatement( final Statement statement, final Statement followingStatement ) {
+      if ( !formatNode( statement.getSubject().asNode(), statement.getPredicate().asNode() ) ) {
+         return false;
       }
-
-      return buffer.toString();
-   }
-
-   private static int formatStatement( final Statement statement, final SmartToken highlightToken, final StringBuffer buffer, int currentColumn ) {
-      final boolean subjectIsAnon = statement.getSubject().isAnon();
-      currentColumn = formatNode( buffer, statement.getSubject().asNode(), highlightToken, currentColumn );
-      currentColumn = formatPredicateNode( buffer, statement.getPredicate().asNode(), statement.getObject().asNode(), highlightToken, currentColumn );
+      if ( !formatNode( statement.getPredicate().asNode(), statement.getObject().asNode() ) ) {
+         return false;
+      }
       final RDFNode object = statement.getObject();
-      final int columnBeforeObject = currentColumn;
-      if ( !object.isAnon() ) { // nested anonymous nodes will have one more statement, which will get a proper formatting
-         currentColumn = formatNode( buffer, object.asNode(), highlightToken, currentColumn );
+      if ( isList( statement.getModel(), object ) ) {
+         if ( !formatList( object ) ) {
+            return false;
+         }
+      } else if ( object.isAnon() ) {
+         if ( !formatAnonymousNodes( object ) ) {
+            return false;
+         }
+      } else {
+         if ( !formatNode( object.asNode(), null ) ) {
+            return false;
+         }
       }
 
-      // we do not have a token for the closing brace of the anonymous nodes and therefore no position information, so we have to reconstruct it:
-      // we add it only if the statement has been fully rendered
-      if ( subjectIsAnon && columnBeforeObject != currentColumn ) {
-         buffer.append( " " ).append( "]" );
-         currentColumn += 2;
+      if ( !statement.getSubject().isAnon() ) {
+         spacedIfPossible( isLastSubjectedStatement( statement ) ? "." : ";", null );
       }
-      return currentColumn;
+
+      return true;
    }
 
-   private static int formatPredicateNode( final StringBuffer buffer, final Node node, final Node objectNode, final SmartToken highlightToken,
-         final int currentColumn ) {
+   // as the "whitespace" si not preserved by the parser ( in this case ';' and '.' ), we have to reconstruct it by looking at the relative positions of the
+   // statements in the original document
+   private boolean isLastSubjectedStatement( final Statement statement ) {
+      final List<Statement> sameSubject = statement.getModel().listStatements( statement.getSubject(), null, (RDFNode) null ).toList();
+      sortSequentially( sameSubject );
+      return sameSubject.indexOf( statement ) == sameSubject.size() - 1;
+   }
+
+   private boolean formatNode( final Node node, final Node followingNode ) {
       final SmartToken nodePosition = extractToken( node );
       if ( null == nodePosition ) {
-         // ugly special case: Jena replaces the RDF keyword 'a' with 'rdf:type' without position information internally,
-         // so we have to reconstruct the formatting as good as we can
+         // ugly special case: Jena replaces the RDF keyword 'a' with 'rdf:type' without position information internally
          if ( node.equals( NodeConst.nodeRDFType ) ) {
-            final SmartToken objectPosition = extractToken( objectNode );
-            if ( objectPosition.line() != highlightToken.line() || objectPosition.column() > (currentColumn + 2) ) {
-               // enough room for a space
-               buffer.append( ' ' ).append( 'a' );
-               return currentColumn + 2;
-            } else {
-               buffer.append( 'a' );
-               return currentColumn + 1;
-            }
+            spacedIfPossible( "a", followingNode );
          }
-         return currentColumn;
+         return true;
       }
 
-      return formatNode( buffer, node, highlightToken, currentColumn );
-   }
-
-   private static int formatNode( final StringBuffer buffer, final Node node, final SmartToken highlightToken, int currentColumn ) {
-      final SmartToken nodePosition = extractToken( node );
-      // one RDF statement can span multiple lines, we are only interested in parts located on exactly the given line
-      if ( nodePosition.line() != highlightToken.line() ) {
-         return currentColumn;
+      // one RDF statement can span multiple lines, we are only interested in parts located on exactly the given line and not rendered yet
+      if ( nodePosition.line() != highlightToken.line() || nodePosition.column() < currentColumn ) {
+         return !(nodePosition.line() > highlightToken.line());
       }
+
       // whitespace is swallowed by the lexer, but we can reconstruct the proper positioning from the position information
       final int colDiff = nodePosition.column() - currentColumn;
       buffer.append( " ".repeat( colDiff ) );
@@ -155,7 +170,77 @@ public class MessageFormatter {
 
       final String nodeText = nodePosition.content();
       buffer.append( nodeText );
-      return currentColumn + nodeText.length();
+      currentColumn += nodeText.length();
+      return true;
+   }
+
+   private boolean isList( final Model model, final RDFNode node ) {
+      return node.equals( RDF.nil ) || (node.isResource() && model.contains( node.asResource(), RDF.rest, (RDFNode) null ));
+   }
+
+   private boolean formatList( final RDFNode listNode ) {
+      final List<RDFNode> elementList = listNode.as( RDFList.class ).asJavaList();
+
+      if ( elementList.isEmpty() ) {
+         spacedIfPossible( "()", null );
+         return true;
+      }
+
+      int index = 0;
+      for ( final RDFNode element : elementList ) {
+         if ( index == 0 && isOnLine( element, highlightToken.line() ) ) {
+            spacedIfPossible( "(", null );
+         }
+         final boolean toContinue = element.isAnon() ? formatAnonymousNodes( element ) : formatNode( element.asNode(), null );
+         if ( !toContinue ) {
+            return false;
+         }
+         index++;
+      }
+
+      spacedIfPossible( ")", null );
+      return true;
+   }
+
+   private boolean formatAnonymousNodes( final RDFNode object ) {
+      final List<Statement> anons = object.getModel().listStatements( object.asResource(), null, (RDFNode) null ).toList();
+      sortSequentially( anons );
+
+      if ( anons.isEmpty() ) {
+         spacedIfPossible( "[]", null );
+         return true;
+      }
+
+      int index = 0;
+      for ( final Statement anon : anons ) {
+         if ( !formatStatement( anon, null ) ) {
+            return false;
+         }
+         if ( index != anons.size() - 1 ) {
+            spacedIfPossible( ";", null );
+         }
+         index++;
+      }
+
+      spacedIfPossible( "]", null );
+      return true;
+   }
+
+   private boolean enoughRoomForSpace( final String content, final Node followingNode ) {
+      if ( followingNode == null ) {
+         return true;
+      }
+      final SmartToken followingToken = extractToken( followingNode );
+      return followingToken.line() != highlightToken.line() || followingToken.column() > (currentColumn + content.length() + 1);
+   }
+
+   private void spacedIfPossible( final String content, final Node followingNode ) {
+      if ( enoughRoomForSpace( content, followingNode ) ) {
+         buffer.append( ' ' );
+         currentColumn++;
+      }
+      buffer.append( content );
+      currentColumn += content.length();
    }
 
    private static SmartToken extractToken( final Node n ) {

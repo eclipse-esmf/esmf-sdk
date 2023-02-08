@@ -43,6 +43,9 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
 
 public class RustLikeFormatter extends ViolationFormatter {
+
+   private final MessageFormatter formatter = new MessageFormatter();
+
    @Override
    public String visit( final Violation violation ) {
       final StringBuilder builder = new StringBuilder();
@@ -55,139 +58,139 @@ public class RustLikeFormatter extends ViolationFormatter {
 
    @Override
    public String visitClassTypeViolation( final ClassTypeViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actualClass(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actualClass(), violation.message() );
    }
 
    @Override
    public String visitDatatypeViolation( final DatatypeViolation violation ) {
-      return MessageFormatter.constructDetailedMessage(
+      return formatter.constructDetailedMessage(
             violation.context().property().isPresent() ? violation.context().property().get() : violation.context().element(),
             violation.message() );
    }
 
    @Override
    public String visitInvalidValueViolation( final InvalidValueViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actual(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
    }
 
    @Override
    public String visitLanguageFromListViolation( final LanguageFromListViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
+      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
    }
 
    @Override
    public String visitMaxCountViolation( final MaxCountViolation violation ) {
-      return MessageFormatter.constructDetailedMessage(
+      return formatter.constructDetailedMessage(
             violation.allowed() == 0 ? violation.context().element() : violation.context().property().get(),
             violation.message() );
    }
 
    @Override
    public String visitMaxExclusiveViolation( final MaxExclusiveViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actual(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
    }
 
    @Override
    public String visitMaxInclusiveViolation( final MaxInclusiveViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actual(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
    }
 
    @Override
    public String visitMaxLengthViolation( final MaxLengthViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
+      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
    }
 
    @Override
    public String visitMinCountViolation( final MinCountViolation violation ) {
-      return MessageFormatter.constructDetailedMessage(
+      return formatter.constructDetailedMessage(
             violation.allowed() == 1 ? violation.context().element() : violation.context().property().get(),
             violation.message() );
    }
 
    @Override
    public String visitMinExclusiveViolation( final MinExclusiveViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actual(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
    }
 
    @Override
    public String visitMinInclusiveViolation( final MinInclusiveViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actual(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
    }
 
    @Override
    public String visitMinLengthViolation( final MinLengthViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
+      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
    }
 
    @Override
    public String visitMissingTypeViolation( final MissingTypeViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.context().element(), violation.message() );
+      return formatter.constructDetailedMessage( violation.context().element(), violation.message() );
    }
 
    @Override
    public String visitNodeKindViolation( final NodeKindViolation violation ) {
-      return MessageFormatter.constructDetailedMessage(
+      return formatter.constructDetailedMessage(
             violation.context().property().isPresent() ? violation.context().property().get() : violation.context().element(),
             violation.message() );
    }
 
    @Override
    public String visitPatternViolation( final PatternViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
+      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
    }
 
    @Override
    public String visitSparqlConstraintViolation( final SparqlConstraintViolation violation ) {
-      return MessageFormatter.constructDetailedMessage(
+      return formatter.constructDetailedMessage(
             violation.bindings().get( "highlight" ) != null ? violation.bindings().get( "highlight" ) : violation.bindings().get( "this" ),
             violation.message() );
    }
 
    @Override
    public String visitUniqueLanguageViolation( final UniqueLanguageViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
+      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
    }
 
    @Override
    public String visitEqualsViolation( final EqualsViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actualValue(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actualValue(), violation.message() );
    }
 
    @Override
    public String visitDisjointViolation( final DisjointViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
+      return formatter.constructDetailedMessage( violation.context().property().get(), violation.message() );
    }
 
    @Override
    public String visitLessThanViolation( final LessThanViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actualValue(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actualValue(), violation.message() );
    }
 
    @Override
    public String visitLessThanOrEqualsViolation( final LessThanOrEqualsViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actualValue(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actualValue(), violation.message() );
    }
 
    @Override
    public String visitValueFromListViolation( final ValueFromListViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actual(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
    }
 
    @Override
    public String visitClosedViolation( final ClosedViolation violation ) {
-      return MessageFormatter.constructDetailedMessage( violation.actual(), violation.message() );
+      return formatter.constructDetailedMessage( violation.actual(), violation.message() );
    }
 
    @Override
    public String visitNotViolation( final NotViolation violation ) {
-      return MessageFormatter.constructDetailedMessage(
+      return formatter.constructDetailedMessage(
             violation.context().property().isPresent() ? violation.context().property().get() : violation.context().element(),
             violation.message() );
    }
 
    @Override
    public String visitJsViolation( final JsConstraintViolation violation ) {
-      return MessageFormatter.constructDetailedMessage(
+      return formatter.constructDetailedMessage(
             violation.context().property().isPresent() ? violation.context().property().get() : violation.context().element(),
             violation.message() );
    }
