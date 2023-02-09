@@ -86,7 +86,7 @@ The available options and their meaning can also be seen in the help text of the
                                         |  _--paging-time-based, -pt_ : in case there is more than one paging possibility, it has to be time based paging|
                                         |  _--language, -l_ : The language from the model for which an OpenAPI specification should be generated (default: en) |  `bamm aspect AspectModel.ttl to openapi -l de`|
 | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.3+| aspect <model> to json             | Generate OpenAPI JSON specification for an Aspect Model        | `bamm aspect AspectModel.ttl to json`
+.3+| aspect <model> to json             | Generate example JSON payload data for an Aspect Model        | `bamm aspect AspectModel.ttl to json`
                                         |  _--output, -o_ : output file path (default: stdout)           |
 | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .3+| aspect <model> to schema           | Generate JSON schema for an Aspect Model                       | `bamm aspect AspectModel.ttl to schema`
