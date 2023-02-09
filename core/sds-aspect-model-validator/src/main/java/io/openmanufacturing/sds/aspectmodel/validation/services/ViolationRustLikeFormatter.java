@@ -13,6 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.validation.services;
 
+import io.openmanufacturing.sds.aspectmodel.resolver.parser.IRdfTextFormatter;
 import io.openmanufacturing.sds.aspectmodel.shacl.RustLikeFormatter;
 import io.openmanufacturing.sds.aspectmodel.shacl.fix.Fix;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ClassTypeViolation;
@@ -44,7 +45,15 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 
 public class ViolationRustLikeFormatter extends ViolationFormatter {
 
-   private final RustLikeFormatter formatter = new RustLikeFormatter();
+   private final RustLikeFormatter formatter;
+
+   public ViolationRustLikeFormatter() {
+      formatter = new RustLikeFormatter();
+   }
+
+   public ViolationRustLikeFormatter( final IRdfTextFormatter formatter ) {
+      this.formatter = new RustLikeFormatter( formatter );
+   }
 
    @Override
    public String visit( final Violation violation ) {

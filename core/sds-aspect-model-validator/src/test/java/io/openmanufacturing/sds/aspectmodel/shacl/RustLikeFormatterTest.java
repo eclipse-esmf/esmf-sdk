@@ -13,7 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.shacl;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -49,7 +49,7 @@ public class RustLikeFormatterTest {
       final RDFNode firstProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "firstProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( firstProperty, "" );
-      assertTrue( message.contains( ":firstProperty 1 ;" ) );
+      assertCorrectFormatting( message, ":firstProperty 1 ;" );
    }
 
    @Test
@@ -65,7 +65,7 @@ public class RustLikeFormatterTest {
       final RDFNode secondProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "secondProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( secondProperty, "" );
-      assertTrue( message.contains( ":secondProperty 2 ." ) );
+      assertCorrectFormatting( message, ":secondProperty 2 ." );
    }
 
    @Test
@@ -80,7 +80,7 @@ public class RustLikeFormatterTest {
       final RDFNode firstProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "firstProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( firstProperty, "" );
-      assertTrue( message.contains( " :firstProperty 1 ; :secondProperty 2 ." ) );
+      assertCorrectFormatting( message, ":firstProperty 1 ; :secondProperty 2 ." );
    }
 
    @Test
@@ -94,7 +94,7 @@ public class RustLikeFormatterTest {
       final RDFNode property = dataModel.listStatements( ResourceFactory.createResource( namespace + "Foo" ),
             ResourceFactory.createProperty( namespace, "property" ), (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( property, "" );
-      assertTrue( message.contains( ":Foo a :TestClass ; :property 1 . :Bar a :TestClass ; :property 2 ." ) );
+      assertCorrectFormatting( message, ":Foo a :TestClass ; :property 1 . :Bar a :TestClass ; :property 2 ." );
    }
 
    @Test
@@ -109,7 +109,7 @@ public class RustLikeFormatterTest {
       final RDFNode property = dataModel.listStatements( ResourceFactory.createResource( namespace + "Foo" ),
             ResourceFactory.createProperty( namespace, "testProperty" ), (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( property, "" );
-      assertTrue( message.contains( ":testProperty [ a :MyType ] ." ) );
+      assertCorrectFormatting( message, ":testProperty [ a :MyType ] ." );
    }
 
    @Test
@@ -126,7 +126,7 @@ public class RustLikeFormatterTest {
       final RDFNode property = dataModel.listStatements( ResourceFactory.createResource( namespace + "Foo" ),
             ResourceFactory.createProperty( namespace, "prop1" ), (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( property, "" );
-      assertTrue( message.contains( ":prop1 [" ) );
+      assertCorrectFormatting( message, ":prop1 [" );
    }
 
    @Test
@@ -143,7 +143,7 @@ public class RustLikeFormatterTest {
       final RDFNode property = dataModel.listStatements( null,
             ResourceFactory.createProperty( namespace, "prop2" ), (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( property, "" );
-      assertTrue( message.contains( ":prop2 23" ) );
+      assertCorrectFormatting( message, ":prop2 23" );
    }
 
    @Test
@@ -158,7 +158,7 @@ public class RustLikeFormatterTest {
       final RDFNode listProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "listProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( listProperty, "" );
-      assertTrue( message.contains( " :listProperty () ." ) );
+      assertCorrectFormatting( message, ":listProperty () ." );
    }
 
    @Test
@@ -173,7 +173,7 @@ public class RustLikeFormatterTest {
       final RDFNode listProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "listProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( listProperty, "" );
-      assertTrue( message.contains( " :listProperty ( :firstValue :secondValue ) ." ) );
+      assertCorrectFormatting( message, ":listProperty ( :firstValue :secondValue ) ." );
    }
 
    @Test
@@ -189,9 +189,25 @@ public class RustLikeFormatterTest {
       final RDFNode listProperty = dataModel.listStatements( null, ResourceFactory.createProperty( namespace, "listProperty" ),
             (RDFNode) null ).nextStatement().getPredicate();
       final String message = formatter.constructDetailedMessage( listProperty, "" );
-      assertTrue( message.contains( " :listProperty ( :firstValue" ) );
+      assertCorrectFormatting( message, ":listProperty ( :firstValue" );
    }
-   
+
+   @Test
+   void testMultilineListFinished() {
+      final Model dataModel = model( """            
+            @prefix : <http://example.com#> .
+                        
+            :Foo a :TestClass ;
+              :listProperty ( :firstValue
+              :secondValue :thirdValue ) .
+            """ );
+
+      final RDFNode listElement = dataModel.listStatements( null, null,
+            ResourceFactory.createResource( namespace + "secondValue" ) ).nextStatement().getObject();
+      final String message = formatter.constructDetailedMessage( listElement, "" );
+      assertCorrectFormatting( message, ":secondValue :thirdValue ) ." );
+   }
+
    @Test
    void testListWithAnonymousNodes() {
       final Model dataModel = model( """            
@@ -204,7 +220,27 @@ public class RustLikeFormatterTest {
       final RDFNode listElement = dataModel.listStatements( null, null,
             ResourceFactory.createResource( namespace + "prop2" ) ).nextStatement().getObject();
       final String message = formatter.constructDetailedMessage( listElement, "" );
-      assertTrue( message.contains( " [ :property :prop2 ;:name \"givenName\" ] ) ." ) );
+      assertCorrectFormatting( message, ":listProperty ( :firstValue [ :property :prop2 ;:name \"givenName\" ] ) ." );
+   }
+
+   @Test
+   void testDenseFormatting() {
+      final Model dataModel = model( """            
+            @prefix : <http://example.com#> .
+                        
+            :Foo a :TestClass;:property 1.:Bar a :TestClass;:property 2.
+            """ );
+
+      final RDFNode property = dataModel.listStatements( ResourceFactory.createResource( namespace + "Foo" ),
+            ResourceFactory.createProperty( namespace, "property" ), (RDFNode) null ).nextStatement().getPredicate();
+      final String message = formatter.constructDetailedMessage( property, "" );
+      assertCorrectFormatting( message, ":Foo a :TestClass;:property 1.:Bar a :TestClass;:property 2 ." );
+   }
+
+   private void assertCorrectFormatting( final String messageText, final String expectedLine ) {
+      final String lineWithSourceText = messageText.lines().toList().get( 2 );
+      final String reconstructedLine = lineWithSourceText.substring( lineWithSourceText.indexOf( '|' ) + 1 );
+      assertEquals( expectedLine, reconstructedLine.trim() );
    }
 
    private Model model( final String ttlRepresentation ) {

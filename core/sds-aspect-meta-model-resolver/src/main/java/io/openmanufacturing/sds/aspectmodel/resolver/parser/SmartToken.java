@@ -19,7 +19,7 @@ import org.apache.jena.riot.tokens.Token;
 import org.apache.jena.riot.tokens.TokenType;
 
 /**
- * Wrapper class for a {@link Token}. This provides access to the actual string representation of the token, 0-based line and
+ * Wrapper class for a {@link Token}. This provides access to the actual string representation of the token, 1-based line and
  * column information.
  * @param token
  */
@@ -93,5 +93,53 @@ public record SmartToken(Token token) {
          case LITERAL_DT -> String.format( "\"%s\"^^%s:%s", token.getImage(), token.getSubToken2().getImage(), token.getSubToken2().getImage2() );
          default -> token.getImage();
       };
+   }
+
+   /**
+    * Format the content of the token in a structured manner.
+    *
+    * @param formatter formatter to use for text formatting
+    * @return the length of the UNFORMATTED content
+    */
+   public int structureContent( final IRdfTextFormatter formatter ) {
+      switch ( token.getType() ) {
+      case IRI -> formatter.formatPrimitive( "<" ).formatIri( token.getImage() ).formatPrimitive( ">" );
+      case DIRECTIVE -> formatter.formatPrimitive( "@" ).formatDirective( token.getImage() );
+      case PREFIXED_NAME -> formatter.formatPrefix( Optional.ofNullable( token.getImage() ).orElse( "" ) )
+            .formatPrimitive( ":" )
+            .formatName( Optional.ofNullable( token.getImage2() ).orElse( "" ) );
+      case LT -> formatter.formatPrimitive( "<" );
+      case GT -> formatter.formatPrimitive( ">" );
+      case LE -> formatter.formatPrimitive( "<=" );
+      case GE -> formatter.formatPrimitive( ">=" );
+      case LOGICAL_AND -> formatter.formatPrimitive( "&&" );
+      case LOGICAL_OR -> formatter.formatPrimitive( "||" );
+      case LT2 -> formatter.formatPrimitive( "<<" );
+      case GT2 -> formatter.formatPrimitive( ">>" );
+      case DOT -> formatter.formatPrimitive( "." );
+      case COMMA -> formatter.formatPrimitive( "," );
+      case SEMICOLON -> formatter.formatPrimitive( ";" );
+      case LBRACE -> formatter.formatPrimitive( "{" );
+      case RBRACE -> formatter.formatPrimitive( "}" );
+      case LPAREN -> formatter.formatPrimitive( "(" );
+      case RPAREN -> formatter.formatPrimitive( ")" );
+      case LBRACKET -> formatter.formatPrimitive( "[" );
+      case RBRACKET -> formatter.formatPrimitive( "]" );
+      case EQUALS -> formatter.formatPrimitive( "=" );
+      case EQUIVALENT -> formatter.formatPrimitive( "==" );
+      case PLUS -> formatter.formatPrimitive( "+" );
+      case MINUS -> formatter.formatPrimitive( "-" );
+      case STAR -> formatter.formatPrimitive( "*" );
+      case SLASH -> formatter.formatPrimitive( "/" );
+      case RSLASH -> formatter.formatPrimitive( "\\" );
+      case STRING -> formatter.formatPrimitive( "\"" ).formatString( token.getImage() ).formatPrimitive( "\"" );
+      case LITERAL_LANG -> formatter.formatPrimitive( "\"" ).formatString( token.getImage() ).formatPrimitive( "\"" )
+            .formatPrimitive( "@" ).formatLangTag( token.getImage2() );
+      case LITERAL_DT -> formatter.formatPrimitive( "\"" ).formatString( token.getImage() ).formatPrimitive( "\"" ).formatPrimitive( "^^" )
+            .formatPrefix( token.getSubToken2().getImage() ).formatPrimitive( ":" ).formatName( token.getSubToken2().getImage2() );
+      default -> formatter.formatDefault( token.getImage() );
+      }
+
+      return content().length();
    }
 }

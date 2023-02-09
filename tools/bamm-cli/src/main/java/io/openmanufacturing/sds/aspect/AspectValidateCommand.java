@@ -18,6 +18,7 @@ import java.util.List;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
+import io.openmanufacturing.sds.JAnsiRdfSyntaxHighlighter;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
@@ -56,7 +57,7 @@ public class AspectValidateCommand extends AbstractCommand {
       if ( details ) {
          System.out.println( new DetailedViolationFormatter().apply( violations ) );
       } else {
-         System.out.println( new ViolationRustLikeFormatter().apply( violations ) );
+         System.out.println( new ViolationRustLikeFormatter( new JAnsiRdfSyntaxHighlighter() ).apply( violations ) );
       }
 
       if ( !violations.isEmpty() ) {
