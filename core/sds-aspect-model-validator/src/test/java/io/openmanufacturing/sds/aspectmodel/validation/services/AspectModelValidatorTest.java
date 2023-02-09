@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspectmodel.validation.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,9 +99,11 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "invalidTestModels" )
    public void testValidateInvalidTestAspectModel( final InvalidTestAspect testModel, final KnownVersion metaModelVersion ) {
-      final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
-      final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
-      assertThat( violations ).isNotEmpty();
+      assertThatCode( () -> {
+         final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
+         final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
+         assertThat( violations ).isNotEmpty();
+      } ).doesNotThrowAnyException();
    }
 
    @ParameterizedTest

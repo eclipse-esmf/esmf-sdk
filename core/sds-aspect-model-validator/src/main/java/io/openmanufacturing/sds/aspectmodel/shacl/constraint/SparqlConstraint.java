@@ -51,7 +51,9 @@ public record SparqlConstraint(String message, Query query) implements Constrain
          final ResultSet resultSet = queryExecution.execSelect();
          while ( resultSet.hasNext() ) {
             final QuerySolution solution = resultSet.next();
-            final Map<String, RDFNode> bindings = resultSet.getResultVars().stream().collect( Collectors.toMap( Function.identity(), solution::get ) );
+            final Map<String, RDFNode> bindings = resultSet.getResultVars().stream()
+                  .filter( resultVar -> solution.get( resultVar ) != null )
+                  .collect( Collectors.toMap( Function.identity(), solution::get ) );
             results.add( new SparqlConstraintViolation( context, message, bindings ) );
          }
       }
