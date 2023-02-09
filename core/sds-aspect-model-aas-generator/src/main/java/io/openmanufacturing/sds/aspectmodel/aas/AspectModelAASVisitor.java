@@ -71,24 +71,25 @@ import io.adminshell.aas.v3.model.impl.DefaultSubmodel;
 import io.adminshell.aas.v3.model.impl.DefaultSubmodelElementCollection;
 import io.adminshell.aas.v3.model.impl.DefaultValueList;
 import io.adminshell.aas.v3.model.impl.DefaultValueReferencePair;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.ModelElement;
-import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import io.openmanufacturing.sds.characteristic.Code;
 import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.characteristic.Duration;
 import io.openmanufacturing.sds.characteristic.Either;
-import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.characteristic.Enumeration;
-import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.characteristic.Measurement;
-import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.characteristic.Quantifiable;
 import io.openmanufacturing.sds.characteristic.SingleEntity;
 import io.openmanufacturing.sds.characteristic.SortedSet;
 import io.openmanufacturing.sds.characteristic.State;
 import io.openmanufacturing.sds.characteristic.StructuredValue;
 import io.openmanufacturing.sds.characteristic.Trait;
+import io.openmanufacturing.sds.metamodel.Aspect;
+import io.openmanufacturing.sds.metamodel.Characteristic;
+import io.openmanufacturing.sds.metamodel.Entity;
+import io.openmanufacturing.sds.metamodel.ModelElement;
+import io.openmanufacturing.sds.metamodel.NamedElement;
+import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
@@ -175,13 +176,11 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return context.getEnvironment();
    }
 
-   private List<SubmodelElement> visitOperations(
-         final List<io.openmanufacturing.sds.metamodel.Operation> elements, final Context context ) {
+   private List<SubmodelElement> visitOperations( final List<io.openmanufacturing.sds.metamodel.Operation> elements, final Context context ) {
       return elements.stream().map( i -> map( i, context ) ).collect( Collectors.toList() );
    }
 
-   private List<SubmodelElement> visitProperties(
-         final List<Property> elements, final Context context ) {
+   private List<SubmodelElement> visitProperties( final List<Property> elements, final Context context ) {
       return elements.stream().map( i -> map( i, context ) ).collect( Collectors.toList() );
    }
 
@@ -195,10 +194,12 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
          // property will be excluded from generation.
          recursiveProperty.remove( property );
          if ( property.isOptional() ) {
-            LOG.warn( String.format( "Having a recursive Property %s which is optional. Will be excluded from AAS mapping.", property ) );
+            LOG.warn( String.format( "Having a recursive Property %s which is optional. Will be excluded from AAS mapping.",
+                  property.getAspectModelUrn().map( AspectModelUrn::toString ).orElse( "(unknown)" ) ) );
             return defaultResultForProperty.get();
          } else {
-            throw new IllegalArgumentException( String.format( "Having a recursive Property: %s which is not optional is not valid.", property ) );
+            throw new IllegalArgumentException( String.format( "Having a recursive Property %s which is not optional is not valid.",
+                  property.getAspectModelUrn().map( AspectModelUrn::toString ).orElse( "(unknown)" ) ) );
          }
       }
       recursiveProperty.add( property );
@@ -228,8 +229,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return decideOnMapping( type, property, context );
    }
 
-   private SubmodelElement decideOnMapping(
-         final Type type, final Property property, final Context context ) {
+   private SubmodelElement decideOnMapping( final Type type, final Property property, final Context context ) {
       if ( type instanceof Entity ) {
          return mapToAasSubModelElementCollection( (Entity) type, context );
       } else {
@@ -237,8 +237,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       }
    }
 
-   private SubmodelElementCollection mapToAasSubModelElementCollection(
-         final Entity entity, final Context context ) {
+   private SubmodelElementCollection mapToAasSubModelElementCollection( final Entity entity, final Context context ) {
       final List<SubmodelElement> submodelElements =
             visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()
@@ -273,8 +272,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
       return type.getUrn();
    }
 
-   private Operation map(
-         final io.openmanufacturing.sds.metamodel.Operation operation, final Context context ) {
+   private Operation map( final io.openmanufacturing.sds.metamodel.Operation operation, final Context context ) {
       return new DefaultOperation.Builder()
             .displayNames( map( operation.getPreferredNames() ) )
             .descriptions( map( operation.getDescriptions() ) )
@@ -441,15 +439,13 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitCharacteristic(
-         final Characteristic characteristic, final Context context ) {
+   public AssetAdministrationShellEnvironment visitCharacteristic( final Characteristic characteristic, final Context context ) {
       createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
       return context.environment;
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitCollection(
-         final Collection collection, final Context context ) {
+   public AssetAdministrationShellEnvironment visitCollection( final Collection collection, final Context context ) {
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementCollection.Builder()
@@ -464,8 +460,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitList(
-         final io.openmanufacturing.sds.characteristic.List list, final Context context ) {
+   public AssetAdministrationShellEnvironment visitList( final io.openmanufacturing.sds.characteristic.List list, final Context context ) {
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementCollection.Builder()
@@ -480,8 +475,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitSet(
-         final io.openmanufacturing.sds.characteristic.Set set, final Context context ) {
+   public AssetAdministrationShellEnvironment visitSet( final io.openmanufacturing.sds.characteristic.Set set, final Context context ) {
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementCollection.Builder()
@@ -497,8 +491,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitSortedSet(
-         final SortedSet sortedSet, final Context context ) {
+   public AssetAdministrationShellEnvironment visitSortedSet( final SortedSet sortedSet, final Context context ) {
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementCollection.Builder()
@@ -517,8 +510,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    // No possibilities to mark the SubmodelElements as optional. So both are either options are
    // in the result and have to be manually selected.
    @Override
-   public AssetAdministrationShellEnvironment visitEither(
-         final Either either, final Context context ) {
+   public AssetAdministrationShellEnvironment visitEither( final Either either, final Context context ) {
       final List<SubmodelElement> submodelElements = new ArrayList<>();
       if ( either.getLeft().getDataType().isPresent() ) {
          submodelElements.add(
@@ -540,8 +532,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitQuantifiable(
-         final Quantifiable quantifiable, final Context context ) {
+   public AssetAdministrationShellEnvironment visitQuantifiable( final Quantifiable quantifiable, final Context context ) {
       createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
 
       if ( quantifiable.getUnit().isPresent() ) {
@@ -560,22 +551,19 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitMeasurement(
-         final Measurement measurement, final Context context ) {
+   public AssetAdministrationShellEnvironment visitMeasurement( final Measurement measurement, final Context context ) {
       // No special handling required can use Quantifiable mapping implementation
       return visitQuantifiable( measurement, context );
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitDuration(
-         final Duration duration, final Context context ) {
+   public AssetAdministrationShellEnvironment visitDuration( final Duration duration, final Context context ) {
       // No special handling required can use Quantifiable mapping implementation
       return visitQuantifiable( duration, context );
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitEnumeration(
-         final Enumeration enumeration, final Context context ) {
+   public AssetAdministrationShellEnvironment visitEnumeration( final Enumeration enumeration, final Context context ) {
       createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
 
       final ConceptDescription conceptDescription =
@@ -589,12 +577,11 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
          dataSpecificationContent.setDataType( mapIEC61360DataType( enumeration ) );
          final List<ValueReferencePair> valueReferencePairs =
                enumeration.getValues().stream()
-                     .map(
-                           x ->
-                                 new DefaultValueReferencePair.Builder()
-                                       .value( x.toString() )
-                                       .valueId( buildReferenceToEnumValue( enumeration, x ) )
-                                       .build() )
+                     .map( x ->
+                           new DefaultValueReferencePair.Builder()
+                                 .value( x.toString() )
+                                 .valueId( buildReferenceToEnumValue( enumeration, x ) )
+                                 .build() )
                      .collect( Collectors.toList() );
 
          final ValueList valueList =
@@ -613,15 +600,13 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitSingleEntity(
-         final SingleEntity singleEntity, final Context context ) {
+   public AssetAdministrationShellEnvironment visitSingleEntity( final SingleEntity singleEntity, final Context context ) {
       // Same handling as characteristics
       return visitCharacteristic( singleEntity, context );
    }
 
    @Override
-   public AssetAdministrationShellEnvironment visitStructuredValue(
-         final StructuredValue structuredValue, final Context context ) {
+   public AssetAdministrationShellEnvironment visitStructuredValue( final StructuredValue structuredValue, final Context context ) {
       // https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/modeling-guidelines.html#declaring-structured-value
       // AAS cannot handle structuredValues, so we can handle them as ordinary Characteristics
       return visitCharacteristic( structuredValue, context );
