@@ -22,9 +22,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFList;
@@ -51,6 +53,7 @@ import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.Value;
+import io.openmanufacturing.sds.metamodel.datatypes.Curie;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.impl.DefaultCollectionValue;
 import io.openmanufacturing.sds.metamodel.impl.DefaultEntityInstance;
@@ -64,6 +67,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
    protected UNIT unit;
    protected Model model;
    protected KnownVersion metaModelVersion;
+   protected final RDFDatatype curieDataType = new CurieRdfType();
 
    public Instantiator( final ModelElementFactory modelElementFactory, final Class<T> targetClass ) {
       super( modelElementFactory.getBamm() );
@@ -226,7 +230,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
          return new DefaultScalarValue( langString, type );
       }
 
-      return ExtendedXsdDataType.supportedXsdTypes.stream()
+      return Stream.concat( ExtendedXsdDataType.supportedXsdTypes.stream(), Stream.of( curieDataType ) )
             .filter( type -> type.getURI().equals( literal.getDatatypeURI() ) )
             .map( type -> type.parse( literal.getLexicalForm() ) )
             .map( value -> new DefaultScalarValue( value, new DefaultScalar( literal.getDatatypeURI(), metaModelVersion ) ) )

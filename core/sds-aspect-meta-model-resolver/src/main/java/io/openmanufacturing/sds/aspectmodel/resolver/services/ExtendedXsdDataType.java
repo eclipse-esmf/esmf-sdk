@@ -45,7 +45,7 @@ public class ExtendedXsdDataType<T> extends XSDDatatype implements TypedRdfDatat
    private static boolean checking = true;
    private static final ExtendedSchemaDVFactoryImpl extendedSchemaDVFactory = new ExtendedSchemaDVFactoryImpl();
 
-   private ExtendedXsdDataType( final Resource dataTypeResource, final Class<T> correspondingJavaClass,
+   public ExtendedXsdDataType( final Resource dataTypeResource, final Class<T> correspondingJavaClass,
          final Function<String, T> parser,
          final Function<T, String> unparser,
          final Predicate<String> lexicalValidator ) {

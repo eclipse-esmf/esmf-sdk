@@ -21,12 +21,13 @@ import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.ImmutableMap;
 
-import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.CollectionValue;
 import io.openmanufacturing.sds.metamodel.EntityInstance;
+import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.ScalarValue;
 import io.openmanufacturing.sds.metamodel.Value;
+import io.openmanufacturing.sds.metamodel.datatypes.Curie;
 import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
@@ -46,6 +47,9 @@ public class ValueToPayloadStructure implements AspectVisitor<Object, Void> {
       if ( scalarValue.getType().getUrn().equals( RDF.langString.getURI() ) ) {
          final LangString langString = (LangString) scalarValue.getValue();
          return ImmutableMap.of( langString.getLanguageTag().toLanguageTag(), langString.getValue() );
+      }
+      if ( scalarValue.getValue() instanceof Curie curie ) {
+         return curie.getValue();
       }
       return scalarValue.getValue();
    }
