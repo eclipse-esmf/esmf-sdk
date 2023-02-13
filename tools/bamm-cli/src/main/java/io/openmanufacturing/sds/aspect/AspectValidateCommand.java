@@ -57,7 +57,7 @@ public class AspectValidateCommand extends AbstractCommand {
       if ( details ) {
          System.out.println( new DetailedViolationFormatter().apply( violations ) );
       } else {
-         System.out.println( new ViolationRustLikeFormatter( new JAnsiRdfSyntaxHighlighter() ).apply( violations ) );
+         System.out.println( new ViolationRustLikeFormatter( versionedModel.get().getRawModel(), new JAnsiRdfSyntaxHighlighter() ).apply( violations ) );
       }
 
       if ( !violations.isEmpty() ) {

@@ -40,7 +40,7 @@ public record ClassConstraint(Resource allowedClass) implements Constraint {
          return List.of( new NodeKindViolation( context, Shape.NodeKind.BlankNodeOrIRI, Shape.NodeKind.forNode( rdfNode ) ) );
       }
       final Resource resource = rdfNode.asResource();
-      final StmtIterator iterator = rdfNode.getModel().listStatements( resource, RDF.type, (RDFNode) null );
+      final StmtIterator iterator = context.resolvedModel().listStatements( resource, RDF.type, (RDFNode) null );
       if ( !iterator.hasNext() ) {
          return List.of( new MissingTypeViolation( context.withElement( resource ).withProperty( RDF.type ).withOffendingStatements( List.of() ) ) );
       }
@@ -53,7 +53,7 @@ public record ClassConstraint(Resource allowedClass) implements Constraint {
                      Shape.NodeKind.forNode( rdfNode ) ) );
       }
       final Resource actualClass = assertedTypeNode.asResource();
-      return RdfTypes.typesOfElement( resource ).contains( allowedClass ) ?
+      return RdfTypes.typesOfElement( typeAssertionStatement.getSubject(), context.resolvedModel() ).contains( allowedClass ) ?
             List.of() :
             List.of( new ClassTypeViolation( context, allowedClass, actualClass ) );
    }

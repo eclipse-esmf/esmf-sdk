@@ -25,7 +25,6 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.sparql.core.Var;
 import org.topbraid.jenax.util.JenaUtil;
@@ -42,12 +41,11 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 public record SparqlConstraint(String message, Query query) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
-      final Model model = context.element().getModel();
       final Map<Var, Node> substitutions = Map.of( Var.alloc( "this" ), context.element().asNode() );
       final Query query1 = JenaUtil.queryWithSubstitutions( query, substitutions );
 
       final List<Violation> results = new ArrayList<>();
-      try ( final QueryExecution queryExecution = QueryExecutionFactory.create( query1, model ) ) {
+      try ( final QueryExecution queryExecution = QueryExecutionFactory.create( query1, context.resolvedModel() ) ) {
          final ResultSet resultSet = queryExecution.execSelect();
          while ( resultSet.hasNext() ) {
             final QuerySolution solution = resultSet.next();

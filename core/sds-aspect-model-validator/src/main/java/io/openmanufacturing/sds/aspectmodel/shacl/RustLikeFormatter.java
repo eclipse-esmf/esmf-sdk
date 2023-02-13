@@ -70,6 +70,14 @@ public class RustLikeFormatter {
    }
 
    public String constructDetailedMessage( final RDFNode highlight, final String message ) {
+      return constructDetailedMessage( highlight, message, highlight.getModel() );
+   }
+
+   public String constructDetailedMessage( final RDFNode highlight, final String message, Model rawModel ) {
+      if ( rawModel == null ) {
+         rawModel = highlight.getModel();
+      }
+      
       highlightToken = extractToken( highlight );
 
       if ( highlightToken == null ) {
@@ -77,8 +85,7 @@ public class RustLikeFormatter {
          return message;
       }
 
-      final Model model = highlight.getModel();
-      candidateStatements = model.listStatements()
+      candidateStatements = rawModel.listStatements()
             .filterKeep( statement -> spansLine( statement, highlightToken.line() ) )
             .toList();
       return formatError( candidateStatements, message );

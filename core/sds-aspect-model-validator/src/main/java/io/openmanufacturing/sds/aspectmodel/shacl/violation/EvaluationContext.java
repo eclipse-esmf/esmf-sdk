@@ -16,6 +16,7 @@ package io.openmanufacturing.sds.aspectmodel.shacl.violation;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -23,16 +24,17 @@ import org.apache.jena.rdf.model.Statement;
 import io.openmanufacturing.sds.aspectmodel.shacl.ShaclValidator;
 import io.openmanufacturing.sds.aspectmodel.shacl.Shape;
 
-public record EvaluationContext(Resource element, Shape shape, Optional<Property> property, List<Statement> offendingStatements, ShaclValidator validator) {
+public record EvaluationContext(Resource element, Shape shape, Optional<Property> property, List<Statement> offendingStatements, ShaclValidator validator,
+                                Model resolvedModel) {
    public EvaluationContext withProperty( final Property newProperty ) {
-      return new EvaluationContext( element(), shape(), Optional.of( newProperty ), offendingStatements(), validator() );
+      return new EvaluationContext( element(), shape(), Optional.of( newProperty ), offendingStatements(), validator(), resolvedModel );
    }
 
    public EvaluationContext withElement( final Resource newElement ) {
-      return new EvaluationContext( newElement, shape(), property(), offendingStatements(), validator() );
+      return new EvaluationContext( newElement, shape(), property(), offendingStatements(), validator(), resolvedModel );
    }
 
    public EvaluationContext withOffendingStatements( final List<Statement> newOffendingStatements ) {
-      return new EvaluationContext( element(), shape(), property(), newOffendingStatements, validator() );
+      return new EvaluationContext( element(), shape(), property(), newOffendingStatements, validator(), resolvedModel );
    }
 }
