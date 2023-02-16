@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -44,6 +45,10 @@ public class OsProcessLauncher extends ProcessLauncher {
       this.commandWithArguments = commandWithArguments;
    }
 
+   protected File workingDirectoryForSubprocess( final ExecutionContext context ) {
+      return context.workingDirectory();
+   }
+
    @Override
    public ExecutionResult apply( final ExecutionContext context ) {
       try {
@@ -55,7 +60,7 @@ public class OsProcessLauncher extends ProcessLauncher {
                      .skip( 1 )
                      .map( argument -> String.format( "\"%s\"", argument ) )
                      .collect( Collectors.joining( " " ) ) );
-         final Process process = Runtime.getRuntime().exec( commandWithAllArguments.toArray( new String[0] ), null, context.workingDirectory() );
+         final Process process = Runtime.getRuntime().exec( commandWithAllArguments.toArray( new String[0] ), null, workingDirectoryForSubprocess( context ) );
          if ( context.stdin().isPresent() ) {
             IOUtils.copy( new ByteArrayInputStream( context.stdin().get() ), process.getOutputStream() );
          }

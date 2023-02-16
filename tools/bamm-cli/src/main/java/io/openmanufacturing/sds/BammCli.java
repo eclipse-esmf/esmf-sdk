@@ -86,6 +86,8 @@ public class BammCli extends AbstractCommand {
    }
 
    public static void main( final String[] argv ) {
+      NativeImageHelpers.ensureRequiredEnvironment();
+
       setupGraphvizJava();
 
       // The disabling color switch needs to be checked before PicoCLI initialization

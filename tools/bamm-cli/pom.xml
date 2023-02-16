@@ -215,7 +215,8 @@
                      <!-- The main class of your build-time scanning code -->
                      <mainClass>io.openmanufacturing.sds.buildtime.CustomizeResourceConfig</mainClass>
                      <!-- Pass the build target file as a commandline param -->
-                     <commandlineArgs>${project.build.outputDirectory}/META-INF/native-image/${project.groupId}/${project.artifactId}/resource-config.json</commandlineArgs>
+                     <commandlineArgs>${project.build.outputDirectory}/META-INF/native-image/${project.groupId}/${project.artifactId}/resource-config.json
+                     </commandlineArgs>
                      <cleanupDaemonThreads>false</cleanupDaemonThreads>
                   </configuration>
                </execution>
@@ -440,6 +441,84 @@
    </build>
 
    <profiles>
+
+      <profile>
+         <id>copy-font-configuration</id>
+         <activation>
+            <os>
+               <family>windows</family>
+            </os>
+         </activation>
+         <build>
+            <plugins>
+               <!-- Copy font configuration files from the GraalVM directory (pointed to by JAVA_HOME in native builds) to the output directory -->
+               <plugin>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>wagon-maven-plugin</artifactId>
+                  <version>1.0</version>
+                  <executions>
+                     <execution>
+                        <id>copy-fontconfig-bfc</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                           <goal>download-single</goal>
+                        </goals>
+                        <configuration>
+                           <url>
+                              file://${env.JAVA_HOME}/lib
+                           </url>
+                           <fromFile>fontconfig.bfc</fromFile>
+                           <toFile>${project.build.directory}/lib/fontconfig.bfc</toFile>
+                        </configuration>
+                     </execution>
+                     <execution>
+                        <id>copy-fontconfig-properties-src</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                           <goal>download-single</goal>
+                        </goals>
+                        <configuration>
+                           <url>
+                              file://${env.JAVA_HOME}/lib
+                           </url>
+                           <fromFile>fontconfig.properties.src</fromFile>
+                           <toFile>${project.build.directory}/lib/fontconfig.properties.src</toFile>
+                        </configuration>
+                     </execution>
+                     <execution>
+                        <id>copy-psfont-properties-ja</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                           <goal>download-single</goal>
+                        </goals>
+                        <configuration>
+                           <url>
+                              file://${env.JAVA_HOME}/lib
+                           </url>
+                           <fromFile>psfont.properties.ja</fromFile>
+                           <toFile>${project.build.directory}/lib/psfont.properties.ja</toFile>
+                        </configuration>
+                     </execution>
+                     <execution>
+                        <id>copy-psfontj2d-properties</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                           <goal>download-single</goal>
+                        </goals>
+                        <configuration>
+                           <url>
+                              file://${env.JAVA_HOME}/lib
+                           </url>
+                           <fromFile>psfontj2d.properties</fromFile>
+                           <toFile>${project.build.directory}/lib/psfontj2d.properties</toFile>
+                        </configuration>
+                     </execution>
+                  </executions>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
+
       <profile>
          <id>native</id>
          <properties>
@@ -471,6 +550,5 @@
             </plugins>
          </build>
       </profile>
-
    </profiles>
 </project>
