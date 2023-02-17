@@ -12,13 +12,15 @@
  */
 package io.openmanufacturing.sds.aspectmodel.aas;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.metamodel.Aspect;
@@ -47,6 +51,15 @@ import io.openmanufacturing.sds.test.TestResources;
 class AspectModelAASGeneratorTest {
 
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
+
+   @Test
+   void testGenerateXmlFromBammAspectWithSimpleProperty() throws IOException, DeserializationException {
+      //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_PROPERTY );
+      //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_ENTITY );
+      //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_NESTED_ENTITY );
+      //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_ENTITY_LIST );
+      getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
+   }
 
    @Test
    void testGenerateAasxFromBammAspectWithListAndAdditionalProperty() throws IOException, DeserializationException {
@@ -160,9 +173,9 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 6, "Not exactly six Elements in SubmodelElements." );
       final SubmodelElement submodelElement =
             env.getSubmodels().get( 0 ).getSubmodelElements().stream()
-                  .filter( x -> x.getIdShort().equals( "stringLcProperty" ) )
-                  .findFirst()
-                  .orElseThrow();
+               .filter( x -> x.getIdShort().equals( "stringLcProperty" ) )
+               .findFirst()
+               .orElseThrow();
       assertEquals( "stringLcProperty", submodelElement.getIdShort() );
 
       final Set<String> semanticIds =
@@ -202,14 +215,14 @@ class AspectModelAASGeneratorTest {
 
       final DataSpecificationIEC61360 dataSpecificationContent =
             env.getConceptDescriptions().stream()
-                  .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
-                  .findFirst()
-                  .get()
-                  .getEmbeddedDataSpecifications()
-                  .stream()
-                  .findFirst()
-                  .get()
-                  .getDataSpecificationContent();
+               .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
+               .findFirst()
+               .get()
+               .getEmbeddedDataSpecifications()
+               .stream()
+               .findFirst()
+               .get()
+               .getDataSpecificationContent();
       assertEquals( 3, dataSpecificationContent.getValueList().getValueReferencePairs().size() );
 
       assertEquals( 1, env.getSubmodels().size() );
@@ -240,8 +253,8 @@ class AspectModelAASGeneratorTest {
       final List<ConceptDescription> conceptDescriptions = env.getConceptDescriptions();
       final List<ConceptDescription> filteredConceptDescriptions =
             conceptDescriptions.stream()
-                  .filter( x -> x.getId().equals( semanticId ) )
-                  .collect( Collectors.toList() );
+                               .filter( x -> x.getId().equals( semanticId ) )
+                               .collect( Collectors.toList() );
       assertEquals( 1, filteredConceptDescriptions.size(), "Not exactly 1 ConceptDescription for semanticId. " + semanticId );
 
       final List<EmbeddedDataSpecification> embeddedDataSpecifications = filteredConceptDescriptions.get( 0 ).getEmbeddedDataSpecifications();
@@ -255,16 +268,33 @@ class AspectModelAASGeneratorTest {
          throws DeserializationException, IOException {
       final Aspect aspect = loadAspect( testAspect );
       final ByteArrayOutputStream out = generator.generateXmlOutput( aspect );
-      return loadAASX( out );
+      //final ByteArrayOutputStream out1 = generator.generateAasxOutput( aspect );
+      //Files.write( Path.of( testAspect.getName() + ".aasx" ), out1.toByteArray() );
+      return loadAASX( out, testAspect );
+   }
+
+   private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect )
+         throws DeserializationException, IOException {
+      final Aspect aspect = loadAspect( testAspect );
+      final JsonNode aspectData = loadPayload( testAspect );
+      final ByteArrayOutputStream out = generator.generateXmlOutput( Map.of( aspect, aspectData ) );
+      return loadAASX( out, testAspect );
    }
 
    private Aspect loadAspect( final TestAspect testAspect ) {
       final VersionedModel model = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
-      return AspectModelLoader.getSingleAspect( model ).get();
+      return AspectModelLoader.getSingleAspectUnchecked( model );
    }
 
-   private Environment loadAASX( final ByteArrayOutputStream byteStream ) throws DeserializationException {
+   private JsonNode loadPayload( final TestAspect testAspect ) {
+      return TestResources.getPayload( testAspect, KnownVersion.getLatest() ).get();
+   }
+
+   private Environment loadAASX( final ByteArrayOutputStream byteStream, final TestAspect testAspect )
+         throws DeserializationException, IOException {
       final XmlDeserializer deserializer = new XmlDeserializer();
-      return deserializer.read( new ByteArrayInputStream( byteStream.toByteArray() ) );
+      final var data = byteStream.toByteArray();
+      Files.write( Path.of( testAspect.getName() + ".xml" ), data );
+      return deserializer.read( new ByteArrayInputStream( data ) );
    }
 }
