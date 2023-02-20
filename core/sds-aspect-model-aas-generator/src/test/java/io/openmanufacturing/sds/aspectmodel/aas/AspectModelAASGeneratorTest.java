@@ -58,7 +58,8 @@ class AspectModelAASGeneratorTest {
       //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_ENTITY );
       //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_NESTED_ENTITY );
       //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_ENTITY_LIST );
-      getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
+      //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
+      getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST );
    }
 
    @Test
@@ -95,7 +96,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertTrue( submodelElement instanceof SubmodelElementCollection, "SubmodelElement is not a SubmodelElementCollection" );
+      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
       assertEquals( "testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
@@ -107,7 +108,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementCollection" );
+      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
       assertEquals( "testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
@@ -119,7 +120,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertTrue( submodelElement instanceof SubmodelElementCollection, "SubmodelElement is not a SubmodelElementCollection" );
+      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
       assertEquals( "testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
@@ -131,7 +132,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementCollection" );
+      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
       assertEquals( "testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
