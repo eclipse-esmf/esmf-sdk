@@ -15,7 +15,7 @@ package examples;
 
 // tag::imports[]
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
-import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfigBuilder;
+import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
