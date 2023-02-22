@@ -13,8 +13,8 @@
 
 package io.openmanufacturing.sds.aspectmodel.generator.jsonschema;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
@@ -111,17 +111,19 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    }
 
    private void assertPayloadIsValid( final JsonNode schema, final JsonNode payload ) {
-      System.out.println( "Payload:" );
-      showJson( payload );
-      System.out.println( "Schema:" );
-      showJson( schema );
-      assertThatCode( () -> {
+      try {
          final ProcessingReport report = parseSchema( schema ).validate( payload );
          if ( !report.isSuccess() ) {
             System.out.println( report );
          }
          assertThat( report.isSuccess() ).isTrue();
-      } ).doesNotThrowAnyException();
+      } catch ( final Throwable throwable ) {
+         System.out.println( "Payload:" );
+         showJson( payload );
+         System.out.println( "Schema:" );
+         showJson( schema );
+         fail();
+      }
    }
 
    private void assertPayloadIsValid( final JsonNode schema, final Aspect aspect ) {

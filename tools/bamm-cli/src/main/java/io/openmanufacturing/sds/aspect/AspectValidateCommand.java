@@ -27,7 +27,6 @@ import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
 import io.openmanufacturing.sds.aspectmodel.validation.services.DetailedViolationFormatter;
 import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
-import io.openmanufacturing.sds.metamodel.AspectContext;
 import io.vavr.control.Try;
 import picocli.CommandLine;
 
@@ -57,7 +56,7 @@ public class AspectValidateCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( parentCommand.getInput() ), customResolver ).map( AspectContext::rdfModel );
+      final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( parentCommand.getInput() ), customResolver );
       final AspectModelValidator validator = new AspectModelValidator();
 
       final List<Violation> violations = validator.validateModel( versionedModel );

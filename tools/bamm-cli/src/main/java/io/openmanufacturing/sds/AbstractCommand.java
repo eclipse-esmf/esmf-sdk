@@ -47,7 +47,7 @@ import io.vavr.control.Try;
 public abstract class AbstractCommand implements Runnable {
    protected static final Logger LOG = LoggerFactory.getLogger( AbstractCommand.class );
 
-   protected Try<AspectContext> loadAndResolveModel( final File input, final ExternalResolverMixin resolverConfig ) {
+   protected Try<VersionedModel> loadAndResolveModel( final File input, final ExternalResolverMixin resolverConfig ) {
       final Try<VersionedModel> versionedModel;
       if ( resolverConfig.commandLine.isBlank() ) {
          versionedModel = AspectModelResolver.loadAndResolveModel( input );
@@ -55,16 +55,18 @@ public abstract class AbstractCommand implements Runnable {
          final AspectModelUrn urn = fileToUrn( input.getAbsoluteFile() );
          versionedModel = new AspectModelResolver().resolveAspectModel( new ExternalResolverStrategy( resolverConfig.commandLine ), urn );
       }
-      return versionedModel.flatMap( model -> {
-         final AspectModelUrn urn = fileToUrn( input.getAbsoluteFile() );
-         return AspectModelLoader.getSingleAspect( model, aspect -> aspect.getName().equals( urn.getName() ) )
-               .map( aspect -> new AspectContext( model, aspect ) );
-      } );
+      return versionedModel;
    }
 
    protected AspectContext loadModelOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig ) {
       final File inputFile = new File( modelFileName );
-      final Try<AspectContext> context = loadAndResolveModel( inputFile, resolverConfig );
+      final Try<VersionedModel> versionedModel = loadAndResolveModel( inputFile, resolverConfig );
+      final Try<AspectContext> context = versionedModel.flatMap( model -> {
+         final AspectModelUrn urn = fileToUrn( inputFile.getAbsoluteFile() );
+         return AspectModelLoader.getSingleAspect( model, aspect -> aspect.getName().equals( urn.getName() ) )
+               .map( aspect -> new AspectContext( model, aspect ) );
+      } );
+
       return context.recover( throwable -> {
          // Model can not be loaded, root cause e.g. File not found
          if ( throwable instanceof IllegalArgumentException ) {
