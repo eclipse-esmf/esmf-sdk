@@ -54,10 +54,10 @@ jobs:
         run: |
           java --version
           export MAVEN_OPTS="-Xmx4096m"
-          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean install
+          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           cd tools/bamm-cli
-          mvn -B clean verify
-          mvn -B verify -Pnative
+          mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
       - name: Upload executable jar
