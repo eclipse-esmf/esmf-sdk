@@ -23,9 +23,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMMC;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMME;
+import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.BAMMC;
+import org.eclipse.esmf.aspectmodel.vocabulary.BAMME;
 
 public abstract class PropertyBasedTest implements BammArbitraries {
    private final DatatypeFactory datatypeFactory;

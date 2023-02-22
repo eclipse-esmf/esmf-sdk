@@ -14,15 +14,15 @@
 package examples;
 
 // tag::imports[]
-import static io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader.loadTurtle;
-import static io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader.openUrl;
+import static org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader.loadTurtle;
+import static org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader.openUrl;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Optional;
 import org.apache.jena.vocabulary.RDF;
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.MetaModelUrls;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
+import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 // end::imports[]
 import org.junit.jupiter.api.Test;
 

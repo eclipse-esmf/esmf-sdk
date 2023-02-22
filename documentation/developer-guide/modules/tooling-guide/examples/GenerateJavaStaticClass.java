@@ -14,12 +14,12 @@
 package examples;
 
 // tag::imports[]
-import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig;
+import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfigBuilder;
-import io.openmanufacturing.sds.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 // end::imports[]
 import java.io.File;
 import org.apache.commons.io.output.NullOutputStream;

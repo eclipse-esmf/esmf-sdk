@@ -13,7 +13,7 @@
 
 package io.openmanufacturing.sds.staticmetamodel;
 
-import io.openmanufacturing.sds.metamodel.Unit;
+import org.eclipse.esmf.metamodel.Unit;
 
 public interface UnitProperty {
 

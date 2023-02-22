@@ -10,7 +10,7 @@
  ~
  ~ SPDX-License-Identifier: MPL-2.0
  *#
-#* @vtlvariable name="deconstructionSets" type="java.util.List<io.openmanufacturing.sds.aspectmodel.java.DeconstructionSet>" *#
+#* @vtlvariable name="deconstructionSets" type="java.util.List<org.eclipse.esmf.aspectmodel.java.DeconstructionSet>" *#
 #* Note that in this macro $enableJacksonAnnotations overrides the value given in $codeGenerationConfig *#
 #macro( constructorContent $deconstructionSets $needInitializer $allProperties $codeGenerationConfig $enableJacksonAnnotations $elementProperties )
     #if( $enableJacksonAnnotations )

@@ -15,12 +15,12 @@ package examples;
 
 // tag::imports[]
 import java.util.List;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
-import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
-import io.openmanufacturing.sds.aspectmodel.validation.services.DetailedViolationFormatter;
-import io.openmanufacturing.sds.aspectmodel.validation.services.ViolationFormatter;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
+import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
+import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import io.vavr.control.Try;
 // end::imports[]
 import java.io.File;

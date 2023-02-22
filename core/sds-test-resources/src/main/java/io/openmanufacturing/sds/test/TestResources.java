@@ -16,12 +16,12 @@ package io.openmanufacturing.sds.test;
 import java.io.InputStream;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import io.openmanufacturing.sds.aspectmodel.VersionNumber;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.ClasspathStrategy;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import io.vavr.control.Try;
 
 public class TestResources {

@@ -17,7 +17,7 @@ import java.io.StringWriter;
 
 import org.apache.jena.rdf.model.Model;
 
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 @SuppressWarnings( "squid:S1214" ) // Can not be avoided because enums can't inherit from an abstract class
 public interface TestModel {

@@ -29,7 +29,7 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
 
-import io.openmanufacturing.sds.aspectmodel.java.QualifiedName;
+import org.eclipse.esmf.aspectmodel.java.QualifiedName;
 
 public class JavaCompiler {
    /**

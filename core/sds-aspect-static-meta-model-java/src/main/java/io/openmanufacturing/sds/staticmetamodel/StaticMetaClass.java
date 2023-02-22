@@ -19,8 +19,8 @@ import java.util.Locale;
 import java.util.Set;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
-import io.openmanufacturing.sds.metamodel.datatypes.LangString;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.metamodel.datatypes.LangString;
 
 /**
  * Base interface for each Aspect Meta Model class.

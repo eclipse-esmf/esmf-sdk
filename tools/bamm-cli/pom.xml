@@ -29,7 +29,7 @@
 
    <properties>
       <packaging-type>jar</packaging-type>
-      <main-class>io.openmanufacturing.sds.BammCli</main-class>
+      <main-class>org.eclipse.esmf.BammCli</main-class>
       <binary-name>bamm</binary-name>
       <graalvm-config-path>${project.build.directory}/classes/META-INF/native-image/${project.groupId}/${project.artifactId}</graalvm-config-path>
       <skip.maven.surefire>false</skip.maven.surefire>
@@ -198,7 +198,7 @@
                   </goals>
                   <configuration>
                      <!-- The main class of your build-time scanning code -->
-                     <mainClass>io.openmanufacturing.sds.buildtime.IoAdminShellAasClassSetup</mainClass>
+                     <mainClass>org.eclipse.esmf.buildtime.IoAdminShellAasClassSetup</mainClass>
                      <!-- Pass the build target file as a commandline param -->
                      <commandlineArgs>${project.build.outputDirectory}/adminshell.properties</commandlineArgs>
                      <cleanupDaemonThreads>false</cleanupDaemonThreads>
@@ -213,7 +213,7 @@
                   </goals>
                   <configuration>
                      <!-- The main class of your build-time scanning code -->
-                     <mainClass>io.openmanufacturing.sds.buildtime.CustomizeResourceConfig</mainClass>
+                     <mainClass>org.eclipse.esmf.buildtime.CustomizeResourceConfig</mainClass>
                      <!-- Pass the build target file as a commandline param -->
                      <commandlineArgs>${project.build.outputDirectory}/META-INF/native-image/${project.groupId}/${project.artifactId}/resource-config.json
                      </commandlineArgs>

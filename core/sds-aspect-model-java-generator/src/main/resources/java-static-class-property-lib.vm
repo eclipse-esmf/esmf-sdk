@@ -53,7 +53,7 @@
     #end
 #end
 
-#* @vtlvariable name="characteristic" type="io.openmanufacturing.sds.metamodel.Characteristic" *#
+#* @vtlvariable name="characteristic" type="org.eclipse.esmf.metamodel.Characteristic" *#
 #macro( propertyCharacteristic $characteristic $propertyTypeName )
     $characteristic.accept($modelVisitor, $context)
 #end

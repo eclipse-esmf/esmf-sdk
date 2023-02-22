@@ -16,9 +16,9 @@ package examples;
 // tag::imports[]
 import java.io.File;
 import java.util.List;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.metamodel.NamedElement;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import io.vavr.collection.Stream;
 // end::imports[]
 import org.junit.jupiter.api.Test;

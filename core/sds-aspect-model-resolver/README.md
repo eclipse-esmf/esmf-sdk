@@ -26,51 +26,42 @@ The following examples assumes an Aspect model in the given directory structure:
 To obtain the resolved raw RDF model:
 
 ```java
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.FileSystemStrategy;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+
 
 AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:1.0.0#Test" );
-Path modelsRoot = Paths.get( "/foo" );
-AspectModelResolver resolver = new AspectModelResolver();
+      Path modelsRoot = Paths.get("/foo");
+      AspectModelResolver resolver = new AspectModelResolver();
 
-resolver.resolveAspectModel( new FileSystemStrategy( modelsRoot ), aspectModelUrn ).forEach( versionedModel -> {
-    // Get the RDF model
-    Model model = versionedModel.getModel();
+      resolver.resolveAspectModel( new FileSystemStrategy( modelsRoot), aspectModelUrn ).forEach( versionedModel -> {
+      // Get the RDF model
+      Model model = versionedModel.getModel();
 
-    // Get the meta model version used in the Aspect
-    KnownVersion version = versionedModel.getVersion();
+      // Get the meta model version used in the Aspect
+      KnownVersion version = versionedModel.getVersion();
 
-    // ...
-} );
+      // ...
+      });
 ```
 
 To obtain an instance of the Java representation of an Aspect model
-(a ```io.openmanufacturing.sds.metamodel.Aspect```):
+(a ```org.eclipse.esmf.metamodel.Aspect```):
 
 ```java
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.FileSystemStrategy;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
+
+
+import loader.org.eclipse.esmf.metamodel.AspectModelLoader;
 
 AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:1.0.0#Test" );
-Path modelsRoot = Paths.get( "/foo" );
-AspectModelResolver resolver = new AspectModelResolver();
+      Path modelsRoot = Paths.get("/foo");
+      AspectModelResolver resolver = new AspectModelResolver();
 
-resolver.resolveAspectModel( new FileSystemStrategy( modelsRoot ), aspectModelUrn )
-    .flatMap( AspectModelLoader::fromVersionedModel )
-    .onFailure( throwable -> { /* something went wrong while loading the model */ }
-    .forEach( aspect -> {
-        // Get the meta model version used in the Aspect
-        KnownVersion version = aspect.getMetaModelVersion();
+      resolver.resolveAspectModel( new FileSystemStrategy(modelsRoot), aspectModelUrn )
+      .flatMap( AspectModelLoader::fromVersionedModel )
+      .onFailure( throwable -> { /* something went wrong while loading the model */ }
+      .forEach(aspect -> {
+      // Get the meta model version used in the Aspect
+      KnownVersion version = aspect.getMetaModelVersion();
 
-        // ... e.g. aspect.getProperties().stream().forEach( ... )
-    } );
+      // ... e.g. aspect.getProperties().stream().forEach( ... )
+      });
 ```

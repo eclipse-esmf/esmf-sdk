@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
+package org.eclipse.esmf.metamodel.loader.instantiator;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+
+import org.eclipse.esmf.metamodel.Operation;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.impl.DefaultOperation;
+import org.eclipse.esmf.metamodel.loader.Instantiator;
+import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+public class OperationInstantiator extends Instantiator<Operation> {
+   public OperationInstantiator( final ModelElementFactory modelElementFactory ) {
+      super( modelElementFactory, Operation.class );
+   }
+
+   @Override
+   public Operation apply( final Resource operation ) {
+      final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( operation );
+      final List<Property> input = getPropertiesModels( operation, bamm.input() );
+      final Optional<Property> output =
+            optionalAttributeValue( operation, bamm.output() )
+                  .map( Statement::getResource )
+                  .map( outputPropertyResource -> modelElementFactory
+                        .create( Property.class, outputPropertyResource ) );
+      return new DefaultOperation( metaModelBaseAttributes, input, output );
+   }
+}

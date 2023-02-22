@@ -15,12 +15,12 @@ package io.openmanufacturing.sds.staticmetamodel.constraint;
 
 import java.util.Optional;
 
-import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Property;
-import io.openmanufacturing.sds.characteristic.Quantifiable;
-import io.openmanufacturing.sds.metamodel.ScalarValue;
-import io.openmanufacturing.sds.metamodel.Unit;
-import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.staticmetamodel.UnitProperty;
 
 /**

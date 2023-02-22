@@ -4,7 +4,7 @@ import java.io.StringWriter;
 
 import org.apache.jena.rdf.model.Model;
 
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 public interface TestSharedModel {
    String TEST_NAMESPACE = "urn:bamm:io.openmanufacturing.test.shared:1.0.0#";

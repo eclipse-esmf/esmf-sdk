@@ -24,8 +24,8 @@ The first call generates a plain xml representation of the AAS whereas the secon
 with the AAS xml file in it.
  
 Should the generator be integrated into custom implementations, the class `AspectModelAASGenerator`
-with its method `io.openmanufacturing.sds.aspectmodel.aas.AspectModelAASGenerator.generateOutput` is the 
-proper entry point. It expects an `io.openmanufacturing.sds.metamodel.Aspect` and returns a 
+with its method `org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator.generateOutput` is the 
+proper entry point. It expects an `org.eclipse.esmf.metamodel.Aspect` and returns a 
 `ByteArrayOutputStream`.
 
 

@@ -20,14 +20,14 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.apache.jena.rdf.model.Model;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.serializer.PrettyPrinter;
-import io.openmanufacturing.sds.aspectmodel.serializer.RdfModelCreatorVisitor;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.Namespace;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
+import org.eclipse.esmf.aspectmodel.serializer.RdfModelCreatorVisitor;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 // end::imports[]
 import org.junit.jupiter.api.Test;
 

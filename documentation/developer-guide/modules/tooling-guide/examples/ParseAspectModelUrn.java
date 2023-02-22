@@ -16,7 +16,7 @@ package examples;
 import org.junit.jupiter.api.Test;
 
 // tag::imports[]
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 // end::imports[]
 
 public class ParseAspectModelUrn {

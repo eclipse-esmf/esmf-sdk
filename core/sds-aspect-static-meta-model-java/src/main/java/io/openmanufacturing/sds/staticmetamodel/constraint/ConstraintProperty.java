@@ -15,8 +15,8 @@ package io.openmanufacturing.sds.staticmetamodel.constraint;
 
 import java.util.List;
 
-import io.openmanufacturing.sds.metamodel.Characteristic;
-import io.openmanufacturing.sds.metamodel.Constraint;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Constraint;
 
 public interface ConstraintProperty<C extends Characteristic> {
 
