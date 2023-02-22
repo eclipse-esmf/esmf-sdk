@@ -24,7 +24,7 @@ import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
 
@@ -78,7 +78,7 @@ public class MigratorService {
 
       if ( migratorFactory.isPresent() ) {
          migrationModel = customMigration( migratorFactory.get(), sourceVersion, versionedModel );
-         sourceVersion = VersionNumber.parse( KnownVersion.BAMM_1_0_0.toVersionString() );
+         sourceVersion = VersionNumber.parse( KnownVersion.SAMM_1_0_0.toVersionString() );
       }
 
       if ( sourceVersion.equals( targetVersion ) ) {

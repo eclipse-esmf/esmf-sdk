@@ -22,7 +22,7 @@ import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import io.openmanufacturing.sds.test.MetaModelVersions;

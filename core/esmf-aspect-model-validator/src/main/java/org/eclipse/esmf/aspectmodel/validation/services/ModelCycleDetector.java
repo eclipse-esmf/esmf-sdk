@@ -41,7 +41,7 @@ import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 

@@ -42,7 +42,7 @@ import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import io.vavr.Tuple2;
 import io.vavr.control.Try;
 

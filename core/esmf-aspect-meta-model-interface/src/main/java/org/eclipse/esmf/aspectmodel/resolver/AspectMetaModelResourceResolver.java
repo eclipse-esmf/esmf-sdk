@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.MissingMetaModelVersionException;
 import org.eclipse.esmf.aspectmodel.MultipleMetaModelVersionsException;
 import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;

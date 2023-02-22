@@ -30,7 +30,7 @@ import org.eclipse.esmf.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.characteristic.Trait;
 import io.openmanufacturing.sds.test.TestAspect;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 

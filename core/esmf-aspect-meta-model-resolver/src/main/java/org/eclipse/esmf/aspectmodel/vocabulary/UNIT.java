@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.vocabulary;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public class UNIT implements Namespace {
    private final KnownVersion bammVersion;

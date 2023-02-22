@@ -53,7 +53,7 @@ import com.google.common.collect.ImmutableList;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
@@ -126,11 +126,11 @@ public class AspectModelDiagramGenerator {
             "entity-abstractproperty-edges"
       );
 
-      aspectToBoxmodelQueryFiles.put( KnownVersion.BAMM_1_0_0,
+      aspectToBoxmodelQueryFiles.put( KnownVersion.SAMM_1_0_0,
             ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
                   .build() );
 
-      aspectToBoxmodelQueryFiles.put( KnownVersion.BAMM_2_0_0,
+      aspectToBoxmodelQueryFiles.put( KnownVersion.SAMM_2_0_0,
             ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
                   .addAll( queryFilesForBammVersionsAsOf2_0_0 )
                   .build() );

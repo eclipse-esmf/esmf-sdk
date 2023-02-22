@@ -34,8 +34,8 @@
 
    <dependencies>
       <dependency>
-         <groupId>io.openmanufacturing</groupId>
-         <artifactId>sds-aspect-meta-model</artifactId>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-semantic-aspect-meta-model</artifactId>
       </dependency>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
@@ -126,14 +126,14 @@
                   <configuration>
                      <artifactItems>
                         <artifactItem>
-                           <groupId>io.openmanufacturing</groupId>
-                           <artifactId>sds-aspect-meta-model</artifactId>
+                           <groupId>org.eclipse.esmf</groupId>
+                           <artifactId>esmf-semantic-aspect-meta-model</artifactId>
                            <version>${aspect-meta-model-version}</version>
                            <type>jar</type>
                            <overWrite>false</overWrite>
                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
                            <excludes>
-                              bamm/meta-model/1.0.0/aspect-meta-model-shapes.ttl,bamm/characteristic/1.0.0/characteristic-shapes.ttl,bamm/meta-model/2.0.0/aspect-meta-model-shapes.ttl,bamm/characteristic/2.0.0/characteristic-shapes.ttl
+                              samm/meta-model/1.0.0/aspect-meta-model-shapes.ttl,samm/characteristic/1.0.0/characteristic-shapes.ttl,samm/meta-model/2.0.0/aspect-meta-model-shapes.ttl,samm/characteristic/2.0.0/characteristic-shapes.ttl
                            </excludes>
                         </artifactItem>
                      </artifactItems>

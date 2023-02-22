@@ -30,7 +30,7 @@ import org.eclipse.esmf.metamodel.Type;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * Provides often needed information about various properties of the numeric types

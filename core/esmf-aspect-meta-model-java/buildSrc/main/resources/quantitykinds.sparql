@@ -9,14 +9,14 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>
-prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#>
+prefix samm: <urn:samm:org.eclipse.samm:meta-model:1.0.0#>
+prefix unit: <urn:samm:org.eclipse.samm:unit:1.0.0#>
 
 select distinct ?quantityKindName ?label
 where {
   ?quantityKind a unit:QuantityKind .
-  ?quantityKind bamm:name ?quantityKindName .
-  ?quantityKind bamm:preferredName ?preferredName .
+  ?quantityKind samm:name ?quantityKindName .
+  ?quantityKind samm:preferredName ?preferredName .
   bind( str( ?preferredName ) as ?label )
 }
 order by ?quantityKindName

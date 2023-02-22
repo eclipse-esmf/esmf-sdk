@@ -23,7 +23,7 @@ import org.eclipse.esmf.constraint.FixedPointConstraint;
 import org.eclipse.esmf.characteristic.Trait;
 import io.openmanufacturing.sds.test.TestAspect;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public class FixedPointConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 

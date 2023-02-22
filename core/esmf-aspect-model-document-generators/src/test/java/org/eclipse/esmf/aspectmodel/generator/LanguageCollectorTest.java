@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Locale;
 import java.util.Set;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;

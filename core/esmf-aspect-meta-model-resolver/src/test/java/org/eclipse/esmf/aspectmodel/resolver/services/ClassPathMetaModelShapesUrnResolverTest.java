@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.net.URL;
 import java.util.Optional;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.junit.jupiter.api.Test;
 

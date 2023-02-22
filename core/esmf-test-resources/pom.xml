@@ -25,7 +25,7 @@
    </parent>
 
    <artifactId>esmf-test-resources</artifactId>
-   <name>EMSF Test Resources</name>
+   <name>ESMF Test Resources</name>
 
    <dependencies>
       <dependency>

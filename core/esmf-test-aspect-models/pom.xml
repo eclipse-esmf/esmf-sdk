@@ -41,8 +41,8 @@
          <artifactId>jena-core</artifactId>
       </dependency>
       <dependency>
-         <groupId>io.openmanufacturing</groupId>
-         <artifactId>sds-aspect-meta-model</artifactId>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-semantic-aspect-meta-model</artifactId>
       </dependency>
    </dependencies>
 </project>

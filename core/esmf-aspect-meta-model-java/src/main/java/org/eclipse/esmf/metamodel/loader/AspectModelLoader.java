@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
@@ -63,8 +63,8 @@ public class AspectModelLoader {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
 
    private static final Set<KnownVersion> supportedVersions = ImmutableSet.of(
-         KnownVersion.BAMM_1_0_0,
-         KnownVersion.BAMM_2_0_0
+         KnownVersion.SAMM_1_0_0,
+         KnownVersion.SAMM_2_0_0
    );
 
    private static final MigratorService migratorService = new MigratorService();

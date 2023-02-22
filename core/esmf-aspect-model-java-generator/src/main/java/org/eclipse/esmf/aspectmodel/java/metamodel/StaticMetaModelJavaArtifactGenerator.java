@@ -42,7 +42,7 @@ import org.jboss.forge.roaster.Roaster;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;

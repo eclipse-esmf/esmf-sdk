@@ -19,7 +19,7 @@ import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import io.openmanufacturing.sds.test.TestAspect;
 
 public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {

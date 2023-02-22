@@ -18,7 +18,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 
 public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions {
@@ -28,14 +28,14 @@ public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions 
    final String sparqlQueryFileName = "constraint2boxmodel.sparql";
 
    protected String boxSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier ) {
-      if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ) {
+      if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ) {
          return String.format( "%s a :Box", constraintIdentifier.equals( "*" ) ? "*" : ":" + constraintIdentifier );
       }
       return ":TestConstraintConstraint a :Box";
    }
 
    protected String entriesSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier ) {
-      if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ) {
+      if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ) {
          return String.format( "%s :entries *", constraintIdentifier.equals( "*" ) ? "*" : ":" + constraintIdentifier );
       }
       return ":TestConstraintConstraint :entries *";
@@ -44,7 +44,7 @@ public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions 
    @BeforeAll
    public static void setup() {
       totalNumberOfExpectedEntriesPerBammVersion = new HashMap<>();
-      totalNumberOfExpectedEntriesPerBammVersion.put( KnownVersion.BAMM_1_0_0, 10 );
-      totalNumberOfExpectedEntriesPerBammVersion.put( KnownVersion.BAMM_2_0_0, 10 );
+      totalNumberOfExpectedEntriesPerBammVersion.put( KnownVersion.SAMM_1_0_0, 10 );
+      totalNumberOfExpectedEntriesPerBammVersion.put( KnownVersion.SAMM_2_0_0, 10 );
    }
 }

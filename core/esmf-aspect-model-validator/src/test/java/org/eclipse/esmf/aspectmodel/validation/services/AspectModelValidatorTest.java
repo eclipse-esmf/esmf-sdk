@@ -39,7 +39,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.test.InvalidTestAspect;
@@ -124,7 +124,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       return Arrays.stream( InvalidTestAspect.values() )
             .flatMap( testModel -> KnownVersion.getVersions().stream().flatMap( metaModelVersion -> {
                // Filter the arguments: Aspects missing bamm:named and/or bamm:properties is only invalid in BAMM 1.0.0
-               if ( metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 )
+               if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 )
                      && (testModel == InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES || testModel == InvalidTestAspect.ASPECT_MISSING_PROPERTIES) ) {
                   return Stream.of();
                }
@@ -279,7 +279,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             ":h -> :i -> :h",
             ":l -> :l",
             // TimeSeries are handled differently between v1 and v2 meta models.
-            metaModelVersion.isOlderThan( KnownVersion.BAMM_2_0_0 ) ? ":n -> :refinedValue -> :n" : ":n -> :NTimeSeriesEntity|bamm-e:value -> :n" ) );
+            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 ) ? ":n -> :refinedValue -> :n" : ":n -> :NTimeSeriesEntity|bamm-e:value -> :n" ) );
    }
 
    @ParameterizedTest

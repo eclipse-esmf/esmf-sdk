@@ -19,7 +19,7 @@ import org.apache.jena.datatypes.DatatypeFormatException;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.impl.LiteralLabel;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.TypedRdfDatatype;
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import org.eclipse.esmf.metamodel.datatypes.Curie;

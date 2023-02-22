@@ -26,7 +26,7 @@ import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 import io.openmanufacturing.sds.test.TestAspect;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 

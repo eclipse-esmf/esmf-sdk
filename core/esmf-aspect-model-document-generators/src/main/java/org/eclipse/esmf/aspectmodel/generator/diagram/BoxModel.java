@@ -16,7 +16,7 @@ package org.eclipse.esmf.aspectmodel.generator.diagram;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 

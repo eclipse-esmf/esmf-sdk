@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.resolver.services;
 
 import org.apache.jena.rdf.model.Model;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 
 /**

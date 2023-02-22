@@ -19,7 +19,7 @@ import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 
@@ -61,7 +61,7 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String characteristicIdentifier = metaModelVersion.isNewerThan( KnownVersion.BAMM_1_0_0 ) ? "Enumeration365b407" : "TestEnumeration";
+      final String characteristicIdentifier = metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ? "Enumeration365b407" : "TestEnumeration";
       final String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
       final String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUMERATION_WITH_MULTIPLE_SEE_ATTRIBUTES,

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMMC;
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMME;

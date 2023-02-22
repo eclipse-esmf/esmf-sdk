@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.common.collect.Streams;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.test.MetaModelVersions;
@@ -89,9 +89,9 @@ public class MigratorTest extends MetaModelVersions {
 
    @Test
    public void testMigrateUnitsToBammNamespace() {
-      final VersionedModel oldModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_UNIT, KnownVersion.BAMM_1_0_0 );
+      final VersionedModel oldModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_UNIT, KnownVersion.SAMM_1_0_0 );
       final Model rewrittenModel = migratorService.updateMetaModelVersion( oldModel ).get().getRawModel();
-      final BAMM bamm = new BAMM( KnownVersion.BAMM_2_0_0 );
+      final BAMM bamm = new BAMM( KnownVersion.SAMM_2_0_0 );
 
       assertThat( rewrittenModel.contains( null, RDF.type, bamm.Unit() ) ).isTrue();
       assertThat( rewrittenModel.contains( null, bamm.symbol(), (RDFNode) null ) ).isTrue();

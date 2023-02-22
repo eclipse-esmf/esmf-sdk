@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.versionupdate.migrator;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * Abstract migration function that is used to apply a change to all URIs in a model

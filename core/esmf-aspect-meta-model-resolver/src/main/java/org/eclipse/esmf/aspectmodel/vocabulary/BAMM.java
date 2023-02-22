@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.vocabulary;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * The RDF jena vocabulary of the aspect meta model.

@@ -42,7 +42,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.eclipse.esmf.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspect.AspectValidateCommand;
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import io.openmanufacturing.sds.test.InvalidTestAspect;
 import io.openmanufacturing.sds.test.MetaModelVersions;

@@ -32,7 +32,7 @@ import org.eclipse.esmf.metamodel.QuantityKinds;
 import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestModel;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
 

@@ -61,7 +61,7 @@ import java.util.HashSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.impl.DefaultUnit;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
@@ -79,7 +79,7 @@ public class Units {
 
    private static AspectModelUrn urn( final KnownVersion version, final String name ) {
       return AspectModelUrn.fromUrn(
-            String.format( "urn:bamm:io.openmanufacturing:unit:%s#%s", version.toVersionString(), name ) );
+            String.format( "urn:samm:org.eclipse.samm:unit:%s#%s", version.toVersionString(), name ) );
    }
 
    ${initMethods.join("\n")}
@@ -196,7 +196,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Optional;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
@@ -241,7 +241,7 @@ public enum QuantityKinds implements QuantityKind {
 
    @Override
    public Optional<AspectModelUrn> getAspectModelUrn() {
-      return Optional.of( AspectModelUrn.fromUrn( String.format( "urn:bamm:io.openmanufacturing:unit:%s#%s", LATEST.toVersionString(), this.name ) ) );
+      return Optional.of( AspectModelUrn.fromUrn( String.format( "urn:samm:org.eclipse.samm:unit:%s#%s", LATEST.toVersionString(), this.name ) ) );
    }
 
    @Override
@@ -272,7 +272,7 @@ def toUpperSnakeCase(String s) {
 }
 
 def model = ModelFactory.createDefaultModel()
-model.read(getClass().getResourceAsStream("bamm/unit/1.0.0/units.ttl"), "", RDFLanguages.TURTLE.getName())
+model.read(getClass().getResourceAsStream("samm/unit/1.0.0/units.ttl"), "", RDFLanguages.TURTLE.getName())
 
 def units = []
 QueryExecutionFactory.create(new File("${project.basedir}/buildSrc/main/resources/units.sparql").text, model).execSelect().each { unit ->

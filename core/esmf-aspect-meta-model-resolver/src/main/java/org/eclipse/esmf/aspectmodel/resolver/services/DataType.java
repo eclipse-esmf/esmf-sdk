@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * This class acts as the bridge between the scalar types used in RDF (XSD/RDF/BAMM-specific (i.e. bamm:curie)) and

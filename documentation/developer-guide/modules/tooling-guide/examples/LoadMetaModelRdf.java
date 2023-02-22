@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Optional;
 import org.apache.jena.vocabulary.RDF;
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 // end::imports[]

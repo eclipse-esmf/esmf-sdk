@@ -22,7 +22,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import io.openmanufacturing.sds.test.TestAspect;
 
 public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {

@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 
 import org.apache.jena.datatypes.BaseDatatype;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
 
 public class BammDataType<T> extends BaseDatatype implements TypedRdfDatatype<T> {

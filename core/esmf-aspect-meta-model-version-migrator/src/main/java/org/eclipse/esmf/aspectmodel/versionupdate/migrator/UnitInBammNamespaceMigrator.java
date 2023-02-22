@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
 
@@ -25,8 +25,8 @@ import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
  * Migrates references to meta model elements and attributes in the unit: namespace to use the bamm: namespace instead
  */
 public class UnitInBammNamespaceMigrator extends AbstractUriRewriter {
-   private static final KnownVersion OLD = KnownVersion.BAMM_1_0_0;
-   private static final KnownVersion NEW = KnownVersion.BAMM_2_0_0;
+   private static final KnownVersion OLD = KnownVersion.SAMM_1_0_0;
+   private static final KnownVersion NEW = KnownVersion.SAMM_2_0_0;
    private static final BAMM bamm = new BAMM( NEW );
    private static final UNIT unit = new UNIT( NEW, bamm );
 

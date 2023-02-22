@@ -37,8 +37,8 @@
          <artifactId>esmf-aspect-meta-model-interface</artifactId>
       </dependency>
       <dependency>
-         <groupId>io.openmanufacturing</groupId>
-         <artifactId>sds-aspect-meta-model</artifactId>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-semantic-aspect-meta-model</artifactId>
       </dependency>
       <dependency>
          <groupId>io.github.classgraph</groupId>

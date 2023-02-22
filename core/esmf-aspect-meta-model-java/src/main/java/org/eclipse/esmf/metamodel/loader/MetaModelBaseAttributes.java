@@ -31,7 +31,7 @@ import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.Streams;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;

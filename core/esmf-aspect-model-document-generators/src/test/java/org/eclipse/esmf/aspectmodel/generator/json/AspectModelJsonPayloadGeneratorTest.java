@@ -54,7 +54,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.Lists;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AbstractTestEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithAbstractEntity;
@@ -442,7 +442,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    void testGeneratedNumbersAreWithinRange( final RDFDatatype numericModelType, final Optional<BoundDefinition> boundKind ) {
       // number types are the same in all versions of the meta model, so we do not need to iterate over all of them,
       // just take the latest one
-      final KnownVersion modelVersion = KnownVersion.BAMM_1_0_0;
+      final KnownVersion modelVersion = KnownVersion.SAMM_1_0_0;
 
       final Type numericType = new DefaultScalar( numericModelType.getURI(), modelVersion );
       final Resource dataTypeResource = ResourceFactory.createResource( numericType.getUrn() );

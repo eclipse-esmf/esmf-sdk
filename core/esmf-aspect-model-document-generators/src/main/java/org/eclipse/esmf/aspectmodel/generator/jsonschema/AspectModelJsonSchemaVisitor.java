@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.BammDataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;

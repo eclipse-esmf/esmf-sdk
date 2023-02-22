@@ -37,7 +37,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.characteristic.impl.DefaultList;
@@ -390,16 +390,16 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertNumberOfFiles( 3 );
 
       final String expectedTestPropertyCharacteristicConstructorCall =
-            "new DefaultEnumeration(MetaModelBaseAttributes.from(KnownVersion.BAMM_2_0_0, AspectModelUrn.fromUrn(NAMESPACE + \"TestEnumeration\"), "
-                  + "\"TestEnumeration\"), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\", KnownVersion.BAMM_2_0_0), new ArrayList<Value>() {\n"
+            "new DefaultEnumeration(MetaModelBaseAttributes.from(KnownVersion.SAMM_2_0_0, AspectModelUrn.fromUrn(NAMESPACE + \"TestEnumeration\"), "
+                  + "\"TestEnumeration\"), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\", KnownVersion.SAMM_2_0_0), new ArrayList<Value>() {\n"
                   + "\n"
                   + "    {\n"
                   + "        add(new DefaultScalarValue(new BigInteger(\"1\"), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\", KnownVersion"
-                  + ".BAMM_2_0_0)));\n"
+                  + ".SAMM_2_0_0)));\n"
                   + "        add(new DefaultScalarValue(new BigInteger(\"2\"), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\", KnownVersion"
-                  + ".BAMM_2_0_0)));\n"
+                  + ".SAMM_2_0_0)));\n"
                   + "        add(new DefaultScalarValue(new BigInteger(\"3\"), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\", KnownVersion"
-                  + ".BAMM_2_0_0)));\n"
+                  + ".SAMM_2_0_0)));\n"
                   + "    }\n"
                   + "})";
 
@@ -478,13 +478,13 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertNumberOfFiles( 6 );
 
       final String expectedTestPropertyCharacteristicConstructorCall = "new DefaultSingleEntity(MetaModelBaseAttributes.builderFor(\"EntityCharacteristic\")"
-            + ".withMetaModelVersion(KnownVersion.BAMM_2_0_0).withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCharacteristic\")).withPreferredName(Locale"
+            + ".withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCharacteristic\")).withPreferredName(Locale"
             + ".forLanguageTag(\"en\"), \"Test Entity Characteristic\").withDescription(Locale.forLanguageTag(\"en\"), \"This is a test Entity "
             + "Characteristic\").withSee(\"http://example.com/omp\").build(), DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.builderFor"
-            + "(\"ExtendingTestEntity\").withMetaModelVersion(KnownVersion.BAMM_2_0_0).withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"ExtendingTestEntity\"))"
+            + "(\"ExtendingTestEntity\").withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"ExtendingTestEntity\"))"
             + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Entity\").withDescription(Locale.forLanguageTag(\"en\"), \"This is a test entity\")"
             + ".build(), MetaExtendingTestEntity.INSTANCE.getProperties(), Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity"
-            + "(MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion.BAMM_2_0_0).withUrn(AspectModelUrn.fromUrn"
+            + "(MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(AspectModelUrn.fromUrn"
             + "(NAMESPACE + \"AbstractTestEntity\")).withPreferredName(Locale.forLanguageTag(\"en\"), \"Abstract Test Entity\").withDescription(Locale"
             + ".forLanguageTag(\"en\"), \"This is a abstract test entity\").build(), MetaAbstractTestEntity.INSTANCE.getProperties(), Optional.empty(), List"
             + ".of(AspectModelUrn.fromUrn(\"urn:bamm:io.openmanufacturing.test:1.0.0#ExtendingTestEntity\"))))))";
@@ -501,10 +501,10 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertNumberOfFiles( 6 );
 
       final String expectedTestPropertyCharacteristicConstructorCall =
-            "new DefaultCollection(MetaModelBaseAttributes.builderFor(\"EntityCollectionCharacteristic\").withMetaModelVersion(KnownVersion.BAMM_2_0_0)" 
+            "new DefaultCollection(MetaModelBaseAttributes.builderFor(\"EntityCollectionCharacteristic\").withMetaModelVersion(KnownVersion.SAMM_2_0_0)" 
                   + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCollectionCharacteristic\")).withDescription(Locale.forLanguageTag(\"en\"), " 
                   + "\"This is an entity collection characteristic\").build(), Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(" 
-                  + "MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion.BAMM_2_0_0).withUrn(" 
+                  + "MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(" 
                   + "AspectModelUrn.fromUrn(NAMESPACE + \"AbstractTestEntity\")).withDescription(Locale.forLanguageTag(\"en\"), " 
                   + "\"This is an abstract test entity\").build(), MetaAbstractTestEntity.INSTANCE.getProperties(), Optional.empty(), " 
                   + "List.of(AspectModelUrn.fromUrn(\"urn:bamm:io.openmanufacturing.test:1.0.0#ExtendingTestEntity\")))), Optional.empty())";

@@ -16,7 +16,7 @@ package org.eclipse.esmf.aspectmodel.versionupdate.migrator;
 import java.util.Map;
 import java.util.Optional;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public class SdsMetaModelVersionUriRewriter extends AbstractUriRewriter {
 

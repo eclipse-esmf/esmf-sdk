@@ -249,7 +249,7 @@
                         <excludes>
                            <!-- Exclude meta model dependency, because meta model resources are already contained in the
                                 meta model resolver package -->
-                           <exclude>io.openmanufacturing:sds-aspect-meta-model</exclude>
+                           <exclude>org.eclipse.esmf:esmf-semantic-aspect-meta-model</exclude>
                            <!-- Duplicate annotations that are already contained in javax.annotation-api -->
                            <exclude>javax.annotation:jsr250-api</exclude>
                         </excludes>

@@ -35,7 +35,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import io.openmanufacturing.sds.test.TestModel;
 import io.openmanufacturing.sds.test.TestResources;
 

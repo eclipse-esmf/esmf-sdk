@@ -31,7 +31,7 @@ import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
 import org.eclipse.esmf.aspectmodel.java.ValueExpressionVisitor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.characteristic.Code;

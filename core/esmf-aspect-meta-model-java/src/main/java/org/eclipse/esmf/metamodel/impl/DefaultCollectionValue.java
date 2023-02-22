@@ -21,7 +21,7 @@ import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 

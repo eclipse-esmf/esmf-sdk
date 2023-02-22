@@ -16,7 +16,7 @@ package io.openmanufacturing.sds.test;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public abstract class MetaModelVersions {
 
@@ -24,7 +24,7 @@ public abstract class MetaModelVersions {
    }
 
    protected static Stream<KnownVersion> allVersions() {
-      return Arrays.stream( KnownVersion.values() ).dropWhile( KnownVersion.BAMM_1_0_0::isNewerThan );
+      return Arrays.stream( KnownVersion.values() ).dropWhile( KnownVersion.SAMM_1_0_0::isNewerThan );
    }
 
    protected static Stream<KnownVersion> versionsStartingWith( final KnownVersion version ) {
@@ -45,10 +45,10 @@ public abstract class MetaModelVersions {
 
    @SuppressWarnings( "squid:S00100" ) // Underscores are required to make version unambiguous
    protected static Stream<KnownVersion> versionsStartingWith2_0_0() {
-      return versionsStartingWith( KnownVersion.BAMM_2_0_0 );
+      return versionsStartingWith( KnownVersion.SAMM_2_0_0 );
    }
 
    protected static Stream<KnownVersion> versionsUpToIncluding1_0_0() {
-      return versionsUpToIncluding( KnownVersion.BAMM_1_0_0 );
+      return versionsUpToIncluding( KnownVersion.SAMM_1_0_0 );
    }
 }

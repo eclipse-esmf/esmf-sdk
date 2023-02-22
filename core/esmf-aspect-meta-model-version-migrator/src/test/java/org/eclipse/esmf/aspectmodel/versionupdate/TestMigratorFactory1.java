@@ -20,7 +20,7 @@ import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.AspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.AbstractMigrator;
@@ -29,7 +29,7 @@ public class TestMigratorFactory1 implements MigratorFactory {
 
    @Override
    public VersionNumber getLatestVersion() {
-      return VersionNumber.parse( KnownVersion.BAMM_1_0_0.toVersionString() );
+      return VersionNumber.parse( KnownVersion.SAMM_1_0_0.toVersionString() );
    }
 
    @Override

@@ -18,7 +18,7 @@ import java.util.StringJoiner;
 
 import org.eclipse.esmf.metamodel.Scalar;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 

@@ -19,7 +19,7 @@ import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
 
 import com.google.common.collect.ImmutableList;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.SdsMetaModelVersionUriRewriter;
@@ -32,8 +32,8 @@ import org.eclipse.esmf.aspectmodel.versionupdate.migrator.UnitInBammNamespaceMi
 public class SdsMigratorFactory {
    private final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
    private final List<Migrator> migrators = ImmutableList.<Migrator> builder()
-         .add( new SdsMetaModelVersionUriRewriter( KnownVersion.BAMM_1_0_0, KnownVersion.BAMM_2_0_0 ) )
-         .add( new SdsRemoveBammNameMigrator( KnownVersion.BAMM_1_0_0, KnownVersion.BAMM_2_0_0 ) )
+         .add( new SdsMetaModelVersionUriRewriter( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
+         .add( new SdsRemoveBammNameMigrator( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
          .add( new UnitInBammNamespaceMigrator() )
          .build();
 

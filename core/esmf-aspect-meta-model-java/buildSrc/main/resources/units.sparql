@@ -11,15 +11,15 @@
 
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>
-prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#>
+prefix samm: <urn:samm:org.eclipse.samm:meta-model:1.0.0#>
+prefix unit: <urn:samm:org.eclipse.samm:unit:1.0.0#>
 
 select distinct ?unitName ?label ?symbol ?code ?referenceUnitName ?conversionFactor ?quantityKinds
 where {
   ?unit rdf:type/rdfs:subClassOf* unit:Unit .
-  ?unit bamm:name ?unitName .
+  ?unit samm:name ?unitName .
   optional {
-    ?unit bamm:preferredName ?preferredName .
+    ?unit samm:preferredName ?preferredName .
     bind( str( ?preferredName ) as ?label )
   }
   optional {
@@ -30,15 +30,15 @@ where {
   }
   optional {
     ?unit unit:referenceUnit ?referenceUnit .
-    ?referenceUnit bamm:name ?referenceUnitName .
+    ?referenceUnit samm:name ?referenceUnitName .
     ?unit unit:conversionFactor ?conversionFactor .
   }
   optional {
     select ?unitName ( group_concat( ?quantityKindName; separator="," ) as ?quantityKinds )
     where {
-      ?unit bamm:name ?unitName .
+      ?unit samm:name ?unitName .
       ?unit unit:referenceUnit?/unit:quantityKind ?quantityKind .
-      ?quantityKind bamm:name ?quantityKindName .
+      ?quantityKind samm:name ?quantityKindName .
     }
     group by ?unitName
   }

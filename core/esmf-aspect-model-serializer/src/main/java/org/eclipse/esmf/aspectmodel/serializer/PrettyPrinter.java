@@ -61,7 +61,7 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import com.google.common.collect.ImmutableList;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMMC;

@@ -54,7 +54,7 @@ import org.topbraid.shacl.vocabulary.SH;
 
 import com.google.common.collect.ImmutableList;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidNamespaceException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidRootElementCountException;

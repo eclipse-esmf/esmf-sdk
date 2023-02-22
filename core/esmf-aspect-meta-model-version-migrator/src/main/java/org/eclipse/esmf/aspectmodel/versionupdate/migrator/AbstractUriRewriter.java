@@ -28,7 +28,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 
 import com.google.common.collect.Streams;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 
 /**

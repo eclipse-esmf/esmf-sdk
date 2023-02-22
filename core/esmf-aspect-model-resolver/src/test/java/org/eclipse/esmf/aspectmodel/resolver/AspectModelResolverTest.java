@@ -33,7 +33,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.common.collect.Streams;
 
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.test.MetaModelVersions;

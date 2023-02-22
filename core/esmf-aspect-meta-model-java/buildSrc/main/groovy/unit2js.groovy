@@ -26,7 +26,7 @@ def generateJs(List quantityKinds, List units) {
  * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -48,7 +48,7 @@ var bamm = {
 }
 
 def model = ModelFactory.createDefaultModel()
-model.read(getClass().getResourceAsStream("bamm/unit/1.0.0/units.ttl"), "", RDFLanguages.TURTLE.getName())
+model.read(getClass().getResourceAsStream("samm/unit/1.0.0/units.ttl"), "", RDFLanguages.TURTLE.getName())
 
 def quantityKinds = []
 QueryExecutionFactory.create(new File("${project.basedir}/buildSrc/main/resources/quantitykinds.sparql").text, model).execSelect().each { unit ->
