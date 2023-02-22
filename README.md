@@ -51,7 +51,7 @@ Are you having trouble with SDS SDK? We want to help!
 
 The top level elements of the SDK structure are all carried out as Maven multimodule projects.
 Building the SDK requires a Java 17-compatible [GraalVM JDK](https://www.graalvm.org/) with the 'js'
-component installed. If you with to build the bamm-cli (see below), you will also have to have the
+component installed. If you want to build the bamm-cli (see below), you will also have to have the
 'native-image' GraalVM component installed.
 
 To build the SDK core components, run the following command:
