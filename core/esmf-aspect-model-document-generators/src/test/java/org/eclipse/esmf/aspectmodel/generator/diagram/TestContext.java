@@ -36,8 +36,8 @@ import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 
 import org.eclipse.esmf.samm.KnownVersion;
-import io.openmanufacturing.sds.test.TestModel;
-import io.openmanufacturing.sds.test.TestResources;
+import org.eclipse.esmf.test.TestModel;
+import org.eclipse.esmf.test.TestResources;
 
 public class TestContext {
    private final AspectModelDiagramGenerator service;

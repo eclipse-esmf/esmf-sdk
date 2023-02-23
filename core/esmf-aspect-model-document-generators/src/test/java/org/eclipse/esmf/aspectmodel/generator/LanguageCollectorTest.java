@@ -27,9 +27,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import io.openmanufacturing.sds.test.MetaModelVersions;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestResources;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
 
 public class LanguageCollectorTest extends MetaModelVersions {
 

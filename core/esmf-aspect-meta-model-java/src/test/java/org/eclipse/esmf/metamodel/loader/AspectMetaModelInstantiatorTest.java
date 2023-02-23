@@ -39,8 +39,8 @@ import org.eclipse.esmf.characteristic.Either;
 import org.eclipse.esmf.characteristic.SingleEntity;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestModel;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestModel;
 
 public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest

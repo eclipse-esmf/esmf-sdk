@@ -24,7 +24,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.eclipse.esmf.constraint.RangeConstraint;
 import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
-import io.openmanufacturing.sds.test.TestAspect;
+import org.eclipse.esmf.test.TestAspect;
 
 import org.eclipse.esmf.samm.KnownVersion;
 

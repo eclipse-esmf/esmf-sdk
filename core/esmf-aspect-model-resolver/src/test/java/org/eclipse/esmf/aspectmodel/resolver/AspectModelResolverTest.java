@@ -36,7 +36,7 @@ import com.google.common.collect.Streams;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import io.openmanufacturing.sds.test.MetaModelVersions;
+import org.eclipse.esmf.test.MetaModelVersions;
 import io.vavr.control.Try;
 
 public class AspectModelResolverTest extends MetaModelVersions {

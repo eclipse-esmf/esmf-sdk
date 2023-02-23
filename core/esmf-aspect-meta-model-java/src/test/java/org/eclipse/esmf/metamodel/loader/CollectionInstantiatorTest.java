@@ -33,8 +33,8 @@ import org.eclipse.esmf.characteristic.SortedSet;
 import org.eclipse.esmf.characteristic.TimeSeries;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.characteristic.impl.DefaultTrait;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestModel;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestModel;
 
 public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 

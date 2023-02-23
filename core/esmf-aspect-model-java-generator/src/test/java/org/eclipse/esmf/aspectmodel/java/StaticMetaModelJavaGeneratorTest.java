@@ -47,8 +47,8 @@ import io.openmanufacturing.sds.staticmetamodel.StaticProperty;
 import io.openmanufacturing.sds.staticmetamodel.StaticUnitProperty;
 import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintContainerProperty;
 import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintProperty;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestSharedAspect;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestSharedAspect;
 
 public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 

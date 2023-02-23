@@ -41,8 +41,8 @@ import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.characteristic.impl.DefaultSet;
 import org.eclipse.esmf.characteristic.impl.DefaultSingleEntity;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestModel;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestModel;
 
 public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
 

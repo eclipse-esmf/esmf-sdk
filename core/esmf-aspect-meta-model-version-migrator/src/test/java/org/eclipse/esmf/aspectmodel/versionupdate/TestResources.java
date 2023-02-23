@@ -23,7 +23,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 
-import io.openmanufacturing.sds.test.TestAspect;
+import org.eclipse.esmf.test.TestAspect;
 
 public class TestResources {
    public static VersionedModel getModelWithoutResolution( final TestAspect model, final KnownVersion knownVersion ) {

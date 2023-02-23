@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
- * information regarding authorship. 
+ * information regarding authorship.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.test;
+package org.eclipse.esmf.test;
 
 import java.io.InputStream;
 
@@ -22,6 +22,7 @@ import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+
 import io.vavr.control.Try;
 
 public class TestResources {

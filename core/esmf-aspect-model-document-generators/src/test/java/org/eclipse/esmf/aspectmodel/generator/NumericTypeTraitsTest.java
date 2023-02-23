@@ -26,7 +26,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
-import io.openmanufacturing.sds.test.MetaModelVersions;
+import org.eclipse.esmf.test.MetaModelVersions;
 
 public class NumericTypeTraitsTest extends MetaModelVersions {
 

@@ -23,7 +23,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.characteristic.List;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import io.openmanufacturing.sds.test.TestAspect;
+import org.eclipse.esmf.test.TestAspect;
 
 public class BlankNodeInstantiationTest extends MetaModelInstantiatorTest {
 

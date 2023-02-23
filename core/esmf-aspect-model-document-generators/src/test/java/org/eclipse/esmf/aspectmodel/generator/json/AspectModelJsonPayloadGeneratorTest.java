@@ -114,9 +114,9 @@ import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import io.openmanufacturing.sds.test.MetaModelVersions;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestResources;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
 import io.vavr.collection.HashMap;
 
 public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {

@@ -25,10 +25,10 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import io.openmanufacturing.sds.test.MetaModelVersions;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestResources;
-import io.openmanufacturing.sds.test.TestSharedAspect;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
+import org.eclipse.esmf.test.TestSharedAspect;
 
 abstract class StaticMetaModelGeneratorTest extends MetaModelVersions {
    Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion version, final boolean executeLibraryMacros,

@@ -28,7 +28,7 @@ import org.eclipse.esmf.constraint.LanguageConstraint;
 import org.eclipse.esmf.constraint.LengthConstraint;
 import org.eclipse.esmf.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.characteristic.Trait;
-import io.openmanufacturing.sds.test.TestAspect;
+import org.eclipse.esmf.test.TestAspect;
 
 import org.eclipse.esmf.samm.KnownVersion;
 

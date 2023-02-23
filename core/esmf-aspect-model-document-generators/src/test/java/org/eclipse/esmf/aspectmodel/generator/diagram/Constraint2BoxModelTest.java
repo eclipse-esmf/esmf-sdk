@@ -20,7 +20,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.eclipse.esmf.samm.KnownVersion;
-import io.openmanufacturing.sds.test.TestAspect;
+import org.eclipse.esmf.test.TestAspect;
 
 public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    private final String expectedValueEntryTitle = "value";

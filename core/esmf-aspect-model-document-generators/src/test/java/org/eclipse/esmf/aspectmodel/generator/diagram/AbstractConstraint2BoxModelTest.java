@@ -19,7 +19,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 
 import org.eclipse.esmf.samm.KnownVersion;
-import io.openmanufacturing.sds.test.MetaModelVersions;
+import org.eclipse.esmf.test.MetaModelVersions;
 
 public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions {
 

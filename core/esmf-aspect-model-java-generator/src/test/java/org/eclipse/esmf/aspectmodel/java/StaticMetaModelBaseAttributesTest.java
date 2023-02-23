@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import org.eclipse.esmf.samm.KnownVersion;
-import io.openmanufacturing.sds.test.TestAspect;
+import org.eclipse.esmf.test.TestAspect;
 
 public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
 

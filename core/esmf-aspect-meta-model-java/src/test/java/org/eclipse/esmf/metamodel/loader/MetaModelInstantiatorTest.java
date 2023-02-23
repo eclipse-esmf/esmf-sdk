@@ -24,9 +24,9 @@ import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import io.openmanufacturing.sds.test.MetaModelVersions;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestResources;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
 import io.vavr.control.Try;
 
 public abstract class MetaModelInstantiatorTest extends MetaModelVersions {

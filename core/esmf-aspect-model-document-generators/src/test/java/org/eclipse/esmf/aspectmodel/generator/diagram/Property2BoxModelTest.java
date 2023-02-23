@@ -20,9 +20,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.eclipse.esmf.samm.KnownVersion;
-import io.openmanufacturing.sds.test.MetaModelVersions;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestProperty;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestProperty;
 
 public class Property2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "property2boxmodel.sparql";

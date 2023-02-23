@@ -29,8 +29,8 @@ import org.eclipse.esmf.characteristic.Measurement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.characteristic.Quantifiable;
 import org.eclipse.esmf.metamodel.QuantityKinds;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestModel;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestModel;
 
 import org.eclipse.esmf.samm.KnownVersion;
 

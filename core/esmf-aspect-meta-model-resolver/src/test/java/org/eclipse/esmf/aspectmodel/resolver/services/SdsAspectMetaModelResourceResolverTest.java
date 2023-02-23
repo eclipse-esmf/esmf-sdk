@@ -31,7 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.eclipse.esmf.samm.KnownVersion;
-import io.openmanufacturing.sds.test.MetaModelVersions;
+import org.eclipse.esmf.test.MetaModelVersions;
 import io.vavr.control.Try;
 
 public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {

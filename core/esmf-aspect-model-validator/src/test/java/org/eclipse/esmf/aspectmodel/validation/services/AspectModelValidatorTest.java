@@ -42,12 +42,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
-import io.openmanufacturing.sds.test.InvalidTestAspect;
-import io.openmanufacturing.sds.test.MetaModelVersions;
-import io.openmanufacturing.sds.test.TestAspect;
-import io.openmanufacturing.sds.test.TestModel;
-import io.openmanufacturing.sds.test.TestProperty;
-import io.openmanufacturing.sds.test.TestResources;
+import org.eclipse.esmf.test.InvalidTestAspect;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestModel;
+import org.eclipse.esmf.test.TestProperty;
+import org.eclipse.esmf.test.TestResources;
 import io.vavr.control.Try;
 
 public class AspectModelValidatorTest extends MetaModelVersions {

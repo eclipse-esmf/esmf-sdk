@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,22 +11,19 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package io.openmanufacturing.sds.test;
+package org.eclipse.esmf.test;
 
 import org.apache.commons.text.CaseUtils;
 
-public enum InvalidTestAspect implements TestModel {
-   ACTUALLY_JSON,
-   ASPECT_MISSING_NAME_AND_PROPERTIES,
-   ASPECT_MISSING_PROPERTIES,
-   ASPECT_WITH_INVALID_VERSION,
-   ASPECT_WITH_BAMM_NAMESPACE_FOR_CUSTOM_UNIT,
-   ASPECT_WITH_RECURSIVE_PROPERTY,
-   INVALID_SYNTAX,
-   MISSING_ASPECT_DECLARATION,
-   INVALID_EXAMPLE_VALUE_DATATYPE,
-   INVALID_PREFERRED_NAME_DATATYPE,
-   RANGE_CONSTRAINT_WITH_WRONG_TYPE;
+public enum TestEntity implements TestModel {
+   ENTITY_WITH_MULTIPLE_SEE_ATTRIBUTES,
+   ENTITY_WITH_OPTIONAL_AND_NOT_IN_PAYLOAD_PROPERTY,
+   ENTITY_WITHOUT_SEE_ATTRIBUTE,
+   ENTITY_WITH_SEE_ATTRIBUTE,
+   SHARED_ENTITY_WITH_SEE_ATTRIBUTE,
+   ENTITY_WITH_OPTIONAL_PROPERTY,
+   ENTITY_WITH_OPTIONAL_PROPERTY_WITH_PAYLOAD_NAME,
+   ENTITY_WITH_PROPERTY_WITH_PAYLOAD_NAME;
 
    @Override
    public String getName() {

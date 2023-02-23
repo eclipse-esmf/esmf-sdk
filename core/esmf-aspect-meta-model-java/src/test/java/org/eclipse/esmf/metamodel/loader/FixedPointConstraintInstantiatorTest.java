@@ -21,7 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import org.eclipse.esmf.constraint.FixedPointConstraint;
 import org.eclipse.esmf.characteristic.Trait;
-import io.openmanufacturing.sds.test.TestAspect;
+import org.eclipse.esmf.test.TestAspect;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
