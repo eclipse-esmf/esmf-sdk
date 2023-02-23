@@ -40,6 +40,7 @@ import picocli.CommandLine;
 )
 public class AspectValidateCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "validate";
+   private static final Logger LOG = LoggerFactory.getLogger( AspectValidateCommand.class );
 
    @CommandLine.ParentCommand
    private AspectCommand parentCommand;
@@ -60,8 +61,10 @@ public class AspectValidateCommand extends AbstractCommand {
 
       final List<Violation> violations = validator.validateModel( versionedModel );
       if ( details ) {
+         LOG.debug( "Printing detailed validation results" );
          System.out.println( new DetailedViolationFormatter().apply( violations ) );
       } else {
+         LOG.debug( "Printing regular validation results" );
          System.out.println( new ViolationFormatter().apply( violations ) );
       }
 
