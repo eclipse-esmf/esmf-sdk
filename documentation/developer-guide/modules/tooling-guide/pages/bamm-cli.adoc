@@ -152,8 +152,8 @@ Please bear in mind that these blocks are snippets or fragments of a larger whol
 Please consider the following model fragment, with the attention focused on the numbered elements:
 
 ----
-@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>.
-@prefix : <urn:bamm:test:2.0.0#>. <1>
+@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix : <urn:bamm:com.mycompany.myproduct:2.0.0#> . <1>
 
 :Test a bamm:Aspect; <3>
     bamm:preferredName "TestAspect"@en ; <2>

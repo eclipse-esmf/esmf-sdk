@@ -487,7 +487,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
             + "(MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(AspectModelUrn.fromUrn"
             + "(NAMESPACE + \"AbstractTestEntity\")).withPreferredName(Locale.forLanguageTag(\"en\"), \"Abstract Test Entity\").withDescription(Locale"
             + ".forLanguageTag(\"en\"), \"This is a abstract test entity\").build(), MetaAbstractTestEntity.INSTANCE.getProperties(), Optional.empty(), List"
-            + ".of(AspectModelUrn.fromUrn(\"urn:bamm:io.openmanufacturing.test:1.0.0#ExtendingTestEntity\"))))))";
+            + ".of(AspectModelUrn.fromUrn(\"urn:samm:org.eclipse.esmf.samm.test:1.0.0#ExtendingTestEntity\"))))))";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithAbstractEntity",
             ImmutableMap.<String, String> builder().put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall ).build(), 1 );
@@ -507,7 +507,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
                   + "MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(" 
                   + "AspectModelUrn.fromUrn(NAMESPACE + \"AbstractTestEntity\")).withDescription(Locale.forLanguageTag(\"en\"), " 
                   + "\"This is an abstract test entity\").build(), MetaAbstractTestEntity.INSTANCE.getProperties(), Optional.empty(), " 
-                  + "List.of(AspectModelUrn.fromUrn(\"urn:bamm:io.openmanufacturing.test:1.0.0#ExtendingTestEntity\")))), Optional.empty())";
+                  + "List.of(AspectModelUrn.fromUrn(\"urn:samm:org.eclipse.esmf.samm.test:1.0.0#ExtendingTestEntity\")))), Optional.empty())";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithCollectionWithAbstractEntity",
             ImmutableMap.<String, String> builder().put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall ).build(), 1 );

@@ -11,7 +11,7 @@
 
 @prefix bamm: <urn:bamm:foo:something:else#> .
 
-<urn:bamm:io.openmanufacturing:TestAspect:1.1.0> a bamm:Aspect;
+<urn:samm:org.eclipse.esmf.samm:TestAspect:1.1.0> a bamm:Aspect;
 	bamm:name "TestAspect" ;
 	bamm:preferredName "Test Aspect"@en;
 	bamm:properties () ;

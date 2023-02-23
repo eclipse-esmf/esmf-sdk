@@ -74,7 +74,7 @@ public class MigratorTest extends MetaModelVersions {
          return;
       }
 
-      final String metaModelNameSpace = String.format( "urn:bamm:io.openmanufacturing:meta-model:%s", metaModelVersion.toVersionString() );
+      final String metaModelNameSpace = String.format( "urn:samm:org.eclipse.esmf.samm:meta-model:%s", metaModelVersion.toVersionString() );
       assertThat( getAllUris( model ) ).noneMatch( uri -> uri.contains( metaModelNameSpace ) );
    }
 
@@ -97,9 +97,9 @@ public class MigratorTest extends MetaModelVersions {
       assertThat( rewrittenModel.contains( null, SAMM.symbol(), (RDFNode) null ) ).isTrue();
       assertThat( rewrittenModel.contains( null, SAMM.quantityKind(), (RDFNode) null ) ).isTrue();
       final Set<String> uris = getAllUris( rewrittenModel );
-      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#Unit" ) );
-      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#symbol" ) );
-      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#quantityKind" ) );
+      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:2.0.0#Unit" ) );
+      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:2.0.0#symbol" ) );
+      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:2.0.0#quantityKind" ) );
    }
 
    @ParameterizedTest

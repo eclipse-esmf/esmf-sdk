@@ -282,7 +282,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testMetaModelBaseAttributesFactoryMethod( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:1.0.0#TestAspect" );
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm:1.0.0#TestAspect" );
       final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.from( metaModelVersion, urn, "someName" );
 
       assertThat( baseAttributes.getUrn() ).contains( urn );
@@ -295,7 +295,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testMetaModelBaseAttributesBuilder( final KnownVersion metaModelVersion ) {
-      final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:1.0.0#TestAspect" );
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm:1.0.0#TestAspect" );
       final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builderFor( "someName" )
             .withMetaModelVersion( metaModelVersion )
             .withUrn( urn )

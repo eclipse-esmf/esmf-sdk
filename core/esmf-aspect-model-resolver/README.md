@@ -28,7 +28,7 @@ To obtain the resolved raw RDF model:
 ```java
 
 
-AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:1.0.0#Test" );
+AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm:1.0.0#Test" );
       Path modelsRoot = Paths.get("/foo");
       AspectModelResolver resolver = new AspectModelResolver();
 
@@ -51,7 +51,7 @@ To obtain an instance of the Java representation of an Aspect model
 
 import loader.org.eclipse.esmf.metamodel.AspectModelLoader;
 
-AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:1.0.0#Test" );
+AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm:1.0.0#Test" );
       Path modelsRoot = Paths.get("/foo");
       AspectModelResolver resolver = new AspectModelResolver();
 

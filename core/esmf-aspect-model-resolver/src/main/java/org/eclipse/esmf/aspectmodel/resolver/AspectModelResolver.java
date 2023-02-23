@@ -268,7 +268,7 @@ public class AspectModelResolver {
     * @return the list of mode element URIs
     */
    private List<AspectModelUrn> urnsToResolve( final Model source, final Model target ) {
-      final Property refines = source.createProperty( "urn:bamm:io.openmanufacturing:meta-model:1.0.0#refines" );
+      final Property refines = source.createProperty( "urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#refines" );
       final List<AspectModelUrn> result = new ArrayList<>();
       for ( final String element : getAllUrnsInModel( source ) ) {
          if ( !target.contains( source.createResource( element ), RDF.type, (RDFNode) null )

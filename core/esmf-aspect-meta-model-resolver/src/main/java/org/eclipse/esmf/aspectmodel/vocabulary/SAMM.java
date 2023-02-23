@@ -22,7 +22,7 @@ import org.eclipse.esmf.samm.KnownVersion;
  */
 public class SAMM implements Namespace {
    final KnownVersion metaModelVersion;
-   private static final String BASE_URI = "urn:bamm:io.openmanufacturing:";
+   private static final String BASE_URI = "urn:samm:org.eclipse.esmf.samm:";
 
    public SAMM( final KnownVersion metaModelVersion ) {
       this.metaModelVersion = metaModelVersion;

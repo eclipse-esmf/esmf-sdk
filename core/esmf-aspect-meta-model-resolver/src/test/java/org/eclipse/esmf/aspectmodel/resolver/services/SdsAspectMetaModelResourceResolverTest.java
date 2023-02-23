@@ -84,10 +84,10 @@ public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testGetAspectModelUrnExpectSuccess( final KnownVersion metaModelVersion ) {
       final Try<AspectModelUrn> aspectModelUrn = AspectModelUrn.from(
-            "urn:bamm:io.openmanufacturing:meta-model:" + metaModelVersion.toVersionString() + "#Aspect" );
+            "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() + "#Aspect" );
       assertThat( aspectModelUrn ).isSuccess();
       org.assertj.core.api.Assertions.assertThat( aspectModelUrn.get().getUrn().toString() )
-            .isEqualTo( "urn:bamm:io.openmanufacturing:meta-model:" + metaModelVersion
+            .isEqualTo( "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion
                   .toVersionString() + "#Aspect" );
    }
 
@@ -108,7 +108,7 @@ public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {
    @Test
    public void testGetUnknownVersionExpectFailure() {
       final Model model = ModelFactory.createDefaultModel();
-      model.setNsPrefix( "bamm", "urn:bamm:io.openmanufacturing:meta-model:5.0.0#" );
+      model.setNsPrefix( "bamm", "urn:samm:org.eclipse.esmf.samm:meta-model:5.0.0#" );
       final Try<VersionNumber> metaModelVersion = aspectMetaModelResourceResolver.getMetaModelVersion( model );
       assertThat( metaModelVersion ).isFailure();
    }
@@ -119,7 +119,7 @@ public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {
       final Model model = aspectMetaModelResourceResolver.loadMetaModel( metaModelVersion ).get();
 
       org.assertj.core.api.Assertions.assertThat( model.contains( ResourceFactory.createResource(
-                  "urn:bamm:io.openmanufacturing:meta-model:" + metaModelVersion.toVersionString() + "#value" ),
+                  "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() + "#value" ),
             RDF.type, (RDFNode) null ) ).isTrue();
    }
 }

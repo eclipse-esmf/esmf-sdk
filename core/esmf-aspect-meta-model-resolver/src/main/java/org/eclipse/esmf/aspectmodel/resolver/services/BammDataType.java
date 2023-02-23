@@ -47,7 +47,7 @@ public class BammDataType<T> extends BaseDatatype implements TypedRdfDatatype<T>
     */
    public static TypedRdfDatatype<Curie> curie( final KnownVersion metaModelVersion ) {
       final String curieUrn = String
-            .format( "urn:bamm:io.openmanufacturing:meta-model:%s#curie", metaModelVersion.toVersionString() );
+            .format( "urn:samm:org.eclipse.esmf.samm:meta-model:%s#curie", metaModelVersion.toVersionString() );
       return new BammDataType<>( curieUrn, Curie.class, Curie::new, Curie::getValue,
             value -> value.matches( CURIE_REGEX ) );
    }

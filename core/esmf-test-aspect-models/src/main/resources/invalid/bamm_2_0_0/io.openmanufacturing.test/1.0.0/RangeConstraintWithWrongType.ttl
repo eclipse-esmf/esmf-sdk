@@ -1,8 +1,8 @@
-@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>.
-@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#>.
-@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:2.0.0#>.
+@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>.
+@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>.
+@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#>.
+@prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#>.
 
 :NumberTrait a bamm-c:Trait ;
    bamm-c:baseCharacteristic :NumberList;

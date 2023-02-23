@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
-@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
+@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
 
 :TestEntity a bamm:Entity ;
    bamm:preferredName "Test Entity"@en ;

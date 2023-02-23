@@ -20,7 +20,7 @@ import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 public interface TestSharedModel {
-   String TEST_NAMESPACE = "urn:bamm:io.openmanufacturing.test.shared:1.0.0#";
+   String TEST_NAMESPACE = "urn:samm:org.eclipse.esmf.samm.test.shared:1.0.0#";
    String getName();
 
    default AspectModelUrn getUrn() {

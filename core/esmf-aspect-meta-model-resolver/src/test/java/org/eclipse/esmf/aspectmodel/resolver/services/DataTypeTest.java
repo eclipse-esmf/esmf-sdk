@@ -304,9 +304,9 @@ public class DataTypeTest {
 
             new TestConfiguration<>( ExtendedXsdDataType.ANY_URI, Map.of(
                   "http://example.org/", v -> v.toString().equals( "http://example.org/" ),
-                  "urn:bamm:io.openmanufacturing:Errors:1.0.0#errorState",
+                  "urn:samm:org.eclipse.esmf.samm:Errors:1.0.0#errorState",
                   v -> v.toString()
-                        .equals( "urn:bamm:io.openmanufacturing:Errors:1.0.0#errorState" )
+                        .equals( "urn:samm:org.eclipse.esmf.samm:Errors:1.0.0#errorState" )
             ) )
       );
 

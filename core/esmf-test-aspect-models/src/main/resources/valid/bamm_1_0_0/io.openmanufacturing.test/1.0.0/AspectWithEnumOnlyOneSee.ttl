@@ -9,14 +9,14 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>.
-@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#>.
-@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#>.
-@prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#>.
+@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>.
+@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>.
+@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#>.
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#>.
+@prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#>.
 
 :AspectWithEnumOnlyOneSee a bamm:Aspect;
     bamm:name "Test";

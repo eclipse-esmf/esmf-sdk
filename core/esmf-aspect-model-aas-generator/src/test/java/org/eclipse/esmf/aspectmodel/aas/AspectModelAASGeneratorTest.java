@@ -53,8 +53,8 @@ class AspectModelAASGeneratorTest {
       assertEquals( 2, env.getSubmodels().get( 0 ).getSubmodelElements().size() );
 
       final Set<String> semanticIds =
-            Set.of( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#testPropertyTwo" );
+            Set.of( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#testProperty",
+                  "urn:samm:org.eclipse.esmf.samm.test:1.0.0#testPropertyTwo" );
 
       checkDataSpecificationIEC61360( semanticIds, env );
    }
@@ -70,7 +70,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, collection.getValues().size(), "Not exactly one Element in SubmodelElementCollection" );
       assertEquals( "entityProperty", collection.getValues().stream().findFirst().get().getIdShort() );
 
-      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -82,7 +82,7 @@ class AspectModelAASGeneratorTest {
       assertTrue( submodelElement instanceof SubmodelElementCollection, "SubmodelElement is not a SubmodelElementCollection" );
       assertEquals( "testProperty", submodelElement.getIdShort() );
 
-      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -95,7 +95,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( "testProperty", submodelElement.getIdShort() );
       assertTrue( ((SubmodelElementCollection) submodelElement).getOrdered(), "List is not ordered." );
 
-      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -109,7 +109,7 @@ class AspectModelAASGeneratorTest {
       assertFalse( ((SubmodelElementCollection) submodelElement).getOrdered(), "Set is ordered." );
       assertFalse( ((SubmodelElementCollection) submodelElement).getAllowDuplicates(), "Set allows duplicates." );
 
-      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -123,7 +123,7 @@ class AspectModelAASGeneratorTest {
       assertTrue( ((SubmodelElementCollection) submodelElement).getOrdered(), "Sorted Set is not ordered." );
       assertFalse( ((SubmodelElementCollection) submodelElement).getAllowDuplicates(), "Sorted Set allows duplicates." );
 
-      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -136,8 +136,8 @@ class AspectModelAASGeneratorTest {
       assertTrue( elementCollection.getValues().stream().anyMatch( x -> testValues.contains( x.getIdShort() ) ), "Neither left nor right entity contained." );
 
       final Set<String> semanticIds =
-            Set.of( "urn:bamm:io.openmanufacturing.test:1.0.0#result",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#error" );
+            Set.of( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#result",
+                  "urn:samm:org.eclipse.esmf.samm.test:1.0.0#error" );
 
       checkDataSpecificationIEC61360( semanticIds, env );
    }
@@ -150,7 +150,7 @@ class AspectModelAASGeneratorTest {
       final SubmodelElement element = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertEquals( "testProperty", element.getIdShort() );
 
-      final DataSpecificationIEC61360 dataSpecificationContent = getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+      final DataSpecificationIEC61360 dataSpecificationContent = getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#testProperty", env );
 
       assertEquals( "percent", dataSpecificationContent.getUnit(), "Unit is not percent" );
    }
@@ -168,12 +168,12 @@ class AspectModelAASGeneratorTest {
       assertEquals( "stringLcProperty", submodelElement.getIdShort() );
 
       final Set<String> semanticIds =
-            Set.of( "urn:bamm:io.openmanufacturing.test:1.0.0#stringLcProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#doubleRcProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#intRcProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#bigIntRcProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#floatRcProperty",
-                  "urn:bamm:io.openmanufacturing.test:1.0.0#stringRegexcProperty" );
+            Set.of( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#stringLcProperty",
+                  "urn:samm:org.eclipse.esmf.samm.test:1.0.0#doubleRcProperty",
+                  "urn:samm:org.eclipse.esmf.samm.test:1.0.0#intRcProperty",
+                  "urn:samm:org.eclipse.esmf.samm.test:1.0.0#bigIntRcProperty",
+                  "urn:samm:org.eclipse.esmf.samm.test:1.0.0#floatRcProperty",
+                  "urn:samm:org.eclipse.esmf.samm.test:1.0.0#stringRegexcProperty" );
 
       checkDataSpecificationIEC61360( semanticIds, env );
    }
@@ -193,7 +193,7 @@ class AspectModelAASGeneratorTest {
       final Property submodelElement = (Property) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertEquals( "http://www.w3.org/2001/XMLSchema#int", submodelElement.getValueType(), "Value type not int" );
 
-      getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#testProperty", env );
    }
 
    @Test

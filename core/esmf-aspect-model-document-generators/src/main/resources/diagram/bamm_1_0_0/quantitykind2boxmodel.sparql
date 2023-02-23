@@ -9,12 +9,12 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>
-prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#>
+prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#>
-prefix : <urn:bamm:io.openmanufacturing:meta-model:1.0.0/boxmodel#>
+prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
 
 # Generates boxes for QuantityKinds
 construct {

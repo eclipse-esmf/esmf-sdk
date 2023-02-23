@@ -57,7 +57,7 @@ public class LoadAspectModelRdf {
       final Path modelsRoot = Paths.get( "aspect-models" );
       final ResolutionStrategy fileSystemStrategy = new FileSystemStrategy( modelsRoot );
       final Try<VersionedModel> tryModel = new AspectModelResolver().resolveAspectModel( fileSystemStrategy,
-            AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing.examples.movement:1.0.0#Movement" ) );
+            AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm.examples.movement:1.0.0#Movement" ) );
       // end::loadAndResolveFromUrn[]
    }
 }

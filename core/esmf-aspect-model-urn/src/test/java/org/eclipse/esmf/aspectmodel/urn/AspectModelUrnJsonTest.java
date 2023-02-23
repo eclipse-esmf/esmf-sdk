@@ -28,9 +28,9 @@ public class AspectModelUrnJsonTest {
    private static final ObjectMapper MAPPER = new ObjectMapper();
 
    private static final TestModel TEST_MODEL = new TestModel( "test",
-         AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing:aspect-model:Aspect:1.0.0" ) );
+         AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm:aspect-model:Aspect:1.0.0" ) );
 
-   private static final String TEST_MODEL_JSON = "{\"description\":\"test\",\"urn\":\"urn:bamm:io.openmanufacturing:aspect-model:Aspect:1.0.0\"}";
+   private static final String TEST_MODEL_JSON = "{\"description\":\"test\",\"urn\":\"urn:samm:org.eclipse.esmf.samm:aspect-model:Aspect:1.0.0\"}";
 
    @Test
    public void serializeToJson() throws JsonProcessingException {

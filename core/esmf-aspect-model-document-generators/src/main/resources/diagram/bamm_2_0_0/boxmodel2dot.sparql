@@ -9,12 +9,12 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#>
+prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix sh: <http://www.w3.org/ns/shacl#>
-prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
 
 # Transforms a box model (boxes and edges) into Graphviz/dot statements
 select ?dotStatement

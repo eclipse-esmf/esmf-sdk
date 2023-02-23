@@ -9,10 +9,10 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#>
+prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix : <urn:bamm:io.openmanufacturing:meta-model:1.0.0/boxmodel#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
 
 # Generates edges between Characteristic and Meta Model Properties (dataType)
 construct {

@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix : <urn:bamm:io.openmanufacturing:meta-model:2.0.0/boxmodel#> .
+@prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#> .
 
 :Node1
    a :Box ;

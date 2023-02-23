@@ -95,7 +95,7 @@ public class TestContext {
    /**
     * Resolve the namespace of a statement pattern against the prefixes of the Aspect Model, e.g.
     * "rdf:type" will return "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-    * ":Box" will return "urn:bamm:io.openmanufacturing:meta-model:1.0.0/boxmodel#Box"
+    * ":Box" will return "urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#Box"
     *
     * @param statementPattern This short statement pattern
     * @return The expanded statement pattern

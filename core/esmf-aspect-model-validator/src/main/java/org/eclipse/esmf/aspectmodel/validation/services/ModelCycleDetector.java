@@ -61,8 +61,8 @@ public class ModelCycleDetector {
    static String ERR_CYCLE_DETECTED =
          "The Aspect Model contains a cycle which includes following properties: %s. Please remove any cycles that do not allow a finite json payload.";
 
-   private final static String prefixes = "prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:%s#> \r\n" +
-         "prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:%s#> \r\n" +
+   private final static String prefixes = "prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> \r\n" +
+         "prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%s#> \r\n" +
          "prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \r\n";
 
    final Set<String> discovered = new LinkedHashSet<>();

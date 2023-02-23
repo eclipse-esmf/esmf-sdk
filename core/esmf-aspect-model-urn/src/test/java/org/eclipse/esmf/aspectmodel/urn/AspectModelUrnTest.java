@@ -25,8 +25,8 @@ import com.google.common.base.Strings;
 import org.junit.jupiter.api.Test;
 
 public class AspectModelUrnTest {
-   private final String baseUri = "urn:bamm:io.openmanufacturing.test:";
-   private final String bammBaseUri = "urn:bamm:io.openmanufacturing:";
+   private final String baseUri = "urn:samm:org.eclipse.esmf.samm.test:";
+   private final String bammBaseUri = "urn:samm:org.eclipse.esmf.samm:";
 
    @Test
    public void createFromValidUrn() throws URISyntaxException {
@@ -110,7 +110,7 @@ public class AspectModelUrnTest {
       final String errorMessage = MessageFormat
             .format( UrnSyntaxException.URN_INVALID_NAMESPACE_MESSAGE, AspectModelUrn.NAMESPACE_REGEX );
 
-      final URI invalidUrn = new URI( "urn:bamm:io.openmanufacturing.tes?t:aspect-model:Errors:1.0.0" );
+      final URI invalidUrn = new URI( "urn:samm:org.eclipse.esmf.samm.tes?t:aspect-model:Errors:1.0.0" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( invalidUrn ) )
@@ -174,7 +174,7 @@ public class AspectModelUrnTest {
 
       final String tooLongString = Strings.repeat( "x", 500 );
       final URI tooLongUrn = new URI(
-            "urn:bamm:io.openmanufacturing" + tooLongString + ":aspect-model:Errors:1.0.0" );
+            "urn:samm:org.eclipse.esmf.samm" + tooLongString + ":aspect-model:Errors:1.0.0" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( tooLongUrn ) )

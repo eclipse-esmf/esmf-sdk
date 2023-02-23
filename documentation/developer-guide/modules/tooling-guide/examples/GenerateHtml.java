@@ -36,7 +36,7 @@ public class GenerateHtml extends AbstractGenerator {
       final ResolutionStrategy strategy = new FileSystemStrategy( Paths.get( "aspect-models" ) );
       // tag::generate[]
       final AspectModelUrn targetAspect
-            = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing.examples.movement:1.0.0#Movement" );
+            = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm.examples.movement:1.0.0#Movement" );
       // VersionedModel as returned by the AspectModelResolver
       final VersionedModel model = // ...
             // end::generate[]

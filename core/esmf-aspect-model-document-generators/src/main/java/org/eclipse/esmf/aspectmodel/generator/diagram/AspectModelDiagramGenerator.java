@@ -77,7 +77,7 @@ public class AspectModelDiagramGenerator {
    private static final String FONT_NAME = "Roboto Condensed";
    private static final String FONT_FILE = "diagram/RobotoCondensed-Regular.ttf";
 
-   static final String GET_ELEMENT_NAME_FUNC = "urn:bamm:io.openmanufacturing:function:2.0.0#getElementName";
+   static final String GET_ELEMENT_NAME_FUNC = "urn:samm:org.eclipse.esmf.samm:function:2.0.0#getElementName";
 
    private final Query boxmodelToDotQuery;
    private final BoxModel boxModelNamespace;
