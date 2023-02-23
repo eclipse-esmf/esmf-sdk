@@ -33,10 +33,6 @@
          <artifactId>jena-core</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.topbraid</groupId>
-         <artifactId>shacl</artifactId>
-      </dependency>
-      <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-semantic-aspect-meta-model</artifactId>
       </dependency>

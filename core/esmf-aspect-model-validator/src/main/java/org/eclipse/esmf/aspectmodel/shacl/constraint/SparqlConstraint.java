@@ -28,10 +28,16 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.expr.Expr;
+import org.apache.jena.sparql.expr.ExprTransform;
+import org.apache.jena.sparql.expr.ExprTransformer;
+import org.apache.jena.sparql.syntax.syntaxtransform.ElementTransform;
+import org.apache.jena.sparql.syntax.syntaxtransform.ElementTransformSubst;
+import org.apache.jena.sparql.syntax.syntaxtransform.ExprTransformNodeElement;
+import org.apache.jena.sparql.syntax.syntaxtransform.QueryTransformOps;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.topbraid.jenax.util.JenaUtil;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#sparql-constraints">sh:sparql</a>
@@ -43,7 +49,7 @@ public record SparqlConstraint(String message, Query query) implements Constrain
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final Model model = context.element().getModel();
       final Map<Var, Node> substitutions = Map.of( Var.alloc( "this" ), context.element().asNode() );
-      final Query query1 = JenaUtil.queryWithSubstitutions( query, substitutions );
+      final Query query1 = substituteVariablesInQuery( query, substitutions );
 
       final List<Violation> results = new ArrayList<>();
       try ( final QueryExecution queryExecution = QueryExecutionFactory.create( query1, model ) ) {
@@ -67,5 +73,29 @@ public record SparqlConstraint(String message, Query query) implements Constrain
    @Override
    public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitSparqlConstraint( this );
+   }
+
+   /**
+    * Perform proper query substitutions; unfortunately the substutions done by {@see org.apache.jena.query.ParameterizedSparqlString} are not always correct.
+    * @param query the query
+    * @param substitutions the map of substitutions to perform
+    * @return the updated query
+    */
+   private Query substituteVariablesInQuery( final Query query, final Map<Var, Node> substitutions ) {
+      final Query result = QueryTransformOps.transform( query, substitutions );
+
+      if ( result.hasHaving() ) {
+         final ElementTransform elementTransform = new ElementTransformSubst( substitutions );
+         final ExprTransform exprTransform = new ExprTransformNodeElement( node -> substitutions.getOrDefault( node, node ), elementTransform );
+         final List<Expr> havingExpressions = result.getHavingExprs();
+         for ( int i = 0; i < havingExpressions.size(); i++ ) {
+            final Expr expression = havingExpressions.get( i );
+            final Expr newExpression = ExprTransformer.transform( exprTransform, expression );
+            if ( newExpression != expression ) {
+               havingExpressions.set( i, newExpression );
+            }
+         }
+      }
+      return result;
    }
 }

@@ -72,23 +72,6 @@ public class AspectModelLoader {
    private AspectModelLoader() {
    }
 
-   /**
-    * Creates an {@link Aspect} instance from a Turtle input model.
-    *
-    * @param versionedModel The RDF model representation of the Aspect model
-    * @return A {@link Try} containing the {@link Aspect} on success and an {@link InvalidRootElementCountException}
-    *       (when the Aspect model does not contain exactly one Aspect) or {@link InvalidVersionException}
-    *       (when the meta model version is not supported by the Aspect loader) on failure
-    * @deprecated Use {@link #getSingleAspect(VersionedModel)} instead to retain the same semantics, but better use {@link #getElements(VersionedModel)}
-    * instead to also properly handle models that contain not exactly one Aspect
-    *
-    * @see AspectModelResolver
-    */
-   @Deprecated( forRemoval = true )
-   public static Try<Aspect> fromVersionedModel( final VersionedModel versionedModel ) {
-      return getSingleAspect( versionedModel );
-   }
-
    private static void validateNamespaceOfCustomUnits( final SAMM samm, final Model rawModel ) {
       final List<String> customUnitsWithSammNamespace = new ArrayList<>();
       rawModel.listStatements( null, RDF.type, samm.Unit() )
@@ -102,23 +85,6 @@ public class AspectModelLoader {
                String.format( "Aspect model contains unit(s) %s not specified in the unit catalog but referred with samm namespace",
                      customUnitsWithSammNamespace ) );
       }
-   }
-
-   /**
-    * Creates an {@link Aspect} instance from a Turtle input model.
-    *
-    * @param versionedModel The RDF model representation of the Aspect model
-    * @return The Aspect
-    * @deprecated use {@link #getSingleAspectUnchecked(VersionedModel)} instead to retain the same semantics, but better use
-    * {@link #getElementsUnchecked(VersionedModel)} instead to also properly handle models that contain not exactly one Aspect
-    * @see #fromVersionedModel(VersionedModel)
-    */
-   @Deprecated( forRemoval = true )
-   public static Aspect fromVersionedModelUnchecked( final VersionedModel versionedModel ) {
-      return fromVersionedModel( versionedModel ).getOrElseThrow( cause -> {
-         LOG.error( "Could not load Aspect", cause );
-         throw new AspectLoadingException( cause );
-      } );
    }
 
    /**
