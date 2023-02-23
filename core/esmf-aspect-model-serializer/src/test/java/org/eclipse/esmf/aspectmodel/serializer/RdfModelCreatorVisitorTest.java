@@ -43,8 +43,8 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
     * Exclude the test models that contain unused elements; the resulting serialized models can
     * never be identical to the original because the unused elements are ignored when loading the
     * model and can therefore not be serialized.
-    * Furthermore, exclude the test model of an Aspect without bamm:properties and bamm:operations,
-    * since the serialization will always write "bamm:properties ()" (i.e., add the attribute with
+    * Furthermore, exclude the test model of an Aspect without samm:properties and samm:operations,
+    * since the serialization will always write "samm:properties ()" (i.e., add the attribute with
     * an empty list as value) for now, so here the serialization will differ from the source model
     * as well.
     */
@@ -99,8 +99,8 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
 
    private String modelToString( final Model model ) {
       return Arrays.stream( TestModel.modelToString( model ).split( "\\n" ) )
-            .filter( line -> !line.contains( "bamm-c:values" ) )
-            .filter( line -> !line.contains( "bamm:see" ) )
+            .filter( line -> !line.contains( "samm-c:values" ) )
+            .filter( line -> !line.contains( "samm:see" ) )
             .map( this::sortLineWithRdfListOrLangString )
             .sorted()
             .collect( Collectors.joining() )

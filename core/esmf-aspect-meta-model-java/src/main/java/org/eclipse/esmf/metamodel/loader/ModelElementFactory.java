@@ -79,7 +79,7 @@ import org.eclipse.esmf.metamodel.Units;
 public class ModelElementFactory extends AttributeValueRetriever {
    private final KnownVersion metaModelVersion;
    private final Model model;
-   private final SAMMC SAMMC;
+   private final SAMMC sammc;
    private final UNIT unit;
    private final Map<Resource, Instantiator<?>> instantiators = new HashMap<>();
    private final Map<Resource, ModelElement> loadedElements = new HashMap<>();
@@ -89,41 +89,41 @@ public class ModelElementFactory extends AttributeValueRetriever {
       super( new SAMM( metaModelVersion ) );
       this.metaModelVersion = metaModelVersion;
       this.model = model;
-      SAMMC = new SAMMC( metaModelVersion );
-      unit = new UNIT( metaModelVersion, SAMM );
+      sammc = new SAMMC( metaModelVersion );
+      unit = new UNIT( metaModelVersion, samm );
 
-      registerInstantiator( SAMM.AbstractEntity(), new AbstractEntityInstantiator( this ) );
-      registerInstantiator( SAMM.AbstractProperty(), new PropertyInstantiator( this ) );
-      registerInstantiator( SAMM.Aspect(), new AspectInstantiator( this ) );
-      registerInstantiator( SAMM.Characteristic(), new CharacteristicInstantiator( this ) );
-      registerInstantiator( SAMM.Constraint(), new ConstraintInstantiator( this ) );
-      registerInstantiator( SAMM.Entity(), new EntityInstantiator( this ) );
-      registerInstantiator( SAMM.Event(), new EventInstantiator( this ) );
-      registerInstantiator( SAMM.Operation(), new OperationInstantiator( this ) );
-      registerInstantiator( SAMM.Property(), new PropertyInstantiator( this ) );
+      registerInstantiator( samm.AbstractEntity(), new AbstractEntityInstantiator( this ) );
+      registerInstantiator( samm.AbstractProperty(), new PropertyInstantiator( this ) );
+      registerInstantiator( samm.Aspect(), new AspectInstantiator( this ) );
+      registerInstantiator( samm.Characteristic(), new CharacteristicInstantiator( this ) );
+      registerInstantiator( samm.Constraint(), new ConstraintInstantiator( this ) );
+      registerInstantiator( samm.Entity(), new EntityInstantiator( this ) );
+      registerInstantiator( samm.Event(), new EventInstantiator( this ) );
+      registerInstantiator( samm.Operation(), new OperationInstantiator( this ) );
+      registerInstantiator( samm.Property(), new PropertyInstantiator( this ) );
 
-      registerInstantiator( SAMMC.Code(), new CodeInstantiator( this ) );
-      registerInstantiator( SAMMC.Collection(), new CollectionInstantiator( this ) );
-      registerInstantiator( SAMMC.Duration(), new DurationInstantiator( this ) );
-      registerInstantiator( SAMMC.Either(), new EitherInstantiator( this ) );
-      registerInstantiator( SAMMC.EncodingConstraint(), new EncodingConstraintInstantiator( this ) );
-      registerInstantiator( SAMMC.Enumeration(), new EnumerationInstantiator( this ) );
-      registerInstantiator( SAMMC.FixedPointConstraint(), new FixedPointConstraintInstantiator( this ) );
-      registerInstantiator( SAMMC.LanguageConstraint(), new LanguageConstraintInstantiator( this ) );
-      registerInstantiator( SAMMC.LengthConstraint(), new LengthConstraintInstantiator( this ) );
-      registerInstantiator( SAMMC.List(), new ListInstantiator( this ) );
-      registerInstantiator( SAMMC.LocaleConstraint(), new LocaleConstraintInstantiator( this ) );
-      registerInstantiator( SAMMC.Measurement(), new MeasurementInstantiator( this ) );
-      registerInstantiator( SAMMC.Quantifiable(), new QuantifiableInstantiator( this ) );
-      registerInstantiator( SAMMC.RangeConstraint(), new RangeConstraintInstantiator( this ) );
-      registerInstantiator( SAMMC.RegularExpressionConstraint(), new RegularExpressionConstraintInstantiator( this ) );
-      registerInstantiator( SAMMC.Set(), new SetInstantiator( this ) );
-      registerInstantiator( SAMMC.SingleEntity(), new SingleEntityInstantiator( this ) );
-      registerInstantiator( SAMMC.SortedSet(), new SortedSetInstantiator( this ) );
-      registerInstantiator( SAMMC.State(), new StateInstantiator( this ) );
-      registerInstantiator( SAMMC.StructuredValue(), new StructuredValueInstantiator( this ) );
-      registerInstantiator( SAMMC.TimeSeries(), new TimeSeriesInstantiator( this ) );
-      registerInstantiator( SAMMC.Trait(), new TraitInstantiator( this ) );
+      registerInstantiator( sammc.Code(), new CodeInstantiator( this ) );
+      registerInstantiator( sammc.Collection(), new CollectionInstantiator( this ) );
+      registerInstantiator( sammc.Duration(), new DurationInstantiator( this ) );
+      registerInstantiator( sammc.Either(), new EitherInstantiator( this ) );
+      registerInstantiator( sammc.EncodingConstraint(), new EncodingConstraintInstantiator( this ) );
+      registerInstantiator( sammc.Enumeration(), new EnumerationInstantiator( this ) );
+      registerInstantiator( sammc.FixedPointConstraint(), new FixedPointConstraintInstantiator( this ) );
+      registerInstantiator( sammc.LanguageConstraint(), new LanguageConstraintInstantiator( this ) );
+      registerInstantiator( sammc.LengthConstraint(), new LengthConstraintInstantiator( this ) );
+      registerInstantiator( sammc.List(), new ListInstantiator( this ) );
+      registerInstantiator( sammc.LocaleConstraint(), new LocaleConstraintInstantiator( this ) );
+      registerInstantiator( sammc.Measurement(), new MeasurementInstantiator( this ) );
+      registerInstantiator( sammc.Quantifiable(), new QuantifiableInstantiator( this ) );
+      registerInstantiator( sammc.RangeConstraint(), new RangeConstraintInstantiator( this ) );
+      registerInstantiator( sammc.RegularExpressionConstraint(), new RegularExpressionConstraintInstantiator( this ) );
+      registerInstantiator( sammc.Set(), new SetInstantiator( this ) );
+      registerInstantiator( sammc.SingleEntity(), new SingleEntityInstantiator( this ) );
+      registerInstantiator( sammc.SortedSet(), new SortedSetInstantiator( this ) );
+      registerInstantiator( sammc.State(), new StateInstantiator( this ) );
+      registerInstantiator( sammc.StructuredValue(), new StructuredValueInstantiator( this ) );
+      registerInstantiator( sammc.TimeSeries(), new TimeSeriesInstantiator( this ) );
+      registerInstantiator( sammc.Trait(), new TraitInstantiator( this ) );
 
       instantiators.putAll( additionalInstantiators );
    }
@@ -139,10 +139,10 @@ public class ModelElementFactory extends AttributeValueRetriever {
          return (T) element;
       }
       final Resource targetType = resourceType( modelElement );
-      if ( SAMM.Unit().equals( targetType ) ) {
+      if ( samm.Unit().equals( targetType ) ) {
          return (T) findOrCreateUnit( modelElement );
       }
-      if ( SAMM.QuantityKind().equals( targetType ) ) {
+      if ( samm.QuantityKind().equals( targetType ) ) {
          return (T) findQuantityKind( modelElement );
       }
       final Instantiator<T> instantiator = (Instantiator<T>) instantiators.get( targetType );
@@ -177,12 +177,12 @@ public class ModelElementFactory extends AttributeValueRetriever {
       }
 
       return new DefaultUnit(
-            MetaModelBaseAttributes.fromModelElement( metaModelVersion, unitResource, model, SAMM ),
-            optionalAttributeValue( unitResource, SAMM.symbol() ).map( Statement::getString ),
-            optionalAttributeValue( unitResource, SAMM.commonCode() ).map( Statement::getString ),
-            optionalAttributeValue( unitResource, SAMM.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
-            optionalAttributeValue( unitResource, SAMM.conversionFactor() ).map( Statement::getString ),
-            Streams.stream( model.listStatements( unitResource, SAMM.quantityKind(), (RDFNode) null ) )
+            MetaModelBaseAttributes.fromModelElement( metaModelVersion, unitResource, model, samm ),
+            optionalAttributeValue( unitResource, samm.symbol() ).map( Statement::getString ),
+            optionalAttributeValue( unitResource, samm.commonCode() ).map( Statement::getString ),
+            optionalAttributeValue( unitResource, samm.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
+            optionalAttributeValue( unitResource, samm.conversionFactor() ).map( Statement::getString ),
+            Streams.stream( model.listStatements( unitResource, samm.quantityKind(), (RDFNode) null ) )
                   .flatMap( quantityKindStatement -> QuantityKinds.fromName( quantityKindStatement.getObject().asResource().getLocalName() ).stream() )
                   .collect( Collectors.toSet() ) );
    }
@@ -191,11 +191,11 @@ public class ModelElementFactory extends AttributeValueRetriever {
       final Supplier<Optional<Resource>> directType = () ->
             optionalAttributeValue( resource, RDF.type ).map( Statement::getResource );
       final Supplier<Optional<Resource>> propertyUsageType = () ->
-            optionalAttributeValue( resource, SAMM.property() ).map( statement -> resourceType( statement.getResource() ) );
+            optionalAttributeValue( resource, samm.property() ).map( statement -> resourceType( statement.getResource() ) );
       final Supplier<Optional<Resource>> subClassType = () ->
             optionalAttributeValue( resource, RDFS.subClassOf ).map( Statement::getResource ).map( this::resourceType );
       final Supplier<Optional<Resource>> extendsType = () ->
-            optionalAttributeValue( resource, SAMM._extends() ).map( Statement::getResource ).map( this::resourceType );
+            optionalAttributeValue( resource, samm._extends() ).map( Statement::getResource ).map( this::resourceType );
 
       return Stream.of( directType, propertyUsageType, subClassType, extendsType )
             .map( Supplier::get )
@@ -214,11 +214,11 @@ public class ModelElementFactory extends AttributeValueRetriever {
    }
 
    protected SAMM getBamm() {
-      return SAMM;
+      return samm;
    }
 
    protected SAMMC getBammc() {
-      return SAMMC;
+      return sammc;
    }
 
    public UNIT getUnit() {

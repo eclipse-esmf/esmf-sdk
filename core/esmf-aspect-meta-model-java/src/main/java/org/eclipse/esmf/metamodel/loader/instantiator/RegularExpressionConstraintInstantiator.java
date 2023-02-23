@@ -29,7 +29,7 @@ public class RegularExpressionConstraintInstantiator extends Instantiator<Regula
    @Override
    public RegularExpressionConstraint apply( final Resource regularExpressionConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( regularExpressionConstraint );
-      final String value = attributeValue( regularExpressionConstraint, SAMM.value() ).getString();
+      final String value = attributeValue( regularExpressionConstraint, samm.value() ).getString();
       return new DefaultRegularExpressionConstraint( metaModelBaseAttributes, value );
    }
 }

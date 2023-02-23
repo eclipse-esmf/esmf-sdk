@@ -636,26 +636,26 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    private Aspect createAspectWithDynamicNumericProperty( final KnownVersion modelVersion, final Type dataType,
          final BoundDefinition boundKind, final Pair<Number, Number> randomRange ) {
-      final SAMM SAMM = new SAMM( modelVersion );
-      final Characteristic constraint = boundKind == null ? createBasicCharacteristic( modelVersion, dataType, SAMM )
-            : createTraitWithRangeConstraint( modelVersion, dataType, boundKind, SAMM, randomRange );
-      final List<Property> properties = List.of( createProperty( modelVersion, "testNumber", constraint, SAMM ) );
+      final SAMM samm = new SAMM( modelVersion );
+      final Characteristic constraint = boundKind == null ? createBasicCharacteristic( modelVersion, dataType, samm )
+            : createTraitWithRangeConstraint( modelVersion, dataType, boundKind, samm, randomRange );
+      final List<Property> properties = List.of( createProperty( modelVersion, "testNumber", constraint, samm ) );
       final MetaModelBaseAttributes aspectAttributes =
-            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( SAMM.Aspect().getURI() ), "AspectWithNumericProperty" );
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( samm.Aspect().getURI() ), "AspectWithNumericProperty" );
       return new DefaultAspect( aspectAttributes, properties, List.of(), List.of(), false );
    }
 
-   private Property createProperty( final KnownVersion modelVersion, final String propertyName, final Characteristic characteristic, final SAMM SAMM ) {
+   private Property createProperty( final KnownVersion modelVersion, final String propertyName, final Characteristic characteristic, final SAMM samm ) {
       final MetaModelBaseAttributes propertyAttributes =
-            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( SAMM.Property().getURI() ), propertyName );
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( samm.Property().getURI() ), propertyName );
       return new DefaultProperty( propertyAttributes, Optional.of( characteristic ), Optional.empty(), false, false, Optional.empty(), false,
             Optional.empty() );
    }
 
    Trait createTraitWithRangeConstraint( final KnownVersion modelVersion, final Type dataType, final BoundDefinition boundKind,
-         final SAMM SAMM, final Pair<Number, Number> randomRange ) {
+         final SAMM samm, final Pair<Number, Number> randomRange ) {
       final MetaModelBaseAttributes constraintAttibutes =
-            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( SAMM.characteristic().getURI() ), "TestConstraint" );
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( samm.characteristic().getURI() ), "TestConstraint" );
       final Optional<ScalarValue> minValue = BoundDefinition.OPEN.equals( boundKind )
             ? Optional.empty()
             : Optional.of( new DefaultScalarValue( randomRange.getLeft(), new DefaultScalar( dataType.getUrn(), modelVersion ) ) );
@@ -665,8 +665,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttibutes, minValue, maxValue, boundKind,
             getMatchingUpperBound( boundKind ) );
       final MetaModelBaseAttributes traitAttributes = MetaModelBaseAttributes
-            .from( modelVersion, AspectModelUrn.fromUrn( SAMM.characteristic().getURI() ), "TestTrait" );
-      return new DefaultTrait( traitAttributes, createBasicCharacteristic( modelVersion, dataType, SAMM ), List.of( rangeConstraint ) );
+            .from( modelVersion, AspectModelUrn.fromUrn( samm.characteristic().getURI() ), "TestTrait" );
+      return new DefaultTrait( traitAttributes, createBasicCharacteristic( modelVersion, dataType, samm ), List.of( rangeConstraint ) );
    }
 
    private BoundDefinition getMatchingUpperBound( final BoundDefinition boundKind ) {
@@ -675,10 +675,10 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
                   BoundDefinition.OPEN;
    }
 
-   Characteristic createBasicCharacteristic( final KnownVersion modelVersion, final Type dataType, final SAMM SAMM ) {
+   Characteristic createBasicCharacteristic( final KnownVersion modelVersion, final Type dataType, final SAMM samm ) {
       return new DefaultCharacteristic( MetaModelBaseAttributes.builderFor( "NumberCharacteristic" )
             .withMetaModelVersion( modelVersion )
-            .withUrn( AspectModelUrn.fromUrn( SAMM.baseCharacteristic().getURI() ) )
+            .withUrn( AspectModelUrn.fromUrn( samm.baseCharacteristic().getURI() ) )
             .withPreferredName( Locale.forLanguageTag( "en" ), "NumberCharacteristic" )
             .withDescription( Locale.forLanguageTag( "en" ), "A simple numeric property." )
             .build(),

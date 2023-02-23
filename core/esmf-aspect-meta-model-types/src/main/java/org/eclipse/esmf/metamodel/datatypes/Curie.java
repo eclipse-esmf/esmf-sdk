@@ -15,7 +15,7 @@ package org.eclipse.esmf.metamodel.datatypes;
 import java.util.Objects;
 
 /**
- * Represents the bamm:curie data type
+ * Represents the samm:curie data type
  */
 public class Curie {
    private final String value;

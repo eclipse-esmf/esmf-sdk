@@ -125,19 +125,19 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
             .map( versionNumber -> KnownVersion.fromVersionString( versionNumber.toString() ).orElseThrow(
                   () -> new UnsupportedVersionException( versionNumber ) ) )
             .toJavaStream().flatMap( metaModelVersion -> {
-               final SAMM SAMM = new SAMM( metaModelVersion );
-               if ( !target.contains( null, RDF.type, SAMM.Aspect() ) ) {
+               final SAMM samm = new SAMM( metaModelVersion );
+               if ( !target.contains( null, RDF.type, samm.Aspect() ) ) {
                   return Streams.stream( modelToAdd.listStatements() );
                }
-               return getModelStatementsWithoutAspectAssertion( modelToAdd, SAMM );
+               return getModelStatementsWithoutAspectAssertion( modelToAdd, samm );
             } );
    }
 
-   private Stream<Statement> getModelStatementsWithoutAspectAssertion( final Model model, final SAMM SAMM ) {
+   private Stream<Statement> getModelStatementsWithoutAspectAssertion( final Model model, final SAMM samm ) {
       return Streams.stream( model.listStatements() ).filter( statement ->
             !(statement.getPredicate().equals( RDF.type )
                   && statement.getObject().isURIResource()
-                  && statement.getObject().asResource().equals( SAMM.Aspect() )) );
+                  && statement.getObject().asResource().equals( samm.Aspect() )) );
    }
 
    /**
@@ -158,7 +158,7 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
    }
 
    /**
-    * Determines all statements that refer to a bamm:// URL and their replacements where the bamm:// URL has
+    * Determines all statements that refer to a samm:// URL and their replacements where the samm:// URL has
     * been replaced with a URL that is resolvable in the current context (e.g. to the class path or via HTTP).
     *
     * @param model the input model
@@ -168,7 +168,7 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
       final Property shaclJsLibraryUrl = ResourceFactory.createProperty( "http://www.w3.org/ns/shacl#jsLibraryURL" );
       return Streams.stream( model.listStatements( null, shaclJsLibraryUrl, (RDFNode) null ) )
             .filter( statement -> statement.getObject().isLiteral() )
-            .filter( statement -> statement.getObject().asLiteral().getString().startsWith( "bamm://" ) )
+            .filter( statement -> statement.getObject().asLiteral().getString().startsWith( "samm://" ) )
             .flatMap( statement -> rewriteBammUrl( statement.getObject().asLiteral().getString() )
                   .stream()
                   .map( newUrl ->
@@ -179,24 +179,24 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
    }
 
    /**
-    * URLs inside meta model shapes, in particular those used with sh:jsLibraryURL, are given as bamm:// URLs
+    * URLs inside meta model shapes, in particular those used with sh:jsLibraryURL, are given as samm:// URLs
     * in order to decouple them from the way they are resolved (i.e. currently to a file in the class path, but
-    * in the future this could be resolved using the URL of a suitable service). This method takes a bamm:// URL
+    * in the future this could be resolved using the URL of a suitable service). This method takes a samm:// URL
     * and rewrites it to the respective URL of the object on the class path.
     *
-    * @param bammUrl the bamm URL in the format bamm://PART/VERSION/FILENAME
+    * @param bammUrl the bamm URL in the format samm://PART/VERSION/FILENAME
     * @return The corresponding class path URL to resolve the meta model resource
     */
    private Optional<String> rewriteBammUrl( final String bammUrl ) {
-      final Matcher matcher = Pattern.compile( "^bamm://([\\p{Alpha}-]*)/(\\d+\\.\\d+\\.\\d+)/(.*)$" )
+      final Matcher matcher = Pattern.compile( "^samm://([\\p{Alpha}-]*)/(\\d+\\.\\d+\\.\\d+)/(.*)$" )
             .matcher( bammUrl );
       if ( matcher.find() ) {
          return KnownVersion.fromVersionString( matcher.group( 2 ) ).flatMap( metaModelVersion ->
                      MetaModelUrls.url( matcher.group( 1 ), metaModelVersion, matcher.group( 3 ) ) )
                .map( URL::toString );
       }
-      if ( bammUrl.startsWith( "bamm://scripts/" ) ) {
-         final String resourcePath = bammUrl.replace( "bamm://", "bamm/" );
+      if ( bammUrl.startsWith( "samm://scripts/" ) ) {
+         final String resourcePath = bammUrl.replace( "samm://", "samm/" );
          final URL resource = SdsAspectMetaModelResourceResolver.class.getClassLoader().getResource( resourcePath );
          return Optional.ofNullable( resource ).map( URL::toString );
       }

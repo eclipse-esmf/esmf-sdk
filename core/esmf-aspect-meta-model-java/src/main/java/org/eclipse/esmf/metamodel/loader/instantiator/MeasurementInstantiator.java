@@ -35,7 +35,7 @@ public class MeasurementInstantiator extends Instantiator<Measurement> {
    public Measurement apply( final Resource measurement ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( measurement );
       final Type type = getType( measurement );
-      final Optional<Unit> unit = optionalAttributeValue( measurement, SAMMC.unit() )
+      final Optional<Unit> unit = optionalAttributeValue( measurement, sammc.unit() )
             .map( Statement::getResource )
             .map( modelElementFactory::findOrCreateUnit );
       return new DefaultMeasurement( metaModelBaseAttributes, type, unit );

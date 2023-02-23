@@ -327,7 +327,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
 
    /**
     * Returns prefix part of the URN, i.e. the part up to and including the # but not including the local name,
-    * e.g. urn:bamm:com.foo.example:1.0.0#
+    * e.g. urn:samm:com.foo.example:1.0.0#
     *
     * @return the prefix part of the URN
     */

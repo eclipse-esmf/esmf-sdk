@@ -40,7 +40,7 @@ public class BammDataType<T> extends BaseDatatype implements TypedRdfDatatype<T>
    }
 
    /**
-    * Returns the DataType for bamm:curie of a given meta model version.
+    * Returns the DataType for samm:curie of a given meta model version.
     *
     * @param metaModelVersion the respective meta model version
     * @return the corresponding DataType

@@ -38,9 +38,9 @@ public class LoadMetaModelRdf {
          final InputStream inputStream = openUrl( url );
          loadTurtle( inputStream ).forEach( model -> {
             // Do something with the org.apache.jena.org.rdf.model.Model
-            final SAMM SAMM = new SAMM( metaModelVersion );
+            final SAMM samm = new SAMM( metaModelVersion );
             final int numberOfCharacteristicInstances =
-                  model.listStatements( null, RDF.type, SAMM.Characteristic() ).toList().size();
+                  model.listStatements( null, RDF.type, samm.Characteristic() ).toList().size();
             final String result = String.format( "Meta Model Version " + metaModelVersion.toVersionString()
                   + " defines " + numberOfCharacteristicInstances + " Characteristic instances" );
          } );

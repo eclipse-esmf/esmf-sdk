@@ -65,7 +65,7 @@ public class SerializeAspectModel {
 
       final String result = stringWriter.toString();
       // end::serialize[]
-      assertThat( result ).contains( ":Movement a bamm:Aspect" );
-      assertThat( result ).contains( ":isMoving a bamm:Property" );
+      assertThat( result ).contains( ":Movement a samm:Aspect" );
+      assertThat( result ).contains( ":isMoving a samm:Property" );
    }
 }

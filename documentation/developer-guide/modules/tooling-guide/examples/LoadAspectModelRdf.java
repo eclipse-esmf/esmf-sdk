@@ -42,9 +42,9 @@ public class LoadAspectModelRdf {
 
       // Let's do something with the loaded model on RDF level
       tryModel.forEach( versionedModel -> { // <3>
-         final SAMM SAMM = new SAMM( KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() ).get() );
+         final SAMM samm = new SAMM( KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() ).get() );
          final Model rdfModel = versionedModel.getModel();
-         final List<Statement> result = rdfModel.listStatements( null, RDF.type, SAMM.Aspect() ).toList();// <4>
+         final List<Statement> result = rdfModel.listStatements( null, RDF.type, samm.Aspect() ).toList();// <4>
       } );
       // end::loadAndResolveFromFile[]
    }

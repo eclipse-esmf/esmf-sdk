@@ -256,8 +256,8 @@ public class AspectModelDiagramGenerator {
    }
 
    private Resource getAspect() {
-      final SAMM SAMM = new SAMM( metaModelVersion );
-      return model.listStatements( null, RDF.type, SAMM.Aspect() ).nextStatement().getSubject();
+      final SAMM samm = new SAMM( metaModelVersion );
+      return model.listStatements( null, RDF.type, samm.Aspect() ).nextStatement().getSubject();
    }
 
    private String getAspectName() {
@@ -294,7 +294,7 @@ public class AspectModelDiagramGenerator {
    /**
     * Generates diagrams for each used language in an Aspect, in a given output format.
     * The callback function will be called with the name of the diagram, which follows the format
-    * ASPECTNAME_XX.EXT where ASPECTNAME is the bamm:name of the Aspect, XX is the language tag
+    * ASPECTNAME_XX.EXT where ASPECTNAME is the samm:name of the Aspect, XX is the language tag
     * and EXT is the file extension for the respective output format.
     *
     * @param outputFormat One of SVG, PNG or DOT
@@ -314,7 +314,7 @@ public class AspectModelDiagramGenerator {
    /**
     * Generates diagrams for an Aspect, in a given language and multiple output formats.
     * The callback function will be called with the name of the diagram, which follows the format
-    * ASPECTNAME_XX.EXT where ASPECTNAME is the bamm:name of the Aspect, XX is the language tag
+    * ASPECTNAME_XX.EXT where ASPECTNAME is the samm:name of the Aspect, XX is the language tag
     * and EXT is the file extension for the respective output format.
     *
     * @param targetFormats The set of formats in which diagrams should be generated
@@ -348,7 +348,7 @@ public class AspectModelDiagramGenerator {
    /**
     * Generates diagrams for each used language in an Aspect, in multiple output formats.
     * The callback function will be called with the name of the diagram, which follows the format
-    * ASPECTNAME_XX.EXT where ASPECTNAME is the bamm:name of the Aspect, XX is the language tag
+    * ASPECTNAME_XX.EXT where ASPECTNAME is the samm:name of the Aspect, XX is the language tag
     * and EXT is the file extension for the respective output format.
     *
     * @param targetFormats The set of formats in which diagrams should be generated

@@ -89,11 +89,11 @@ public class AspectModelLoader {
       return getSingleAspect( versionedModel );
    }
 
-   private static void validateNamespaceOfCustomUnits( final SAMM SAMM, final Model rawModel ) {
+   private static void validateNamespaceOfCustomUnits( final SAMM samm, final Model rawModel ) {
       final List<String> customUnitsWithBammNamespace = new ArrayList<>();
-      rawModel.listStatements( null, RDF.type, SAMM.Unit() )
+      rawModel.listStatements( null, RDF.type, samm.Unit() )
             .mapWith( Statement::getSubject )
-            .filterKeep( subject -> subject.getNameSpace().equals( SAMM.getNamespace() ) )
+            .filterKeep( subject -> subject.getNameSpace().equals( samm.getNamespace() ) )
             .mapWith( Resource::getLocalName )
             .forEach( customUnitsWithBammNamespace::add );
 
@@ -161,10 +161,10 @@ public class AspectModelLoader {
          return Try.failure( updatedModel.getCause() );
       }
 
-      final SAMM SAMM = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
 
       try {
-         validateNamespaceOfCustomUnits( SAMM, versionedModel.getRawModel() );
+         validateNamespaceOfCustomUnits( samm, versionedModel.getRawModel() );
       } catch ( final InvalidNamespaceException exception ) {
          return Try.failure( exception );
       }

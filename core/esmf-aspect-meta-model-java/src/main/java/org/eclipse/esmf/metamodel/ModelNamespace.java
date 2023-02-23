@@ -52,15 +52,15 @@ public interface ModelNamespace {
    }
 
    /**
-    * The identifier of the namespace, e.g. urn:bamm:com.example.myapp:1.2.3
+    * The identifier of the namespace, e.g. urn:samm:com.example.myapp:1.2.3
     * @return the identifier
     */
    default String urn() {
-      return String.format( "urn:bamm:%s:%s", packagePart(), version() );
+      return String.format( "urn:samm:%s:%s", packagePart(), version() );
    }
 
    /**
-    * The RDF prefix to use for elements in this namespace, e.g. urn:bamm:com.example.myapp:1.2.3#
+    * The RDF prefix to use for elements in this namespace, e.g. urn:samm:com.example.myapp:1.2.3#
     * @return the prefix
     */
    default String elementUrnPrefix() {

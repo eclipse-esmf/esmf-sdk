@@ -164,7 +164,7 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
    default Arbitrary<AspectModelUrn> anyTopLevelElementUrnInItsOwnScope( final TopLevelElementType type ) {
       return Combinators.combine( anyNamespace(), anyTopLevelElementName(), anyModelElementVersion() )
             .as( ( namespace, entityName, version ) ->
-                  String.format( "urn:bamm:%s:%s:%s:%s", namespace, type.elementType.getValue(), entityName, version ) )
+                  String.format( "urn:samm:%s:%s:%s:%s", namespace, type.elementType.getValue(), entityName, version ) )
             .map( AspectModelUrn::fromUrn );
    }
 
@@ -221,7 +221,7 @@ public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
             .combine( anyNamespace(), anyTopLevelElementType(), anyTopLevelElementName(),
                   anyModelElementVersion(), anyElementName )
             .as( ( namespace, containingElementType, containingElementName, version, elementName ) ->
-                  String.format( "urn:bamm:%s:%s:%s:%s#%s", namespace, containingElementType.getValue(), containingElementName, version, elementName ) )
+                  String.format( "urn:samm:%s:%s:%s:%s#%s", namespace, containingElementType.getValue(), containingElementName, version, elementName ) )
             .map( AspectModelUrn::fromUrn );
    }
 

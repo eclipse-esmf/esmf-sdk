@@ -22,16 +22,16 @@ import org.eclipse.esmf.samm.KnownVersion;
 
 public class SAMME implements Namespace {
    private final KnownVersion metaModelVersion;
-   private final SAMM SAMM;
+   private final SAMM samm;
 
-   public SAMME( final KnownVersion metaModelVersion, final SAMM SAMM ) {
+   public SAMME( final KnownVersion metaModelVersion, final SAMM samm ) {
       this.metaModelVersion = metaModelVersion;
-      this.SAMM = SAMM;
+      this.samm = samm;
    }
 
    @Override
    public String getUri() {
-      return SAMM.getBaseUri() + "entity:" + metaModelVersion.toVersionString();
+      return samm.getBaseUri() + "entity:" + metaModelVersion.toVersionString();
    }
 
    @SuppressWarnings( "squid:S00100" ) // Method name should match model element

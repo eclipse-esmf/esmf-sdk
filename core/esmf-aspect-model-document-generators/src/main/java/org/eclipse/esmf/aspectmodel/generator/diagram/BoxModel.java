@@ -22,16 +22,16 @@ import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 
 public final class BoxModel implements Namespace {
    private final KnownVersion metaModelVersion;
-   private final SAMM SAMM;
+   private final SAMM samm;
 
    public BoxModel( final KnownVersion metaModelVersion ) {
       this.metaModelVersion = metaModelVersion;
-      SAMM = new SAMM( metaModelVersion );
+      samm = new SAMM( metaModelVersion );
    }
 
    @Override
    public String getUri() {
-      return SAMM.getBaseUri() + "meta-model:" + metaModelVersion.toVersionString() + "/boxmodel";
+      return samm.getBaseUri() + "meta-model:" + metaModelVersion.toVersionString() + "/boxmodel";
    }
 
    public Resource box() {

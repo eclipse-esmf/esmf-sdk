@@ -109,7 +109,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       this( aspect, new SAMM( aspect.getMetaModelVersion() ), randomStrategy );
    }
 
-   private AspectModelJsonPayloadGenerator( final Aspect aspect, final SAMM SAMM, final Random randomStrategy ) {
+   private AspectModelJsonPayloadGenerator( final Aspect aspect, final SAMM samm, final Random randomStrategy ) {
       this.aspect = aspect;
       exampleValueGenerator = new ExampleValueGenerator( randomStrategy );
       objectMapper = AspectModelJsonPayloadGenerator.createObjectMapper();

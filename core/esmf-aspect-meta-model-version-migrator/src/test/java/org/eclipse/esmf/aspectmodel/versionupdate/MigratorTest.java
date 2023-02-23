@@ -91,11 +91,11 @@ public class MigratorTest extends MetaModelVersions {
    public void testMigrateUnitsToBammNamespace() {
       final VersionedModel oldModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_UNIT, KnownVersion.SAMM_1_0_0 );
       final Model rewrittenModel = migratorService.updateMetaModelVersion( oldModel ).get().getRawModel();
-      final SAMM SAMM = new SAMM( KnownVersion.SAMM_2_0_0 );
+      final SAMM samm = new SAMM( KnownVersion.SAMM_2_0_0 );
 
-      assertThat( rewrittenModel.contains( null, RDF.type, SAMM.Unit() ) ).isTrue();
-      assertThat( rewrittenModel.contains( null, SAMM.symbol(), (RDFNode) null ) ).isTrue();
-      assertThat( rewrittenModel.contains( null, SAMM.quantityKind(), (RDFNode) null ) ).isTrue();
+      assertThat( rewrittenModel.contains( null, RDF.type, samm.Unit() ) ).isTrue();
+      assertThat( rewrittenModel.contains( null, samm.symbol(), (RDFNode) null ) ).isTrue();
+      assertThat( rewrittenModel.contains( null, samm.quantityKind(), (RDFNode) null ) ).isTrue();
       final Set<String> uris = getAllUris( rewrittenModel );
       assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:2.0.0#Unit" ) );
       assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:2.0.0#symbol" ) );
@@ -105,11 +105,11 @@ public class MigratorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testRemoveBammName( final KnownVersion metaModelVersion ) {
-      final SAMM SAMM = new SAMM( metaModelVersion );
+      final SAMM samm = new SAMM( metaModelVersion );
       final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
 
-      final String bammNameUrn = SAMM.getNamespace() + "name";
+      final String bammNameUrn = samm.getNamespace() + "name";
       final List<Statement> bammNameStatements = rewrittenModel.getModel().listStatements().toList().stream()
             .filter( statement -> statement.getPredicate().getURI().equals( bammNameUrn ) )
             .collect( Collectors.toList() );

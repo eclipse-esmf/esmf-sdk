@@ -61,8 +61,8 @@ public class ModelCycleDetector {
    static String ERR_CYCLE_DETECTED =
          "The Aspect Model contains a cycle which includes following properties: %s. Please remove any cycles that do not allow a finite json payload.";
 
-   private final static String prefixes = "prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> \r\n" +
-         "prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%s#> \r\n" +
+   private final static String prefixes = "prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#> \r\n" +
+         "prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%s#> \r\n" +
          "prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \r\n";
 
    final Set<String> discovered = new LinkedHashSet<>();
@@ -70,7 +70,7 @@ public class ModelCycleDetector {
 
    private Query query;
 
-   private SAMM SAMM;
+   private SAMM samm;
    private Model model;
 
    List<Violation> cycleDetectionReport = new ArrayList<>();
@@ -82,14 +82,14 @@ public class ModelCycleDetector {
 
       model = versionedModel.getModel();
       final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() );
-      SAMM = new SAMM( metaModelVersion.get() );
+      samm = new SAMM( metaModelVersion.get() );
       initializeQuery( metaModelVersion.get() );
 
       // we only want to investigate properties that are directly reachable from an Aspect
-      final StmtIterator aspects = model.listStatements( null, RDF.type, SAMM.Aspect() );
+      final StmtIterator aspects = model.listStatements( null, RDF.type, samm.Aspect() );
       if ( aspects.hasNext() ) {
          final Statement aspect = aspects.nextStatement();
-         final Statement properties = aspect.getSubject().getProperty( SAMM.properties() );
+         final Statement properties = aspect.getSubject().getProperty( samm.properties() );
          if ( properties != null ) {
             final Iterator<RDFNode> aspectProperties = properties.getList().iterator();
             while ( aspectProperties.hasNext() ) {
@@ -148,9 +148,9 @@ public class ModelCycleDetector {
 
    private void investigateProperty( Resource propertyNode, final BiConsumer<String, Set<String>> cycleHandler ) {
       if ( propertyNode.isAnon() ) {
-         // [ bamm:property :propName ; bamm:optional value ; ]
+         // [ samm:property :propName ; samm:optional value ; ]
          if ( isOptionalProperty( propertyNode ) ) {
-            // presence of bamm:optional = true; no need to continue on this path, the potential cycle would be broken by the optional property anyway
+            // presence of samm:optional = true; no need to continue on this path, the potential cycle would be broken by the optional property anyway
             return;
          }
 
@@ -168,7 +168,7 @@ public class ModelCycleDetector {
    }
 
    private Resource resolvePropertyReference( final Resource propertyNode ) {
-      final Statement prop = propertyNode.getProperty( SAMM.property() );
+      final Statement prop = propertyNode.getProperty( samm.property() );
       if ( prop != null ) {
          return prop.getObject().asResource();
       }
@@ -176,16 +176,16 @@ public class ModelCycleDetector {
    }
 
    private boolean isOptionalProperty( final Resource propertyNode ) {
-      final Statement optional = propertyNode.getProperty( SAMM.optional() );
+      final Statement optional = propertyNode.getProperty( samm.optional() );
       return (optional != null) && optional.getBoolean();
    }
 
    private String getUniqueName( final Resource property ) {
-      // Ugly special case: when extending Entities, the property name will always be the same ([ bamm:extends bamm-e:value ; bamm:characteristic :someChara ]),
+      // Ugly special case: when extending Entities, the property name will always be the same ([ samm:extends samm-e:value ; samm:characteristic :someChara ]),
       // so we need a unique name in case more than one extending Entity exists in the model
       if ( property.isAnon() ) {
-         if ( property.getProperty( SAMM._extends() ) != null ) {
-            return findExtendingEntityName( property ) + "|" + model.shortForm( property.getProperty( SAMM._extends() ).getObject().asResource().getURI() );
+         if ( property.getProperty( samm._extends() ) != null ) {
+            return findExtendingEntityName( property ) + "|" + model.shortForm( property.getProperty( samm._extends() ).getObject().asResource().getURI() );
          }
          // safety net
          return property.toString();
@@ -195,9 +195,9 @@ public class ModelCycleDetector {
    }
 
    private String findExtendingEntityName( final Resource extendsProperty ) {
-      return model.listSubjectsWithProperty( SAMM._extends() )
-            .filterKeep( entity -> entity.getProperty( SAMM.properties() ) != null )
-            .filterKeep( entity -> entity.getProperty( SAMM.properties() ).getList().contains( extendsProperty ) )
+      return model.listSubjectsWithProperty( samm._extends() )
+            .filterKeep( entity -> entity.getProperty( samm.properties() ) != null )
+            .filterKeep( entity -> entity.getProperty( samm.properties() ).getList().contains( extendsProperty ) )
             .mapWith( resource -> model.shortForm( resource.getURI() ) )
             .nextOptional().orElse( extendsProperty.toString() );
    }
@@ -216,17 +216,17 @@ public class ModelCycleDetector {
             "%s select ?reachableProperty ?viaEither"
                   + "    where {"
                   + "      {"
-                  + "        ?currentProperty bamm:characteristic/bamm-c:baseCharacteristic*/bamm-c:left/bamm:dataType/bamm:properties/rdf:rest*/rdf:first ?reachableProperty"
+                  + "        ?currentProperty samm:characteristic/samm-c:baseCharacteristic*/samm-c:left/samm:dataType/samm:properties/rdf:rest*/rdf:first ?reachableProperty"
                   + "        bind (1 as ?viaEither)"
                   + "      }"
                   + "      union"
                   + "      {"
-                  + "        ?currentProperty bamm:characteristic/bamm-c:baseCharacteristic*/bamm-c:right/bamm:dataType/bamm:properties/rdf:rest*/rdf:first ?reachableProperty"
+                  + "        ?currentProperty samm:characteristic/samm-c:baseCharacteristic*/samm-c:right/samm:dataType/samm:properties/rdf:rest*/rdf:first ?reachableProperty"
                   + "        bind (2 as ?viaEither)"
                   + "      }"
                   + "      union"
                   + "      {"
-                  + "        ?currentProperty bamm:characteristic/bamm-c:baseCharacteristic*/bamm:dataType/bamm:properties/rdf:rest*/rdf:first ?reachableProperty"
+                  + "        ?currentProperty samm:characteristic/samm-c:baseCharacteristic*/samm:dataType/samm:properties/rdf:rest*/rdf:first ?reachableProperty"
                   + "        bind (0 as ?viaEither)"
                   + "      }"
                   + "}",

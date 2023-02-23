@@ -123,7 +123,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    private static Stream<Arguments> invalidTestModels() {
       return Arrays.stream( InvalidTestAspect.values() )
             .flatMap( testModel -> KnownVersion.getVersions().stream().flatMap( metaModelVersion -> {
-               // Filter the arguments: Aspects missing bamm:named and/or bamm:properties is only invalid in BAMM 1.0.0
+               // Filter the arguments: Aspects missing samm:named and/or samm:properties is only invalid in SAMM 1.0.0
                if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 )
                      && (testModel == InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES || testModel == InvalidTestAspect.ASPECT_MISSING_PROPERTIES) ) {
                   return Stream.of();
@@ -149,16 +149,16 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final List<Violation> violations = service.get( metaModelVersion ).validateElement( element );
       assertThat( violations ).hasSize( 1 );
       final SparqlConstraintViolation violation = (SparqlConstraintViolation) violations.get( 0 );
-      final SAMM SAMM = new SAMM( metaModelVersion );
+      final SAMM samm = new SAMM( metaModelVersion );
       assertThat( violation.context().element() ).isEqualTo( element );
-      assertThat( violation.context().property().get() ).isEqualTo( SAMM.exampleValue() );
+      assertThat( violation.context().property().get() ).isEqualTo( samm.exampleValue() );
       assertThat( violation.bindings().get( "value" ).asResource().getURI() ).isEqualTo( XSD.xint.getURI() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "versionsUpToIncluding1_0_0" )
    public void testInvalidAspectMissingProperties( final KnownVersion metaModelVersion ) {
-      final SAMM SAMM = new SAMM( metaModelVersion );
+      final SAMM samm = new SAMM( metaModelVersion );
       final TestModel testModel = InvalidTestAspect.ASPECT_MISSING_PROPERTIES;
       final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
@@ -166,14 +166,14 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final Violation violation = violations.get( 0 );
       assertThat( violation ).isInstanceOf( MinCountViolation.class );
       final MinCountViolation minCountViolation = (MinCountViolation) violation;
-      assertThat( minCountViolation.context().property() ).hasValue( SAMM.properties() );
+      assertThat( minCountViolation.context().property() ).hasValue( samm.properties() );
       assertThat( minCountViolation.context().element().getURI() ).isEqualTo( testModel.getUrn().toString() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "versionsUpToIncluding1_0_0" )
    public void testInvalidAspectMissingNameAndProperties( final KnownVersion metaModelVersion ) {
-      final SAMM SAMM = new SAMM( metaModelVersion );
+      final SAMM samm = new SAMM( metaModelVersion );
       final TestModel testModel = InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES;
       final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
@@ -181,10 +181,10 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
       assertThat( violations )
             .anyMatch( v -> v instanceof MinCountViolation
-                  && v.context().property().map( p -> p.equals( SAMM.properties() ) ).orElse( false )
+                  && v.context().property().map( p -> p.equals( samm.properties() ) ).orElse( false )
                   && v.context().element().getURI().equals( testModel.getUrn().toString() ) )
             .anyMatch( v -> v instanceof MinCountViolation
-                  && v.context().property().map( p -> p.equals( SAMM.property( "name" ) ) ).orElse( false )
+                  && v.context().property().map( p -> p.equals( samm.property( "name" ) ) ).orElse( false )
                   && v.context().element().getURI().equals( testModel.getUrn().toString() ) );
    }
 

@@ -247,7 +247,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    /**
     * This test checks that if the same shared resource (in this case: the shared TestCharacteristic) is
     * transitively imported on multiple paths through the dependency graph, it is still only added once to the
-    * final merged model, so for example the Statement x:testCharacteristic bamm:name "testCharacteristic" is
+    * final merged model, so for example the Statement x:testCharacteristic samm:name "testCharacteristic" is
     * only present once in the model. Here, TransitiveReferenceTest references both the Test Characteristic
     * and a second Aspect model, ReferenceCharacteristicTest, which in turn also references the Test Characteristic.
     *
@@ -328,9 +328,9 @@ public class AspectModelResolverTest extends MetaModelVersions {
       assertThat( result ).isSuccess();
 
       final Model model = result.get().getModel();
-      final SAMM SAMM = new SAMM( metaModelVersion );
+      final SAMM samm = new SAMM( metaModelVersion );
       org.assertj.core.api.Assertions.assertThat(
-            Streams.stream( model.listStatements( null, RDF.type, SAMM.Aspect() ) ).count() ).isEqualTo( 2 );
+            Streams.stream( model.listStatements( null, RDF.type, samm.Aspect() ) ).count() ).isEqualTo( 2 );
    }
 
    @ParameterizedTest
@@ -367,8 +367,8 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Model model = result.get().getModel();
       final Resource primaryAspect = model.createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#PrimaryAspect" );
-      final SAMM SAMM = new SAMM( metaModelVersion );
-      final List<Statement> propertiesAssertions = model.listStatements( primaryAspect, SAMM.properties(), (RDFNode) null ).toList();
+      final SAMM samm = new SAMM( metaModelVersion );
+      final List<Statement> propertiesAssertions = model.listStatements( primaryAspect, samm.properties(), (RDFNode) null ).toList();
       Assertions.assertThat( propertiesAssertions.size() ).isEqualTo( 1 );
    }
 
@@ -390,8 +390,8 @@ public class AspectModelResolverTest extends MetaModelVersions {
       // make sure the source file for the definitions of ModelYear and ModelCode (ModelDef.ttl) is only loaded once
       final Model model = result.get().getModel();
       final Resource entity = model.createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#SomeOtherNonRelatedEntity" );
-      final SAMM SAMM = new SAMM( metaModelVersion );
-      final List<Statement> properties = model.listStatements( entity, SAMM.properties(), (RDFNode) null ).toList();
+      final SAMM samm = new SAMM( metaModelVersion );
+      final List<Statement> properties = model.listStatements( entity, samm.properties(), (RDFNode) null ).toList();
       Assertions.assertThat( properties.size() ).isEqualTo( 1 );
    }
 }

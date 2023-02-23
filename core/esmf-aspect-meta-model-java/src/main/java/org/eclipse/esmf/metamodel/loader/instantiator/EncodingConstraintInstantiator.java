@@ -31,7 +31,7 @@ public class EncodingConstraintInstantiator extends Instantiator<EncodingConstra
    @Override
    public EncodingConstraint apply( final Resource encodingConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( encodingConstraint );
-      final String value = encodingConstraint.getProperty( SAMM.value() ).getObject().toString();
+      final String value = encodingConstraint.getProperty( samm.value() ).getObject().toString();
       final String encoding = value.substring( value.indexOf( '#' ) + 1 );
       return new DefaultEncodingConstraint( metaModelBaseAttributes, Charset.forName( encoding ) );
    }

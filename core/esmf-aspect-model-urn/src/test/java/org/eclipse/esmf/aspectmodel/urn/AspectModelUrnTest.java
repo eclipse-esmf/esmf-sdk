@@ -58,7 +58,7 @@ public class AspectModelUrnTest {
    public void createFromValidUrnMaxLength() throws URISyntaxException {
       final String namespace = Strings.repeat( "x", 221 );
       final URI validUrn = new URI(
-            "urn:bamm:" + namespace + ":aspect-model:Errors:1.0.0" );
+            "urn:samm:" + namespace + ":aspect-model:Errors:1.0.0" );
       final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
       assertAspectModelUrn( aspectModelUrn, "Errors", namespace );
@@ -85,7 +85,7 @@ public class AspectModelUrnTest {
       final String errorMessage = MessageFormat
             .format( UrnSyntaxException.URN_INVALID_PROTOCOL_MESSAGE, AspectModelUrn.VALID_PROTOCOL );
 
-      final URI invalidUrn = new URI( "http:bamm:io.openmanufacturing.test:aspect-model:Errors:1.0.0" );
+      final URI invalidUrn = new URI( "http:samm:io.openmanufacturing.test:aspect-model:Errors:1.0.0" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( invalidUrn ) )

@@ -18,17 +18,17 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
+import org.eclipse.esmf.samm.KnownVersion;
 
 /**
- * Migrates references to meta model elements and attributes in the unit: namespace to use the bamm: namespace instead
+ * Migrates references to meta model elements and attributes in the unit: namespace to use the samm: namespace instead
  */
 public class UnitInBammNamespaceMigrator extends AbstractUriRewriter {
    private static final KnownVersion OLD = KnownVersion.SAMM_1_0_0;
    private static final KnownVersion NEW = KnownVersion.SAMM_2_0_0;
-   private static final SAMM SAMM = new SAMM( NEW );
-   private static final UNIT unit = new UNIT( NEW, SAMM );
+   private static final SAMM samm = new SAMM( NEW );
+   private static final UNIT unit = new UNIT( NEW, samm );
 
    private final List<String> movedElements = List.of(
          "Unit", "QuantityKind", "quantityKind", "referenceUnit", "commonCode", "conversionFactor", "numericConversionFactor", "symbol" );
@@ -40,7 +40,7 @@ public class UnitInBammNamespaceMigrator extends AbstractUriRewriter {
    @Override
    protected Optional<String> rewriteUri( final String oldUri, final Map<String, String> oldToNewNamespaces ) {
       if ( oldUri.startsWith( unit.getUri() ) ) {
-         return movedElements.stream().filter( oldUri::endsWith ).findFirst().map( movedElement -> SAMM.getNamespace() + movedElement );
+         return movedElements.stream().filter( oldUri::endsWith ).findFirst().map( movedElement -> samm.getNamespace() + movedElement );
       }
       return Optional.empty();
    }

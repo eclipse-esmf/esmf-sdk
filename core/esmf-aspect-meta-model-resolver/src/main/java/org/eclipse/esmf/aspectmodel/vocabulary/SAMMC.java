@@ -26,16 +26,16 @@ import org.eclipse.esmf.samm.KnownVersion;
 @SuppressWarnings( "squid:S00100" ) // Method names should match model element
 public class SAMMC implements Namespace {
    private final KnownVersion metaModelVersion;
-   private final SAMM SAMM;
+   private final SAMM samm;
 
    public SAMMC( final KnownVersion metaModelVersion ) {
       this.metaModelVersion = metaModelVersion;
-      SAMM = new SAMM( metaModelVersion );
+      samm = new SAMM( metaModelVersion );
    }
 
    @Override
    public String getUri() {
-      return SAMM.getBaseUri() + "characteristic:" + metaModelVersion.toVersionString();
+      return samm.getBaseUri() + "characteristic:" + metaModelVersion.toVersionString();
    }
 
    public Resource RangeConstraint() {

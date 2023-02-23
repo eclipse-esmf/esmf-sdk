@@ -312,10 +312,10 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    private Map<String, JsonNode> getAdditionalFieldsForType( final Resource type, final KnownVersion metaModelVersion ) {
-      final SAMM SAMM = new SAMM( metaModelVersion );
+      final SAMM samm = new SAMM( metaModelVersion );
       final Map<Resource, Map<String, JsonNode>> typeDates = ImmutableMap.<Resource, Map<String, JsonNode>> builder()
             .putAll( typeData )
-            .put( SAMM.curie(), Map.of( "pattern", factory.textNode( BammDataType.CURIE_REGEX ) ) )
+            .put( samm.curie(), Map.of( "pattern", factory.textNode( BammDataType.CURIE_REGEX ) ) )
             .build();
       return typeDates.getOrDefault( type, Map.of() );
    }
@@ -538,13 +538,13 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    @Override
    public JsonNode visitEnumeration( final Enumeration enumeration, final ObjectNode context ) {
-      final SAMM SAMM = new SAMM( enumeration.getMetaModelVersion() );
+      final SAMM samm = new SAMM( enumeration.getMetaModelVersion() );
       final Type type = enumeration.getDataType().orElseThrow( () ->
             new DocumentGenerationException( "Characteristic " + enumeration + " is missing a dataType" ) );
       if ( type.is( Scalar.class ) ) {
-         return createEnumNodeWithScalarValues( enumeration, type, context, SAMM );
+         return createEnumNodeWithScalarValues( enumeration, type, context, samm );
       }
-      return createEnumNodeWithComplexValues( enumeration, SAMM );
+      return createEnumNodeWithComplexValues( enumeration, samm );
    }
 
    private String escapeUrn( final String urn ) {
@@ -552,7 +552,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
             .replace( ":", "_" );
    }
 
-   private JsonNode createEnumNodeWithScalarValues( final Enumeration enumeration, final Type type, final ObjectNode context, final SAMM SAMM ) {
+   private JsonNode createEnumNodeWithScalarValues( final Enumeration enumeration, final Type type, final ObjectNode context, final SAMM samm ) {
       final ArrayNode valuesNode = factory.arrayNode();
       final ObjectNode enumNode = type.getUrn().equals( RDF.langString.getURI() ) ?
             factory.objectNode().put( "type", "object" ) :
@@ -565,7 +565,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       return enumNode;
    }
 
-   private JsonNode createEnumNodeWithComplexValues( final Enumeration enumeration, final SAMM SAMM ) {
+   private JsonNode createEnumNodeWithComplexValues( final Enumeration enumeration, final SAMM samm ) {
       final ObjectNode enumNode = factory.objectNode();
       addDescription( enumNode, enumeration, locale );
       enumNode.put( "type", "object" );
@@ -579,7 +579,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
             .forEach( value -> {
                final String instanceName = value.getName();
                enumValueReferences.add( factory.objectNode().put( "$ref", "#/components/schemas/" + instanceName ) );
-               final JsonNode enumValueNode = createNodeForEnumEntityInstance( value, SAMM );
+               final JsonNode enumValueNode = createNodeForEnumEntityInstance( value, samm );
                setNodeInRootSchema( enumValueNode, instanceName );
             } );
       if ( enumValueReferences.size() > 0 ) {
@@ -588,7 +588,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       return enumNode;
    }
 
-   private JsonNode createNodeForEnumEntityInstance( final EntityInstance entityInstance, final SAMM SAMM ) {
+   private JsonNode createNodeForEnumEntityInstance( final EntityInstance entityInstance, final SAMM samm ) {
       final ObjectNode enumEntityInstanceNode = factory.objectNode();
       final ArrayNode required = factory.arrayNode();
       final ObjectNode properties = factory.objectNode();
@@ -602,7 +602,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
             .forEach( property -> {
                required.add( property.getPayloadName() );
                properties.set( property.getPayloadName(),
-                     createNodeForEnumEntityPropertyInstance( property, entityInstance, SAMM ) );
+                     createNodeForEnumEntityPropertyInstance( property, entityInstance, samm ) );
             } );
 
       enumEntityInstanceNode.set( "properties", properties );
@@ -612,7 +612,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    @SuppressWarnings( { "squid:S3655" } )
    //squid S3655 - Properties with an Enumeration Characteristic always have a data type
-   private JsonNode createNodeForEnumEntityPropertyInstance( final Property property, final EntityInstance entityInstance, final SAMM SAMM ) {
+   private JsonNode createNodeForEnumEntityPropertyInstance( final Property property, final EntityInstance entityInstance, final SAMM samm ) {
       final Characteristic characteristic = property.getCharacteristic().orElseThrow( () ->
             new DocumentGenerationException( "Property " + property + " has no Characteristic" ) );
       final Type type = property.getDataType().get();
@@ -622,7 +622,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
             JsonType.OBJECT;
 
       if ( characteristic.is( SingleEntity.class ) ) {
-         return createNodeForEnumEntityInstance( valueForProperty.as( EntityInstance.class ), SAMM );
+         return createNodeForEnumEntityInstance( valueForProperty.as( EntityInstance.class ), samm );
       }
       if ( characteristic.is( Collection.class ) ) {
          final ObjectNode propertyInstanceNode = factory.objectNode();

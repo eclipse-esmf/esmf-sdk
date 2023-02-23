@@ -62,14 +62,14 @@ public class LanguageCollector {
    public static Set<Locale> collectUsedLanguages( final Model model ) {
       final SdsAspectMetaModelResourceResolver resolver = new SdsAspectMetaModelResourceResolver();
       return resolver.getMetaModelVersion( model ).map( metaModelVersion -> {
-         final SAMM SAMM = new SAMM( KnownVersion.fromVersionString( metaModelVersion.toString() )
+         final SAMM samm = new SAMM( KnownVersion.fromVersionString( metaModelVersion.toString() )
                .orElseThrow( () -> new UnsupportedVersionException( metaModelVersion ) ) );
 
-         final String nameSpace = model.listStatements( null, RDF.type, SAMM.Aspect() ).nextStatement().getSubject()
+         final String nameSpace = model.listStatements( null, RDF.type, samm.Aspect() ).nextStatement().getSubject()
                .getNameSpace();
          final Set<Locale> locales = Stream.concat(
-                     ImmutableList.copyOf( model.listStatements( null, SAMM.preferredName(), (RDFNode) null ) ).stream(),
-                     ImmutableList.copyOf( model.listStatements( null, SAMM.description(), (RDFNode) null ) ).stream() )
+                     ImmutableList.copyOf( model.listStatements( null, samm.preferredName(), (RDFNode) null ) ).stream(),
+                     ImmutableList.copyOf( model.listStatements( null, samm.description(), (RDFNode) null ) ).stream() )
                .filter( statement -> !statement.getSubject().isAnon() )
                .filter( statement -> statement.getSubject().getNameSpace()
                      .contains( nameSpace ) )

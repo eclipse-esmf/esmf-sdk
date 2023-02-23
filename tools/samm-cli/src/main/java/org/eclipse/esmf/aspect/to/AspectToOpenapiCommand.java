@@ -62,7 +62,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       boolean generateJsonOpenApiSpec = false;
 
       @CommandLine.Option( names = { "--comment", "-c" }, required = false,
-            description = "Generate $comment OpenAPI keyword for bamm:see attributes in the model." )
+            description = "Generate $comment OpenAPI keyword for samm:see attributes in the model." )
       boolean generateCommentForSeeAttributes = false;
    }
 

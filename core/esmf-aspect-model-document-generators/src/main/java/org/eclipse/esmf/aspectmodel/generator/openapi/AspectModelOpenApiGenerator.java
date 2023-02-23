@@ -160,7 +160,7 @@ public class AspectModelOpenApiGenerator {
     *       included in the specification
     * @param pagingOption if defined, the chosen paging type will be in the JSON.
     * @param locale the locale for choosing the preferred language for description and preferred name.
-    * @param generateCommentForSeeAttributes generate $comment OpenAPI element for bamm:see attributes in the model
+    * @param generateCommentForSeeAttributes generate $comment OpenAPI element for samm:see attributes in the model
     * @return a JsonNode containing the JSON for the given Aspect.
     */
    public JsonNode applyForJson( final Aspect aspect, final boolean useSemanticVersion, final String baseUrl,

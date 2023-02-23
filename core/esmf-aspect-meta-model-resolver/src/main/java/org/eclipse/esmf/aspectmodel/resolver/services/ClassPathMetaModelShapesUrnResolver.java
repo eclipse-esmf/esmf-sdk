@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.samm.KnownVersion;
 
 /**
- * Returns the set of bamm:// URLs that comprise the meta model shape files for a given meta model version
+ * Returns the set of samm:// URLs that comprise the meta model shape files for a given meta model version
  */
 @SuppressWarnings( "squid:S2112" ) // URL is specifically required here
 public class ClassPathMetaModelShapesUrnResolver implements Function<KnownVersion, Set<URL>> {

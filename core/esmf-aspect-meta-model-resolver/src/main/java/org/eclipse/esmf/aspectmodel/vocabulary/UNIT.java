@@ -17,15 +17,15 @@ import org.eclipse.esmf.samm.KnownVersion;
 
 public class UNIT implements Namespace {
    private final KnownVersion metaModelVersion;
-   private final SAMM SAMM;
+   private final SAMM samm;
 
-   public UNIT( final KnownVersion metaModelVersion, final SAMM SAMM ) {
+   public UNIT( final KnownVersion metaModelVersion, final SAMM samm ) {
       this.metaModelVersion = metaModelVersion;
-      this.SAMM = SAMM;
+      this.samm = samm;
    }
 
    @Override
    public String getUri() {
-      return SAMM.getBaseUri() + "unit:" + metaModelVersion.toVersionString();
+      return samm.getBaseUri() + "unit:" + metaModelVersion.toVersionString();
    }
 }

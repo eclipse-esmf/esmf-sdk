@@ -37,13 +37,13 @@ public class EntityInstantiator extends Instantiator<Entity> {
    @Override
    public Entity apply( final Resource entity ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( entity );
-      final List<Property> properties = getPropertiesModels( entity, SAMM.properties() );
+      final List<Property> properties = getPropertiesModels( entity, samm.properties() );
 
-      final Optional<ComplexType> extendedEntity = optionalAttributeValue( entity, SAMM._extends() )
+      final Optional<ComplexType> extendedEntity = optionalAttributeValue( entity, samm._extends() )
             .map( Statement::getResource )
             .map( extendedEntityResource -> attributeValue( extendedEntityResource, RDF.type ) )
             .map( entityStatement -> {
-               if ( SAMM.AbstractEntity().equals( entityStatement.getObject().asResource() ) ) {
+               if ( samm.AbstractEntity().equals( entityStatement.getObject().asResource() ) ) {
                   return modelElementFactory.create( AbstractEntity.class, entityStatement.getSubject() );
                }
                return modelElementFactory.create( Entity.class, entityStatement.getSubject() );

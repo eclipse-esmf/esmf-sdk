@@ -30,7 +30,7 @@ import com.google.common.collect.Iterables;
 import org.eclipse.esmf.samm.KnownVersion;
 
 /**
- * This class acts as the bridge between the scalar types used in RDF (XSD/RDF/BAMM-specific (i.e. bamm:curie)) and
+ * This class acts as the bridge between the scalar types used in RDF (XSD/RDF/BAMM-specific (i.e. samm:curie)) and
  * their representations in Java. It implements {@link RDFDatatype} in order to register the types directly
  * in the Jena RDF parser. The actual registration is performed by calling {@link #setupTypeMapping()}.
  */
@@ -69,7 +69,7 @@ public class DataType {
 
    /**
     * Returns the list of all supported DataTypes, which is equivalent to the union of {@link #getSupportedXsdTypes()}
-    * and DataTypes for bamm:curie of all known meta model versions ({@see KnownVersion}).
+    * and DataTypes for samm:curie of all known meta model versions ({@see KnownVersion}).
     *
     * @return the list of all supported types
     */
@@ -79,7 +79,7 @@ public class DataType {
 
    /**
     * Returns the list of all supported DataTypes of a given meta model version, which is equivalent to the union
-    * of {@link #getSupportedXsdTypes()} and the DataType for bamm:curie corresponding to the meta model version.
+    * of {@link #getSupportedXsdTypes()} and the DataType for samm:curie corresponding to the meta model version.
     *
     * @param metaModelVersion the given meta model version
     * @return the list of all supported types in the meta model version

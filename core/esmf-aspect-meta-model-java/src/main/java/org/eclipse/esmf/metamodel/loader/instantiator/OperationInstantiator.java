@@ -34,9 +34,9 @@ public class OperationInstantiator extends Instantiator<Operation> {
    @Override
    public Operation apply( final Resource operation ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( operation );
-      final List<Property> input = getPropertiesModels( operation, SAMM.input() );
+      final List<Property> input = getPropertiesModels( operation, samm.input() );
       final Optional<Property> output =
-            optionalAttributeValue( operation, SAMM.output() )
+            optionalAttributeValue( operation, samm.output() )
                   .map( Statement::getResource )
                   .map( outputPropertyResource -> modelElementFactory
                         .create( Property.class, outputPropertyResource ) );

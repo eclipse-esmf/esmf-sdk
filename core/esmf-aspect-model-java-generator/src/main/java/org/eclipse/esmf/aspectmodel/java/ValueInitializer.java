@@ -115,8 +115,8 @@ public class ValueInitializer {
     * @param metaModelVersion the used meta model version
     */
    public String apply( final Resource rdfType, final Class<?> javaType, final String valueExpression, final KnownVersion metaModelVersion ) {
-      final SAMM SAMM = new SAMM( metaModelVersion );
-      if ( rdfType.equals( SAMM.curie() ) ) {
+      final SAMM samm = new SAMM( metaModelVersion );
+      if ( rdfType.equals( samm.curie() ) ) {
          return String.format( "new Curie( %s )", valueExpression );
       }
       return INITIALIZERS.get( rdfType ).apply( javaType, valueExpression );

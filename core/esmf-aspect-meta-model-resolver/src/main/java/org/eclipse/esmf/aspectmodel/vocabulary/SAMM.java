@@ -67,7 +67,7 @@ public class SAMM implements Namespace {
    }
 
    /**
-    * @return a {@link Resource} for the bamm:Property RDF Class definition.
+    * @return a {@link Resource} for the samm:Property RDF Class definition.
     */
    @SuppressWarnings( { "squid:S00100", "squid:S1845" } ) // Method name should match model element
    public Resource Property() {
@@ -123,7 +123,7 @@ public class SAMM implements Namespace {
    }
 
    /**
-    * @return a {@link Property} for the bamm:property RDF Property definition
+    * @return a {@link Property} for the samm:property RDF Property definition
     */
    @SuppressWarnings( "squid:S1845" ) // Method name should match model element
    public Property property() {

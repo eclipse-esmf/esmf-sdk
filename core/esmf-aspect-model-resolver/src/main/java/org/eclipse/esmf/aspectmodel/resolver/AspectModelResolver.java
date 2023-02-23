@@ -313,7 +313,7 @@ public class AspectModelResolver {
             return Try.success( model );
          } );
       } catch ( final UrnSyntaxException e ) {
-         // If it's no valid Aspect Model URN but some other URI (e.g., a bamm:see value), there is nothing
+         // If it's no valid Aspect Model URN but some other URI (e.g., a samm:see value), there is nothing
          // to resolve, so we return just an empty model
          return Try.success( EMPTY_MODEL );
       }
@@ -384,7 +384,7 @@ public class AspectModelResolver {
 
       final String namespace = namespaceDirectory.getName();
       final String aspectName = FilenameUtils.removeExtension( inputFile.getName() );
-      final String urn = String.format( "urn:bamm:%s:%s#%s", namespace, version, aspectName );
+      final String urn = String.format( "urn:samm:%s:%s#%s", namespace, version, aspectName );
       return AspectModelUrn.from( urn ).getOrElse( () -> {
          throw new ModelResolutionException( "The URN constructed from the input file path is invalid: " + urn );
       } );

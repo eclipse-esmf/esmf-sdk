@@ -30,20 +30,20 @@ import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 
 /**
- * This class provides utilities to retrieve attribute values from model elements, e.g., a bamm:Property's bamm:characteristic.
+ * This class provides utilities to retrieve attribute values from model elements, e.g., a samm:Property's samm:characteristic.
  * It knows how to handle:
  * <ul>
- *   <li>optionality (e.g., bamm-c:upperBoundDefinition on a bamm-c:RangeConstraint is not mandatory)</li>
- *   <li>n-ary attributes (e.g., bamm:preferredName and bamm:description can appear multiple times)</li>
- *   <li>abstract Properties (i.e., a bnode with bamm:extends used as a Property)</li>
- *   <li>Property references (i.e., a bnode with bamm:property used as a Property)</li>
+ *   <li>optionality (e.g., samm-c:upperBoundDefinition on a samm-c:RangeConstraint is not mandatory)</li>
+ *   <li>n-ary attributes (e.g., samm:preferredName and samm:description can appear multiple times)</li>
+ *   <li>abstract Properties (i.e., a bnode with samm:extends used as a Property)</li>
+ *   <li>Property references (i.e., a bnode with samm:property used as a Property)</li>
  * </ul>
  */
 public class AttributeValueRetriever {
-   protected final SAMM SAMM;
+   protected final SAMM samm;
 
-   public AttributeValueRetriever( final SAMM SAMM ) {
-      this.SAMM = SAMM;
+   public AttributeValueRetriever( final SAMM samm ) {
+      this.samm = samm;
    }
 
    /**
@@ -52,7 +52,7 @@ public class AttributeValueRetriever {
     * @param modelElement the model element
     * @param attribute the given attribute
     * @return the statement asserting the value
-    * @throws AspectLoadingException when the attribute is not present or is present multiple times, or if bamm:extends is used wrong
+    * @throws AspectLoadingException when the attribute is not present or is present multiple times, or if samm:extends is used wrong
     */
    protected Statement attributeValue( final Resource modelElement, final Property attribute ) {
       return optionalAttributeValue( modelElement, attribute ).orElseThrow(
@@ -81,19 +81,19 @@ public class AttributeValueRetriever {
     * Duplicate attribute assertions are removed and only the assertion with the highest precedence will be returned (bottom-most in the inheritance tree),
     * this includes multiple assertions for the same attribute with rdf:langString values with the same language tag. For example:
     *
-    * :SuperEntity a bamm:AbstractEntity ;
-    *   bamm:description "I'm abstract"@en ;
-    *   bamm:description "Ich bin abstrakt"@de ;
-    *   bamm:properties () .
+    * :SuperEntity a samm:AbstractEntity ;
+    *   samm:description "I'm abstract"@en ;
+    *   samm:description "Ich bin abstrakt"@de ;
+    *   samm:properties () .
     *
-    * :MyEntity a bamm:Entity ;
-    *   bamm:extends :SuperEntity ;
-    *   bamm:description "I'm concrete"@en ;
-    *   bamm:properties () .
+    * :MyEntity a samm:Entity ;
+    *   samm:extends :SuperEntity ;
+    *   samm:description "I'm concrete"@en ;
+    *   samm:properties () .
     *
-    * Here, attributeValues( :MyEntity, bamm:description ) will return:
-    *   List( Statement( :MyEntity bamm:description "I'm contrete"@en ),
-    *         Statement( :SuperEntity bamm:description "Ich bin abstrakt"@de ) )
+    * Here, attributeValues( :MyEntity, samm:description ) will return:
+    *   List( Statement( :MyEntity samm:description "I'm contrete"@en ),
+    *         Statement( :SuperEntity samm:description "Ich bin abstrakt"@de ) )
     *
     * The attribute that is overridden with a new value takes precedence, the one that is not overridden is inherited.
     *
@@ -116,23 +116,23 @@ public class AttributeValueRetriever {
          }
       }
 
-      // If the model element is a bnode with bamm:property given, it's a Property reference. Follow it to retrieve the sought-for attribute assertions.
-      final StmtIterator referenceIterator = modelElement.listProperties( SAMM.property() );
+      // If the model element is a bnode with samm:property given, it's a Property reference. Follow it to retrieve the sought-for attribute assertions.
+      final StmtIterator referenceIterator = modelElement.listProperties( samm.property() );
       if ( referenceIterator.hasNext() ) {
          final RDFNode referencedElement = referenceIterator.next().getObject();
          if ( !referencedElement.isResource() ) {
-            throw new AspectLoadingException( "bamm:property on " + modelElement + " must point to a Property" );
+            throw new AspectLoadingException( "samm:property on " + modelElement + " must point to a Property" );
          }
          result.addAll( attributeValues( referencedElement.asResource(), attribute ) );
          return result;
       }
 
-      // If the model element is bamm:extends another element, retrieve attribute assertions from this supertype as well.
-      final StmtIterator extendsIterator = modelElement.listProperties( SAMM._extends() );
+      // If the model element is samm:extends another element, retrieve attribute assertions from this supertype as well.
+      final StmtIterator extendsIterator = modelElement.listProperties( samm._extends() );
       if ( extendsIterator.hasNext() ) {
          final RDFNode superElementNode = extendsIterator.next().getObject();
          if ( !superElementNode.isResource() ) {
-            throw new AspectLoadingException( "bamm:extends on " + modelElement + " must point to a valid model element" );
+            throw new AspectLoadingException( "samm:extends on " + modelElement + " must point to a valid model element" );
          }
          result.addAll( attributeValues( superElementNode.asResource(), attribute ) );
       }

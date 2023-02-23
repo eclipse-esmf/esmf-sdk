@@ -29,8 +29,8 @@ public class FixedPointConstraintInstantiator extends Instantiator<FixedPointCon
    @Override
    public FixedPointConstraint apply( final Resource fixedPointConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( fixedPointConstraint );
-      final Integer scale = attributeValue( fixedPointConstraint, SAMMC.scale() ).getLiteral().getInt();
-      final Integer integer = attributeValue( fixedPointConstraint, SAMMC.integer() ).getLiteral().getInt();
+      final Integer scale = attributeValue( fixedPointConstraint, sammc.scale() ).getLiteral().getInt();
+      final Integer integer = attributeValue( fixedPointConstraint, sammc.integer() ).getLiteral().getInt();
       return new DefaultFixedPointConstraint( metaModelBaseAttributes, scale, integer );
    }
 }

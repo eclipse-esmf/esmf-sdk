@@ -61,13 +61,13 @@ public class AspectModelUrnPropertyTest {
          @ForAll( "validModelUrnType" ) final String urnType,
          @ForAll @AlphaChars @StringLength( min = 1, max = 100 ) final String elementName,
          @ForAll( "validVersion" ) final String version ) {
-      return isValidUrn( String.format( "urn:bamm:%s:%s:%s:%s", namespace, urnType, elementName, version ) );
+      return isValidUrn( String.format( "urn:samm:%s:%s:%s:%s", namespace, urnType, elementName, version ) );
    }
 
    @Property
    public boolean allValidMetaModelStringsAreValidMetaModelUrns(
          @ForAll @AlphaChars @Chars( { '.' } ) @StringLength( min = 1, max = 100 ) final String namespace,
          @ForAll( "validVersion" ) final String version ) {
-         return isValidUrn( String.format( "urn:bamm:%s:meta-model:%s#Foo", namespace, version ) );
+         return isValidUrn( String.format( "urn:samm:%s:meta-model:%s#Foo", namespace, version ) );
       }
 }
