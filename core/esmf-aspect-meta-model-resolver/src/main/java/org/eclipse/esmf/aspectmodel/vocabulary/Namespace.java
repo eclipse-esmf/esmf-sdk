@@ -51,9 +51,9 @@ public interface Namespace {
       final UNIT unit = new UNIT( metaModelVersion, samm );
 
       final Map<String, String> result = new LinkedHashMap<>();
-      result.put( "bamm", samm.getUri() + "#" );
-      result.put( "bamm-c", sammc.getUri() + "#" );
-      result.put( "bamm-e", samme.getUri() + "#" );
+      result.put( "samm", samm.getUri() + "#" );
+      result.put( "samm-c", sammc.getUri() + "#" );
+      result.put( "samm-e", samme.getUri() + "#" );
       result.put( "unit", unit.getUri() + "#" );
       result.put( "rdf", RDF.getURI() );
       result.put( "rdfs", RDFS.getURI() );

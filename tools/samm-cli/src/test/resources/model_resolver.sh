@@ -1,12 +1,12 @@
 #!/bin/bash
 
 root="$1"
-bamm_ver="$2"
+samm_ver="$2"
 model_urn="$3"
 
-no_bamm_urn="${model_urn/urn:bamm:/}"
-path="${no_bamm_urn/://}"
+no_samm_urn="${model_urn/urn:samm:/}"
+path="${no_samm_urn/://}"
 path="${path/\#//}"
-path="${root}/${bamm_ver}/${path}.ttl"
+path="${root}/${samm_ver}/${path}.ttl"
 
 cat "$path"

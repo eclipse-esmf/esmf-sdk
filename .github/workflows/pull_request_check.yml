@@ -54,8 +54,8 @@ jobs:
         run: |
           java --version
           export MAVEN_OPTS="-Xmx4096m"
-          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-          cd tools/bamm-cli
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          cd tools/samm-cli
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
@@ -65,25 +65,25 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2
         with:
-          name: bamm-cli-jar
-          path: tools/bamm-cli/target/bamm-cli-*.jar
+          name: samm-cli-jar
+          path: tools/samm-cli/target/samm-cli-*.jar
 
       - name: Upload binary (Windows)
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v2
         with:
-          name: bamm-cli-binary-${{ matrix.os }}
+          name: samm-cli-binary-${{ matrix.os }}
           # We put all the possible binary names in the path,
           # upload-artifact will upload the one(s) that are actually present
           path: |
-            tools/bamm-cli/target/bamm.exe
+            tools/samm-cli/target/samm.exe
 
       - name: Upload binary (Linux/Mac)
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v2
         with:
-          name: bamm-cli-binary-${{ matrix.os }}
+          name: samm-cli-binary-${{ matrix.os }}
           # We put all the possible binary names in the path,
           # upload-artifact will upload the one(s) that are actually present
           path: |
-            tools/bamm-cli/target/bamm
+            tools/samm-cli/target/samm

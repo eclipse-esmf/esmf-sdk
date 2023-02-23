@@ -90,11 +90,11 @@
 #* @vtlvariable name="SingleEntity" type="java.lang.Class<org.eclipse.esmf.characteristic.SingleEntity>" *#
 #* @vtlvariable name="SortedSet" type="java.lang.Class<org.eclipse.esmf.characteristic.SortedSet>" *#
 #* @vtlvariable name="State" type="java.lang.Class<org.eclipse.esmf.characteristic.State>" *#
-#* @vtlvariable name="StaticConstraintContainerProperty" type="java.lang.Class<io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintContainerProperty>" *#
-#* @vtlvariable name="StaticConstraintProperty" type="java.lang.Class<io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintProperty>" *#
-#* @vtlvariable name="StaticConstraintUnitProperty" type="java.lang.Class<io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintUnitProperty>" *#
-#* @vtlvariable name="StaticContainerProperty" type="java.lang.Class<io.openmanufacturing.sds.staticmetamodel.StaticContainerProperty>" *#
-#* @vtlvariable name="StaticUnitProperty" type="java.lang.Class<io.openmanufacturing.sds.staticmetamodel.StaticUnitProperty>" *#
+#* @vtlvariable name="StaticConstraintContainerProperty" type="java.lang.Class<org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintContainerProperty>" *#
+#* @vtlvariable name="StaticConstraintProperty" type="java.lang.Class<org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintProperty>" *#
+#* @vtlvariable name="StaticConstraintUnitProperty" type="java.lang.Class<org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintUnitProperty>" *#
+#* @vtlvariable name="StaticContainerProperty" type="java.lang.Class<org.eclipse.esmf.staticmetamodel.StaticContainerProperty>" *#
+#* @vtlvariable name="StaticUnitProperty" type="java.lang.Class<org.eclipse.esmf.staticmetamodel.StaticUnitProperty>" *#
 #* @vtlvariable name="String" type="java.lang.Class<java.lang.String>" *#
 #* @vtlvariable name="StringEscapeUtils" type="org.apache.commons.text.StringEscapeUtils" *#
 #* @vtlvariable name="StringUtils" type="org.apache.commons.lang3.StringUtils" *#

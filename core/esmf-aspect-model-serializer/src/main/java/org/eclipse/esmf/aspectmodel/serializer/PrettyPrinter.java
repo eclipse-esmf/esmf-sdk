@@ -173,9 +173,9 @@ public class PrettyPrinter {
 
    private Comparator<Map.Entry<String, String>> createPredefinedPrefixOrder() {
       final List<String> predefinedPrefixOrder = new ArrayList<>();
-      predefinedPrefixOrder.add( "bamm" );
-      predefinedPrefixOrder.add( "bamm-c" );
-      predefinedPrefixOrder.add( "bamm-e" );
+      predefinedPrefixOrder.add( "samm" );
+      predefinedPrefixOrder.add( "samm-c" );
+      predefinedPrefixOrder.add( "samm-e" );
       predefinedPrefixOrder.add( "unit" );
       predefinedPrefixOrder.add( "rdf" );
       predefinedPrefixOrder.add( "rdfs" );
@@ -205,7 +205,7 @@ public class PrettyPrinter {
       final Properties applicationProperties = loadProperties( "pom.properties" );
       final String version = applicationProperties.get( "aspect-meta-model-version" ).toString();
       if ( version.contains( "-M" ) ) {
-         writer.println( "# This model was created using BAMM version " + version + " and is not intended for productive usage." );
+         writer.println( "# This model was created using SAMM version " + version + " and is not intended for productive usage." );
          writer.println();
       }
    }

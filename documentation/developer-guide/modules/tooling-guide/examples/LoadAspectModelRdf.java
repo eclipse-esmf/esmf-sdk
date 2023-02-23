@@ -53,7 +53,7 @@ public class LoadAspectModelRdf {
    public void loadAndResolveFromUrn() {
       // tag::loadAndResolveFromUrn[]
       // The directory containing the models folder structure,
-      // see [.underline]#xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory structure]#
+      // see [.underline]#xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory structure]#
       final Path modelsRoot = Paths.get( "aspect-models" );
       final ResolutionStrategy fileSystemStrategy = new FileSystemStrategy( modelsRoot );
       final Try<VersionedModel> tryModel = new AspectModelResolver().resolveAspectModel( fileSystemStrategy,

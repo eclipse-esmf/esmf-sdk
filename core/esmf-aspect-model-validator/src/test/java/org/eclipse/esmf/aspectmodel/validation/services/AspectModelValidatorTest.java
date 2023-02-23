@@ -66,18 +66,18 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_CONSTRAINTS",
-         // uses bamm-c:OPEN which is not specified, see https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues/174
+         // uses samm-c:OPEN which is not specified, see https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/issues/174
          "ASPECT_WITH_FIXED_POINT",
          "ASPECT_WITH_FIXED_POINT_CONSTRAINT",
          "ASPECT_WITH_LANGUAGE_CONSTRAINT",
-         "ASPECT_WITH_RANGE_CONSTRAINT_ON_CONSTRAINED_NUMERIC_TYPE", // uses bamm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_DOUBLE_VALUE", // uses bamm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_INTEGER_VALUE", // uses bamm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND", // uses bamm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_INCL_BOUND_DEFINITION", // uses bamm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE", // uses bamm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND", // uses bamm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND_INCL_BOUND_DEFINITION", // uses bamm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_ON_CONSTRAINED_NUMERIC_TYPE", // uses samm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_DOUBLE_VALUE", // uses samm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_INTEGER_VALUE", // uses samm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND", // uses samm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_INCL_BOUND_DEFINITION", // uses samm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE", // uses samm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND", // uses samm-c:OPEN
+         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND_INCL_BOUND_DEFINITION", // uses samm-c:OPEN
          "MODEL_WITH_CYCLES",
          "MODEL_WITH_BROKEN_CYCLES"// contains cycles
    } )
@@ -216,13 +216,13 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    /**
     * Verify that validation of the given aspect model containing a unit not specified in the unit catalog
-    * and referred with bamm namespace fails.
+    * and referred with samm namespace fails.
     */
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectWithBammNamespaceForCustomUnit( final KnownVersion metaModelVersion ) {
+   public void testAspectWithSammNamespaceForCustomUnit( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> invalidAspectModel = TestResources
-            .getModel( InvalidTestAspect.ASPECT_WITH_BAMM_NAMESPACE_FOR_CUSTOM_UNIT, metaModelVersion );
+            .getModel( InvalidTestAspect.ASPECT_WITH_SAMM_NAMESPACE_FOR_CUSTOM_UNIT, metaModelVersion );
 
       final List<Violation> errors = service.get( metaModelVersion ).validateModel( invalidAspectModel );
       assertThat( errors ).hasSize( 1 );
@@ -279,7 +279,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             ":h -> :i -> :h",
             ":l -> :l",
             // TimeSeries are handled differently between v1 and v2 meta models.
-            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 ) ? ":n -> :refinedValue -> :n" : ":n -> :NTimeSeriesEntity|bamm-e:value -> :n" ) );
+            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 ) ? ":n -> :refinedValue -> :n" : ":n -> :NTimeSeriesEntity|samm-e:value -> :n" ) );
    }
 
    @ParameterizedTest

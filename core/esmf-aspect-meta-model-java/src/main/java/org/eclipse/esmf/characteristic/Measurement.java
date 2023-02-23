@@ -16,7 +16,7 @@ package org.eclipse.esmf.characteristic;
 /**
  * A value which can be measured and has a unit.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Measurement extends Quantifiable {
 

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 public class AspectModelUrnTest {
    private final String baseUri = "urn:samm:org.eclipse.esmf.samm.test:";
-   private final String bammBaseUri = "urn:samm:org.eclipse.esmf.samm:";
+   private final String sammBaseUri = "urn:samm:org.eclipse.esmf.samm:";
 
    @Test
    public void createFromValidUrn() throws URISyntaxException {
@@ -128,11 +128,11 @@ public class AspectModelUrnTest {
             .withMessage( "The aspect name must match \\p{Alpha}\\p{Alnum}*: Error?s" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( bammBaseUri + "meta-model:1.0.0#Aspe?ct" ) ) )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( sammBaseUri + "meta-model:1.0.0#Aspe?ct" ) ) )
             .withMessage( "The meta model element name must match \\p{Alpha}\\p{Alnum}*: Aspe?ct" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( bammBaseUri + "characteristic:1.0.0#Eit?her" ) ) )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( sammBaseUri + "characteristic:1.0.0#Eit?her" ) ) )
             .withMessage( "The characteristic name must match \\p{Alpha}\\p{Alnum}*: Eit?her" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
@@ -140,7 +140,7 @@ public class AspectModelUrnTest {
             .withMessage( "The characteristic name must match \\p{Alpha}\\p{Alnum}*: Eit?her" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( bammBaseUri + "entity:1.0.0#Time?Series" ) ) )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( sammBaseUri + "entity:1.0.0#Time?Series" ) ) )
             .withMessage( "The entity name must match \\p{Alpha}\\p{Alnum}*: Time?Series" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
@@ -213,7 +213,7 @@ public class AspectModelUrnTest {
             .withMessage( "Invalid version in URN: 1.0." );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( bammBaseUri + "characteristic:1.0#Either" ) ) )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( sammBaseUri + "characteristic:1.0#Either" ) ) )
             .withMessage( "Invalid version in URN: 1.0." );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
@@ -221,11 +221,11 @@ public class AspectModelUrnTest {
             .withMessage( "Invalid version in URN: 1.0." );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( bammBaseUri + "entity:1.0#TimeSeries" ) ) )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( sammBaseUri + "entity:1.0#TimeSeries" ) ) )
             .withMessage( "Invalid version in URN: 1.0." );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
-            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( bammBaseUri + "meta-model:1.0#Aspect" ) ) )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( sammBaseUri + "meta-model:1.0#Aspect" ) ) )
             .withMessage( "Invalid version in URN: 1.0." );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
@@ -258,19 +258,19 @@ public class AspectModelUrnTest {
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
       assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.ASPECT_MODEL_ELEMENT );
-      assertThat( elementUrn.isBammUrn() ).isFalse();
+      assertThat( elementUrn.isSammUrn() ).isFalse();
    }
 
    @Test
-   public void createUrnForBammCharacteristic() throws URISyntaxException {
-      final URI validUrn = new URI( bammBaseUri + "characteristic:1.0.0#Either" );
+   public void createUrnForSammCharacteristic() throws URISyntaxException {
+      final URI validUrn = new URI( sammBaseUri + "characteristic:1.0.0#Either" );
       final AspectModelUrn metaModelElementUrn = AspectModelUrn.fromUrn( validUrn );
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "Either" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
       assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.CHARACTERISTIC );
-      assertThat( metaModelElementUrn.isBammUrn() ).isTrue();
+      assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
 
    @Test
@@ -282,7 +282,7 @@ public class AspectModelUrnTest {
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
       assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.CHARACTERISTIC );
-      assertThat( elementUrn.isBammUrn() ).isFalse();
+      assertThat( elementUrn.isSammUrn() ).isFalse();
    }
 
    @Test
@@ -294,31 +294,31 @@ public class AspectModelUrnTest {
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
       assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.CHARACTERISTIC_MODEL_ELEMENT );
-      assertThat( elementUrn.isBammUrn() ).isFalse();
+      assertThat( elementUrn.isSammUrn() ).isFalse();
    }
 
    @Test
-   public void createUrnForBammEntity() throws URISyntaxException {
-      final URI validUrn = new URI( bammBaseUri + "entity:1.0.0#TimeSeriesEntity" );
+   public void createUrnForSammEntity() throws URISyntaxException {
+      final URI validUrn = new URI( sammBaseUri + "entity:1.0.0#TimeSeriesEntity" );
       final AspectModelUrn metaModelElementUrn = AspectModelUrn.fromUrn( validUrn );
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "TimeSeriesEntity" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
       assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.ENTITY );
-      assertThat( metaModelElementUrn.isBammUrn() ).isTrue();
+      assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
 
    @Test
-   public void createUrnForBammEntityProperty() throws URISyntaxException {
-      final URI validUrn = new URI( bammBaseUri + "entity:1.0.0#value" );
+   public void createUrnForSammEntityProperty() throws URISyntaxException {
+      final URI validUrn = new URI( sammBaseUri + "entity:1.0.0#value" );
       final AspectModelUrn metaModelElementUrn = AspectModelUrn.fromUrn( validUrn );
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "value" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
       assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.ENTITY );
-      assertThat( metaModelElementUrn.isBammUrn() ).isTrue();
+      assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
 
    @Test
@@ -330,7 +330,7 @@ public class AspectModelUrnTest {
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
       assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.ENTITY );
-      assertThat( elementUrn.isBammUrn() ).isFalse();
+      assertThat( elementUrn.isSammUrn() ).isFalse();
    }
 
    @Test
@@ -342,19 +342,19 @@ public class AspectModelUrnTest {
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
       assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.ENTITY_MODEL_ELEMENT );
-      assertThat( elementUrn.isBammUrn() ).isFalse();
+      assertThat( elementUrn.isSammUrn() ).isFalse();
    }
 
    @Test
-   public void createUrnForBammUnit() throws URISyntaxException {
-      final URI validUrn = new URI( bammBaseUri + "unit:1.0.0#litre" );
+   public void createUrnForSammUnit() throws URISyntaxException {
+      final URI validUrn = new URI( sammBaseUri + "unit:1.0.0#litre" );
       final AspectModelUrn metaModelElementUrn = AspectModelUrn.fromUrn( validUrn );
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "litre" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
       assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.UNIT );
-      assertThat( metaModelElementUrn.isBammUrn() ).isTrue();
+      assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
 
    @Test
@@ -366,6 +366,6 @@ public class AspectModelUrnTest {
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
       assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.UNIT );
-      assertThat( elementUrn.isBammUrn() ).isFalse();
+      assertThat( elementUrn.isSammUrn() ).isFalse();
    }
 }

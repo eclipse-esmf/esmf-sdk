@@ -108,7 +108,7 @@ public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {
    @Test
    public void testGetUnknownVersionExpectFailure() {
       final Model model = ModelFactory.createDefaultModel();
-      model.setNsPrefix( "bamm", "urn:samm:org.eclipse.esmf.samm:meta-model:5.0.0#" );
+      model.setNsPrefix( "samm", "urn:samm:org.eclipse.esmf.samm:meta-model:5.0.0#" );
       final Try<VersionNumber> metaModelVersion = aspectMetaModelResourceResolver.getMetaModelVersion( model );
       assertThat( metaModelVersion ).isFailure();
    }

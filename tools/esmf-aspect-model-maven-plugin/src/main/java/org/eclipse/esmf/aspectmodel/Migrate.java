@@ -53,7 +53,7 @@ public class Migrate extends AspectModelMojo {
          final PrettyPrinter prettyPrinter = new PrettyPrinter( migratedModel.get(), aspectModelUrn, printWriter );
          prettyPrinter.print();
          printWriter.close();
-         logger.info( "Successfully migrated Aspect Model {} to latest BAMM version.", aspectModelUrn.getName() );
+         logger.info( "Successfully migrated Aspect Model {} to latest SAMM version.", aspectModelUrn.getName() );
       }
    }
 }

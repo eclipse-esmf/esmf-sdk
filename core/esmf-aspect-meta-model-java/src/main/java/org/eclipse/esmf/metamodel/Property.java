@@ -21,7 +21,7 @@ import org.eclipse.esmf.characteristic.Trait;
  * A Property has a name that is unique to its use in an Aspect or an Entity, and a Characteristic (i.e., the
  * description of the Property). It describes a single piece of information in the Aspect or Entity.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Property extends NamedElement {
 
@@ -55,7 +55,7 @@ public interface Property extends NamedElement {
     * @see
     * <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/snapshot/modeling-guidelines.html#declaring-enumerations">BAMM Aspect Meta Model
     *       Specification - Declaring Enumerations</a>
-    * @since BAMM 1.0.0
+    * @since SAMM 1.0.0
     */
    default boolean isNotInPayload() {
       return false;

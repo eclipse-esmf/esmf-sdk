@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 
-import io.openmanufacturing.sds.test.shared.compiler.JavaCompiler;
+import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
 
 public class TestContext {
    public static ThrowingFunction<Collection<JavaGenerator>, GenerationResult, IOException> generateAspectCode() {

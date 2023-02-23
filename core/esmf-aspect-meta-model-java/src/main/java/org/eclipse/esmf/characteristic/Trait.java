@@ -21,7 +21,7 @@ import org.eclipse.esmf.metamodel.Constraint;
 /**
  * A characterstic that can specify Constraints on another Characteristic.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Trait extends Characteristic {
    /**

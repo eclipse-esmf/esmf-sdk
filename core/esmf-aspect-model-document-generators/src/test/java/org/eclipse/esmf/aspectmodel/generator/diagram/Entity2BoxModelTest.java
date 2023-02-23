@@ -66,7 +66,7 @@ public class Entity2BoxModelTest extends MetaModelVersions {
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat( queryResult.listStatements( context.selector( ":SharedEntityWithSeeAttributeEntity a :Box" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( "bamm-e:SharedEntityEntity a :Box" ) ).toList() ).hasSize( 0 );
+      assertThat( queryResult.listStatements( context.selector( "samm-e:SharedEntityEntity a :Box" ) ).toList() ).hasSize( 0 );
    }
 
    @ParameterizedTest

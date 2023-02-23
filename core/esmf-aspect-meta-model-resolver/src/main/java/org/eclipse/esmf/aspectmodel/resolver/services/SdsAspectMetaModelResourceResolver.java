@@ -108,11 +108,11 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
     */
    @Override
    public Try<VersionedModel> mergeMetaModelIntoRawModel( final Model rawModel, final VersionNumber metaModelVersion ) {
-      final Try<KnownVersion> bammKnownVersion = KnownVersion.fromVersionString( metaModelVersion.toString() )
+      final Try<KnownVersion> sammKnownVersion = KnownVersion.fromVersionString( metaModelVersion.toString() )
             .map( Try::success )
             .orElse( Try.failure( new UnsupportedVersionException( metaModelVersion ) ) );
 
-      return bammKnownVersion.flatMap( this::loadMetaModel ).map( metaModel -> {
+      return sammKnownVersion.flatMap( this::loadMetaModel ).map( metaModel -> {
          final Model model = deepCopy( rawModel );
          model.add( metaModel );
          return new VersionedModel( model, metaModelVersion, rawModel );
@@ -148,7 +148,7 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
     */
    public Try<Model> loadShapesModel( final KnownVersion metaModelVersion ) {
       return loadUrlSet( metaModelVersion, new ClassPathMetaModelShapesUrnResolver() ).map( model -> {
-         final Set<Tuple2<Statement, Statement>> changeSet = determineBammUrlsToReplace( model );
+         final Set<Tuple2<Statement, Statement>> changeSet = determineSammUrlsToReplace( model );
          changeSet.forEach( urlReplacement -> {
             model.remove( urlReplacement._1() );
             model.add( urlReplacement._2() );
@@ -164,12 +164,12 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
     * @param model the input model
     * @return the tuples of the original statement to replace and the replacement statement
     */
-   private Set<Tuple2<Statement, Statement>> determineBammUrlsToReplace( final Model model ) {
+   private Set<Tuple2<Statement, Statement>> determineSammUrlsToReplace( final Model model ) {
       final Property shaclJsLibraryUrl = ResourceFactory.createProperty( "http://www.w3.org/ns/shacl#jsLibraryURL" );
       return Streams.stream( model.listStatements( null, shaclJsLibraryUrl, (RDFNode) null ) )
             .filter( statement -> statement.getObject().isLiteral() )
             .filter( statement -> statement.getObject().asLiteral().getString().startsWith( "samm://" ) )
-            .flatMap( statement -> rewriteBammUrl( statement.getObject().asLiteral().getString() )
+            .flatMap( statement -> rewriteSammUrl( statement.getObject().asLiteral().getString() )
                   .stream()
                   .map( newUrl ->
                         ResourceFactory.createStatement( statement.getSubject(), statement.getPredicate(),
@@ -184,19 +184,19 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
     * in the future this could be resolved using the URL of a suitable service). This method takes a samm:// URL
     * and rewrites it to the respective URL of the object on the class path.
     *
-    * @param bammUrl the bamm URL in the format samm://PART/VERSION/FILENAME
+    * @param sammUrl the samm URL in the format samm://PART/VERSION/FILENAME
     * @return The corresponding class path URL to resolve the meta model resource
     */
-   private Optional<String> rewriteBammUrl( final String bammUrl ) {
+   private Optional<String> rewriteSammUrl( final String sammUrl ) {
       final Matcher matcher = Pattern.compile( "^samm://([\\p{Alpha}-]*)/(\\d+\\.\\d+\\.\\d+)/(.*)$" )
-            .matcher( bammUrl );
+            .matcher( sammUrl );
       if ( matcher.find() ) {
          return KnownVersion.fromVersionString( matcher.group( 2 ) ).flatMap( metaModelVersion ->
                      MetaModelUrls.url( matcher.group( 1 ), metaModelVersion, matcher.group( 3 ) ) )
                .map( URL::toString );
       }
-      if ( bammUrl.startsWith( "samm://scripts/" ) ) {
-         final String resourcePath = bammUrl.replace( "samm://", "samm/" );
+      if ( sammUrl.startsWith( "samm://scripts/" ) ) {
+         final String resourcePath = sammUrl.replace( "samm://", "samm/" );
          final URL resource = SdsAspectMetaModelResourceResolver.class.getClassLoader().getResource( resourcePath );
          return Optional.ofNullable( resource ).map( URL::toString );
       }
@@ -211,15 +211,14 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
     */
    @Override
    public Set<VersionNumber> getUsedMetaModelVersions( final Model model ) {
-      final String bammUrnStart = String.format( "%s:%s",
-            AspectModelUrn.VALID_PROTOCOL, AspectModelUrn.VALID_NAMESPACE_IDENTIFIER );
+      final String sammUrnStart = String.format( "%s:%s", AspectModelUrn.VALID_PROTOCOL, AspectModelUrn.VALID_NAMESPACE_IDENTIFIER );
       return model.listObjects()
             .toList()
             .stream()
             .filter( RDFNode::isURIResource )
             .map( RDFNode::asResource )
             .map( Resource::getURI )
-            .filter( uri -> uri.startsWith( bammUrnStart ) )
+            .filter( uri -> uri.startsWith( sammUrnStart ) )
             .flatMap( uri -> AspectModelUrn.from( uri ).toJavaStream() )
             .filter( urn -> (urn.getElementType().equals( ElementType.META_MODEL ) || urn.getElementType().equals( ElementType.CHARACTERISTIC )) )
             .map( AspectModelUrn::getVersion )

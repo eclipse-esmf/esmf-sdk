@@ -213,11 +213,11 @@ public class ModelElementFactory extends AttributeValueRetriever {
       return model;
    }
 
-   protected SAMM getBamm() {
+   protected SAMM getSamm() {
       return samm;
    }
 
-   protected SAMMC getBammc() {
+   protected SAMMC getSammc() {
       return sammc;
    }
 

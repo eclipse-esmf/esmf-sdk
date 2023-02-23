@@ -45,7 +45,7 @@ public class StructuredValueInstantiator extends Instantiator<StructuredValue> {
    }
 
    /**
-    * Takes as input an RDFNode given in an bamm-c:elements list and turns it into either a String or
+    * Takes as input an RDFNode given in an samm-c:elements list and turns it into either a String or
     * a {@link Property}
     *
     * @param node the input element node

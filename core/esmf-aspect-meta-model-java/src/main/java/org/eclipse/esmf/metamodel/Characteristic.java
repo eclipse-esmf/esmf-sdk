@@ -18,7 +18,7 @@ import java.util.Optional;
 /**
  * Description of a Property in the scope of an Aspect that determines the Property's data type and other qualities.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Characteristic extends NamedElement {
 

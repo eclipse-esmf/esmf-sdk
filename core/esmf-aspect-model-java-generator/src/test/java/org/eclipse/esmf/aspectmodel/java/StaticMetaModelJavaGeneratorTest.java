@@ -42,11 +42,11 @@ import org.eclipse.esmf.metamodel.datatypes.Curie;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.characteristic.impl.DefaultList;
 import org.eclipse.esmf.characteristic.impl.DefaultMeasurement;
-import io.openmanufacturing.sds.staticmetamodel.StaticContainerProperty;
-import io.openmanufacturing.sds.staticmetamodel.StaticProperty;
-import io.openmanufacturing.sds.staticmetamodel.StaticUnitProperty;
-import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintContainerProperty;
-import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintProperty;
+import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
+import org.eclipse.esmf.staticmetamodel.StaticProperty;
+import org.eclipse.esmf.staticmetamodel.StaticUnitProperty;
+import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintContainerProperty;
+import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintProperty;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestSharedAspect;
 

@@ -383,7 +383,7 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openAPI.getComponents().getSchemas().get( "AspectWithCollection" ).get$comment() ).isEqualTo( "See: http://example.com/omp" );
       assertThat( ((Schema) openAPI.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties().get( "testProperty" )).get$comment() )
             .isEqualTo( "See: http://example.com/me, http://example.com/omp" );
-      assertThat( openAPI.getComponents().getSchemas().get( "urn_bamm_io.openmanufacturing.test_1.0.0_TestCollection" ).get$comment() )
+      assertThat( openAPI.getComponents().getSchemas().get( "urn_samm_org.eclipse.esmf.samm.test_1.0.0_TestCollection" ).get$comment() )
             .isEqualTo( "See: http://example.com/omp" );
    }
 

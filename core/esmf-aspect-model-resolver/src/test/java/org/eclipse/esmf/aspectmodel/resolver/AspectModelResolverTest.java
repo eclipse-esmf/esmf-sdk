@@ -26,17 +26,17 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.assertj.core.api.Assertions;
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.MetaModelVersions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.common.collect.Streams;
 
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.test.MetaModelVersions;
 import io.vavr.control.Try;
 
 public class AspectModelResolverTest extends MetaModelVersions {
@@ -59,12 +59,10 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Resource aspect = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#Test" );
-      final Resource bammAspect = ResourceFactory
-            .createResource(
-                  "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
-                        + "#Aspect" );
+      final Resource sammAspect = ResourceFactory.createResource(
+            "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() + "#Aspect" );
       org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, bammAspect ).nextOptional() )
+            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, sammAspect ).nextOptional() )
             .isNotEmpty();
    }
 
@@ -86,12 +84,10 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Resource aspect = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.1.0#Test" );
-      final Resource bammAspect = ResourceFactory
-            .createResource(
-                  "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
-                        + "#Aspect" );
+      final Resource sammAspect = ResourceFactory.createResource(
+            "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() + "#Aspect" );
       org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, bammAspect ).nextOptional() )
+            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, sammAspect ).nextOptional() )
             .isNotEmpty();
    }
 
@@ -117,22 +113,22 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Resource aspect = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#AnotherTest" );
-      final Resource bammAspect = ResourceFactory
+      final Resource sammAspect = ResourceFactory
             .createResource(
                   "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
                         + "#Aspect" );
       org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, bammAspect ).nextOptional() )
+            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, sammAspect ).nextOptional() )
             .isNotEmpty();
 
       final Resource propertyFromReferencedAspect = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#foo" );
-      final Resource bammProperty = ResourceFactory
+      final Resource sammProperty = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
                   + "#Property" );
       org.assertj.core.api.Assertions
             .assertThat(
-                  result.get().getModel().listStatements( propertyFromReferencedAspect, RDF.type, bammProperty )
+                  result.get().getModel().listStatements( propertyFromReferencedAspect, RDF.type, sammProperty )
                         .nextOptional() ).isNotEmpty();
    }
 
@@ -153,22 +149,22 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Resource aspect = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#AnotherTest" );
-      final Resource bammAspect = ResourceFactory
+      final Resource sammAspect = ResourceFactory
             .createResource(
                   "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
                         + "#Aspect" );
       org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, bammAspect ).nextOptional() )
+            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, sammAspect ).nextOptional() )
             .isNotEmpty();
 
       final Resource propertyFromReferencedAspect = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#foo" );
-      final Resource bammProperty = ResourceFactory
+      final Resource sammProperty = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
                   + "#Property" );
       org.assertj.core.api.Assertions
             .assertThat(
-                  result.get().getModel().listStatements( propertyFromReferencedAspect, RDF.type, bammProperty )
+                  result.get().getModel().listStatements( propertyFromReferencedAspect, RDF.type, sammProperty )
                         .nextOptional() ).isNotEmpty();
    }
 
@@ -225,22 +221,22 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Resource aspect = ResourceFactory
             .createResource(
                   "urn:samm:org.eclipse.esmf.samm.test:1.0.0#ReferenceCharacteristicTest" );
-      final Resource bammAspect = ResourceFactory
+      final Resource sammAspect = ResourceFactory
             .createResource(
                   "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
                         + "#Aspect" );
       org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, bammAspect ).nextOptional() )
+            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, sammAspect ).nextOptional() )
             .isNotEmpty();
 
       final Resource referencedCharacteristic = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#TestCharacteristic" );
-      final Resource bammCharacteristic = ResourceFactory
+      final Resource sammCharacteristic = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
                   + "#Characteristic" );
       org.assertj.core.api.Assertions
             .assertThat(
-                  result.get().getModel().listStatements( referencedCharacteristic, RDF.type, bammCharacteristic )
+                  result.get().getModel().listStatements( referencedCharacteristic, RDF.type, sammCharacteristic )
                         .nextOptional() ).isNotEmpty();
    }
 
@@ -293,24 +289,20 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Resource aspect = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#ReferenceEntityTest" );
-      final Resource bammAspect = ResourceFactory
+      final Resource sammAspect = ResourceFactory
             .createResource(
                   "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
                         + "#Aspect" );
       org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, bammAspect ).nextOptional() )
+            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, sammAspect ).nextOptional() )
             .isNotEmpty();
 
       final Resource referencedEntity = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#TestEntity" );
-      final Resource bammEntity = ResourceFactory
-            .createResource(
-                  "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
-                        + "#Entity" );
+      final Resource sammEntity = ResourceFactory
+            .createResource( "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() + "#Entity" );
       org.assertj.core.api.Assertions
-            .assertThat(
-                  result.get().getModel().listStatements( referencedEntity, RDF.type, bammEntity )
-                        .nextOptional() ).isNotEmpty();
+            .assertThat( result.get().getModel().listStatements( referencedEntity, RDF.type, sammEntity ).nextOptional() ).isNotEmpty();
    }
 
    @ParameterizedTest

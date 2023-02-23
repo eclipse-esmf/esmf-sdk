@@ -225,9 +225,9 @@ public class MetaModelBaseAttributes {
    // [
    //  aux:contains _:blankNode ;
    // ] .
-   // :NumberList a bamm-c:List ;
-   //    bamm-c:elementCharacteristic _:blankNode .
-   // _:blankNode a bamm-c:Trait ;
+   // :NumberList a samm-c:List ;
+   //    samm-c:elementCharacteristic _:blankNode .
+   // _:blankNode a samm-c:Trait ;
    private static Resource getNamedParent( final Resource modelElement, final Model model ) {
       final StmtIterator elements = model.listStatements( null, null, modelElement );
       while ( elements.hasNext() ) {

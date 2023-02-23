@@ -8,7 +8,7 @@
     {"pattern":"\\QMETA-INF/services/com.oracle.truffle.api.instrumentation.TruffleInstrument$Provider\\E"},
     {"pattern":"\\QMETA-INF/services/javax.script.ScriptEngineFactory\\E"},
     {"pattern":"\\QMETA-INF/services/org.apache.jena.sys.JenaSubsystemLifecycle\\E"},
-    {"pattern":"bamm/[^/]*/([^/]*/)?[a-zA-Z0-9-]+\\.(ttl|js)"},
+    {"pattern":"samm/[^/]*/([^/]*/)?[a-zA-Z0-9-]+\\.(ttl|js)"},
     {"pattern":"\\Qcom/oracle/truffle/nfi/impl/NFILanguageImpl.class\\E"},
     {"pattern":"\\Qlogback.xml\\E"},
     {"pattern":"\\Qorg/apache/jena/arq/arq-properties.xml\\E"},

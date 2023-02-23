@@ -20,7 +20,7 @@ import org.eclipse.esmf.metamodel.Value;
 /**
  * A list of possible states. Provides a default value.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface State extends Enumeration {
 

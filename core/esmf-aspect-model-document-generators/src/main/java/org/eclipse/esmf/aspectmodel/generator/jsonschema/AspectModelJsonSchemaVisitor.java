@@ -39,7 +39,7 @@ import com.google.common.collect.ImmutableMap;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.BammDataType;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammDataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.characteristic.Either;
@@ -315,7 +315,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final SAMM samm = new SAMM( metaModelVersion );
       final Map<Resource, Map<String, JsonNode>> typeDates = ImmutableMap.<Resource, Map<String, JsonNode>> builder()
             .putAll( typeData )
-            .put( samm.curie(), Map.of( "pattern", factory.textNode( BammDataType.CURIE_REGEX ) ) )
+            .put( samm.curie(), Map.of( "pattern", factory.textNode( SammDataType.CURIE_REGEX ) ) )
             .build();
       return typeDates.getOrDefault( type, Map.of() );
    }

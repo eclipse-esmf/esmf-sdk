@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
-import io.openmanufacturing.sds.test.shared.arbitraries.PropertyBasedTest;
+import org.eclipse.esmf.test.shared.arbitraries.PropertyBasedTest;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.Tuple;

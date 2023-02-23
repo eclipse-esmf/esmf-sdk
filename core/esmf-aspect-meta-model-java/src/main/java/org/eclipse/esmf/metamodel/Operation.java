@@ -20,7 +20,7 @@ import java.util.Optional;
  * Defines a piece of functionality of an Asset which can be triggered by an external factor, e.g. by a user, service,
  * or machine.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Operation extends NamedElement {
 

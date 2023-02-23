@@ -46,7 +46,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 
 /**
- * Cycle detector for BAMM models.
+ * Cycle detector for SAMM models.
  *
  * Because of the limitations of the property paths in Sparql queries, it is impossible to realize the cycle detection together with
  * other validations via Shacl shapes.
@@ -120,7 +120,7 @@ public class ModelCycleDetector {
 
       final List<NextHopProperty> nextHopProperties = getDirectlyReachableProperties( model, currentProperty );
 
-      // bamm-c:Either makes the task somewhat more complicated - we need to know the status of both branches (left/right)
+      // samm-c:Either makes the task somewhat more complicated - we need to know the status of both branches (left/right)
       // to be able to decide whether there really is a cycle or not
       if ( reachedViaEither( nextHopProperties ) ) {
          final EitherCycleDetector leftBranch = new EitherCycleDetector( currentPropertyName, this::reportCycle );
@@ -279,7 +279,7 @@ public class ModelCycleDetector {
          }
       }
 
-      // Cycles involving bamm-c:Either can be considered breakable only if they "encompass" the property characterized by the Either construct.
+      // Cycles involving samm-c:Either can be considered breakable only if they "encompass" the property characterized by the Either construct.
       // Consider these two examples: ( E is the Either property )
       // a -> E -> b -> c -> a : this cycle can be broken by the other branch of the Either construct
       // a -> E -> b -> c -> b : this cycle is unbreakable and can be reported immediately

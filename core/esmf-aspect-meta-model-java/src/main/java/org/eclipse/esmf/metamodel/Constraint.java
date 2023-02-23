@@ -16,7 +16,7 @@ package org.eclipse.esmf.metamodel;
 /**
  * A Constraint enforces a specific condition on a Characteristic.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Constraint extends NamedElement {
 }

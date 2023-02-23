@@ -18,7 +18,7 @@ import org.eclipse.esmf.metamodel.Constraint;
 /**
  * Defines the scale as well as the number of integral digits for a fixed point number.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface FixedPointConstraint extends Constraint {
 

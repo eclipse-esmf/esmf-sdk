@@ -82,18 +82,18 @@ public class AspectModelResolver {
 
          return Stream.of( subjectUri, propertyUri, objectUri )
                .flatMap( Function.identity() )
-               .map( AspectModelResolver::resolveBammUrn )
+               .map( AspectModelResolver::resolveSammUrn )
                .flatMap( Value::toJavaStream );
       } ) ).flatMap( Function.identity() ).collect( Collectors.toSet() );
    }
 
    /**
-    * Tries to resolve the given Bamm URN {@link AspectModelUrn}
+    * Tries to resolve the given SAMM URN {@link AspectModelUrn}
     *
     * @param urn The Aspect (meta) model URN
     * @return The {@link String} if it is resolvable, an {@link UrnSyntaxException} otherwise
     */
-   private static Try<String> resolveBammUrn( final String urn ) {
+   private static Try<String> resolveSammUrn( final String urn ) {
       try {
          AspectModelUrn.fromUrn( urn );
          return Try.success( urn );
@@ -272,7 +272,7 @@ public class AspectModelResolver {
       final List<AspectModelUrn> result = new ArrayList<>();
       for ( final String element : getAllUrnsInModel( source ) ) {
          if ( !target.contains( source.createResource( element ), RDF.type, (RDFNode) null )
-               // Backwards compatibility with BAMM 1.0.0
+               // Backwards compatibility with SAMM 1.0.0
                && !target.contains( source.createResource( element ), refines, (RDFNode) null )
          ) {
             result.add( AspectModelUrn.fromUrn( element ) );

@@ -18,7 +18,7 @@ import org.eclipse.esmf.metamodel.Characteristic;
 /**
  * Describes a Property whose value can have one of two possible types (a disjoint union).
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Either extends Characteristic {
 

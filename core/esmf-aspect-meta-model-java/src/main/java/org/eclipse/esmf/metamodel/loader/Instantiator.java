@@ -68,10 +68,10 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
    protected final RDFDatatype curieDataType = new CurieRdfType();
 
    public Instantiator( final ModelElementFactory modelElementFactory, final Class<T> targetClass ) {
-      super( modelElementFactory.getBamm() );
+      super( modelElementFactory.getSamm() );
       this.modelElementFactory = modelElementFactory;
       this.targetClass = targetClass;
-      sammc = modelElementFactory.getBammc();
+      sammc = modelElementFactory.getSammc();
       unit = modelElementFactory.getUnit();
       model = modelElementFactory.getModel();
       metaModelVersion = modelElementFactory.getMetaModelVersion();
@@ -176,7 +176,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
     *
     * @param node the RDF node that represents the value
     * @param characteristicResource the resources that represents the Characteristic that describes the value. This can be empty for the values of collections
-    *                               that have no bamm-c:elementCharacterisic set
+    *                               that have no samm-c:elementCharacterisic set
     * @param type the type that describes the value
     * @return a value instance
     */

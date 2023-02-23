@@ -19,7 +19,7 @@ import java.util.Set;
 /**
  * A physical unit.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Unit extends NamedElement {
    /**

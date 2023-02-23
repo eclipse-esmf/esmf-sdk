@@ -16,7 +16,7 @@ package org.eclipse.esmf.characteristic;
 /**
  * A time duration according to ISO 8601.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Duration extends Quantifiable {
 }

@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * An Aspect encapsulates a number of properties and operations that define one functional facet of a Digital Twin.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Aspect extends StructureElement {
    /**
@@ -28,7 +28,7 @@ public interface Aspect extends StructureElement {
 
    /**
     * @return the {@link Event}s defined in the scope of this Aspect.
-    * @since BAMM 2.0.0
+    * @since SAMM 2.0.0
     */
    List<Event> getEvents();
 }

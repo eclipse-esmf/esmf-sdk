@@ -38,12 +38,12 @@ public class MetaModelUrls {
     * Create a URL referring to a meta model resource
     *
     * @param part The meta model section, e.g. aspect-meta-model or characteristics
-    * @param version The BAMM version
+    * @param version The meta model version
     * @param fileName The respective file name
     * @return The resource URL
     */
    public static Optional<URL> url( final String part, final KnownVersion version, final String fileName ) {
-      final String spec = String.format( "bamm/%s/%s/%s", part, version.toVersionString(), fileName );
+      final String spec = String.format( "samm/%s/%s/%s", part, version.toVersionString(), fileName );
       try {
          final List<URL> urls = ImmutableList.copyOf( MetaModelUrls.class.getClassLoader().getResources( spec ).asIterator() );
          if ( urls.size() == 1 ) {

@@ -22,7 +22,7 @@ import org.eclipse.esmf.metamodel.Value;
 /**
  * A list of possible values.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Enumeration extends Characteristic {
 

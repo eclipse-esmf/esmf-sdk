@@ -17,7 +17,7 @@ package org.eclipse.esmf.metamodel;
  * An Event is a model element that represents a single occurence where the timing is important.
  * Assets can for instance emit events to notify other assets in case of special occurences.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Event extends StructureElement {
 }

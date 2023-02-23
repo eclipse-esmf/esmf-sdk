@@ -30,8 +30,8 @@ public class PropertyCharacteristicEdges2BoxModelTest extends MetaModelVersions 
    @ParameterizedTest
    @MethodSource( value = "versionsUpToIncluding1_0_0" )
    void testPropertyToCharacteristicEdgeFromSharedNamespaceNotPresent( final KnownVersion metaModelVersion ) {
-      // v1.0 sparql queries were not properly filtering out some properties from shared bamm-e namespace
-      // https://github.com/OpenManufacturingPlatform/sds-sdk/issues/196
+      // v1.0 sparql queries were not properly filtering out some properties from shared samm-e namespace
+      // https://github.com/eclipse-esmf/esmf-sdk/issues/196
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUM_ONLY_ONE_SEE, metaModelVersion );
 
       final Model queryResult = context.executeQuery( sparqlQueryFileName );

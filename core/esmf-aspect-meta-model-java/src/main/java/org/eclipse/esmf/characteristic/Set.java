@@ -16,7 +16,7 @@ package org.eclipse.esmf.characteristic;
 /**
  * A collection which may not contain duplicates and is unordered.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Set extends Collection {
 }

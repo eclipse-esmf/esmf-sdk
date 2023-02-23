@@ -83,21 +83,21 @@ public class UnitGenerationTest {
 
    @Test
    public void testJavaScriptUnits() {
-      final InputStream js = UnitGenerationTest.class.getClassLoader().getResourceAsStream( "bamm-units.js" );
-      final String bammUnits = new Scanner( js, "UTF-8" ).useDelimiter( "\\A" ).next();
+      final InputStream js = UnitGenerationTest.class.getClassLoader().getResourceAsStream( "samm-units.js" );
+      final String sammUnits = new Scanner( js, "UTF-8" ).useDelimiter( "\\A" ).next();
 
       final Context context = Context.enter();
       final Scriptable scope = context.initStandardObjects();
 
       // Evaluate .js
-      context.evaluateString( scope, bammUnits, "<cmd>", 1, null );
+      context.evaluateString( scope, sammUnits, "<cmd>", 1, null );
 
-      final ScriptableObject bamm = (ScriptableObject) scope.get( "bamm", scope );
-      assertThat( bamm ).isNotNull();
-      assertThat( bamm ).isNotEqualTo( Scriptable.NOT_FOUND );
-      assertThat( Context.toString( bamm ) ).isEqualTo( "[object Object]" );
+      final ScriptableObject samm = (ScriptableObject) scope.get( "samm", scope );
+      assertThat( samm ).isNotNull();
+      assertThat( samm ).isNotEqualTo( Scriptable.NOT_FOUND );
+      assertThat( Context.toString( samm ) ).isEqualTo( "[object Object]" );
 
-      final ScriptableObject units = (ScriptableObject) bamm.get( "units" );
+      final ScriptableObject units = (ScriptableObject) samm.get( "units" );
       assertThat( units ).isNotNull();
       assertThat( units ).isNotEqualTo( Scriptable.NOT_FOUND );
       assertThat( Context.toString( units ) ).isEqualTo( "[object Object]" );
@@ -110,7 +110,7 @@ public class UnitGenerationTest {
       assertThat( Context.toString( degreeCelsius.get( "name" ) ) ).isEqualTo( "degreeCelsius" );
       assertThat( Context.toString( degreeCelsius.get( "label" ) ) ).isEqualTo( "degree Celsius" );
 
-      final ScriptableObject quantityKinds = (ScriptableObject) bamm.get( "quantityKinds" );
+      final ScriptableObject quantityKinds = (ScriptableObject) samm.get( "quantityKinds" );
       assertThat( quantityKinds ).isNotNull();
       assertThat( quantityKinds ).isNotEqualTo( Scriptable.NOT_FOUND );
 

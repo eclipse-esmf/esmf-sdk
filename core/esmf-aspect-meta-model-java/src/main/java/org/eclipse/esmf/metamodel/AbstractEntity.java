@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Represents a generic domain specific concept which may have multiple specific variants.
  *
- * @since BAMM 2.0.0
+ * @since SAMM 2.0.0
  */
 public interface AbstractEntity extends ComplexType {
 

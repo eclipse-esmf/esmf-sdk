@@ -18,7 +18,7 @@ import org.eclipse.esmf.metamodel.Characteristic;
 /**
  * Describes a Property which contains any kind of code.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Code extends Characteristic {
 }

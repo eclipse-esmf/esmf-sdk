@@ -69,7 +69,7 @@ public class Property2BoxModelTest extends MetaModelVersions {
             queryResult.listStatements( context.selector( ":sharedPropertyWithSeeAttributeProperty a :Box" ) )
                   .toList() )
             .hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( "bamm-e:sharedPropertyProperty a :Box" ) ).toList() )
+      assertThat( queryResult.listStatements( context.selector( "samm-e:sharedPropertyProperty a :Box" ) ).toList() )
             .hasSize( 0 );
    }
 

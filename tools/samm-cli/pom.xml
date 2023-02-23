@@ -23,14 +23,14 @@
    </parent>
    <modelVersion>4.0.0</modelVersion>
 
-   <artifactId>bamm-cli</artifactId>
+   <artifactId>samm-cli</artifactId>
    <name>Semantic Aspect Meta Model Command Line Tool</name>
    <packaging>jar</packaging>
 
    <properties>
       <packaging-type>jar</packaging-type>
-      <main-class>org.eclipse.esmf.BammCli</main-class>
-      <binary-name>bamm</binary-name>
+      <main-class>org.eclipse.esmf.SammCli</main-class>
+      <binary-name>samm</binary-name>
       <graalvm-config-path>${project.build.directory}/classes/META-INF/native-image/${project.groupId}/${project.artifactId}</graalvm-config-path>
       <skip.maven.surefire>false</skip.maven.surefire>
       <skip.maven.surefire.report.plugin>false</skip.maven.surefire.report.plugin>
@@ -153,9 +153,9 @@
                <argLine>-Xmx6g</argLine>
                <skip>${skip.maven.surefire}</skip>
                <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
-               <!-- Do NOT wildcard include *Test.java, because then we would also run the BammCliIntegrationTest -->
+               <!-- Do NOT wildcard include *Test.java, because then we would also run the SammCliIntegrationTest -->
                <includes>
-                  <include>**/BammCliTest.java</include>
+                  <include>**/SammCliTest.java</include>
                   <include>**/CommandExecutorTest.java</include>
                </includes>
             </configuration>
@@ -409,7 +409,7 @@
                   <argLine>-Xmx4096m</argLine>
                </systemPropertyVariables>
                <includes>
-                  <include>**/BammCliIntegrationTest.java</include>
+                  <include>**/SammCliIntegrationTest.java</include>
                </includes>
             </configuration>
          </plugin>

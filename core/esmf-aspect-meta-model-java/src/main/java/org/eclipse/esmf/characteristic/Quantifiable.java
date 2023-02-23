@@ -21,7 +21,7 @@ import org.eclipse.esmf.metamodel.Unit;
 /**
  * A value which can be quantified and may have a unit.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Quantifiable extends Characteristic {
 

@@ -151,7 +151,7 @@ file system, in a remote model repository etc. This is done using a _resolution 
 type `T` to a `Try` of a RDF model. Several commonly used resolution strategies are readily available:
 
 * The `FileSystemStrategy` resolves a `java.nio.file.Path` for a file relative
-  to the xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory]
+  to the xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory]
 * The `ClassPathStrategy` resolves a model from resources in the Java class path
 * The `EitherStrategy` can be used to chain two different strategies of different types
 
@@ -184,7 +184,7 @@ include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromFile]
 ----
 
 <1> The file must be located in a directory according to the
-xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory] structure.
+xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory] structure.
 <2> You can check if loading succeeded using `versionedModel.isSuccess()` and
 `versionedModel.isFailure()`. If loading fails, `versionedModel.getCause()` provides more
 information.
@@ -609,7 +609,7 @@ include::sds-developer-guide:ROOT:partial$sds-aspect-static-meta-model-java-arti
 
 It is possible to change predefined sections of the generated classes by providing custom https://velocity.apache.org/[Velocity] templates; see the https://velocity.apache.org/engine/2.3/user-guide.html[Velocity User Guide] for more information.
 The custom macros must be defined in a single template file.
-The path to the template file as well as its name may be passed as arguments to the code generation, e.g. using the xref:bamm-cli.adoc#bamm-cli[BAMM-CLI].
+The path to the template file as well as its name may be passed as arguments to the code generation, e.g. using the xref:samm-cli.adoc#bamm-cli[SAMM-CLI].
 
 Custom macros may be provided for the following sections:
 

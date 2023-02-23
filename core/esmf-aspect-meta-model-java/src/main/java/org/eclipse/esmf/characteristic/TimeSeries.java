@@ -16,7 +16,7 @@ package org.eclipse.esmf.characteristic;
 /**
  * A collection containing values with the exact point in time when the values where recorded.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface TimeSeries extends SortedSet {
 }

@@ -622,7 +622,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
    public AssetAdministrationShellEnvironment visitTrait( final Trait trait, final Context context ) {
       // AAS submodel templates do not support the specification of constraints for SubmodelElements.
       // Hence, they will be
-      // ignored and have to be deduced by resolving a BAMM model referenced by its semanticID
+      // ignored and have to be deduced by resolving a SAMM model referenced by its semanticID
       return visitCharacteristic( trait.getBaseCharacteristic(), context );
    }
 }

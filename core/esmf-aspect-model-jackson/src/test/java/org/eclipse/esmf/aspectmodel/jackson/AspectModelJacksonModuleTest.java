@@ -61,7 +61,7 @@ import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
-import io.openmanufacturing.sds.test.shared.compiler.JavaCompiler;
+import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 

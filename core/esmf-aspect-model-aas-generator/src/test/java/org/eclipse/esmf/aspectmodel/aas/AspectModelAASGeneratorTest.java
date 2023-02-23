@@ -46,7 +46,7 @@ class AspectModelAASGeneratorTest {
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
    @Test
-   void testGenerateAasxFromBammAspectWithListAndAdditionalProperty() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithListAndAdditionalProperty() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY );
       assertEquals( 3, env.getConceptDescriptions().size() );
       assertEquals( 1, env.getSubmodels().size() );
@@ -60,7 +60,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromBammAspectWithEntity() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithEntity() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENTITY );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in Submodel." );
@@ -74,7 +74,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromBammAspectWithCollection() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithCollection() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_COLLECTION );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
@@ -86,7 +86,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromBammAspectWithList() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithList() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_LIST );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
@@ -99,7 +99,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromBammAspectWithSet() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithSet() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_SET );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
@@ -113,7 +113,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromBammAspectWithSortedSet() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithSortedSet() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_SORTED_SET );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
@@ -127,7 +127,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromBammAspectWithEitherWithComplexTypes() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithEitherWithComplexTypes() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 1, "Not exactly one Element in SubmodelElements." );
@@ -143,7 +143,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromBammAspectWithQuantifiable() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithQuantifiable() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 1, "Not exactly one Element in SubmodelElements." );
@@ -156,7 +156,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromBammWithConstraint() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammWithConstraint() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_CONSTRAINT );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 6, "Not exactly six Elements in SubmodelElements." );
@@ -179,13 +179,13 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromBammAspectWithRecursivePropertyWithOptional() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithRecursivePropertyWithOptional() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL );
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
    }
 
    @Test
-   void testGenerateAasxFromBammAspectWithCode() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithCode() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_CODE );
       assertEquals( 2, env.getConceptDescriptions().size() );
       assertEquals( 1, env.getSubmodels().size() );
@@ -197,7 +197,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromBammAspectWithEnumeration() throws IOException, DeserializationException {
+   void testGenerateAasxFromSammAspectWithEnumeration() throws IOException, DeserializationException {
       final AssetAdministrationShellEnvironment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_ENUMERATION );
 
       assertEquals( 2, env.getConceptDescriptions().size() );

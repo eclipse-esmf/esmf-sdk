@@ -53,7 +53,7 @@ import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import io.vavr.control.Try;
 
 /**
- * Provides functionality to load an Aspect Model from a {@link VersionedModel} and use the correct BAMM resources to
+ * Provides functionality to load an Aspect Model from a {@link VersionedModel} and use the correct SAMM resources to
  * instantiate it. To load a regular Aspect Model, use {@link #getElements(VersionedModel)} or {@link #getElementsUnchecked(VersionedModel)}.
  * To load elements from an RDF model that might contain elements from multiple namespaces, use {@link #getNamespaces(VersionedModel)}.
  *
@@ -90,17 +90,17 @@ public class AspectModelLoader {
    }
 
    private static void validateNamespaceOfCustomUnits( final SAMM samm, final Model rawModel ) {
-      final List<String> customUnitsWithBammNamespace = new ArrayList<>();
+      final List<String> customUnitsWithSammNamespace = new ArrayList<>();
       rawModel.listStatements( null, RDF.type, samm.Unit() )
             .mapWith( Statement::getSubject )
             .filterKeep( subject -> subject.getNameSpace().equals( samm.getNamespace() ) )
             .mapWith( Resource::getLocalName )
-            .forEach( customUnitsWithBammNamespace::add );
+            .forEach( customUnitsWithSammNamespace::add );
 
-      if ( !customUnitsWithBammNamespace.isEmpty() ) {
+      if ( !customUnitsWithSammNamespace.isEmpty() ) {
          throw new InvalidNamespaceException(
-               String.format( "Aspect model contains unit(s) %s not specified in the unit catalog but referred with bamm namespace",
-                     customUnitsWithBammNamespace ) );
+               String.format( "Aspect model contains unit(s) %s not specified in the unit catalog but referred with samm namespace",
+                     customUnitsWithSammNamespace ) );
       }
    }
 

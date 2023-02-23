@@ -18,7 +18,7 @@ import org.eclipse.esmf.metamodel.Characteristic;
 /**
  * A single value of an Entity type.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface SingleEntity extends Characteristic {
 }

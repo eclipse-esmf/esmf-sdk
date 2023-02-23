@@ -39,7 +39,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    public static final String MODEL_ELEMENT_NAME_REGEX = "\\p{Alpha}\\p{Alnum}*";
    public static final String VERSION_REGEX = "^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$";
    public static final String VALID_PROTOCOL = "urn";
-   public static final String VALID_NAMESPACE_IDENTIFIER = "bamm";
+   public static final String VALID_NAMESPACE_IDENTIFIER = "samm";
    public static final int MAX_URN_LENGTH = 256;
    public static final int ASPECT_NAME_INDEX = 4;
 
@@ -68,19 +68,19 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    private final String version;
    private final String namespace;
    private final ElementType elementType;
-   private final boolean isBammUrn;
+   private final boolean isSammUrn;
 
    @JsonValue
    private final URI urn;
 
    private AspectModelUrn( final URI urn, final String name, final String namespace, final ElementType elementType,
-         final String version, final boolean isBammUrn ) {
+         final String version, final boolean isSammUrn ) {
       this.urn = urn;
       this.name = name;
       this.namespace = namespace;
       this.elementType = elementType;
       this.version = version;
-      this.isBammUrn = isBammUrn;
+      this.isSammUrn = isSammUrn;
    }
 
    /**
@@ -129,10 +129,10 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
             UrnSyntaxException.URN_INVALID_NAMESPACE_MESSAGE, NAMESPACE_REGEX );
 
       final ElementType elementType = getElementType( urnParts );
-      final boolean isBammUrn = isBammUrn( urn, urnParts, elementType );
-      final String version = getVersion( isBammUrn, urnParts, elementType );
-      final String elementName = getName( isBammUrn, urnParts, elementType );
-      return new AspectModelUrn( urn, elementName, namespace, elementType, version, isBammUrn );
+      final boolean isSammUrn = isSammUrn( urn, urnParts, elementType );
+      final String version = getVersion( isSammUrn, urnParts, elementType );
+      final String elementName = getName( isSammUrn, urnParts, elementType );
+      return new AspectModelUrn( urn, elementName, namespace, elementType, version, isSammUrn );
    }
 
    /**
@@ -205,7 +205,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    /**
     * Retrieves the version from the given URN.
     */
-   private static String getVersion( final boolean isBammUrn, final List<String> urnParts,
+   private static String getVersion( final boolean isSammUrn, final List<String> urnParts,
          final ElementType elementType ) {
       if ( elementType.equals( ElementType.NONE ) ) {
          final String version = urnParts.get( VERSION_INDEX_FOR_MODEL_ELEMENTS );
@@ -219,7 +219,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       }
       if ( ELEMENT_TYPES_WITH_VARIABLE_NAMESPACE_STRUCTURE.contains( elementType ) ) {
          String version = urnParts.get( VERSION_INDEX_FOR_ASPECTS );
-         if ( isBammUrn ) {
+         if ( isSammUrn ) {
             version = urnParts.get( VERSION_INDEX_FOR_META_MODEL );
          }
          checkVersion( version );
@@ -233,7 +233,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    /**
     * Retrieves the name from the given URN.
     */
-   private static String getName( final boolean isBammUrn, final List<String> urnParts,
+   private static String getName( final boolean isSammUrn, final List<String> urnParts,
          final ElementType elementType ) {
       if ( elementType.equals( ElementType.META_MODEL ) ) {
          final String modelElementName = urnParts.get( META_MODEL_ELEMENT_NAME_INDEX );
@@ -247,7 +247,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       }
       if ( ELEMENT_TYPES_WITH_VARIABLE_NAMESPACE_STRUCTURE.contains( elementType ) ) {
          String name = urnParts.get( ASPECT_NAME_INDEX );
-         if ( isBammUrn ) {
+         if ( isSammUrn ) {
             name = urnParts.get( META_MODEL_ELEMENT_NAME_INDEX );
          }
          checkElementName( name, elementType.getValue() );
@@ -260,11 +260,11 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    /**
-    * Determines whether the given URN identifies an element which is defined in the context of the BAMM.
+    * Determines whether the given URN identifies an element which is defined in the context of the SAMM.
     *
-    * @return true if the element is defined in the context of the BAMM, false otherwise.
+    * @return true if the element is defined in the context of the SAMM, false otherwise.
     */
-   private static boolean isBammUrn( final URI urn, final List<String> urnParts,
+   private static boolean isSammUrn( final URI urn, final List<String> urnParts,
          final ElementType elementType ) {
       if ( elementType == ElementType.NONE || urnParts.size() == MODEL_ELEMENT_NAME_INDEX + 1 ) {
          return false;
@@ -339,8 +339,8 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       return elementType;
    }
 
-   public boolean isBammUrn() {
-      return isBammUrn;
+   public boolean isSammUrn() {
+      return isSammUrn;
    }
 
    /**

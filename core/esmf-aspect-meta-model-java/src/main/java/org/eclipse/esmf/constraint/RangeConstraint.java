@@ -23,7 +23,7 @@ import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 /**
  * Restricts the value of a Property to a specific set of possible values.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface RangeConstraint extends Constraint {
 
@@ -43,7 +43,7 @@ public interface RangeConstraint extends Constraint {
     * @return the definition of how the lower bound of the range is to be interpreted. Possible values are
     *       'OPEN', 'AT_LEAST' and 'GREATER_THAN'
     *
-    * @since BAMM 1.0.0
+    * @since SAMM 1.0.0
     */
    BoundDefinition getLowerBoundDefinition();
 
@@ -51,7 +51,7 @@ public interface RangeConstraint extends Constraint {
     * @return the definition of how the upper bound of the range is to be interpreted. Possible values are
     *       'OPEN', 'AT_MOST' and 'LESS_THAN'
     *
-    * @since BAMM 1.0.0
+    * @since SAMM 1.0.0
     */
    BoundDefinition getUpperBoundDefinition();
 }

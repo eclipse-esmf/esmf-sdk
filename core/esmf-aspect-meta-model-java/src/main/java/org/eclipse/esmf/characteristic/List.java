@@ -16,7 +16,7 @@ package org.eclipse.esmf.characteristic;
 /**
  * A collection which may contain duplicates and is ordered.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface List extends Collection {
 }

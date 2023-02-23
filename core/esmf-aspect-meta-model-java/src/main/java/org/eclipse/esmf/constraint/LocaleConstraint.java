@@ -20,7 +20,7 @@ import org.eclipse.esmf.metamodel.Constraint;
 /**
  * Restricts a value to a specific language.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface LocaleConstraint extends Constraint {
 

@@ -31,6 +31,8 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.stmt.Statement;
 
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.staticmetamodel.StaticMetaClass;
+import org.eclipse.esmf.staticmetamodel.StaticProperty;
 
 public class StaticClassGenerationResult extends GenerationResult {
 
@@ -80,7 +82,7 @@ public class StaticClassGenerationResult extends GenerationResult {
    }
 
    /**
-    * Allows asserting a constructor argument for a {@link io.openmanufacturing.sds.staticmetamodel.StaticProperty},
+    * Allows asserting a constructor argument for a {@link StaticProperty},
     * e.g. the instantiation of the {@link MetaModelBaseAttributes},
     * for the
     * fields of a generated class. The expected attribute values have to be given as a {@code Map} where the key is the
@@ -121,7 +123,7 @@ public class StaticClassGenerationResult extends GenerationResult {
    }
 
    /**
-    * Allows the assertion of the methods implemented in the {@link io.openmanufacturing.sds.staticmetamodel.StaticMetaClass}.
+    * Allows the assertion of the methods implemented in the {@link StaticMetaClass}.
     * The expected methods and their corresponding bodies are given in a {@code Map} where the key is the name
     * of the expected method and the value is a {@code String} representation of its body.
     *

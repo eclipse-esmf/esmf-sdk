@@ -102,14 +102,14 @@ import org.eclipse.esmf.characteristic.impl.DefaultState;
 import org.eclipse.esmf.characteristic.impl.DefaultStructuredValue;
 import org.eclipse.esmf.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import io.openmanufacturing.sds.staticmetamodel.PropertyContainer;
-import io.openmanufacturing.sds.staticmetamodel.StaticContainerProperty;
-import io.openmanufacturing.sds.staticmetamodel.StaticMetaClass;
-import io.openmanufacturing.sds.staticmetamodel.StaticProperty;
-import io.openmanufacturing.sds.staticmetamodel.StaticUnitProperty;
-import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintContainerProperty;
-import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintProperty;
-import io.openmanufacturing.sds.staticmetamodel.constraint.StaticConstraintUnitProperty;
+import org.eclipse.esmf.staticmetamodel.PropertyContainer;
+import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
+import org.eclipse.esmf.staticmetamodel.StaticMetaClass;
+import org.eclipse.esmf.staticmetamodel.StaticProperty;
+import org.eclipse.esmf.staticmetamodel.StaticUnitProperty;
+import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintContainerProperty;
+import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintProperty;
+import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintUnitProperty;
 
 /**
  * A {@link ArtifactGenerator} that generates static meta classes

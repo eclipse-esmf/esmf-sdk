@@ -68,7 +68,7 @@ public interface AspectMetaModelResourceResolver {
    }
 
    /**
-    * Provides the Aspect statements based on the specific BAMM Meta Model version
+    * Provides the Aspect statements based on the specific meta model version
     *
     * @param sourceModel the source model
     * @param target the target model

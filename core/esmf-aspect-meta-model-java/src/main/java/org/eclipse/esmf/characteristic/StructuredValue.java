@@ -18,7 +18,7 @@ import java.util.List;
 import org.eclipse.esmf.metamodel.Characteristic;
 
 /**
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface StructuredValue extends Characteristic {
    /**

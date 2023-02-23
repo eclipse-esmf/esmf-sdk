@@ -21,7 +21,7 @@ import org.eclipse.esmf.metamodel.Constraint;
  * Restricts a string value to a certain encoding.
  * Possible encodings are US-ASCII, ISO-8859-1, UTF-8, UTF-16, UTF-16BE and UTF-16LE.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface EncodingConstraint extends Constraint {
 

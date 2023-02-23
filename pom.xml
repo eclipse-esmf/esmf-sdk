@@ -256,7 +256,7 @@
          </dependency>
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
-            <artifactId>bamm-cli</artifactId>
+            <artifactId>samm-cli</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>

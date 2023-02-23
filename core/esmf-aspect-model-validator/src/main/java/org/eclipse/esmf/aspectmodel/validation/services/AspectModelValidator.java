@@ -179,7 +179,7 @@ public class AspectModelValidator {
             return List.of( new ProcessingViolation(
                   "Validation succeeded, but an error was found while processing the model. "
                         + "This indicates an error in the model validation; please consider reporting this issue including the model "
-                        + "at https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues -- "
+                        + "at https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/issues -- "
                         + buildCauseMessage( modelElements.getCause() ), modelElements.getCause() ) );
          }
       }
@@ -249,7 +249,7 @@ public class AspectModelValidator {
       } else {
          errorMessage = "Validation succeeded, but an error was found while processing the model. "
                + "This indicates an error in the model validation; please consider reporting this issue including the model "
-               + "at https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model/issues -- "
+               + "at https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/issues -- "
                + buildCauseMessage( cause );
       }
 

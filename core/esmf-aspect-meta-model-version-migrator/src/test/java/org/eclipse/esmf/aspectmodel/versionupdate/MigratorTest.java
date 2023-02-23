@@ -68,7 +68,7 @@ public class MigratorTest extends MetaModelVersions {
 
       Assertions.assertThat( rewrittenModel.getMetaModelVersion() ).isEqualTo( VersionNumber.parse( KnownVersion.getLatest().toVersionString() ) );
       final Model model = rewrittenModel.getRawModel();
-      assertThat( model.getNsPrefixURI( "bamm" ) ).contains( KnownVersion.getLatest().toVersionString() );
+      assertThat( model.getNsPrefixURI( "samm" ) ).contains( KnownVersion.getLatest().toVersionString() );
 
       if ( metaModelVersion.equals( KnownVersion.getLatest() ) ) {
          return;
@@ -88,7 +88,7 @@ public class MigratorTest extends MetaModelVersions {
    }
 
    @Test
-   public void testMigrateUnitsToBammNamespace() {
+   public void testMigrateUnitsToSammNamespace() {
       final VersionedModel oldModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_UNIT, KnownVersion.SAMM_1_0_0 );
       final Model rewrittenModel = migratorService.updateMetaModelVersion( oldModel ).get().getRawModel();
       final SAMM samm = new SAMM( KnownVersion.SAMM_2_0_0 );
@@ -104,16 +104,16 @@ public class MigratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testRemoveBammName( final KnownVersion metaModelVersion ) {
+   public void testRemoveSammName( final KnownVersion metaModelVersion ) {
       final SAMM samm = new SAMM( metaModelVersion );
       final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
 
-      final String bammNameUrn = samm.getNamespace() + "name";
-      final List<Statement> bammNameStatements = rewrittenModel.getModel().listStatements().toList().stream()
-            .filter( statement -> statement.getPredicate().getURI().equals( bammNameUrn ) )
+      final String sammNameUrn = samm.getNamespace() + "name";
+      final List<Statement> sammNameStatements = rewrittenModel.getModel().listStatements().toList().stream()
+            .filter( statement -> statement.getPredicate().getURI().equals( sammNameUrn ) )
             .collect( Collectors.toList() );
-      assertThat( bammNameStatements ).isEmpty();
+      assertThat( sammNameStatements ).isEmpty();
    }
 
    private Set<String> getAllUris( final Model model ) {

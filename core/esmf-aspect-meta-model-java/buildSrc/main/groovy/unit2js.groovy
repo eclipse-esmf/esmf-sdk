@@ -35,7 +35,7 @@ def generateJs(List quantityKinds, List units) {
  * SPDX-License-Identifier: MPL-2.0
  */
 
-var bamm = {
+var samm = {
     quantityKinds: {
         ${joinedQuantityKinds}
     },
@@ -64,7 +64,7 @@ QueryExecutionFactory.create(new File("${project.basedir}/buildSrc/main/resource
     def symbol = unit.get("symbol") == null ? "null" : "\"" + unit.get("symbol") + "\""
     def code = unit.get("code") == null ? "null" : "\"" + unit.get("code") + "\""
     def referenceUnitName = unit.get("referenceUnitName") == null ? "null" :
-            "function() { return bamm.units[\"" + unit.get("referenceUnitName").asLiteral().toString() + "\"] }"
+            "function() { return samm.units[\"" + unit.get("referenceUnitName").asLiteral().toString() + "\"] }"
     def conversionFactor = unit.get("conversionFactor") == null ? "null" :
             "\"" + unit.get("conversionFactor").asLiteral().toString() + "\""
     def quantityKindsString = unit.get("quantityKinds") == null ? "null" :
@@ -78,8 +78,8 @@ QueryExecutionFactory.create(new File("${project.basedir}/buildSrc/main/resource
 
 def path = "${project.basedir}/src-gen/main/resources"
 new File(path).mkdirs()
-System.out.println("Writing generated source file: " + path + "/bamm-units.js")
-Paths.get(path).resolve("bamm-units.js")
+System.out.println("Writing generated source file: " + path + "/samm-units.js")
+Paths.get(path).resolve("samm-units.js")
         .toFile()
         .newWriter(StandardCharsets.UTF_8.name())
         .withWriter { w -> w << generateJs(quantityKinds, units) }

@@ -21,7 +21,7 @@ import org.eclipse.esmf.metamodel.CollectionValue;
 /**
  * A group of values which may be either of a simple or complex type. The values may be duplicated and are not ordered.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 public interface Collection extends Characteristic {
 
@@ -38,7 +38,7 @@ public interface Collection extends Characteristic {
    /**
     * @return {@link Optional} containing the {@link Characteristic} describing the elements of the Collection
     *
-    * @since BAMM 1.0.0
+    * @since SAMM 1.0.0
     */
    default Optional<Characteristic> getElementCharacteristic() {
       return Optional.empty();

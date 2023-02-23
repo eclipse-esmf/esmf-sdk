@@ -16,7 +16,7 @@ package org.eclipse.esmf.metamodel;
 /**
  * Represents a domain specific concept.
  *
- * @since BAMM 1.0.0
+ * @since SAMM 1.0.0
  */
 @SuppressWarnings( "squid:S3655" ) // Entity should always have a URN
 public interface Entity extends ComplexType {
