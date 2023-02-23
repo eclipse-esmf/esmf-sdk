@@ -10,29 +10,29 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithUsedAndUnusedEnumeration a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithUsedAndUnusedEnumeration a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic :UsedTestEnumeration .
+:testProperty a samm:Property ;
+   samm:characteristic :UsedTestEnumeration .
 
-:UsedTestEnumeration a bamm-c:Enumeration ;
-   bamm:preferredName "Used Test Enumeration"@en ;
-   bamm:description "Used Test Enumeration"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm-c:values ( "foo" "bar" ) ;
-   bamm:dataType xsd:string .
+:UsedTestEnumeration a samm-c:Enumeration ;
+   samm:preferredName "Used Test Enumeration"@en ;
+   samm:description "Used Test Enumeration"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm-c:values ( "foo" "bar" ) ;
+   samm:dataType xsd:string .
 
-:UnusedTestEnumeration a bamm-c:Enumeration ;
-   bamm:preferredName "Unused Test Enumeration"@en ;
-   bamm:description "Unused Test Enumeration"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm-c:values ( "foo" "bar" ) ;
-   bamm:dataType xsd:string .
+:UnusedTestEnumeration a samm-c:Enumeration ;
+   samm:preferredName "Unused Test Enumeration"@en ;
+   samm:description "Unused Test Enumeration"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm-c:values ( "foo" "bar" ) ;
+   samm:dataType xsd:string .

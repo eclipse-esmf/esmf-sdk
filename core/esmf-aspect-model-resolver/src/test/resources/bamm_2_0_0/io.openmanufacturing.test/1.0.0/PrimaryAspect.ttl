@@ -1,20 +1,20 @@
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>.
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>.
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>.
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>.
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>.
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>.
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#>.
 
-:PrimaryAspect a bamm:Aspect ;
-    bamm:properties ( :property1 ) ;
-    bamm:operations () ;
-    bamm:events () .
+:PrimaryAspect a samm:Aspect ;
+    samm:properties ( :property1 ) ;
+    samm:operations () ;
+    samm:events () .
 
-:property1 a bamm:Property ;
-    bamm:characteristic :MyChar .
+:property1 a samm:Property ;
+    samm:characteristic :MyChar .
 
-:MyChar a bamm-c:Enumeration ;
-    bamm:dataType xsd:string ;
-    bamm-c:values ( "true" "false" ) .
+:MyChar a samm-c:Enumeration ;
+    samm:dataType xsd:string ;
+    samm-c:values ( "true" "false" ) .

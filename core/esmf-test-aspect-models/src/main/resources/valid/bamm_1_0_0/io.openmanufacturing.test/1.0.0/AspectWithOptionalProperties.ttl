@@ -10,27 +10,27 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithOptionalProperties a bamm:Aspect ;
-   bamm:name "AspectWithOptionalProperties" ;
-   bamm:properties ( [ bamm:property :numberProperty; bamm:optional true ] :timestampProperty ) ;
-   bamm:operations ( ) .
+:AspectWithOptionalProperties a samm:Aspect ;
+   samm:name "AspectWithOptionalProperties" ;
+   samm:properties ( [ samm:property :numberProperty; samm:optional true ] :timestampProperty ) ;
+   samm:operations ( ) .
 
-:timestampProperty a bamm:Property ;
-   bamm:name "timestampProperty" ;
-   bamm:characteristic bamm-c:Timestamp .
+:timestampProperty a samm:Property ;
+   samm:name "timestampProperty" ;
+   samm:characteristic samm-c:Timestamp .
 
-:numberProperty a bamm:Property ;
-   bamm:name "numberProperty" ;
-   bamm:characteristic [
-     a bamm-c:Quantifiable ;
-     bamm:name "SomeLength" ;
-     bamm:dataType xsd:unsignedLong ;
-     bamm-c:unit unit:metre
+:numberProperty a samm:Property ;
+   samm:name "numberProperty" ;
+   samm:characteristic [
+     a samm-c:Quantifiable ;
+     samm:name "SomeLength" ;
+     samm:dataType xsd:unsignedLong ;
+     samm-c:unit unit:metre
    ] .
 

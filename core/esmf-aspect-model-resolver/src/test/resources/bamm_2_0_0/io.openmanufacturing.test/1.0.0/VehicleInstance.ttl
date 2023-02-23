@@ -9,14 +9,14 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
 
-:VehicleInstance a bamm:Entity ;
-   bamm:properties ( :modelYear :model ) .
+:VehicleInstance a samm:Entity ;
+   samm:properties ( :modelYear :model ) .
 
-:modelYear a bamm:Property ;
-   bamm:characteristic :ModelYear .
+:modelYear a samm:Property ;
+   samm:characteristic :ModelYear .
 
-:model a bamm:Property ;
-   bamm:characteristic :ModelCode .
+:model a samm:Property ;
+   samm:characteristic :ModelCode .

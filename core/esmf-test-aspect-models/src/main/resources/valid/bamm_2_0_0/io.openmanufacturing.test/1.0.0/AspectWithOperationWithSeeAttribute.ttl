@@ -11,27 +11,27 @@
 
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 
-:AspectWithOperationWithSeeAttribute a bamm:Aspect ;
-   bamm:properties ( ) ;
-   bamm:operations ( :testOperation :testOperationTwo ) .
+:AspectWithOperationWithSeeAttribute a samm:Aspect ;
+   samm:properties ( ) ;
+   samm:operations ( :testOperation :testOperationTwo ) .
 
-:testOperation a bamm:Operation ;
-   bamm:preferredName "Test Operation"@en ;
-   bamm:description "Test Operation"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:input ( ) ;
-   bamm:output :output .
+:testOperation a samm:Operation ;
+   samm:preferredName "Test Operation"@en ;
+   samm:description "Test Operation"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:input ( ) ;
+   samm:output :output .
 
-:testOperationTwo a bamm:Operation ;
-   bamm:preferredName "Test Operation Two"@en ;
-   bamm:description "Test Operation Two"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:input ( ) ;
-   bamm:output :output .
+:testOperationTwo a samm:Operation ;
+   samm:preferredName "Test Operation Two"@en ;
+   samm:description "Test Operation Two"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:input ( ) ;
+   samm:output :output .
 
-:output a bamm:Property ;
-   bamm:characteristic bamm-c:Text .
+:output a samm:Property ;
+   samm:characteristic samm-c:Text .

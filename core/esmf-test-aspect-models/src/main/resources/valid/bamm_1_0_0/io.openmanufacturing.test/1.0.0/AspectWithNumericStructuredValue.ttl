@@ -10,47 +10,47 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
-:AspectWithNumericStructuredValue a bamm:Aspect ;
-   bamm:name "AspectWithNumericStructuredValue" ;
-   bamm:properties ( :date ) ;
-   bamm:operations ( ) .
+:AspectWithNumericStructuredValue a samm:Aspect ;
+   samm:name "AspectWithNumericStructuredValue" ;
+   samm:properties ( :date ) ;
+   samm:operations ( ) .
 
-:date a bamm:Property ;
-   bamm:name "date" ;
-   bamm:exampleValue "2019-09-27"^^xsd:date ;
-   bamm:characteristic :StructuredDate .
+:date a samm:Property ;
+   samm:name "date" ;
+   samm:exampleValue "2019-09-27"^^xsd:date ;
+   samm:characteristic :StructuredDate .
 
-:StructuredDate a bamm-c:StructuredValue ;
-   bamm:name "StructuredDate" ;
-   bamm:dataType xsd:date ;
-   bamm-c:deconstructionRule "(\\d{4})-(\\d{2})-(\\d{2})" ;
-   bamm-c:elements ( :year "-" :month "-" :day ) .
+:StructuredDate a samm-c:StructuredValue ;
+   samm:name "StructuredDate" ;
+   samm:dataType xsd:date ;
+   samm-c:deconstructionRule "(\\d{4})-(\\d{2})-(\\d{2})" ;
+   samm-c:elements ( :year "-" :month "-" :day ) .
 
-:year a bamm:Property ;
-   bamm:name "year" ;
-   bamm:characteristic :Year .
+:year a samm:Property ;
+   samm:name "year" ;
+   samm:characteristic :Year .
 
-:month a bamm:Property ;
-   bamm:name "month" ;
-   bamm:characteristic :Month .
+:month a samm:Property ;
+   samm:name "month" ;
+   samm:characteristic :Month .
 
-:day a bamm:Property ;
-   bamm:name "day" ;
-   bamm:characteristic :Day .
+:day a samm:Property ;
+   samm:name "day" ;
+   samm:characteristic :Day .
 
-:Year a bamm:Characteristic ;
-   bamm:name "Year" ;
-   bamm:dataType xsd:unsignedInt .
+:Year a samm:Characteristic ;
+   samm:name "Year" ;
+   samm:dataType xsd:unsignedInt .
 
-:Month a bamm:Characteristic ;
-   bamm:name "Month" ;
-   bamm:dataType xsd:unsignedInt .
+:Month a samm:Characteristic ;
+   samm:name "Month" ;
+   samm:dataType xsd:unsignedInt .
 
-:Day a bamm:Characteristic ;
-   bamm:name "Day" ;
-   bamm:dataType xsd:unsignedInt .
+:Day a samm:Characteristic ;
+   samm:name "Day" ;
+   samm:dataType xsd:unsignedInt .

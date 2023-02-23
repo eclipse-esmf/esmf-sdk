@@ -10,35 +10,35 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
-:AspectWithEitherWithoutSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithEitherWithoutSeeAttribute" ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEitherWithoutSeeAttribute a samm:Aspect ;
+   samm:name "AspectWithEitherWithoutSeeAttribute" ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestEither .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestEither .
 
-:TestEither a bamm-c:Either ;
-   bamm:name "TestEither" ;
-   bamm:preferredName "Test Either"@en ;
-   bamm:description "Test Either Characteristic"@en ;
-   bamm-c:left :LeftType ;
-   bamm-c:right :RightType .
+:TestEither a samm-c:Either ;
+   samm:name "TestEither" ;
+   samm:preferredName "Test Either"@en ;
+   samm:description "Test Either Characteristic"@en ;
+   samm-c:left :LeftType ;
+   samm-c:right :RightType .
 
-:LeftType a bamm:Characteristic ;
-   bamm:name "LeftType" ;
-   bamm:preferredName "Left Type"@en ;
-   bamm:description "Left Type Characteristic"@en ;
-   bamm:dataType xsd:float .
+:LeftType a samm:Characteristic ;
+   samm:name "LeftType" ;
+   samm:preferredName "Left Type"@en ;
+   samm:description "Left Type Characteristic"@en ;
+   samm:dataType xsd:float .
 
-:RightType a bamm:Characteristic ;
-   bamm:name "RightType" ;
-   bamm:preferredName "Right Type"@en ;
-   bamm:description "Right Type Characteristic"@en ;
-   bamm:dataType xsd:string .
+:RightType a samm:Characteristic ;
+   samm:name "RightType" ;
+   samm:preferredName "Right Type"@en ;
+   samm:description "Right Type Characteristic"@en ;
+   samm:dataType xsd:string .

@@ -10,21 +10,21 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:AspectWithEnumAndOptionalEnumProperties a bamm:Aspect ;
-   bamm:properties ( :testProperty [ bamm:property :optionalTestProperty ; bamm:optional "true"^^xsd:boolean ] ) ;
-   bamm:operations ( ) .
+:AspectWithEnumAndOptionalEnumProperties a samm:Aspect ;
+   samm:properties ( :testProperty [ samm:property :optionalTestProperty ; samm:optional "true"^^xsd:boolean ] ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic :TestEnumeration .
+:testProperty a samm:Property ;
+   samm:characteristic :TestEnumeration .
 
-:optionalTestProperty a bamm:Property ;
-   bamm:characteristic :TestEnumeration .
+:optionalTestProperty a samm:Property ;
+   samm:characteristic :TestEnumeration .
 
-:TestEnumeration a bamm-c:Enumeration ;
-   bamm:dataType xsd:integer ;
-   bamm-c:values ( 1 2 3 ) .
+:TestEnumeration a samm-c:Enumeration ;
+   samm:dataType xsd:integer ;
+   samm-c:values ( 1 2 3 ) .

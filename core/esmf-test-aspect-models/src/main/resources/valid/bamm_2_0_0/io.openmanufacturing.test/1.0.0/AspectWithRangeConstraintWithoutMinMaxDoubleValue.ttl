@@ -10,38 +10,38 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithRangeConstraintWithoutMinMaxDoubleValue a bamm:Aspect ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:preferredName "Test Aspekt"@de ;
-   bamm:properties ( :doubleProperty ) ;
-   bamm:operations ( ) .
+:AspectWithRangeConstraintWithoutMinMaxDoubleValue a samm:Aspect ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:preferredName "Test Aspekt"@de ;
+   samm:properties ( :doubleProperty ) ;
+   samm:operations ( ) .
 
-:doubleProperty a bamm:Property ;
-   bamm:preferredName "Test Double Property"@en ;
-   bamm:preferredName "Numerischer Wert"@de ;
-   bamm:description "A property with a numeric value."@en ;
-   bamm:description "Eine Property mit einem numerischen Wert."@de ;
-   bamm:characteristic :TestRangeConstraint .
+:doubleProperty a samm:Property ;
+   samm:preferredName "Test Double Property"@en ;
+   samm:preferredName "Numerischer Wert"@de ;
+   samm:description "A property with a numeric value."@en ;
+   samm:description "Eine Property mit einem numerischen Wert."@de ;
+   samm:characteristic :TestRangeConstraint .
 
-:TestRangeConstraint a bamm-c:Trait ;
-   bamm:preferredName "Test Range Constraint"@en ;
-   bamm:preferredName "Test Range Constraint"@de ;
-   bamm:description "Restricts a numeric value to values between 0 and 100."@en ;
-   bamm:description "Beschränkt einen numerischen Wert auf Werte zwischen 0 und 100."@de ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:upperBoundDefinition bamm-c:OPEN ;
-      bamm-c:lowerBoundDefinition bamm-c:OPEN ;
+:TestRangeConstraint a samm-c:Trait ;
+   samm:preferredName "Test Range Constraint"@en ;
+   samm:preferredName "Test Range Constraint"@de ;
+   samm:description "Restricts a numeric value to values between 0 and 100."@en ;
+   samm:description "Beschränkt einen numerischen Wert auf Werte zwischen 0 und 100."@de ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:upperBoundDefinition samm-c:OPEN ;
+      samm-c:lowerBoundDefinition samm-c:OPEN ;
    ] ;
-   bamm-c:baseCharacteristic :DoubleCharacteristic .
+   samm-c:baseCharacteristic :DoubleCharacteristic .
 
-:DoubleCharacteristic a bamm:Characteristic ;
-   bamm:preferredName "Double Characteristic"@en ;
-   bamm:preferredName "Numerische Charakteristik"@de ;
-   bamm:description "Positive Numbers"@en ;
-   bamm:description "Positive Zahlen"@de ;
-   bamm:dataType xsd:double .
+:DoubleCharacteristic a samm:Characteristic ;
+   samm:preferredName "Double Characteristic"@en ;
+   samm:preferredName "Numerische Charakteristik"@de ;
+   samm:description "Positive Numbers"@en ;
+   samm:description "Positive Zahlen"@de ;
+   samm:dataType xsd:double .

@@ -9,15 +9,15 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
 
-:AspectInPreviousNamespace a bamm:Aspect ;
-   bamm:name "AspectInPreviousNamespace" ;
-   bamm:properties ( :distinctProperty ) ;
-   bamm:operations ( ) .
+:AspectInPreviousNamespace a samm:Aspect ;
+   samm:name "AspectInPreviousNamespace" ;
+   samm:properties ( :distinctProperty ) ;
+   samm:operations ( ) .
 
-:distinctProperty a bamm:Property ;
-   bamm:name "distinctProperty" ;
-   bamm:characteristic bamm-c:Text .
+:distinctProperty a samm:Property ;
+   samm:name "distinctProperty" ;
+   samm:characteristic samm-c:Text .

@@ -9,18 +9,18 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:2.0.0#> .
 @prefix prev: <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
 
-:Test a bamm:Aspect ;
-   bamm:name "Test" ;
-   bamm:preferredName "Test 2.0"@en ;
-   bamm:properties ( prev:distinctProperty ) ;
-   bamm:operations ( ) .
+:Test a samm:Aspect ;
+   samm:name "Test" ;
+   samm:preferredName "Test 2.0"@en ;
+   samm:properties ( prev:distinctProperty ) ;
+   samm:operations ( ) .
 
 # Define the Property here too to make sure we can deal with the same name in multiple namespaces
-:distinctProperty a bamm:Property ;
-   bamm:name "distinctProperty" ;
-   bamm:characteristic bamm-c:Text .
+:distinctProperty a samm:Property ;
+   samm:name "distinctProperty" ;
+   samm:characteristic samm-c:Text .

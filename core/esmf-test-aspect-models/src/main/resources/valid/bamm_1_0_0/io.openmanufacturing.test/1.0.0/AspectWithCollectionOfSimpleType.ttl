@@ -10,20 +10,20 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithCollectionOfSimpleType a bamm:Aspect ;
-   bamm:name "AspectWithCollectionOfSimpleType" ;
-   bamm:properties ( :testList ) ;
-   bamm:operations ( ) .
+:AspectWithCollectionOfSimpleType a samm:Aspect ;
+   samm:name "AspectWithCollectionOfSimpleType" ;
+   samm:properties ( :testList ) ;
+   samm:operations ( ) .
 
-:testList a bamm:Property ;
-   bamm:name "testList" ;
-   bamm:exampleValue "35"^^xsd:int ;
-   bamm:characteristic :IntegerList .
+:testList a samm:Property ;
+   samm:name "testList" ;
+   samm:exampleValue "35"^^xsd:int ;
+   samm:characteristic :IntegerList .
 
-:IntegerList a bamm-c:List ;
-   bamm:name "IntegerList" ;
-   bamm:dataType xsd:int .
+:IntegerList a samm-c:List ;
+   samm:name "IntegerList" ;
+   samm:dataType xsd:int .

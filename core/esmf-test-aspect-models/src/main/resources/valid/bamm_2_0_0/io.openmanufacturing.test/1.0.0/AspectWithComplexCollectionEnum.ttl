@@ -10,88 +10,88 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:units:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithComplexCollectionEnum a bamm:Aspect ;
-   bamm:properties ( :myPropertyOne :myPropertyTwo :myPropertyThree :myPropertyFour ) ;
-   bamm:operations ( ) .
+:AspectWithComplexCollectionEnum a samm:Aspect ;
+   samm:properties ( :myPropertyOne :myPropertyTwo :myPropertyThree :myPropertyFour ) ;
+   samm:operations ( ) .
 
-:myPropertyOne a bamm:Property ;
-   bamm:characteristic :MyEnumerationOne .
+:myPropertyOne a samm:Property ;
+   samm:characteristic :MyEnumerationOne .
 
-:MyEnumerationOne a bamm-c:Enumeration ;
-   bamm:dataType :MyEntityOne ;
-   bamm-c:values ( :entityInstanceOne ) .
+:MyEnumerationOne a samm-c:Enumeration ;
+   samm:dataType :MyEntityOne ;
+   samm-c:values ( :entityInstanceOne ) .
 
-:MyEntityOne a bamm:Entity ;
-   bamm:properties ( :entityPropertyOne ) .
+:MyEntityOne a samm:Entity ;
+   samm:properties ( :entityPropertyOne ) .
 
-:entityPropertyOne a bamm:Property ;
-   bamm:characteristic :ListCharacteristic .
+:entityPropertyOne a samm:Property ;
+   samm:characteristic :ListCharacteristic .
 
-:ListCharacteristic a bamm-c:List ;
-   bamm:dataType xsd:string .
+:ListCharacteristic a samm-c:List ;
+   samm:dataType xsd:string .
 
 :entityInstanceOne a :MyEntityOne ;
    :entityPropertyOne ( "fooOne" "barOne" "bazOne" ) .
 
-:myPropertyTwo a bamm:Property ;
-   bamm:characteristic :MyEnumerationTwo .
+:myPropertyTwo a samm:Property ;
+   samm:characteristic :MyEnumerationTwo .
 
-:MyEnumerationTwo a bamm-c:Enumeration ;
-   bamm:dataType :MyEntityTwo ;
-   bamm-c:values ( :entityInstanceTwo ) .
+:MyEnumerationTwo a samm-c:Enumeration ;
+   samm:dataType :MyEntityTwo ;
+   samm-c:values ( :entityInstanceTwo ) .
 
-:MyEntityTwo a bamm:Entity ;
-   bamm:properties ( :entityPropertyTwo ) .
+:MyEntityTwo a samm:Entity ;
+   samm:properties ( :entityPropertyTwo ) .
 
-:entityPropertyTwo a bamm:Property ;
-   bamm:characteristic :setCharacteristic .
+:entityPropertyTwo a samm:Property ;
+   samm:characteristic :setCharacteristic .
 
-:setCharacteristic a bamm-c:Set ;
-   bamm:dataType xsd:string .
+:setCharacteristic a samm-c:Set ;
+   samm:dataType xsd:string .
 
 :entityInstanceTwo a :MyEntityTwo ;
    :entityPropertyTwo ( "fooTwo" "barTwo" "bazTwo" ) .
 
-:myPropertyThree a bamm:Property ;
-   bamm:characteristic :MyEnumerationThree .
+:myPropertyThree a samm:Property ;
+   samm:characteristic :MyEnumerationThree .
 
-:MyEnumerationThree a bamm-c:Enumeration ;
-   bamm:dataType :MyEntityThree ;
-   bamm-c:values ( :entityInstanceThree ) .
+:MyEnumerationThree a samm-c:Enumeration ;
+   samm:dataType :MyEntityThree ;
+   samm-c:values ( :entityInstanceThree ) .
 
-:MyEntityThree a bamm:Entity ;
-   bamm:properties ( :entityPropertyThree ) .
+:MyEntityThree a samm:Entity ;
+   samm:properties ( :entityPropertyThree ) .
 
-:entityPropertyThree a bamm:Property ;
-   bamm:characteristic :sortedSetCharacteristic .
+:entityPropertyThree a samm:Property ;
+   samm:characteristic :sortedSetCharacteristic .
 
-:sortedSetCharacteristic a bamm-c:SortedSet ;
-   bamm:dataType xsd:string .
+:sortedSetCharacteristic a samm-c:SortedSet ;
+   samm:dataType xsd:string .
 
 :entityInstanceThree a :MyEntityThree ;
    :entityPropertyThree ( "fooThree" "barThree" "bazThree" ) .
 
-:myPropertyFour a bamm:Property ;
-   bamm:characteristic :MyEnumerationFour .
+:myPropertyFour a samm:Property ;
+   samm:characteristic :MyEnumerationFour .
 
-:MyEnumerationFour a bamm-c:Enumeration ;
-   bamm:dataType :MyEntityFour ;
-   bamm-c:values ( :entityInstanceFour ) .
+:MyEnumerationFour a samm-c:Enumeration ;
+   samm:dataType :MyEntityFour ;
+   samm-c:values ( :entityInstanceFour ) .
 
-:MyEntityFour a bamm:Entity ;
-   bamm:properties ( :entityPropertyFour ) .
+:MyEntityFour a samm:Entity ;
+   samm:properties ( :entityPropertyFour ) .
 
-:entityPropertyFour a bamm:Property ;
-   bamm:characteristic :collectionCharacteristic .
+:entityPropertyFour a samm:Property ;
+   samm:characteristic :collectionCharacteristic .
 
-:collectionCharacteristic a bamm-c:Collection ;
-   bamm:dataType xsd:string .
+:collectionCharacteristic a samm-c:Collection ;
+   samm:dataType xsd:string .
 
 :entityInstanceFour a :MyEntityFour ;
    :entityPropertyFour ( "fooFour" "barFour" "bazFour" ) .

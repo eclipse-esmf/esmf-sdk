@@ -10,27 +10,27 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithCollectionsWithElementCharacteristicAndSimpleDataType a bamm:Aspect ;
-   bamm:name "AspectWithCollectionsWithElementCharacteristicAndSimpleDataType" ;
-   bamm:properties ( :testProperty :testPropertyTwo ) ;
-   bamm:operations ( ) .
+:AspectWithCollectionsWithElementCharacteristicAndSimpleDataType a samm:Aspect ;
+   samm:name "AspectWithCollectionsWithElementCharacteristicAndSimpleDataType" ;
+   samm:properties ( :testProperty :testPropertyTwo ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestCollection .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestCollection .
 
-:testPropertyTwo a bamm:Property ;
-   bamm:name "testPropertyTwo" ;
-   bamm:characteristic :TestCollectionTwo .
+:testPropertyTwo a samm:Property ;
+   samm:name "testPropertyTwo" ;
+   samm:characteristic :TestCollectionTwo .
 
-:TestCollection a bamm-c:Collection ;
-   bamm:name "TestCollection" ;
-   bamm:dataType xsd:string .
+:TestCollection a samm-c:Collection ;
+   samm:name "TestCollection" ;
+   samm:dataType xsd:string .
 
-:TestCollectionTwo a bamm-c:Collection ;
-   bamm:name "TestCollectionTwo" ;
-   bamm-c:elementCharacteristic bamm-c:Text .
+:TestCollectionTwo a samm-c:Collection ;
+   samm:name "TestCollectionTwo" ;
+   samm-c:elementCharacteristic samm-c:Text .

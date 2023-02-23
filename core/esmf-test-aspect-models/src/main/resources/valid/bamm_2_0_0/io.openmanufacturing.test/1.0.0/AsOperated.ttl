@@ -10,68 +10,68 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AsOperated a bamm:Aspect ;
-   bamm:preferredName "As Operated"@en ;
-   bamm:description "The As Operated Aspect provides the latest values for all relevant parameters provided by the SOFC generation FCS04 and FCS05 during operation."@en ;
-   bamm:properties ( :timestamp :parameters ) ;
-   bamm:operations () .
+:AsOperated a samm:Aspect ;
+   samm:preferredName "As Operated"@en ;
+   samm:description "The As Operated Aspect provides the latest values for all relevant parameters provided by the SOFC generation FCS04 and FCS05 during operation."@en ;
+   samm:properties ( :timestamp :parameters ) ;
+   samm:operations () .
 
-:timestamp a bamm:Property ;
-   bamm:preferredName "Timestamp"@en ;
-   bamm:description "The point in time the values were sent by the SOFC unit."@en ;
-   bamm:characteristic bamm-c:Timestamp .
+:timestamp a samm:Property ;
+   samm:preferredName "Timestamp"@en ;
+   samm:description "The point in time the values were sent by the SOFC unit."@en ;
+   samm:characteristic samm-c:Timestamp .
 
-:parameters a bamm:Property ;
-   bamm:preferredName "Parameters"@en ;
-   bamm:characteristic [
-      a bamm-c:SingleEntity ;
-      bamm:dataType :AllValues
+:parameters a samm:Property ;
+   samm:preferredName "Parameters"@en ;
+   samm:characteristic [
+      a samm-c:SingleEntity ;
+      samm:dataType :AllValues
    ] .
 
-:AllValues a bamm:Entity ;
-   bamm:properties ( :system :stackOne :stackTwo :airGasPath ) .
+:AllValues a samm:Entity ;
+   samm:properties ( :system :stackOne :stackTwo :airGasPath ) .
 
-:system a bamm:Property ;
-   bamm:preferredName "System"@en ;
-   bamm:description "Defines all system relevant parameters."@en ;
-   bamm:characteristic [
-      a bamm-c:SingleEntity ;
-      bamm:preferredName "System Parameters Entity"@en ;
-      bamm:dataType :SystemParameters
+:system a samm:Property ;
+   samm:preferredName "System"@en ;
+   samm:description "Defines all system relevant parameters."@en ;
+   samm:characteristic [
+      a samm-c:SingleEntity ;
+      samm:preferredName "System Parameters Entity"@en ;
+      samm:dataType :SystemParameters
    ] .
 
-:stackOne a bamm:Property ;
-   bamm:preferredName "Stack One"@en ;
-   bamm:description "Defines all relevant parameters for stack one."@en ;
-   bamm:characteristic :StackParametersEntity .
+:stackOne a samm:Property ;
+   samm:preferredName "Stack One"@en ;
+   samm:description "Defines all relevant parameters for stack one."@en ;
+   samm:characteristic :StackParametersEntity .
 
-:stackTwo a bamm:Property ;
-   bamm:preferredName "Stack Two"@en ;
-   bamm:description "Defines all relevant parameters for stack two."@en ;
-   bamm:characteristic :StackParametersEntity .
+:stackTwo a samm:Property ;
+   samm:preferredName "Stack Two"@en ;
+   samm:description "Defines all relevant parameters for stack two."@en ;
+   samm:characteristic :StackParametersEntity .
 
-:airGasPath a bamm:Property ;
-   bamm:preferredName "Air-Gas-Path"@en ;
-   bamm:description "Defines all air and gas flow relevant parameters."@en ;
-   bamm:characteristic [
-      a bamm-c:SingleEntity ;
-      bamm:preferredName "Air-Gas-Path Parameters Entity"@en ;
-      bamm:dataType :AirGasPathParameters
+:airGasPath a samm:Property ;
+   samm:preferredName "Air-Gas-Path"@en ;
+   samm:description "Defines all air and gas flow relevant parameters."@en ;
+   samm:characteristic [
+      a samm-c:SingleEntity ;
+      samm:preferredName "Air-Gas-Path Parameters Entity"@en ;
+      samm:dataType :AirGasPathParameters
    ] .
 
-:StackParametersEntity a bamm-c:SingleEntity ;
-   bamm:preferredName "Stack Parameters Entity"@en ;
-   bamm:dataType :StackParameters .
+:StackParametersEntity a samm-c:SingleEntity ;
+   samm:preferredName "Stack Parameters Entity"@en ;
+   samm:dataType :StackParameters .
 
-:SystemParameters a bamm:Entity ;
-   bamm:preferredName "System Parameters"@en ;
-   bamm:properties ( :id
+:SystemParameters a samm:Entity ;
+   samm:preferredName "System Parameters"@en ;
+   samm:properties ( :id
                      :procedureAndStepIdentification
                      :housingTemperature
                      :housingPressure
@@ -89,17 +89,17 @@
                      :dcPower
                      :runtime ) .
 
-:StackParameters a bamm:Entity ;
-   bamm:preferredName "Stack Parameters"@en ;
-   bamm:properties ( :inletAirTemperature
+:StackParameters a samm:Entity ;
+   samm:preferredName "Stack Parameters"@en ;
+   samm:properties ( :inletAirTemperature
                      :outletAirTemperature
                      :anodeInletGasTemperature
                      :voltage
                      :cellVoltage ) .
 
-:AirGasPathParameters a bamm:Entity ;
-   bamm:preferredName "Air-Gas-Path Parameters"@en ;
-   bamm:properties ( :fuelGasFlowRate
+:AirGasPathParameters a samm:Entity ;
+   samm:preferredName "Air-Gas-Path Parameters"@en ;
+   samm:properties ( :fuelGasFlowRate
                      :mainAirFlowRate
                      :airCoolingFlowRate
                      :bypassAirFlowRate
@@ -114,425 +114,425 @@
                      :recirculationFlowRate ) .
 
 #Properties for :SystemParameters
-:id a bamm:Property ;
-   bamm:preferredName "Id"@en ;
-   bamm:description "The identifier of the SOFC unit."@en ;
-   bamm:characteristic bamm-c:Text .
+:id a samm:Property ;
+   samm:preferredName "Id"@en ;
+   samm:description "The identifier of the SOFC unit."@en ;
+   samm:characteristic samm-c:Text .
 
-:procedureAndStepIdentification a bamm:Property ;
-   bamm:preferredName "Procedure And Step Identification"@en ;
-   bamm:description "The identification code for the procedure and execution step in which the Fuel Cell finds itself."@en ;
-   bamm:characteristic [
-      a bamm-c:Enumeration ;
-      bamm:preferredName "Procedure And Step Number"@en ;
-      bamm:description "Defines the codes which represent the state of the system."@en ;
-      bamm:dataType :ProcedureAndStepNumber ;
-      bamm-c:values ( :Code101 :Code102 :Code103 :Code104 :Code105 :Code106 :Code107 :Code200 :Code300 :Code301 :Code302 :Code303 :Code304
+:procedureAndStepIdentification a samm:Property ;
+   samm:preferredName "Procedure And Step Identification"@en ;
+   samm:description "The identification code for the procedure and execution step in which the Fuel Cell finds itself."@en ;
+   samm:characteristic [
+      a samm-c:Enumeration ;
+      samm:preferredName "Procedure And Step Number"@en ;
+      samm:description "Defines the codes which represent the state of the system."@en ;
+      samm:dataType :ProcedureAndStepNumber ;
+      samm-c:values ( :Code101 :Code102 :Code103 :Code104 :Code105 :Code106 :Code107 :Code200 :Code300 :Code301 :Code302 :Code303 :Code304
          :Code305 :Code400 :Code401 :Code500 :Code501 :Code502 :Code503 :Code504 :Code505 :Code506 :Code507 :Code508 :Code509 :Code510
 		 :Code700 :Code701 :Code702 :Code703 :Code800 )
    ] .
 
-:housingTemperature a bamm:Property ;
-   bamm:preferredName "Housing Temperature"@en ;
-   bamm:description "The temperature within the system."@en ;
-   bamm:characteristic :TemperatureRange .
+:housingTemperature a samm:Property ;
+   samm:preferredName "Housing Temperature"@en ;
+   samm:description "The temperature within the system."@en ;
+   samm:characteristic :TemperatureRange .
 
-:housingPressure a bamm:Property ;
-   bamm:preferredName "Housing Pressure"@en ;
-   bamm:description "The pressure within the system."@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "Housing Pressure Range"@en ;
-      bamm-c:baseCharacteristic :Pressure ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "800"^^xsd:float ;
-         bamm-c:maxValue "1200"^^xsd:float ;
+:housingPressure a samm:Property ;
+   samm:preferredName "Housing Pressure"@en ;
+   samm:description "The pressure within the system."@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "Housing Pressure Range"@en ;
+      samm-c:baseCharacteristic :Pressure ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "800"^^xsd:float ;
+         samm-c:maxValue "1200"^^xsd:float ;
       ]
    ] .
 
-:currentAtPositivePole a bamm:Property ;
-   bamm:preferredName "Current At Positive Pole"@en ;
-   bamm:description "The stack current measured at the positive pole."@en ;
-   bamm:characteristic :CurrentRange .
+:currentAtPositivePole a samm:Property ;
+   samm:preferredName "Current At Positive Pole"@en ;
+   samm:description "The stack current measured at the positive pole."@en ;
+   samm:characteristic :CurrentRange .
 
-:currentAtNegativePole a bamm:Property ;
-   bamm:preferredName "Current At Negative Pole"@en ;
-   bamm:description "The stack current measured at the negative pole."@en ;
-   bamm:characteristic :CurrentRange .
+:currentAtNegativePole a samm:Property ;
+   samm:preferredName "Current At Negative Pole"@en ;
+   samm:description "The stack current measured at the negative pole."@en ;
+   samm:characteristic :CurrentRange .
 
-:faultCurrent a bamm:Property ;
-   bamm:preferredName "Fault Current"@en ;
-   bamm:description "The fault current measured on the earth potential."@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "Current Fault Range"@en ;
-      bamm:description "Defines that the fault current must be between 0 and 500 milliampere."@en ;
-      bamm-c:baseCharacteristic [
-         a bamm-c:Measurement ;
-         bamm:preferredName "Current Fault"@en ;
-         bamm:description "Current measured in milliampere."@en ;
-         bamm:dataType xsd:float ;
-         bamm-c:unit unit:milliampere
+:faultCurrent a samm:Property ;
+   samm:preferredName "Fault Current"@en ;
+   samm:description "The fault current measured on the earth potential."@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "Current Fault Range"@en ;
+      samm:description "Defines that the fault current must be between 0 and 500 milliampere."@en ;
+      samm-c:baseCharacteristic [
+         a samm-c:Measurement ;
+         samm:preferredName "Current Fault"@en ;
+         samm:description "Current measured in milliampere."@en ;
+         samm:dataType xsd:float ;
+         samm-c:unit unit:milliampere
       ] ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "0"^^xsd:float ;
-         bamm-c:maxValue "500"^^xsd:float ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "0"^^xsd:float ;
+         samm-c:maxValue "500"^^xsd:float ;
       ]
    ] .
 
-:acPower a bamm:Property ;
-   bamm:preferredName "AC Power"@en ;
-   bamm:description "The amount generated AC power."@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "AC Power Range"@en ;
-      bamm:description "Defines that the power measurements taken within the fuel cell must have a value between 0 and 13 kilowatt."@en ;
-      bamm-c:baseCharacteristic :Power ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "0"^^xsd:float ;
-         bamm-c:maxValue "13"^^xsd:float ;
+:acPower a samm:Property ;
+   samm:preferredName "AC Power"@en ;
+   samm:description "The amount generated AC power."@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "AC Power Range"@en ;
+      samm:description "Defines that the power measurements taken within the fuel cell must have a value between 0 and 13 kilowatt."@en ;
+      samm-c:baseCharacteristic :Power ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "0"^^xsd:float ;
+         samm-c:maxValue "13"^^xsd:float ;
       ]
    ] .
 
-:stackAirUtilization a bamm:Property ;
-   bamm:preferredName "Stack Air Utilization"@en ;
-   bamm:description "Shows how efficiently the fuel cell uses the available air."@en ;
-   bamm:characteristic :PercentRange .
+:stackAirUtilization a samm:Property ;
+   samm:preferredName "Stack Air Utilization"@en ;
+   samm:description "Shows how efficiently the fuel cell uses the available air."@en ;
+   samm:characteristic :PercentRange .
 
-:stackFuelUtilization a bamm:Property ;
-   bamm:preferredName "Stack Fuel Utilization"@en ;
-   bamm:description "Shows how efficiently the stacks use the available fuel."@en ;
-   bamm:characteristic :PercentRange .
+:stackFuelUtilization a samm:Property ;
+   samm:preferredName "Stack Fuel Utilization"@en ;
+   samm:description "Shows how efficiently the stacks use the available fuel."@en ;
+   samm:characteristic :PercentRange .
 
-:stackCurrent a bamm:Property ;
-   bamm:preferredName "Stack Current"@en ;
-   bamm:description "The current produced by the stacks."@en ;
-   bamm:characteristic :CurrentRange .
+:stackCurrent a samm:Property ;
+   samm:preferredName "Stack Current"@en ;
+   samm:description "The current produced by the stacks."@en ;
+   samm:characteristic :CurrentRange .
 
-:anodeOffgasOutletTemperature a bamm:Property ;
-   bamm:preferredName "Anode Offgas Outlet Temperature"@en ;
-   bamm:description "The temperature of the offgas measured at the anode outlet."@en ;
-   bamm:characteristic :TemperatureRange .
+:anodeOffgasOutletTemperature a samm:Property ;
+   samm:preferredName "Anode Offgas Outlet Temperature"@en ;
+   samm:description "The temperature of the offgas measured at the anode outlet."@en ;
+   samm:characteristic :TemperatureRange .
 
-:ocRatioAnodeInlet a bamm:Property ;
-   bamm:preferredName "O/C Ratio Anode Inlet"@en ;
-   bamm:description "The ratio of oxygen and carbon in the gas at the anode inlet."@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "Element Ratio Range"@en ;
-      bamm-c:baseCharacteristic [
-         a bamm-c:Measurement ;
-         bamm:preferredName "Element Ratio"@en ;
-         bamm:description "A measurement which depicts the ratio between to elements in a gas."@en ;
-         bamm:dataType xsd:float ;
-         bamm-c:unit :molePerMole
+:ocRatioAnodeInlet a samm:Property ;
+   samm:preferredName "O/C Ratio Anode Inlet"@en ;
+   samm:description "The ratio of oxygen and carbon in the gas at the anode inlet."@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "Element Ratio Range"@en ;
+      samm-c:baseCharacteristic [
+         a samm-c:Measurement ;
+         samm:preferredName "Element Ratio"@en ;
+         samm:description "A measurement which depicts the ratio between to elements in a gas."@en ;
+         samm:dataType xsd:float ;
+         samm-c:unit :molePerMole
       ] ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "0"^^xsd:float ;
-         bamm-c:maxValue "1"^^xsd:float ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "0"^^xsd:float ;
+         samm-c:maxValue "1"^^xsd:float ;
       ]
    ] .
 
-:acEfficiency a bamm:Property ;
-   bamm:preferredName "AC Efficiency"@en ;
-   bamm:description "The efficiency with which the fuel cell is generating AC power."@en ;
-   bamm:characteristic :PercentRange .
+:acEfficiency a samm:Property ;
+   samm:preferredName "AC Efficiency"@en ;
+   samm:description "The efficiency with which the fuel cell is generating AC power."@en ;
+   samm:characteristic :PercentRange .
 
-:fuelUtilization a bamm:Property ;
-   bamm:preferredName "Fuel Utilization"@en ;
-   bamm:description "Shows how efficiently the fuel cell uses the available fuel."@en ;
-   bamm:characteristic :PercentRange .
+:fuelUtilization a samm:Property ;
+   samm:preferredName "Fuel Utilization"@en ;
+   samm:description "Shows how efficiently the fuel cell uses the available fuel."@en ;
+   samm:characteristic :PercentRange .
 
-:dcPower a bamm:Property ;
-   bamm:preferredName "DC Power"@en ;
-   bamm:description "The amount generated DC power."@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "DC Power Range"@en ;
-      bamm:description "Defines that the power measurements taken for the stacks must have a value between 0 and 15 kilowatt."@en ;
-      bamm-c:baseCharacteristic :Power ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "0"^^xsd:float ;
-         bamm-c:maxValue "15"^^xsd:float ;
+:dcPower a samm:Property ;
+   samm:preferredName "DC Power"@en ;
+   samm:description "The amount generated DC power."@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "DC Power Range"@en ;
+      samm:description "Defines that the power measurements taken for the stacks must have a value between 0 and 15 kilowatt."@en ;
+      samm-c:baseCharacteristic :Power ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "0"^^xsd:float ;
+         samm-c:maxValue "15"^^xsd:float ;
       ]
    ] .
 
-:runtime a bamm:Property ;
-   bamm:preferredName "Runtime"@en ;
-   bamm:description "The total runtime of the unit."@en ;
-   bamm:characteristic [
-      a bamm-c:Measurement ;
-      bamm:preferredName "Hours"@en ;
-      bamm:description "Time measurement in hours."@en ;
-      bamm:dataType xsd:float ;
-      bamm-c:unit unit:hour
+:runtime a samm:Property ;
+   samm:preferredName "Runtime"@en ;
+   samm:description "The total runtime of the unit."@en ;
+   samm:characteristic [
+      a samm-c:Measurement ;
+      samm:preferredName "Hours"@en ;
+      samm:description "Time measurement in hours."@en ;
+      samm:dataType xsd:float ;
+      samm-c:unit unit:hour
    ].
 
 # Properties for :StackParameters
-:inletAirTemperature a bamm:Property ;
-   bamm:preferredName "Inlet Air Temperature"@en ;
-   bamm:description "The air temperature measured at the inlet of the stack."@en ;
-   bamm:characteristic :TemperatureRange .
+:inletAirTemperature a samm:Property ;
+   samm:preferredName "Inlet Air Temperature"@en ;
+   samm:description "The air temperature measured at the inlet of the stack."@en ;
+   samm:characteristic :TemperatureRange .
 
-:outletAirTemperature a bamm:Property ;
-   bamm:preferredName "Outlet Air Temperature"@en ;
-   bamm:description "The air temperature measured at the outlet of the stack."@en ;
-   bamm:characteristic :TemperatureRange .
+:outletAirTemperature a samm:Property ;
+   samm:preferredName "Outlet Air Temperature"@en ;
+   samm:description "The air temperature measured at the outlet of the stack."@en ;
+   samm:characteristic :TemperatureRange .
 
-:anodeInletGasTemperature a bamm:Property ;
-   bamm:preferredName "Anode Inlet Gas Temperature"@en ;
-   bamm:description "The temperature of the offgas measured at the anode outlet."@en ;
-   bamm:characteristic :TemperatureRange .
+:anodeInletGasTemperature a samm:Property ;
+   samm:preferredName "Anode Inlet Gas Temperature"@en ;
+   samm:description "The temperature of the offgas measured at the anode outlet."@en ;
+   samm:characteristic :TemperatureRange .
 
-:voltage a bamm:Property ;
-   bamm:preferredName "Voltage"@en ;
-   bamm:description "The voltage produced by the stack."@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "Stack Voltage Range"@en ;
-      bamm:description "Defines that the voltage measurements taken for a stack must have a value between -0.1 and 325 volt."@en ;
-      bamm-c:baseCharacteristic :Voltage ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "-0.1"^^xsd:float ;
-         bamm-c:maxValue "325"^^xsd:float ;
+:voltage a samm:Property ;
+   samm:preferredName "Voltage"@en ;
+   samm:description "The voltage produced by the stack."@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "Stack Voltage Range"@en ;
+      samm:description "Defines that the voltage measurements taken for a stack must have a value between -0.1 and 325 volt."@en ;
+      samm-c:baseCharacteristic :Voltage ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "-0.1"^^xsd:float ;
+         samm-c:maxValue "325"^^xsd:float ;
       ]
    ] .
 
-:cellVoltage a bamm:Property ;
-   bamm:preferredName "Cell Voltage"@en ;
-   bamm:description "The average voltage produced by all the cells in the stack."@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "Cell Voltage Range"@en ;
-      bamm:description "Defines that the average voltage calculated for the cells in the stack must have a value between -0.1 and 1.3 volt."@en ;
-      bamm-c:baseCharacteristic :Voltage ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "-0.1"^^xsd:float ;
-         bamm-c:maxValue "1.3"^^xsd:float ;
+:cellVoltage a samm:Property ;
+   samm:preferredName "Cell Voltage"@en ;
+   samm:description "The average voltage produced by all the cells in the stack."@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "Cell Voltage Range"@en ;
+      samm:description "Defines that the average voltage calculated for the cells in the stack must have a value between -0.1 and 1.3 volt."@en ;
+      samm-c:baseCharacteristic :Voltage ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "-0.1"^^xsd:float ;
+         samm-c:maxValue "1.3"^^xsd:float ;
       ] ;
    ] .
 
 #Properties for :AirGasPathParameters
-:fuelGasFlowRate a bamm:Property ;
-   bamm:preferredName "Fuel Gas Flow Rate"@en ;
-   bamm:description "The flow rate of the fuel gas, natural gas or hydrogen, in the system."@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "Gas Flow Rate Range"@en ;
-      bamm:description "Defines that the gas flow rate measurements taken within the fuel cell must have a value between 0 and 35 norm litre per minute."@en ;
-      bamm-c:baseCharacteristic :GasFlow ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "5"^^xsd:float ;
-         bamm-c:maxValue "30"^^xsd:float ;
+:fuelGasFlowRate a samm:Property ;
+   samm:preferredName "Fuel Gas Flow Rate"@en ;
+   samm:description "The flow rate of the fuel gas, natural gas or hydrogen, in the system."@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "Gas Flow Rate Range"@en ;
+      samm:description "Defines that the gas flow rate measurements taken within the fuel cell must have a value between 0 and 35 norm litre per minute."@en ;
+      samm-c:baseCharacteristic :GasFlow ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "5"^^xsd:float ;
+         samm-c:maxValue "30"^^xsd:float ;
       ]
    ] .
 
-:mainAirFlowRate a bamm:Property ;
-   bamm:preferredName "Main Air Flow Rate"@en ;
-   bamm:description "The flow rate of the main air flow in the system."@en ;
-   bamm:characteristic :GasFlow .
+:mainAirFlowRate a samm:Property ;
+   samm:preferredName "Main Air Flow Rate"@en ;
+   samm:description "The flow rate of the main air flow in the system."@en ;
+   samm:characteristic :GasFlow .
 
-:airCoolingFlowRate a bamm:Property ;
-   bamm:preferredName "Air Cooling Flow Rate"@en ;
-   bamm:description "The flow rate of the air used to cool the recirculation unit."@en ;
-   bamm:characteristic :GasFlow .
+:airCoolingFlowRate a samm:Property ;
+   samm:preferredName "Air Cooling Flow Rate"@en ;
+   samm:description "The flow rate of the air used to cool the recirculation unit."@en ;
+   samm:characteristic :GasFlow .
 
-:bypassAirFlowRate a bamm:Property ;
-   bamm:preferredName "Bypass Air Flow Rate"@en ;
-   bamm:description "The flow rate of the air used to control the temperature of the main air flow during operation."@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "Bypass Flow Rate Range"@en ;
-      bamm:description "Defines that the bypass flow rate measurements taken within the fuel cell must have a value between 20 and 6835 norm litre per minute."@en ;
-      bamm-c:baseCharacteristic :GasFlow ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "20"^^xsd:float ;
-         bamm-c:maxValue "6835"^^xsd:float ;
+:bypassAirFlowRate a samm:Property ;
+   samm:preferredName "Bypass Air Flow Rate"@en ;
+   samm:description "The flow rate of the air used to control the temperature of the main air flow during operation."@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "Bypass Flow Rate Range"@en ;
+      samm:description "Defines that the bypass flow rate measurements taken within the fuel cell must have a value between 20 and 6835 norm litre per minute."@en ;
+      samm-c:baseCharacteristic :GasFlow ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "20"^^xsd:float ;
+         samm-c:maxValue "6835"^^xsd:float ;
       ]
    ] .
 
-:recirculationBlowerAnodeInletGasTemperature a bamm:Property ;
-   bamm:preferredName "Recirculation Blower Anode Inlet Gas Temperature"@en ;
-   bamm:description "The gas temperature measured at the recirculation blower anode inlet."@en ;
-   bamm:characteristic :TemperatureRange .
+:recirculationBlowerAnodeInletGasTemperature a samm:Property ;
+   samm:preferredName "Recirculation Blower Anode Inlet Gas Temperature"@en ;
+   samm:description "The gas temperature measured at the recirculation blower anode inlet."@en ;
+   samm:characteristic :TemperatureRange .
 
-:recirculationBlowerAnodeOutletGasTemperature a bamm:Property ;
-   bamm:preferredName "Recirculation Blower Anode Outlet Gas Temperature"@en ;
-   bamm:description "The gas temperature measured at the recirculation blower anode outlet."@en ;
-   bamm:characteristic :TemperatureRange .
+:recirculationBlowerAnodeOutletGasTemperature a samm:Property ;
+   samm:preferredName "Recirculation Blower Anode Outlet Gas Temperature"@en ;
+   samm:description "The gas temperature measured at the recirculation blower anode outlet."@en ;
+   samm:characteristic :TemperatureRange .
 
-:recirculationBlowerAnodeInletGasPressure a bamm:Property ;
-   bamm:preferredName "Recirculation Blower Anode Inlet Gas Pressure"@en ;
-   bamm:description "The gas pressure measured at the recirculation blower anode inlet."@en ;
-   bamm:characteristic :PressureRange .
+:recirculationBlowerAnodeInletGasPressure a samm:Property ;
+   samm:preferredName "Recirculation Blower Anode Inlet Gas Pressure"@en ;
+   samm:description "The gas pressure measured at the recirculation blower anode inlet."@en ;
+   samm:characteristic :PressureRange .
 
-:recirculationBlowerAnodeOutletGasPressure a bamm:Property ;
-   bamm:preferredName "Recirculation Blower Anode Outlet Gas Pressure"@en ;
-   bamm:description "The gas pressure measured at the recirculation blower anode outlet."@en ;
-   bamm:characteristic :PressureRange .
+:recirculationBlowerAnodeOutletGasPressure a samm:Property ;
+   samm:preferredName "Recirculation Blower Anode Outlet Gas Pressure"@en ;
+   samm:description "The gas pressure measured at the recirculation blower anode outlet."@en ;
+   samm:characteristic :PressureRange .
 
-:recirculationBlowerSpeed a bamm:Property ;
-   bamm:preferredName "Recirculation Blower Speed"@en ;
-   bamm:description "The speed of the recirculation blower."@en ;
-   bamm:characteristic [
-      a bamm-c:Measurement ;
-      bamm:preferredName "Hertz"@en ;
-      bamm:description "Frequency measured in hertz."@en ;
-      bamm:dataType xsd:float ;
-      bamm-c:unit unit:hertz
+:recirculationBlowerSpeed a samm:Property ;
+   samm:preferredName "Recirculation Blower Speed"@en ;
+   samm:description "The speed of the recirculation blower."@en ;
+   samm:characteristic [
+      a samm-c:Measurement ;
+      samm:preferredName "Hertz"@en ;
+      samm:description "Frequency measured in hertz."@en ;
+      samm:dataType xsd:float ;
+      samm-c:unit unit:hertz
    ] .
 
-:reformerAnodeInletGasTemperature a bamm:Property ;
-   bamm:preferredName "Reformer Anode Inlet Gas Temperature"@en ;
-   bamm:description "The gas temperature measured at the reformer anode inlet."@en ;
-   bamm:characteristic :TemperatureRange .
+:reformerAnodeInletGasTemperature a samm:Property ;
+   samm:preferredName "Reformer Anode Inlet Gas Temperature"@en ;
+   samm:description "The gas temperature measured at the reformer anode inlet."@en ;
+   samm:characteristic :TemperatureRange .
 
-:tailgasBurnerOffgasOutletTemperature a bamm:Property ;
-   bamm:preferredName "Tailgas Burner Offgas Outlet Temperature"@en ;
-   bamm:description "The temperature measured of the offgas at the tailgas burner outlet."@en ;
-   bamm:characteristic :TemperatureRange .
+:tailgasBurnerOffgasOutletTemperature a samm:Property ;
+   samm:preferredName "Tailgas Burner Offgas Outlet Temperature"@en ;
+   samm:description "The temperature measured of the offgas at the tailgas burner outlet."@en ;
+   samm:characteristic :TemperatureRange .
 
-:stackAirFlowRate a bamm:Property ;
-   bamm:preferredName "Stack Air Flow Rate"@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "Air Flow Rate Range"@en ;
-      bamm:description "Defines that the air flow rate measurements taken within the fuel cell must have a value between 20 and 6835 norm litre per minute."@en ;
-      bamm-c:baseCharacteristic :GasFlow ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "20"^^xsd:float ;
-         bamm-c:maxValue "6835"^^xsd:float ;
+:stackAirFlowRate a samm:Property ;
+   samm:preferredName "Stack Air Flow Rate"@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "Air Flow Rate Range"@en ;
+      samm:description "Defines that the air flow rate measurements taken within the fuel cell must have a value between 20 and 6835 norm litre per minute."@en ;
+      samm-c:baseCharacteristic :GasFlow ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "20"^^xsd:float ;
+         samm-c:maxValue "6835"^^xsd:float ;
       ]
    ] .
 
-:recirculationFlowRate a bamm:Property ;
-   bamm:preferredName "Recirculation Flow Rate"@en ;
-   bamm:characteristic [
-      a bamm-c:Trait ;
-      bamm:preferredName "Recirculation Flow Rate Range"@en ;
-      bamm:description "Defines that the recirculation flow rate measurements taken within the fuel cell must have a value between 0 and 400 norm litre per minute."@en ;
-      bamm-c:baseCharacteristic :GasFlow ;
-      bamm-c:constraint [
-         a bamm-c:RangeConstraint ;
-         bamm-c:minValue "0"^^xsd:float ;
-         bamm-c:maxValue "400"^^xsd:float ;
+:recirculationFlowRate a samm:Property ;
+   samm:preferredName "Recirculation Flow Rate"@en ;
+   samm:characteristic [
+      a samm-c:Trait ;
+      samm:preferredName "Recirculation Flow Rate Range"@en ;
+      samm:description "Defines that the recirculation flow rate measurements taken within the fuel cell must have a value between 0 and 400 norm litre per minute."@en ;
+      samm-c:baseCharacteristic :GasFlow ;
+      samm-c:constraint [
+         a samm-c:RangeConstraint ;
+         samm-c:minValue "0"^^xsd:float ;
+         samm-c:maxValue "400"^^xsd:float ;
       ]
    ] .
 
 # Characteristics
-:TemperatureRange a bamm-c:Trait ;
-   bamm:preferredName "Temperature Range"@en ;
-   bamm:description "Defines that the temperature measurements taken within the fuel cell must have a value between 0 and 900 degrees celsius."@en ;
-   bamm-c:baseCharacteristic [
-      a bamm-c:Measurement ;
-      bamm:preferredName "Temperature"@en ;
-      bamm:description "Temperature measured in degree Celsius."@en ;
-      bamm:dataType xsd:float ;
-      bamm-c:unit unit:degreeCelsius
+:TemperatureRange a samm-c:Trait ;
+   samm:preferredName "Temperature Range"@en ;
+   samm:description "Defines that the temperature measurements taken within the fuel cell must have a value between 0 and 900 degrees celsius."@en ;
+   samm-c:baseCharacteristic [
+      a samm-c:Measurement ;
+      samm:preferredName "Temperature"@en ;
+      samm:description "Temperature measured in degree Celsius."@en ;
+      samm:dataType xsd:float ;
+      samm-c:unit unit:degreeCelsius
    ] ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "0"^^xsd:float ;
-      bamm-c:maxValue "900"^^xsd:float ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "0"^^xsd:float ;
+      samm-c:maxValue "900"^^xsd:float ;
    ] .
 
-:PressureRange a bamm-c:Trait ;
-   bamm:preferredName "Pressure Range"@en ;
-   bamm:description "Defines that the pressure measurements taken within the fuel cell must have a value between 0 and 160 millibar."@en ;
-   bamm-c:baseCharacteristic :Pressure ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "0"^^xsd:float ;
-      bamm-c:maxValue "160"^^xsd:float ;
+:PressureRange a samm-c:Trait ;
+   samm:preferredName "Pressure Range"@en ;
+   samm:description "Defines that the pressure measurements taken within the fuel cell must have a value between 0 and 160 millibar."@en ;
+   samm-c:baseCharacteristic :Pressure ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "0"^^xsd:float ;
+      samm-c:maxValue "160"^^xsd:float ;
    ] .
 
-:Pressure a bamm-c:Measurement ;
-   bamm:preferredName "Pressure"@en ;
-   bamm:description "Pressure measured in millibar."@en ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit unit:millibar .
+:Pressure a samm-c:Measurement ;
+   samm:preferredName "Pressure"@en ;
+   samm:description "Pressure measured in millibar."@en ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:millibar .
 
-:Power a bamm-c:Measurement ;
-   bamm:preferredName "Power"@en ;
-   bamm:description "Power measured in kilowatt."@en ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit unit:kilowatt .
+:Power a samm-c:Measurement ;
+   samm:preferredName "Power"@en ;
+   samm:description "Power measured in kilowatt."@en ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:kilowatt .
 
-:PercentRange a bamm-c:Trait ;
-   bamm:preferredName "Percent Range"@en ;
-   bamm:description "Defines that the percentage values must have a value between 0 and 100 percent."@en ;
-   bamm-c:baseCharacteristic [
-      a bamm-c:Measurement ;
-      bamm:preferredName "Percent"@en ;
-      bamm:description "Describes a value which is represented as a percentage."@en ;
-      bamm:dataType xsd:float ;
-      bamm-c:unit unit:percent
+:PercentRange a samm-c:Trait ;
+   samm:preferredName "Percent Range"@en ;
+   samm:description "Defines that the percentage values must have a value between 0 and 100 percent."@en ;
+   samm-c:baseCharacteristic [
+      a samm-c:Measurement ;
+      samm:preferredName "Percent"@en ;
+      samm:description "Describes a value which is represented as a percentage."@en ;
+      samm:dataType xsd:float ;
+      samm-c:unit unit:percent
    ] ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "0"^^xsd:float ;
-      bamm-c:maxValue "100"^^xsd:float ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "0"^^xsd:float ;
+      samm-c:maxValue "100"^^xsd:float ;
    ] .
 
-:CurrentRange a bamm-c:Trait ;
-   bamm:preferredName "Current Range"@en ;
-   bamm:description "Defines that the current measurements taken within the fuel cell must have a value between 0 and 35 ampere."@en ;
-   bamm-c:baseCharacteristic [
-      a bamm-c:Measurement ;
-      bamm:preferredName "Current"@en ;
-      bamm:description "Current measured in ampere."@en ;
-      bamm:dataType xsd:float ;
-      bamm-c:unit unit:ampere
+:CurrentRange a samm-c:Trait ;
+   samm:preferredName "Current Range"@en ;
+   samm:description "Defines that the current measurements taken within the fuel cell must have a value between 0 and 35 ampere."@en ;
+   samm-c:baseCharacteristic [
+      a samm-c:Measurement ;
+      samm:preferredName "Current"@en ;
+      samm:description "Current measured in ampere."@en ;
+      samm:dataType xsd:float ;
+      samm-c:unit unit:ampere
    ] ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "0"^^xsd:float ;
-      bamm-c:maxValue "35"^^xsd:float ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "0"^^xsd:float ;
+      samm-c:maxValue "35"^^xsd:float ;
    ] .
 
-:Voltage a bamm-c:Measurement ;
-   bamm:preferredName "Voltage"@en ;
-   bamm:description "Voltage measured in volt."@en ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit unit:volt .
+:Voltage a samm-c:Measurement ;
+   samm:preferredName "Voltage"@en ;
+   samm:description "Voltage measured in volt."@en ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:volt .
 
-:GasFlow a bamm-c:Measurement ;
-   bamm:preferredName "Gas Flow"@en ;
-   bamm:description "Gas flow measured in norm liter per minute."@en ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit :normLitrePerMinute .
+:GasFlow a samm-c:Measurement ;
+   samm:preferredName "Gas Flow"@en ;
+   samm:description "Gas flow measured in norm liter per minute."@en ;
+   samm:dataType xsd:float ;
+   samm-c:unit :normLitrePerMinute .
 
-:NumericCode a bamm-c:Code ;
-   bamm:preferredName "Numeric Code"@en ;
-   bamm:description "A numeric code"@en ;
-   bamm:dataType xsd:short .
+:NumericCode a samm-c:Code ;
+   samm:preferredName "Numeric Code"@en ;
+   samm:description "A numeric code"@en ;
+   samm:dataType xsd:short .
 
 # Entities
-:ProcedureAndStepNumber a bamm:Entity ;
-   bamm:preferredName "Procedure And Step Number"@en ;
-   bamm:description "Represents a code which represents a specific system state."@en ;
-   bamm:properties ( :code
-                     [ bamm:property :description ; bamm:notInPayload "true"^^xsd:boolean ] ) .
+:ProcedureAndStepNumber a samm:Entity ;
+   samm:preferredName "Procedure And Step Number"@en ;
+   samm:description "Represents a code which represents a specific system state."@en ;
+   samm:properties ( :code
+                     [ samm:property :description ; samm:notInPayload "true"^^xsd:boolean ] ) .
 
-:code a bamm:Property ;
-   bamm:preferredName "Code"@en ;
-   bamm:description "The code which represents a specific system state."@en ;
-   bamm:characteristic :NumericCode .
+:code a samm:Property ;
+   samm:preferredName "Code"@en ;
+   samm:description "The code which represents a specific system state."@en ;
+   samm:characteristic :NumericCode .
 
-:description a bamm:Property ;
-   bamm:preferredName "Description"@en ;
-   bamm:description "The description for a specific system state."@en ;
-   bamm:characteristic bamm-c:Text .
+:description a samm:Property ;
+   samm:preferredName "Description"@en ;
+   samm:description "The description for a specific system state."@en ;
+   samm:characteristic samm-c:Text .
 
 :Code101 a :ProcedureAndStepNumber ;
    :code "101"^^xsd:short ;
@@ -664,11 +664,11 @@
 
 # Units
 :normLitrePerMinute a unit:Unit ;
-   bamm:preferredName "norm litre per minute"@en ;
+   samm:preferredName "norm litre per minute"@en ;
    unit:quantityKind unit:volumeFlowRate ;
    unit:symbol "nl/min" .
 
 :molePerMole a unit:Unit ;
-   bamm:preferredName "mole per mole"@en ;
+   samm:preferredName "mole per mole"@en ;
    unit:quantityKind unit:amountOfSubstance, unit:concentrationOfB ;
    unit:symbol "mol/mol" .

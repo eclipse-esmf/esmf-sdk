@@ -10,29 +10,29 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithRangeConstraintWithOnlyLowerBoundDefinitionAndBothValues a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic :TestTrait .
+:testProperty a samm:Property ;
+   samm:characteristic :TestTrait .
 
-:TestTrait a bamm-c:Trait ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm:preferredName "Test Constraint"@en ;
-      bamm:description "Test Constraint"@en ;
-      bamm:see <http://example.com/omp> ;
-      bamm-c:minValue "5"^^xsd:nonNegativeInteger ;
-      bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
-      bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
+:TestTrait a samm-c:Trait ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:preferredName "Test Constraint"@en ;
+      samm:description "Test Constraint"@en ;
+      samm:see <http://example.com/omp> ;
+      samm-c:minValue "5"^^xsd:nonNegativeInteger ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
    ] ;
-   bamm-c:baseCharacteristic [
-      a bamm:Characteristic ;
-      bamm:dataType xsd:nonNegativeInteger
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:dataType xsd:nonNegativeInteger
    ] .

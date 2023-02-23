@@ -10,46 +10,46 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithConstraintWithSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithConstraintWithSeeAttribute" ;
-   bamm:properties ( :testProperty :testPropertyTwo ) ;
-   bamm:operations ( ) .
+:AspectWithConstraintWithSeeAttribute a samm:Aspect ;
+   samm:name "AspectWithConstraintWithSeeAttribute" ;
+   samm:properties ( :testProperty :testPropertyTwo ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestTrait .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestTrait .
 
-:testPropertyTwo a bamm:Property ;
-   bamm:name "testPropertyTwo" ;
-   bamm:characteristic :TestTraitTwo .
+:testPropertyTwo a samm:Property ;
+   samm:name "testPropertyTwo" ;
+   samm:characteristic :TestTraitTwo .
 
-:TestTrait a bamm-c:Trait ;
-   bamm:name "TestTrait" ;
-   bamm-c:constraint [
-      a bamm-c:LengthConstraint ;
-      bamm:name "TestConstraint" ;
-      bamm:preferredName "Test Constraint"@en ;
-      bamm:description "Test Constraint"@en ;
-      bamm:see <http://example.com/omp> ;
-      bamm-c:minValue "5"^^xsd:nonNegativeInteger ;
-      bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+:TestTrait a samm-c:Trait ;
+   samm:name "TestTrait" ;
+   samm-c:constraint [
+      a samm-c:LengthConstraint ;
+      samm:name "TestConstraint" ;
+      samm:preferredName "Test Constraint"@en ;
+      samm:description "Test Constraint"@en ;
+      samm:see <http://example.com/omp> ;
+      samm-c:minValue "5"^^xsd:nonNegativeInteger ;
+      samm-c:maxValue "10"^^xsd:nonNegativeInteger ;
    ] ;
-   bamm-c:baseCharacteristic bamm-c:Text .
+   samm-c:baseCharacteristic samm-c:Text .
 
-:TestTraitTwo a bamm-c:Trait ;
-   bamm:name "TestTraitTwo" ;
-   bamm-c:constraint [
-      a bamm-c:LengthConstraint ;
-      bamm:name "TestConstraintTwo" ;
-      bamm:preferredName "Test Constraint Two"@en ;
-      bamm:description "Test Constraint Two"@en ;
-      bamm:see <http://example.com/omp> ;
-      bamm:see <http://example.com/me> ;
-      bamm-c:minValue "5"^^xsd:nonNegativeInteger ;
-      bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+:TestTraitTwo a samm-c:Trait ;
+   samm:name "TestTraitTwo" ;
+   samm-c:constraint [
+      a samm-c:LengthConstraint ;
+      samm:name "TestConstraintTwo" ;
+      samm:preferredName "Test Constraint Two"@en ;
+      samm:description "Test Constraint Two"@en ;
+      samm:see <http://example.com/omp> ;
+      samm:see <http://example.com/me> ;
+      samm-c:minValue "5"^^xsd:nonNegativeInteger ;
+      samm-c:maxValue "10"^^xsd:nonNegativeInteger ;
    ] ;
-   bamm-c:baseCharacteristic bamm-c:Text .
+   samm-c:baseCharacteristic samm-c:Text .

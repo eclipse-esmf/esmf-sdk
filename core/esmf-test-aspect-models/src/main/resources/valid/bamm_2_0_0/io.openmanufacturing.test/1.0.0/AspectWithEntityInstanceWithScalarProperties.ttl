@@ -10,35 +10,35 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEntityInstanceWithScalarProperties a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEntityInstanceWithScalarProperties a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic :TestCharacteristic .
+:testProperty a samm:Property ;
+   samm:characteristic :TestCharacteristic .
 
-:TestCharacteristic a bamm-c:Enumeration ;
-   bamm:dataType :TestEntity ;
-   bamm-c:values ( :TestEntityInstance ) .
+:TestCharacteristic a samm-c:Enumeration ;
+   samm:dataType :TestEntity ;
+   samm-c:values ( :TestEntityInstance ) .
 
 :TestEntityInstance a :TestEntity ;
    :code "3"^^xsd:short ;
    :description "foo" .
 
-:TestEntity a bamm:Entity ;
-   bamm:properties ( :code [ bamm:property :description ; bamm:notInPayload "true"^^xsd:boolean ] ) .
+:TestEntity a samm:Entity ;
+   samm:properties ( :code [ samm:property :description ; samm:notInPayload "true"^^xsd:boolean ] ) .
 
-:code a bamm:Property ;
-   bamm:characteristic :ShortCode .
+:code a samm:Property ;
+   samm:characteristic :ShortCode .
 
-:description a bamm:Property ;
-   bamm:characteristic bamm-c:Text .
+:description a samm:Property ;
+   samm:characteristic samm-c:Text .
 
-:ShortCode a bamm:Characteristic ;
-   bamm:preferredName "Short Code"@en ;
-   bamm:description "A numeric code with dataType short"@en ;
-   bamm:dataType xsd:short .
+:ShortCode a samm:Characteristic ;
+   samm:preferredName "Short Code"@en ;
+   samm:description "A numeric code with dataType short"@en ;
+   samm:dataType xsd:short .

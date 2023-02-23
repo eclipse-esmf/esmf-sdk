@@ -10,95 +10,95 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:AspectWithExclusiveRangeConstraint a bamm:Aspect ;
-   bamm:properties ( :floatProp :doubleProp :decimalProp :integerProp :intProp ) ;
-   bamm:operations ( ) .
+:AspectWithExclusiveRangeConstraint a samm:Aspect ;
+   samm:properties ( :floatProp :doubleProp :decimalProp :integerProp :intProp ) ;
+   samm:operations ( ) .
 
-:floatProp a bamm:Property ;
-   bamm:characteristic :FloatRange .
+:floatProp a samm:Property ;
+   samm:characteristic :FloatRange .
 
-:doubleProp a bamm:Property ;
-   bamm:characteristic :DoubleRange .
+:doubleProp a samm:Property ;
+   samm:characteristic :DoubleRange .
 
-:decimalProp a bamm:Property ;
-   bamm:characteristic :DecimalRange .
+:decimalProp a samm:Property ;
+   samm:characteristic :DecimalRange .
 
-:integerProp a bamm:Property ;
-   bamm:characteristic :IntegerRange .
+:integerProp a samm:Property ;
+   samm:characteristic :IntegerRange .
 
-:intProp a bamm:Property ;
-   bamm:characteristic :IntRange .
+:intProp a samm:Property ;
+   samm:characteristic :IntRange .
 
-:FloatRange a bamm-c:Trait;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm:description "This is a floating range constraint"@en ;
-      bamm-c:minValue "12.3"^^xsd:float ;
-      bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
-      bamm-c:maxValue "23.45"^^xsd:float ;
-      bamm-c:upperBoundDefinition bamm-c:LESS_THAN ;
+:FloatRange a samm-c:Trait;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:description "This is a floating range constraint"@en ;
+      samm-c:minValue "12.3"^^xsd:float ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "23.45"^^xsd:float ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
    ] ;
-   bamm-c:baseCharacteristic [
-      a bamm:Characteristic ;
-      bamm:dataType xsd:float
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:dataType xsd:float
    ] .
 
-:DoubleRange a bamm-c:Trait ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm:description "This is a double range constraint"@en ;
-      bamm-c:minValue "12.3"^^xsd:double ;
-      bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
-      bamm-c:maxValue "23.45"^^xsd:double ;
-      bamm-c:upperBoundDefinition bamm-c:LESS_THAN ;
+:DoubleRange a samm-c:Trait ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:description "This is a double range constraint"@en ;
+      samm-c:minValue "12.3"^^xsd:double ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "23.45"^^xsd:double ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
    ] ;
-   bamm-c:baseCharacteristic [
-      a bamm:Characteristic ;
-      bamm:dataType xsd:double
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:dataType xsd:double
    ] .
 
-:DecimalRange a bamm-c:Trait ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm:description "This is a decimal range constraint"@en ;
-      bamm-c:minValue "12.3"^^xsd:decimal ;
-      bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
-      bamm-c:maxValue "23.45"^^xsd:decimal ;
-      bamm-c:upperBoundDefinition bamm-c:LESS_THAN ;
+:DecimalRange a samm-c:Trait ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:description "This is a decimal range constraint"@en ;
+      samm-c:minValue "12.3"^^xsd:decimal ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "23.45"^^xsd:decimal ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
    ] ;
-   bamm-c:baseCharacteristic [
-      a bamm:Characteristic ;
-      bamm:dataType xsd:decimal
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:dataType xsd:decimal
    ] .
 
-:IntegerRange a bamm-c:Trait ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm:description "This is a integer range constraint"@en ;
-      bamm-c:minValue "12"^^xsd:integer ;
-      bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
-      bamm-c:maxValue "23"^^xsd:integer ;
-      bamm-c:upperBoundDefinition bamm-c:LESS_THAN ;
+:IntegerRange a samm-c:Trait ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:description "This is a integer range constraint"@en ;
+      samm-c:minValue "12"^^xsd:integer ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "23"^^xsd:integer ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
    ] ;
-   bamm-c:baseCharacteristic [
-      a bamm:Characteristic ;
-      bamm:dataType xsd:integer
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:dataType xsd:integer
    ] .
 
-:IntRange a bamm-c:Trait ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "12"^^xsd:int ;
-      bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
-      bamm-c:maxValue "23"^^xsd:int ;
-      bamm-c:upperBoundDefinition bamm-c:LESS_THAN ;
+:IntRange a samm-c:Trait ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "12"^^xsd:int ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "23"^^xsd:int ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
    ] ;
-   bamm-c:baseCharacteristic [
-      a bamm:Characteristic ;
-      bamm:dataType xsd:int
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:dataType xsd:int
    ] .

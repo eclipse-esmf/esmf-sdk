@@ -10,46 +10,46 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:units:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithComplexEntityCollectionEnum a bamm:Aspect ;
-   bamm:name "AspectWithComplexEntityCollectionEnum" ;
-   bamm:properties ( :myPropertyOne ) ;
-   bamm:operations ( ) .
+:AspectWithComplexEntityCollectionEnum a samm:Aspect ;
+   samm:name "AspectWithComplexEntityCollectionEnum" ;
+   samm:properties ( :myPropertyOne ) ;
+   samm:operations ( ) .
 
-:myPropertyOne a bamm:Property ;
-   bamm:name "myPropertyOne" ;
-   bamm:characteristic :MyEnumerationOne .
+:myPropertyOne a samm:Property ;
+   samm:name "myPropertyOne" ;
+   samm:characteristic :MyEnumerationOne .
 
-:MyEnumerationOne a bamm-c:Enumeration ;
-   bamm:name "MyEnumerationOne" ;
-   bamm:description "This is my enumeration one"@en ;
-   bamm:dataType :MyEntityOne ;
-   bamm-c:values ( :entityInstanceOne ) .
+:MyEnumerationOne a samm-c:Enumeration ;
+   samm:name "MyEnumerationOne" ;
+   samm:description "This is my enumeration one"@en ;
+   samm:dataType :MyEntityOne ;
+   samm-c:values ( :entityInstanceOne ) .
 
-:MyEntityOne a bamm:Entity ;
-   bamm:name "MyEntityOne" ;
-   bamm:properties ( :entityPropertyOne ) .
+:MyEntityOne a samm:Entity ;
+   samm:name "MyEntityOne" ;
+   samm:properties ( :entityPropertyOne ) .
 
-:entityPropertyOne a bamm:Property ;
-   bamm:name "entityPropertyOne" ;
-   bamm:characteristic :ListCharacteristic .
+:entityPropertyOne a samm:Property ;
+   samm:name "entityPropertyOne" ;
+   samm:characteristic :ListCharacteristic .
 
-:ListCharacteristic a bamm-c:List ;
-   bamm:name "ListCharacteristic" ;
-   bamm:dataType :MyEntityTwo .
+:ListCharacteristic a samm-c:List ;
+   samm:name "ListCharacteristic" ;
+   samm:dataType :MyEntityTwo .
 
-:MyEntityTwo a bamm:Entity ;
-   bamm:name "MyEntityTwo" ;
-   bamm:properties ( :entityPropertyTwo ) .
+:MyEntityTwo a samm:Entity ;
+   samm:name "MyEntityTwo" ;
+   samm:properties ( :entityPropertyTwo ) .
 
-:entityPropertyTwo a bamm:Property ;
-   bamm:name "entityPropertyTwo" ;
-   bamm:characteristic bamm-c:Text .
+:entityPropertyTwo a samm:Property ;
+   samm:name "entityPropertyTwo" ;
+   samm:characteristic samm-c:Text .
 
 :entityInstanceOne a :MyEntityOne ;
    :entityPropertyOne ( :entityInstanceTwo ) .

@@ -10,20 +10,20 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:AspectWithQuantifiableWithoutUnit a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithQuantifiableWithoutUnit a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic :TestQuantifiable .
+:testProperty a samm:Property ;
+   samm:characteristic :TestQuantifiable .
 
-:TestQuantifiable a bamm-c:Quantifiable ;
-   bamm:preferredName "Test Quantifiable"@en ;
-   bamm:description "This is a test Quantifiable"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType xsd:float .
+:TestQuantifiable a samm-c:Quantifiable ;
+   samm:preferredName "Test Quantifiable"@en ;
+   samm:description "This is a test Quantifiable"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType xsd:float .

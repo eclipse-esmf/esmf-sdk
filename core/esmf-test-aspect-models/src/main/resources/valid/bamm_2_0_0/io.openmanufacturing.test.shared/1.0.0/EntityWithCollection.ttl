@@ -10,25 +10,25 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test.shared:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:TestEntityWithCollection a bamm:Entity ;
-                           bamm:properties ( :testCollectionProperty ) ;
-                           bamm:operations ( ) .
+:TestEntityWithCollection a samm:Entity ;
+                           samm:properties ( :testCollectionProperty ) ;
+                           samm:operations ( ) .
 
-:testCollectionProperty a bamm:Property ;
-              bamm:preferredName "Test Property"@en ;
-              bamm:description "This is a test property."@en ;
-              bamm:see <http://example.com/omp> ;
-              bamm:see <http://example.com/me> ;
-              bamm:exampleValue "Example Value" ;
-              bamm:characteristic :TestCollection .
+:testCollectionProperty a samm:Property ;
+              samm:preferredName "Test Property"@en ;
+              samm:description "This is a test property."@en ;
+              samm:see <http://example.com/omp> ;
+              samm:see <http://example.com/me> ;
+              samm:exampleValue "Example Value" ;
+              samm:characteristic :TestCollection .
 
-:TestCollection a bamm-c:Collection ;
-                bamm:preferredName "Test Collection"@en ;
-                bamm:description "This is a test collection."@en ;
-                bamm:see <http://example.com/omp> ;
-                bamm:dataType xsd:string .
+:TestCollection a samm-c:Collection ;
+                samm:preferredName "Test Collection"@en ;
+                samm:description "This is a test collection."@en ;
+                samm:see <http://example.com/omp> ;
+                samm:dataType xsd:string .

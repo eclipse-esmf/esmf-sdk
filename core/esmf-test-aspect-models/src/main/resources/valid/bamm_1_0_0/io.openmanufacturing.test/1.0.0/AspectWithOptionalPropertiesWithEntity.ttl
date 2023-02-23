@@ -10,63 +10,63 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithOptionalPropertiesWithEntity a bamm:Aspect ;
-   bamm:name "AspectWithOptionalPropertiesWithEntity" ;
-   bamm:properties ( :testString [
-                                    bamm:property :testOptionalString ;
-                                    bamm:optional "true"^^xsd:boolean
+:AspectWithOptionalPropertiesWithEntity a samm:Aspect ;
+   samm:name "AspectWithOptionalPropertiesWithEntity" ;
+   samm:properties ( :testString [
+                                    samm:property :testOptionalString ;
+                                    samm:optional "true"^^xsd:boolean
                                  ] [
-                                      bamm:property :testOptionalEntity ;
-                                      bamm:optional "true"^^xsd:boolean
+                                      samm:property :testOptionalEntity ;
+                                      samm:optional "true"^^xsd:boolean
                                    ] ) ;
-   bamm:operations ( ) .
+   samm:operations ( ) .
 
-:testOptionalEntity a bamm:Property ;
-   bamm:name "testOptionalEntity" ;
-   bamm:characteristic :TestEntityCharacteristic .
+:testOptionalEntity a samm:Property ;
+   samm:name "testOptionalEntity" ;
+   samm:characteristic :TestEntityCharacteristic .
 
-:TestEntity a bamm:Entity ;
-   bamm:name "TestEntity" ;
-   bamm:properties ( :codeProperty :testSecondString :testIntList ) .
+:TestEntity a samm:Entity ;
+   samm:name "TestEntity" ;
+   samm:properties ( :codeProperty :testSecondString :testIntList ) .
 
-:codeProperty a bamm:Property ;
-   bamm:name "codeProperty" ;
-   bamm:characteristic :TestCode .
+:codeProperty a samm:Property ;
+   samm:name "codeProperty" ;
+   samm:characteristic :TestCode .
 
-:TestCode a bamm-c:Code ;
-   bamm:name "TestCode" ;
-   bamm:preferredName "Test Code"@en ;
-   bamm:description "This is a test code."@en ;
-   bamm:dataType xsd:int .
+:TestCode a samm-c:Code ;
+   samm:name "TestCode" ;
+   samm:preferredName "Test Code"@en ;
+   samm:description "This is a test code."@en ;
+   samm:dataType xsd:int .
 
-:testString a bamm:Property ;
-   bamm:name "testString" ;
-   bamm:exampleValue "Example Value Test" ;
-   bamm:characteristic bamm-c:Text .
+:testString a samm:Property ;
+   samm:name "testString" ;
+   samm:exampleValue "Example Value Test" ;
+   samm:characteristic samm-c:Text .
 
-:testOptionalString a bamm:Property ;
-   bamm:name "testOptionalString" ;
-   bamm:exampleValue "Example Value Test" ;
-   bamm:characteristic bamm-c:Text .
+:testOptionalString a samm:Property ;
+   samm:name "testOptionalString" ;
+   samm:exampleValue "Example Value Test" ;
+   samm:characteristic samm-c:Text .
 
-:testSecondString a bamm:Property ;
-   bamm:name "testSecondString" ;
-   bamm:exampleValue "Another Example Value Test" ;
-   bamm:characteristic bamm-c:Text .
+:testSecondString a samm:Property ;
+   samm:name "testSecondString" ;
+   samm:exampleValue "Another Example Value Test" ;
+   samm:characteristic samm-c:Text .
 
-:testIntList a bamm:Property ;
-   bamm:name "testIntList" ;
-   bamm:exampleValue "3"^^xsd:int ;
-   bamm:characteristic :IntegerList .
+:testIntList a samm:Property ;
+   samm:name "testIntList" ;
+   samm:exampleValue "3"^^xsd:int ;
+   samm:characteristic :IntegerList .
 
-:IntegerList a bamm-c:List ;
-   bamm:name "IntegerList" ;
-   bamm:dataType xsd:int .
+:IntegerList a samm-c:List ;
+   samm:name "IntegerList" ;
+   samm:dataType xsd:int .
 
-:TestEntityCharacteristic a bamm:Characteristic ;
-   bamm:name "TestEntityCharacteristic" ;
-   bamm:dataType :TestEntity .
+:TestEntityCharacteristic a samm:Characteristic ;
+   samm:name "TestEntityCharacteristic" ;
+   samm:dataType :TestEntity .

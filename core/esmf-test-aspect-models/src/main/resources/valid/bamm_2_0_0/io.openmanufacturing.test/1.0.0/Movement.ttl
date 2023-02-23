@@ -10,65 +10,65 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:Movement a bamm:Aspect ;
-   bamm:preferredName "Movement"@en ;
-   bamm:description "Aspect for movement information"@en ;
-   bamm:properties ( :moving :speedLimitWarning :position ) ;
-   bamm:operations ( ) .
+:Movement a samm:Aspect ;
+   samm:preferredName "Movement"@en ;
+   samm:description "Aspect for movement information"@en ;
+   samm:properties ( :moving :speedLimitWarning :position ) ;
+   samm:operations ( ) .
 
-:moving a bamm:Property ;
-   bamm:preferredName "Moving"@en ;
-   bamm:description "Flag indicating if the position is changing"@en ;
-   bamm:characteristic bamm-c:Boolean .
+:moving a samm:Property ;
+   samm:preferredName "Moving"@en ;
+   samm:description "Flag indicating if the position is changing"@en ;
+   samm:characteristic samm-c:Boolean .
 
-:speedLimitWarning a bamm:Property ;
-   bamm:preferredName "Speed Limit Warning"@en ;
-   bamm:description "Indicats if speed limit is adhered to."@en ;
-   bamm:characteristic :WarningLevel .
+:speedLimitWarning a samm:Property ;
+   samm:preferredName "Speed Limit Warning"@en ;
+   samm:description "Indicats if speed limit is adhered to."@en ;
+   samm:characteristic :WarningLevel .
 
-:position a bamm:Property ;
-   bamm:preferredName "Position"@en ;
-   bamm:description "Indicates a position"@en ;
-   bamm:characteristic [
-      a bamm-c:SingleEntity ;
-      bamm:preferredName "Spatial Position Characteristic"@en ;
-      bamm:description "Represents a single location in space."@en ;
-      bamm:dataType :SpatialPosition
+:position a samm:Property ;
+   samm:preferredName "Position"@en ;
+   samm:description "Indicates a position"@en ;
+   samm:characteristic [
+      a samm-c:SingleEntity ;
+      samm:preferredName "Spatial Position Characteristic"@en ;
+      samm:description "Represents a single location in space."@en ;
+      samm:dataType :SpatialPosition
    ] .
 
-:WarningLevel a bamm-c:Enumeration ;
-   bamm:preferredName "Warning Level"@en ;
-   bamm:description "Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red)."@en ;
-   bamm:dataType xsd:string ;
-   bamm-c:values ( "green" "yellow" "red" ) .
+:WarningLevel a samm-c:Enumeration ;
+   samm:preferredName "Warning Level"@en ;
+   samm:description "Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red)."@en ;
+   samm:dataType xsd:string ;
+   samm-c:values ( "green" "yellow" "red" ) .
 
-:SpatialPosition a bamm:Entity ;
-   bamm:preferredName "Spatial Position"@en ;
-   bamm:description "Position in space, described along three axis, with the third axis optional, if all positions are in a plane."@en ;
-   bamm:properties ( :x :y [ bamm:property :z; bamm:optional true ] ) .
+:SpatialPosition a samm:Entity ;
+   samm:preferredName "Spatial Position"@en ;
+   samm:description "Position in space, described along three axis, with the third axis optional, if all positions are in a plane."@en ;
+   samm:properties ( :x :y [ samm:property :z; samm:optional true ] ) .
 
-:x a bamm:Property ;
-   bamm:preferredName "x"@en ;
-   bamm:description "x coordinate in space"@en ;
-   bamm:characteristic :Coordinate .
+:x a samm:Property ;
+   samm:preferredName "x"@en ;
+   samm:description "x coordinate in space"@en ;
+   samm:characteristic :Coordinate .
 
-:y a bamm:Property ;
-   bamm:preferredName "y"@en ;
-   bamm:description "y coordinate in space"@en ;
-   bamm:characteristic :Coordinate .
+:y a samm:Property ;
+   samm:preferredName "y"@en ;
+   samm:description "y coordinate in space"@en ;
+   samm:characteristic :Coordinate .
 
-:z a bamm:Property ;
-   bamm:preferredName "z"@en ;
-   bamm:description "z coordinate in space"@en ;
-   bamm:characteristic :Coordinate .
+:z a samm:Property ;
+   samm:preferredName "z"@en ;
+   samm:description "z coordinate in space"@en ;
+   samm:characteristic :Coordinate .
 
-:Coordinate a bamm-c:Measurement ;
-   bamm:preferredName "Coordinate"@en ;
-   bamm:description "Represents a coordinate along an axis in space."@en ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit unit:metre .
+:Coordinate a samm-c:Measurement ;
+   samm:preferredName "Coordinate"@en ;
+   samm:description "Represents a coordinate along an axis in space."@en ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:metre .

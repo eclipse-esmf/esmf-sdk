@@ -10,28 +10,28 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm:aspect-model:AspectWithBammNamespaceForCustomUnit:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
-:AspectWithBammNamespaceForCustomUnit a bamm:Aspect ;
-   bamm:name "AspectWithCustomUnit" ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithBammNamespaceForCustomUnit a samm:Aspect ;
+   samm:name "AspectWithCustomUnit" ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestQuantifiable .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestQuantifiable .
 
-:TestQuantifiable a bamm-c:Quantifiable ;
-   bamm:name "TestQuantifiable" ;
-   bamm:dataType xsd:int ;
-   bamm-c:unit bamm:normLitrePerMinute .
+:TestQuantifiable a samm-c:Quantifiable ;
+   samm:name "TestQuantifiable" ;
+   samm:dataType xsd:int ;
+   samm-c:unit samm:normLitrePerMinute .
 
-bamm:normLitrePerMinute a unit:Unit ;
-   bamm:name "normLitrePerMinute" ;
-   bamm:preferredName "norm litre per minute"@en ;
+samm:normLitrePerMinute a unit:Unit ;
+   samm:name "normLitrePerMinute" ;
+   samm:preferredName "norm litre per minute"@en ;
    unit:quantityKind unit:volumeFlowRate ;
    unit:symbol "nl/min" .
 

@@ -10,118 +10,118 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test.shared:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:EntityWithConstraint a bamm:Entity ;
-   bamm:properties ( :stringLcProperty :doubleRcProperty :intRcProperty :bigIntRcProperty :floatRcProperty :stringRegexcProperty ) ;
-   bamm:operations ( ) .
+:EntityWithConstraint a samm:Entity ;
+   samm:properties ( :stringLcProperty :doubleRcProperty :intRcProperty :bigIntRcProperty :floatRcProperty :stringRegexcProperty ) ;
+   samm:operations ( ) .
 
-:stringLcProperty a bamm:Property ;
-   bamm:characteristic :StringLengthConstraint .
+:stringLcProperty a samm:Property ;
+   samm:characteristic :StringLengthConstraint .
 
-:stringRegexcProperty a bamm:Property ;
-   bamm:characteristic :RegularExpressionConstraint .
+:stringRegexcProperty a samm:Property ;
+   samm:characteristic :RegularExpressionConstraint .
 
-:doubleRcProperty a bamm:Property ;
-   bamm:characteristic :DoubleRangeConstraint .
+:doubleRcProperty a samm:Property ;
+   samm:characteristic :DoubleRangeConstraint .
 
-:intRcProperty a bamm:Property ;
-   bamm:characteristic :IntegerRangeConstraint .
+:intRcProperty a samm:Property ;
+   samm:characteristic :IntegerRangeConstraint .
 
-:bigIntRcProperty a bamm:Property ;
-   bamm:characteristic :BigIntegerRangeConstraint .
+:bigIntRcProperty a samm:Property ;
+   samm:characteristic :BigIntegerRangeConstraint .
 
-:floatRcProperty a bamm:Property ;
-   bamm:characteristic :FloatRangeConstraint .
+:floatRcProperty a samm:Property ;
+   samm:characteristic :FloatRangeConstraint .
 
-:StringLengthConstraint a bamm-c:Trait ;
-   bamm:preferredName "Used Test Constraint"@en ;
-   bamm:description "Used Test Constraint"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm-c:constraint [
-      a bamm-c:LengthConstraint ;
-      bamm-c:minValue "20"^^xsd:nonNegativeInteger ;
-      bamm-c:maxValue "22"^^xsd:nonNegativeInteger ;
+:StringLengthConstraint a samm-c:Trait ;
+   samm:preferredName "Used Test Constraint"@en ;
+   samm:description "Used Test Constraint"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm-c:constraint [
+      a samm-c:LengthConstraint ;
+      samm-c:minValue "20"^^xsd:nonNegativeInteger ;
+      samm-c:maxValue "22"^^xsd:nonNegativeInteger ;
    ] ;
-   bamm-c:baseCharacteristic bamm-c:Text .
+   samm-c:baseCharacteristic samm-c:Text .
 
-:DoubleRangeConstraint a bamm-c:Trait ;
-   bamm:preferredName "Test Constraint"@en ;
-   bamm:description "Test Constraint"@en ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "-0.1"^^xsd:double ;
-      bamm-c:maxValue "0.2"^^xsd:double ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+:DoubleRangeConstraint a samm-c:Trait ;
+   samm:preferredName "Test Constraint"@en ;
+   samm:description "Test Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "-0.1"^^xsd:double ;
+      samm-c:maxValue "0.2"^^xsd:double ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
-   bamm-c:baseCharacteristic :DoubleMeasurement .
+   samm-c:baseCharacteristic :DoubleMeasurement .
 
-:IntegerRangeConstraint a bamm-c:Trait ;
-   bamm:preferredName "Test Constraint"@en ;
-   bamm:description "Test Constraint"@en ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "-1"^^xsd:int ;
-      bamm-c:maxValue "-1"^^xsd:int ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+:IntegerRangeConstraint a samm-c:Trait ;
+   samm:preferredName "Test Constraint"@en ;
+   samm:description "Test Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "-1"^^xsd:int ;
+      samm-c:maxValue "-1"^^xsd:int ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
-   bamm-c:baseCharacteristic :IntegerMeasurement .
+   samm-c:baseCharacteristic :IntegerMeasurement .
 
-:BigIntegerRangeConstraint a bamm-c:Trait ;
-   bamm:preferredName "Test Constraint"@en ;
-   bamm:description "Test Constraint"@en ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "10"^^xsd:int ;
-      bamm-c:maxValue "15"^^xsd:int ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+:BigIntegerRangeConstraint a samm-c:Trait ;
+   samm:preferredName "Test Constraint"@en ;
+   samm:description "Test Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "10"^^xsd:int ;
+      samm-c:maxValue "15"^^xsd:int ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
-   bamm-c:baseCharacteristic :BigIntegerMeasurement .
+   samm-c:baseCharacteristic :BigIntegerMeasurement .
 
-:FloatRangeConstraint a bamm-c:Trait ;
-   bamm:preferredName "Test Constraint"@en ;
-   bamm:description "Test Constraint"@en ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "100"^^xsd:int ;
-      bamm-c:maxValue "112"^^xsd:int ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+:FloatRangeConstraint a samm-c:Trait ;
+   samm:preferredName "Test Constraint"@en ;
+   samm:description "Test Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "100"^^xsd:int ;
+      samm-c:maxValue "112"^^xsd:int ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
-   bamm-c:baseCharacteristic :FloatMeasurement .
+   samm-c:baseCharacteristic :FloatMeasurement .
 
-:RegularExpressionConstraint a bamm-c:Trait ;
-   bamm:preferredName "Test Regular Expression Constraint"@en ;
-   bamm:description "Test Regular Expression Constraint"@en ;
-   bamm-c:constraint [
-      a bamm-c:RegularExpressionConstraint ;
-      bamm:value "[a-zA-Z]" ;
+:RegularExpressionConstraint a samm-c:Trait ;
+   samm:preferredName "Test Regular Expression Constraint"@en ;
+   samm:description "Test Regular Expression Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RegularExpressionConstraint ;
+      samm:value "[a-zA-Z]" ;
    ] ;
-   bamm-c:baseCharacteristic bamm-c:Text .
+   samm-c:baseCharacteristic samm-c:Text .
 
-:DoubleMeasurement a bamm-c:Measurement ;
-   bamm:description "The acceleration"@en ;
-   bamm-c:unit unit:metrePerSecondSquared ;
-   bamm:dataType xsd:double .
+:DoubleMeasurement a samm-c:Measurement ;
+   samm:description "The acceleration"@en ;
+   samm-c:unit unit:metrePerSecondSquared ;
+   samm:dataType xsd:double .
 
-:IntegerMeasurement a bamm-c:Measurement ;
-   bamm:description "The acceleration"@en ;
-   bamm-c:unit unit:metrePerSecondSquared ;
-   bamm:dataType xsd:int .
+:IntegerMeasurement a samm-c:Measurement ;
+   samm:description "The acceleration"@en ;
+   samm-c:unit unit:metrePerSecondSquared ;
+   samm:dataType xsd:int .
 
-:BigIntegerMeasurement a bamm-c:Measurement ;
-   bamm:description "The acceleration"@en ;
-   bamm-c:unit unit:metrePerSecondSquared ;
-   bamm:dataType xsd:integer .
+:BigIntegerMeasurement a samm-c:Measurement ;
+   samm:description "The acceleration"@en ;
+   samm-c:unit unit:metrePerSecondSquared ;
+   samm:dataType xsd:integer .
 
-:FloatMeasurement a bamm-c:Measurement ;
-   bamm:description "The acceleration"@en ;
-   bamm-c:unit unit:metrePerSecondSquared ;
-   bamm:dataType xsd:float .
+:FloatMeasurement a samm-c:Measurement ;
+   samm:description "The acceleration"@en ;
+   samm-c:unit unit:metrePerSecondSquared ;
+   samm:dataType xsd:float .

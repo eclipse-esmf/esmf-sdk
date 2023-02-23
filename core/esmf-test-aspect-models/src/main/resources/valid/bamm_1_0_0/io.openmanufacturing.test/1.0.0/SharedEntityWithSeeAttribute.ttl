@@ -10,20 +10,20 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
 
-:SharedEntityWithSeeAttribute a bamm:Entity ;
-   bamm:name "SharedEntityWithSeeAttribute" ;
-   bamm:preferredName "Test Entity"@en ;
-   bamm:description "This is a test entity."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:properties ( ) .
+:SharedEntityWithSeeAttribute a samm:Entity ;
+   samm:name "SharedEntityWithSeeAttribute" ;
+   samm:preferredName "Test Entity"@en ;
+   samm:description "This is a test entity."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:properties ( ) .
 
-bamm-e:SharedEntity a bamm:Entity ;
-   bamm:name "SharedEntity" ;
-   bamm:preferredName "Shared Entity"@en ;
-   bamm:description "This is a shared entity."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:properties ( ) .
+samm-e:SharedEntity a samm:Entity ;
+   samm:name "SharedEntity" ;
+   samm:preferredName "Shared Entity"@en ;
+   samm:description "This is a shared entity."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:properties ( ) .

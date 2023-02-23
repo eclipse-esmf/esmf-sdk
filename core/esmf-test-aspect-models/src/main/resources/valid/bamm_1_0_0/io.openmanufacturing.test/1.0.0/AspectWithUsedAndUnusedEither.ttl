@@ -10,65 +10,65 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithUsedAndUnusedEither a bamm:Aspect ;
-   bamm:name "AspectWithUsedAndUnusedEither" ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithUsedAndUnusedEither a samm:Aspect ;
+   samm:name "AspectWithUsedAndUnusedEither" ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :UsedTestEither .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :UsedTestEither .
 
-:UsedTestEither a bamm-c:Either ;
-   bamm:name "UsedTestEither" ;
-   bamm:preferredName "Test Either"@en ;
-   bamm:description "Test Either Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm-c:left :UsedLeftType ;
-   bamm-c:right :UsedRightType .
+:UsedTestEither a samm-c:Either ;
+   samm:name "UsedTestEither" ;
+   samm:preferredName "Test Either"@en ;
+   samm:description "Test Either Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm-c:left :UsedLeftType ;
+   samm-c:right :UsedRightType .
 
-:UsedLeftType a bamm:Characteristic ;
-   bamm:name "UsedLeftType" ;
-   bamm:preferredName "Left Type"@en ;
-   bamm:description "Left Type Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:float .
+:UsedLeftType a samm:Characteristic ;
+   samm:name "UsedLeftType" ;
+   samm:preferredName "Left Type"@en ;
+   samm:description "Left Type Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:dataType xsd:float .
 
-:UsedRightType a bamm:Characteristic ;
-   bamm:name "UsedRightType" ;
-   bamm:preferredName "Right Type"@en ;
-   bamm:description "Right Type Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:string .
+:UsedRightType a samm:Characteristic ;
+   samm:name "UsedRightType" ;
+   samm:preferredName "Right Type"@en ;
+   samm:description "Right Type Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:dataType xsd:string .
 
-:NonUsedTestEither a bamm-c:Either ;
-   bamm:name "NonUsedTestEither" ;
-   bamm:preferredName "Test Either"@en ;
-   bamm:description "Test Either Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm-c:left :NonUsedLeftType ;
-   bamm-c:right :NonUsedRightType .
+:NonUsedTestEither a samm-c:Either ;
+   samm:name "NonUsedTestEither" ;
+   samm:preferredName "Test Either"@en ;
+   samm:description "Test Either Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm-c:left :NonUsedLeftType ;
+   samm-c:right :NonUsedRightType .
 
-:NonUsedLeftType a bamm:Characteristic ;
-   bamm:name "NonUsedLeftType" ;
-   bamm:preferredName "Left Type"@en ;
-   bamm:description "Left Type Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:float .
+:NonUsedLeftType a samm:Characteristic ;
+   samm:name "NonUsedLeftType" ;
+   samm:preferredName "Left Type"@en ;
+   samm:description "Left Type Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:dataType xsd:float .
 
-:NonUsedRightType a bamm:Characteristic ;
-   bamm:name "UnusedRightType" ;
-   bamm:preferredName "Right Type"@en ;
-   bamm:description "Right Type Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:string .
+:NonUsedRightType a samm:Characteristic ;
+   samm:name "UnusedRightType" ;
+   samm:preferredName "Right Type"@en ;
+   samm:description "Right Type Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:dataType xsd:string .

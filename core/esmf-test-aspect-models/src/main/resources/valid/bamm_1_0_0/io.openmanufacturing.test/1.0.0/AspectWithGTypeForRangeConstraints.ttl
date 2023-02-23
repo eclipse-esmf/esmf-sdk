@@ -10,141 +10,141 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix :       <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm:   <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm:   <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit:   <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
 
 :AspectWithGTypeForRangeConstraints
-    a               bamm:Aspect ;
-    bamm:name       "AspectWithGTypeForRangeConstraints" ;
-    bamm:properties ( :testPropertyWithGYear :testPropertyWithGMonth
+    a               samm:Aspect ;
+    samm:name       "AspectWithGTypeForRangeConstraints" ;
+    samm:properties ( :testPropertyWithGYear :testPropertyWithGMonth
                       :testPropertyWithGDay :testPropertyWithGYearMonth
                       :testPropertyWithGMonthYear ) ;
-    bamm:operations ( ) .
+    samm:operations ( ) .
 
 :testPropertyWithGYear
-    a                   bamm:Property ;
-    bamm:name           "testPropertyWithGYear" ;
-    bamm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGYear .
+    a                   samm:Property ;
+    samm:name           "testPropertyWithGYear" ;
+    samm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGYear .
 
 :testWithGregorianCalendarMinGregorianCalendarMaxGYear
-    a                       bamm-c:Trait;
-    bamm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGYear" ;
-    bamm:preferredName      "Test Range"@en ;
-    bamm:description        "Test Range"@en ;
-    bamm-c:constraint [
-       a bamm-c:RangeConstraint ;
-       bamm-c:minValue         "2000"^^xsd:gYear ;
-       bamm-c:maxValue         "2001"^^xsd:gYear ;
-       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+    a                       samm-c:Trait;
+    samm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGYear" ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue         "2000"^^xsd:gYear ;
+       samm-c:maxValue         "2001"^^xsd:gYear ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
     ] ;
-    bamm-c:baseCharacteristic :MeasurementGYear .
+    samm-c:baseCharacteristic :MeasurementGYear .
 
 :MeasurementGYear
-    a             bamm-c:Measurement ;
-    bamm:name     "Measurement" ;
-    bamm:dataType xsd:gYear ;
-    bamm-c:unit   unit:year .
+    a             samm-c:Measurement ;
+    samm:name     "Measurement" ;
+    samm:dataType xsd:gYear ;
+    samm-c:unit   unit:year .
 
 :testPropertyWithGMonth
-    a                   bamm:Property ;
-    bamm:name           "testPropertyWithGMonth" ;
-    bamm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGMonth .
+    a                   samm:Property ;
+    samm:name           "testPropertyWithGMonth" ;
+    samm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGMonth .
 
 :testWithGregorianCalendarMinGregorianCalendarMaxGMonth
-    a                       bamm-c:Trait ;
-    bamm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGMonth" ;
-    bamm:preferredName      "Test Range"@en ;
-    bamm:description        "Test Range"@en ;
-    bamm-c:constraint [
-       a bamm-c:RangeConstraint ;
-       bamm-c:minValue         "--04"^^xsd:gMonth ;
-       bamm-c:maxValue         "--05"^^xsd:gMonth ;
-       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+    a                       samm-c:Trait ;
+    samm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGMonth" ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue         "--04"^^xsd:gMonth ;
+       samm-c:maxValue         "--05"^^xsd:gMonth ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
     ] ;
-    bamm-c:baseCharacteristic :MeasurementGMonth .
+    samm-c:baseCharacteristic :MeasurementGMonth .
 
 :MeasurementGMonth
-    a             bamm-c:Measurement ;
-    bamm:name     "Measurement" ;
-    bamm:dataType xsd:gMonth ;
-    bamm-c:unit   unit:month .
+    a             samm-c:Measurement ;
+    samm:name     "Measurement" ;
+    samm:dataType xsd:gMonth ;
+    samm-c:unit   unit:month .
 
 :testPropertyWithGDay
-    a                   bamm:Property ;
-    bamm:name           "testPropertyWithGDay" ;
-    bamm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGDay .
+    a                   samm:Property ;
+    samm:name           "testPropertyWithGDay" ;
+    samm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGDay .
 
 :testWithGregorianCalendarMinGregorianCalendarMaxGDay
-    a                       bamm-c:Trait ;
-    bamm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGDay" ;
-    bamm:preferredName      "Test Range"@en ;
-    bamm:description        "Test Range"@en ;
-    bamm-c:constraint [
-       a bamm-c:RangeConstraint ;
-       bamm-c:minValue         "---04"^^xsd:gDay ;
-       bamm-c:maxValue         "---05"^^xsd:gDay ;
-       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+    a                       samm-c:Trait ;
+    samm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGDay" ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue         "---04"^^xsd:gDay ;
+       samm-c:maxValue         "---05"^^xsd:gDay ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
     ] ;
-    bamm-c:baseCharacteristic :MeasurementGDay .
+    samm-c:baseCharacteristic :MeasurementGDay .
 
 :MeasurementGDay
-    a             bamm-c:Measurement ;
-    bamm:name     "Measurement" ;
-    bamm:dataType xsd:gDay ;
-    bamm-c:unit   unit:day .
+    a             samm-c:Measurement ;
+    samm:name     "Measurement" ;
+    samm:dataType xsd:gDay ;
+    samm-c:unit   unit:day .
 
 :testPropertyWithGYearMonth
-    a                   bamm:Property ;
-    bamm:name           "testPropertyWithGYearMonth" ;
-    bamm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGYearMonth .
+    a                   samm:Property ;
+    samm:name           "testPropertyWithGYearMonth" ;
+    samm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGYearMonth .
 
 :testWithGregorianCalendarMinGregorianCalendarMaxGYearMonth
-    a                       bamm-c:Trait ;
-    bamm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGYearMonth" ;
-    bamm:preferredName      "Test Range"@en ;
-    bamm:description        "Test Range"@en ;
-    bamm-c:constraint [
-       a bamm-c:RangeConstraint ;
-       bamm-c:minValue         "2000-01"^^xsd:gYearMonth ;
-       bamm-c:maxValue         "2000-02"^^xsd:gYearMonth ;
-       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+    a                       samm-c:Trait ;
+    samm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGYearMonth" ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue         "2000-01"^^xsd:gYearMonth ;
+       samm-c:maxValue         "2000-02"^^xsd:gYearMonth ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
     ] ;
-    bamm-c:baseCharacteristic :MeasurementGYearMonth .
+    samm-c:baseCharacteristic :MeasurementGYearMonth .
 
 :MeasurementGYearMonth
-    a             bamm-c:Measurement ;
-    bamm:name     "Measurement" ;
-    bamm:dataType xsd:gYearMonth ;
-    bamm-c:unit   unit:one .
+    a             samm-c:Measurement ;
+    samm:name     "Measurement" ;
+    samm:dataType xsd:gYearMonth ;
+    samm-c:unit   unit:one .
 
 :testPropertyWithGMonthYear
-    a                   bamm:Property ;
-    bamm:name           "testPropertyWithGMonthYear" ;
-    bamm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGMonthYear .
+    a                   samm:Property ;
+    samm:name           "testPropertyWithGMonthYear" ;
+    samm:characteristic :testWithGregorianCalendarMinGregorianCalendarMaxGMonthYear .
 
 :testWithGregorianCalendarMinGregorianCalendarMaxGMonthYear
-    a                       bamm-c:Trait ;
-    bamm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGMonthYear" ;
-    bamm:preferredName      "Test Range"@en ;
-    bamm:description        "Test Range"@en ;
-    bamm-c:constraint [
-       a bamm-c:RangeConstraint ;
-       bamm-c:minValue         "--01-01"^^xsd:gMonthDay ;
-       bamm-c:maxValue         "--01-02"^^xsd:gMonthDay ;
-       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+    a                       samm-c:Trait ;
+    samm:name               "testWithGregorianCalendarMinGregorianCalendarMaxGMonthYear" ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue         "--01-01"^^xsd:gMonthDay ;
+       samm-c:maxValue         "--01-02"^^xsd:gMonthDay ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
     ] ;
-    bamm-c:baseCharacteristic :MeasurementGMonthYear .
+    samm-c:baseCharacteristic :MeasurementGMonthYear .
 
 :MeasurementGMonthYear
-    a             bamm-c:Measurement ;
-    bamm:name     "Measurement" ;
-    bamm:dataType xsd:gMonthDay ;
-    bamm-c:unit   unit:one .
+    a             samm-c:Measurement ;
+    samm:name     "Measurement" ;
+    samm:dataType xsd:gMonthDay ;
+    samm-c:unit   unit:one .

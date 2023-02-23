@@ -10,59 +10,59 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithExtendedEnumsWithNotInPayloadProperty a bamm:Aspect ;
-   bamm:name "AspectWithExtendedEnumsWithNotInPayloadProperty" ;
-   bamm:properties ( :result :simpleResult ) ;
-   bamm:operations ( ) .
+:AspectWithExtendedEnumsWithNotInPayloadProperty a samm:Aspect ;
+   samm:name "AspectWithExtendedEnumsWithNotInPayloadProperty" ;
+   samm:properties ( :result :simpleResult ) ;
+   samm:operations ( ) .
 
-:EvaluationResult a bamm:Entity ;
-   bamm:name "EvaluationResult" ;
-   bamm:preferredName "Evaluation Result"@en ;
-   bamm:description "Possible values for the evaluation of a process"@en ;
-   bamm:properties ( [ bamm:property :average ; bamm:optional "true"^^xsd:boolean ]
+:EvaluationResult a samm:Entity ;
+   samm:name "EvaluationResult" ;
+   samm:preferredName "Evaluation Result"@en ;
+   samm:description "Possible values for the evaluation of a process"@en ;
+   samm:properties ( [ samm:property :average ; samm:optional "true"^^xsd:boolean ]
                      :numericCode
-                     [ bamm:property :description ; bamm:notInPayload "true"^^xsd:boolean ]
+                     [ samm:property :description ; samm:notInPayload "true"^^xsd:boolean ]
                      :nestedResult ) .
 
-:NestedResult a bamm:Entity ;
-   bamm:name "NestedResult" ;
-   bamm:preferredName "Nested Result"@en ;
-   bamm:description "A nested result for testing"@en ;
-   bamm:properties ( :average :description ) .
+:NestedResult a samm:Entity ;
+   samm:name "NestedResult" ;
+   samm:preferredName "Nested Result"@en ;
+   samm:description "A nested result for testing"@en ;
+   samm:properties ( :average :description ) .
 
-:ShortCode a bamm:Characteristic ;
-   bamm:name "ShortCode" ;
-   bamm:preferredName "Short Code"@en ;
-   bamm:description "A numeric code with dataType short"@en ;
-   bamm:dataType xsd:short .
+:ShortCode a samm:Characteristic ;
+   samm:name "ShortCode" ;
+   samm:preferredName "Short Code"@en ;
+   samm:description "A numeric code with dataType short"@en ;
+   samm:dataType xsd:short .
 
-:BigIntegerValue a bamm:Characteristic ;
-   bamm:name "BigIntegerValue" ;
-   bamm:preferredName "BigInteger Value"@en ;
-   bamm:description "Some big integer value"@en ;
-   bamm:dataType xsd:integer .
+:BigIntegerValue a samm:Characteristic ;
+   samm:name "BigIntegerValue" ;
+   samm:preferredName "BigInteger Value"@en ;
+   samm:description "Some big integer value"@en ;
+   samm:dataType xsd:integer .
 
-:numericCode a bamm:Property ;
-   bamm:name "numericCode" ;
-   bamm:preferredName "Numeric Code"@en ;
-   bamm:description "Numeric code for the evaluation result"@en ;
-   bamm:characteristic :ShortCode .
+:numericCode a samm:Property ;
+   samm:name "numericCode" ;
+   samm:preferredName "Numeric Code"@en ;
+   samm:description "Numeric code for the evaluation result"@en ;
+   samm:characteristic :ShortCode .
 
-:description a bamm:Property ;
-   bamm:name "description" ;
-   bamm:preferredName "Description"@en ;
-   bamm:description "Human-readable description of the process result code"@en ;
-   bamm:characteristic bamm-c:Text .
+:description a samm:Property ;
+   samm:name "description" ;
+   samm:preferredName "Description"@en ;
+   samm:description "Human-readable description of the process result code"@en ;
+   samm:characteristic samm-c:Text .
 
-:average a bamm:Property ;
-   bamm:name "average" ;
-   bamm:preferredName "Average"@en ;
-   bamm:description "Some artifical average value"@en ;
-   bamm:characteristic :BigIntegerValue .
+:average a samm:Property ;
+   samm:name "average" ;
+   samm:preferredName "Average"@en ;
+   samm:description "Some artifical average value"@en ;
+   samm:characteristic :BigIntegerValue .
 
 :ResultNoStatus a :EvaluationResult ;
    :average "3"^^xsd:integer ;
@@ -86,37 +86,37 @@
    :average "1"^^xsd:integer ;
    :description "GOOD" .
 
-:EvaluationResults a bamm-c:Enumeration ;
-   bamm:name "EvaluationResults" ;
-   bamm:preferredName "Evaluation Results"@en ;
-   bamm:description "Possible values for the evaluation of a process"@en ;
-   bamm:dataType :EvaluationResult ;
-   bamm-c:values ( :ResultNoStatus
+:EvaluationResults a samm-c:Enumeration ;
+   samm:name "EvaluationResults" ;
+   samm:preferredName "Evaluation Results"@en ;
+   samm:description "Possible values for the evaluation of a process"@en ;
+   samm:dataType :EvaluationResult ;
+   samm-c:values ( :ResultNoStatus
                    :ResultGood
                    :ResultBad ) .
 
-:result a bamm:Property ;
-   bamm:name "result" ;
-   bamm:preferredName "result"@en ;
-   bamm:characteristic :EvaluationResults .
+:result a samm:Property ;
+   samm:name "result" ;
+   samm:preferredName "result"@en ;
+   samm:characteristic :EvaluationResults .
 
-:nestedResult a bamm:Property ;
-   bamm:name "nestedResult" ;
-   bamm:preferredName "nested result"@en ;
-   bamm:characteristic :NestedResultCharacteristic .
+:nestedResult a samm:Property ;
+   samm:name "nestedResult" ;
+   samm:preferredName "nested result"@en ;
+   samm:characteristic :NestedResultCharacteristic .
 
-:NestedResultCharacteristic a bamm:Characteristic ;
-   bamm:name "NestedResultCharacteristic" ;
-   bamm:dataType :NestedResult .
+:NestedResultCharacteristic a samm:Characteristic ;
+   samm:name "NestedResultCharacteristic" ;
+   samm:dataType :NestedResult .
 
-:YesNo a bamm-c:Enumeration ;
-   bamm:name "YesNo" ;
-   bamm:preferredName "YesNo Result"@en ;
-   bamm:dataType xsd:string ;
-   bamm-c:values ( "Yes"
+:YesNo a samm-c:Enumeration ;
+   samm:name "YesNo" ;
+   samm:preferredName "YesNo Result"@en ;
+   samm:dataType xsd:string ;
+   samm-c:values ( "Yes"
                    "No" ) .
 
-:simpleResult a bamm:Property ;
-   bamm:name "simpleResult" ;
-   bamm:preferredName "simpleResult"@en ;
-   bamm:characteristic :YesNo .
+:simpleResult a samm:Property ;
+   samm:name "simpleResult" ;
+   samm:preferredName "simpleResult"@en ;
+   samm:characteristic :YesNo .

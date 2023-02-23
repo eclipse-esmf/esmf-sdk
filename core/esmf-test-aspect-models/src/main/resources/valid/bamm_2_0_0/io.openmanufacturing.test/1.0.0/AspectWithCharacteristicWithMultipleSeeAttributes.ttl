@@ -10,20 +10,20 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithCharacteristicWithMultipleSeeAttributes a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithCharacteristicWithMultipleSeeAttributes a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic :TestCharacteristic .
+:testProperty a samm:Property ;
+   samm:characteristic :TestCharacteristic .
 
-:TestCharacteristic a bamm:Characteristic ;
-   bamm:preferredName "Test Characteristic"@en ;
-   bamm:description "Test Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:string .
+:TestCharacteristic a samm:Characteristic ;
+   samm:preferredName "Test Characteristic"@en ;
+   samm:description "Test Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:dataType xsd:string .

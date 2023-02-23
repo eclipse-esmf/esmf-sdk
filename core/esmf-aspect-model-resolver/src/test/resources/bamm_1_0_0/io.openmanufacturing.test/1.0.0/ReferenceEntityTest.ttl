@@ -9,19 +9,19 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
 
-:ReferenceEntityTest a bamm:Aspect ;
-   bamm:name "ReferenceEntityTest" ;
-   bamm:properties ( :foo ) ;
-   bamm:operations ( ) .
+:ReferenceEntityTest a samm:Aspect ;
+   samm:name "ReferenceEntityTest" ;
+   samm:properties ( :foo ) ;
+   samm:operations ( ) .
 
-:foo a bamm:Property ;
-   bamm:name "foo" ;
-   bamm:characteristic :TestCharacteristic .
+:foo a samm:Property ;
+   samm:name "foo" ;
+   samm:characteristic :TestCharacteristic .
 
-:TestCharacteristic a bamm-c:SingleEntity ;
-   bamm:name "TestCharacteristic" ;
-   bamm:dataType :TestEntity .
+:TestCharacteristic a samm-c:SingleEntity ;
+   samm:name "TestCharacteristic" ;
+   samm:dataType :TestEntity .

@@ -10,35 +10,35 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
-:AspectWithEncodingConstraint a bamm:Aspect ;
-   bamm:name "AspectWithEncodingConstraint" ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:description "This is a test description"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEncodingConstraint a samm:Aspect ;
+   samm:name "AspectWithEncodingConstraint" ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:description "This is a test description"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:preferredName "Test Property"@en ;
-   bamm:description "This is a test property."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:exampleValue "Example Value" ;
-   bamm:characteristic :TestEncodingConstraint .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:exampleValue "Example Value" ;
+   samm:characteristic :TestEncodingConstraint .
 
-:TestEncodingConstraint a bamm-c:Trait ;
-   bamm:name "TestEncodingConstraint" ;
-   bamm-c:constraint [
-      a bamm-c:EncodingConstraint ;
-      bamm:preferredName "Test Encoding Constraint"@en ;
-      bamm:description "This is a test encoding constraint."@en ;
-      bamm:see <http://example.com/omp> ;
-      bamm:value bamm:UTF-8 ;
+:TestEncodingConstraint a samm-c:Trait ;
+   samm:name "TestEncodingConstraint" ;
+   samm-c:constraint [
+      a samm-c:EncodingConstraint ;
+      samm:preferredName "Test Encoding Constraint"@en ;
+      samm:description "This is a test encoding constraint."@en ;
+      samm:see <http://example.com/omp> ;
+      samm:value samm:UTF-8 ;
    ] ;
-   bamm-c:baseCharacteristic bamm-c:Text .
+   samm-c:baseCharacteristic samm-c:Text .

@@ -10,9 +10,9 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
 
-:AspectMissingProperties a bamm:Aspect ;
-   bamm:name "InvalidAspectMissingProperties" ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:operations ( ) .
+:AspectMissingProperties a samm:Aspect ;
+   samm:name "InvalidAspectMissingProperties" ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:operations ( ) .

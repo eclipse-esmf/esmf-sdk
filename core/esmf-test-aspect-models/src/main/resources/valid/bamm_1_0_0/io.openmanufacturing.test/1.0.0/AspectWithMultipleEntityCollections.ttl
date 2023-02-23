@@ -10,63 +10,63 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithMultipleEntityCollections a bamm:Aspect ;
-   bamm:name "AspectWithMultipleEntityCollections" ;
-   bamm:properties ( :testListOne :testListTwo ) ;
-   bamm:operations ( ) .
+:AspectWithMultipleEntityCollections a samm:Aspect ;
+   samm:name "AspectWithMultipleEntityCollections" ;
+   samm:properties ( :testListOne :testListTwo ) ;
+   samm:operations ( ) .
 
-:testListOne a bamm:Property ;
-   bamm:name "testListOne" ;
-   bamm:characteristic :EntityList .
+:testListOne a samm:Property ;
+   samm:name "testListOne" ;
+   samm:characteristic :EntityList .
 
-:testListTwo a bamm:Property ;
-   bamm:name "testListTwo" ;
-   bamm:characteristic :EntityList .
+:testListTwo a samm:Property ;
+   samm:name "testListTwo" ;
+   samm:characteristic :EntityList .
 
-:EntityList a bamm-c:List ;
-   bamm:name "EntityList" ;
-   bamm:dataType :TestEntity .
+:EntityList a samm-c:List ;
+   samm:name "EntityList" ;
+   samm:dataType :TestEntity .
 
-:TestEntity a bamm:Entity ;
-   bamm:name "TestEntity" ;
-   bamm:properties ( :testString :testInt :testFloat :testLocalDateTime :randomValue ) .
+:TestEntity a samm:Entity ;
+   samm:name "TestEntity" ;
+   samm:properties ( :testString :testInt :testFloat :testLocalDateTime :randomValue ) .
 
-:testString a bamm:Property ;
-   bamm:name "testString" ;
-   bamm:exampleValue "Example Value Test" ;
-   bamm:characteristic bamm-c:Text .
+:testString a samm:Property ;
+   samm:name "testString" ;
+   samm:exampleValue "Example Value Test" ;
+   samm:characteristic samm-c:Text .
 
-:testInt a bamm:Property ;
-   bamm:name "testInt" ;
-   bamm:exampleValue "3"^^xsd:int ;
-   bamm:characteristic :Int .
+:testInt a samm:Property ;
+   samm:name "testInt" ;
+   samm:exampleValue "3"^^xsd:int ;
+   samm:characteristic :Int .
 
-:testFloat a bamm:Property ;
-   bamm:name "testFloat" ;
-   bamm:exampleValue "2.25"^^xsd:float ;
-   bamm:characteristic :Float .
+:testFloat a samm:Property ;
+   samm:name "testFloat" ;
+   samm:exampleValue "2.25"^^xsd:float ;
+   samm:characteristic :Float .
 
-:testLocalDateTime a bamm:Property ;
-   bamm:name "testLocalDateTime" ;
-   bamm:exampleValue "2018-02-28T14:23:32.918Z"^^xsd:dateTimeStamp ;
-   bamm:characteristic :LocalDateTime .
+:testLocalDateTime a samm:Property ;
+   samm:name "testLocalDateTime" ;
+   samm:exampleValue "2018-02-28T14:23:32.918Z"^^xsd:dateTimeStamp ;
+   samm:characteristic :LocalDateTime .
 
-:randomValue a bamm:Property ;
-   bamm:name "randomValue" ;
-   bamm:characteristic bamm-c:Text .
+:randomValue a samm:Property ;
+   samm:name "randomValue" ;
+   samm:characteristic samm-c:Text .
 
-:Int a bamm:Characteristic ;
-   bamm:name "Int" ;
-   bamm:dataType xsd:int .
+:Int a samm:Characteristic ;
+   samm:name "Int" ;
+   samm:dataType xsd:int .
 
-:Float a bamm:Characteristic ;
-   bamm:name "Float" ;
-   bamm:dataType xsd:float .
+:Float a samm:Characteristic ;
+   samm:name "Float" ;
+   samm:dataType xsd:float .
 
-:LocalDateTime a bamm:Characteristic ;
-   bamm:name "LocalDateTime" ;
-   bamm:dataType xsd:dateTimeStamp .
+:LocalDateTime a samm:Characteristic ;
+   samm:name "LocalDateTime" ;
+   samm:dataType xsd:dateTimeStamp .

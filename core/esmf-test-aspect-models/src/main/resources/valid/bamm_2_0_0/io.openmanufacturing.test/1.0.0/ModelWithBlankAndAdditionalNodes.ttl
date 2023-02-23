@@ -10,8 +10,8 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm:   <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm:   <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix aux: <urn:samm:org.eclipse.esmf.samm:aux#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
@@ -19,20 +19,20 @@
   aux:contains  :ModelWithBlankAndAdditionalNodes, :testProperty, :NumberList, :Number, _:blankNode ;
 ] .
 
-:ModelWithBlankAndAdditionalNodes a bamm:Aspect ;
-    bamm:properties  ( :testProperty ) .
+:ModelWithBlankAndAdditionalNodes a samm:Aspect ;
+    samm:properties  ( :testProperty ) .
 
-:testProperty a bamm:Property ;
-    bamm:characteristic :NumberList .
+:testProperty a samm:Property ;
+    samm:characteristic :NumberList .
 
-:NumberList a bamm-c:List ;
-    bamm-c:elementCharacteristic _:blankNode .
+:NumberList a samm-c:List ;
+    samm-c:elementCharacteristic _:blankNode .
 
-_:blankNode a bamm-c:Trait ;
-    bamm-c:baseCharacteristic :Number ;
-    bamm-c:constraint [ a bamm-c:RangeConstraint ;
-                        bamm-c:minValue  "5"^^xsd:nonNegativeInteger ;
-                        bamm-c:maxValue  "10"^^xsd:nonNegativeInteger ; ] .
+_:blankNode a samm-c:Trait ;
+    samm-c:baseCharacteristic :Number ;
+    samm-c:constraint [ a samm-c:RangeConstraint ;
+                        samm-c:minValue  "5"^^xsd:nonNegativeInteger ;
+                        samm-c:maxValue  "10"^^xsd:nonNegativeInteger ; ] .
 
-:Number a bamm:Characteristic ;
-    bamm:dataType xsd:nonNegativeInteger .
+:Number a samm:Characteristic ;
+    samm:dataType xsd:nonNegativeInteger .

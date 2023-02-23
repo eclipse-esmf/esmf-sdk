@@ -10,31 +10,31 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithUsedAndUnusedCharacteristic a bamm:Aspect ;
-   bamm:name "AspectWithUsedAndUnusedCharacteristic" ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithUsedAndUnusedCharacteristic a samm:Aspect ;
+   samm:name "AspectWithUsedAndUnusedCharacteristic" ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :UsedTestCharacteristic .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :UsedTestCharacteristic .
 
-:UsedTestCharacteristic a bamm:Characteristic ;
-   bamm:name "UsedTestCharacteristic" ;
-   bamm:preferredName "Used Test Characteristic"@en ;
-   bamm:description "Used Test Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:string .
+:UsedTestCharacteristic a samm:Characteristic ;
+   samm:name "UsedTestCharacteristic" ;
+   samm:preferredName "Used Test Characteristic"@en ;
+   samm:description "Used Test Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:dataType xsd:string .
 
-:UnusedTestCharacteristic a bamm:Characteristic ;
-   bamm:name "UnusedTestCharacteristic" ;
-   bamm:preferredName "Unused Test Characteristic"@en ;
-   bamm:description "Unused Test Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:string .
+:UnusedTestCharacteristic a samm:Characteristic ;
+   samm:name "UnusedTestCharacteristic" ;
+   samm:preferredName "Unused Test Characteristic"@en ;
+   samm:description "Unused Test Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:dataType xsd:string .

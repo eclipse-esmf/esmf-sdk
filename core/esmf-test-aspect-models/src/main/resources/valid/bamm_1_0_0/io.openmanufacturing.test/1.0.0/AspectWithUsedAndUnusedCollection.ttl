@@ -10,31 +10,31 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithUsedAndUnusedCollection a bamm:Aspect ;
-   bamm:name "AspectWithUsedAndUnusedCollection" ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithUsedAndUnusedCollection a samm:Aspect ;
+   samm:name "AspectWithUsedAndUnusedCollection" ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :UsedTestCollection .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :UsedTestCollection .
 
-:UsedTestCollection a bamm-c:Collection ;
-   bamm:name "UsedTestCollection" ;
-   bamm:preferredName "Used Test Collection"@en ;
-   bamm:description "Used Test Collection"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:string .
+:UsedTestCollection a samm-c:Collection ;
+   samm:name "UsedTestCollection" ;
+   samm:preferredName "Used Test Collection"@en ;
+   samm:description "Used Test Collection"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:dataType xsd:string .
 
-:UnusedTestCollection a bamm-c:Collection ;
-   bamm:name "UnusedTestCollection" ;
-   bamm:preferredName "Unused Test Collection"@en ;
-   bamm:description "Unused Test Collection"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:string .
+:UnusedTestCollection a samm-c:Collection ;
+   samm:name "UnusedTestCollection" ;
+   samm:preferredName "Unused Test Collection"@en ;
+   samm:description "Unused Test Collection"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:dataType xsd:string .

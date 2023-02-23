@@ -10,56 +10,56 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix :       <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm:   <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm:   <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit:   <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
 :AspectWithDateTimeTypeForRangeConstraints
-    a               bamm:Aspect ;
-    bamm:properties ( :testPropertyWithDateTime :testPropertyWithDateTimeStamp ) ;
-    bamm:operations ( ) .
+    a               samm:Aspect ;
+    samm:properties ( :testPropertyWithDateTime :testPropertyWithDateTimeStamp ) ;
+    samm:operations ( ) .
 
 :testPropertyWithDateTime
-    a                   bamm:Property ;
-    bamm:characteristic :testWithGregorianCalenderMinGregorianCalenderMaxDateTime .
+    a                   samm:Property ;
+    samm:characteristic :testWithGregorianCalenderMinGregorianCalenderMaxDateTime .
 
 :testWithGregorianCalenderMinGregorianCalenderMaxDateTime
-    a                       bamm-c:Trait ;
-    bamm:preferredName      "Test Range"@en ;
-    bamm:description        "Test Range"@en ;
-    bamm-c:constraint [
-       a bamm-c:RangeConstraint ;
-       bamm-c:minValue "2000-01-01T14:23:00"^^xsd:dateTime ;
-       bamm-c:maxValue "2000-01-02T15:23:00"^^xsd:dateTime ;
-       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+    a                       samm-c:Trait ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue "2000-01-01T14:23:00"^^xsd:dateTime ;
+       samm-c:maxValue "2000-01-02T15:23:00"^^xsd:dateTime ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
     ] ;
-    bamm-c:baseCharacteristic :MeasurementDateTime .
+    samm-c:baseCharacteristic :MeasurementDateTime .
 
 :MeasurementDateTime
-    a             bamm-c:Measurement ;
-    bamm:dataType xsd:dateTime ;
-    bamm-c:unit   unit:secondUnitOfTime .
+    a             samm-c:Measurement ;
+    samm:dataType xsd:dateTime ;
+    samm-c:unit   unit:secondUnitOfTime .
 
 :testPropertyWithDateTimeStamp
-    a                   bamm:Property ;
-    bamm:characteristic :testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp .
+    a                   samm:Property ;
+    samm:characteristic :testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp .
 
 :testWithGregorianCalenderMinGregorianCalenderMaxDateTimeStamp
-    a                       bamm-c:Trait;
-    bamm:preferredName      "Test Range"@en ;
-    bamm:description        "Test Range"@en ;
-    bamm-c:constraint [
-       a bamm-c:RangeConstraint ;
-       bamm-c:minValue "2000-01-01T14:23:00.66372+14:00"^^xsd:dateTimeStamp ;
-       bamm-c:maxValue "2000-01-01T15:23:00.66372+14:00"^^xsd:dateTimeStamp ;
-       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+    a                       samm-c:Trait;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue "2000-01-01T14:23:00.66372+14:00"^^xsd:dateTimeStamp ;
+       samm-c:maxValue "2000-01-01T15:23:00.66372+14:00"^^xsd:dateTimeStamp ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
     ] ;
-    bamm-c:baseCharacteristic :MeasurementDateTimeStamp .
+    samm-c:baseCharacteristic :MeasurementDateTimeStamp .
 
 :MeasurementDateTimeStamp
-    a             bamm-c:Measurement ;
-    bamm:dataType xsd:dateTimeStamp ;
-    bamm-c:unit   unit:secondUnitOfTime .
+    a             samm-c:Measurement ;
+    samm:dataType xsd:dateTimeStamp ;
+    samm-c:unit   unit:secondUnitOfTime .

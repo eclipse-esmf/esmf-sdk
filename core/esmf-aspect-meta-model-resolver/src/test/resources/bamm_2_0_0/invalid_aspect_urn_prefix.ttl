@@ -9,9 +9,9 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix bamm: <urn:foo:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix samm: <urn:foo:io.openmanufacturing:meta-model:2.0.0#> .
 
-<urn:samm:org.eclipse.esmf.samm:aspect-model:TestAspect:1.1.0> a bamm:Aspect ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:properties ( ) ;
-   bamm:operations ( ) .
+<urn:samm:org.eclipse.esmf.samm:aspect-model:TestAspect:1.1.0> a samm:Aspect ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:properties ( ) ;
+   samm:operations ( ) .

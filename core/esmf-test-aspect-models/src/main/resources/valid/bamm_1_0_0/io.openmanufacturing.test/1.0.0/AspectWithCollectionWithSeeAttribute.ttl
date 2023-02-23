@@ -10,34 +10,34 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithCollectionWithSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithCollectionWithSeeAttribute" ;
-   bamm:properties ( :testProperty :testPropertyTwo ) ;
-   bamm:operations ( ) .
+:AspectWithCollectionWithSeeAttribute a samm:Aspect ;
+   samm:name "AspectWithCollectionWithSeeAttribute" ;
+   samm:properties ( :testProperty :testPropertyTwo ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestCollection .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestCollection .
 
-:testPropertyTwo a bamm:Property ;
-   bamm:name "testPropertyTwo" ;
-   bamm:characteristic :TestCollectionTwo .
+:testPropertyTwo a samm:Property ;
+   samm:name "testPropertyTwo" ;
+   samm:characteristic :TestCollectionTwo .
 
-:TestCollection a bamm-c:Collection ;
-   bamm:name "TestCollection" ;
-   bamm:preferredName "Test Collection"@en ;
-   bamm:description "Test Collection"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType xsd:string .
+:TestCollection a samm-c:Collection ;
+   samm:name "TestCollection" ;
+   samm:preferredName "Test Collection"@en ;
+   samm:description "Test Collection"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType xsd:string .
 
-:TestCollectionTwo a bamm-c:Collection ;
-   bamm:name "TestCollectionTwo" ;
-   bamm:preferredName "Test Collection Two"@en ;
-   bamm:description "Test Collection Two"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:dataType xsd:string .
+:TestCollectionTwo a samm-c:Collection ;
+   samm:name "TestCollectionTwo" ;
+   samm:preferredName "Test Collection Two"@en ;
+   samm:description "Test Collection Two"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:dataType xsd:string .

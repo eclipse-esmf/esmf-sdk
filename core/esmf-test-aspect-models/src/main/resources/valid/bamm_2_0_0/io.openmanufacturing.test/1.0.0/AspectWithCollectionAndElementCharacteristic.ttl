@@ -10,26 +10,26 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:AspectWithCollectionAndElementCharacteristic a bamm:Aspect ;
-   bamm:properties ( :items ) ;
-   bamm:operations ( ) .
+:AspectWithCollectionAndElementCharacteristic a samm:Aspect ;
+   samm:properties ( :items ) ;
+   samm:operations ( ) .
 
-:items a bamm:Property ;
-   bamm:characteristic [
-      a bamm-c:Collection ;
-      bamm-c:elementCharacteristic :TestEntityCharacteristic
+:items a samm:Property ;
+   samm:characteristic [
+      a samm-c:Collection ;
+      samm-c:elementCharacteristic :TestEntityCharacteristic
    ] .
 
-:TestEntityCharacteristic a bamm-c:SingleEntity ;
-   bamm:dataType :TestEntity .
+:TestEntityCharacteristic a samm-c:SingleEntity ;
+   samm:dataType :TestEntity .
 
-:TestEntity a bamm:Entity ;
-   bamm:properties ( :testProperty ) .
+:TestEntity a samm:Entity ;
+   samm:properties ( :testProperty ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic bamm-c:Text .
+:testProperty a samm:Property ;
+   samm:characteristic samm-c:Text .

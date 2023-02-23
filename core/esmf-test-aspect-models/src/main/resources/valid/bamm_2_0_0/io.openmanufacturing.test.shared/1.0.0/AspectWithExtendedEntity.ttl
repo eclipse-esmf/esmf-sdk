@@ -10,41 +10,41 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test.shared:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithExtendedEntity a bamm:Aspect ;
-    bamm:properties ( :testProperty ) ;
-    bamm:operations ( ) .
+:AspectWithExtendedEntity a samm:Aspect ;
+    samm:properties ( :testProperty ) ;
+    samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-              bamm:preferredName "Test Property"@en ;
-              bamm:description "This is a test property."@en ;
-              bamm:see <http://example.com/omp> ;
-              bamm:see <http://example.com/me> ;
-              bamm:characteristic [ a             bamm-c:SortedSet ;
-                                    bamm:dataType :TestEntity ] .
+:testProperty a samm:Property ;
+              samm:preferredName "Test Property"@en ;
+              samm:description "This is a test property."@en ;
+              samm:see <http://example.com/omp> ;
+              samm:see <http://example.com/me> ;
+              samm:characteristic [ a             samm-c:SortedSet ;
+                                    samm:dataType :TestEntity ] .
 
-:TestEntity a bamm:Entity ;
-    bamm:extends :ParentTestEntity ;
-    bamm:properties ( ) .
+:TestEntity a samm:Entity ;
+    samm:extends :ParentTestEntity ;
+    samm:properties ( ) .
 
-:ParentTestEntity a bamm:AbstractEntity ;
-    bamm:extends :ParentOfParentEntity ;
-    bamm:properties ( :parentString ) .
+:ParentTestEntity a samm:AbstractEntity ;
+    samm:extends :ParentOfParentEntity ;
+    samm:properties ( :parentString ) .
 
-:ParentOfParentEntity a bamm:AbstractEntity ;
-    bamm:properties ( :booleanProperty ) .
+:ParentOfParentEntity a samm:AbstractEntity ;
+    samm:properties ( :booleanProperty ) .
 
-:StringCode a bamm-c:Code ;
-    bamm:dataType xsd:string .
+:StringCode a samm-c:Code ;
+    samm:dataType xsd:string .
 
-:parentString a bamm:Property ;
-    bamm:characteristic :StringCode .
+:parentString a samm:Property ;
+    samm:characteristic :StringCode .
 
-:parentOfParentString a bamm:Property ;
-    bamm:characteristic :StringCode .
+:parentOfParentString a samm:Property ;
+    samm:characteristic :StringCode .
 

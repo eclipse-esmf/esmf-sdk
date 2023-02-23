@@ -10,28 +10,28 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEnumerationWithoutScalarVariable a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEnumerationWithoutScalarVariable a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:preferredName "result"@en ;
-   bamm:characteristic :EvaluationResults .
+:testProperty a samm:Property ;
+   samm:preferredName "result"@en ;
+   samm:characteristic :EvaluationResults .
 
-:EvaluationResults a bamm-c:Enumeration ;
-   bamm:preferredName "Evaluation Results"@en ;
-   bamm:description "Possible values for the evaluation of a process"@en ;
-   bamm:dataType :EvaluationResult ;
-   bamm-c:values ( :ResultGood ) .
+:EvaluationResults a samm-c:Enumeration ;
+   samm:preferredName "Evaluation Results"@en ;
+   samm:description "Possible values for the evaluation of a process"@en ;
+   samm:dataType :EvaluationResult ;
+   samm-c:values ( :ResultGood ) .
 
 :ResultGood a :EvaluationResult .
 
-:EvaluationResult a bamm:Entity ;
-   bamm:preferredName "Evaluation Result"@en ;
-   bamm:description "Possible values for the evaluation of a process"@en ;
-   bamm:properties ( ) .
+:EvaluationResult a samm:Entity ;
+   samm:preferredName "Evaluation Result"@en ;
+   samm:description "Possible values for the evaluation of a process"@en ;
+   samm:properties ( ) .
 

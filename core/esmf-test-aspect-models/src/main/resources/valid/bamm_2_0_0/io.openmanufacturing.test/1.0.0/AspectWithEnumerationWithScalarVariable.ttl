@@ -10,21 +10,21 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEnumerationWithScalarVariable a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEnumerationWithScalarVariable a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:preferredName "testProperty"@en ;
-   bamm:characteristic :TestScalarEnumeration .
+:testProperty a samm:Property ;
+   samm:preferredName "testProperty"@en ;
+   samm:characteristic :TestScalarEnumeration .
 
-:TestScalarEnumeration a bamm-c:Enumeration ;
-   bamm:preferredName "TestScalarEnumeration Result"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType xsd:string ;
-   bamm-c:values ( "Yes"
+:TestScalarEnumeration a samm-c:Enumeration ;
+   samm:preferredName "TestScalarEnumeration Result"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType xsd:string ;
+   samm-c:values ( "Yes"
                    "No" ) .

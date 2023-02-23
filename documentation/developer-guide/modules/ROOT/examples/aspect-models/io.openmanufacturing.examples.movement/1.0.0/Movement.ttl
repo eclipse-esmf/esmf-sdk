@@ -9,109 +9,109 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix : <urn:samm:org.eclipse.esmf.samm.examples.movement:1.0.0#> .
 
-:Movement a bamm:Aspect ;
-   bamm:name "Movement" ;
-   bamm:preferredName "movement"@en ;
-   bamm:description "Aspect for movement information"@en ;
-   bamm:properties ( :isMoving :position :speed :speedLimitWarning ) ;
-   bamm:operations ( ) ;
-   bamm:events ( ) .
+:Movement a samm:Aspect ;
+   samm:name "Movement" ;
+   samm:preferredName "movement"@en ;
+   samm:description "Aspect for movement information"@en ;
+   samm:properties ( :isMoving :position :speed :speedLimitWarning ) ;
+   samm:operations ( ) ;
+   samm:events ( ) .
 
-:isMoving a bamm:Property ;
-   bamm:name "isMoving" ;
-   bamm:preferredName "is moving"@en ;
-   bamm:description "Flag indicating whether the asset is currently moving"@en ;
-   bamm:characteristic bamm-c:Boolean .
+:isMoving a samm:Property ;
+   samm:name "isMoving" ;
+   samm:preferredName "is moving"@en ;
+   samm:description "Flag indicating whether the asset is currently moving"@en ;
+   samm:characteristic samm-c:Boolean .
 
-:position a bamm:Property ;
-   bamm:name "position" ;
-   bamm:preferredName "position"@en ;
-   bamm:description "Indicates a position"@en ;
-   bamm:characteristic :SpatialPositionCharacteristic .
+:position a samm:Property ;
+   samm:name "position" ;
+   samm:preferredName "position"@en ;
+   samm:description "Indicates a position"@en ;
+   samm:characteristic :SpatialPositionCharacteristic .
 
-:speed a bamm:Property ;
-   bamm:name "speed" ;
-   bamm:preferredName "speed"@en ;
-   bamm:description "speed of vehicle"@en ;
-   bamm:characteristic :Speed .
+:speed a samm:Property ;
+   samm:name "speed" ;
+   samm:preferredName "speed"@en ;
+   samm:description "speed of vehicle"@en ;
+   samm:characteristic :Speed .
 
-:speedLimitWarning a bamm:Property ;
-   bamm:name "speedLimitWarning" ;
-   bamm:preferredName "speed limit warning"@en ;
-   bamm:description "Indicates if the speed limit is adhered to."@en ;
-   bamm:characteristic :TrafficLight .
+:speedLimitWarning a samm:Property ;
+   samm:name "speedLimitWarning" ;
+   samm:preferredName "speed limit warning"@en ;
+   samm:description "Indicates if the speed limit is adhered to."@en ;
+   samm:characteristic :TrafficLight .
 
-:SpatialPositionCharacteristic a bamm-c:SingleEntity ;
-   bamm:name "SpatialPositionCharacteristic" ;
-   bamm:preferredName "spatial position characteristic"@en ;
-   bamm:description "Represents a single position in space with optional z coordinate."@en ;
-   bamm:dataType :SpatialPosition .
+:SpatialPositionCharacteristic a samm-c:SingleEntity ;
+   samm:name "SpatialPositionCharacteristic" ;
+   samm:preferredName "spatial position characteristic"@en ;
+   samm:description "Represents a single position in space with optional z coordinate."@en ;
+   samm:dataType :SpatialPosition .
 
-:Speed a bamm-c:Measurement ;
-   bamm:name "Speed" ;
-   bamm:preferredName "speed"@en ;
-   bamm:description "Scalar representation of speed of an object in kilometers per hour."@en ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit unit:kilometrePerHour .
+:Speed a samm-c:Measurement ;
+   samm:name "Speed" ;
+   samm:preferredName "speed"@en ;
+   samm:description "Scalar representation of speed of an object in kilometers per hour."@en ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:kilometrePerHour .
 
-:TrafficLight a bamm-c:Enumeration ;
-   bamm:name "TrafficLight" ;
-   bamm:preferredName "warning level"@en ;
-   bamm:description "Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red)."@en ;
-   bamm:dataType xsd:string ;
-   bamm-c:values ( "green" "yellow" "red" ) .
+:TrafficLight a samm-c:Enumeration ;
+   samm:name "TrafficLight" ;
+   samm:preferredName "warning level"@en ;
+   samm:description "Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red)."@en ;
+   samm:dataType xsd:string ;
+   samm-c:values ( "green" "yellow" "red" ) .
 
-:SpatialPosition a bamm:Entity ;
-   bamm:name "SpatialPosition" ;
-   bamm:preferredName "spatial position"@en ;
-   bamm:description "Represents latitude, longitude and altitude information in the WGS84 geodetic reference datum"@en ;
-   bamm:see <https://www.w3.org/2003/01/geo/> ;
-   bamm:properties ( :latitude :longitude [ bamm:property :altitude; bamm:optional true ] ) .
+:SpatialPosition a samm:Entity ;
+   samm:name "SpatialPosition" ;
+   samm:preferredName "spatial position"@en ;
+   samm:description "Represents latitude, longitude and altitude information in the WGS84 geodetic reference datum"@en ;
+   samm:see <https://www.w3.org/2003/01/geo/> ;
+   samm:properties ( :latitude :longitude [ samm:property :altitude; samm:optional true ] ) .
 
-:latitude a bamm:Property ;
-   bamm:name "latitude" ;
-   bamm:preferredName "latitude"@en ;
-   bamm:description "latitude coordinate in space (WGS84)"@en ;
-   bamm:see <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ;
-   bamm:characteristic :Coordinate ;
-   bamm:exampleValue "9.1781"^^xsd:decimal .
+:latitude a samm:Property ;
+   samm:name "latitude" ;
+   samm:preferredName "latitude"@en ;
+   samm:description "latitude coordinate in space (WGS84)"@en ;
+   samm:see <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ;
+   samm:characteristic :Coordinate ;
+   samm:exampleValue "9.1781"^^xsd:decimal .
 
-:longitude a bamm:Property ;
-   bamm:name "longitude" ;
-   bamm:preferredName "longitude"@en ;
-   bamm:description "longitude coordinate in space (WGS84)"@en ;
-   bamm:see <http://www.w3.org/2003/01/geo/wgs84_pos#long> ;
-   bamm:characteristic :Coordinate ;
-   bamm:exampleValue "48.80835"^^xsd:decimal .
+:longitude a samm:Property ;
+   samm:name "longitude" ;
+   samm:preferredName "longitude"@en ;
+   samm:description "longitude coordinate in space (WGS84)"@en ;
+   samm:see <http://www.w3.org/2003/01/geo/wgs84_pos#long> ;
+   samm:characteristic :Coordinate ;
+   samm:exampleValue "48.80835"^^xsd:decimal .
 
-:altitude a bamm:Property ;
-   bamm:name "altitude" ;
-   bamm:preferredName "altitude"@en ;
-   bamm:description "Elevation above sea level zero"@en ;
-   bamm:see <http://www.w3.org/2003/01/geo/wgs84_pos#alt> ;
-   bamm:characteristic :MetresAboveMeanSeaLevel ;
-   bamm:exampleValue "153"^^xsd:float .
+:altitude a samm:Property ;
+   samm:name "altitude" ;
+   samm:preferredName "altitude"@en ;
+   samm:description "Elevation above sea level zero"@en ;
+   samm:see <http://www.w3.org/2003/01/geo/wgs84_pos#alt> ;
+   samm:characteristic :MetresAboveMeanSeaLevel ;
+   samm:exampleValue "153"^^xsd:float .
 
-:Coordinate a bamm-c:Measurement ;
-   bamm:name "Coordinate" ;
-   bamm:preferredName "coordinate"@en ;
-   bamm:description "Representing the geographical coordinate"@en ;
-   bamm:dataType xsd:decimal ;
-   bamm-c:unit unit:degreeUnitOfAngle .
+:Coordinate a samm-c:Measurement ;
+   samm:name "Coordinate" ;
+   samm:preferredName "coordinate"@en ;
+   samm:description "Representing the geographical coordinate"@en ;
+   samm:dataType xsd:decimal ;
+   samm-c:unit unit:degreeUnitOfAngle .
 
-:MetresAboveMeanSeaLevel a bamm-c:Measurement ;
-   bamm:name "MetresAboveMeanSeaLevel" ;
-   bamm:preferredName "metres above mean sea level"@en ;
-   bamm:description "Signifies the vertical distance in reference to a historic mean sea level as a vertical datum"@en ;
-   bamm:see <https://en.wikipedia.org/wiki/Height_above_sea_level> ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit unit:metre .
+:MetresAboveMeanSeaLevel a samm-c:Measurement ;
+   samm:name "MetresAboveMeanSeaLevel" ;
+   samm:preferredName "metres above mean sea level"@en ;
+   samm:description "Signifies the vertical distance in reference to a historic mean sea level as a vertical datum"@en ;
+   samm:see <https://en.wikipedia.org/wiki/Height_above_sea_level> ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:metre .

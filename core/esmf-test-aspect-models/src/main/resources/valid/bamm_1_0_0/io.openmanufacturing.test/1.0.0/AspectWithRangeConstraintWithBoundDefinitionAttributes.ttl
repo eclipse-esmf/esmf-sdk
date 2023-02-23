@@ -10,34 +10,34 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithRangeConstraintWithBoundDefinitionAttributes a bamm:Aspect ;
-   bamm:name "AspectWithRangeConstraintWithBoundDefinitionAttributes" ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithRangeConstraintWithBoundDefinitionAttributes a samm:Aspect ;
+   samm:name "AspectWithRangeConstraintWithBoundDefinitionAttributes" ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestTrait .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestTrait .
 
-:TestTrait a bamm-c:Trait ;
-   bamm:name "TestTrait" ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm:name "TestConstraint" ;
-      bamm:preferredName "Test Constraint"@en ;
-      bamm:description "Test Constraint"@en ;
-      bamm:see <http://example.com/omp> ;
-      bamm-c:minValue "5"^^xsd:nonNegativeInteger ;
-      bamm-c:lowerBoundDefinition bamm-c:GREATER_THAN ;
-      bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
-      bamm-c:upperBoundDefinition bamm-c:LESS_THAN ;
+:TestTrait a samm-c:Trait ;
+   samm:name "TestTrait" ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:name "TestConstraint" ;
+      samm:preferredName "Test Constraint"@en ;
+      samm:description "Test Constraint"@en ;
+      samm:see <http://example.com/omp> ;
+      samm-c:minValue "5"^^xsd:nonNegativeInteger ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
    ] ;
-   bamm-c:baseCharacteristic [
-      a bamm:Characteristic ;
-      bamm:name "NumberCharacteristic" ;
-      bamm:dataType xsd:nonNegativeInteger
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:name "NumberCharacteristic" ;
+      samm:dataType xsd:nonNegativeInteger
    ] .

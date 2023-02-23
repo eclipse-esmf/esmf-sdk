@@ -10,13 +10,13 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 
-:propertyWithSeeAttribute a bamm:Property ;
-   bamm:preferredName "Test Property"@en ;
-   bamm:description "This is a test property."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:exampleValue "foo" ;
-   bamm:characteristic bamm-c:Text .
+:propertyWithSeeAttribute a samm:Property ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:exampleValue "foo" ;
+   samm:characteristic samm-c:Text .
 

@@ -10,20 +10,20 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithCurie a bamm:Aspect ;
-   bamm:name "AspectWithCurie" ;
-   bamm:properties ( :testCurie :testCurieWithoutExampleValue ) ;
-   bamm:operations ( ) .
+:AspectWithCurie a samm:Aspect ;
+   samm:name "AspectWithCurie" ;
+   samm:properties ( :testCurie :testCurieWithoutExampleValue ) ;
+   samm:operations ( ) .
 
-:testCurie a bamm:Property ;
-   bamm:name "testCurie" ;
-   bamm:exampleValue "unit:hectopascal"^^bamm:curie ;
-   bamm:characteristic bamm-c:UnitReference .
+:testCurie a samm:Property ;
+   samm:name "testCurie" ;
+   samm:exampleValue "unit:hectopascal"^^samm:curie ;
+   samm:characteristic samm-c:UnitReference .
 
-:testCurieWithoutExampleValue a bamm:Property ;
-   bamm:name "testCurieWithoutExampleValue" ;
-   bamm:characteristic bamm-c:UnitReference .
+:testCurieWithoutExampleValue a samm:Property ;
+   samm:name "testCurieWithoutExampleValue" ;
+   samm:characteristic samm-c:UnitReference .

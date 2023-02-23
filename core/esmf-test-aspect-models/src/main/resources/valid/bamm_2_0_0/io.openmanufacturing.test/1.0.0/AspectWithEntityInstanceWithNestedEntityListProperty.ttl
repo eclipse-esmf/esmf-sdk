@@ -10,48 +10,48 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEntityInstanceWithNestedEntityListProperty a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEntityInstanceWithNestedEntityListProperty a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic :TestCharacteristic .
+:testProperty a samm:Property ;
+   samm:characteristic :TestCharacteristic .
 
-:TestCharacteristic a bamm-c:Enumeration ;
-   bamm:dataType :TestEntity ;
-   bamm-c:values ( :TestEntityInstance ) .
+:TestCharacteristic a samm-c:Enumeration ;
+   samm:dataType :TestEntity ;
+   samm-c:values ( :TestEntityInstance ) .
 
 :TestEntityInstance a :TestEntity ;
    :code "3"^^xsd:short ;
    :testList ( :NestedEntityInstance :NestedEntityInstanceTwo ) .
 
-:TestEntity a bamm:Entity ;
-   bamm:properties ( :code
-   					 [ bamm:property :testList ; bamm:notInPayload "true"^^xsd:boolean ] ) .
+:TestEntity a samm:Entity ;
+   samm:properties ( :code
+   					 [ samm:property :testList ; samm:notInPayload "true"^^xsd:boolean ] ) .
 
-:code a bamm:Property ;
-   bamm:characteristic :ShortCode .
+:code a samm:Property ;
+   samm:characteristic :ShortCode .
 
-:testList a bamm:Property ;
-   bamm:characteristic [
-      a bamm-c:List ;
-      bamm:dataType :NestedEntity
+:testList a samm:Property ;
+   samm:characteristic [
+      a samm-c:List ;
+      samm:dataType :NestedEntity
    ] .
 
-:ShortCode a bamm:Characteristic ;
-   bamm:preferredName "Short Code"@en ;
-   bamm:description "A numeric code with dataType short"@en ;
-   bamm:dataType xsd:short .
+:ShortCode a samm:Characteristic ;
+   samm:preferredName "Short Code"@en ;
+   samm:description "A numeric code with dataType short"@en ;
+   samm:dataType xsd:short .
 
-:NestedEntity a bamm:Entity ;
-   bamm:properties ( :nestedEntityProperty ) .
+:NestedEntity a samm:Entity ;
+   samm:properties ( :nestedEntityProperty ) .
 
-:nestedEntityProperty a bamm:Property ;
-   bamm:characteristic bamm-c:Text .
+:nestedEntityProperty a samm:Property ;
+   samm:characteristic samm-c:Text .
 
 :NestedEntityInstance a :NestedEntity ;
    :nestedEntityProperty "bar" .

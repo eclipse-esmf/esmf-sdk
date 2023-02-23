@@ -10,18 +10,18 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 
-:AspectWithOperationWithoutSeeAttribute a bamm:Aspect ;
-   bamm:properties ( ) ;
-   bamm:operations ( :testOperation ) .
+:AspectWithOperationWithoutSeeAttribute a samm:Aspect ;
+   samm:properties ( ) ;
+   samm:operations ( :testOperation ) .
 
-:testOperation a bamm:Operation ;
-   bamm:preferredName "Test Operation"@en ;
-   bamm:description "Test Operation"@en ;
-   bamm:input ( ) ;
-   bamm:output :output .
+:testOperation a samm:Operation ;
+   samm:preferredName "Test Operation"@en ;
+   samm:description "Test Operation"@en ;
+   samm:input ( ) ;
+   samm:output :output .
 
-:output a bamm:Property ;
-   bamm:characteristic bamm-c:Text .
+:output a samm:Property ;
+   samm:characteristic samm-c:Text .

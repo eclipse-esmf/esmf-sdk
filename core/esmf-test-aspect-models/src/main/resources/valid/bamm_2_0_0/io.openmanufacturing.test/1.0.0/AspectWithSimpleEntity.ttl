@@ -10,25 +10,25 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithSimpleEntity a bamm:Aspect ;
-   bamm:properties ( :entityProperty ) ;
-   bamm:operations ( ) .
+:AspectWithSimpleEntity a samm:Aspect ;
+   samm:properties ( :entityProperty ) ;
+   samm:operations ( ) .
 
-:entityProperty a bamm:Property ;
-   bamm:characteristic [
-      a bamm-c:SingleEntity ;
-      bamm:dataType :Foo
+:entityProperty a samm:Property ;
+   samm:characteristic [
+      a samm-c:SingleEntity ;
+      samm:dataType :Foo
    ] .
 
-:Foo a bamm:Entity ;
-   bamm:properties ( :foo ) .
+:Foo a samm:Entity ;
+   samm:properties ( :foo ) .
 
-:foo a bamm:Property ;
-   bamm:characteristic bamm-c:Text .
+:foo a samm:Property ;
+   samm:characteristic samm-c:Text .
 

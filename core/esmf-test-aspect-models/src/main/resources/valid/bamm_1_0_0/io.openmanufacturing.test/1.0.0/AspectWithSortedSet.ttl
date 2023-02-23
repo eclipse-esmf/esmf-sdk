@@ -10,31 +10,31 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
-:AspectWithSortedSet a bamm:Aspect ;
-   bamm:name "AspectWithSortedSet" ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:description "This is a test description"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithSortedSet a samm:Aspect ;
+   samm:name "AspectWithSortedSet" ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:description "This is a test description"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:preferredName "Test Property"@en ;
-   bamm:description "This is a test property."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:exampleValue "Example Value" ;
-   bamm:characteristic :TestSortedSet .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:exampleValue "Example Value" ;
+   samm:characteristic :TestSortedSet .
 
-:TestSortedSet a bamm-c:SortedSet ;
-   bamm:name "TestSortedSet" ;
-   bamm:preferredName "Test Sorted Set"@en ;
-   bamm:description "This is a test sorted set."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType xsd:string .
+:TestSortedSet a samm-c:SortedSet ;
+   samm:name "TestSortedSet" ;
+   samm:preferredName "Test Sorted Set"@en ;
+   samm:description "This is a test sorted set."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType xsd:string .

@@ -10,39 +10,39 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithNestedEntityEnumerationWithNotInPayload a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithNestedEntityEnumerationWithNotInPayload a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic :TestEnumeration .
+:testProperty a samm:Property ;
+   samm:characteristic :TestEnumeration .
 
-:TestEnumeration a bamm-c:Enumeration ;
-   bamm:dataType :TestEntity ;
-   bamm-c:values ( :entityInstance ) .
+:TestEnumeration a samm-c:Enumeration ;
+   samm:dataType :TestEntity ;
+   samm-c:values ( :entityInstance ) .
 
-:TestEntity a bamm:Entity ;
-   bamm:properties ( :entityProperty
-                     [ bamm:property :nestedEntityProperty ; bamm:notInPayload "true"^^xsd:boolean ] ) .
+:TestEntity a samm:Entity ;
+   samm:properties ( :entityProperty
+                     [ samm:property :nestedEntityProperty ; samm:notInPayload "true"^^xsd:boolean ] ) .
 
-:entityProperty a bamm:Property ;
-   bamm:characteristic bamm-c:Text .
+:entityProperty a samm:Property ;
+   samm:characteristic samm-c:Text .
 
-:nestedEntityProperty a bamm:Property ;
-   bamm:characteristic [
-      a bamm-c:SingleEntity ;
-      bamm:dataType :NestedEntity
+:nestedEntityProperty a samm:Property ;
+   samm:characteristic [
+      a samm-c:SingleEntity ;
+      samm:dataType :NestedEntity
    ] .
 
-:NestedEntity a bamm:Entity ;
-   bamm:properties ( :notInPayloadProperty ) .
+:NestedEntity a samm:Entity ;
+   samm:properties ( :notInPayloadProperty ) .
 
-:notInPayloadProperty a bamm:Property ;
-   bamm:characteristic bamm-c:Text .
+:notInPayloadProperty a samm:Property ;
+   samm:characteristic samm-c:Text .
 
 :entityInstance a :TestEntity ;
    :entityProperty "This is a test." ;

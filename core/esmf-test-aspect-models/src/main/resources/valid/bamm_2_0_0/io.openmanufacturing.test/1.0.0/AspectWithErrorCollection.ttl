@@ -10,51 +10,51 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:AspectWithErrorCollection a bamm:Aspect ;
-   bamm:preferredName "Errors Aspect"@en ;
-   bamm:description "The Errors Aspect delivers a list of the currently active errors for a specific machine."@en ;
-   bamm:properties ( :items ) ;
-   bamm:operations ( ) .
+:AspectWithErrorCollection a samm:Aspect ;
+   samm:preferredName "Errors Aspect"@en ;
+   samm:description "The Errors Aspect delivers a list of the currently active errors for a specific machine."@en ;
+   samm:properties ( :items ) ;
+   samm:operations ( ) .
 
-:items a bamm:Property ;
-   bamm:preferredName "Items"@en ;
-   bamm:description "A list of current active errors."@en ;
-   bamm:characteristic [
-                          a bamm-c:Collection ;
-                          bamm:preferredName "Errors"@en ;
-                          bamm:description "A collection of Error Entities."@en ;
-                          bamm:dataType :Error
+:items a samm:Property ;
+   samm:preferredName "Items"@en ;
+   samm:description "A list of current active errors."@en ;
+   samm:characteristic [
+                          a samm-c:Collection ;
+                          samm:preferredName "Errors"@en ;
+                          samm:description "A collection of Error Entities."@en ;
+                          samm:dataType :Error
                        ] .
 
-:Error a bamm:Entity ;
-   bamm:preferredName "Error Entity"@en ;
-   bamm:description "The Entity describing an Error."@en ;
-   bamm:properties ( :errorNo :errorText :startTimestamp ) .
+:Error a samm:Entity ;
+   samm:preferredName "Error Entity"@en ;
+   samm:description "The Entity describing an Error."@en ;
+   samm:properties ( :errorNo :errorText :startTimestamp ) .
 
-:errorNo a bamm:Property ;
-   bamm:preferredName "Error Number"@en ;
-   bamm:description "The number that represents the type of error which has occurred."@en ;
-   bamm:exampleValue "123"^^xsd:int ;
-   bamm:characteristic :ErrorNumber .
+:errorNo a samm:Property ;
+   samm:preferredName "Error Number"@en ;
+   samm:description "The number that represents the type of error which has occurred."@en ;
+   samm:exampleValue "123"^^xsd:int ;
+   samm:characteristic :ErrorNumber .
 
-:errorText a bamm:Property ;
-   bamm:preferredName "Error Text"@en ;
-   bamm:description "The error text provided by the machine."@en ;
-   bamm:exampleValue "120.6 °C" ;
-   bamm:characteristic bamm-c:Text .
+:errorText a samm:Property ;
+   samm:preferredName "Error Text"@en ;
+   samm:description "The error text provided by the machine."@en ;
+   samm:exampleValue "120.6 °C" ;
+   samm:characteristic samm-c:Text .
 
-:startTimestamp a bamm:Property ;
-   bamm:preferredName "Start Timestamp"@en ;
-   bamm:description "The timestamp denoting when the error occurred."@en ;
-   bamm:exampleValue "2018-08-08T12:00:00.0000"^^xsd:dateTime ;
-   bamm:characteristic bamm-c:Timestamp .
+:startTimestamp a samm:Property ;
+   samm:preferredName "Start Timestamp"@en ;
+   samm:description "The timestamp denoting when the error occurred."@en ;
+   samm:exampleValue "2018-08-08T12:00:00.0000"^^xsd:dateTime ;
+   samm:characteristic samm-c:Timestamp .
 
-:ErrorNumber a bamm-c:Code ;
-   bamm:preferredName "Error Number"@en ;
-   bamm:description "The numeric representation of an Error."@en ;
-   bamm:dataType xsd:int .
+:ErrorNumber a samm-c:Code ;
+   samm:preferredName "Error Number"@en ;
+   samm:description "The numeric representation of an Error."@en ;
+   samm:dataType xsd:int .

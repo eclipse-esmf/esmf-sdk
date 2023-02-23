@@ -10,19 +10,19 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithStringEnumeration a bamm:Aspect ;
-   bamm:properties ( :enumerationProperty ) ;
-   bamm:operations ( ) .
+:AspectWithStringEnumeration a samm:Aspect ;
+   samm:properties ( :enumerationProperty ) ;
+   samm:operations ( ) .
 
-:enumerationProperty a bamm:Property ;
-   bamm:characteristic [
-     a bamm-c:Enumeration ;
-     bamm:dataType xsd:string ;
-     bamm-c:values ( "foo" "bar" )
+:enumerationProperty a samm:Property ;
+   samm:characteristic [
+     a samm-c:Enumeration ;
+     samm:dataType xsd:string ;
+     samm-c:values ( "foo" "bar" )
    ] .

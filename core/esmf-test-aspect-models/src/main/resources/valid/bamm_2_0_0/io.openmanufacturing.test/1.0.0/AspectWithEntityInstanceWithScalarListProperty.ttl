@@ -10,39 +10,39 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEntityInstanceWithScalarListProperty a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEntityInstanceWithScalarListProperty a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic :TestCharacteristic .
+:testProperty a samm:Property ;
+   samm:characteristic :TestCharacteristic .
 
-:TestCharacteristic a bamm-c:Enumeration ;
-   bamm:dataType :TestEntity ;
-   bamm-c:values ( :TestEntityInstance ) .
+:TestCharacteristic a samm-c:Enumeration ;
+   samm:dataType :TestEntity ;
+   samm-c:values ( :TestEntityInstance ) .
 
 :TestEntityInstance a :TestEntity ;
    :code "3"^^xsd:short ;
    :testList ( 1 2 3 ) .
 
-:TestEntity a bamm:Entity ;
-   bamm:properties ( :code
+:TestEntity a samm:Entity ;
+   samm:properties ( :code
    					 :testList ) .
 
-:code a bamm:Property ;
-   bamm:characteristic :ShortCode .
+:code a samm:Property ;
+   samm:characteristic :ShortCode .
 
-:testList a bamm:Property ;
-   bamm:characteristic [
-      a bamm-c:List ;
-      bamm:dataType xsd:integer
+:testList a samm:Property ;
+   samm:characteristic [
+      a samm-c:List ;
+      samm:dataType xsd:integer
    ] .
 
-:ShortCode a bamm:Characteristic ;
-   bamm:preferredName "Short Code"@en ;
-   bamm:description "A numeric code with dataType short"@en ;
-   bamm:dataType xsd:short .
+:ShortCode a samm:Characteristic ;
+   samm:preferredName "Short Code"@en ;
+   samm:description "A numeric code with dataType short"@en ;
+   samm:dataType xsd:short .

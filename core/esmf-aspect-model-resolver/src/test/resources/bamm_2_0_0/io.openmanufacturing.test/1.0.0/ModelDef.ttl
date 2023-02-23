@@ -9,19 +9,19 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
 
-:ModelCode a bamm-c:Code ;
-   bamm:dataType xsd:string .
+:ModelCode a samm-c:Code ;
+   samm:dataType xsd:string .
 
-:ModelYear a bamm-c:Code ;
-   bamm:dataType xsd:nonNegativeInteger .
+:ModelYear a samm-c:Code ;
+   samm:dataType xsd:nonNegativeInteger .
 
-:SomeOtherNonRelatedEntity a bamm:Entity ;
-   bamm:properties ( :name ) .
+:SomeOtherNonRelatedEntity a samm:Entity ;
+   samm:properties ( :name ) .
 
-:name a bamm:Property ;
-   bamm:characteristic bamm-c:Text .
+:name a samm:Property ;
+   samm:characteristic samm-c:Text .

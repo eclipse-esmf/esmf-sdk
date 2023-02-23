@@ -10,25 +10,25 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithPropertyWithAllBaseAttributes a bamm:Aspect ;
-   bamm:name "AspectWithPropertyWithAllBaseAttributes" ;
-   bamm:properties ( :testBoolean ) ;
-   bamm:operations ( ) .
+:AspectWithPropertyWithAllBaseAttributes a samm:Aspect ;
+   samm:name "AspectWithPropertyWithAllBaseAttributes" ;
+   samm:properties ( :testBoolean ) ;
+   samm:operations ( ) .
 
-:testBoolean a bamm:Property ;
-   bamm:name "testBoolean" ;
-   bamm:preferredName "Test Boolean"@en ;
-   bamm:preferredName "Test Boolean"@de ;
-   bamm:description "Test Description"@en ;
-   bamm:description "Test Beschreibung"@de ;
-   bamm:characteristic :BooleanTestCharacteristic ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> .
+:testBoolean a samm:Property ;
+   samm:name "testBoolean" ;
+   samm:preferredName "Test Boolean"@en ;
+   samm:preferredName "Test Boolean"@de ;
+   samm:description "Test Description"@en ;
+   samm:description "Test Beschreibung"@de ;
+   samm:characteristic :BooleanTestCharacteristic ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> .
 
-:BooleanTestCharacteristic a bamm:Characteristic ;
-   bamm:name "BooleanTestCharacteristic" ;
-   bamm:dataType xsd:boolean .
+:BooleanTestCharacteristic a samm:Characteristic ;
+   samm:name "BooleanTestCharacteristic" ;
+   samm:dataType xsd:boolean .

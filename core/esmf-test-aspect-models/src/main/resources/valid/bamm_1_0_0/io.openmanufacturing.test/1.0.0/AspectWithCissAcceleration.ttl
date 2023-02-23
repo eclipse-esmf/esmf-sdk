@@ -10,197 +10,197 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
-:AspectWithCissAcceleration a bamm:Aspect ;
-   bamm:name "AspectWithCissAcceleration" ;
-   bamm:preferredName "CISS Acceleration Aspect"@en ;
-   bamm:preferredName "CISS Beschleunigungsaspekt"@de ;
-   bamm:properties ( :acceleration_x :acceleration_y :acceleration_z ) ;
-   bamm:operations ( :SetConfig :FFT ) .
+:AspectWithCissAcceleration a samm:Aspect ;
+   samm:name "AspectWithCissAcceleration" ;
+   samm:preferredName "CISS Acceleration Aspect"@en ;
+   samm:preferredName "CISS Beschleunigungsaspekt"@de ;
+   samm:properties ( :acceleration_x :acceleration_y :acceleration_z ) ;
+   samm:operations ( :SetConfig :FFT ) .
 
-:acceleration_x a bamm:Property ;
-   bamm:name "acceleration_x" ;
-   bamm:characteristic :AccelerationTimeSeries .
+:acceleration_x a samm:Property ;
+   samm:name "acceleration_x" ;
+   samm:characteristic :AccelerationTimeSeries .
 
-:acceleration_y a bamm:Property ;
-   bamm:name "acceleration_y" ;
-   bamm:characteristic :AccelerationTimeSeries .
+:acceleration_y a samm:Property ;
+   samm:name "acceleration_y" ;
+   samm:characteristic :AccelerationTimeSeries .
 
-:acceleration_z a bamm:Property ;
-   bamm:name "acceleration_z" ;
-   bamm:characteristic :AccelerationTimeSeries .
+:acceleration_z a samm:Property ;
+   samm:name "acceleration_z" ;
+   samm:characteristic :AccelerationTimeSeries .
 
-:AccelerationTimeSeries a bamm-c:TimeSeries ;
-   bamm:name "AccelerationTimeSeries" ;
-   bamm:preferredName "Acceleration Time Series"@en ;
-   bamm:description "Represents the acceleration over time as key/value pair with the timestamp being the key and the recorded value being the value."@en ;
-   bamm:dataType :AccelerationTimeSeriesEntity .
+:AccelerationTimeSeries a samm-c:TimeSeries ;
+   samm:name "AccelerationTimeSeries" ;
+   samm:preferredName "Acceleration Time Series"@en ;
+   samm:description "Represents the acceleration over time as key/value pair with the timestamp being the key and the recorded value being the value."@en ;
+   samm:dataType :AccelerationTimeSeriesEntity .
 
-:AccelerationTimeSeriesEntity bamm:refines bamm-e:TimeSeriesEntity ;
-   bamm:name "AccelerationTimeSeriesEntity" ;
-   bamm:preferredName "Acceleration Time Series Entity"@en ;
-   bamm:preferredName "Acceleration Time Series Entität"@de ;
-   bamm:description "Defines the Acceleration as a Time Series value."@en ;
-   bamm:properties ( :acceleration_value ) .
+:AccelerationTimeSeriesEntity samm:refines samm-e:TimeSeriesEntity ;
+   samm:name "AccelerationTimeSeriesEntity" ;
+   samm:preferredName "Acceleration Time Series Entity"@en ;
+   samm:preferredName "Acceleration Time Series Entität"@de ;
+   samm:description "Defines the Acceleration as a Time Series value."@en ;
+   samm:properties ( :acceleration_value ) .
 
-:acceleration_value bamm:refines bamm-e:value ;
-   bamm:name "acceleration_value" ;
-   bamm:preferredName "Acceleration Value"@en ;
-   bamm:preferredName "Beschleunigungswert"@de ;
-   bamm:description "The acceleration at a certain point in time."@en ;
-   bamm:description "Die Beschleunigung zu einem bestimmten Zeitpunkt."@de ;
-   bamm:characteristic :AccelerationRange .
+:acceleration_value samm:refines samm-e:value ;
+   samm:name "acceleration_value" ;
+   samm:preferredName "Acceleration Value"@en ;
+   samm:preferredName "Beschleunigungswert"@de ;
+   samm:description "The acceleration at a certain point in time."@en ;
+   samm:description "Die Beschleunigung zu einem bestimmten Zeitpunkt."@de ;
+   samm:characteristic :AccelerationRange .
 
-:AccelerationRange a bamm-c:Trait ;
-   bamm:name "AccelerationRange" ;
-   bamm:description "The acceleration range"@en ;
-   bamm-c:baseCharacteristic :AccelerationMeasurement ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "-2000"^^xsd:float ;
-      bamm-c:maxValue "2000"^^xsd:float ;
+:AccelerationRange a samm-c:Trait ;
+   samm:name "AccelerationRange" ;
+   samm:description "The acceleration range"@en ;
+   samm-c:baseCharacteristic :AccelerationMeasurement ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "-2000"^^xsd:float ;
+      samm-c:maxValue "2000"^^xsd:float ;
    ] .
 
-:AccelerationMeasurement a bamm-c:Measurement ;
-   bamm:name "AccelerationMeasurement" ;
-   bamm:description "The acceleration"@en ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit unit:gal .
+:AccelerationMeasurement a samm-c:Measurement ;
+   samm:name "AccelerationMeasurement" ;
+   samm:description "The acceleration"@en ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:gal .
 
-:SetConfig a bamm:Operation ;
-   bamm:name "SetConfig" ;
-   bamm:preferredName "Set Configuration"@en ;
-   bamm:description "Operation which updates the device configuration."@en ;
-   bamm:input ( :minValue :maxValue :sampleRate :enabled ) ;
-   bamm:output :operationStatus .
+:SetConfig a samm:Operation ;
+   samm:name "SetConfig" ;
+   samm:preferredName "Set Configuration"@en ;
+   samm:description "Operation which updates the device configuration."@en ;
+   samm:input ( :minValue :maxValue :sampleRate :enabled ) ;
+   samm:output :operationStatus .
 
-:minValue a bamm:Property ;
-   bamm:name "minValue" ;
-   bamm:preferredName "Minimum Value"@en ;
-   bamm:preferredName "Minimalwert"@de ;
-   bamm:characteristic :ValueRange .
+:minValue a samm:Property ;
+   samm:name "minValue" ;
+   samm:preferredName "Minimum Value"@en ;
+   samm:preferredName "Minimalwert"@de ;
+   samm:characteristic :ValueRange .
 
-:maxValue a bamm:Property ;
-   bamm:name "maxValue" ;
-   bamm:preferredName "Maximum Value"@en ;
-   bamm:preferredName "Maximalwert"@de ;
-   bamm:characteristic :ValueRange .
+:maxValue a samm:Property ;
+   samm:name "maxValue" ;
+   samm:preferredName "Maximum Value"@en ;
+   samm:preferredName "Maximalwert"@de ;
+   samm:characteristic :ValueRange .
 
-:sampleRate a bamm:Property ;
-   bamm:name "sampleRate" ;
-   bamm:preferredName "Sample Rate"@en ;
-   bamm:preferredName "Messrate"@de ;
-   bamm:characteristic :FrequencyRange .
+:sampleRate a samm:Property ;
+   samm:name "sampleRate" ;
+   samm:preferredName "Sample Rate"@en ;
+   samm:preferredName "Messrate"@de ;
+   samm:characteristic :FrequencyRange .
 
-:enabled a bamm:Property ;
-   bamm:name "enabled" ;
-   bamm:preferredName "Enabled/Disabled"@en ;
-   bamm:preferredName "Aktiviert/Deaktiviert"@de ;
-   bamm:characteristic bamm-c:Boolean .
+:enabled a samm:Property ;
+   samm:name "enabled" ;
+   samm:preferredName "Enabled/Disabled"@en ;
+   samm:preferredName "Aktiviert/Deaktiviert"@de ;
+   samm:characteristic samm-c:Boolean .
 
-:operationStatus a bamm:Property ;
-   bamm:name "operationStatus" ;
-   bamm:preferredName "Status of Set Config Operation"@en ;
-   bamm:preferredName "Status der Konfigurations-Operation"@de ;
-   bamm:characteristic :OperationState .
+:operationStatus a samm:Property ;
+   samm:name "operationStatus" ;
+   samm:preferredName "Status of Set Config Operation"@en ;
+   samm:preferredName "Status der Konfigurations-Operation"@de ;
+   samm:characteristic :OperationState .
 
-:FrequencyRange a bamm-c:Trait ;
-   bamm:name "FrequencyRange" ;
-   bamm:description "The range of the Sample Rate Frequency"@en ;
-   bamm-c:baseCharacteristic :Frequency ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "0"^^xsd:float ;
-      bamm-c:maxValue "100"^^xsd:float ;
+:FrequencyRange a samm-c:Trait ;
+   samm:name "FrequencyRange" ;
+   samm:description "The range of the Sample Rate Frequency"@en ;
+   samm-c:baseCharacteristic :Frequency ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "0"^^xsd:float ;
+      samm-c:maxValue "100"^^xsd:float ;
    ] .
 
-:Frequency a bamm-c:Measurement ;
-   bamm:name "Frequency" ;
-   bamm:description "Rate at which measurements are taken by the sensor"@en ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit unit:hertz .
+:Frequency a samm-c:Measurement ;
+   samm:name "Frequency" ;
+   samm:description "Rate at which measurements are taken by the sensor"@en ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:hertz .
 
-:ValueRange a bamm-c:Trait ;
-   bamm:name "ValueRange" ;
-   bamm:description "The range of the input parameters for the SetConfig Operation"@en ;
-   bamm-c:baseCharacteristic :Numeric ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint  ;
-      bamm-c:minValue "-2000"^^xsd:float ;
-      bamm-c:maxValue "2000"^^xsd:float ;
+:ValueRange a samm-c:Trait ;
+   samm:name "ValueRange" ;
+   samm:description "The range of the input parameters for the SetConfig Operation"@en ;
+   samm-c:baseCharacteristic :Numeric ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint  ;
+      samm-c:minValue "-2000"^^xsd:float ;
+      samm-c:maxValue "2000"^^xsd:float ;
    ] .
 
-:Numeric a bamm:Characteristic ;
-   bamm:name "Numeric" ;
-   bamm:description "Positive Integers"@en ;
-   bamm:dataType xsd:float .
+:Numeric a samm:Characteristic ;
+   samm:name "Numeric" ;
+   samm:description "Positive Integers"@en ;
+   samm:dataType xsd:float .
 
-:OperationState a bamm-c:State ;
-   bamm:name "OperationState" ;
-   bamm:description "Return status for the Set Configuration Operation"@en ;
-   bamm:dataType xsd:string ;
-   bamm-c:defaultValue "OK" ;
-   bamm-c:values ( "OK" "ERR" ) .
+:OperationState a samm-c:State ;
+   samm:name "OperationState" ;
+   samm:description "Return status for the Set Configuration Operation"@en ;
+   samm:dataType xsd:string ;
+   samm-c:defaultValue "OK" ;
+   samm-c:values ( "OK" "ERR" ) .
 
-:FFT a bamm:Operation ;
-   bamm:name "FFT" ;
-   bamm:preferredName "Fourier Transformation"@en ;
-   bamm:description "Operation which performs a Fourier Transformation for a specific axis."@en ;
-   bamm:input ( :axis :nfft :nmean ) ;
-   bamm:output :fftResult .
+:FFT a samm:Operation ;
+   samm:name "FFT" ;
+   samm:preferredName "Fourier Transformation"@en ;
+   samm:description "Operation which performs a Fourier Transformation for a specific axis."@en ;
+   samm:input ( :axis :nfft :nmean ) ;
+   samm:output :fftResult .
 
-:axis a bamm:Property ;
-   bamm:name "axis" ;
-   bamm:preferredName "Axis"@en ;
-   bamm:preferredName "Achse"@de ;
-   bamm:characteristic :AccelerationProperties .
+:axis a samm:Property ;
+   samm:name "axis" ;
+   samm:preferredName "Axis"@en ;
+   samm:preferredName "Achse"@de ;
+   samm:characteristic :AccelerationProperties .
 
-:nfft a bamm:Property ;
-   bamm:name "nfft" ;
-   bamm:preferredName "Nfft"@en ;
-   bamm:preferredName "Nfft"@de ;
-   bamm:characteristic :PositiveNumeric .
+:nfft a samm:Property ;
+   samm:name "nfft" ;
+   samm:preferredName "Nfft"@en ;
+   samm:preferredName "Nfft"@de ;
+   samm:characteristic :PositiveNumeric .
 
-:nmean a bamm:Property ;
-   bamm:name "nmean" ;
-   bamm:preferredName "Nmean"@en ;
-   bamm:preferredName "Nmean"@de ;
-   bamm:characteristic :PositiveNumeric .
+:nmean a samm:Property ;
+   samm:name "nmean" ;
+   samm:preferredName "Nmean"@en ;
+   samm:preferredName "Nmean"@de ;
+   samm:characteristic :PositiveNumeric .
 
-:AccelerationProperties a bamm-c:Enumeration ;
-   bamm:name "AccelerationProperties" ;
-   bamm:description "The properties from the Acceleration Aspect which may be used in the FFT Operation."@en ;
-   bamm:dataType bamm:Property ;
-   bamm-c:values ( :acceleration_x :acceleration_y :acceleration_z ) .
+:AccelerationProperties a samm-c:Enumeration ;
+   samm:name "AccelerationProperties" ;
+   samm:description "The properties from the Acceleration Aspect which may be used in the FFT Operation."@en ;
+   samm:dataType samm:Property ;
+   samm-c:values ( :acceleration_x :acceleration_y :acceleration_z ) .
 
-:PositiveNumeric a bamm:Characteristic ;
-   bamm:name "PositiveNumeric" ;
-   bamm:description "Positive Integers"@en ;
-   bamm:dataType xsd:positiveInteger .
+:PositiveNumeric a samm:Characteristic ;
+   samm:name "PositiveNumeric" ;
+   samm:description "Positive Integers"@en ;
+   samm:dataType xsd:positiveInteger .
 
-:fftResult a bamm:Property ;
-   bamm:name "fftResult" ;
-   bamm:preferredName "FFT Result"@en ;
-   bamm:preferredName "FFT Ergebnis"@de ;
-   bamm:characteristic [
-                          a bamm-c:Set ;
-                          bamm:name "FFTResultSet" ;
-                          bamm:dataType :FFTResult
+:fftResult a samm:Property ;
+   samm:name "fftResult" ;
+   samm:preferredName "FFT Result"@en ;
+   samm:preferredName "FFT Ergebnis"@de ;
+   samm:characteristic [
+                          a samm-c:Set ;
+                          samm:name "FFTResultSet" ;
+                          samm:dataType :FFTResult
                        ] .
 
-:FFTResult a bamm:Entity ;
-   bamm:name "FFTResult" ;
-   bamm:preferredName "FFT Result Domain Entity"@en ;
-   bamm:properties ( :frequency :acceleration_value ) .
+:FFTResult a samm:Entity ;
+   samm:name "FFTResult" ;
+   samm:preferredName "FFT Result Domain Entity"@en ;
+   samm:properties ( :frequency :acceleration_value ) .
 
-:frequency a bamm:Property ;
-   bamm:name "frequency" ;
-   bamm:preferredName "Frequency"@en ;
-   bamm:preferredName "Frequenz"@de ;
-   bamm:description "Amount of occurrences of value"@en ;
-   bamm:characteristic :PositiveNumeric .
+:frequency a samm:Property ;
+   samm:name "frequency" ;
+   samm:preferredName "Frequency"@en ;
+   samm:preferredName "Frequenz"@de ;
+   samm:description "Amount of occurrences of value"@en ;
+   samm:characteristic :PositiveNumeric .

@@ -10,40 +10,40 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithComplexEnumInclOptional a bamm:Aspect ;
-   bamm:properties ( :result :simpleResult ) ;
-   bamm:operations ( ) .
+:AspectWithComplexEnumInclOptional a samm:Aspect ;
+   samm:properties ( :result :simpleResult ) ;
+   samm:operations ( ) .
 
-:EvaluationResult a bamm:Entity ;
-   bamm:preferredName "Evalution Result"@en ;
-   bamm:description "Possible values for the evaluation of a process"@en ;
-   bamm:properties ( [
-                        bamm:property :numericCode ;
-                        bamm:optional "true"^^xsd:boolean
+:EvaluationResult a samm:Entity ;
+   samm:preferredName "Evalution Result"@en ;
+   samm:description "Possible values for the evaluation of a process"@en ;
+   samm:properties ( [
+                        samm:property :numericCode ;
+                        samm:optional "true"^^xsd:boolean
                      ]
                      [
-                        bamm:property :description ;
-                        bamm:optional "true"^^xsd:boolean
+                        samm:property :description ;
+                        samm:optional "true"^^xsd:boolean
                      ] ) .
 
-:ShortCode a bamm:Characteristic ;
-   bamm:preferredName "Short Code"@en ;
-   bamm:description "A numeric code with dataType short"@en ;
-   bamm:dataType xsd:short .
+:ShortCode a samm:Characteristic ;
+   samm:preferredName "Short Code"@en ;
+   samm:description "A numeric code with dataType short"@en ;
+   samm:dataType xsd:short .
 
-:numericCode a bamm:Property ;
-   bamm:preferredName "Numeric Code"@en ;
-   bamm:description "Numeric code for the evaluation result"@en ;
-   bamm:characteristic :ShortCode .
+:numericCode a samm:Property ;
+   samm:preferredName "Numeric Code"@en ;
+   samm:description "Numeric code for the evaluation result"@en ;
+   samm:characteristic :ShortCode .
 
-:description a bamm:Property ;
-   bamm:preferredName "Description"@en ;
-   bamm:description "Human-readable description of the process result code"@en ;
-   bamm:characteristic bamm-c:Text .
+:description a samm:Property ;
+   samm:preferredName "Description"@en ;
+   samm:description "Human-readable description of the process result code"@en ;
+   samm:characteristic samm-c:Text .
 
 :ResultNoStatus a :EvaluationResult ;
    :numericCode "-1"^^xsd:short ;
@@ -57,21 +57,21 @@
    :numericCode "2"^^xsd:short ;
    :description "Bad" .
 
-:EvaluationResults a bamm-c:Enumeration ;
-   bamm:preferredName "Evaluation Results"@en ;
-   bamm:description "Possible values for the evaluation of a process"@en ;
-   bamm:dataType :EvaluationResult ;
-   bamm-c:values ( :ResultNoStatus :ResultGood :ResultBad ) .
+:EvaluationResults a samm-c:Enumeration ;
+   samm:preferredName "Evaluation Results"@en ;
+   samm:description "Possible values for the evaluation of a process"@en ;
+   samm:dataType :EvaluationResult ;
+   samm-c:values ( :ResultNoStatus :ResultGood :ResultBad ) .
 
-:result a bamm:Property ;
-   bamm:preferredName "result"@en ;
-   bamm:characteristic :EvaluationResults .
+:result a samm:Property ;
+   samm:preferredName "result"@en ;
+   samm:characteristic :EvaluationResults .
 
-:YesNo a bamm-c:Enumeration ;
-   bamm:preferredName "YesNo Result"@en ;
-   bamm:dataType xsd:string ;
-   bamm-c:values ( "Yes" "No" ) .
+:YesNo a samm-c:Enumeration ;
+   samm:preferredName "YesNo Result"@en ;
+   samm:dataType xsd:string ;
+   samm-c:values ( "Yes" "No" ) .
 
-:simpleResult a bamm:Property ;
-   bamm:preferredName "simpleResult"@en ;
-   bamm:characteristic :YesNo .
+:simpleResult a samm:Property ;
+   samm:preferredName "simpleResult"@en ;
+   samm:characteristic :YesNo .

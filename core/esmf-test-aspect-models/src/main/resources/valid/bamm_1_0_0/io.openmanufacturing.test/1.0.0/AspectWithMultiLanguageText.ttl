@@ -10,18 +10,18 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:units:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithMultiLanguageText a bamm:Aspect ;
-   bamm:name "AspectWithMultiLanguageText" ;
-   bamm:properties ( :prop ) ;
-   bamm:operations ( ) .
+:AspectWithMultiLanguageText a samm:Aspect ;
+   samm:name "AspectWithMultiLanguageText" ;
+   samm:properties ( :prop ) ;
+   samm:operations ( ) .
 
-:prop a bamm:Property ;
-   bamm:name "prop" ;
-   bamm:characteristic bamm-c:MultiLanguageText .
+:prop a samm:Property ;
+   samm:name "prop" ;
+   samm:characteristic samm-c:MultiLanguageText .
 

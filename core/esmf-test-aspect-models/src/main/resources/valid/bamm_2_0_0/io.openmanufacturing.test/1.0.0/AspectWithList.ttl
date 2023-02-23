@@ -10,28 +10,28 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:AspectWithList a bamm:Aspect ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:description "This is a test description"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithList a samm:Aspect ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:description "This is a test description"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:preferredName "Test Property"@en ;
-   bamm:description "This is a test property."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:exampleValue "Example Value" ;
-   bamm:characteristic :TestList .
+:testProperty a samm:Property ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:exampleValue "Example Value" ;
+   samm:characteristic :TestList .
 
-:TestList a bamm-c:List ;
-   bamm:preferredName "Test List"@en ;
-   bamm:description "This is a test list."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType xsd:string .
+:TestList a samm-c:List ;
+   samm:preferredName "Test List"@en ;
+   samm:description "This is a test list."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType xsd:string .

@@ -10,20 +10,20 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithBlankNode a bamm:Aspect ;
-   bamm:preferredName "Aspect With Blank Node"@en ;
-   bamm:preferredName "Aspekt mit anonymen Knoten"@de ;
-   bamm:properties ( :list ) ;
-   bamm:operations ( ) .
+:AspectWithBlankNode a samm:Aspect ;
+   samm:preferredName "Aspect With Blank Node"@en ;
+   samm:preferredName "Aspekt mit anonymen Knoten"@de ;
+   samm:properties ( :list ) ;
+   samm:operations ( ) .
 
-:list a bamm:Property ;
-   bamm:characteristic [
-      a bamm-c:Collection ;
-      bamm:preferredName "Blank Node Collection"@en ;
-      bamm:preferredName "Blank Node Liste"@de ;
-      bamm:dataType xsd:string ;
+:list a samm:Property ;
+   samm:characteristic [
+      a samm-c:Collection ;
+      samm:preferredName "Blank Node Collection"@en ;
+      samm:preferredName "Blank Node Liste"@de ;
+      samm:dataType xsd:string ;
    ] .

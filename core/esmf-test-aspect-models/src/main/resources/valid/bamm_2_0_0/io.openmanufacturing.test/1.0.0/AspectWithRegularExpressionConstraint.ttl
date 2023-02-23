@@ -10,32 +10,32 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:AspectWithRegularExpressionConstraint a bamm:Aspect ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:description "This is a test description"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithRegularExpressionConstraint a samm:Aspect ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:description "This is a test description"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:preferredName "Test Property"@en ;
-   bamm:description "This is a test property."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:exampleValue "3" ;
-   bamm:characteristic :TestRegularExpressionConstraint .
+:testProperty a samm:Property ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:exampleValue "3" ;
+   samm:characteristic :TestRegularExpressionConstraint .
 
-:TestRegularExpressionConstraint a bamm-c:Trait ;
-   bamm-c:constraint [
-      a bamm-c:RegularExpressionConstraint ;
-      bamm:preferredName "Test Regular Expression Constraint"@en ;
-      bamm:description "This is a test regular expression constraint."@en ;
-      bamm:see <http://example.com/omp> ;
-      bamm:value "^[0-9]*$" ;
+:TestRegularExpressionConstraint a samm-c:Trait ;
+   samm-c:constraint [
+      a samm-c:RegularExpressionConstraint ;
+      samm:preferredName "Test Regular Expression Constraint"@en ;
+      samm:description "This is a test regular expression constraint."@en ;
+      samm:see <http://example.com/omp> ;
+      samm:value "^[0-9]*$" ;
    ] ;
-   bamm-c:baseCharacteristic bamm-c:Text .
+   samm-c:baseCharacteristic samm-c:Text .

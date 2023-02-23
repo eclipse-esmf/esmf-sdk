@@ -10,24 +10,24 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
-:AspectWithMeasurement a bamm:Aspect ;
-   bamm:name "AspectWithMeasurement" ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithMeasurement a samm:Aspect ;
+   samm:name "AspectWithMeasurement" ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestMeasurement .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestMeasurement .
 
-:TestMeasurement a bamm-c:Measurement ;
-   bamm:name "TestMeasurement" ;
-   bamm:preferredName "Test Measurement"@en ;
-   bamm:description "This is a test Measurement"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit unit:kelvin .
+:TestMeasurement a samm-c:Measurement ;
+   samm:name "TestMeasurement" ;
+   samm:preferredName "Test Measurement"@en ;
+   samm:description "This is a test Measurement"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:kelvin .

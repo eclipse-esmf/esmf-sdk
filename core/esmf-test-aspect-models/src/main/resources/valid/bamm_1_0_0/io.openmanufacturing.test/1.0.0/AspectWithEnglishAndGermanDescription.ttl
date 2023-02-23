@@ -10,25 +10,25 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEnglishAndGermanDescription a bamm:Aspect ;
-   bamm:name "AspectWithEnglishAndGermanDescription" ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:preferredName "Testaspekt"@de ;
-   bamm:description "Aspect With Multilingual Descriptions"@en ;
-   bamm:description "Aspekt mit mehrsprachigen Beschreibungen"@de ;
-   bamm:properties ( :testString ) ;
-   bamm:operations ( ) .
+:AspectWithEnglishAndGermanDescription a samm:Aspect ;
+   samm:name "AspectWithEnglishAndGermanDescription" ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:preferredName "Testaspekt"@de ;
+   samm:description "Aspect With Multilingual Descriptions"@en ;
+   samm:description "Aspekt mit mehrsprachigen Beschreibungen"@de ;
+   samm:properties ( :testString ) ;
+   samm:operations ( ) .
 
-:testString a bamm:Property ;
-   bamm:name "testString" ;
-   bamm:preferredName "testString"@en ;
-   bamm:preferredName "testString"@de ;
-   bamm:description "This is a test string"@en ;
-   bamm:description "Es ist ein Test-String"@de ;
-   bamm:exampleValue "Example Value Test" ;
-   bamm:characteristic bamm-c:Text .
+:testString a samm:Property ;
+   samm:name "testString" ;
+   samm:preferredName "testString"@en ;
+   samm:preferredName "testString"@de ;
+   samm:description "This is a test string"@en ;
+   samm:description "Es ist ein Test-String"@de ;
+   samm:exampleValue "Example Value Test" ;
+   samm:characteristic samm-c:Text .
 

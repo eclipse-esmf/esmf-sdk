@@ -10,33 +10,33 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:AspectWithEntityEnumerationAndNotInPayloadProperties a bamm:Aspect ;
-   bamm:preferredName "Aspect with entity enumeration and not in payload properties"@en ;
-   bamm:description "This is a test description"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:properties ( :systemState ) ;
-   bamm:operations ( ) .
+:AspectWithEntityEnumerationAndNotInPayloadProperties a samm:Aspect ;
+   samm:preferredName "Aspect with entity enumeration and not in payload properties"@en ;
+   samm:description "This is a test description"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:properties ( :systemState ) ;
+   samm:operations ( ) .
 
-:systemState a bamm:Property ;
-   bamm:preferredName "System State"@en ;
-   bamm:description "The state the system is currently in, e.g. heat-up."@en ;
-   bamm:characteristic [
-     a bamm-c:Enumeration ;
-     bamm:preferredName "System States"@en ;
-     bamm:description "Defines which states the system may have."@en ;
-     bamm:dataType :SystemState ;
-     bamm-c:values ( :On :CoolDown :Off :HeatUp )
+:systemState a samm:Property ;
+   samm:preferredName "System State"@en ;
+   samm:description "The state the system is currently in, e.g. heat-up."@en ;
+   samm:characteristic [
+     a samm-c:Enumeration ;
+     samm:preferredName "System States"@en ;
+     samm:description "Defines which states the system may have."@en ;
+     samm:dataType :SystemState ;
+     samm-c:values ( :On :CoolDown :Off :HeatUp )
    ] .
 
-:SystemState a bamm:Entity ;
-   bamm:preferredName "System State"@en ;
-   bamm:description "Represents a specific state the system may have."@en ;
-   bamm:properties ( :state [ bamm:property :description ; bamm:notInPayload "true"^^xsd:boolean ] ) .
+:SystemState a samm:Entity ;
+   samm:preferredName "System State"@en ;
+   samm:description "Represents a specific state the system may have."@en ;
+   samm:properties ( :state [ samm:property :description ; samm:notInPayload "true"^^xsd:boolean ] ) .
 
 :Off a :SystemState ;
    :state "0"^^xsd:short ;
@@ -54,16 +54,16 @@
    :state "4"^^xsd:short ;
    :description "HeatUp" .
 
-:state a bamm:Property ;
-   bamm:characteristic :Measurement .
+:state a samm:Property ;
+   samm:characteristic :Measurement .
 
-:description a bamm:Property ;
-   bamm:preferredName "Test Property"@en ;
-   bamm:description "This is a test property."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:characteristic bamm-c:Text .
+:description a samm:Property ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:characteristic samm-c:Text .
 
-:Measurement a bamm-c:Measurement ;
-   bamm:dataType xsd:short ;
-   bamm-c:unit unit:metrePerSecond .
+:Measurement a samm-c:Measurement ;
+   samm:dataType xsd:short ;
+   samm-c:unit unit:metrePerSecond .

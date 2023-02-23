@@ -10,202 +10,202 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
-:AspectWithConstraints a bamm:Aspect ;
-   bamm:name "AspectWithConstraints" ;
-   bamm:properties ( :testPropertyWithRegularExpression :testPropertyWithDecimalMinDecimalMaxRangeConstraint
+:AspectWithConstraints a samm:Aspect ;
+   samm:name "AspectWithConstraints" ;
+   samm:properties ( :testPropertyWithRegularExpression :testPropertyWithDecimalMinDecimalMaxRangeConstraint
                      :testPropertyWithDecimalMaxRangeConstraint :testPropertyWithMinMaxRangeConstraint
                      :testPropertyWithMinRangeConstraint :testPropertyRangeConstraintWithFloatType
                      :testPropertyRangeConstraintWithDoubleType :testPropertyWithMinMaxLengthConstraint
                      :testPropertyWithMinLengthConstraint :testPropertyCollectionLengthConstraint ) ;
-   bamm:operations ( ) .
+   samm:operations ( ) .
 
-:testPropertyWithRegularExpression a bamm:Property ;
-   bamm:name "testPropertyWithRegularExpression" ;
-   bamm:characteristic :TestRegularExpressionConstraint .
+:testPropertyWithRegularExpression a samm:Property ;
+   samm:name "testPropertyWithRegularExpression" ;
+   samm:characteristic :TestRegularExpressionConstraint .
 
-:TestRegularExpressionConstraint a bamm-c:Trait ;
-   bamm:name "TestRegularExpressionConstraint" ;
-   bamm:preferredName "Test Regular Expression Constraint"@en ;
-   bamm:description "Test Regular Expression Constraint"@en ;
-   bamm-c:constraint [
-      a bamm-c:RegularExpressionConstraint ;
-      bamm:value "^[a-zA-Z]\\.[0-9]" ;
+:TestRegularExpressionConstraint a samm-c:Trait ;
+   samm:name "TestRegularExpressionConstraint" ;
+   samm:preferredName "Test Regular Expression Constraint"@en ;
+   samm:description "Test Regular Expression Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RegularExpressionConstraint ;
+      samm:value "^[a-zA-Z]\\.[0-9]" ;
    ] ;
-   bamm-c:baseCharacteristic bamm-c:Text .
+   samm-c:baseCharacteristic samm-c:Text .
 
-:testPropertyWithDecimalMinDecimalMaxRangeConstraint a bamm:Property ;
-   bamm:name "testPropertyWithDecimalMinDecimalMaxRangeConstraint" ;
-   bamm:characteristic :TestWithDecimalMinDecimalMaxRangeConstraint .
+:testPropertyWithDecimalMinDecimalMaxRangeConstraint a samm:Property ;
+   samm:name "testPropertyWithDecimalMinDecimalMaxRangeConstraint" ;
+   samm:characteristic :TestWithDecimalMinDecimalMaxRangeConstraint .
 
-:TestWithDecimalMinDecimalMaxRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestWithDecimalMinDecimalMaxRangeConstraint" ;
-   bamm:preferredName "Test Range"@en ;
-   bamm:description "Test Range"@en ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "2.3"^^xsd:decimal ;
-      bamm-c:maxValue "10.5"^^xsd:decimal ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+:TestWithDecimalMinDecimalMaxRangeConstraint a samm-c:Trait ;
+   samm:name "TestWithDecimalMinDecimalMaxRangeConstraint" ;
+   samm:preferredName "Test Range"@en ;
+   samm:description "Test Range"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "2.3"^^xsd:decimal ;
+      samm-c:maxValue "10.5"^^xsd:decimal ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
-   bamm-c:baseCharacteristic :MeasurementDecimal .
+   samm-c:baseCharacteristic :MeasurementDecimal .
 
-:testPropertyWithDecimalMaxRangeConstraint a bamm:Property ;
-   bamm:name "testPropertyWithDecimalMaxRangeConstraint" ;
-   bamm:characteristic :TestWithDecimalMaxRangeConstraint .
+:testPropertyWithDecimalMaxRangeConstraint a samm:Property ;
+   samm:name "testPropertyWithDecimalMaxRangeConstraint" ;
+   samm:characteristic :TestWithDecimalMaxRangeConstraint .
 
-:TestWithDecimalMaxRangeConstraint a bamm-c:Trait ;
-   bamm:name "testWithDecimalMaxRangeConstraint" ;
-   bamm:preferredName "Test Range"@en ;
-   bamm:description "Test Range"@en ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:maxValue "10.5"^^xsd:decimal ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+:TestWithDecimalMaxRangeConstraint a samm-c:Trait ;
+   samm:name "testWithDecimalMaxRangeConstraint" ;
+   samm:preferredName "Test Range"@en ;
+   samm:description "Test Range"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:maxValue "10.5"^^xsd:decimal ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
-   bamm-c:baseCharacteristic :MeasurementDecimal .
+   samm-c:baseCharacteristic :MeasurementDecimal .
 
-:MeasurementDecimal a bamm-c:Measurement ;
-   bamm:name "MeasurementDecimal" ;
-   bamm:dataType xsd:decimal ;
-   bamm-c:unit unit:metrePerSecond .
+:MeasurementDecimal a samm-c:Measurement ;
+   samm:name "MeasurementDecimal" ;
+   samm:dataType xsd:decimal ;
+   samm-c:unit unit:metrePerSecond .
 
-:testPropertyWithMinMaxRangeConstraint a bamm:Property ;
-   bamm:name "testPropertyWithMinMaxRangeConstraint" ;
-   bamm:characteristic :TestWithMinMaxRangeConstraint .
+:testPropertyWithMinMaxRangeConstraint a samm:Property ;
+   samm:name "testPropertyWithMinMaxRangeConstraint" ;
+   samm:characteristic :TestWithMinMaxRangeConstraint .
 
-:TestWithMinMaxRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestWithMinMaxRangeConstraint" ;
-   bamm:preferredName "Test Range"@en ;
-   bamm:description "Test Range"@en ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "1"^^xsd:int ;
-      bamm-c:maxValue "10"^^xsd:int ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+:TestWithMinMaxRangeConstraint a samm-c:Trait ;
+   samm:name "TestWithMinMaxRangeConstraint" ;
+   samm:preferredName "Test Range"@en ;
+   samm:description "Test Range"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "1"^^xsd:int ;
+      samm-c:maxValue "10"^^xsd:int ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
-   bamm-c:baseCharacteristic :Measurement .
+   samm-c:baseCharacteristic :Measurement .
 
-:testPropertyWithMinRangeConstraint a bamm:Property ;
-   bamm:name "testPropertyWithMinRangeConstraint" ;
-   bamm:characteristic :TestWithMinRangeConstraint .
+:testPropertyWithMinRangeConstraint a samm:Property ;
+   samm:name "testPropertyWithMinRangeConstraint" ;
+   samm:characteristic :TestWithMinRangeConstraint .
 
-:TestWithMinRangeConstraint a bamm-c:Trait ;
-   bamm:name "TestWithMinRangeConstraint" ;
-   bamm:preferredName "Test Range"@en ;
-   bamm:description "Test Range"@en ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "1"^^xsd:int ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+:TestWithMinRangeConstraint a samm-c:Trait ;
+   samm:name "TestWithMinRangeConstraint" ;
+   samm:preferredName "Test Range"@en ;
+   samm:description "Test Range"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "1"^^xsd:int ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
-   bamm-c:baseCharacteristic :Measurement .
+   samm-c:baseCharacteristic :Measurement .
 
-:Measurement a bamm-c:Measurement ;
-   bamm:name "Measurement" ;
-   bamm:dataType xsd:int ;
-   bamm-c:unit unit:metrePerSecond .
+:Measurement a samm-c:Measurement ;
+   samm:name "Measurement" ;
+   samm:dataType xsd:int ;
+   samm-c:unit unit:metrePerSecond .
 
-:testPropertyRangeConstraintWithFloatType a bamm:Property ;
-   bamm:name "testPropertyRangeConstraintWithFloatType" ;
-   bamm:characteristic :TestRangeConstraintWithFloatType .
+:testPropertyRangeConstraintWithFloatType a samm:Property ;
+   samm:name "testPropertyRangeConstraintWithFloatType" ;
+   samm:characteristic :TestRangeConstraintWithFloatType .
 
-:TestRangeConstraintWithFloatType a bamm-c:Trait ;
-   bamm:name "TestRangeConstraintWithFloatType" ;
-   bamm:preferredName "Test Range"@en ;
-   bamm:description "Test Range"@en ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "1"^^xsd:float ;
-      bamm-c:maxValue "10"^^xsd:float ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+:TestRangeConstraintWithFloatType a samm-c:Trait ;
+   samm:name "TestRangeConstraintWithFloatType" ;
+   samm:preferredName "Test Range"@en ;
+   samm:description "Test Range"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "1"^^xsd:float ;
+      samm-c:maxValue "10"^^xsd:float ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
-   bamm-c:baseCharacteristic :MeasurementWithFloatType .
+   samm-c:baseCharacteristic :MeasurementWithFloatType .
 
-:MeasurementWithFloatType a bamm-c:Measurement ;
-   bamm:name "MeasurementWithFloatType" ;
-   bamm:dataType xsd:float ;
-   bamm-c:unit unit:metrePerSecond .
+:MeasurementWithFloatType a samm-c:Measurement ;
+   samm:name "MeasurementWithFloatType" ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:metrePerSecond .
 
-:testPropertyRangeConstraintWithDoubleType a bamm:Property ;
-   bamm:name "testPropertyRangeConstraintWithDoubleType" ;
-   bamm:characteristic :TestRangeConstraintWithDoubleType .
+:testPropertyRangeConstraintWithDoubleType a samm:Property ;
+   samm:name "testPropertyRangeConstraintWithDoubleType" ;
+   samm:characteristic :TestRangeConstraintWithDoubleType .
 
-:TestRangeConstraintWithDoubleType a bamm-c:Trait ;
-   bamm:name "TestRangeConstraintWithDoubleType" ;
-   bamm:preferredName "Test Range"@en ;
-   bamm:description "Test Range"@en ;
-   bamm-c:constraint [
-      a bamm-c:RangeConstraint ;
-      bamm-c:minValue "1"^^xsd:double ;
-      bamm-c:maxValue "10"^^xsd:double ;
-      bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-      bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+:TestRangeConstraintWithDoubleType a samm-c:Trait ;
+   samm:name "TestRangeConstraintWithDoubleType" ;
+   samm:preferredName "Test Range"@en ;
+   samm:description "Test Range"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "1"^^xsd:double ;
+      samm-c:maxValue "10"^^xsd:double ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
-   bamm-c:baseCharacteristic :MeasurementWithDoubleType .
+   samm-c:baseCharacteristic :MeasurementWithDoubleType .
 
-:MeasurementWithDoubleType a bamm-c:Measurement ;
-   bamm:name "MeasurementWithDoubleType" ;
-   bamm:dataType xsd:double ;
-   bamm-c:unit unit:metrePerSecond .
+:MeasurementWithDoubleType a samm-c:Measurement ;
+   samm:name "MeasurementWithDoubleType" ;
+   samm:dataType xsd:double ;
+   samm-c:unit unit:metrePerSecond .
 
-:testPropertyWithMinMaxLengthConstraint a bamm:Property ;
-   bamm:name "testPropertyWithMinMaxLengthConstraint" ;
-   bamm:characteristic :TestLengthConstraint .
+:testPropertyWithMinMaxLengthConstraint a samm:Property ;
+   samm:name "testPropertyWithMinMaxLengthConstraint" ;
+   samm:characteristic :TestLengthConstraint .
 
-:TestLengthConstraint a bamm-c:Trait ;
-   bamm:name "TestLengthConstraint" ;
-   bamm:preferredName "Test Length Constraint"@en ;
-   bamm:description "Test Length Constraint"@en ;
-   bamm-c:constraint [
-      a bamm-c:LengthConstraint ;
-      bamm-c:minValue "1"^^xsd:nonNegativeInteger ;
-      bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+:TestLengthConstraint a samm-c:Trait ;
+   samm:name "TestLengthConstraint" ;
+   samm:preferredName "Test Length Constraint"@en ;
+   samm:description "Test Length Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:LengthConstraint ;
+      samm-c:minValue "1"^^xsd:nonNegativeInteger ;
+      samm-c:maxValue "10"^^xsd:nonNegativeInteger ;
    ] ;
-   bamm-c:baseCharacteristic bamm-c:Text .
+   samm-c:baseCharacteristic samm-c:Text .
 
-:testPropertyWithMinLengthConstraint a bamm:Property ;
-   bamm:name "testPropertyWithMinLengthConstraint" ;
-   bamm:characteristic :TestLengthConstraintOnlyMin .
+:testPropertyWithMinLengthConstraint a samm:Property ;
+   samm:name "testPropertyWithMinLengthConstraint" ;
+   samm:characteristic :TestLengthConstraintOnlyMin .
 
-:TestLengthConstraintOnlyMin a bamm-c:Trait ;
-   bamm:name "TestLengthConstraintOnlyMin" ;
-   bamm:preferredName "Test Length Constraint"@en ;
-   bamm:description "Test Length Constraint"@en ;
-   bamm-c:constraint [
-      a bamm-c:LengthConstraint ;
-      bamm-c:minValue "1"^^xsd:nonNegativeInteger ;
+:TestLengthConstraintOnlyMin a samm-c:Trait ;
+   samm:name "TestLengthConstraintOnlyMin" ;
+   samm:preferredName "Test Length Constraint"@en ;
+   samm:description "Test Length Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:LengthConstraint ;
+      samm-c:minValue "1"^^xsd:nonNegativeInteger ;
    ] ;
-   bamm-c:baseCharacteristic [
-      a bamm:Characteristic ;
-      bamm:name "NonNegativeInteger" ;
-      bamm:dataType xsd:nonNegativeInteger
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:name "NonNegativeInteger" ;
+      samm:dataType xsd:nonNegativeInteger
    ] .
 
-:testPropertyCollectionLengthConstraint a bamm:Property ;
-   bamm:name "testPropertyCollectionLengthConstraint" ;
-   bamm:characteristic :TestLengthConstraintWithCollection .
+:testPropertyCollectionLengthConstraint a samm:Property ;
+   samm:name "testPropertyCollectionLengthConstraint" ;
+   samm:characteristic :TestLengthConstraintWithCollection .
 
-:TestLengthConstraintWithCollection a bamm-c:Trait ;
-   bamm:name "TestLengthConstraintWithCollection" ;
-   bamm:preferredName "Test Length Constraint with collection"@en ;
-   bamm:description "Test Length Constraint with collection"@en ;
-   bamm-c:constraint [
-      a bamm-c:LengthConstraint ;
-      bamm-c:minValue "1"^^xsd:nonNegativeInteger ;
-      bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+:TestLengthConstraintWithCollection a samm-c:Trait ;
+   samm:name "TestLengthConstraintWithCollection" ;
+   samm:preferredName "Test Length Constraint with collection"@en ;
+   samm:description "Test Length Constraint with collection"@en ;
+   samm-c:constraint [
+      a samm-c:LengthConstraint ;
+      samm-c:minValue "1"^^xsd:nonNegativeInteger ;
+      samm-c:maxValue "10"^^xsd:nonNegativeInteger ;
    ] ;
-   bamm-c:baseCharacteristic [
-      a bamm-c:List ;
-      bamm:name "IntList" ;
-      bamm:dataType xsd:nonNegativeInteger
+   samm-c:baseCharacteristic [
+      a samm-c:List ;
+      samm:name "IntList" ;
+      samm:dataType xsd:nonNegativeInteger
    ] .

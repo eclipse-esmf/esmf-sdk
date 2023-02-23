@@ -10,61 +10,61 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEitherWithComplexTypes a bamm:Aspect ;
-   bamm:name "AspectWithEitherWithComplexTypes" ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEitherWithComplexTypes a samm:Aspect ;
+   samm:name "AspectWithEitherWithComplexTypes" ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestEither .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestEither .
 
-:TestEither a bamm-c:Either ;
-   bamm:name "TestEither" ;
-   bamm:preferredName "Test Either"@en ;
-   bamm:description "Test Either Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm-c:left :LeftType ;
-   bamm-c:right :RightType .
+:TestEither a samm-c:Either ;
+   samm:name "TestEither" ;
+   samm:preferredName "Test Either"@en ;
+   samm:description "Test Either Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm-c:left :LeftType ;
+   samm-c:right :RightType .
 
-:LeftType a bamm:Characteristic ;
-   bamm:name "LeftType" ;
-   bamm:preferredName "Left Type"@en ;
-   bamm:description "Left Type Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType :LeftEntity .
+:LeftType a samm:Characteristic ;
+   samm:name "LeftType" ;
+   samm:preferredName "Left Type"@en ;
+   samm:description "Left Type Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType :LeftEntity .
 
-:RightType a bamm:Characteristic ;
-   bamm:name "RightType" ;
-   bamm:preferredName "Right Type"@en ;
-   bamm:description "Right Type Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType :RightEntity .
+:RightType a samm:Characteristic ;
+   samm:name "RightType" ;
+   samm:preferredName "Right Type"@en ;
+   samm:description "Right Type Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType :RightEntity .
 
-:LeftEntity a bamm:Entity ;
-   bamm:name "LeftEntity" ;
-   bamm:properties ( :result ) .
+:LeftEntity a samm:Entity ;
+   samm:name "LeftEntity" ;
+   samm:properties ( :result ) .
 
-:result a bamm:Property ;
-   bamm:name "result" ;
-   bamm:characteristic :ResultCharacteristic .
+:result a samm:Property ;
+   samm:name "result" ;
+   samm:characteristic :ResultCharacteristic .
 
-:ResultCharacteristic a bamm:Characteristic ;
-   bamm:name "ResultCharacteristic" ;
-   bamm:dataType xsd:string .
+:ResultCharacteristic a samm:Characteristic ;
+   samm:name "ResultCharacteristic" ;
+   samm:dataType xsd:string .
 
-:RightEntity a bamm:Entity ;
-   bamm:name "RightEntity" ;
-   bamm:properties ( :error ) .
+:RightEntity a samm:Entity ;
+   samm:name "RightEntity" ;
+   samm:properties ( :error ) .
 
-:error a bamm:Property ;
-   bamm:name "error" ;
-   bamm:characteristic :ErrorCharacteristic .
+:error a samm:Property ;
+   samm:name "error" ;
+   samm:characteristic :ErrorCharacteristic .
 
-:ErrorCharacteristic a bamm:Characteristic ;
-   bamm:name "ErrorCharacteristic" ;
-   bamm:dataType xsd:string .
+:ErrorCharacteristic a samm:Characteristic ;
+   samm:name "ErrorCharacteristic" ;
+   samm:dataType xsd:string .

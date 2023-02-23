@@ -10,22 +10,22 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>.
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>.
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#>.
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>.
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#>.
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>.
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#>.
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
 
-:AspectWithRecursiveProperty a bamm:Aspect;
-    bamm:name "AspectWithRecursiveProperty";
-    bamm:properties ( :testProperty);
-    bamm:operations ().
-:testProperty a bamm:Property;
-    bamm:name "testProperty";
-    bamm:characteristic :testItemCharacteristic.
-:testItemCharacteristic a bamm-c:SingleEntity;
-    bamm:name "testItemCharacteristic";
-    bamm:dataType :testEntity.
-:testEntity a bamm:Entity;
-    bamm:name "testEntity";
-    bamm:properties (:testProperty).
+:AspectWithRecursiveProperty a samm:Aspect;
+    samm:name "AspectWithRecursiveProperty";
+    samm:properties ( :testProperty);
+    samm:operations ().
+:testProperty a samm:Property;
+    samm:name "testProperty";
+    samm:characteristic :testItemCharacteristic.
+:testItemCharacteristic a samm-c:SingleEntity;
+    samm:name "testItemCharacteristic";
+    samm:dataType :testEntity.
+:testEntity a samm:Entity;
+    samm:name "testEntity";
+    samm:properties (:testProperty).

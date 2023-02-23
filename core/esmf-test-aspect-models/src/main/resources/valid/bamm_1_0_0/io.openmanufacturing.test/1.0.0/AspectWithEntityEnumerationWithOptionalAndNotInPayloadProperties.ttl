@@ -10,55 +10,55 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEntityEnumerationWithOptionalAndNotInPayloadProperties a bamm:Aspect ;
-   bamm:name "AspectWithEntityEnumerationWithOptionalAndNotInPayloadProperties" ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:description "This is a test description"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEntityEnumerationWithOptionalAndNotInPayloadProperties a samm:Aspect ;
+   samm:name "AspectWithEntityEnumerationWithOptionalAndNotInPayloadProperties" ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:description "This is a test description"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:preferredName "Test Property"@en ;
-   bamm:description "This is a test property."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:characteristic :TestEnumeration .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:characteristic :TestEnumeration .
 
-:TestEnumeration a bamm-c:Enumeration ;
-   bamm:name "TestEnumeration" ;
-   bamm:preferredName "Test Enumeration"@en ;
-   bamm:description "This is a test for enumeration."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType :TestEntity ;
-   bamm-c:values ( :entityInstance ) .
+:TestEnumeration a samm-c:Enumeration ;
+   samm:name "TestEnumeration" ;
+   samm:preferredName "Test Enumeration"@en ;
+   samm:description "This is a test for enumeration."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType :TestEntity ;
+   samm-c:values ( :entityInstance ) .
 
-:TestEntity a bamm:Entity ;
-   bamm:name "TestEntity" ;
-   bamm:preferredName "Test Entity"@en ;
-   bamm:description "This is a test entity"@en ;
-   bamm:properties ( :entityProperty
-                     [ bamm:property :optionalEntityProperty ; bamm:optional "true"^^xsd:boolean ]
-                     [ bamm:property :notInPayloadEntityProperty ; bamm:notInPayload "true"^^xsd:boolean ] ) .
+:TestEntity a samm:Entity ;
+   samm:name "TestEntity" ;
+   samm:preferredName "Test Entity"@en ;
+   samm:description "This is a test entity"@en ;
+   samm:properties ( :entityProperty
+                     [ samm:property :optionalEntityProperty ; samm:optional "true"^^xsd:boolean ]
+                     [ samm:property :notInPayloadEntityProperty ; samm:notInPayload "true"^^xsd:boolean ] ) .
 
-:entityProperty a bamm:Property ;
-   bamm:name "entityProperty" ;
-   bamm:preferredName "Entity Property"@en ;
-   bamm:description "This is a property for the test entity."@en ;
-   bamm:characteristic bamm-c:Text .
+:entityProperty a samm:Property ;
+   samm:name "entityProperty" ;
+   samm:preferredName "Entity Property"@en ;
+   samm:description "This is a property for the test entity."@en ;
+   samm:characteristic samm-c:Text .
 
-:optionalEntityProperty a bamm:Property ;
-   bamm:name "optionalEntityProperty" ;
-   bamm:characteristic bamm-c:Text .
+:optionalEntityProperty a samm:Property ;
+   samm:name "optionalEntityProperty" ;
+   samm:characteristic samm-c:Text .
 
-:notInPayloadEntityProperty a bamm:Property ;
-   bamm:name "notInPayloadEntityProperty" ;
-   bamm:characteristic bamm-c:Text .
+:notInPayloadEntityProperty a samm:Property ;
+   samm:name "notInPayloadEntityProperty" ;
+   samm:characteristic samm-c:Text .
 
 :entityInstance a :TestEntity ;
    :entityProperty "This is a test." ;

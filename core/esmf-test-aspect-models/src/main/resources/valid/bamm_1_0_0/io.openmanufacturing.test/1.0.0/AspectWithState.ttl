@@ -10,21 +10,21 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithState a bamm:Aspect ;
-   bamm:name "AspectWithState" ;
-   bamm:properties ( :status ) ;
-   bamm:operations () .
+:AspectWithState a samm:Aspect ;
+   samm:name "AspectWithState" ;
+   samm:properties ( :status ) ;
+   samm:operations () .
 
-:status a bamm:Property ;
-   bamm:name "status" ;
-   bamm:characteristic :TestState .
+:status a samm:Property ;
+   samm:name "status" ;
+   samm:characteristic :TestState .
 
-:TestState a bamm-c:State ;
-   bamm:name "TestState" ;
-   bamm:dataType xsd:string ;
-   bamm-c:values ( "Success" "Error" "In Progress" ) ;
-   bamm-c:defaultValue "In Progress" .
+:TestState a samm-c:State ;
+   samm:name "TestState" ;
+   samm:dataType xsd:string ;
+   samm-c:values ( "Success" "Error" "In Progress" ) ;
+   samm-c:defaultValue "In Progress" .

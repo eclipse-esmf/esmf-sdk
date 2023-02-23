@@ -10,22 +10,22 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithHtmlTags a bamm:Aspect ;
-   bamm:preferredName "Aspect With <img src=xss.png onerror=alert('Boom!')> Entity"@en ;
-   bamm:description "Aspect With <p>inside html tag</p> Entity"@en ;
-   bamm:properties ( :testEntity ) ;
-   bamm:operations ( ) .
+:AspectWithHtmlTags a samm:Aspect ;
+   samm:preferredName "Aspect With <img src=xss.png onerror=alert('Boom!')> Entity"@en ;
+   samm:description "Aspect With <p>inside html tag</p> Entity"@en ;
+   samm:properties ( :testEntity ) ;
+   samm:operations ( ) .
 
-:testEntity a bamm:Property ;
-   bamm:preferredName "Preferred Name <input value=''/><script>alert('Boom!')</script>'/>"@en ;
-   bamm:characteristic :TestEntityCharacteristic .
+:testEntity a samm:Property ;
+   samm:preferredName "Preferred Name <input value=''/><script>alert('Boom!')</script>'/>"@en ;
+   samm:characteristic :TestEntityCharacteristic .
 
-:TestEntityCharacteristic a bamm:Characteristic ;
-   bamm:dataType :TestEntity .
+:TestEntityCharacteristic a samm:Characteristic ;
+   samm:dataType :TestEntity .
 
-:TestEntity a bamm:Entity ;
-   bamm:properties ( ) .
+:TestEntity a samm:Entity ;
+   samm:properties ( ) .

@@ -10,20 +10,20 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithCurieEnumeration a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithCurieEnumeration a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:exampleValue "unit:hectopascal"^^bamm:curie ;
-   bamm:characteristic :TestEnumeration .
+:testProperty a samm:Property ;
+   samm:exampleValue "unit:hectopascal"^^samm:curie ;
+   samm:characteristic :TestEnumeration .
 
-:TestEnumeration a bamm-c:Enumeration ;
-   bamm:preferredName "Test Enumeration"@en ;
-   bamm:description "This is a test for enumeration."@en ;
-   bamm:dataType bamm:curie ;
-   bamm-c:values ( "unit:hectopascal"^^bamm:curie "unit:gram"^^bamm:curie ) .
+:TestEnumeration a samm-c:Enumeration ;
+   samm:preferredName "Test Enumeration"@en ;
+   samm:description "This is a test for enumeration."@en ;
+   samm:dataType samm:curie ;
+   samm-c:values ( "unit:hectopascal"^^samm:curie "unit:gram"^^samm:curie ) .

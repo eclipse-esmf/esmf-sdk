@@ -10,32 +10,32 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithNestedEntity a bamm:Aspect ;
-   bamm:properties ( :entity ) ;
-   bamm:operations ( ) .
+:AspectWithNestedEntity a samm:Aspect ;
+   samm:properties ( :entity ) ;
+   samm:operations ( ) .
 
-:entity a bamm:Property ;
-   bamm:characteristic :EntityCharacteristic .
+:entity a samm:Property ;
+   samm:characteristic :EntityCharacteristic .
 
-:Entity a bamm:Entity ;
-   bamm:properties ( :nestedEntity :testString ) .
+:Entity a samm:Entity ;
+   samm:properties ( :nestedEntity :testString ) .
 
-:nestedEntity a bamm:Property ;
-   bamm:characteristic :NestedEntityCharacteristic .
+:nestedEntity a samm:Property ;
+   samm:characteristic :NestedEntityCharacteristic .
 
-:NestedTestEntity a bamm:Entity ;
-   bamm:properties ( :testString ) .
+:NestedTestEntity a samm:Entity ;
+   samm:properties ( :testString ) .
 
-:testString a bamm:Property ;
-   bamm:exampleValue "Example Value Test" ;
-   bamm:characteristic bamm-c:Text .
+:testString a samm:Property ;
+   samm:exampleValue "Example Value Test" ;
+   samm:characteristic samm-c:Text .
 
-:EntityCharacteristic a bamm:Characteristic ;
-   bamm:dataType :Entity .
+:EntityCharacteristic a samm:Characteristic ;
+   samm:dataType :Entity .
 
-:NestedEntityCharacteristic a bamm:Characteristic ;
-   bamm:dataType :NestedTestEntity .
+:NestedEntityCharacteristic a samm:Characteristic ;
+   samm:dataType :NestedTestEntity .

@@ -10,133 +10,133 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:ModelWithCycles a bamm:Aspect ;
-   bamm:properties ( :a :e :h :l :n ) .
+:ModelWithCycles a samm:Aspect ;
+   samm:properties ( :a :e :h :l :n ) .
 
 #####################################
 # direct cycle between two properties
 #####################################
-:a a bamm:Property;
-   bamm:characteristic :aCharacteristic.
+:a a samm:Property;
+   samm:characteristic :aCharacteristic.
 
-:aCharacteristic a bamm:Characteristic;
-   bamm:dataType :AEntity.
+:aCharacteristic a samm:Characteristic;
+   samm:dataType :AEntity.
 
-:AEntity a bamm:Entity;
-    bamm:properties ( :b ) .
+:AEntity a samm:Entity;
+    samm:properties ( :b ) .
 
-:b a bamm:Property;
-   bamm:characteristic :bCharacteristic.
+:b a samm:Property;
+   samm:characteristic :bCharacteristic.
 
-:bCharacteristic a bamm:Characteristic;
-   bamm:dataType :BEntity.
+:bCharacteristic a samm:Characteristic;
+   samm:dataType :BEntity.
 
-:BEntity a bamm:Entity;
-    bamm:properties ( :a ) .
+:BEntity a samm:Entity;
+    samm:properties ( :a ) .
 
 #############################################
 # indirect cycle via an intermediate property
 #############################################
-:e a bamm:Property;
-   bamm:characteristic :eCharacteristic.
+:e a samm:Property;
+   samm:characteristic :eCharacteristic.
 
-:eCharacteristic a bamm:Characteristic;
-   bamm:dataType :EEntity.
+:eCharacteristic a samm:Characteristic;
+   samm:dataType :EEntity.
 
-:EEntity a bamm:Entity;
-    bamm:properties ( :f ) .
+:EEntity a samm:Entity;
+    samm:properties ( :f ) .
 
-:f a bamm:Property;
-   bamm:characteristic :fCharacteristic.
+:f a samm:Property;
+   samm:characteristic :fCharacteristic.
 
-:fCharacteristic a bamm:Characteristic;
-   bamm:dataType :FEntity.
+:fCharacteristic a samm:Characteristic;
+   samm:dataType :FEntity.
 
-:FEntity a bamm:Entity;
-    bamm:properties ( :g ) .
+:FEntity a samm:Entity;
+    samm:properties ( :g ) .
 
-:g a bamm:Property;
-   bamm:characteristic :gCharacteristic.
+:g a samm:Property;
+   samm:characteristic :gCharacteristic.
 
-:gCharacteristic a bamm:Characteristic;
-   bamm:dataType :GEntity.
+:gCharacteristic a samm:Characteristic;
+   samm:dataType :GEntity.
 
-:GEntity a bamm:Entity;
-    bamm:properties ( :e ) .
+:GEntity a samm:Entity;
+    samm:properties ( :e ) .
 
 ##############################################
-# cycle via both branches of bamm-c:Either
+# cycle via both branches of samm-c:Either
 ##############################################
-:h a bamm:Property;
-   bamm:characteristic :hCharacteristic.
+:h a samm:Property;
+   samm:characteristic :hCharacteristic.
 
-:hCharacteristic a bamm-c:Either;
-    bamm-c:left :leftCharacteristic ;
-    bamm-c:right :rightCharacteristic.
+:hCharacteristic a samm-c:Either;
+    samm-c:left :leftCharacteristic ;
+    samm-c:right :rightCharacteristic.
 
-:leftCharacteristic a bamm:Characteristic;
-   bamm:dataType :LeftEntity.
+:leftCharacteristic a samm:Characteristic;
+   samm:dataType :LeftEntity.
 
-:rightCharacteristic a bamm:Characteristic;
-   bamm:dataType :RightEntity.
+:rightCharacteristic a samm:Characteristic;
+   samm:dataType :RightEntity.
 
-:LeftEntity a bamm:Entity;
-    bamm:properties ( :h ) . # direct cycle
+:LeftEntity a samm:Entity;
+    samm:properties ( :h ) . # direct cycle
 
-:RightEntity a bamm:Entity;
-    bamm:properties ( :i ) . # cycle via an intermediary property
+:RightEntity a samm:Entity;
+    samm:properties ( :i ) . # cycle via an intermediary property
 
-:i a bamm:Property;
-   bamm:characteristic :iCharacteristic.
+:i a samm:Property;
+   samm:characteristic :iCharacteristic.
 
-:iCharacteristic a bamm:Characteristic;
-   bamm:dataType :IEntity.
+:iCharacteristic a samm:Characteristic;
+   samm:dataType :IEntity.
 
-:IEntity a bamm:Entity;
-    bamm:properties ( :h ) .
+:IEntity a samm:Entity;
+    samm:properties ( :h ) .
 
 #############################################
-# cycle via bamm-c:baseCharacteristic
+# cycle via samm-c:baseCharacteristic
 #############################################
-:l a bamm:Property;
-   bamm:characteristic :lCharacteristic .
+:l a samm:Property;
+   samm:characteristic :lCharacteristic .
 
-:lCharacteristic a bamm-c:Trait;
-   bamm-c:baseCharacteristic :MEntityList ;
-   bamm-c:constraint [
-      a bamm-c:LengthConstraint ;
-      bamm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+:lCharacteristic a samm-c:Trait;
+   samm-c:baseCharacteristic :MEntityList ;
+   samm-c:constraint [
+      a samm-c:LengthConstraint ;
+      samm-c:maxValue "10"^^xsd:nonNegativeInteger ;
    ] .
 
-:MEntityList a bamm-c:List ;
-   bamm:dataType :MEntity .
+:MEntityList a samm-c:List ;
+   samm:dataType :MEntity .
 
-:MEntity a bamm:Entity;
-    bamm:properties ( :l ) .
+:MEntity a samm:Entity;
+    samm:properties ( :l ) .
 
 ####################################################
-# cycle via bamm-e:TimeSeriesEntity and bamm:extends
+# cycle via samm-e:TimeSeriesEntity and samm:extends
 ####################################################
-:n a bamm:Property ;
-   bamm:characteristic :NTimeSeries .
+:n a samm:Property ;
+   samm:characteristic :NTimeSeries .
 
-:NTimeSeries a bamm-c:TimeSeries ;
-   bamm:dataType :NTimeSeriesEntity .
+:NTimeSeries a samm-c:TimeSeries ;
+   samm:dataType :NTimeSeriesEntity .
 
-:NTimeSeriesEntity a bamm:Entity ;
-   bamm:extends bamm-e:TimeSeriesEntity ;
-   bamm:properties ( [ bamm:extends bamm-e:value ; bamm:characteristic :oCharacteristic ] ) .
+:NTimeSeriesEntity a samm:Entity ;
+   samm:extends samm-e:TimeSeriesEntity ;
+   samm:properties ( [ samm:extends samm-e:value ; samm:characteristic :oCharacteristic ] ) .
 
-:oCharacteristic a bamm:Characteristic;
-   bamm:dataType :OEntity.
+:oCharacteristic a samm:Characteristic;
+   samm:dataType :OEntity.
 
-:OEntity a bamm:Entity;
-    bamm:properties ( :n ) .
+:OEntity a samm:Entity;
+    samm:properties ( :n ) .
 
 
 

@@ -10,14 +10,14 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 
-:AspectWithMultipleSeeAttributes a bamm:Aspect ;
-   bamm:name "AspectWithMultipleSeeAttributes" ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:description "This is a test Aspect."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:properties ( ) ;
-   bamm:operations ( ) .
+:AspectWithMultipleSeeAttributes a samm:Aspect ;
+   samm:name "AspectWithMultipleSeeAttributes" ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:description "This is a test Aspect."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:properties ( ) ;
+   samm:operations ( ) .

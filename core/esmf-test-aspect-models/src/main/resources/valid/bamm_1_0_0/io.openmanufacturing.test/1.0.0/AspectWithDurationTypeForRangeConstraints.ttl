@@ -10,89 +10,89 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix :       <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm:   <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm:   <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit:   <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
 :AspectWithDurationTypeForRangeConstraints
-    a               bamm:Aspect ;
-    bamm:name       "AspectWithDurationTypeForRangeConstraints" ;
-    bamm:properties ( :testPropertyWithDayTimeDuration :testPropertyWithDuration
+    a               samm:Aspect ;
+    samm:name       "AspectWithDurationTypeForRangeConstraints" ;
+    samm:properties ( :testPropertyWithDayTimeDuration :testPropertyWithDuration
                       :testPropertyWithYearMonthDuration ) ;
-    bamm:operations ( ) .
+    samm:operations ( ) .
 
 :testPropertyWithDayTimeDuration
-    a                   bamm:Property ;
-    bamm:name           "testPropertyWithDayTimeDuration" ;
-    bamm:characteristic :testWithDurationMinDurationMaxDayTimeDuration .
+    a                   samm:Property ;
+    samm:name           "testPropertyWithDayTimeDuration" ;
+    samm:characteristic :testWithDurationMinDurationMaxDayTimeDuration .
 
 :testWithDurationMinDurationMaxDayTimeDuration
-    a                       bamm-c:Trait ;
-    bamm:name               "testWithDurationMinDurationMaxDayTimeDuration" ;
-    bamm:preferredName      "Test Range"@en ;
-    bamm:description        "Test Range"@en ;
-    bamm-c:constraint [
-       a bamm-c:RangeConstraint ;
-       bamm-c:minValue "P1DT5H"^^xsd:dayTimeDuration ;
-       bamm-c:maxValue "P1DT8H"^^xsd:dayTimeDuration ;
-       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+    a                       samm-c:Trait ;
+    samm:name               "testWithDurationMinDurationMaxDayTimeDuration" ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue "P1DT5H"^^xsd:dayTimeDuration ;
+       samm-c:maxValue "P1DT8H"^^xsd:dayTimeDuration ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
     ] ;
-    bamm-c:baseCharacteristic :MeasurementDayTimeDuration .
+    samm-c:baseCharacteristic :MeasurementDayTimeDuration .
 
 :MeasurementDayTimeDuration
-    a             bamm-c:Measurement ;
-    bamm:name     "Measurement" ;
-    bamm:dataType xsd:dayTimeDuration ;
-    bamm-c:unit   unit:hour .
+    a             samm-c:Measurement ;
+    samm:name     "Measurement" ;
+    samm:dataType xsd:dayTimeDuration ;
+    samm-c:unit   unit:hour .
 
 :testPropertyWithDuration
-    a                   bamm:Property ;
-    bamm:name           "testPropertyWithDuration" ;
-    bamm:characteristic :testWithDurationMinDurationMaxDuration .
+    a                   samm:Property ;
+    samm:name           "testPropertyWithDuration" ;
+    samm:characteristic :testWithDurationMinDurationMaxDuration .
 
 :testWithDurationMinDurationMaxDuration
-    a                       bamm-c:Trait ;
-    bamm:name               "testWithDurationMinDurationMaxDuration" ;
-    bamm:preferredName      "Test Range"@en ;
-    bamm:description        "Test Range"@en ;
-    bamm-c:constraint [
-       a bamm-c:RangeConstraint ;
-       bamm-c:minValue "PT1H5M0S"^^xsd:duration ;
-       bamm-c:maxValue "PT1H5M3S"^^xsd:duration ;
-       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+    a                       samm-c:Trait ;
+    samm:name               "testWithDurationMinDurationMaxDuration" ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue "PT1H5M0S"^^xsd:duration ;
+       samm-c:maxValue "PT1H5M3S"^^xsd:duration ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
     ] ;
-    bamm-c:baseCharacteristic :MeasurementDuration .
+    samm-c:baseCharacteristic :MeasurementDuration .
 
 :MeasurementDuration
-    a             bamm-c:Measurement ;
-    bamm:name     "Measurement" ;
-    bamm:dataType xsd:duration ;
-    bamm-c:unit   unit:hour .
+    a             samm-c:Measurement ;
+    samm:name     "Measurement" ;
+    samm:dataType xsd:duration ;
+    samm-c:unit   unit:hour .
 
 :testPropertyWithYearMonthDuration
-    a                   bamm:Property ;
-    bamm:name           "testPropertyWithYearMonthDuration" ;
-    bamm:characteristic :testWithDurationMinDurationMaxYearMonthDuration .
+    a                   samm:Property ;
+    samm:name           "testPropertyWithYearMonthDuration" ;
+    samm:characteristic :testWithDurationMinDurationMaxYearMonthDuration .
 
 :testWithDurationMinDurationMaxYearMonthDuration
-    a                       bamm-c:Trait ;
-    bamm:name               "testWithDurationMinDurationMaxYearMonthDuration" ;
-    bamm:preferredName      "Test Range"@en ;
-    bamm:description        "Test Range"@en ;
-    bamm-c:constraint [
-       a bamm-c:RangeConstraint ;
-       bamm-c:minValue         "P5Y2M"^^xsd:yearMonthDuration ;
-       bamm-c:maxValue         "P5Y3M"^^xsd:yearMonthDuration ;
-       bamm-c:upperBoundDefinition bamm-c:AT_MOST ;
-       bamm-c:lowerBoundDefinition bamm-c:AT_LEAST ;
+    a                       samm-c:Trait ;
+    samm:name               "testWithDurationMinDurationMaxYearMonthDuration" ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue         "P5Y2M"^^xsd:yearMonthDuration ;
+       samm-c:maxValue         "P5Y3M"^^xsd:yearMonthDuration ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
     ] ;
-    bamm-c:baseCharacteristic :MeasurementYearMonthDuration .
+    samm-c:baseCharacteristic :MeasurementYearMonthDuration .
 
 :MeasurementYearMonthDuration
-    a             bamm-c:Measurement ;
-    bamm:name     "Measurement" ;
-    bamm:dataType xsd:yearMonthDuration ;
-    bamm-c:unit   unit:hour .
+    a             samm-c:Measurement ;
+    samm:name     "Measurement" ;
+    samm:dataType xsd:yearMonthDuration ;
+    samm-c:unit   unit:hour .

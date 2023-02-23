@@ -10,37 +10,37 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
 # Test of Entity instance with two optional Properties, # with no Property being present in the instance
 
-:EntityInstanceTest4 a bamm:Aspect ;
-   bamm:name "EntityInstanceTest4" ;
-   bamm:properties ( :aspectProperty ) ;
-   bamm:operations ( ) .
+:EntityInstanceTest4 a samm:Aspect ;
+   samm:name "EntityInstanceTest4" ;
+   samm:properties ( :aspectProperty ) ;
+   samm:operations ( ) .
 
-:aspectProperty a bamm:Property ;
-   bamm:name "aspectProperty" ;
-   bamm:characteristic :TheEnum .
+:aspectProperty a samm:Property ;
+   samm:name "aspectProperty" ;
+   samm:characteristic :TheEnum .
 
-:TheEnum a bamm-c:Enumeration ;
-   bamm:name "TheEnum" ;
-   bamm:dataType :TheEntity ;
-   bamm-c:values ( :entityInstance ) .
+:TheEnum a samm-c:Enumeration ;
+   samm:name "TheEnum" ;
+   samm:dataType :TheEntity ;
+   samm-c:values ( :entityInstance ) .
 
-:TheEntity a bamm:Entity ;
-   bamm:name "TheEntity" ;
-   bamm:properties ( [ bamm:property :entityProperty; bamm:optional true ] [ bamm:property :optionalEntityProperty; bamm:optional true ] ) .
-:entityProperty a bamm:Property ;
-   bamm:name "entityProperty" ;
-   bamm:characteristic bamm-c:Text .
+:TheEntity a samm:Entity ;
+   samm:name "TheEntity" ;
+   samm:properties ( [ samm:property :entityProperty; samm:optional true ] [ samm:property :optionalEntityProperty; samm:optional true ] ) .
+:entityProperty a samm:Property ;
+   samm:name "entityProperty" ;
+   samm:characteristic samm-c:Text .
 
-:optionalEntityProperty a bamm:Property ;
-   bamm:name "optionalEntityProperty" ;
-   bamm:characteristic bamm-c:Text .
+:optionalEntityProperty a samm:Property ;
+   samm:name "optionalEntityProperty" ;
+   samm:characteristic samm-c:Text .
 
 :entityInstance a :TheEntity .
 

@@ -10,23 +10,23 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 
-:AspectWithCode a bamm:Aspect ;
-   bamm:name "AspectWithCode" ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithCode a samm:Aspect ;
+   samm:name "AspectWithCode" ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestCode .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestCode .
 
-:TestCode a bamm-c:Code ;
-   bamm:name "TestCode" ;
-   bamm:preferredName "Test Code"@en ;
-   bamm:description "This is a test code."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType xsd:int .
+:TestCode a samm-c:Code ;
+   samm:name "TestCode" ;
+   samm:preferredName "Test Code"@en ;
+   samm:description "This is a test code."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType xsd:int .

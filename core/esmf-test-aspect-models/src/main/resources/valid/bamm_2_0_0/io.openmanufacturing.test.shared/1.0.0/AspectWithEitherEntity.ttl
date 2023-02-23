@@ -10,41 +10,41 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test.shared:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
 
-:AspectWithEitherEntity a bamm:Aspect ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:description "This is a test description"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEitherEntity a samm:Aspect ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:description "This is a test description"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:preferredName "Test Property"@en ;
-   bamm:description "This is a test property."@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm:characteristic :EntityCharacteristic .
+:testProperty a samm:Property ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm:characteristic :EntityCharacteristic .
 
-:EntityCharacteristic a bamm-c:SingleEntity ;
-   bamm:preferredName "Test Entity Characteristic"@en ;
-   bamm:description "This is a test Entity Characteristic"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:dataType :TestEntity .
+:EntityCharacteristic a samm-c:SingleEntity ;
+   samm:preferredName "Test Entity Characteristic"@en ;
+   samm:description "This is a test Entity Characteristic"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:dataType :TestEntity .
 
-:TestEntity a bamm:Entity ;
-   bamm:extends :ParentTestEntity ;
-   bamm:preferredName "Test Entity"@en ;
-   bamm:description "This is a test entity"@en ;
-   bamm:properties ( :entityProperty ) .
+:TestEntity a samm:Entity ;
+   samm:extends :ParentTestEntity ;
+   samm:preferredName "Test Entity"@en ;
+   samm:description "This is a test entity"@en ;
+   samm:properties ( :entityProperty ) .
 
-:entityProperty a bamm:Property ;
-   bamm:preferredName "Entity Property"@en ;
-   bamm:description "This is a property for the test entity."@en ;
-   bamm:characteristic bamm-c:Text .
+:entityProperty a samm:Property ;
+   samm:preferredName "Entity Property"@en ;
+   samm:description "This is a property for the test entity."@en ;
+   samm:characteristic samm-c:Text .
 
-:ParentTestEntity a bamm:AbstractEntity ;
-   bamm:properties ( :testPropertyWithEither ) .
+:ParentTestEntity a samm:AbstractEntity ;
+   samm:properties ( :testPropertyWithEither ) .

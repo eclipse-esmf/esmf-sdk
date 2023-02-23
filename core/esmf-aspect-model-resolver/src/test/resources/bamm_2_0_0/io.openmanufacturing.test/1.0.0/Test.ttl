@@ -9,16 +9,16 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
 
-:Test a bamm:Aspect ;
-   bamm:preferredName "Test"@en ;
-   bamm:properties ( ) ;
-   bamm:operations ( ) .
+:Test a samm:Aspect ;
+   samm:preferredName "Test"@en ;
+   samm:properties ( ) ;
+   samm:operations ( ) .
 
-:foo a bamm:Property ;
-   bamm:preferredName "Foo"@en ;
-   bamm:description "This is a test property."@en ;
-   bamm:characteristic bamm-c:Text .
+:foo a samm:Property ;
+   samm:preferredName "Foo"@en ;
+   samm:description "This is a test property."@en ;
+   samm:characteristic samm-c:Text .

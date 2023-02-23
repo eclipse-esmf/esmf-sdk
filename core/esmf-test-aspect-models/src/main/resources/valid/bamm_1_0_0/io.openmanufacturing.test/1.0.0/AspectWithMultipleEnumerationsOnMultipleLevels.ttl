@@ -10,54 +10,54 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithMultipleEnumerationsOnMultipleLevels a bamm:Aspect ;
-   bamm:name "AspectWithMultipleEnumerationsOnMultipleLevels" ;
-   bamm:properties ( :testPropertyWithEnumOne :testPropertyWithEnumTwo :testEntityWithEnumOne ) ;
-   bamm:operations ( ) .
+:AspectWithMultipleEnumerationsOnMultipleLevels a samm:Aspect ;
+   samm:name "AspectWithMultipleEnumerationsOnMultipleLevels" ;
+   samm:properties ( :testPropertyWithEnumOne :testPropertyWithEnumTwo :testEntityWithEnumOne ) ;
+   samm:operations ( ) .
 
-:testPropertyWithEnumOne a bamm:Property ;
-   bamm:name "testPropertyWithEnumOne" ;
-   bamm:characteristic :TestEnumOneCharacteristic .
+:testPropertyWithEnumOne a samm:Property ;
+   samm:name "testPropertyWithEnumOne" ;
+   samm:characteristic :TestEnumOneCharacteristic .
 
-:testPropertyWithEnumTwo a bamm:Property ;
-   bamm:name "testPropertyWithEnumTwo" ;
-   bamm:characteristic :TestEnumTwoCharacteristic .
+:testPropertyWithEnumTwo a samm:Property ;
+   samm:name "testPropertyWithEnumTwo" ;
+   samm:characteristic :TestEnumTwoCharacteristic .
 
-:testEntityWithEnumOne a bamm:Property ;
-   bamm:name "testEntityWithEnumOne" ;
-   bamm:characteristic :TestEntityCharacteristic .
+:testEntityWithEnumOne a samm:Property ;
+   samm:name "testEntityWithEnumOne" ;
+   samm:characteristic :TestEntityCharacteristic .
 
-:TestEnumOneCharacteristic a bamm-c:Enumeration ;
-   bamm:name "TestEnumOneCharacteristic" ;
-   bamm:dataType xsd:integer ;
-   bamm-c:values ( 1 2 3 ) .
+:TestEnumOneCharacteristic a samm-c:Enumeration ;
+   samm:name "TestEnumOneCharacteristic" ;
+   samm:dataType xsd:integer ;
+   samm-c:values ( 1 2 3 ) .
 
-:TestEnumTwoCharacteristic a bamm-c:Enumeration ;
-   bamm:name "TestEnumTwoCharacteristic" ;
-   bamm:dataType xsd:string ;
-   bamm-c:values ( "One" "Two" "Three" ) .
+:TestEnumTwoCharacteristic a samm-c:Enumeration ;
+   samm:name "TestEnumTwoCharacteristic" ;
+   samm:dataType xsd:string ;
+   samm-c:values ( "One" "Two" "Three" ) .
 
-:TestEntityCharacteristic a bamm-c:SingleEntity ;
-   bamm:name "TestEntityCharacteristic" ;
-   bamm:dataType :TestEntityWithEnumOne .
+:TestEntityCharacteristic a samm-c:SingleEntity ;
+   samm:name "TestEntityCharacteristic" ;
+   samm:dataType :TestEntityWithEnumOne .
 
-:TestEntityWithEnumOne a bamm:Entity ;
-   bamm:name "TestEntityWithEnumOne" ;
-   bamm:properties ( :testString :testPropertyWithEnumOne :testPropertyWithEnumThree ) .
+:TestEntityWithEnumOne a samm:Entity ;
+   samm:name "TestEntityWithEnumOne" ;
+   samm:properties ( :testString :testPropertyWithEnumOne :testPropertyWithEnumThree ) .
 
-:testString a bamm:Property ;
-   bamm:name "testString" ;
-   bamm:characteristic bamm-c:Text .
+:testString a samm:Property ;
+   samm:name "testString" ;
+   samm:characteristic samm-c:Text .
 
-:testPropertyWithEnumThree a bamm:Property ;
-   bamm:name "testPropertyWithEnumThree" ;
-   bamm:characteristic :TestEnumThreeCharacteristic .
+:testPropertyWithEnumThree a samm:Property ;
+   samm:name "testPropertyWithEnumThree" ;
+   samm:characteristic :TestEnumThreeCharacteristic .
 
-:TestEnumThreeCharacteristic a bamm-c:Enumeration ;
-   bamm:name "TestEnumThreeCharacteristic" ;
-   bamm:dataType xsd:string ;
-   bamm-c:values ( "Active" "Error" "Inactive" ) .
+:TestEnumThreeCharacteristic a samm-c:Enumeration ;
+   samm:name "TestEnumThreeCharacteristic" ;
+   samm:dataType xsd:string ;
+   samm-c:values ( "Active" "Error" "Inactive" ) .

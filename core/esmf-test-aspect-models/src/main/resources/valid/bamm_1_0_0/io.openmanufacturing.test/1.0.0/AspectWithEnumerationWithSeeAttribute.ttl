@@ -10,36 +10,36 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEnumerationWithSeeAttribute a bamm:Aspect ;
-   bamm:name "AspectWithEnumerationWithSeeAttribute" ;
-   bamm:properties ( :testProperty :testPropertyTwo ) ;
-   bamm:operations ( ) .
+:AspectWithEnumerationWithSeeAttribute a samm:Aspect ;
+   samm:name "AspectWithEnumerationWithSeeAttribute" ;
+   samm:properties ( :testProperty :testPropertyTwo ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestEnumeration .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestEnumeration .
 
-:testPropertyTwo a bamm:Property ;
-   bamm:name "testPropertyTwo" ;
-   bamm:characteristic :TestEnumerationTwo .
+:testPropertyTwo a samm:Property ;
+   samm:name "testPropertyTwo" ;
+   samm:characteristic :TestEnumerationTwo .
 
-:TestEnumeration a bamm-c:Enumeration ;
-   bamm:name "TestEnumeration" ;
-   bamm:preferredName "Test Enumeration"@en ;
-   bamm:description "Test Enumeration"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm-c:values ( "foo" "bar" ) ;
-   bamm:dataType xsd:string .
+:TestEnumeration a samm-c:Enumeration ;
+   samm:name "TestEnumeration" ;
+   samm:preferredName "Test Enumeration"@en ;
+   samm:description "Test Enumeration"@en ;
+   samm:see <http://example.com/omp> ;
+   samm-c:values ( "foo" "bar" ) ;
+   samm:dataType xsd:string .
 
-:TestEnumerationTwo a bamm-c:Enumeration ;
-   bamm:name "TestEnumerationTwo" ;
-   bamm:preferredName "Test Enumeration Two"@en ;
-   bamm:description "Test Enumeration Two"@en ;
-   bamm:see <http://example.com/omp> ;
-   bamm:see <http://example.com/me> ;
-   bamm-c:values ( "foo" "bar" ) ;
-   bamm:dataType xsd:string .
+:TestEnumerationTwo a samm-c:Enumeration ;
+   samm:name "TestEnumerationTwo" ;
+   samm:preferredName "Test Enumeration Two"@en ;
+   samm:description "Test Enumeration Two"@en ;
+   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/me> ;
+   samm-c:values ( "foo" "bar" ) ;
+   samm:dataType xsd:string .

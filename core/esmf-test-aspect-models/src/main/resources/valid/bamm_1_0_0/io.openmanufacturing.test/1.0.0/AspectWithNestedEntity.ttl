@@ -10,40 +10,40 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithNestedEntity a bamm:Aspect ;
-   bamm:name "AspectWithNestedEntity" ;
-   bamm:properties ( :entity ) ;
-   bamm:operations ( ) .
+:AspectWithNestedEntity a samm:Aspect ;
+   samm:name "AspectWithNestedEntity" ;
+   samm:properties ( :entity ) ;
+   samm:operations ( ) .
 
-:entity a bamm:Property ;
-   bamm:name "entity" ;
-   bamm:characteristic :EntityCharacteristic .
+:entity a samm:Property ;
+   samm:name "entity" ;
+   samm:characteristic :EntityCharacteristic .
 
-:Entity a bamm:Entity ;
-   bamm:name "Entity" ;
-   bamm:properties ( :nestedEntity :testString ) .
+:Entity a samm:Entity ;
+   samm:name "Entity" ;
+   samm:properties ( :nestedEntity :testString ) .
 
-:nestedEntity a bamm:Property ;
-   bamm:name "nestedEntity" ;
-   bamm:characteristic :NestedEntityCharacteristic .
+:nestedEntity a samm:Property ;
+   samm:name "nestedEntity" ;
+   samm:characteristic :NestedEntityCharacteristic .
 
-:NestedTestEntity a bamm:Entity ;
-   bamm:name "NestedTestEntity" ;
-   bamm:properties ( :testString ) .
+:NestedTestEntity a samm:Entity ;
+   samm:name "NestedTestEntity" ;
+   samm:properties ( :testString ) .
 
-:testString a bamm:Property ;
-   bamm:name "testString" ;
-   bamm:exampleValue "Example Value Test" ;
-   bamm:characteristic bamm-c:Text .
+:testString a samm:Property ;
+   samm:name "testString" ;
+   samm:exampleValue "Example Value Test" ;
+   samm:characteristic samm-c:Text .
 
-:EntityCharacteristic a bamm:Characteristic ;
-   bamm:name "EntityCharacteristic" ;
-   bamm:dataType :Entity .
+:EntityCharacteristic a samm:Characteristic ;
+   samm:name "EntityCharacteristic" ;
+   samm:dataType :Entity .
 
-:NestedEntityCharacteristic a bamm:Characteristic ;
-   bamm:name "NestedEntityCharacteristic" ;
-   bamm:dataType :NestedTestEntity .
+:NestedEntityCharacteristic a samm:Characteristic ;
+   samm:name "NestedEntityCharacteristic" ;
+   samm:dataType :NestedTestEntity .

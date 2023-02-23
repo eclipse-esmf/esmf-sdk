@@ -10,31 +10,31 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
-@prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithCollections a bamm:Aspect ;
-   bamm:name "AspectWithCollections" ;
-   bamm:properties ( :setProperty :listProperty ) ;
-   bamm:operations ( ) .
+:AspectWithCollections a samm:Aspect ;
+   samm:name "AspectWithCollections" ;
+   samm:properties ( :setProperty :listProperty ) ;
+   samm:operations ( ) .
 
-:listProperty a bamm:Property ;
-   bamm:name "listProperty" ;
-   bamm:characteristic [
-      a bamm-c:List ;
-      bamm:name "NumberList" ;
-      bamm:dataType xsd:int
+:listProperty a samm:Property ;
+   samm:name "listProperty" ;
+   samm:characteristic [
+      a samm-c:List ;
+      samm:name "NumberList" ;
+      samm:dataType xsd:int
    ] .
 
-:setProperty a bamm:Property ;
-   bamm:name "setProperty" ;
-   bamm:characteristic [
-      a bamm-c:Set ;
-      bamm:name "StringSet" ;
-      bamm:dataType xsd:string
+:setProperty a samm:Property ;
+   samm:name "setProperty" ;
+   samm:characteristic [
+      a samm-c:Set ;
+      samm:name "StringSet" ;
+      samm:dataType xsd:string
    ] .
 
 

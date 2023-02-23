@@ -10,48 +10,48 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithNestedEntityListEnumerationWithNotInPayload a bamm:Aspect ;
-   bamm:name "AspectWithNestedEntityListEnumerationWithNotInPayload" ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithNestedEntityListEnumerationWithNotInPayload a samm:Aspect ;
+   samm:name "AspectWithNestedEntityListEnumerationWithNotInPayload" ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:name "testProperty" ;
-   bamm:characteristic :TestEnumeration .
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:characteristic :TestEnumeration .
 
-:TestEnumeration a bamm-c:Enumeration ;
-   bamm:name "TestEnumeration" ;
-   bamm:dataType :TestEntity ;
-   bamm-c:values ( :entityInstance ) .
+:TestEnumeration a samm-c:Enumeration ;
+   samm:name "TestEnumeration" ;
+   samm:dataType :TestEntity ;
+   samm-c:values ( :entityInstance ) .
 
-:TestEntity a bamm:Entity ;
-   bamm:name "TestEntity" ;
-   bamm:properties ( :entityProperty
-                     [ bamm:property :nestedEntityListProperty ; bamm:notInPayload "true"^^xsd:boolean ] ) .
+:TestEntity a samm:Entity ;
+   samm:name "TestEntity" ;
+   samm:properties ( :entityProperty
+                     [ samm:property :nestedEntityListProperty ; samm:notInPayload "true"^^xsd:boolean ] ) .
 
-:entityProperty a bamm:Property ;
-   bamm:name "entityProperty" ;
-   bamm:characteristic bamm-c:Text .
+:entityProperty a samm:Property ;
+   samm:name "entityProperty" ;
+   samm:characteristic samm-c:Text .
 
-:nestedEntityListProperty a bamm:Property ;
-   bamm:name "nestedEntityListProperty" ;
-   bamm:characteristic [
-      a bamm-c:Set ;
-      bamm:name "NestedEntityList" ;
-      bamm:dataType :NestedEntity
+:nestedEntityListProperty a samm:Property ;
+   samm:name "nestedEntityListProperty" ;
+   samm:characteristic [
+      a samm-c:Set ;
+      samm:name "NestedEntityList" ;
+      samm:dataType :NestedEntity
    ] .
 
-:NestedEntity a bamm:Entity ;
-   bamm:name "NestedEntity" ;
-   bamm:properties ( :notInPayloadProperty ) .
+:NestedEntity a samm:Entity ;
+   samm:name "NestedEntity" ;
+   samm:properties ( :notInPayloadProperty ) .
 
-:notInPayloadProperty a bamm:Property ;
-   bamm:name "notInPayloadProperty" ;
-   bamm:characteristic bamm-c:Text .
+:notInPayloadProperty a samm:Property ;
+   samm:name "notInPayloadProperty" ;
+   samm:characteristic samm-c:Text .
 
 :entityInstance a :TestEntity ;
    :entityProperty "This is a test." ;

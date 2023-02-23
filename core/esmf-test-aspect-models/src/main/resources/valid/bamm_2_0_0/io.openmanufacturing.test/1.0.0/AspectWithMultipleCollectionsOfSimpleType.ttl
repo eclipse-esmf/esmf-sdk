@@ -11,24 +11,24 @@
 
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithMultipleCollectionsOfSimpleType a bamm:Aspect ;
-   bamm:properties ( :testListInt :testListString ) ;
-   bamm:operations ( ) .
+:AspectWithMultipleCollectionsOfSimpleType a samm:Aspect ;
+   samm:properties ( :testListInt :testListString ) ;
+   samm:operations ( ) .
 
-:testListInt a bamm:Property ;
-   bamm:exampleValue "35"^^xsd:int ;
-   bamm:characteristic :IntegerList .
+:testListInt a samm:Property ;
+   samm:exampleValue "35"^^xsd:int ;
+   samm:characteristic :IntegerList .
 
-:testListString a bamm:Property ;
-   bamm:exampleValue "test string" ;
-   bamm:characteristic :StringList .
+:testListString a samm:Property ;
+   samm:exampleValue "test string" ;
+   samm:characteristic :StringList .
 
-:IntegerList a bamm-c:List ;
-   bamm:dataType xsd:int .
+:IntegerList a samm-c:List ;
+   samm:dataType xsd:int .
 
-:StringList a bamm-c:List ;
-   bamm:dataType xsd:string .
+:StringList a samm-c:List ;
+   samm:dataType xsd:string .

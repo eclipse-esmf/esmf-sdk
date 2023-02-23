@@ -10,21 +10,21 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:AspectWithEnumerationWithMultipleSeeAttributes a bamm:Aspect ;
-   bamm:properties ( :testProperty ) ;
-   bamm:operations ( ) .
+:AspectWithEnumerationWithMultipleSeeAttributes a samm:Aspect ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
 
-:testProperty a bamm:Property ;
-   bamm:characteristic [
-      a bamm-c:Enumeration ;
-      bamm:preferredName "Test Enumeration"@en ;
-      bamm:description "Test Enumeration"@en ;
-      bamm:see <http://example.com/omp> ;
-      bamm:see <http://example.com/me> ;
-      bamm-c:values ( "foo" "bar" ) ;
-      bamm:dataType xsd:string
+:testProperty a samm:Property ;
+   samm:characteristic [
+      a samm-c:Enumeration ;
+      samm:preferredName "Test Enumeration"@en ;
+      samm:description "Test Enumeration"@en ;
+      samm:see <http://example.com/omp> ;
+      samm:see <http://example.com/me> ;
+      samm-c:values ( "foo" "bar" ) ;
+      samm:dataType xsd:string
    ] .

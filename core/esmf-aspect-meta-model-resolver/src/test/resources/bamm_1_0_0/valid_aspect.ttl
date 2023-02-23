@@ -10,10 +10,10 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
-@prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
 
-:TestAspect a bamm:Aspect ;
-   bamm:name "TestAspect" ;
-   bamm:preferredName "Test Aspect"@en ;
-   bamm:properties ( ) ;
-   bamm:operations ( ) .
+:TestAspect a samm:Aspect ;
+   samm:name "TestAspect" ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:properties ( ) ;
+   samm:operations ( ) .
