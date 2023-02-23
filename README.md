@@ -80,7 +80,7 @@ opening a pull request.
 To ease navigation through the SDK and its components, the repository employs the following structure:
 
 ```
-sds-sdk
+esmf-sdk
  │
  ├─── core                                      # e.g. meta model implementations etc.
  │     ├─── esmf-aspect-meta-model-interface
