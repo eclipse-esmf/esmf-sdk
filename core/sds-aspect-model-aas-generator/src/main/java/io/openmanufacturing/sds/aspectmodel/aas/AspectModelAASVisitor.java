@@ -12,6 +12,7 @@
  */
 package io.openmanufacturing.sds.aspectmodel.aas;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -48,6 +49,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 import org.eclipse.digitaltwin.aas4j.v3.model.ValueList;
 import org.eclipse.digitaltwin.aas4j.v3.model.ValueReferencePair;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultAssetAdministrationShell;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultBlob;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultDataSpecificationIEC61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultEmbeddedDataSpecification;
@@ -88,6 +90,7 @@ import io.openmanufacturing.sds.metamodel.Entity;
 import io.openmanufacturing.sds.metamodel.ModelElement;
 import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.metamodel.Property;
+import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.Type;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
@@ -285,9 +288,11 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private org.eclipse.digitaltwin.aas4j.v3.model.Property mapToAasProperty( final Property property, final Context context ) {
       return new DefaultProperty.Builder()
-            .idShort( property.getName() )
+            .idShort( context.getPropertyShortId() )
             .kind( context.getModelingKind() )
-            .valueType( mapAASXSDataType( property.getCharacteristic().flatMap( Characteristic::getDataType ).map( this::mapType )
+            .valueType( mapAASXSDataType( property.getCharacteristic()
+                                                  .flatMap( Characteristic::getDataType )
+                                                  .map( this::mapType )
                                                   .orElse( UNKNOWN_TYPE ) ) ) // TODO this might not work and a proper mapping implementation is required
             .displayName( map( property.getPreferredNames() ) )
             .value( context.getPropertyValue( UNKNOWN_EXAMPLE ) )
@@ -519,13 +524,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          if ( node instanceof ArrayNode arrayNode ) {
             final SubmodelElementBuilder listBuilder =
                   ( property ) -> {
-                     final var values = StreamSupport.stream( arrayNode.spliterator(), false )
-                                                     .map( n -> {
-                                                        context.iterate( property );
-                                                        return decideOnMapping( property, context );
-                                                     } )
-                                                     .toList();
-                     context.finishIteration( property );
+                     final var values = getValues( collection, property, context, arrayNode );
                      return new DefaultSubmodelElementList.Builder()
                            .idShort( property.getName() )
                            .displayName( map( property.getPreferredNames() ) )
@@ -542,6 +541,28 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          createSubmodelElement( builder, context );
          return context.getEnvironment();
       } );
+   }
+
+   private <T extends Collection> List<SubmodelElement> getValues( final T collection, final Property property, final Context context,
+         final ArrayNode arrayNode ) {
+      return collection.getDataType()
+                       .map( dataType -> {
+                          if ( Scalar.class.isAssignableFrom( dataType.getClass() ) ) {
+                             return List.of( (SubmodelElement) new DefaultBlob.Builder().value( StreamSupport.stream( arrayNode.spliterator(), false )
+                                                                                                             .map( JsonNode::asText )
+                                                                                                             .collect( Collectors.joining( "," ) )
+                                                                                                             .getBytes( StandardCharsets.UTF_8 ) ).build() );
+                          } else {
+                             final var values = StreamSupport.stream( arrayNode.spliterator(), false )
+                                                             .map( n -> {
+                                                                context.iterate( property );
+                                                                return decideOnMapping( property, context );
+                                                             } )
+                                                             .toList();
+                             context.finishIteration( property );
+                             return values;
+                          }
+                       } ).orElseGet( () -> List.of() );
    }
 
    // Either will be mapped by adding both the left and the right side to the SubmodelTemplate.

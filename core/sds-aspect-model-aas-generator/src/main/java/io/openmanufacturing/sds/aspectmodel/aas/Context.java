@@ -16,8 +16,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
@@ -141,6 +143,17 @@ public class Context {
       }
 
       return ModelingKind.INSTANCE;
+   }
+
+   public String getPropertyShortId() {
+      if ( ModelingKind.TEMPLATE.equals( getModelingKind() ) ) {
+         return property.getName();
+      }
+      return property.getName() + propertyPath.stream()
+                                              .map( indices::get )
+                                              .filter( Objects::nonNull )
+                                              .map( Objects::toString )
+                                              .collect( Collectors.joining( "_" ) );
    }
 
    /**
