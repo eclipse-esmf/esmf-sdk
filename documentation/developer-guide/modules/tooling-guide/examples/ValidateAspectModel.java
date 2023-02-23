@@ -34,7 +34,7 @@ public class ValidateAspectModel {
       final Try<VersionedModel> tryModel = // ...
             // end::validate[]
             AspectModelResolver.loadAndResolveModel(
-                  new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" ) );
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::validate[]
 
       final List<Violation> violations = new AspectModelValidator().validateModel( tryModel );

@@ -27,7 +27,7 @@ public class LoadAspectModelObjects {
    @Test
    public void loadModel() {
       // tag::loadModel[]
-      final File modelFile = new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" );
+      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
       final List<String> result = AspectModelResolver.loadAndResolveModel( modelFile )
             .flatMap( AspectModelLoader::getElements )
             .toStream()

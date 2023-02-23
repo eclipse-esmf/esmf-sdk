@@ -30,7 +30,7 @@ public class MigrateAspectModel {
    public void migrate() {
       final ResolutionStrategy strategy = new FileSystemStrategy( Paths.get( "aspect-models" ) );
       final AspectModelUrn targetAspect
-            = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm.examples.movement:1.0.0#Movement" );
+            = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.examples.movement:1.0.0#Movement" );
       // tag::migrate[]
       // Try<VersionedModel> as returned by the AspectModelResolver
       final Try<VersionedModel> tryModel = // ...

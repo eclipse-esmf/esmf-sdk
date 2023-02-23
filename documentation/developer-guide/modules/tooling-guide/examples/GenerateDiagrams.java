@@ -34,7 +34,7 @@ public class GenerateDiagrams extends AbstractGenerator {
       final VersionedModel model = // ...
             // end::generate[]
             AspectModelResolver.loadAndResolveModel(
-                  new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" ) ).get();
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) ).get();
       // tag::generate[]
 
       final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( model ); // <1>

@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 public class SerializeAspectModel {
    @Test
    public void serializeAspectModel() {
-      final File modelFile = new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" );
+      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
 
       // tag::serialize[]
       // Aspect as created by the AspectModelLoader

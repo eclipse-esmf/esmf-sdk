@@ -37,7 +37,7 @@ public class LoadAspectModelRdf {
    @Test
    public void loadAndResolveFromFile() {
       // tag::loadAndResolveFromFile[]
-      final File modelFile = new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" ); // <1>
+      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ); // <1>
       final Try<VersionedModel> tryModel = AspectModelResolver.loadAndResolveModel( modelFile ); // <2>
 
       // Let's do something with the loaded model on RDF level
@@ -57,7 +57,7 @@ public class LoadAspectModelRdf {
       final Path modelsRoot = Paths.get( "aspect-models" );
       final ResolutionStrategy fileSystemStrategy = new FileSystemStrategy( modelsRoot );
       final Try<VersionedModel> tryModel = new AspectModelResolver().resolveAspectModel( fileSystemStrategy,
-            AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm.examples.movement:1.0.0#Movement" ) );
+            AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.examples.movement:1.0.0#Movement" ) );
       // end::loadAndResolveFromUrn[]
    }
 }
