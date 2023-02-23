@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
-prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
 prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
@@ -24,10 +24,10 @@ construct {
 } where {
   #process Properties defined in the Aspect Model being processed
   {
-    ?property rdf:type bamm:Property .
+    ?property rdf:type samm:Property .
 
     bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
-    ?property bamm:characteristic ?characteristic .
+    ?property samm:characteristic ?characteristic .
     bind( func:getElementName( ?characteristic ) as ?characteristicName )
 
     bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )

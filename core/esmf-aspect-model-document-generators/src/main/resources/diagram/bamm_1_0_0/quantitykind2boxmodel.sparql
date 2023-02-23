@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
-prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#>
@@ -23,8 +23,8 @@ construct {
   ?quantityKindBox :title ?upperQuantityKindName .
   ?quantityKindBox :entries ()
 } where {
-  [] bamm-c:unit/unit:referenceUnit?/unit:quantityKind ?quantityKind .
-  ?quantityKind bamm:name ?quantityKindName .
+  [] samm-c:unit/unit:referenceUnit?/unit:quantityKind ?quantityKind .
+  ?quantityKind samm:name ?quantityKindName .
   bind( concat( ucase( substr( ?quantityKindName, 1, 1 ) ), substr( ?quantityKindName, 2 ) ) as ?upperQuantityKindName )
   bind( concat( replace( ?upperQuantityKindName, "-", "" ), "QuantityKind" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?quantityKindBox )

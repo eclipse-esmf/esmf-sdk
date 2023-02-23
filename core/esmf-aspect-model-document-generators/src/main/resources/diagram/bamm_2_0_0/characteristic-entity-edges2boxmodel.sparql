@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
-prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
@@ -23,10 +23,10 @@ construct {
   ?edge :from ?from .
   ?edge :to ?to .
 } where {
-  ?characteristic bamm:dataType ?entityOrAbstractEntity .
+  ?characteristic samm:dataType ?entityOrAbstractEntity .
   filter( ! strstarts( str( ?entityOrAbstractEntity ), str( xsd: ) )
          && ! strstarts( str( ?entityOrAbstractEntity ), str( rdf: ) )
-         && ! strstarts( str( ?entityOrAbstractEntity ), str ( bamm-e: ) ) )
+         && ! strstarts( str( ?entityOrAbstractEntity ), str ( samm-e: ) ) )
   bind( func:getElementName( ?characteristic ) as ?characteristicName )
   bind( strafter( str( ?entityOrAbstractEntity ), "#" ) as ?entityOrAbstractEntityName ) .
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )

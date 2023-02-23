@@ -9,9 +9,9 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
-prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
-prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -25,20 +25,20 @@ construct {
   ?edge :to ?to .
 } where {
   ?instance a ?entity .
-  ?entity a bamm:Entity .
+  ?entity a samm:Entity .
 
   filter( exists {
-    ?aspect a bamm:Aspect .
+    ?aspect a samm:Aspect .
     ?aspect (<>|!<>)* ?instance .
   } && exists {
-    ?aspect a bamm:Aspect .
+    ?aspect a samm:Aspect .
     ?aspect (<>|!<>)* ?entity .
   } )
 
-  ?entity bamm:properties/rdf:rest*/rdf:first*/bamm:property* ?property .
+  ?entity samm:properties/rdf:rest*/rdf:first*/samm:property* ?property .
   bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
-  ?property bamm:characteristic/bamm-c:baseCharacteristc*/bamm:dataType ?dataType .
-  filter ( exists { ?dataType rdf:type/rdfs:subclassOf* bamm:Entity } ) .
+  ?property samm:characteristic/samm-c:baseCharacteristc*/samm:dataType ?dataType .
+  filter ( exists { ?dataType rdf:type/rdfs:subclassOf* samm:Entity } ) .
 
   bind( strafter( str( ?instance ), "#" ) as ?instanceName )
   bind( concat( ?instanceName, "EntityInstance" ) as ?instanceBoxName )

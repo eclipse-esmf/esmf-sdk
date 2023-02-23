@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
-prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
@@ -46,40 +46,40 @@ construct {
 } where {
   #process Properties defined in the Aspect Model being processed
   {
-    ?property rdf:type bamm:Property .
+    ?property rdf:type samm:Property .
     bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
 
     bind( concat( ?propertyName, "Property" ) as ?boxName )
     bind( iri( concat( str( : ), ?boxName ) ) as ?propertyBox )
 
     optional {
-      ?property bamm:preferredName ?preferredNameValue .
+      ?property samm:preferredName ?preferredNameValue .
       filter( lang( ?preferredNameValue ) = "en" )
       bind( xsd:string( ?preferredNameValue ) as ?preferredName )
     }
 
     optional {
-      ?property bamm:description ?descriptionValue .
+      ?property samm:description ?descriptionValue .
       filter( lang( ?descriptionValue ) = "en" )
       bind( xsd:string( ?descriptionValue ) as ?description )
     }
 
     optional {
-      ?property bamm:exampleValue ?exampleValue .
+      ?property samm:exampleValue ?exampleValue .
     }
 
-    #subquery which concatenates all values for the bamm:see attributes
+    #subquery which concatenates all values for the samm:see attributes
     optional {
       select * where {
-        ?property rdf:type bamm:Property .
+        ?property rdf:type samm:Property .
         filter( str( ?subQueryProperty ) = str( ?property ) )
         {
           select ?subQueryProperty ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
           where {
             select *
             where {
-              ?subQueryProperty rdf:type bamm:Property .
-              ?subQueryProperty bamm:see ?seeValue .
+              ?subQueryProperty rdf:type samm:Property .
+              ?subQueryProperty samm:see ?seeValue .
             }
             order by str( ?seeValue )
           }

@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
-prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
 prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
@@ -23,7 +23,7 @@ construct {
   ?edge :to ?to .
 } where {
   bind( func:getElementName( ?characteristic ) as ?characteristicName )
-  ?characteristic bamm-c:baseCharacteristic ?baseCharacteristic .
+  ?characteristic samm-c:baseCharacteristic ?baseCharacteristic .
   bind( func:getElementName( ?baseCharacteristic ) as ?baseCharacteristicName )
   bind( concat( ?characteristicName, "Characteristic" ) as ?box1Name )
   bind( iri( concat( str( : ), ?box1Name ) ) as ?from )

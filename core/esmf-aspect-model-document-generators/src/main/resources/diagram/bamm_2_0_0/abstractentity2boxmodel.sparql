@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
@@ -38,20 +38,20 @@ construct {
      ]
   )
 } where {
-  ?abstractEntity rdf:type bamm:AbstractEntity .
+  ?abstractEntity rdf:type samm:AbstractEntity .
   bind( strafter( str( ?abstractEntity ), "#" ) as ?abstractEntityName )
 
   bind( concat( ?abstractEntityName, "AbstractEntity" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?abstractEntityBox )
 
   optional {
-    ?abstractEntity bamm:preferredName ?preferredNameValue .
+    ?abstractEntity samm:preferredName ?preferredNameValue .
     filter( lang( ?preferredNameValue ) = "en" )
     bind( xsd:string( ?preferredNameValue ) as ?preferredName )
   }
 
   optional {
-    ?abstractEntity bamm:description ?descriptionValue .
+    ?abstractEntity samm:description ?descriptionValue .
     filter( lang( ?descriptionValue ) = "en" )
     bind( xsd:string( ?descriptionValue ) as ?description )
   }
@@ -62,8 +62,8 @@ construct {
       where {
         select *
         where {
-          ?abstractEntity rdf:type bamm:AbstractEntity .
-          ?abstractEntity bamm:see ?seeValue .
+          ?abstractEntity rdf:type samm:AbstractEntity .
+          ?abstractEntity samm:see ?seeValue .
         }
         order by str( ?seeValue )
       }

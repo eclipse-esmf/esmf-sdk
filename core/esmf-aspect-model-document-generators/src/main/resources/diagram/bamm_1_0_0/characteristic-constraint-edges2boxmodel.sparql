@@ -9,9 +9,9 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
-prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>
-prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -24,28 +24,28 @@ construct {
   ?edge :from ?from .
   ?edge :to ?to .
 } where {
-  ?characteristic bamm-c:constraint ?constraint .
-  ?characteristic bamm:name ?characteristicName .
+  ?characteristic samm-c:constraint ?constraint .
+  ?characteristic samm:name ?characteristicName .
 
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
   bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
 
   optional {
-    ?constraint bamm:name ?givenConstraintName .
+    ?constraint samm:name ?givenConstraintName .
   }
 
-  # Calculate logical hash for constraint in case it does not have a bamm:name
+  # Calculate logical hash for constraint in case it does not have a samm:name
   # The constraint might also be defined as an anonymous node
   {
     select * where {
-      ?constraint rdf:type/rdfs:subClassOf* bamm:Constraint .
+      ?constraint rdf:type/rdfs:subClassOf* samm:Constraint .
       filter( sameTerm( ?propertySubQueryConstraint, ?constraint ) )
       {
         select ?propertySubQueryConstraint ( group_concat( ?serializedProperty; separator=":" ) as ?constraintPropertyValues )
         where {
           select *
           where {
-            ?propertySubQueryConstraint rdf:type/rdfs:subClassOf* bamm:Constraint .
+            ?propertySubQueryConstraint rdf:type/rdfs:subClassOf* samm:Constraint .
             ?propertySubQueryConstraint ?anyProperty ?constraintPropertyValue .
             bind( concat( str( ?anyProperty ), "=", str( ?constraintPropertyValue ) ) as ?serializedProperty )
           }

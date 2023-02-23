@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
-prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
@@ -39,20 +39,20 @@ construct {
      ]
   )
 } where {
-  ?entity rdf:type bamm:Entity .
+  ?entity rdf:type samm:Entity .
   bind( strafter( str( ?entity ), "#" ) as ?entityName ) .
 
   bind( concat( ?entityName, "Entity" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?entityBox )
 
   optional {
-    ?entity bamm:preferredName ?preferredNameValue .
+    ?entity samm:preferredName ?preferredNameValue .
     filter( lang( ?preferredNameValue ) = "en" )
     bind( xsd:string( ?preferredNameValue ) as ?preferredName )
   }
 
   optional {
-    ?entity bamm:description ?descriptionValue .
+    ?entity samm:description ?descriptionValue .
     filter( lang( ?descriptionValue ) = "en" )
     bind( xsd:string( ?descriptionValue ) as ?description )
   }
@@ -63,8 +63,8 @@ construct {
       where {
         select *
         where {
-          ?entity rdf:type bamm:Entity .
-          ?entity bamm:see ?seeValue .
+          ?entity rdf:type samm:Entity .
+          ?entity samm:see ?seeValue .
         }
         order by str( ?seeValue )
       }

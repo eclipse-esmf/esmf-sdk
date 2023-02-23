@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
 
@@ -37,33 +37,33 @@ construct {
      ]
   )
 } where {
-  ?aspect a bamm:Aspect .
+  ?aspect a samm:Aspect .
   bind( strafter( str( ?aspect ), "#" ) as ?aspectName ) .
 
   bind( concat( ?aspectName, "Aspect" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?aspectBox )
 
   optional {
-    ?aspect bamm:preferredName ?preferredNameValue .
+    ?aspect samm:preferredName ?preferredNameValue .
     filter( lang( ?preferredNameValue ) = "en" )
     bind( xsd:string( ?preferredNameValue ) as ?preferredName )
   }
 
   optional {
-    ?aspect bamm:description ?descriptionValue .
+    ?aspect samm:description ?descriptionValue .
     filter( lang( ?descriptionValue ) = "en" )
     bind( xsd:string( ?descriptionValue ) as ?description )
   }
 
-  #subquery which concatenates all values for the bamm:see attributes
+  #subquery which concatenates all values for the samm:see attributes
   optional {
     {
       select ( group_concat( ?seeValue; separator=", " ) as ?seeValues ) ?aspect
       where {
         select *
         where {
-          ?aspect a bamm:Aspect .
-          ?aspect bamm:see ?seeValue .
+          ?aspect a samm:Aspect .
+          ?aspect samm:see ?seeValue .
         }
         order by str( ?seeValue )
       }

@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
-prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
@@ -23,14 +23,14 @@ construct {
   ?edge :from ?from .
   ?edge :to ?to .
 } where {
-  ?characteristic rdf:type/rdfs:subClassOf* bamm-c:StructuredValue .
+  ?characteristic rdf:type/rdfs:subClassOf* samm-c:StructuredValue .
   bind( func:getElementName( ?characteristic ) as ?characteristicName )
 
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
   bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
 
-  ?characteristic bamm-c:elements/rdf:rest*/rdf:first ?element .
-  filter( exists { ?element a bamm:Property } )
+  ?characteristic samm-c:elements/rdf:rest*/rdf:first ?element .
+  filter( exists { ?element a samm:Property } )
   bind( strafter( str( ?aspect ), "#" ) as ?aspectName ) .
   bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
   bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?to )

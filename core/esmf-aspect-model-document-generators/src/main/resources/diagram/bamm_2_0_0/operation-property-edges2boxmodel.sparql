@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
 
@@ -23,9 +23,9 @@ construct {
 
   # Operation -> Property (input)
   {
-    ?operation a bamm:Operation .
+    ?operation a samm:Operation .
     bind( strafter( str( ?operation ), "#" ) as ?operationName ) .
-    ?operation bamm:input/rdf:rest*/rdf:first ?property .
+    ?operation samm:input/rdf:rest*/rdf:first ?property .
     bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
 
     bind( concat( ?operationName, "Operation" ) as ?operationBoxName )
@@ -41,9 +41,9 @@ construct {
 
   # Operation -> Property (output)
   {
-    ?operation a bamm:Operation .
+    ?operation a samm:Operation .
     bind( strafter( str( ?operation ), "#" ) as ?operationName ) .
-    ?operation bamm:output ?property .
+    ?operation samm:output ?property .
     bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
 
     bind( concat( ?operationName, "Operation" ) as ?operationBoxName )

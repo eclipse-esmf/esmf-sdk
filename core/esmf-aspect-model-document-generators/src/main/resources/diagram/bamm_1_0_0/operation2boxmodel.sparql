@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
@@ -37,22 +37,22 @@ construct {
      ]
   )
 } where {
-  ?aspect a bamm:Aspect .
-  ?aspect bamm:operations/rdf:rest*/rdf:first ?operation .
+  ?aspect a samm:Aspect .
+  ?aspect samm:operations/rdf:rest*/rdf:first ?operation .
 
-  ?operation bamm:name ?operationName .
+  ?operation samm:name ?operationName .
 
   bind( concat( ?operationName, "Operation" ) as ?boxName )
   bind( iri( concat( str( : ), ?boxName ) ) as ?operationBox )
 
   optional {
-    ?operation bamm:preferredName ?preferredNameValue .
+    ?operation samm:preferredName ?preferredNameValue .
     filter( lang( ?preferredNameValue ) = "en" )
     bind( xsd:string( ?preferredNameValue ) as ?preferredName )
   }
 
   optional {
-    ?operation bamm:description ?descriptionValue .
+    ?operation samm:description ?descriptionValue .
     filter( lang( ?descriptionValue ) = "en" )
     bind( xsd:string( ?descriptionValue ) as ?description )
   }
@@ -63,9 +63,9 @@ construct {
      where {
        select *
        where {
-         ?aspect a bamm:Aspect .
-         ?aspect bamm:operations/rdf:rest*/rdf:first ?operation .
-         ?operation bamm:see ?seeValue .
+         ?aspect a samm:Aspect .
+         ?aspect samm:operations/rdf:rest*/rdf:first ?operation .
+         ?operation samm:see ?seeValue .
        }
        order by str( ?seeValue )
      }

@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
-prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
 
@@ -21,9 +21,9 @@ construct {
   ?edge :from ?from .
   ?edge :to ?to .
 } where {
-  ?characteristic bamm:name ?characteristicName .
-  ?characteristic bamm-c:baseCharacteristic ?baseCharacteristic .
-  ?baseCharacteristic bamm:name ?baseCharacteristicName .
+  ?characteristic samm:name ?characteristicName .
+  ?characteristic samm-c:baseCharacteristic ?baseCharacteristic .
+  ?baseCharacteristic samm:name ?baseCharacteristicName .
   bind( concat( ?characteristicName, "Characteristic" ) as ?box1Name )
   bind( iri( concat( str( : ), ?box1Name ) ) as ?from )
 

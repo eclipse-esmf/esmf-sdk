@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
-prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -30,9 +30,9 @@ construct {
      ]
   )
 } where {
-  ?measurement bamm-c:unit ?unit .
+  ?measurement samm-c:unit ?unit .
   # Select only those Units that are used in the Aspect
-  filter( exists { ?property bamm:characteristic/( bamm-c:baseCharacteristic* | rdfs:subClassOf* ) ?measurement } )
+  filter( exists { ?property samm:characteristic/( samm-c:baseCharacteristic* | rdfs:subClassOf* ) ?measurement } )
   bind( strafter( str( ?unit ), "#" ) as ?unitName ) .
   bind( concat( ucase( substr( ?unitName, 1, 1 ) ), substr( ?unitName, 2 ) ) as ?upperUnitName )
 
@@ -40,6 +40,6 @@ construct {
   bind( iri( concat( str( : ), ?boxName ) ) as ?unitBox )
 
   optional {
-    ?unit bamm:symbol ?symbol
+    ?unit samm:symbol ?symbol
   }
 }

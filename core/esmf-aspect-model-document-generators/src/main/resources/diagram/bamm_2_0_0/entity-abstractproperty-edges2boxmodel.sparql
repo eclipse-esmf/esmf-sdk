@@ -9,8 +9,8 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
-prefix bamm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
@@ -38,14 +38,14 @@ construct {
   ?edge3 :from ?box .
   ?edge3 :to ?propertyBox .
 } where {
-  ?entity rdf:type bamm:Entity .
+  ?entity rdf:type samm:Entity .
 
   bind( strafter( str( ?entity ), "#" ) as ?entityName ) .
 
-  ?property rdf:type bamm:AbstractProperty .
+  ?property rdf:type samm:AbstractProperty .
 
   bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
-  filter( exists { ?entity bamm:properties/rdf:rest*/rdf:first/bamm:extends ?property } )
+  filter( exists { ?entity samm:properties/rdf:rest*/rdf:first/samm:extends ?property } )
 
   bind( concat( ?entityName, "Entity" ) as ?entityBoxName )
   bind( iri( concat( str( : ), ?entityBoxName ) ) as ?entityBox )
@@ -60,9 +60,9 @@ construct {
   bind( iri( concat( str( : ), ?entityBoxName, "_To_", ?boxName ) ) as ?edge1 )
   bind( iri( concat( str( : ), ?boxName, "_To_", ?propertyBoxName ) ) as ?edge3 )
 
-  ?entity bamm:properties/rdf:rest*/rdf:first ?propertyNode .
-  ?propertyNode bamm:extends ?property .
-  ?propertyNode bamm:characteristic ?characteristic .
+  ?entity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+  ?propertyNode samm:extends ?property .
+  ?propertyNode samm:characteristic ?characteristic .
   bind( func:getElementName( ?characteristic ) as ?characteristicName )
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
   bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?characteristicBox )

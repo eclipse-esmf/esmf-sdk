@@ -10,8 +10,8 @@
 # SPDX-License-Identifier: MPL-2.0
 
 prefix mmm: <urn:samm:org.eclipse.esmf.samm:meta-meta-model:2.0.0#>
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
-prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -57,13 +57,13 @@ construct {
      ]
   )
 } where {
-  ?characteristic rdf:type/rdfs:subClassOf* bamm-c:Collection .
+  ?characteristic rdf:type/rdfs:subClassOf* samm-c:Collection .
 
   # Apply only to those Characteristics which are used in the Aspect model,
   # i.e. where a directed link from an Aspect to the Characteristic exists.
   # (<>|!<>) matches any RDF property.
   filter( exists {
-    ?aspect a bamm:Aspect .
+    ?aspect a samm:Aspect .
     ?aspect (<>|!<>)* ?characteristic .
   } )
 
@@ -72,19 +72,19 @@ construct {
   bind( iri( concat( str( : ), ?boxName ) ) as ?characteristicBox )
 
   optional {
-    ?characteristic bamm:preferredName ?preferredNameValue .
+    ?characteristic samm:preferredName ?preferredNameValue .
     filter( lang( ?preferredNameValue ) = "en" )
     bind( xsd:string( ?preferredNameValue ) as ?preferredName )
   }
 
   optional {
-    ?characteristic bamm:description ?descriptionValue .
+    ?characteristic samm:description ?descriptionValue .
     filter( lang( ?descriptionValue ) = "en" )
     bind( xsd:string( ?descriptionValue ) as ?description )
   }
 
   optional {
-    ?characteristic bamm:dataType ?dataTypeValue .
+    ?characteristic samm:dataType ?dataTypeValue .
     filter( strstarts( str( ?dataTypeValue ), str( xsd: ) )
       || strstarts( str( ?dataTypeValue ), str( rdf: ) ) )
     bind( replace( str( ?dataTypeValue ), "[^#]*#(.*)", "$1") as ?dataType )
@@ -132,19 +132,19 @@ construct {
     }
   }
 
-  #subquery which concatenates all values for the bamm:see attributes
+  #subquery which concatenates all values for the samm:see attributes
   optional {
     {
       select * where {
-        ?characteristic rdf:type/rdfs:subClassOf* bamm-c:Collection .
+        ?characteristic rdf:type/rdfs:subClassOf* samm-c:Collection .
         filter( str( ?subQueryCharacteristic ) = str( ?characteristic ) )
         {
           select ?subQueryCharacteristic ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
           where {
             select *
             where {
-              ?subQueryCharacteristic rdf:type/rdfs:subClassOf* bamm-c:Collection .
-              ?subQueryCharacteristic bamm:see ?seeValue .
+              ?subQueryCharacteristic rdf:type/rdfs:subClassOf* samm-c:Collection .
+              ?subQueryCharacteristic samm:see ?seeValue .
             }
             order by str( ?seeValue )
           }

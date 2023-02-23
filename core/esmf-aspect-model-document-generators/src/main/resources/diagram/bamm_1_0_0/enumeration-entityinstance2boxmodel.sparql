@@ -1,5 +1,5 @@
-prefix bamm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
-prefix bamm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
@@ -11,30 +11,30 @@ construct {
   ?edge :from ?from .
   ?edge :to ?to .
 } where {
-  ?characteristic rdf:type/rdfs:subClassOf* bamm:Characteristic .
+  ?characteristic rdf:type/rdfs:subClassOf* samm:Characteristic .
 
   filter( exists {
-    ?aspect a bamm:Aspect .
+    ?aspect a samm:Aspect .
     ?aspect (<>|!<>)* ?characteristic .
   } )
 
   # Don't apply to Constraints
-  filter( !exists { ?characteristic bamm-c:baseCharacteristic [] } )
+  filter( !exists { ?characteristic samm-c:baseCharacteristic [] } )
   # Don't apply to Collections
-  filter( !exists { ?characteristic rdf:type/rdfs:subClassOf* bamm-c:Collection } )
+  filter( !exists { ?characteristic rdf:type/rdfs:subClassOf* samm-c:Collection } )
   # Apply only to Enumerations
-  filter( exists { ?characteristic a bamm-c:Enumeration }
-       || exists { ?characteristic a bamm-c:State } )
+  filter( exists { ?characteristic a samm-c:Enumeration }
+       || exists { ?characteristic a samm-c:State } )
 
   # Apply to Enumerations with Complex values
-  ?characteristic bamm-c:values/rdf:rest*/rdf:first ?instance .
+  ?characteristic samm-c:values/rdf:rest*/rdf:first ?instance .
   ?instance rdf:type/rdfs:subClassOf* ?instanceClass
-  filter( exists { ?instanceClass  rdf:type/rdfs:subClassOf* bamm:Entity} )
+  filter( exists { ?instanceClass  rdf:type/rdfs:subClassOf* samm:Entity} )
 
-  ?characteristic bamm:name ?characteristicName .
+  ?characteristic samm:name ?characteristicName .
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
   bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
-  ?characteristic bamm-c:values/rdf:rest*/rdf:first ?instance .
+  ?characteristic samm-c:values/rdf:rest*/rdf:first ?instance .
   bind( strafter( str( ?instance ), "#" ) as ?instanceName )
   bind( concat( ?instanceName, "EntityInstance" ) as ?instanceBoxName )
 
