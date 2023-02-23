@@ -690,7 +690,7 @@ public class BammCliTest extends MetaModelVersions {
    private File inputFile( final TestModel testModel ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
       final boolean isValid = !(testModel instanceof InvalidTestAspect);
-      final String resourcePath = String.format( "%s/../../core/sds-test-aspect-models/src/main/resources/%s/%s/io.openmanufacturing.test/1.0.0/%s.ttl",
+      final String resourcePath = String.format( "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/%s/io.openmanufacturing.test/1.0.0/%s.ttl",
             System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", metaModelVersion.toString().toLowerCase(), testModel.getName() );
 
       try {

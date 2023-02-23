@@ -27,7 +27,7 @@
          <plugin>
             <artifactId>sds-aspect-model-maven-plugin</artifactId>
             <configuration>
-               <modelsRootDirectory>${basedir}/../../core/sds-test-aspect-models/src/main/resources/valid/bamm_2_0_0</modelsRootDirectory>
+               <modelsRootDirectory>${basedir}/../../core/esmf-test-aspect-models/src/main/resources/valid/samm_2_0_0</modelsRootDirectory>
             </configuration>
          </plugin>
       </plugins>

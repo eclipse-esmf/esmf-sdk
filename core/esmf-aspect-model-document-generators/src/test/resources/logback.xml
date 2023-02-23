@@ -12,5 +12,5 @@
 -->
 
 <configuration>
-  <include file="../sds-test-aspect-models/src/test/resources/logback-include.xml"/>
+  <include file="../esmf-test-aspect-models/src/test/resources/logback-include.xml"/>
 </configuration>
