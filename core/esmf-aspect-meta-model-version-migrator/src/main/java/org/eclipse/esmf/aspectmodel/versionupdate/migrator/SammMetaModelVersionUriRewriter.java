@@ -18,9 +18,9 @@ import java.util.Optional;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
-public class SdsMetaModelVersionUriRewriter extends AbstractUriRewriter {
+public class SammMetaModelVersionUriRewriter extends AbstractUriRewriter {
 
-   public SdsMetaModelVersionUriRewriter( final KnownVersion sourceVersion, final KnownVersion targetVersion ) {
+   public SammMetaModelVersionUriRewriter( final KnownVersion sourceVersion, final KnownVersion targetVersion ) {
       super( sourceVersion, targetVersion );
    }
 

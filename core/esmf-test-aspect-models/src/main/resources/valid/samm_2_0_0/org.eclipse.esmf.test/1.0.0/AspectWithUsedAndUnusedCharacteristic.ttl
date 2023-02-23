@@ -24,13 +24,13 @@
 :UsedTestCharacteristic a samm:Characteristic ;
    samm:preferredName "Used Test Characteristic"@en ;
    samm:description "Used Test Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .
 
 :UnusedTestCharacteristic a samm:Characteristic ;
    samm:preferredName "Unused Test Characteristic"@en ;
    samm:description "Unused Test Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .

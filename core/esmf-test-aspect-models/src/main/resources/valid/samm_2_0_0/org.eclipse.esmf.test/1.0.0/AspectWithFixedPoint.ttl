@@ -18,7 +18,7 @@
 :AspectWithFixedPoint a samm:Aspect ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
@@ -30,7 +30,7 @@
       a samm-c:FixedPointConstraint ;
       samm:preferredName "Test Fixed Point"@en ;
       samm:description "This is a test fixed point constraint."@en ;
-      samm:see <http://example.com/omp> ;
+      samm:see <http://example.com/> ;
       samm-c:scale "5"^^xsd:positiveInteger ;
       samm-c:integer "3"^^xsd:positiveInteger ;
    ] ;

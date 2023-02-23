@@ -24,6 +24,6 @@
 :TestCollection a samm-c:Collection ;
    samm:preferredName "Test Collection"@en ;
    samm:description "Test Collection"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .

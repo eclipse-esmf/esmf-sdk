@@ -51,7 +51,7 @@ public class Either2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_EITHER_WITH_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement, totalNumberOfExpectedEntries,
-            indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/omp" );
+            indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/" );
    }
 
    @ParameterizedTest
@@ -61,7 +61,7 @@ public class Either2BoxModelTest extends MetaModelVersions {
             metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement, totalNumberOfExpectedEntries,
-            indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/me, http://example.com/omp" );
+            indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/me, http://example.com/" );
    }
 
    @ParameterizedTest

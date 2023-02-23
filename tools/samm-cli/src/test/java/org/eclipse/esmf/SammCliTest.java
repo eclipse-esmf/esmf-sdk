@@ -336,7 +336,7 @@ public class SammCliTest extends MetaModelVersions {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" ).toFile();
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining( file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
 
@@ -366,7 +366,7 @@ public class SammCliTest extends MetaModelVersions {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" ).toFile();
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining( file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
 
@@ -383,7 +383,7 @@ public class SammCliTest extends MetaModelVersions {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" ).toFile();
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining( file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
 
@@ -396,18 +396,18 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToJavaWithCustomFileHeader() {
       final File outputDir = outputDirectory.toFile();
       final File templateLibraryFile = new File(
-            System.getProperty( "user.dir" ) + "/../../core/sds-aspect-model-java-generator/templates/test-macro-lib.vm" );
+            System.getProperty( "user.dir" ) + "/../../core/esmf-aspect-model-java-generator/templates/test-macro-lib.vm" );
 
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--execute-library-macros", "--template-library-file", templateLibraryFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" ).toFile();
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining( file -> file.getName().equals( "AspectWithEntity.java" ) || file.getName().equals( "TestEntity.java" ) );
 
-      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", LocalDate.now().getYear() );
+      final String expectedCopyright = String.format( "Copyright (c) %s Test Inc. All rights reserved", LocalDate.now().getYear() );
       final File sourceFile = directory.toPath().resolve( "AspectWithEntity.java" ).toFile();
       assertThat( sourceFile ).content().contains( expectedCopyright );
    }
@@ -430,13 +430,13 @@ public class SammCliTest extends MetaModelVersions {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" ).toFile();
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
             file -> file.getName().equals( "MetaAspectWithEntity.java" ) || file.getName().equals( "MetaTestEntity.java" ) );
 
       final File sourceFile = directory.toPath().resolve( "MetaAspectWithEntity.java" ).toFile();
-      assertThat( sourceFile ).content().contains( "package io.openmanufacturing.test;" );
+      assertThat( sourceFile ).content().contains( "package org.eclipse.esmf.test;" );
       assertThat( sourceFile ).content().contains( "class MetaAspectWithEntity implements StaticMetaClass" );
    }
 
@@ -466,13 +466,13 @@ public class SammCliTest extends MetaModelVersions {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" ).toFile();
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
             file -> file.getName().equals( "MetaAspectWithEntity.java" ) || file.getName().equals( "MetaTestEntity.java" ) );
 
       final File sourceFile = directory.toPath().resolve( "MetaAspectWithEntity.java" ).toFile();
-      assertThat( sourceFile ).content().contains( "package io.openmanufacturing.test;" );
+      assertThat( sourceFile ).content().contains( "package org.eclipse.esmf.test;" );
       assertThat( sourceFile ).content().contains( "class MetaAspectWithEntity implements StaticMetaClass" );
    }
 
@@ -480,19 +480,19 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToJavaStaticWithCustomFileHeader() {
       final File outputDir = outputDirectory.toFile();
       final File templateLibraryFile = new File(
-            System.getProperty( "user.dir" ) + "/../../core/sds-aspect-model-java-generator/templates/test-macro-lib.vm" );
+            System.getProperty( "user.dir" ) + "/../../core/esmf-aspect-model-java-generator/templates/test-macro-lib.vm" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--static", "--execute-library-macros", "--template-library-file", templateLibraryFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = Paths.get( outputDir.getAbsolutePath(), "io", "openmanufacturing", "test" ).toFile();
+      final File directory = Paths.get( outputDir.getAbsolutePath(), "org", "eclipse", "esmf", "test" ).toFile();
       assertThat( directory ).exists();
       assertThat( directory ).isDirectoryContaining(
             file -> file.getName().equals( "MetaAspectWithEntity.java" ) || file.getName().equals( "MetaTestEntity.java" ) );
 
       final File sourceFile = directory.toPath().resolve( "MetaAspectWithEntity.java" ).toFile();
-      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", LocalDate.now().getYear() );
+      final String expectedCopyright = String.format( "Copyright (c) %s Test Inc. All rights reserved", LocalDate.now().getYear() );
       assertThat( sourceFile ).content().contains( expectedCopyright );
    }
 
@@ -690,7 +690,7 @@ public class SammCliTest extends MetaModelVersions {
    private File inputFile( final TestModel testModel ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
       final boolean isValid = !(testModel instanceof InvalidTestAspect);
-      final String resourcePath = String.format( "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/%s/io.openmanufacturing.test/1.0.0/%s.ttl",
+      final String resourcePath = String.format( "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
             System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", metaModelVersion.toString().toLowerCase(), testModel.getName() );
 
       try {

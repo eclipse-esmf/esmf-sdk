@@ -19,7 +19,7 @@
     samm:name "AspectWithEntityEnumeration" ;
     samm:preferredName "Aspect with entity enumeration"@en ;
     samm:description "This is a test description"@en ;
-    samm:see <http://example.com/omp> ;
+    samm:see <http://example.com/> ;
     samm:properties ( :systemState ) ;
     samm:operations ( ) .
 

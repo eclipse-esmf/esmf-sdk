@@ -60,7 +60,7 @@ import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidNamespaceExceptio
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ModelElement;
@@ -73,7 +73,7 @@ import io.vavr.control.Try;
 public class AspectModelValidator {
 
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelValidator.class );
-   private final SdsAspectMetaModelResourceResolver aspectMetaModelResourceResolver;
+   private final SammAspectMetaModelResourceResolver aspectMetaModelResourceResolver;
    private final ShaclValidator shaclValidator;
 
    private final Match.Case<RiotException, ValidationReport.InvalidReport> riotExceptionHandler =
@@ -119,7 +119,7 @@ public class AspectModelValidator {
 
    public AspectModelValidator( final KnownVersion metaModelVersion ) {
       ARQ.init();
-      aspectMetaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+      aspectMetaModelResourceResolver = new SammAspectMetaModelResourceResolver();
       ValidationEngineFactory.set( new BammValidationEngineFactory() );
       shaclValidator = new ShaclValidator( aspectMetaModelResourceResolver.loadShapesModel( metaModelVersion )
             .getOrElseThrow( () -> new RuntimeException( "Could not load meta model shapes" ) ) );

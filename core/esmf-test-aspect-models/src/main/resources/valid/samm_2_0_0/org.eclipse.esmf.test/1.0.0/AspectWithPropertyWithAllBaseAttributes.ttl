@@ -24,7 +24,7 @@
    samm:description "Test Description"@en ;
    samm:description "Test Beschreibung"@de ;
    samm:characteristic :BooleanTestCharacteristic ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> .
 
 :BooleanTestCharacteristic a samm:Characteristic ;

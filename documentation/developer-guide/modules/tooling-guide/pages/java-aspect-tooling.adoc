@@ -10,7 +10,7 @@ In this section, the Java APIs for working with Aspect Models are described. All
 following subsections can either be included in your project using a dedicated dependency (as described in the
 respective subsection), _or_ you can use the `aspect-model-starter` artifact that aggregates all necessary dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-starter-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-starter-artifact.adoc[]
 
 The error handling in many APIs is done using the
 `https://javadoc.io/doc/io.vavr/vavr/0.10.3/io/vavr/control/Try.html[Try]` type provided by the Java
@@ -52,8 +52,8 @@ To be able to use the artifacts released in this way in your projects, first the
 <repositories>
   <repository>
     <id>github</id>
-    <name>OpenManufacturingPlatform SDS-SDK</name>
-    <url>https://maven.pkg.github.com/OpenManufacturingPlatform/sds-sdk</url>
+    <name>ESMF SDK</name>
+    <url>https://maven.pkg.github.com/eclipse-esmf/esmf-sdk</url>
     <releases><enabled>true</enabled></releases>
     <snapshots><enabled>true</enabled></snapshots>
   </repository>
@@ -65,16 +65,16 @@ https://docs.github.com/en/packages/working-with-a-github-packages-registry/work
 [[jdk-requirements]]
 == JDK requirements
 
-The sds-sdk components are built with Java 17 and require a JDK >= 17 such as
+The esmf-sdk components are built with Java 17 and require a JDK >= 17 such as
 https://adoptium.net/[Adoptium Temurin].
 
-The sds-sdk can also be used with a Java 17-compatible https://www.graalvm.org/[GraalVM JDK]. With
+The esmf-sdk can also be used with a Java 17-compatible https://www.graalvm.org/[GraalVM JDK]. With
 GraalVM you need to make the Graal JavaScript component available, as parts of the SDK such as the
 Aspect Model validation component require embedded JavaScript execution:
 
-* For using the sds-sdk in the GraalVM itself, install the JS component using the
+* For using the esmf-sdk in the GraalVM itself, install the JS component using the
   https://www.graalvm.org/22.3/reference-manual/js/[GraalVM Updater]: `gu install js`
-* For using the sds-sdk with GraalVM `native-image`, be sure to use the `--language:js` option when
+* For using the esmf-sdk with GraalVM `native-image`, be sure to use the `--language:js` option when
   building the native image; for more information see
   https://www.graalvm.org/22.3/reference-manual/polyglot-programming/[polyglot programming].
 
@@ -103,7 +103,7 @@ include::example$ParseAspectModelUrn.java[tags=parseAspectModelUrn]
 
 To include the artifact, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-urn-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-urn-artifact.adoc[]
 
 [[loading-and-saving]]
 == Loading and Saving Aspect Models
@@ -215,7 +215,7 @@ include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromUrn]
 
 To include the model resolver artifact, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-resolver-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-resolver-artifact.adoc[]
 
 [[loading-an-aspect-model-java-model-level]]
 === Loading an Aspect Model to work on the Java Aspect Model Level
@@ -244,7 +244,7 @@ include::example$LoadAspectModelObjects.java[tags=loadModel]
 
 To include the Java Aspect model artifact, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-meta-model-java-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-java-artifact.adoc[]
 
 [[serializing-an-aspect-model]]
 === Serializing a Java Aspect Model into a RDF/Turtle Aspect Model
@@ -272,7 +272,7 @@ include::example$SerializeAspectModel.java[tags=serialize]
 
 To include the serializer artifact, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-serializer-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-serializer-artifact.adoc[]
 
 [[validating-aspect-models]]
 == Validating Aspect Models
@@ -315,7 +315,7 @@ Violations in a type-safe way.
 
 To include the model validator, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-validator-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-validator-artifact.adoc[]
 
 [[generating-documentation]]
 == Generating Documentation for Aspect Models
@@ -323,7 +323,7 @@ include::sds-developer-guide:ROOT:partial$sds-aspect-model-validator-artifact.ad
 Different types of artifacts can be generated from an Aspect model. All corresponding generators are included in the
 following dependency:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-document-generators-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-document-generators-artifact.adoc[]
 
 The documentation generation APIs provide methods that take as an argument a `Function<String, java.io.OutputStream>`.
 This is a mapping function that takes a file name as an input (which is determined by the respective generator) and
@@ -504,7 +504,7 @@ Depending on the use case, you would either use one or both of the types simulta
 
 To include the Java generator, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-java-generator-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-java-generator-artifact.adoc[]
 
 [[type-mapping]]
 === Type Mapping
@@ -549,7 +549,7 @@ lists the correspondences.
 | `xsd:hexBinary` | `byte[]`
 | `xsd:base64Binary` | `byte[]`
 | `xsd:anyURI` | `java.net.URI`
-| `samm:curie` | `io.openmanufacturing.metamodel.datatypes.Curie`
+| `samm:curie` | `org.eclipse.esmf.metamodel.datatypes.Curie`
 |===
 
 [[generating-pojos]]
@@ -602,7 +602,7 @@ include::example$GenerateJavaStaticClass.java[tags=generate]
 
 To use the generated static meta classes, you need the following additional dependency:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-static-meta-model-java-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-static-meta-model-java-artifact.adoc[]
 
 [[providing-custom-macros-for-code-generation]]
 ==== Providing Custom Macros for Code Generation
@@ -659,16 +659,16 @@ include::example$MigrateAspectModel.java[tags=migrate]
 
 To use the meta model version migrator, you need the following dependency:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-meta-model-version-migrator-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-version-migrator-artifact.adoc[]
 
 [[accessing-samm-programmatically]]
 == Accessing the SAMM programmatically
 
 In order to access the source RDF files that describe the SAMM vocabulary, shared Characteristics and Entities as well
-as Units, you can add a dependency to the `sds-aspect-meta-model` artifact. Note that this artifact does not contain any
+as Units, you can add a dependency to the `esmf-aspect-meta-model` artifact. Note that this artifact does not contain any
 Java classes.
 
-include::sds-developer-guide:ROOT:partial$aspect-meta-model-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$aspect-meta-model-artifact.adoc[]
 
 In order to access the files via `java.lang.Class#getResourceAsStream`, you can refer to the following directory
 structure that is present in the artifact:
@@ -826,4 +826,4 @@ include::example$GenerateAas.java[tags=generate]
 
 To include the serializer artifact, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-aas-generator-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-aas-generator-artifact.adoc[]

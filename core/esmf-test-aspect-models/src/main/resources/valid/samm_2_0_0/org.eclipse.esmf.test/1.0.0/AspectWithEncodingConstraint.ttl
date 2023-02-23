@@ -18,14 +18,14 @@
 :AspectWithEncodingConstraint a samm:Aspect ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
 :testProperty a samm:Property ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:exampleValue "Example Value" ;
    samm:characteristic :TestEncodingConstraint .
@@ -35,7 +35,7 @@
       a samm-c:EncodingConstraint ;
       samm:preferredName "Test Encoding Constraint"@en ;
       samm:description "This is a test encoding constraint."@en ;
-      samm:see <http://example.com/omp> ;
+      samm:see <http://example.com/> ;
       samm:value samm:UTF-8 ;
    ] ;
    samm-c:baseCharacteristic samm-c:Text .

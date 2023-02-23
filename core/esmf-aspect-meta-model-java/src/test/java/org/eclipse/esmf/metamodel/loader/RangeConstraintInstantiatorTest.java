@@ -149,6 +149,6 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
       assertBaseAttributes( base,
             "Test Range Constraint",
             "This is a test range constraint.",
-            "http://example.com/omp" );
+            "http://example.com/" );
    }
 }

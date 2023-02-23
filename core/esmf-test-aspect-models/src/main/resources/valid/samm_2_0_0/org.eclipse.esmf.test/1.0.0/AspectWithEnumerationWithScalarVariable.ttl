@@ -24,7 +24,7 @@
 
 :TestScalarEnumeration a samm-c:Enumeration ;
    samm:preferredName "TestScalarEnumeration Result"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType xsd:string ;
    samm-c:values ( "Yes"
                    "No" ) .

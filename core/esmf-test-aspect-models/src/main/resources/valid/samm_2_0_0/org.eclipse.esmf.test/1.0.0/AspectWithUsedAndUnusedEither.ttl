@@ -24,7 +24,7 @@
 :UsedTestEither a samm-c:Either ;
    samm:preferredName "Test Either"@en ;
    samm:description "Test Either Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm-c:left :UsedLeftType ;
    samm-c:right :UsedRightType .
@@ -32,21 +32,21 @@
 :UsedLeftType a samm:Characteristic ;
    samm:preferredName "Left Type"@en ;
    samm:description "Left Type Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:float .
 
 :UsedRightType a samm:Characteristic ;
    samm:preferredName "Right Type"@en ;
    samm:description "Right Type Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .
 
 :NonUsedTestEither a samm-c:Either ;
    samm:preferredName "Test Either"@en ;
    samm:description "Test Either Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm-c:left :NonUsedLeftType ;
    samm-c:right :NonUsedRightType .
@@ -54,13 +54,13 @@
 :NonUsedLeftType a samm:Characteristic ;
    samm:preferredName "Left Type"@en ;
    samm:description "Left Type Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:float .
 
 :NonUsedRightType a samm:Characteristic ;
    samm:preferredName "Right Type"@en ;
    samm:description "Right Type Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .

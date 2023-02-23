@@ -30,7 +30,7 @@ import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 @Constraint( validatedBy = FloatMaxValidator.class )
 public @interface FloatMax {
 
-   String message() default "{io.openmanufacturing.aspectmodel.java.customconstraint.message}";
+   String message() default "{org.eclipse.esmf.aspectmodel.java.customconstraint.message}";
 
    Class<?>[] groups() default {};
 

@@ -33,12 +33,12 @@ public class AspectModelUrnTest {
       URI validUrn = new URI( baseUri + "1.0.0#Errors" );
       AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
-      assertModelElementUrn( aspectModelUrn, "Errors", "io.openmanufacturing.test" );
+      assertModelElementUrn( aspectModelUrn, "Errors", "org.eclipse.esmf.test" );
 
       validUrn = new URI( baseUri + "1.0.0#E2" );
       aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
-      assertModelElementUrn( aspectModelUrn, "E2", "io.openmanufacturing.test" );
+      assertModelElementUrn( aspectModelUrn, "E2", "org.eclipse.esmf.test" );
    }
 
    @Test
@@ -46,12 +46,12 @@ public class AspectModelUrnTest {
       URI validUrn = new URI( baseUri + "aspect-model:Errors:1.0.0" );
       AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
-      assertAspectModelUrn( aspectModelUrn, "Errors", "io.openmanufacturing.test" );
+      assertAspectModelUrn( aspectModelUrn, "Errors", "org.eclipse.esmf.test" );
 
       validUrn = new URI( baseUri + "aspect-model:E2:1.0.0" );
       aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
-      assertAspectModelUrn( aspectModelUrn, "E2", "io.openmanufacturing.test" );
+      assertAspectModelUrn( aspectModelUrn, "E2", "org.eclipse.esmf.test" );
    }
 
    @Test
@@ -85,7 +85,7 @@ public class AspectModelUrnTest {
       final String errorMessage = MessageFormat
             .format( UrnSyntaxException.URN_INVALID_PROTOCOL_MESSAGE, AspectModelUrn.VALID_PROTOCOL );
 
-      final URI invalidUrn = new URI( "http:samm:io.openmanufacturing.test:aspect-model:Errors:1.0.0" );
+      final URI invalidUrn = new URI( "http:samm:org.eclipse.esmf.test:aspect-model:Errors:1.0.0" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( invalidUrn ) )
@@ -98,7 +98,7 @@ public class AspectModelUrnTest {
             .format( UrnSyntaxException.URN_INVALID_NAMESPACE_IDENTIFIER_MESSAGE,
                   AspectModelUrn.VALID_NAMESPACE_IDENTIFIER );
 
-      final URI invalidUrn = new URI( "urn:invalid-identifier:io.openmanufacturing.test:aspect-model:Errors:1.0.0" );
+      final URI invalidUrn = new URI( "urn:invalid-identifier:org.eclipse.esmf.test:aspect-model:Errors:1.0.0" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( invalidUrn ) )
@@ -256,7 +256,7 @@ public class AspectModelUrnTest {
 
       assertThat( elementUrn.getName() ).isEqualTo( "property" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
+      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.ASPECT_MODEL_ELEMENT );
       assertThat( elementUrn.isSammUrn() ).isFalse();
    }
@@ -268,7 +268,7 @@ public class AspectModelUrnTest {
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "Either" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing" );
+      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.samm" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.CHARACTERISTIC );
       assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
@@ -280,7 +280,7 @@ public class AspectModelUrnTest {
 
       assertThat( elementUrn.getName() ).isEqualTo( "TestCharacteristic" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
+      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.CHARACTERISTIC );
       assertThat( elementUrn.isSammUrn() ).isFalse();
    }
@@ -292,7 +292,7 @@ public class AspectModelUrnTest {
 
       assertThat( elementUrn.getName() ).isEqualTo( "RightCharacteristic" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
+      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.CHARACTERISTIC_MODEL_ELEMENT );
       assertThat( elementUrn.isSammUrn() ).isFalse();
    }
@@ -304,7 +304,7 @@ public class AspectModelUrnTest {
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "TimeSeriesEntity" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing" );
+      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.samm" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.ENTITY );
       assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
@@ -316,7 +316,7 @@ public class AspectModelUrnTest {
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "value" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing" );
+      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.samm" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.ENTITY );
       assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
@@ -328,7 +328,7 @@ public class AspectModelUrnTest {
 
       assertThat( elementUrn.getName() ).isEqualTo( "TestEntity" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
+      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.ENTITY );
       assertThat( elementUrn.isSammUrn() ).isFalse();
    }
@@ -340,7 +340,7 @@ public class AspectModelUrnTest {
 
       assertThat( elementUrn.getName() ).isEqualTo( "property" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
+      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.ENTITY_MODEL_ELEMENT );
       assertThat( elementUrn.isSammUrn() ).isFalse();
    }
@@ -352,7 +352,7 @@ public class AspectModelUrnTest {
 
       assertThat( metaModelElementUrn.getName() ).isEqualTo( "litre" );
       assertThat( metaModelElementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing" );
+      assertThat( metaModelElementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.samm" );
       assertThat( metaModelElementUrn.getElementType() ).isEqualTo( ElementType.UNIT );
       assertThat( metaModelElementUrn.isSammUrn() ).isTrue();
    }
@@ -364,7 +364,7 @@ public class AspectModelUrnTest {
 
       assertThat( elementUrn.getName() ).isEqualTo( "litre" );
       assertThat( elementUrn.getVersion() ).isEqualTo( "1.0.0" );
-      assertThat( elementUrn.getNamespace() ).isEqualTo( "io.openmanufacturing.test" );
+      assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.UNIT );
       assertThat( elementUrn.isSammUrn() ).isFalse();
    }

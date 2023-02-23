@@ -28,7 +28,7 @@
    samm:name "TestEither" ;
    samm:preferredName "Test Either"@en ;
    samm:description "Test Either Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm-c:left :LeftType ;
    samm-c:right :RightType .
@@ -37,7 +37,7 @@
    samm:name "LeftType" ;
    samm:preferredName "Left Type"@en ;
    samm:description "Left Type Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:float .
 
@@ -45,6 +45,6 @@
    samm:name "RightType" ;
    samm:preferredName "Right Type"@en ;
    samm:description "Right Type Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .

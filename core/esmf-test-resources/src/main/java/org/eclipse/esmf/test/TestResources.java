@@ -19,7 +19,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 
@@ -31,7 +31,7 @@ public class TestResources {
 
    public static VersionedModel getModelWithoutResolution( final TestModel model, final KnownVersion knownVersion ) {
       final String baseDirectory = model instanceof InvalidTestAspect ? "invalid" : "valid";
-      final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+      final SammAspectMetaModelResourceResolver metaModelResourceResolver = new SammAspectMetaModelResourceResolver();
       final String path = String.format( "%s/%s/%s/%s/%s.ttl", baseDirectory, knownVersion.toString().toLowerCase(),
             model.getUrn().getNamespace(), model.getUrn().getVersion(), model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );

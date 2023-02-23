@@ -44,7 +44,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
-            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ), 5, expectedSeeEntryTitle, "http://example.com/omp" );
+            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ), 5, expectedSeeEntryTitle, "http://example.com/" );
    }
 
    @ParameterizedTest
@@ -58,7 +58,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             5,
             expectedSeeEntryTitle,
-            "http://example.com/me, http://example.com/omp" );
+            "http://example.com/me, http://example.com/" );
    }
 
    @ParameterizedTest

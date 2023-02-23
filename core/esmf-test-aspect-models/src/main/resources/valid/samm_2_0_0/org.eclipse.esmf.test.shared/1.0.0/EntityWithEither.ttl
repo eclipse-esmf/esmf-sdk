@@ -25,6 +25,6 @@
 :TestEither a samm-c:Either ;
    samm:preferredName "Test Either"@en ;
    samm:description "This is a test Either."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm-c:left samm-c:Text ;
    samm-c:right samm-c:Boolean .

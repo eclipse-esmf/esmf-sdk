@@ -20,11 +20,11 @@ import org.eclipse.esmf.samm.KnownVersion;
 /**
  * Abstract migration function that is used to apply a change to all URIs in a model
  */
-public abstract class AbstractSdsMigrator extends AbstractMigrator {
+public abstract class AbstractSammMigrator extends AbstractMigrator {
    private final KnownVersion sourceKnownVersion;
    private final KnownVersion targetKnownVersion;
 
-   protected AbstractSdsMigrator( final KnownVersion sourceKnownVersion, final KnownVersion targetKnownVersion, final int order ) {
+   protected AbstractSammMigrator( final KnownVersion sourceKnownVersion, final KnownVersion targetKnownVersion, final int order ) {
       super( VersionNumber.parse( sourceKnownVersion.toVersionString() ), VersionNumber.parse( targetKnownVersion.toVersionString() ), order );
       this.sourceKnownVersion = sourceKnownVersion;
       this.targetKnownVersion = targetKnownVersion;

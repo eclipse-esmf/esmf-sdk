@@ -65,19 +65,19 @@
 :TestEither a samm-c:Either ;
    samm:preferredName "Test Either"@en ;
    samm:description "This is a test Either."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm-c:right :RightEitherType ;
    samm-c:left :LeftEitherType .
 
 :RightEitherType a samm:Characteristic ;
    samm:preferredName "Right either type"@en ;
    samm:description "Right type Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType :TestEntity .
 
 :LeftEitherType a samm:Characteristic ;
    samm:preferredName "Left either type"@en ;
    samm:description "Left type Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType :TestEntity .
 

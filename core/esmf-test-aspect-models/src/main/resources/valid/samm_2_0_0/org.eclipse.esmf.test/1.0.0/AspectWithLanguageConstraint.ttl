@@ -18,14 +18,14 @@
 :AspectWithLanguageConstraint a samm:Aspect ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
 :testProperty a samm:Property ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:exampleValue "Example Value" ;
    samm:characteristic :TestLanguageConstraint .
@@ -35,7 +35,7 @@
       a samm-c:LanguageConstraint ;
       samm:preferredName "Test Language Constraint"@en ;
       samm:description "This is a test language constraint."@en ;
-      samm:see <http://example.com/omp> ;
+      samm:see <http://example.com/> ;
       samm-c:languageCode "de" ;
    ] ;
    samm-c:baseCharacteristic samm-c:Text .

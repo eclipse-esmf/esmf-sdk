@@ -28,6 +28,6 @@
    samm:name "TestDuration" ;
    samm:preferredName "Test Duration"@en ;
    samm:description "This is a test Duration"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType xsd:int ;
    samm-c:unit unit:kilosecond .

@@ -27,7 +27,7 @@
    samm:name "UsedTestCollection" ;
    samm:preferredName "Used Test Collection"@en ;
    samm:description "Used Test Collection"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .
 
@@ -35,6 +35,6 @@
    samm:name "UnusedTestCollection" ;
    samm:preferredName "Unused Test Collection"@en ;
    samm:description "Unused Test Collection"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .

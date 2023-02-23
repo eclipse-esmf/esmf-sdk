@@ -29,7 +29,7 @@ public class GenerateJavaClassesTest extends AspectModelMojoTest {
       final Mojo generateJavaClasses = lookupMojo( "generateJavaClasses", testPom );
       assertThatCode( generateJavaClasses::execute ).doesNotThrowAnyException();
 
-      final String packagePath = "io/openmanufacturing/test";
+      final String packagePath = "org/eclipse/esmf/test";
       assertGeneratedFileExists( "Aspect.java", packagePath );
       deleteGeneratedFile( "Aspect.java", packagePath );
    }

@@ -18,12 +18,12 @@
    samm:name "SharedEntityWithSeeAttribute" ;
    samm:preferredName "Test Entity"@en ;
    samm:description "This is a test entity."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( ) .
 
 samm-e:SharedEntity a samm:Entity ;
    samm:name "SharedEntity" ;
    samm:preferredName "Shared Entity"@en ;
    samm:description "This is a shared entity."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( ) .

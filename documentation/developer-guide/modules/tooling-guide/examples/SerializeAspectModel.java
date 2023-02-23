@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
 import org.eclipse.esmf.aspectmodel.serializer.RdfModelCreatorVisitor;
@@ -56,7 +56,7 @@ public class SerializeAspectModel {
       // Second step: Serialize RDF model into nicely formatted Turtle
       final StringWriter stringWriter = new StringWriter();
       final PrintWriter printWriter = new PrintWriter( stringWriter );
-      final VersionedModel versionedModel = new SdsAspectMetaModelResourceResolver()
+      final VersionedModel versionedModel = new SammAspectMetaModelResourceResolver()
             .mergeMetaModelIntoRawModel( model, aspect.getMetaModelVersion() ).get();
       final PrettyPrinter prettyPrinter = new PrettyPrinter(
             versionedModel, aspect.getAspectModelUrn().get(), printWriter );

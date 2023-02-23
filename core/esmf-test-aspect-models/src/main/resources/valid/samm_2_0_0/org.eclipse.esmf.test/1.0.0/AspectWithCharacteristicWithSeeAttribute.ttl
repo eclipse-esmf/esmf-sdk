@@ -27,12 +27,12 @@
 :TestCharacteristic a samm:Characteristic ;
    samm:preferredName "Test Characteristic"@en ;
    samm:description "Test Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType xsd:string .
 
 :TestCharacteristicTwo a samm:Characteristic ;
    samm:preferredName "Test Characteristic Two"@en ;
    samm:description "Test Characteristic Two"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .

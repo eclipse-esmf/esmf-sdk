@@ -24,7 +24,7 @@
 :UsedTestEnumeration a samm-c:Enumeration ;
    samm:preferredName "Used Test Enumeration"@en ;
    samm:description "Used Test Enumeration"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm-c:values ( "foo" "bar" ) ;
    samm:dataType xsd:string .
@@ -32,7 +32,7 @@
 :UnusedTestEnumeration a samm-c:Enumeration ;
    samm:preferredName "Unused Test Enumeration"@en ;
    samm:description "Unused Test Enumeration"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm-c:values ( "foo" "bar" ) ;
    samm:dataType xsd:string .

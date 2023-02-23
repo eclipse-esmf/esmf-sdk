@@ -31,13 +31,13 @@
    samm:name "TestCollection" ;
    samm:preferredName "Test Collection"@en ;
    samm:description "Test Collection"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType xsd:string .
 
 :TestCollectionTwo a samm-c:Collection ;
    samm:name "TestCollectionTwo" ;
    samm:preferredName "Test Collection Two"@en ;
    samm:description "Test Collection Two"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .

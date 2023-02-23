@@ -380,11 +380,11 @@ public class OpenApiTest extends MetaModelVersions {
       final OpenAPI openAPI = result.getOpenAPI();
       // $comment keyword is an OpenAPI 3.1 feature
       assertThat( openAPI.getSpecVersion() ).isEqualTo( SpecVersion.V31 );
-      assertThat( openAPI.getComponents().getSchemas().get( "AspectWithCollection" ).get$comment() ).isEqualTo( "See: http://example.com/omp" );
+      assertThat( openAPI.getComponents().getSchemas().get( "AspectWithCollection" ).get$comment() ).isEqualTo( "See: http://example.com/" );
       assertThat( ((Schema) openAPI.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties().get( "testProperty" )).get$comment() )
-            .isEqualTo( "See: http://example.com/me, http://example.com/omp" );
+            .isEqualTo( "See: http://example.com/me, http://example.com/" );
       assertThat( openAPI.getComponents().getSchemas().get( "urn_samm_org.eclipse.esmf.samm.test_1.0.0_TestCollection" ).get$comment() )
-            .isEqualTo( "See: http://example.com/omp" );
+            .isEqualTo( "See: http://example.com/" );
    }
 
    private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect )

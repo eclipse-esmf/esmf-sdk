@@ -18,7 +18,7 @@
    samm:name "AspectWithEntityEnumerationWithOptionalAndNotInPayloadProperties" ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
@@ -26,7 +26,7 @@
    samm:name "testProperty" ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:characteristic :TestEnumeration .
 
@@ -34,7 +34,7 @@
    samm:name "TestEnumeration" ;
    samm:preferredName "Test Enumeration"@en ;
    samm:description "This is a test for enumeration."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType :TestEntity ;
    samm-c:values ( :entityInstance ) .
 

@@ -37,7 +37,7 @@ public class FixedPointConstraintInstantiatorTest extends MetaModelInstantiatorT
       assertBaseAttributes( fixedPointConstraint,
             "Test Fixed Point",
             "This is a test fixed point constraint.",
-            "http://example.com/omp" );
+            "http://example.com/" );
 
       assertThat( fixedPointConstraint.getScale() ).isEqualTo( Integer.valueOf( 5 ) );
       assertThat( fixedPointConstraint.getInteger() ).isEqualTo( Integer.valueOf( 3 ) );

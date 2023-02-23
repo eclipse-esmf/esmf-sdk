@@ -21,11 +21,11 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 
-public class SdsRemoveSammNameMigrator extends AbstractSdsMigrator {
+public class SammRemoveSammNameMigrator extends AbstractSammMigrator {
 
    private final SAMM sourceSamm;
 
-   public SdsRemoveSammNameMigrator( final KnownVersion sourceKnownVersion, final KnownVersion targetKnownVersion ) {
+   public SammRemoveSammNameMigrator( final KnownVersion sourceKnownVersion, final KnownVersion targetKnownVersion ) {
       super( sourceKnownVersion, targetKnownVersion, 60 );
       this.sourceSamm = new SAMM( sourceKnownVersion );
    }

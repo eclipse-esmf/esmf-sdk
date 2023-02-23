@@ -18,7 +18,7 @@
 :AspectWithEntityEnumerationAndNotInPayloadProperties a samm:Aspect ;
    samm:preferredName "Aspect with entity enumeration and not in payload properties"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :systemState ) ;
    samm:operations ( ) .
 
@@ -60,7 +60,7 @@
 :description a samm:Property ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:characteristic samm-c:Text .
 

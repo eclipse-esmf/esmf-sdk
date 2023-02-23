@@ -158,7 +158,7 @@ public class AspectModelJavaUtil {
 
       if ( characteristic.is( Either.class ) ) {
          if ( codeGenerationConfig.enableJacksonAnnotations() ) {
-            codeGenerationConfig.importTracker().importExplicit( "io.openmanufacturing.sds.aspectmodel.jackson.Either" );
+            codeGenerationConfig.importTracker().importExplicit( "org.eclipse.esmf.aspectmodel.jackson.Either" );
          } else {
             codeGenerationConfig.importTracker().importExplicit( org.eclipse.esmf.aspectmodel.java.types.Either.class );
          }

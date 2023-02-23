@@ -55,7 +55,7 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUMERATION_WITH_SEE_ATTRIBUTE,
             metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
-            totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/omp" );
+            totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/" );
    }
 
    @ParameterizedTest
@@ -68,7 +68,7 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
             metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle,
-            "http://example.com/me, http://example.com/omp" );
+            "http://example.com/me, http://example.com/" );
    }
 
    @ParameterizedTest
@@ -87,7 +87,7 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    void testOnlyRightSeeAttributeIsSelected( final KnownVersion metaModelVersion ) {
       // See attribute was rendered also on elements on which it was not declared:
-      // https://github.com/OpenManufacturingPlatform/sds-sdk/issues/196
+      // https://github.com/eclipse-esmf/esmf-sdk/issues/196
       String characteristicIdentifier = "Enum1";
       String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
       String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );

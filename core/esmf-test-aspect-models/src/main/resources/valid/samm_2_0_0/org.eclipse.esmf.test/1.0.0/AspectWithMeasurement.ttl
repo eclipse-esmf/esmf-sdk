@@ -25,6 +25,6 @@
 :TestMeasurement a samm-c:Measurement ;
    samm:preferredName "Test Measurement"@en ;
    samm:description "This is a test Measurement"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType xsd:float ;
    samm-c:unit unit:kelvin .

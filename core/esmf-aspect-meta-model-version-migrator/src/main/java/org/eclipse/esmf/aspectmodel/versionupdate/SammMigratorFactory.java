@@ -21,19 +21,19 @@ import com.google.common.collect.ImmutableList;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.versionupdate.migrator.SdsMetaModelVersionUriRewriter;
-import org.eclipse.esmf.aspectmodel.versionupdate.migrator.SdsRemoveSammNameMigrator;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.versionupdate.migrator.SammMetaModelVersionUriRewriter;
+import org.eclipse.esmf.aspectmodel.versionupdate.migrator.SammRemoveSammNameMigrator;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.UnitInSammNamespaceMigrator;
 
 /**
- * Includes all SDS migrators
+ * Includes all SAMM migrators
  */
-public class SdsMigratorFactory {
-   private final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+public class SammMigratorFactory {
+   private final SammAspectMetaModelResourceResolver metaModelResourceResolver = new SammAspectMetaModelResourceResolver();
    private final List<Migrator> migrators = ImmutableList.<Migrator> builder()
-         .add( new SdsMetaModelVersionUriRewriter( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
-         .add( new SdsRemoveSammNameMigrator( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
+         .add( new SammMetaModelVersionUriRewriter( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
+         .add( new SammRemoveSammNameMigrator( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
          .add( new UnitInSammNamespaceMigrator() )
          .build();
 

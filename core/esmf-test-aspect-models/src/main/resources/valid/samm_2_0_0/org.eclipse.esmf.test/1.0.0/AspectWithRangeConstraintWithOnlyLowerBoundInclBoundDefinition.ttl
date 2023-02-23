@@ -18,14 +18,14 @@
 :AspectWithRangeConstraintWithOnlyLowerBoundInclBoundDefinition a samm:Aspect ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
 :testProperty a samm:Property ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:exampleValue "5.7"^^xsd:float ;
    samm:characteristic :TestRangeConstraint .
@@ -35,7 +35,7 @@
       a samm-c:RangeConstraint ;
       samm:preferredName "Test Range Constraint"@en ;
       samm:description "This is a test range constraint."@en ;
-      samm:see <http://example.com/omp> ;
+      samm:see <http://example.com/> ;
       samm-c:minValue "2.3"^^xsd:float ;
       samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
       samm-c:upperBoundDefinition samm-c:OPEN ;

@@ -22,7 +22,7 @@
 :testCollectionProperty a samm:Property ;
               samm:preferredName "Test Property"@en ;
               samm:description "This is a test property."@en ;
-              samm:see <http://example.com/omp> ;
+              samm:see <http://example.com/> ;
               samm:see <http://example.com/me> ;
               samm:exampleValue "Example Value" ;
               samm:characteristic :TestCollection .
@@ -30,5 +30,5 @@
 :TestCollection a samm-c:Collection ;
                 samm:preferredName "Test Collection"@en ;
                 samm:description "This is a test collection."@en ;
-                samm:see <http://example.com/omp> ;
+                samm:see <http://example.com/> ;
                 samm:dataType xsd:string .

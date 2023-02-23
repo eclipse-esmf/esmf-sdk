@@ -21,14 +21,14 @@
 :testOperation a samm:Operation ;
    samm:preferredName "Test Operation"@en ;
    samm:description "Test Operation"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:input ( ) ;
    samm:output :output .
 
 :testOperationTwo a samm:Operation ;
    samm:preferredName "Test Operation Two"@en ;
    samm:description "Test Operation Two"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:input ( ) ;
    samm:output :output .

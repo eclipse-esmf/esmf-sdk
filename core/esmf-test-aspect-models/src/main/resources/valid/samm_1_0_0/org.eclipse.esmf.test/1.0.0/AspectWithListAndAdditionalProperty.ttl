@@ -19,7 +19,7 @@
    samm:name "AspectWithListAndAdditionalProperty" ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty :testPropertyTwo ) ;
    samm:operations ( ) .
 
@@ -27,7 +27,7 @@
    samm:name "testProperty" ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:exampleValue "Example Value" ;
    samm:characteristic :TestList .
@@ -36,7 +36,7 @@
    samm:name "testPropertyTwo" ;
    samm:preferredName "Test Property Two"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:exampleValue "Example Value" ;
    samm:characteristic samm-c:Text .
@@ -45,5 +45,5 @@
    samm:name "TestList" ;
    samm:preferredName "Test List"@en ;
    samm:description "This is a test list."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType xsd:string .

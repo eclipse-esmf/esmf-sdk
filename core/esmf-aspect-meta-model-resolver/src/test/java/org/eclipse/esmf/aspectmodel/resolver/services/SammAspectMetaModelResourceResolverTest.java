@@ -34,12 +34,12 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import io.vavr.control.Try;
 
-public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {
-   private final SdsAspectMetaModelResourceResolver aspectMetaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+public class SammAspectMetaModelResourceResolverTest extends MetaModelVersions {
+   private final SammAspectMetaModelResourceResolver aspectMetaModelResourceResolver = new SammAspectMetaModelResourceResolver();
 
    private Model getModel( final String resource, final KnownVersion version ) {
       final InputStream aspectModel =
-            SdsAspectMetaModelResourceResolverTest.class.getClassLoader().getResourceAsStream(
+            SammAspectMetaModelResourceResolverTest.class.getClassLoader().getResourceAsStream(
                   version.toString().toLowerCase() + "/" + resource );
       return TurtleLoader.loadTurtle( aspectModel ).get();
    }
@@ -94,7 +94,7 @@ public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testGetAspectModelUrnInvalidUrnExpectFailure( final KnownVersion metaModelVersion ) {
-      final Try<AspectModelUrn> aspectModelUrn = AspectModelUrn.from( "urn:foo:io.openmanufacturing:meta-model:" + metaModelVersion.toVersionString() );
+      final Try<AspectModelUrn> aspectModelUrn = AspectModelUrn.from( "urn:foo:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() );
       assertThat( aspectModelUrn ).isFailure();
    }
 

@@ -17,6 +17,6 @@
    samm:name "EntityWithMultipleSeeAttributes" ;
    samm:preferredName "Test Entity"@en ;
    samm:description "This is a test entity."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:properties ( ) .

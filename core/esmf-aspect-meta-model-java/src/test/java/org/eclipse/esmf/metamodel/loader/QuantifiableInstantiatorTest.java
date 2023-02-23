@@ -49,7 +49,7 @@ public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
       final Quantifiable quantifiable = (Quantifiable) property.getCharacteristic().get();
 
       assertBaseAttributes( quantifiable, expectedAspectModelUrn, "TestQuantifiable",
-            "Test Quantifiable", "This is a test Quantifiable", "http://example.com/omp" );
+            "Test Quantifiable", "This is a test Quantifiable", "http://example.com/" );
 
       final Scalar scalar = (Scalar) property.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( "http://www.w3.org/2001/XMLSchema#float" );
@@ -73,7 +73,7 @@ public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
       final Quantifiable quantifiable = (Quantifiable) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( quantifiable, expectedAspectModelUrn, "TestQuantifiable",
-            "Test Quantifiable", "This is a test Quantifiable", "http://example.com/omp" );
+            "Test Quantifiable", "This is a test Quantifiable", "http://example.com/" );
       final Scalar scalar = (Scalar) quantifiable.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xfloat.getURI() );
       Assertions.assertThat( quantifiable.getUnit() ).isNotPresent();
@@ -91,7 +91,7 @@ public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
       final Measurement measurement = (Measurement) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( measurement, expectedAspectModelUrn, "TestMeasurement",
-            "Test Measurement", "This is a test Measurement", "http://example.com/omp" );
+            "Test Measurement", "This is a test Measurement", "http://example.com/" );
 
       final Scalar scalar = (Scalar) measurement.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xfloat.getURI() );
@@ -114,7 +114,7 @@ public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
       final Duration duration = (Duration) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( duration, expectedAspectModelUrn, "TestDuration",
-            "Test Duration", "This is a test Duration", "http://example.com/omp" );
+            "Test Duration", "This is a test Duration", "http://example.com/" );
 
       final Scalar scalar = (Scalar) duration.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xint.getURI() );

@@ -28,5 +28,5 @@
    samm:name "TestCode" ;
    samm:preferredName "Test Code"@en ;
    samm:description "This is a test code."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType xsd:int .

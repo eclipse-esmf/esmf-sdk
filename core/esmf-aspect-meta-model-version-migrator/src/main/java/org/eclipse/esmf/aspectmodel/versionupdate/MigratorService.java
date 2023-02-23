@@ -36,7 +36,7 @@ import io.vavr.control.Try;
 public class MigratorService {
    private static final Logger LOG = LoggerFactory.getLogger( MigratorService.class );
    private final Optional<MigratorFactory> migratorFactory;
-   private final SdsMigratorFactory sdsMigratorFactory = new SdsMigratorFactory();
+   private final SammMigratorFactory sammMigratorFactory = new SammMigratorFactory();
 
    public MigratorService() {
       migratorFactory = Optional.empty();
@@ -50,8 +50,8 @@ public class MigratorService {
       return migratorFactory;
    }
 
-   public SdsMigratorFactory getSdsMigratorFactory() {
-      return sdsMigratorFactory;
+   public SammMigratorFactory getSdsMigratorFactory() {
+      return sammMigratorFactory;
    }
 
    private Model execute( final Migrator migrator, final Model sourceModel ) {
@@ -98,7 +98,7 @@ public class MigratorService {
    }
 
    private Try<VersionedModel> migration( final VersionNumber sourceVersion, final VersionNumber targetVersion, final Model targetModel ) {
-      final Model model = migrate( sdsMigratorFactory.createMigrators(), sourceVersion, targetVersion, targetModel );
+      final Model model = migrate( sammMigratorFactory.createMigrators(), sourceVersion, targetVersion, targetModel );
       return getSdsMigratorFactory().createAspectMetaModelResourceResolver().mergeMetaModelIntoRawModel( model, targetVersion );
    }
 

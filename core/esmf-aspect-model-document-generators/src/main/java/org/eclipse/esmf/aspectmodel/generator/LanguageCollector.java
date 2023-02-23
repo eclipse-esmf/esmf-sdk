@@ -24,7 +24,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.visitor.LanguageCollectorModelVisitor;
@@ -60,7 +60,7 @@ public class LanguageCollector {
     * @return The set of language tags used in the Aspect Model
     */
    public static Set<Locale> collectUsedLanguages( final Model model ) {
-      final SdsAspectMetaModelResourceResolver resolver = new SdsAspectMetaModelResourceResolver();
+      final SammAspectMetaModelResourceResolver resolver = new SammAspectMetaModelResourceResolver();
       return resolver.getMetaModelVersion( model ).map( metaModelVersion -> {
          final SAMM samm = new SAMM( KnownVersion.fromVersionString( metaModelVersion.toString() )
                .orElseThrow( () -> new UnsupportedVersionException( metaModelVersion ) ) );

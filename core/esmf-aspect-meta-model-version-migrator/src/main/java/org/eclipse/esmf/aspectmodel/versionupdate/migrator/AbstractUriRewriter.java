@@ -34,7 +34,7 @@ import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 /**
  * Abstract migration function that is used to apply a change to all URIs in a model
  */
-public abstract class AbstractUriRewriter extends AbstractSdsMigrator {
+public abstract class AbstractUriRewriter extends AbstractSammMigrator {
    protected AbstractUriRewriter( final KnownVersion sourceVersion, final KnownVersion targetVersion ) {
       super( sourceVersion, targetVersion, 100 );
    }

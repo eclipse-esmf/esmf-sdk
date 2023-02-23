@@ -22,7 +22,7 @@ import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.AbstractMigrator;
 
 public class TestMigratorFactory1 implements MigratorFactory {
@@ -39,7 +39,7 @@ public class TestMigratorFactory1 implements MigratorFactory {
 
    @Override
    public AspectMetaModelResourceResolver createAspectMetaModelResourceResolver() {
-      return new SdsAspectMetaModelResourceResolver();
+      return new SammAspectMetaModelResourceResolver();
    }
 
    public static class TestMigrator1 extends AbstractMigrator {

@@ -63,9 +63,9 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       assertThat( htmlResult ).isNotEmpty();
       assertThat( htmlResult ).contains( "<h1 id=\"AspectWithEntityCollection\">Aspect Model Test Aspect</h1>" );
       assertThat( htmlResult ).contains(
-            "<h3 id=\"io-openmanufacturing-test-AspectWithEntityCollection-io-openmanufacturing-test-testProperty-property\">Test Property</h3>" );
+            "<h3 id=\"org-eclipse-esmf-test-AspectWithEntityCollection-org-eclipse-esmf-test-testProperty-property\">Test Property</h3>" );
       assertThat( htmlResult ).contains(
-            "<h5 id=\"io-openmanufacturing-test-TestEntity-io-openmanufacturing-test-entityProperty-property\">Entity Property</h5>" );
+            "<h5 id=\"org-eclipse-esmf-test-TestEntity-org-eclipse-esmf-test-entityProperty-property\">Entity Property</h5>" );
    }
 
    @ParameterizedTest
@@ -81,7 +81,7 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       assertThat( htmlResult ).isNotEmpty();
       assertThat( htmlResult ).contains( "<h1 id=\"AspectWithCollectionOfSimpleType\">Aspect Model AspectWithCollectionOfSimpleType</h1>" );
       assertThat( htmlResult ).contains(
-            "<h3 id=\"io-openmanufacturing-test-AspectWithCollectionOfSimpleType-io-openmanufacturing-test-testList-property\">testList</h3>" );
+            "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionOfSimpleType-org-eclipse-esmf-test-testList-property\">testList</h3>" );
       // example value
       assertThat( htmlResult ).containsIgnoringWhitespaces( "<div class=\"w-80\">Example</div><div class=\"w-full\">35</div>" );
    }
@@ -154,11 +154,11 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
       assertThat( documentation ).contains(
-            "<h3 id=\"io-openmanufacturing-test-AspectWithAbstractSingleEntity-io-openmanufacturing-test-testProperty-property\">testProperty</h3>" );
+            "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractSingleEntity-org-eclipse-esmf-test-testProperty-property\">testProperty</h3>" );
       assertThat( documentation ).contains(
-            "<h5 id=\"io-openmanufacturing-test-AbstractTestEntity-io-openmanufacturing-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
+            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
       assertThat( documentation ).contains(
-            "<h5 id=\"io-openmanufacturing-test-ExtendingTestEntity-io-openmanufacturing-test-entityProperty-property\">entityProperty</h5>" );
+            "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">entityProperty</h5>" );
    }
 
    @ParameterizedTest
@@ -166,11 +166,11 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
       assertThat( documentation ).contains(
-            "<h3 id=\"io-openmanufacturing-test-AspectWithAbstractEntity-io-openmanufacturing-test-testProperty-property\">Test Property</h3>" );
+            "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractEntity-org-eclipse-esmf-test-testProperty-property\">Test Property</h3>" );
       assertThat( documentation ).contains(
-            "<h5 id=\"io-openmanufacturing-test-AbstractTestEntity-io-openmanufacturing-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
+            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
       assertThat( documentation ).contains(
-            "<h5 id=\"io-openmanufacturing-test-ExtendingTestEntity-io-openmanufacturing-test-entityProperty-property\">Entity Property</h5>" );
+            "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">Entity Property</h5>" );
    }
 
    @ParameterizedTest
@@ -178,11 +178,11 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    public void testAspectWithCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
       assertThat( documentation ).contains(
-            "<h3 id=\"io-openmanufacturing-test-AspectWithCollectionWithAbstractEntity-io-openmanufacturing-test-testProperty-property\">testProperty</h3>" );
+            "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionWithAbstractEntity-org-eclipse-esmf-test-testProperty-property\">testProperty</h3>" );
       assertThat( documentation ).contains(
-            "<h5 id=\"io-openmanufacturing-test-AbstractTestEntity-io-openmanufacturing-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
+            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
       assertThat( documentation ).contains(
-            "<h5 id=\"io-openmanufacturing-test-ExtendingTestEntity-io-openmanufacturing-test-entityProperty-property\">entityProperty</h5>" );
+            "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">entityProperty</h5>" );
    }
 
    @ParameterizedTest

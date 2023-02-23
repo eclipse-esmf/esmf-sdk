@@ -28,6 +28,6 @@
    samm:name "TestQuantifiable" ;
    samm:preferredName "Test Quantifiable"@en ;
    samm:description "This is a test Quantifiable"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType xsd:float ;
    samm-c:unit unit:hertz .

@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /*
  * Dummy Class - this exists only here to be present in the classpath during compilation tests.
- * A dependency to the module containing the real class (sds-aspect-model-jackson) can not be
+ * A dependency to the module containing the real class (esmf-aspect-model-jackson) can not be
  * added due to cyclic dependencies.
  */
 public class HexBinaryDeserializer extends JsonDeserializer<byte[]> {

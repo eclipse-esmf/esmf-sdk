@@ -4712,7 +4712,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
 
-## io.openmanufacturing:sds-aspect-meta-model:1.0.0
+## org.eclipse.esmf:esmf-aspect-meta-model:1.0.0
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -5099,7 +5099,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 ```
 
 
-## io.openmanufacturing:sds-aspect-meta-model-interface:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-meta-model-interface:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -5313,7 +5313,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-meta-model-java:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-meta-model-java:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -5527,7 +5527,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-meta-model-resolver:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-meta-model-resolver:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -5741,7 +5741,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-meta-model-types:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-meta-model-types:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -5955,7 +5955,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-meta-model-version-migrator:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-meta-model-version-migrator:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -6169,7 +6169,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-model-document-generators:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-model-document-generators:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -6383,7 +6383,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-model-generator:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-model-generator:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -6597,7 +6597,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-model-jackson:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-model-jackson:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -6811,7 +6811,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-model-java-core:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-model-java-core:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -7025,7 +7025,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-model-java-generator:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-model-java-generator:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -7239,7 +7239,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-model-resolver:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-model-resolver:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -7453,7 +7453,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-model-serializer:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-model-serializer:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -7667,7 +7667,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-model-starter:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-model-starter:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -7881,7 +7881,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-model-urn:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-model-urn:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -8095,7 +8095,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-model-validator:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-model-validator:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements
@@ -8309,7 +8309,7 @@ Copyright (C) Pivotal Software, Inc.
 ```
 
 
-## io.openmanufacturing:sds-aspect-static-meta-model-java:DEV-SNAPSHOT
+## org.eclipse.esmf:esmf-aspect-static-meta-model-java:DEV-SNAPSHOT
 
 This package contains the following copyright statements and is licensed under the following declared licenses.
 ### Copyright Statements

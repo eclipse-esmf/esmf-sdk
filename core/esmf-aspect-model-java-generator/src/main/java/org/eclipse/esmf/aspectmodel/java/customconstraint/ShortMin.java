@@ -29,7 +29,7 @@ import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 @Constraint( validatedBy = ShortMinValidator.class )
 public @interface ShortMin {
 
-   String message() default "{io.openmanufacturing.aspectmodel.java.customconstraint.message}";
+   String message() default "{org.eclipse.esmf.aspectmodel.java.customconstraint.message}";
 
    Class<?>[] groups() default {};
 

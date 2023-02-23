@@ -37,7 +37,7 @@ import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
@@ -117,7 +117,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
          final File inputFile = new File( aspectModelFilePath ).getAbsoluteFile();
          try ( final InputStream inputStream = new FileInputStream( inputFile ) ) {
-            final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+            final SammAspectMetaModelResourceResolver metaModelResourceResolver = new SammAspectMetaModelResourceResolver();
             final Try<VersionedModel> versionedModel = TurtleLoader.loadTurtle( inputStream )
                   .flatMap( model -> metaModelResourceResolver.getMetaModelVersion( model )
                         .flatMap( metaModelVersion -> metaModelResourceResolver.mergeMetaModelIntoRawModel( model, metaModelVersion ) ) );

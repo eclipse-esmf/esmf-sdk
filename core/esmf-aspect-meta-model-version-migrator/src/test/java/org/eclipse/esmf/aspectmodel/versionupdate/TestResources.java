@@ -20,14 +20,14 @@ import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 
 import org.eclipse.esmf.test.TestAspect;
 
 public class TestResources {
    public static VersionedModel getModelWithoutResolution( final TestAspect model, final KnownVersion knownVersion ) {
-      final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+      final SammAspectMetaModelResourceResolver metaModelResourceResolver = new SammAspectMetaModelResourceResolver();
       final String path = String.format( "valid/%s/%s/%s/%s.ttl", knownVersion.toString().toLowerCase(),
             model.getUrn().getNamespace(), model.getUrn().getVersion(), model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );

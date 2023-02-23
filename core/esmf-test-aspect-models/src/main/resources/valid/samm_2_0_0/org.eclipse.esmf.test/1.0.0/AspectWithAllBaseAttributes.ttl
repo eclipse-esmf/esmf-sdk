@@ -19,7 +19,7 @@
    samm:preferredName "Aspekt Mit Boolean"@de ;
    samm:description "Test Description"@en ;
    samm:description "Test Beschreibung"@de ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testBoolean ) ;
    samm:operations ( ) .
 

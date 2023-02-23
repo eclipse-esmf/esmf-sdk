@@ -26,7 +26,7 @@
       a samm-c:LengthConstraint ;
       samm:preferredName "Test Constraint"@en ;
       samm:description "Test Constraint"@en ;
-      samm:see <http://example.com/omp> ;
+      samm:see <http://example.com/> ;
       samm:see <http://example.com/me> ;
       samm-c:minValue "5"^^xsd:nonNegativeInteger ;
       samm-c:maxValue "10"^^xsd:nonNegativeInteger ;

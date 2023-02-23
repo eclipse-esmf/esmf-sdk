@@ -26,7 +26,7 @@
       a samm-c:LengthConstraint ;
       samm:preferredName "Used Test Constraint"@en ;
       samm:description "Used Test Constraint"@en ;
-      samm:see <http://example.com/omp> ;
+      samm:see <http://example.com/> ;
       samm:see <http://example.com/me> ;
       samm-c:minValue "5"^^xsd:nonNegativeInteger ;
       samm-c:maxValue "10"^^xsd:nonNegativeInteger ;
@@ -36,7 +36,7 @@
 :UnusedTestConstraint a samm-c:LengthConstraint ;
    samm:preferredName "Unused Test Constraint"@en ;
    samm:description "Unused Test Constraint"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm-c:minValue "5"^^xsd:nonNegativeInteger ;
    samm-c:maxValue "10"^^xsd:nonNegativeInteger .

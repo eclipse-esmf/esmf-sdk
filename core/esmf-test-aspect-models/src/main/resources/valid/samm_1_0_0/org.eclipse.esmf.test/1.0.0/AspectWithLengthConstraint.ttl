@@ -19,7 +19,7 @@
    samm:name "AspectWithLengthConstraint" ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
@@ -27,7 +27,7 @@
    samm:name "testProperty" ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:exampleValue "Test123" ;
    samm:characteristic :TestLengthConstraint .
@@ -38,7 +38,7 @@
       a samm-c:LengthConstraint ;
       samm:preferredName "Test Length Constraint"@en ;
       samm:description "This is a test length constraint."@en ;
-      samm:see <http://example.com/omp> ;
+      samm:see <http://example.com/> ;
       samm-c:minValue "5"^^xsd:nonNegativeInteger ;
       samm-c:maxValue "10"^^xsd:nonNegativeInteger ;
    ] ;

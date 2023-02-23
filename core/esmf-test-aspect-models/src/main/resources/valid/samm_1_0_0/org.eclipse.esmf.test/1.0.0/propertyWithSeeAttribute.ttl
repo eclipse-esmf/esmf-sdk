@@ -17,7 +17,7 @@
    samm:name "propertyWithSeeAttribute" ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:exampleValue "foo" ;
    samm:characteristic samm-c:Text .
 

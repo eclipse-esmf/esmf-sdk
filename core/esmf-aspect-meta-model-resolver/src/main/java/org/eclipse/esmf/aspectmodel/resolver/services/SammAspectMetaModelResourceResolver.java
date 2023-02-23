@@ -49,7 +49,7 @@ import io.vavr.control.Try;
 /**
  * Provides functionality to resolve Aspect Meta Model resources which reside in the classpath.
  */
-public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResourceResolver {
+public class SammAspectMetaModelResourceResolver implements AspectMetaModelResourceResolver {
 
    /**
     * Extends the given {@link Model} with elements contained in the given {@link InputStream}s.
@@ -197,7 +197,7 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
       }
       if ( sammUrl.startsWith( "samm://scripts/" ) ) {
          final String resourcePath = sammUrl.replace( "samm://", "samm/" );
-         final URL resource = SdsAspectMetaModelResourceResolver.class.getClassLoader().getResource( resourcePath );
+         final URL resource = SammAspectMetaModelResourceResolver.class.getClassLoader().getResource( resourcePath );
          return Optional.ofNullable( resource ).map( URL::toString );
       }
       return Optional.empty();

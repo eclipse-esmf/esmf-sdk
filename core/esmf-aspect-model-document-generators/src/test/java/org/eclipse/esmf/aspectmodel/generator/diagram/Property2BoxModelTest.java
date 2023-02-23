@@ -36,7 +36,7 @@ public class Property2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITH_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, ":propertyWithSeeAttributeProperty a :Box",
             ":propertyWithSeeAttributeProperty :entries *",
-            totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/omp" );
+            totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/" );
    }
 
    @ParameterizedTest
@@ -46,7 +46,7 @@ public class Property2BoxModelTest extends MetaModelVersions {
       context.executeAttributeIsPresentTest( sparqlQueryFileName, ":propertyWithMultipleSeeAttributesProperty a :Box",
             ":propertyWithMultipleSeeAttributesProperty :entries *",
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle,
-            "http://example.com/me, http://example.com/omp" );
+            "http://example.com/me, http://example.com/" );
    }
 
    @ParameterizedTest

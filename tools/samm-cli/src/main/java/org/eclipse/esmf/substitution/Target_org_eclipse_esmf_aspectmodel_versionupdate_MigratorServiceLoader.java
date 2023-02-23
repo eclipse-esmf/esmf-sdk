@@ -32,11 +32,11 @@ import org.eclipse.esmf.aspectmodel.versionupdate.MigratorServiceLoader;
       "squid:S00101" // Class name uses GraalVM substitution class naming schema, see
       // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
 } )
-public final class Target_io_openmanufacturing_sds_aspectmodel_versionupdate_MigratorServiceLoader {
+public final class Target_org_eclipse_esmf_aspectmodel_versionupdate_MigratorServiceLoader {
    @Alias
    private MigratorService migratorService;
 
-   private Target_io_openmanufacturing_sds_aspectmodel_versionupdate_MigratorServiceLoader() {
+   private Target_org_eclipse_esmf_aspectmodel_versionupdate_MigratorServiceLoader() {
    }
 
    @Substitute

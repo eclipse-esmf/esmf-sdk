@@ -19,7 +19,7 @@
    samm:name "AspectWithOptionalPropertyWithPayloadName" ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( [
                         samm:property :testProperty ;
                         samm:optional "true"^^xsd:boolean ;
@@ -32,5 +32,5 @@
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
    samm:see <http://example.com/me> ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:characteristic samm-c:Text .

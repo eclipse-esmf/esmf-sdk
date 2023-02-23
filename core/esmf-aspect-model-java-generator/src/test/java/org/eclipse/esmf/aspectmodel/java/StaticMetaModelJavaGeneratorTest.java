@@ -446,7 +446,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
             "new DefaultQuantifiable(MetaModelBaseAttributes" + ".builderFor(\"TestQuantifiable\")" + ".withMetaModelVersion(KnownVersion."
                   + KnownVersion.getLatest() + ")" + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"TestQuantifiable\"))"
                   + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Quantifiable\")"
-                  + ".withDescription(Locale.forLanguageTag(\"en\"), \"This is a test Quantifiable\")" + ".withSee(\"http://example.com/omp\").build(),"
+                  + ".withDescription(Locale.forLanguageTag(\"en\"), \"This is a test Quantifiable\")" + ".withSee(\"http://example.com/\").build(),"
                   + " new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#float\", KnownVersion." + KnownVersion.getLatest() + ")," + " Optional.empty())";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithQuantifiableWithoutUnit",
@@ -480,7 +480,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       final String expectedTestPropertyCharacteristicConstructorCall = "new DefaultSingleEntity(MetaModelBaseAttributes.builderFor(\"EntityCharacteristic\")"
             + ".withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCharacteristic\")).withPreferredName(Locale"
             + ".forLanguageTag(\"en\"), \"Test Entity Characteristic\").withDescription(Locale.forLanguageTag(\"en\"), \"This is a test Entity "
-            + "Characteristic\").withSee(\"http://example.com/omp\").build(), DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.builderFor"
+            + "Characteristic\").withSee(\"http://example.com/\").build(), DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.builderFor"
             + "(\"ExtendingTestEntity\").withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"ExtendingTestEntity\"))"
             + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Entity\").withDescription(Locale.forLanguageTag(\"en\"), \"This is a test entity\")"
             + ".build(), MetaExtendingTestEntity.INSTANCE.getProperties(), Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity"
@@ -541,7 +541,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
             .apply( getGenerators( aspect, metaModelVersion, true, templateLibFile ) );
 
       final int currentYear = LocalDate.now().getYear();
-      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );
+      final String expectedCopyright = String.format( "Copyright (c) %s Test Inc. All rights reserved", currentYear );
       result.assertCopyright( TestAspect.ASPECT_WITH_COMPLEX_ENUM.getName(), expectedCopyright );
       result.assertCopyright( "EvaluationResults", expectedCopyright );
       result.assertCopyright( "EvaluationResult", expectedCopyright );

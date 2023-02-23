@@ -55,7 +55,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       assertThat( aspect.getProperties() ).hasSize( 1 );
       final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
-            "Test Enumeration", "This is a test for enumeration.", "http://example.com/omp" );
+            "Test Enumeration", "This is a test for enumeration.", "http://example.com/" );
 
       final Scalar scalar = (Scalar) enumeration.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.integer.getURI() );
@@ -73,7 +73,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().get().as( Enumeration.class );
 
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
-            "Test Enumeration", "This is a test for enumeration.", "http://example.com/omp" );
+            "Test Enumeration", "This is a test for enumeration.", "http://example.com/" );
 
       Assertions.assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
 
@@ -124,7 +124,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
-            "Test Enumeration", "This is a test for enumeration.", "http://example.com/omp" );
+            "Test Enumeration", "This is a test for enumeration.", "http://example.com/" );
 
       Assertions.assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
 

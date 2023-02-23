@@ -19,7 +19,7 @@
    samm:name "AspectWithCollectionWithElementCharacteristic" ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
@@ -27,7 +27,7 @@
    samm:name "testProperty" ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:exampleValue "Example Value" ;
    samm:characteristic :TestCollection .
@@ -36,5 +36,5 @@
    samm:name "TestCollection" ;
    samm:preferredName "Test Collection"@en ;
    samm:description "This is a test collection."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm-c:elementCharacteristic samm-c:Text .

@@ -27,6 +27,6 @@
    samm:name "TestCharacteristic" ;
    samm:preferredName "Test Characteristic"@en ;
    samm:description "Test Characteristic"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:dataType xsd:string .

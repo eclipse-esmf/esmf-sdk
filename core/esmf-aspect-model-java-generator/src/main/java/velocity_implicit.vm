@@ -13,7 +13,7 @@
 #* @vtlvariable name="Collection" type="java.lang.Class<org.eclipse.esmf.characteristic.Collection>" *#
 #* @vtlvariable name="ComplexType" type="java.lang.Class<org.eclipse.esmf.metamodel.ComplexType>" *#
 #* @vtlvariable name="Constraint" type="java.lang.Class<org.eclipse.esmf.metamodel.Constraint>" *#
-#* @vtlvariable name="context" type="io.openmanufacturing.sds.aspectmodel.java.metamodel.StaticCodeGenerationConfig" *#
+#* @vtlvariable name="context" type="org.eclipse.esmf.aspectmodel.java.metamodel.StaticCodeGenerationContext" *#
 #* @vtlvariable name="currentYear" type="java.time.Year" *#
 #* @vtlvariable name="DatatypeConfigurationException" type="java.lang.Class<javax.xml.datatype.DatatypeConfigurationException>" *#
 #* @vtlvariable name="DatatypeConstants" type="java.lang.Class<javax.xml.datatype.DatatypeConstants>" *#
@@ -62,7 +62,7 @@
 #* @vtlvariable name="JsonProperty" type="java.lang.Class<com.fasterxml.jackson.annotation.JsonProperty>" *#
 #* @vtlvariable name="JsonSerialize" type="java.lang.Class<com.fasterxml.jackson.databind.annotation.JsonSerialize>" *#
 #* @vtlvariable name="JsonValue" type="java.lang.Class<com.fasterxml.jackson.annotation.JsonValue>" *#
-#* @vtlvariable name="KnownVersion" type="java.lang.Class<io.openmanufacturing.sds.aspectmetamodel.KnownVersion>" *#
+#* @vtlvariable name="KnownVersion" type="java.lang.Class<org.eclipse.esmf.samm.KnownVersion>" *#
 #* @vtlvariable name="LangString" type="java.lang.Class<org.eclipse.esmf.metamodel.datatypes.LangString>)" *#
 #* @vtlvariable name="LanguageConstraint" type="java.lang.Class<org.eclipse.esmf.constraint.LanguageConstraint>" *#
 #* @vtlvariable name="LocaleConstraint" type="java.lang.Class<org.eclipse.esmf.constraint.LocaleConstraint>" *#
@@ -101,7 +101,7 @@
 #* @vtlvariable name="StructuredValue" type="java.lang.Class<org.eclipse.esmf.characteristic.StructuredValue>" *#
 #* @vtlvariable name="Trait" type="java.lang.class<org.eclipse.esmf.characteristic.Trait>" *#
 #* @vtlvariable name="Unit" type="java.lang.Class<org.eclipse.esmf.metamodel.Unit>" *#
-#* @vtlvariable name="Units" type="java.lang.Class<io.openmanufacturing.sds.metamodel.Units>" *#
+#* @vtlvariable name="Units" type="java.lang.Class<org.eclipse.esmf.metamodel.Units>" *#
 #* @vtlvariable name="util" type="org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil" *#
 #* @vtlvariable name="valueInitializer" type="org.eclipse.esmf.aspectmodel.java.ValueInitializer" *#
 #* @vtlvariable name="XSD" type="org.apache.jena.vocabulary.XSD" *#

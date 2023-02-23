@@ -50,7 +50,7 @@ import org.eclipse.esmf.aspectmodel.versionupdate.MigratorServiceLoader;
 
 import com.google.common.collect.Streams;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 
 import io.vavr.CheckedFunction1;
@@ -398,7 +398,7 @@ public class AspectModelResolver {
     */
    public static Try<VersionedModel> loadButNotResolveModel( final File inputFile ) {
       try ( final InputStream inputStream = new FileInputStream( inputFile ) ) {
-         final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+         final SammAspectMetaModelResourceResolver metaModelResourceResolver = new SammAspectMetaModelResourceResolver();
          return TurtleLoader.loadTurtle( inputStream ).flatMap( model ->
                metaModelResourceResolver.getMetaModelVersion( model ).flatMap( metaModelVersion ->
                      metaModelResourceResolver.mergeMetaModelIntoRawModel( model, metaModelVersion ) ) );

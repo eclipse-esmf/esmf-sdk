@@ -34,7 +34,7 @@ public class Operation2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_OPERATION_WITH_SEE_ATTRIBUTE,
             metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
-            totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/omp" );
+            totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/" );
    }
 
    @ParameterizedTest
@@ -44,7 +44,7 @@ public class Operation2BoxModelTest extends MetaModelVersions {
             metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle,
-            "http://example.com/me, http://example.com/omp" );
+            "http://example.com/me, http://example.com/" );
    }
 
    @ParameterizedTest

@@ -30,7 +30,7 @@ import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 @Constraint( validatedBy = DurationMinValidator.class )
 public @interface DurationMin {
 
-   String message() default "{io.openmanufacturing.aspectmodel.java.customconstraint.message}";
+   String message() default "{org.eclipse.esmf.aspectmodel.java.customconstraint.message}";
 
    Class<?>[] groups() default {};
 

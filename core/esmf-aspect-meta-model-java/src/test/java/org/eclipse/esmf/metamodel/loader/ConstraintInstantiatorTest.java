@@ -47,7 +47,7 @@ public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
       assertBaseAttributes( languageConstraint,
             "Test Language Constraint",
             "This is a test language constraint.",
-            "http://example.com/omp" );
+            "http://example.com/" );
 
       assertThat( languageConstraint.getLanguageCode() ).isEqualTo( Locale.forLanguageTag( "de" ) );
    }
@@ -65,7 +65,7 @@ public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
       assertBaseAttributes( encodingConstraint,
             "Test Encoding Constraint",
             "This is a test encoding constraint.",
-            "http://example.com/omp" );
+            "http://example.com/" );
 
       assertThat( encodingConstraint.getValue() ).isEqualTo( StandardCharsets.UTF_8 );
    }
@@ -83,7 +83,7 @@ public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
       assertBaseAttributes( lengthConstraint,
             "Test Length Constraint",
             "This is a test length constraint.",
-            "http://example.com/omp" );
+            "http://example.com/" );
 
       assertThat( lengthConstraint.getMaxValue() ).isPresent();
       assertThat( lengthConstraint.getMaxValue().get() ).isEqualTo( new BigInteger( "10" ) );
@@ -105,7 +105,7 @@ public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
       assertBaseAttributes( regularExpressionConstraint,
             "Test Regular Expression Constraint",
             "This is a test regular expression constraint.",
-            "http://example.com/omp" );
+            "http://example.com/" );
 
       assertThat( regularExpressionConstraint.getValue() ).isEqualTo( "^[0-9]*$" );
    }

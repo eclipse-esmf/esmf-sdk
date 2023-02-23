@@ -220,7 +220,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
       // 1. A custom parser for rdf:langString values can not be registered with Jena, because it would only receive from Jena during parsing
       //    the lexical representation of the value without the language tag (this is handled specially in Jena).
       // 2. This means that a Literal we receive here which has a type URI of rdf:langString will be of type org.apache.jena.datatypes.xsd.impl.RDFLangString
-      //    but _not_ io.openmanufacturing.sds.metamodel.datatypes.LangString as we would like to.
+      //    but _not_ org.eclipse.esmf.metamodel.datatypes.LangString as we would like to.
       // 3. So we construct an instance of LangString here from the RDFLangString.
       if ( literal.getDatatypeURI().equals( RDF.langString.getURI() ) ) {
          final LangString langString = new LangString( literal.getString(), Locale.forLanguageTag( literal.getLanguage() ) );

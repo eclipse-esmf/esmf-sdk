@@ -57,7 +57,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SEE, metaModelVersion );
       final AspectModelUrn expectedAspectModelUrn = TestAspect.ASPECT_WITH_SEE.getUrn();
       assertBaseAttributes( aspect, expectedAspectModelUrn, "AspectWithSee", "Test Aspect With See",
-            "This is a test description", "http://example.com/omp" );
+            "This is a test description", "http://example.com/" );
    }
 
    @ParameterizedTest
@@ -72,7 +72,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final Property property = aspect.getProperties().get( 0 );
 
       assertBaseAttributes( property, expectedAspectModelUrn, "testProperty", "Test Property",
-            "This is a test property.", "http://example.com/me", "http://example.com/omp" );
+            "This is a test property.", "http://example.com/me", "http://example.com/" );
       assertThat( property.getExampleValue() ).map( value -> value.as( ScalarValue.class ).getValue() ).contains( "Example Value" );
       assertThat( property.isOptional() ).isFalse();
       assertThat( property.getCharacteristic().get().getName() ).isEqualTo( "Text" );
@@ -91,7 +91,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final Property property = aspect.getProperties().get( 0 );
 
       assertBaseAttributes( property, expectedAspectModelUrn, "testProperty", "Test Property",
-            "This is a test property.", "http://example.com/me", "http://example.com/omp" );
+            "This is a test property.", "http://example.com/me", "http://example.com/" );
 
       assertThat( property.getExampleValue() ).isEmpty();
       assertThat( property.isOptional() ).isTrue();
@@ -111,7 +111,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final Property property = entity.getProperties().get( 1 );
 
       assertBaseAttributes( property, expectedAspectModelUrn, "description", "Test Property",
-            "This is a test property.", "http://example.com/me", "http://example.com/omp" );
+            "This is a test property.", "http://example.com/me", "http://example.com/" );
 
       assertThat( property.getExampleValue() ).isEmpty();
       assertThat( property.isOptional() ).isFalse();
@@ -130,7 +130,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final Property property = aspect.getProperties().get( 0 );
 
       assertBaseAttributes( property, expectedAspectModelUrn, "testProperty", "Test Property",
-            "This is a test property.", "http://example.com/me", "http://example.com/omp" );
+            "This is a test property.", "http://example.com/me", "http://example.com/" );
 
       assertThat( property.getExampleValue() ).isEmpty();
       assertThat( property.isOptional() ).isFalse();
@@ -150,7 +150,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final Either either = (Either) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( either, expectedAspectModelUrn, "TestEither",
-            "Test Either", "This is a test Either.", "http://example.com/omp" );
+            "Test Either", "This is a test Either.", "http://example.com/" );
 
       Assertions.assertThat( either.getDataType() ).isNotPresent();
       Assertions.assertThat( either.getLeft().getName() ).isEqualTo( "Text" );
@@ -168,7 +168,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final SingleEntity singleEntity = (SingleEntity) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( singleEntity, expectedAspectModelUrn, "EntityCharacteristic",
-            "Test Entity Characteristic", "This is a test Entity Characteristic", "http://example.com/omp" );
+            "Test Entity Characteristic", "This is a test Entity Characteristic", "http://example.com/" );
 
       Assertions.assertThat( singleEntity.getDataType().get() ).isInstanceOf( Entity.class );
    }
@@ -216,7 +216,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final Code code = (Code) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( code, expectedAspectModelUrn, "TestCode",
-            "Test Code", "This is a test code.", "http://example.com/omp" );
+            "Test Code", "This is a test code.", "http://example.com/" );
 
       final Scalar scalar = (Scalar) code.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xint.getURI() );
@@ -230,7 +230,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertBaseAttributes( aspect, expectedAspectModelUrn, "AspectWithList", "Test Aspect",
             "This is a test description",
-            "http://example.com/omp" );
+            "http://example.com/" );
 
       assertThat( aspect.getProperties() ).hasSize( 1 );
       assertThat( aspect.isCollectionAspect() ).isTrue();
@@ -245,7 +245,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertBaseAttributes( aspect, expectedAspectModelUrn, "AspectWithTwoLists", "Test Aspect",
             "This is a test description",
-            "http://example.com/omp" );
+            "http://example.com/" );
 
       assertThat( aspect.getProperties() ).hasSize( 2 );
       assertThat( aspect.isCollectionAspect() ).isFalse();
@@ -259,7 +259,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final AspectModelUrn expectedAspectModelUrn = TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY.getUrn();
 
       assertBaseAttributes( aspect, expectedAspectModelUrn, "AspectWithListAndAdditionalProperty",
-            "Test Aspect", "This is a test description", "http://example.com/omp" );
+            "Test Aspect", "This is a test description", "http://example.com/" );
 
       assertThat( aspect.getProperties() ).hasSize( 2 );
       assertThat( aspect.isCollectionAspect() ).isTrue();

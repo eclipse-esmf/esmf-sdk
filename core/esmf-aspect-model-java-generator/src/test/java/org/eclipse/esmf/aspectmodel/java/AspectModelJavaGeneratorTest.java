@@ -455,7 +455,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 1 );
-      result.assertNamespace( "AspectWithBinary", "io.openmanufacturing.test" );
+      result.assertNamespace( "AspectWithBinary", "org.eclipse.esmf.test" );
    }
 
    @ParameterizedTest
@@ -1082,7 +1082,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .apply( getGenerators( aspect, metaModelVersion, false, true, templateLibFile ) );
 
       final int currentYear = LocalDate.now().getYear();
-      final String expectedCopyright = String.format( "Copyright (c) %s OMP Test Inc. All rights reserved", currentYear );
+      final String expectedCopyright = String.format( "Copyright (c) %s Test Inc. All rights reserved", currentYear );
       result.assertCopyright( TestAspect.ASPECT_WITH_COMPLEX_ENUM.getName(), expectedCopyright );
       result.assertCopyright( "EvaluationResults", expectedCopyright );
       result.assertCopyright( "EvaluationResult", expectedCopyright );

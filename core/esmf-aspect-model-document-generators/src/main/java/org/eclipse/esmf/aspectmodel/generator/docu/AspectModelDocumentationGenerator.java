@@ -253,8 +253,8 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
       if ( customCSS != null && !customCSS.isEmpty() ) {
          return html.replace( "custom_css_placeholder", customCSS );
       }
-      try ( final InputStream ompCSS = getClass().getResourceAsStream( DOCU_ROOT_DIR + "/styles/omp-aspect-docu-theme.css" ) ) {
-         final String defaultCSS = CharStreams.toString( new InputStreamReader( ompCSS ) );
+      try ( final InputStream defaultCss = getClass().getResourceAsStream( DOCU_ROOT_DIR + "/styles/default-aspect-docu-theme.css" ) ) {
+         final String defaultCSS = CharStreams.toString( new InputStreamReader( defaultCss ) );
          return html.replace( "custom_css_placeholder", defaultCSS );
       }
    }

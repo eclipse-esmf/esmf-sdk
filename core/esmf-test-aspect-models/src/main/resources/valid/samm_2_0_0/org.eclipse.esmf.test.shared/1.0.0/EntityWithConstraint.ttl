@@ -40,7 +40,7 @@
 :StringLengthConstraint a samm-c:Trait ;
    samm:preferredName "Used Test Constraint"@en ;
    samm:description "Used Test Constraint"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm-c:constraint [
       a samm-c:LengthConstraint ;

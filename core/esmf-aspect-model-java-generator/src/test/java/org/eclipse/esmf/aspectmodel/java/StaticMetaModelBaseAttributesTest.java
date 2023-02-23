@@ -62,7 +62,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             + ".withDescription(Locale.forLanguageTag(\"de\"), \"Test Beschreibung\")"
             + ".withDescription(Locale.forLanguageTag(\"en\"), \"Test Description\")"
             + ".withSee(\"http://example.com/me\")"
-            + ".withSee(\"http://example.com/omp\")"
+            + ".withSee(\"http://example.com/\")"
             + ".build()";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithPropertyWithAllBaseAttributes",
@@ -119,7 +119,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             + ".withMetaModelVersion(KnownVersion." + KnownVersion.getLatest() + ")"
             + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"testBoolean\"))"
             + ".withSee(\"http://example.com/me\")"
-            + ".withSee(\"http://example.com/omp\")"
+            + ".withSee(\"http://example.com/\")"
             + ".build()";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithPropertyWithSee",
@@ -178,7 +178,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getName", "return \"AspectWithAllBaseAttributes\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
             .put( "getAllProperties", "return getProperties();" )
-            .put( "getSee", "return Arrays.asList(\"http://example.com/omp\");" )
+            .put( "getSee", "return Arrays.asList(\"http://example.com/\");" )
             .put( "getPreferredNames", getPreferredNamesBody )
             .put( "getDescriptions", getDescriptionsBody )
             .put( "getPropertyType", "return Boolean.class;" )

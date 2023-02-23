@@ -23,7 +23,7 @@
 :testProperty a samm:Property ;
               samm:preferredName "Test Property"@en ;
               samm:description "This is a test property."@en ;
-              samm:see <http://example.com/omp> ;
+              samm:see <http://example.com/> ;
               samm:see <http://example.com/me> ;
               samm:characteristic [ a             samm-c:SortedSet ;
                                     samm:dataType :TestEntity ] .

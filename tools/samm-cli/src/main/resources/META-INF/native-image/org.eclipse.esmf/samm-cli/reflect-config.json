@@ -180,7 +180,7 @@
     "allDeclaredConstructors": true
   },
   {
-    "name":"io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig",
+    "name":"org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig",
     "allDeclaredConstructors": true,
     "allDeclaredFields":true,
     "allDeclaredMethods": true

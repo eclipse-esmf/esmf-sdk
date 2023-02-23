@@ -49,7 +49,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
-            "Test Collection", "This is a test collection.", "http://example.com/omp" );
+            "Test Collection", "This is a test collection.", "http://example.com/" );
 
       final Scalar scalar = (Scalar) collection.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xstring.getURI() );
@@ -70,7 +70,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
-            "Test Collection", "This is a test collection.", "http://example.com/omp" );
+            "Test Collection", "This is a test collection.", "http://example.com/" );
 
       Assertions.assertThat( collection.getDataType().get() ).isInstanceOf( Entity.class );
 
@@ -89,7 +89,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final List list = (List) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( list, expectedAspectModelUrn, "TestList",
-            "Test List", "This is a test list.", "http://example.com/omp" );
+            "Test List", "This is a test list.", "http://example.com/" );
 
       final Scalar scalar = (Scalar) list.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xstring.getURI() );
@@ -109,7 +109,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final Set set = (Set) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( set, expectedAspectModelUrn, "TestSet",
-            "Test Set", "This is a test set.", "http://example.com/omp" );
+            "Test Set", "This is a test set.", "http://example.com/" );
 
       final Scalar scalar = (Scalar) set.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xstring.getURI() );
@@ -129,7 +129,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final SortedSet sortedSet = (SortedSet) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( sortedSet, expectedAspectModelUrn, "TestSortedSet",
-            "Test Sorted Set", "This is a test sorted set.", "http://example.com/omp" );
+            "Test Sorted Set", "This is a test sorted set.", "http://example.com/" );
 
       final Scalar scalar = (Scalar) sortedSet.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xstring.getURI() );
@@ -149,7 +149,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final TimeSeries timeSeries = (TimeSeries) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( timeSeries, expectedAspectModelUrn, "TestTimeSeries",
-            "Test Time Series", "This is a test time series.", "http://example.com/omp" );
+            "Test Time Series", "This is a test time series.", "http://example.com/" );
 
       Assertions.assertThat( timeSeries.getDataType().get() ).isInstanceOf( Entity.class );
 
@@ -166,7 +166,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
       final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
-            "Test Collection", "This is a test collection.", "http://example.com/omp" );
+            "Test Collection", "This is a test collection.", "http://example.com/" );
 
       final Scalar scalar = (Scalar) collection.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xstring.getURI() );
@@ -188,7 +188,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
       final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
-            "Test Collection", "This is a test collection.", "http://example.com/omp" );
+            "Test Collection", "This is a test collection.", "http://example.com/" );
 
       final Scalar scalar = (Scalar) collection.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xfloat.getURI() );

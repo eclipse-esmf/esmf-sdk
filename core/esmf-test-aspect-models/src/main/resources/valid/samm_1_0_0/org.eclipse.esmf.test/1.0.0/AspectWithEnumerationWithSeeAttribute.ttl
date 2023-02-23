@@ -31,7 +31,7 @@
    samm:name "TestEnumeration" ;
    samm:preferredName "Test Enumeration"@en ;
    samm:description "Test Enumeration"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm-c:values ( "foo" "bar" ) ;
    samm:dataType xsd:string .
 
@@ -39,7 +39,7 @@
    samm:name "TestEnumerationTwo" ;
    samm:preferredName "Test Enumeration Two"@en ;
    samm:description "Test Enumeration Two"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm-c:values ( "foo" "bar" ) ;
    samm:dataType xsd:string .

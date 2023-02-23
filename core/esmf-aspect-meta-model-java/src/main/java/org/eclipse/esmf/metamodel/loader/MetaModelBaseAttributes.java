@@ -33,7 +33,7 @@ import com.google.common.collect.Streams;
 
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 
@@ -42,7 +42,7 @@ import org.eclipse.esmf.metamodel.datatypes.LangString;
  */
 public class MetaModelBaseAttributes {
 
-   private static final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
+   private static final SammAspectMetaModelResourceResolver metaModelResourceResolver = new SammAspectMetaModelResourceResolver();
    private final KnownVersion metaModelVersion;
    private final Optional<AspectModelUrn> urn;
    private final String name;

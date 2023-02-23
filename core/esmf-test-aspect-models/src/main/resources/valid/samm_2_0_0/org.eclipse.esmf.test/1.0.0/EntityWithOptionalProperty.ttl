@@ -18,7 +18,7 @@
 :EntityWithOptionalProperty a samm:Entity ;
    samm:preferredName "Test Entity"@en ;
    samm:description "This is a test entity."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( [ samm:property :testProperty ; samm:optional "true"^^xsd:boolean ] ) .
 
 :testProperty a samm:Property ;

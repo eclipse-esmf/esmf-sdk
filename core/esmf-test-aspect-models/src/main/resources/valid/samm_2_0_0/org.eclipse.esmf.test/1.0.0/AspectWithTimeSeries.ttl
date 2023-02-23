@@ -19,26 +19,26 @@
 :AspectWithTimeSeries a samm:Aspect ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
 :testProperty a samm:Property ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:characteristic :TestTimeSeries .
 
 :TestTimeSeries a samm-c:TimeSeries ;
    samm:preferredName "Test Time Series"@en ;
    samm:description "This is a test time series."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType :TestTimeSeriesEntity .
 
 :TestTimeSeriesEntity a samm:Entity ;
    samm:extends samm-e:TimeSeriesEntity ;
    samm:preferredName "Test Time Series Entity"@en ;
    samm:description "This is a test time series entity."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( [ samm:extends samm-e:value ; samm:characteristic samm-c:Text ] ) .

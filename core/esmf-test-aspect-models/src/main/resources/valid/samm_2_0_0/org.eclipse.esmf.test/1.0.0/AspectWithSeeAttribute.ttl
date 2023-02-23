@@ -16,6 +16,6 @@
 :AspectWithSeeAttribute a samm:Aspect ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test Aspect."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( ) ;
    samm:operations ( ) .

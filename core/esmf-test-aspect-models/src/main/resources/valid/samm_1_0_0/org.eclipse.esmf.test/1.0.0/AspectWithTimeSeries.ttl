@@ -20,7 +20,7 @@
    samm:name "AspectWithTimeSeries" ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
@@ -28,7 +28,7 @@
    samm:name "testProperty" ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:characteristic :TestTimeSeries .
 
@@ -36,19 +36,19 @@
    samm:name "TestTimeSeries" ;
    samm:preferredName "Test Time Series"@en ;
    samm:description "This is a test time series."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:dataType :TestTimeSeriesEntity .
 
 :TestTimeSeriesEntity samm:refines samm-e:TimeSeriesEntity ;
    samm:name "TestTimeSeriesEntity" ;
    samm:preferredName "Test Time Series Entity"@en ;
    samm:description "This is a test time series entity."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testValue ) .
 
 :testValue samm:refines samm-e:value ;
    samm:name "testValue" ;
    samm:preferredName "Test Value"@en ;
    samm:description "This is a test value."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:characteristic samm-c:Text .

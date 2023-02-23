@@ -18,14 +18,14 @@
 :AspectWithRegularExpressionConstraint a samm:Aspect ;
    samm:preferredName "Test Aspect"@en ;
    samm:description "This is a test description"@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:properties ( :testProperty ) ;
    samm:operations ( ) .
 
 :testProperty a samm:Property ;
    samm:preferredName "Test Property"@en ;
    samm:description "This is a test property."@en ;
-   samm:see <http://example.com/omp> ;
+   samm:see <http://example.com/> ;
    samm:see <http://example.com/me> ;
    samm:exampleValue "3" ;
    samm:characteristic :TestRegularExpressionConstraint .
@@ -35,7 +35,7 @@
       a samm-c:RegularExpressionConstraint ;
       samm:preferredName "Test Regular Expression Constraint"@en ;
       samm:description "This is a test regular expression constraint."@en ;
-      samm:see <http://example.com/omp> ;
+      samm:see <http://example.com/> ;
       samm:value "^[0-9]*$" ;
    ] ;
    samm-c:baseCharacteristic samm-c:Text .

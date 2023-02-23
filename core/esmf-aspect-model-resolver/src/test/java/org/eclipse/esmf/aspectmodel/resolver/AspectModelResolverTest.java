@@ -104,7 +104,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Model model = TurtleLoader.loadTurtle(
             AspectModelResolverTest.class.getResourceAsStream(
                   "/" + metaModelVersion.toString().toLowerCase()
-                        + "/io.openmanufacturing.test/1.0.0/Test.ttl" ) ).get();
+                        + "/org.eclipse.esmf.test/1.0.0/Test.ttl" ) ).get();
       final ResolutionStrategy inMemoryStrategy = anyUrn -> Try.success( model );
       final EitherStrategy inMemoryResolutionStrategy = new EitherStrategy( urnStrategy, inMemoryStrategy );
 
