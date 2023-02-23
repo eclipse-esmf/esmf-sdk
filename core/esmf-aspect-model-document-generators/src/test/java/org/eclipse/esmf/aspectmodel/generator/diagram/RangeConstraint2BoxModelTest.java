@@ -29,13 +29,13 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             6, "lowerBoundDefinition", "GREATER_THAN" );
 
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             7, "upperBoundDefinition", "LESS_THAN" );
    }
 
@@ -46,12 +46,12 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
       final String constraintIdentifier = "RangeConstrainta825f71";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_DEFINITION_AND_BOTH_VALUES, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             6, "lowerBoundDefinition", "GREATER_THAN" );
 
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             7, "upperBoundDefinition", "AT_MOST" );
    }
 
@@ -61,16 +61,16 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
       final String constraintIdentifier = "RangeConstraintdf1bc0b";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             6, "lowerBoundDefinition", "GREATER_THAN" );
 
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             7, "upperBoundDefinition", "OPEN" );
 
       context.executeAttributeIsNotPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             8 );
    }
 }

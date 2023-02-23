@@ -35,11 +35,11 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMMC;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -61,7 +61,7 @@ import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 public abstract class Instantiator<T extends ModelElement> extends AttributeValueRetriever implements Function<Resource, T> {
    protected final ModelElementFactory modelElementFactory;
    protected Class<T> targetClass;
-   protected BAMMC bammc;
+   protected SAMMC SAMMC;
    protected UNIT unit;
    protected Model model;
    protected KnownVersion metaModelVersion;
@@ -71,14 +71,14 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
       super( modelElementFactory.getBamm() );
       this.modelElementFactory = modelElementFactory;
       this.targetClass = targetClass;
-      bammc = modelElementFactory.getBammc();
+      SAMMC = modelElementFactory.getBammc();
       unit = modelElementFactory.getUnit();
       model = modelElementFactory.getModel();
       metaModelVersion = modelElementFactory.getMetaModelVersion();
    }
 
    protected MetaModelBaseAttributes buildBaseAttributes( final Resource resource ) {
-      return MetaModelBaseAttributes.fromModelElement( metaModelVersion, resource, model, bamm );
+      return MetaModelBaseAttributes.fromModelElement( metaModelVersion, resource, model, SAMM );
    }
 
    protected Statement propertyValueFromTypeTree( final Resource subject, final org.apache.jena.rdf.model.Property property ) {
@@ -88,20 +88,20 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
       }
 
       // Check if the subject is a Property reference, then we should continue to search the referenced Property
-      final Optional<Statement> propertyStatement = optionalAttributeValue( subject, bamm.property() );
+      final Optional<Statement> propertyStatement = optionalAttributeValue( subject, SAMM.property() );
       if ( propertyStatement.isPresent() ) {
          return propertyValueFromTypeTree( propertyStatement.get().getObject().asResource(), property );
       }
 
-      final Statement extendsStatement = optionalAttributeValue( subject, bamm._extends() )
+      final Statement extendsStatement = optionalAttributeValue( subject, SAMM._extends() )
             .orElseThrow( () -> new AspectLoadingException( "Property " + property + " not found on " + subject + " or its supertypes" ) );
       final Resource superType = extendsStatement.getObject().asResource();
       return propertyValueFromTypeTree( superType, property );
    }
 
    /**
-    * Extracts all {@link BAMM#Property()} model elements which are referenced in the given Property List, e.g.
-    * {@link BAMM#properties()}, and creates {@link Property} instances for these model elements.
+    * Extracts all {@link SAMM#Property()} model elements which are referenced in the given Property List, e.g.
+    * {@link SAMM#properties()}, and creates {@link Property} instances for these model elements.
     *
     * @param elementWithProperties the {@link Resource} which has the propertyRdfClass list for which the model
     *       elements are extracted
@@ -129,11 +129,11 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
 
       final Optional<Statement> entityStatement = optionalAttributeValue( dataTypeResource, RDF.type );
 
-      if ( entityStatement.isPresent() && bamm.Entity().equals( entityStatement.get().getObject().asResource() ) ) {
+      if ( entityStatement.isPresent() && SAMM.Entity().equals( entityStatement.get().getObject().asResource() ) ) {
          return modelElementFactory.create( Entity.class, entityStatement.get().getSubject() );
       }
 
-      if ( entityStatement.isPresent() && bamm.AbstractEntity().equals( entityStatement.get().getObject().asResource() ) ) {
+      if ( entityStatement.isPresent() && SAMM.AbstractEntity().equals( entityStatement.get().getObject().asResource() ) ) {
          return modelElementFactory.create( AbstractEntity.class, entityStatement.get().getSubject() );
       }
 
@@ -147,13 +147,13 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
     * @return The statement describing the datatype
     */
    private Statement getDataType( final Resource resource ) {
-      return Optional.ofNullable( resource.getPropertyResourceValue( bamm.baseCharacteristic() ) )
+      return Optional.ofNullable( resource.getPropertyResourceValue( SAMM.baseCharacteristic() ) )
             .map( this::getDataType )
-            .orElseGet( () -> resource.getProperty( bamm.dataType() ) );
+            .orElseGet( () -> resource.getProperty( SAMM.dataType() ) );
    }
 
    protected Optional<Characteristic> getElementCharacteristic( final Resource collection ) {
-      return optionalAttributeValue( collection, bammc.elementCharacteristic() )
+      return optionalAttributeValue( collection, SAMMC.elementCharacteristic() )
             .map( Statement::getResource )
             .map( elementCharacteristicResource ->
                   modelElementFactory.create( Characteristic.class, elementCharacteristicResource ) );
@@ -189,15 +189,15 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
       // Collections
       if ( characteristicResource.isPresent() ) {
          final Resource characteristic = characteristicResource.get();
-         final Optional<Resource> elementCharacteristic = optionalAttributeValue( characteristic, bammc.elementCharacteristic() ).map( Statement::getResource );
+         final Optional<Resource> elementCharacteristic = optionalAttributeValue( characteristic, SAMMC.elementCharacteristic() ).map( Statement::getResource );
          CollectionValue.CollectionType collectionType = null;
-         if ( isTypeOfOrSubtypeOf( characteristic, bammc.Set() ) ) {
+         if ( isTypeOfOrSubtypeOf( characteristic, SAMMC.Set() ) ) {
             collectionType = CollectionValue.CollectionType.SET;
-         } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.SortedSet() ) ) {
+         } else if ( isTypeOfOrSubtypeOf( characteristic, SAMMC.SortedSet() ) ) {
             collectionType = CollectionValue.CollectionType.SORTEDSET;
-         } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.List() ) ) {
+         } else if ( isTypeOfOrSubtypeOf( characteristic, SAMMC.List() ) ) {
             collectionType = CollectionValue.CollectionType.LIST;
-         } else if ( isTypeOfOrSubtypeOf( characteristic, bammc.Collection() ) ) {
+         } else if ( isTypeOfOrSubtypeOf( characteristic, SAMMC.Collection() ) ) {
             collectionType = CollectionValue.CollectionType.COLLECTION;
          }
          if ( collectionType != null ) {
@@ -258,7 +258,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
          }
          final RDFNode rdfValue = entityInstance.getProperty( rdfProperty ).getObject();
          final Type propertyType = property.getDataType().orElseThrow( () -> new AspectLoadingException( "Invalid Property without a dataType found" ) );
-         final Resource characteristic = attributeValue( rdfProperty, bamm.characteristic() ).getResource();
+         final Resource characteristic = attributeValue( rdfProperty, SAMM.characteristic() ).getResource();
          final Value value = buildValue( rdfValue, Optional.of( characteristic ), propertyType );
          assertions.put( property, value );
       } );

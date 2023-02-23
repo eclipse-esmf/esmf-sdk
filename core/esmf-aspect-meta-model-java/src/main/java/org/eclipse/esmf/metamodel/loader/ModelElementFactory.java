@@ -32,8 +32,8 @@ import com.google.common.collect.Streams;
 
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMMC;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.ModelElement;
@@ -79,51 +79,51 @@ import org.eclipse.esmf.metamodel.Units;
 public class ModelElementFactory extends AttributeValueRetriever {
    private final KnownVersion metaModelVersion;
    private final Model model;
-   private final BAMMC bammc;
+   private final SAMMC SAMMC;
    private final UNIT unit;
    private final Map<Resource, Instantiator<?>> instantiators = new HashMap<>();
    private final Map<Resource, ModelElement> loadedElements = new HashMap<>();
    private Set<ModelNamespace> namespaces;
 
    public ModelElementFactory( final KnownVersion metaModelVersion, final Model model, final Map<Resource, Instantiator<?>> additionalInstantiators ) {
-      super( new BAMM( metaModelVersion ) );
+      super( new SAMM( metaModelVersion ) );
       this.metaModelVersion = metaModelVersion;
       this.model = model;
-      bammc = new BAMMC( metaModelVersion );
-      unit = new UNIT( metaModelVersion, bamm );
+      SAMMC = new SAMMC( metaModelVersion );
+      unit = new UNIT( metaModelVersion, SAMM );
 
-      registerInstantiator( bamm.AbstractEntity(), new AbstractEntityInstantiator( this ) );
-      registerInstantiator( bamm.AbstractProperty(), new PropertyInstantiator( this ) );
-      registerInstantiator( bamm.Aspect(), new AspectInstantiator( this ) );
-      registerInstantiator( bamm.Characteristic(), new CharacteristicInstantiator( this ) );
-      registerInstantiator( bamm.Constraint(), new ConstraintInstantiator( this ) );
-      registerInstantiator( bamm.Entity(), new EntityInstantiator( this ) );
-      registerInstantiator( bamm.Event(), new EventInstantiator( this ) );
-      registerInstantiator( bamm.Operation(), new OperationInstantiator( this ) );
-      registerInstantiator( bamm.Property(), new PropertyInstantiator( this ) );
+      registerInstantiator( SAMM.AbstractEntity(), new AbstractEntityInstantiator( this ) );
+      registerInstantiator( SAMM.AbstractProperty(), new PropertyInstantiator( this ) );
+      registerInstantiator( SAMM.Aspect(), new AspectInstantiator( this ) );
+      registerInstantiator( SAMM.Characteristic(), new CharacteristicInstantiator( this ) );
+      registerInstantiator( SAMM.Constraint(), new ConstraintInstantiator( this ) );
+      registerInstantiator( SAMM.Entity(), new EntityInstantiator( this ) );
+      registerInstantiator( SAMM.Event(), new EventInstantiator( this ) );
+      registerInstantiator( SAMM.Operation(), new OperationInstantiator( this ) );
+      registerInstantiator( SAMM.Property(), new PropertyInstantiator( this ) );
 
-      registerInstantiator( bammc.Code(), new CodeInstantiator( this ) );
-      registerInstantiator( bammc.Collection(), new CollectionInstantiator( this ) );
-      registerInstantiator( bammc.Duration(), new DurationInstantiator( this ) );
-      registerInstantiator( bammc.Either(), new EitherInstantiator( this ) );
-      registerInstantiator( bammc.EncodingConstraint(), new EncodingConstraintInstantiator( this ) );
-      registerInstantiator( bammc.Enumeration(), new EnumerationInstantiator( this ) );
-      registerInstantiator( bammc.FixedPointConstraint(), new FixedPointConstraintInstantiator( this ) );
-      registerInstantiator( bammc.LanguageConstraint(), new LanguageConstraintInstantiator( this ) );
-      registerInstantiator( bammc.LengthConstraint(), new LengthConstraintInstantiator( this ) );
-      registerInstantiator( bammc.List(), new ListInstantiator( this ) );
-      registerInstantiator( bammc.LocaleConstraint(), new LocaleConstraintInstantiator( this ) );
-      registerInstantiator( bammc.Measurement(), new MeasurementInstantiator( this ) );
-      registerInstantiator( bammc.Quantifiable(), new QuantifiableInstantiator( this ) );
-      registerInstantiator( bammc.RangeConstraint(), new RangeConstraintInstantiator( this ) );
-      registerInstantiator( bammc.RegularExpressionConstraint(), new RegularExpressionConstraintInstantiator( this ) );
-      registerInstantiator( bammc.Set(), new SetInstantiator( this ) );
-      registerInstantiator( bammc.SingleEntity(), new SingleEntityInstantiator( this ) );
-      registerInstantiator( bammc.SortedSet(), new SortedSetInstantiator( this ) );
-      registerInstantiator( bammc.State(), new StateInstantiator( this ) );
-      registerInstantiator( bammc.StructuredValue(), new StructuredValueInstantiator( this ) );
-      registerInstantiator( bammc.TimeSeries(), new TimeSeriesInstantiator( this ) );
-      registerInstantiator( bammc.Trait(), new TraitInstantiator( this ) );
+      registerInstantiator( SAMMC.Code(), new CodeInstantiator( this ) );
+      registerInstantiator( SAMMC.Collection(), new CollectionInstantiator( this ) );
+      registerInstantiator( SAMMC.Duration(), new DurationInstantiator( this ) );
+      registerInstantiator( SAMMC.Either(), new EitherInstantiator( this ) );
+      registerInstantiator( SAMMC.EncodingConstraint(), new EncodingConstraintInstantiator( this ) );
+      registerInstantiator( SAMMC.Enumeration(), new EnumerationInstantiator( this ) );
+      registerInstantiator( SAMMC.FixedPointConstraint(), new FixedPointConstraintInstantiator( this ) );
+      registerInstantiator( SAMMC.LanguageConstraint(), new LanguageConstraintInstantiator( this ) );
+      registerInstantiator( SAMMC.LengthConstraint(), new LengthConstraintInstantiator( this ) );
+      registerInstantiator( SAMMC.List(), new ListInstantiator( this ) );
+      registerInstantiator( SAMMC.LocaleConstraint(), new LocaleConstraintInstantiator( this ) );
+      registerInstantiator( SAMMC.Measurement(), new MeasurementInstantiator( this ) );
+      registerInstantiator( SAMMC.Quantifiable(), new QuantifiableInstantiator( this ) );
+      registerInstantiator( SAMMC.RangeConstraint(), new RangeConstraintInstantiator( this ) );
+      registerInstantiator( SAMMC.RegularExpressionConstraint(), new RegularExpressionConstraintInstantiator( this ) );
+      registerInstantiator( SAMMC.Set(), new SetInstantiator( this ) );
+      registerInstantiator( SAMMC.SingleEntity(), new SingleEntityInstantiator( this ) );
+      registerInstantiator( SAMMC.SortedSet(), new SortedSetInstantiator( this ) );
+      registerInstantiator( SAMMC.State(), new StateInstantiator( this ) );
+      registerInstantiator( SAMMC.StructuredValue(), new StructuredValueInstantiator( this ) );
+      registerInstantiator( SAMMC.TimeSeries(), new TimeSeriesInstantiator( this ) );
+      registerInstantiator( SAMMC.Trait(), new TraitInstantiator( this ) );
 
       instantiators.putAll( additionalInstantiators );
    }
@@ -139,10 +139,10 @@ public class ModelElementFactory extends AttributeValueRetriever {
          return (T) element;
       }
       final Resource targetType = resourceType( modelElement );
-      if ( bamm.Unit().equals( targetType ) ) {
+      if ( SAMM.Unit().equals( targetType ) ) {
          return (T) findOrCreateUnit( modelElement );
       }
-      if ( bamm.QuantityKind().equals( targetType ) ) {
+      if ( SAMM.QuantityKind().equals( targetType ) ) {
          return (T) findQuantityKind( modelElement );
       }
       final Instantiator<T> instantiator = (Instantiator<T>) instantiators.get( targetType );
@@ -177,12 +177,12 @@ public class ModelElementFactory extends AttributeValueRetriever {
       }
 
       return new DefaultUnit(
-            MetaModelBaseAttributes.fromModelElement( metaModelVersion, unitResource, model, bamm ),
-            optionalAttributeValue( unitResource, bamm.symbol() ).map( Statement::getString ),
-            optionalAttributeValue( unitResource, bamm.commonCode() ).map( Statement::getString ),
-            optionalAttributeValue( unitResource, bamm.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
-            optionalAttributeValue( unitResource, bamm.conversionFactor() ).map( Statement::getString ),
-            Streams.stream( model.listStatements( unitResource, bamm.quantityKind(), (RDFNode) null ) )
+            MetaModelBaseAttributes.fromModelElement( metaModelVersion, unitResource, model, SAMM ),
+            optionalAttributeValue( unitResource, SAMM.symbol() ).map( Statement::getString ),
+            optionalAttributeValue( unitResource, SAMM.commonCode() ).map( Statement::getString ),
+            optionalAttributeValue( unitResource, SAMM.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
+            optionalAttributeValue( unitResource, SAMM.conversionFactor() ).map( Statement::getString ),
+            Streams.stream( model.listStatements( unitResource, SAMM.quantityKind(), (RDFNode) null ) )
                   .flatMap( quantityKindStatement -> QuantityKinds.fromName( quantityKindStatement.getObject().asResource().getLocalName() ).stream() )
                   .collect( Collectors.toSet() ) );
    }
@@ -191,11 +191,11 @@ public class ModelElementFactory extends AttributeValueRetriever {
       final Supplier<Optional<Resource>> directType = () ->
             optionalAttributeValue( resource, RDF.type ).map( Statement::getResource );
       final Supplier<Optional<Resource>> propertyUsageType = () ->
-            optionalAttributeValue( resource, bamm.property() ).map( statement -> resourceType( statement.getResource() ) );
+            optionalAttributeValue( resource, SAMM.property() ).map( statement -> resourceType( statement.getResource() ) );
       final Supplier<Optional<Resource>> subClassType = () ->
             optionalAttributeValue( resource, RDFS.subClassOf ).map( Statement::getResource ).map( this::resourceType );
       final Supplier<Optional<Resource>> extendsType = () ->
-            optionalAttributeValue( resource, bamm._extends() ).map( Statement::getResource ).map( this::resourceType );
+            optionalAttributeValue( resource, SAMM._extends() ).map( Statement::getResource ).map( this::resourceType );
 
       return Stream.of( directType, propertyUsageType, subClassType, extendsType )
             .map( Supplier::get )
@@ -213,12 +213,12 @@ public class ModelElementFactory extends AttributeValueRetriever {
       return model;
    }
 
-   protected BAMM getBamm() {
-      return bamm;
+   protected SAMM getBamm() {
+      return SAMM;
    }
 
-   protected BAMMC getBammc() {
-      return bammc;
+   protected SAMMC getBammc() {
+      return SAMMC;
    }
 
    public UNIT getUnit() {

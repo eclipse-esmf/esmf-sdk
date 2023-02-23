@@ -24,17 +24,15 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
+import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.visitor.LanguageCollectorModelVisitor;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
-import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.visitor.LanguageCollectorModelVisitor;
 
 /**
  * Contains the logic to determine the language tags used in an Aspect Model.
@@ -63,22 +61,22 @@ public class LanguageCollector {
     */
    public static Set<Locale> collectUsedLanguages( final Model model ) {
       final SdsAspectMetaModelResourceResolver resolver = new SdsAspectMetaModelResourceResolver();
-      return resolver.getBammVersion( model ).map( bammVersion -> {
-         final BAMM bamm = new BAMM( KnownVersion.fromVersionString( bammVersion.toString() )
-                                                 .orElseThrow( () -> new UnsupportedVersionException( bammVersion ) ) );
+      return resolver.getMetaModelVersion( model ).map( metaModelVersion -> {
+         final SAMM SAMM = new SAMM( KnownVersion.fromVersionString( metaModelVersion.toString() )
+               .orElseThrow( () -> new UnsupportedVersionException( metaModelVersion ) ) );
 
-         final String nameSpace = model.listStatements( null, RDF.type, bamm.Aspect() ).nextStatement().getSubject()
-                                       .getNameSpace();
+         final String nameSpace = model.listStatements( null, RDF.type, SAMM.Aspect() ).nextStatement().getSubject()
+               .getNameSpace();
          final Set<Locale> locales = Stream.concat(
-               ImmutableList.copyOf( model.listStatements( null, bamm.preferredName(), (RDFNode) null ) ).stream(),
-               ImmutableList.copyOf( model.listStatements( null, bamm.description(), (RDFNode) null ) ).stream() )
-                                           .filter( statement -> !statement.getSubject().isAnon() )
-                                           .filter( statement -> statement.getSubject().getNameSpace()
-                                                                          .contains( nameSpace ) )
-                                           .map( Statement::getLanguage )
-                                           .filter( language -> !language.isEmpty() )
-                                           .map( Locale::forLanguageTag )
-                                           .collect( Collectors.toSet() );
+                     ImmutableList.copyOf( model.listStatements( null, SAMM.preferredName(), (RDFNode) null ) ).stream(),
+                     ImmutableList.copyOf( model.listStatements( null, SAMM.description(), (RDFNode) null ) ).stream() )
+               .filter( statement -> !statement.getSubject().isAnon() )
+               .filter( statement -> statement.getSubject().getNameSpace()
+                     .contains( nameSpace ) )
+               .map( Statement::getLanguage )
+               .filter( language -> !language.isEmpty() )
+               .map( Locale::forLanguageTag )
+               .collect( Collectors.toSet() );
          if ( locales.isEmpty() ) {
             locales.add( Locale.ENGLISH );
          }

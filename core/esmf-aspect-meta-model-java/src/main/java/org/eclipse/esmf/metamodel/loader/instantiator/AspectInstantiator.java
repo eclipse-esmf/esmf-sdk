@@ -37,11 +37,11 @@ public class AspectInstantiator extends Instantiator<Aspect> {
    @Override
    public Aspect apply( final Resource aspect ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( aspect );
-      final List<Property> properties = getPropertiesModels( aspect, bamm.properties() );
-      final List<Operation> operations = getResourcesFromList( aspect, bamm.operations() )
+      final List<Property> properties = getPropertiesModels( aspect, SAMM.properties() );
+      final List<Operation> operations = getResourcesFromList( aspect, SAMM.operations() )
             .map( operation -> modelElementFactory.create( Operation.class, operation ) )
             .collect( Collectors.toList() );
-      final List<Event> events = getResourcesFromList( aspect, bamm.events() )
+      final List<Event> events = getResourcesFromList( aspect, SAMM.events() )
             .map( event -> modelElementFactory.create( Event.class, event ) )
             .collect( Collectors.toList() );
       final boolean isCollectionAspect = properties.stream()

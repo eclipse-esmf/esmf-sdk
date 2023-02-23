@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
 
 /**
@@ -27,8 +27,8 @@ import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
 public class UnitInBammNamespaceMigrator extends AbstractUriRewriter {
    private static final KnownVersion OLD = KnownVersion.SAMM_1_0_0;
    private static final KnownVersion NEW = KnownVersion.SAMM_2_0_0;
-   private static final BAMM bamm = new BAMM( NEW );
-   private static final UNIT unit = new UNIT( NEW, bamm );
+   private static final SAMM SAMM = new SAMM( NEW );
+   private static final UNIT unit = new UNIT( NEW, SAMM );
 
    private final List<String> movedElements = List.of(
          "Unit", "QuantityKind", "quantityKind", "referenceUnit", "commonCode", "conversionFactor", "numericConversionFactor", "symbol" );
@@ -40,7 +40,7 @@ public class UnitInBammNamespaceMigrator extends AbstractUriRewriter {
    @Override
    protected Optional<String> rewriteUri( final String oldUri, final Map<String, String> oldToNewNamespaces ) {
       if ( oldUri.startsWith( unit.getUri() ) ) {
-         return movedElements.stream().filter( oldUri::endsWith ).findFirst().map( movedElement -> bamm.getNamespace() + movedElement );
+         return movedElements.stream().filter( oldUri::endsWith ).findFirst().map( movedElement -> SAMM.getNamespace() + movedElement );
       }
       return Optional.empty();
    }

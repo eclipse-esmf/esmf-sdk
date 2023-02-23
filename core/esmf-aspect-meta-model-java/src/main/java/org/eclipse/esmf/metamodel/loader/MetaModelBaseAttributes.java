@@ -31,10 +31,10 @@ import org.apache.jena.vocabulary.RDF;
 
 import com.google.common.collect.Streams;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 
 /**
@@ -146,28 +146,28 @@ public class MetaModelBaseAttributes {
     * @param metaModelVersion the used meta model version
     * @param modelElement the Aspect model element to be processed.
     * @param model the RDF {@link Model} representing the entire Aspect Meta Model.
-    * @param bamm the Aspect Meta Model vocabulary
+    * @param SAMM the Aspect Meta Model vocabulary
     * @return the newly created instance
     */
    public static MetaModelBaseAttributes fromModelElement( final KnownVersion metaModelVersion,
-         final Resource modelElement, final Model model, final BAMM bamm ) {
-      final AttributeValueRetriever valueRetriever = new AttributeValueRetriever( bamm );
+         final Resource modelElement, final Model model, final SAMM SAMM ) {
+      final AttributeValueRetriever valueRetriever = new AttributeValueRetriever( SAMM );
 
-      final Optional<AspectModelUrn> urn = getUrn( modelElement, bamm );
-      final Set<LangString> preferredNames = getLanguages( modelElement, bamm.preferredName(), valueRetriever );
-      final Set<LangString> descriptions = getLanguages( modelElement, bamm.description(), valueRetriever );
-      final List<String> seeValues = getSeeValues( modelElement, bamm, valueRetriever );
-      final String name = getName( modelElement, bamm )
-            .orElseGet( () -> getSyntheticName( modelElement, model, bamm ) );
+      final Optional<AspectModelUrn> urn = getUrn( modelElement, SAMM );
+      final Set<LangString> preferredNames = getLanguages( modelElement, SAMM.preferredName(), valueRetriever );
+      final Set<LangString> descriptions = getLanguages( modelElement, SAMM.description(), valueRetriever );
+      final List<String> seeValues = getSeeValues( modelElement, SAMM, valueRetriever );
+      final String name = getName( modelElement, SAMM )
+            .orElseGet( () -> getSyntheticName( modelElement, model, SAMM ) );
       final boolean isSyntheticName = urn.isEmpty();
       return new MetaModelBaseAttributes( metaModelVersion, urn.orElse( null ), name, preferredNames, descriptions, seeValues, isSyntheticName );
    }
 
-   private static Optional<AspectModelUrn> getUrn( final Resource modelElement, final BAMM bamm ) {
+   private static Optional<AspectModelUrn> getUrn( final Resource modelElement, final SAMM SAMM ) {
       if ( modelElement.isAnon() ) {
-         final Statement propertyStatement = modelElement.getProperty( bamm.property() );
+         final Statement propertyStatement = modelElement.getProperty( SAMM.property() );
          if ( propertyStatement != null ) {
-            return getUrn( propertyStatement.getObject().asResource(), bamm );
+            return getUrn( propertyStatement.getObject().asResource(), SAMM );
          }
          return Optional.empty();
       }
@@ -179,25 +179,25 @@ public class MetaModelBaseAttributes {
     * (e.g., [ bamm:extends :foo ; ... ]) go up the inheritance tree recursively.
     *
     * @param modelElement the model element to retrieve the name for
-    * @param bamm the meta model vocabulary
+    * @param SAMM the meta model vocabulary
     * @return the element's local name
     */
-   private static Optional<String> getName( final Resource modelElement, final BAMM bamm ) {
+   private static Optional<String> getName( final Resource modelElement, final SAMM SAMM ) {
       if ( !modelElement.isAnon() ) {
          return Optional.of( AspectModelUrn.fromUrn( modelElement.getURI() ).getName() );
       }
 
-      final Statement propertyStatement = modelElement.getProperty( bamm.property() );
+      final Statement propertyStatement = modelElement.getProperty( SAMM.property() );
       if ( propertyStatement != null ) {
-         return getName( propertyStatement.getObject().asResource(), bamm );
+         return getName( propertyStatement.getObject().asResource(), SAMM );
       }
 
       final Optional<Statement> extendsStatement = Streams.stream(
-            modelElement.getModel().listStatements( modelElement, bamm._extends(), (RDFNode) null ) ).findAny();
-      return extendsStatement.flatMap( statement -> getName( statement.getObject().asResource(), bamm ) );
+            modelElement.getModel().listStatements( modelElement, SAMM._extends(), (RDFNode) null ) ).findAny();
+      return extendsStatement.flatMap( statement -> getName( statement.getObject().asResource(), SAMM ) );
    }
 
-   private static String getSyntheticName( final Resource modelElement, final Model model, final BAMM bamm ) {
+   private static String getSyntheticName( final Resource modelElement, final Model model, final SAMM SAMM ) {
       final Resource namedParent = getNamedParent( modelElement, model );
       if ( namedParent == null ) {
          throw new AspectLoadingException( "At least one anonymous node in the model does not have a parent with a regular name." );
@@ -209,7 +209,7 @@ public class MetaModelBaseAttributes {
             .map( StringUtils::capitalize )
             .orElse( "" );
 
-      final Resource modelElementType = getModelElementType( modelElement, bamm );
+      final Resource modelElementType = getModelElementType( modelElement, SAMM );
       final String modelElementTypeUri = modelElementType.getURI();
       final String modelElementTypeName = AspectModelUrn.from( modelElementTypeUri )
             .toJavaOptional()
@@ -244,26 +244,26 @@ public class MetaModelBaseAttributes {
       return null; // element has no named parent
    }
 
-   private static Resource getModelElementType( final Resource modelElement, final BAMM bamm ) {
+   private static Resource getModelElementType( final Resource modelElement, final SAMM SAMM ) {
       final Statement typeStatement = modelElement.getProperty( RDF.type );
       if ( typeStatement != null ) {
          return typeStatement.getObject().asResource();
       }
 
       // If the model element is a Property reference, the actual type will be found when we follow bamm:property
-      final Statement propertyStatement = modelElement.getProperty( bamm.property() );
+      final Statement propertyStatement = modelElement.getProperty( SAMM.property() );
       if ( propertyStatement != null ) {
-         return getModelElementType( propertyStatement.getObject().asResource(), bamm );
+         return getModelElementType( propertyStatement.getObject().asResource(), SAMM );
       }
 
       // This model element has no type, but maybe it extends another element
-      final Statement extendsStatement = modelElement.getProperty( bamm._extends() );
+      final Statement extendsStatement = modelElement.getProperty( SAMM._extends() );
       if ( extendsStatement == null ) {
          throw new AspectLoadingException( "Model element has no type and does not extend another type: " + modelElement );
       }
 
       final Resource superElement = extendsStatement.getObject().asResource();
-      return getModelElementType( superElement, bamm );
+      return getModelElementType( superElement, SAMM );
    }
 
    /**
@@ -282,12 +282,12 @@ public class MetaModelBaseAttributes {
 
    /**
     * @param resource the RDF {@link Resource} representing the Aspect Model element to be processed
-    * @param bamm the Aspect Meta Model vocabulary
+    * @param SAMM the Aspect Meta Model vocabulary
     * @param valueRetriever the {@link AttributeValueRetriever} used to retrieve the attribute values
-    * @return a {@link List} containing all {@link BAMM#see()} values for a Aspect Model element
+    * @return a {@link List} containing all {@link SAMM#see()} values for a Aspect Model element
     */
-   private static List<String> getSeeValues( final Resource resource, final BAMM bamm, final AttributeValueRetriever valueRetriever ) {
-      return valueRetriever.attributeValues( resource, bamm.see() ).stream()
+   private static List<String> getSeeValues( final Resource resource, final SAMM SAMM, final AttributeValueRetriever valueRetriever ) {
+      return valueRetriever.attributeValues( resource, SAMM.see() ).stream()
             .map( statement -> statement.getObject().toString() )
             .sorted()
             .collect( Collectors.toList() );

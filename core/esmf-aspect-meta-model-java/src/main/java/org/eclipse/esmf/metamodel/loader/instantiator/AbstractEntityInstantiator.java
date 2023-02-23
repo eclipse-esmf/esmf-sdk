@@ -68,27 +68,27 @@ public class AbstractEntityInstantiator extends Instantiator<AbstractEntity> {
    @Override
    public AbstractEntity apply( final Resource abstractEntity ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( abstractEntity );
-      final List<Property> properties = getPropertiesModels( abstractEntity, bamm.properties() );
+      final List<Property> properties = getPropertiesModels( abstractEntity, SAMM.properties() );
 
-      final Optional<ComplexType> extendedEntity = optionalAttributeValue( abstractEntity, bamm._extends() )
+      final Optional<ComplexType> extendedEntity = optionalAttributeValue( abstractEntity, SAMM._extends() )
             .map( Statement::getResource )
             .map( extendedEntityResource -> attributeValue( extendedEntityResource, RDF.type ) )
             .map( entityStatement -> {
-               if ( bamm.AbstractEntity().equals( entityStatement.getObject().asResource() ) ) {
+               if ( SAMM.AbstractEntity().equals( entityStatement.getObject().asResource() ) ) {
                   return modelElementFactory.create( AbstractEntity.class, entityStatement.getSubject() );
                }
                return modelElementFactory.create( Entity.class, entityStatement.getSubject() );
             } );
 
       final List<AspectModelUrn> extendingComplexTypes = model
-            .listSubjectsWithProperty( bamm._extends(), abstractEntity )
+            .listSubjectsWithProperty( SAMM._extends(), abstractEntity )
             .mapWith( extendingComplexType -> attributeValue( extendingComplexType, RDF.type ) )
             .mapWith( statement -> {
                if ( processedExtendingElements.contains( statement.getSubject() ) ) {
                   return AspectModelUrn.fromUrn( statement.getSubject().getURI() );
                }
                processedExtendingElements.add( statement.getSubject() );
-               if ( bamm.AbstractEntity().equals( statement.getObject().asResource() ) ) {
+               if ( SAMM.AbstractEntity().equals( statement.getObject().asResource() ) ) {
                   return modelElementFactory.create( AbstractEntity.class,
                         statement.getSubject() ).getAspectModelUrn().get();
                }

@@ -27,7 +27,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 
 /**
  * This class provides utilities to retrieve attribute values from model elements, e.g., a bamm:Property's bamm:characteristic.
@@ -40,10 +40,10 @@ import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
  * </ul>
  */
 public class AttributeValueRetriever {
-   protected final BAMM bamm;
+   protected final SAMM SAMM;
 
-   public AttributeValueRetriever( final BAMM bamm ) {
-      this.bamm = bamm;
+   public AttributeValueRetriever( final SAMM SAMM ) {
+      this.SAMM = SAMM;
    }
 
    /**
@@ -117,7 +117,7 @@ public class AttributeValueRetriever {
       }
 
       // If the model element is a bnode with bamm:property given, it's a Property reference. Follow it to retrieve the sought-for attribute assertions.
-      final StmtIterator referenceIterator = modelElement.listProperties( bamm.property() );
+      final StmtIterator referenceIterator = modelElement.listProperties( SAMM.property() );
       if ( referenceIterator.hasNext() ) {
          final RDFNode referencedElement = referenceIterator.next().getObject();
          if ( !referencedElement.isResource() ) {
@@ -128,7 +128,7 @@ public class AttributeValueRetriever {
       }
 
       // If the model element is bamm:extends another element, retrieve attribute assertions from this supertype as well.
-      final StmtIterator extendsIterator = modelElement.listProperties( bamm._extends() );
+      final StmtIterator extendsIterator = modelElement.listProperties( SAMM._extends() );
       if ( extendsIterator.hasNext() ) {
          final RDFNode superElementNode = extendsIterator.next().getObject();
          if ( !superElementNode.isResource() ) {

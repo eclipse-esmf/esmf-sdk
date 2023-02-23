@@ -43,7 +43,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 
 /**
  * Cycle detector for BAMM models.
@@ -70,7 +70,7 @@ public class ModelCycleDetector {
 
    private Query query;
 
-   private BAMM bamm;
+   private SAMM SAMM;
    private Model model;
 
    List<Violation> cycleDetectionReport = new ArrayList<>();
@@ -82,14 +82,14 @@ public class ModelCycleDetector {
 
       model = versionedModel.getModel();
       final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() );
-      bamm = new BAMM( metaModelVersion.get() );
+      SAMM = new SAMM( metaModelVersion.get() );
       initializeQuery( metaModelVersion.get() );
 
       // we only want to investigate properties that are directly reachable from an Aspect
-      final StmtIterator aspects = model.listStatements( null, RDF.type, bamm.Aspect() );
+      final StmtIterator aspects = model.listStatements( null, RDF.type, SAMM.Aspect() );
       if ( aspects.hasNext() ) {
          final Statement aspect = aspects.nextStatement();
-         final Statement properties = aspect.getSubject().getProperty( bamm.properties() );
+         final Statement properties = aspect.getSubject().getProperty( SAMM.properties() );
          if ( properties != null ) {
             final Iterator<RDFNode> aspectProperties = properties.getList().iterator();
             while ( aspectProperties.hasNext() ) {
@@ -168,7 +168,7 @@ public class ModelCycleDetector {
    }
 
    private Resource resolvePropertyReference( final Resource propertyNode ) {
-      final Statement prop = propertyNode.getProperty( bamm.property() );
+      final Statement prop = propertyNode.getProperty( SAMM.property() );
       if ( prop != null ) {
          return prop.getObject().asResource();
       }
@@ -176,7 +176,7 @@ public class ModelCycleDetector {
    }
 
    private boolean isOptionalProperty( final Resource propertyNode ) {
-      final Statement optional = propertyNode.getProperty( bamm.optional() );
+      final Statement optional = propertyNode.getProperty( SAMM.optional() );
       return (optional != null) && optional.getBoolean();
    }
 
@@ -184,8 +184,8 @@ public class ModelCycleDetector {
       // Ugly special case: when extending Entities, the property name will always be the same ([ bamm:extends bamm-e:value ; bamm:characteristic :someChara ]),
       // so we need a unique name in case more than one extending Entity exists in the model
       if ( property.isAnon() ) {
-         if ( property.getProperty( bamm._extends() ) != null ) {
-            return findExtendingEntityName( property ) + "|" + model.shortForm( property.getProperty( bamm._extends() ).getObject().asResource().getURI() );
+         if ( property.getProperty( SAMM._extends() ) != null ) {
+            return findExtendingEntityName( property ) + "|" + model.shortForm( property.getProperty( SAMM._extends() ).getObject().asResource().getURI() );
          }
          // safety net
          return property.toString();
@@ -195,9 +195,9 @@ public class ModelCycleDetector {
    }
 
    private String findExtendingEntityName( final Resource extendsProperty ) {
-      return model.listSubjectsWithProperty( bamm._extends() )
-            .filterKeep( entity -> entity.getProperty( bamm.properties() ) != null )
-            .filterKeep( entity -> entity.getProperty( bamm.properties() ).getList().contains( extendsProperty ) )
+      return model.listSubjectsWithProperty( SAMM._extends() )
+            .filterKeep( entity -> entity.getProperty( SAMM.properties() ) != null )
+            .filterKeep( entity -> entity.getProperty( SAMM.properties() ).getList().contains( extendsProperty ) )
             .mapWith( resource -> model.shortForm( resource.getURI() ) )
             .nextOptional().orElse( extendsProperty.toString() );
    }

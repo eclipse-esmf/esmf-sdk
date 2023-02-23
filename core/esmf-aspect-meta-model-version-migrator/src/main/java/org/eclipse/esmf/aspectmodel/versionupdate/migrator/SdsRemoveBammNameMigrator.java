@@ -18,16 +18,16 @@ import java.util.Map;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 
 public class SdsRemoveBammNameMigrator extends AbstractSdsMigrator {
 
-   private final BAMM sourceBamm;
+   private final SAMM sourceSamm;
 
    public SdsRemoveBammNameMigrator( final KnownVersion sourceKnownVersion, final KnownVersion targetKnownVersion ) {
       super( sourceKnownVersion, targetKnownVersion, 60 );
-      this.sourceBamm = new BAMM( sourceKnownVersion );
+      this.sourceSamm = new SAMM( sourceKnownVersion );
    }
 
    @Override
@@ -36,7 +36,7 @@ public class SdsRemoveBammNameMigrator extends AbstractSdsMigrator {
       final Map<String, String> sourcePrefixMap = sourceModel.getNsPrefixMap();
       targetModel.setNsPrefixes( sourcePrefixMap );
 
-      final String bammNameUrn = sourceBamm.getNamespace() + "name";
+      final String bammNameUrn = sourceSamm.getNamespace() + "name";
       sourceModel.listStatements().toList().stream()
             .filter( statement -> !statement.getPredicate().getURI().equals( bammNameUrn ) )
             .forEach( targetModel::add );

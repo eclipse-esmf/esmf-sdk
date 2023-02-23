@@ -28,6 +28,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.ModelElement;
@@ -48,7 +49,6 @@ import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidRootElementCountE
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 
 import io.vavr.control.Try;
 
@@ -89,11 +89,11 @@ public class AspectModelLoader {
       return getSingleAspect( versionedModel );
    }
 
-   private static void validateNamespaceOfCustomUnits( final BAMM bamm, final Model rawModel ) {
+   private static void validateNamespaceOfCustomUnits( final SAMM SAMM, final Model rawModel ) {
       final List<String> customUnitsWithBammNamespace = new ArrayList<>();
-      rawModel.listStatements( null, RDF.type, bamm.Unit() )
+      rawModel.listStatements( null, RDF.type, SAMM.Unit() )
             .mapWith( Statement::getSubject )
-            .filterKeep( subject -> subject.getNameSpace().equals( bamm.getNamespace() ) )
+            .filterKeep( subject -> subject.getNameSpace().equals( SAMM.getNamespace() ) )
             .mapWith( Resource::getLocalName )
             .forEach( customUnitsWithBammNamespace::add );
 
@@ -161,10 +161,10 @@ public class AspectModelLoader {
          return Try.failure( updatedModel.getCause() );
       }
 
-      final BAMM bamm = new BAMM( KnownVersion.getLatest() );
+      final SAMM SAMM = new SAMM( KnownVersion.getLatest() );
 
       try {
-         validateNamespaceOfCustomUnits( bamm, versionedModel.getRawModel() );
+         validateNamespaceOfCustomUnits( SAMM, versionedModel.getRawModel() );
       } catch ( final InvalidNamespaceException exception ) {
          return Try.failure( exception );
       }

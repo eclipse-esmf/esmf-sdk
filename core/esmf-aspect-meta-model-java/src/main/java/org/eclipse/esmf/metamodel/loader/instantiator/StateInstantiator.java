@@ -36,10 +36,10 @@ public class StateInstantiator extends Instantiator<State> {
    public State apply( final Resource state ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( state );
       final Type type = getType( state );
-      final List<Value> enumValues = getNodesFromList( state, bammc.values() )
+      final List<Value> enumValues = getNodesFromList( state, SAMMC.values() )
             .map( node -> buildValue( node, Optional.of( state ), type ) )
             .collect( Collectors.toList() );
-      final Value defaultValue = buildValue( attributeValue( state, bammc.defaultValue() ).getObject(), Optional.of( state ), type );
+      final Value defaultValue = buildValue( attributeValue( state, SAMMC.defaultValue() ).getObject(), Optional.of( state ), type );
       return new DefaultState( metaModelBaseAttributes, type, enumValues, defaultValue );
    }
 }

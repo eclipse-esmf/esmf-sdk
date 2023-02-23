@@ -54,7 +54,7 @@ public interface AspectMetaModelResourceResolver {
     *       one of {@link MissingMetaModelVersionException}, {@link MultipleMetaModelVersionsException}
     *       or {@link UnsupportedVersionException} (if the version can not be parsed).
     */
-   default Try<VersionNumber> getBammVersion( final Model model ) {
+   default Try<VersionNumber> getMetaModelVersion( final Model model ) {
       final Set<VersionNumber> metaModelVersionsUsedInModel = getUsedMetaModelVersions( model );
 
       if ( metaModelVersionsUsedInModel.isEmpty() ) {

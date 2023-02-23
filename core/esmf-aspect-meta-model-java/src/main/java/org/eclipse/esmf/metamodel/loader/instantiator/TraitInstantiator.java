@@ -36,10 +36,10 @@ public class TraitInstantiator extends Instantiator<Trait> {
    public Trait apply( final Resource trait ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( trait );
       final Characteristic baseCharacteristic = modelElementFactory
-            .create( Characteristic.class, attributeValue( trait, bammc.baseCharacteristic() ).getResource() );
+            .create( Characteristic.class, attributeValue( trait, SAMMC.baseCharacteristic() ).getResource() );
 
       final List<Constraint> constraints =
-            model.listStatements( trait, bammc.constraint(), (RDFNode) null ).mapWith( Statement::getResource )
+            model.listStatements( trait, SAMMC.constraint(), (RDFNode) null ).mapWith( Statement::getResource )
                  .mapWith( constraintResource -> modelElementFactory.create( Constraint.class, constraintResource ) )
                  .toList();
       return new DefaultTrait( metaModelBaseAttributes, baseCharacteristic, constraints );

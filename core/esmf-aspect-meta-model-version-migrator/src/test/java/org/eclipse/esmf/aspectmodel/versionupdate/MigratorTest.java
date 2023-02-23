@@ -29,6 +29,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.assertj.core.api.Assertions;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -37,7 +38,6 @@ import com.google.common.collect.Streams;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.openmanufacturing.sds.test.TestAspect;
 
@@ -54,10 +54,10 @@ public class MigratorTest extends MetaModelVersions {
       if ( metaModelVersion.equals( KnownVersion.getLatest() ) ) {
          return;
       }
-      final BAMM originalBamm = new BAMM( metaModelVersion );
-      final BAMM latestBamm = new BAMM( KnownVersion.getLatest() );
-      assertThat( rewrittenModel.getRawModel().contains( null, RDF.type, originalBamm.Aspect() ) ).isFalse();
-      assertThat( rewrittenModel.getRawModel().contains( null, RDF.type, latestBamm.Aspect() ) ).isTrue();
+      final SAMM originalSamm = new SAMM( metaModelVersion );
+      final SAMM latestSamm = new SAMM( KnownVersion.getLatest() );
+      assertThat( rewrittenModel.getRawModel().contains( null, RDF.type, originalSamm.Aspect() ) ).isFalse();
+      assertThat( rewrittenModel.getRawModel().contains( null, RDF.type, latestSamm.Aspect() ) ).isTrue();
    }
 
    @ParameterizedTest
@@ -91,11 +91,11 @@ public class MigratorTest extends MetaModelVersions {
    public void testMigrateUnitsToBammNamespace() {
       final VersionedModel oldModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_UNIT, KnownVersion.SAMM_1_0_0 );
       final Model rewrittenModel = migratorService.updateMetaModelVersion( oldModel ).get().getRawModel();
-      final BAMM bamm = new BAMM( KnownVersion.SAMM_2_0_0 );
+      final SAMM SAMM = new SAMM( KnownVersion.SAMM_2_0_0 );
 
-      assertThat( rewrittenModel.contains( null, RDF.type, bamm.Unit() ) ).isTrue();
-      assertThat( rewrittenModel.contains( null, bamm.symbol(), (RDFNode) null ) ).isTrue();
-      assertThat( rewrittenModel.contains( null, bamm.quantityKind(), (RDFNode) null ) ).isTrue();
+      assertThat( rewrittenModel.contains( null, RDF.type, SAMM.Unit() ) ).isTrue();
+      assertThat( rewrittenModel.contains( null, SAMM.symbol(), (RDFNode) null ) ).isTrue();
+      assertThat( rewrittenModel.contains( null, SAMM.quantityKind(), (RDFNode) null ) ).isTrue();
       final Set<String> uris = getAllUris( rewrittenModel );
       assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#Unit" ) );
       assertThat( uris ).noneMatch( uri -> uri.contains( "urn:bamm:io.openmanufacturing:unit:2.0.0#symbol" ) );
@@ -105,11 +105,11 @@ public class MigratorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testRemoveBammName( final KnownVersion metaModelVersion ) {
-      final BAMM bamm = new BAMM( metaModelVersion );
+      final SAMM SAMM = new SAMM( metaModelVersion );
       final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
 
-      final String bammNameUrn = bamm.getNamespace() + "name";
+      final String bammNameUrn = SAMM.getNamespace() + "name";
       final List<Statement> bammNameStatements = rewrittenModel.getModel().listStatements().toList().stream()
             .filter( statement -> statement.getPredicate().getURI().equals( bammNameUrn ) )
             .collect( Collectors.toList() );

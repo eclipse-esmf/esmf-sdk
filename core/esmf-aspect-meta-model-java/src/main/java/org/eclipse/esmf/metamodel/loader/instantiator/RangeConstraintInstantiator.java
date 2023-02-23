@@ -39,18 +39,18 @@ public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
    public RangeConstraint apply( final Resource rangeConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( rangeConstraint );
 
-      final Optional<ScalarValue> minValue = optionalAttributeValue( rangeConstraint, bammc.minValue() )
+      final Optional<ScalarValue> minValue = optionalAttributeValue( rangeConstraint, SAMMC.minValue() )
             .map( Statement::getLiteral )
             .map( literal -> new DefaultScalarValue( literal.getValue(),
                   new DefaultScalar( literal.getDatatypeURI(), metaModelBaseAttributes.getMetaModelVersion() ) ) );
-      final Optional<ScalarValue> maxValue = optionalAttributeValue( rangeConstraint, bammc.maxValue() )
+      final Optional<ScalarValue> maxValue = optionalAttributeValue( rangeConstraint, SAMMC.maxValue() )
             .map( Statement::getLiteral )
             .map( literal -> new DefaultScalarValue( literal.getValue(),
                   new DefaultScalar( literal.getDatatypeURI(), metaModelBaseAttributes.getMetaModelVersion() ) ) );
       final BoundDefinition lowerBoundDefinition = getBoundDefinitionForRangeValue( minValue,
-            bammc.lowerBoundDefinition(), rangeConstraint, BoundDefinition.AT_LEAST );
+            SAMMC.lowerBoundDefinition(), rangeConstraint, BoundDefinition.AT_LEAST );
       final BoundDefinition upperBoundDefinition = getBoundDefinitionForRangeValue( maxValue,
-            bammc.upperBoundDefinition(), rangeConstraint, BoundDefinition.AT_MOST );
+            SAMMC.upperBoundDefinition(), rangeConstraint, BoundDefinition.AT_MOST );
 
       return new DefaultRangeConstraint( metaModelBaseAttributes, minValue, maxValue, lowerBoundDefinition, upperBoundDefinition );
    }

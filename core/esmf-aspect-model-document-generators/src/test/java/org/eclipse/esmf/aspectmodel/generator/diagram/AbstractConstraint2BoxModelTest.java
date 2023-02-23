@@ -23,7 +23,7 @@ import io.openmanufacturing.sds.test.MetaModelVersions;
 
 public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions {
 
-   static Map<KnownVersion, Integer> totalNumberOfExpectedEntriesPerBammVersion;
+   static Map<KnownVersion, Integer> totalNumberOfExpectedEntriesPerMetaModelVersion;
 
    final String sparqlQueryFileName = "constraint2boxmodel.sparql";
 
@@ -43,8 +43,8 @@ public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions 
 
    @BeforeAll
    public static void setup() {
-      totalNumberOfExpectedEntriesPerBammVersion = new HashMap<>();
-      totalNumberOfExpectedEntriesPerBammVersion.put( KnownVersion.SAMM_1_0_0, 10 );
-      totalNumberOfExpectedEntriesPerBammVersion.put( KnownVersion.SAMM_2_0_0, 10 );
+      totalNumberOfExpectedEntriesPerMetaModelVersion = new HashMap<>();
+      totalNumberOfExpectedEntriesPerMetaModelVersion.put( KnownVersion.SAMM_1_0_0, 10 );
+      totalNumberOfExpectedEntriesPerMetaModelVersion.put( KnownVersion.SAMM_2_0_0, 10 );
    }
 }

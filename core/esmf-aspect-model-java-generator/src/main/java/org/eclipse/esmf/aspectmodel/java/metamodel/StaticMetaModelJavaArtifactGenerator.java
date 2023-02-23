@@ -47,7 +47,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.java.pojo.JavaArtifactGenerator;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMMC;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.characteristic.Code;
 import org.eclipse.esmf.characteristic.Collection;
@@ -138,7 +138,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
       final String modelUrnPrefix = element.getAspectModelUrn().map( AspectModelUrn::getUrnPrefix ).orElseThrow( () -> {
          throw new CodeGenerationException( "Aspect or Entity may not be declared as an anonymous node" );
       } );
-      final String characteristicBaseUrn = matchHash.trimTrailingFrom( new BAMMC( element.getMetaModelVersion() ).getNamespace() );
+      final String characteristicBaseUrn = matchHash.trimTrailingFrom( new SAMMC( element.getMetaModelVersion() ).getNamespace() );
 
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
             .put( "Arrays", java.util.Arrays.class )

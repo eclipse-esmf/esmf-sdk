@@ -17,21 +17,21 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 
 import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 
 public final class BoxModel implements Namespace {
-   private final KnownVersion bammVersion;
-   private final BAMM bamm;
+   private final KnownVersion metaModelVersion;
+   private final SAMM SAMM;
 
-   public BoxModel( final KnownVersion bammVersion ) {
-      this.bammVersion = bammVersion;
-      bamm = new BAMM( bammVersion );
+   public BoxModel( final KnownVersion metaModelVersion ) {
+      this.metaModelVersion = metaModelVersion;
+      SAMM = new SAMM( metaModelVersion );
    }
 
    @Override
    public String getUri() {
-      return bamm.getBaseUri() + "meta-model:" + bammVersion.toVersionString() + "/boxmodel";
+      return SAMM.getBaseUri() + "meta-model:" + metaModelVersion.toVersionString() + "/boxmodel";
    }
 
    public Resource box() {

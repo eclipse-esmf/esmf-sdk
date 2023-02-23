@@ -43,6 +43,7 @@ import org.assertj.core.api.Condition;
 import org.assertj.core.data.Percentage;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -94,7 +95,6 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.TestEntityWithSim
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.constraint.RangeConstraint;
@@ -636,26 +636,26 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    private Aspect createAspectWithDynamicNumericProperty( final KnownVersion modelVersion, final Type dataType,
          final BoundDefinition boundKind, final Pair<Number, Number> randomRange ) {
-      final BAMM bamm = new BAMM( modelVersion );
-      final Characteristic constraint = boundKind == null ? createBasicCharacteristic( modelVersion, dataType, bamm )
-            : createTraitWithRangeConstraint( modelVersion, dataType, boundKind, bamm, randomRange );
-      final List<Property> properties = List.of( createProperty( modelVersion, "testNumber", constraint, bamm ) );
+      final SAMM SAMM = new SAMM( modelVersion );
+      final Characteristic constraint = boundKind == null ? createBasicCharacteristic( modelVersion, dataType, SAMM )
+            : createTraitWithRangeConstraint( modelVersion, dataType, boundKind, SAMM, randomRange );
+      final List<Property> properties = List.of( createProperty( modelVersion, "testNumber", constraint, SAMM ) );
       final MetaModelBaseAttributes aspectAttributes =
-            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( bamm.Aspect().getURI() ), "AspectWithNumericProperty" );
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( SAMM.Aspect().getURI() ), "AspectWithNumericProperty" );
       return new DefaultAspect( aspectAttributes, properties, List.of(), List.of(), false );
    }
 
-   private Property createProperty( final KnownVersion modelVersion, final String propertyName, final Characteristic characteristic, final BAMM bamm ) {
+   private Property createProperty( final KnownVersion modelVersion, final String propertyName, final Characteristic characteristic, final SAMM SAMM ) {
       final MetaModelBaseAttributes propertyAttributes =
-            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( bamm.Property().getURI() ), propertyName );
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( SAMM.Property().getURI() ), propertyName );
       return new DefaultProperty( propertyAttributes, Optional.of( characteristic ), Optional.empty(), false, false, Optional.empty(), false,
             Optional.empty() );
    }
 
    Trait createTraitWithRangeConstraint( final KnownVersion modelVersion, final Type dataType, final BoundDefinition boundKind,
-         final BAMM bamm, final Pair<Number, Number> randomRange ) {
+         final SAMM SAMM, final Pair<Number, Number> randomRange ) {
       final MetaModelBaseAttributes constraintAttibutes =
-            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( bamm.characteristic().getURI() ), "TestConstraint" );
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( SAMM.characteristic().getURI() ), "TestConstraint" );
       final Optional<ScalarValue> minValue = BoundDefinition.OPEN.equals( boundKind )
             ? Optional.empty()
             : Optional.of( new DefaultScalarValue( randomRange.getLeft(), new DefaultScalar( dataType.getUrn(), modelVersion ) ) );
@@ -665,8 +665,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final RangeConstraint rangeConstraint = new DefaultRangeConstraint( constraintAttibutes, minValue, maxValue, boundKind,
             getMatchingUpperBound( boundKind ) );
       final MetaModelBaseAttributes traitAttributes = MetaModelBaseAttributes
-            .from( modelVersion, AspectModelUrn.fromUrn( bamm.characteristic().getURI() ), "TestTrait" );
-      return new DefaultTrait( traitAttributes, createBasicCharacteristic( modelVersion, dataType, bamm ), List.of( rangeConstraint ) );
+            .from( modelVersion, AspectModelUrn.fromUrn( SAMM.characteristic().getURI() ), "TestTrait" );
+      return new DefaultTrait( traitAttributes, createBasicCharacteristic( modelVersion, dataType, SAMM ), List.of( rangeConstraint ) );
    }
 
    private BoundDefinition getMatchingUpperBound( final BoundDefinition boundKind ) {
@@ -675,10 +675,10 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
                   BoundDefinition.OPEN;
    }
 
-   Characteristic createBasicCharacteristic( final KnownVersion modelVersion, final Type dataType, final BAMM bamm ) {
+   Characteristic createBasicCharacteristic( final KnownVersion modelVersion, final Type dataType, final SAMM SAMM ) {
       return new DefaultCharacteristic( MetaModelBaseAttributes.builderFor( "NumberCharacteristic" )
             .withMetaModelVersion( modelVersion )
-            .withUrn( AspectModelUrn.fromUrn( bamm.baseCharacteristic().getURI() ) )
+            .withUrn( AspectModelUrn.fromUrn( SAMM.baseCharacteristic().getURI() ) )
             .withPreferredName( Locale.forLanguageTag( "en" ), "NumberCharacteristic" )
             .withDescription( Locale.forLanguageTag( "en" ), "A simple numeric property." )
             .build(),

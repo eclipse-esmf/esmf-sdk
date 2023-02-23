@@ -20,18 +20,18 @@ import org.apache.jena.rdf.model.Resource;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
-public class BAMME implements Namespace {
-   private final KnownVersion bammVersion;
-   private final BAMM bamm;
+public class SAMME implements Namespace {
+   private final KnownVersion metaModelVersion;
+   private final SAMM SAMM;
 
-   public BAMME( final KnownVersion bammVersion, final BAMM bamm ) {
-      this.bammVersion = bammVersion;
-      this.bamm = bamm;
+   public SAMME( final KnownVersion metaModelVersion, final SAMM SAMM ) {
+      this.metaModelVersion = metaModelVersion;
+      this.SAMM = SAMM;
    }
 
    @Override
    public String getUri() {
-      return bamm.getBaseUri() + "entity:" + bammVersion.toVersionString();
+      return SAMM.getBaseUri() + "entity:" + metaModelVersion.toVersionString();
    }
 
    @SuppressWarnings( "squid:S00100" ) // Method name should match model element

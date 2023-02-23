@@ -13,7 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,19 +48,18 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
+import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.ImmutableList;
 
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
-import org.eclipse.esmf.samm.KnownVersion;
-
-import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
-import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 
 public class AspectModelDiagramGenerator {
    public enum Format {
@@ -82,12 +83,12 @@ public class AspectModelDiagramGenerator {
    private final BoxModel boxModelNamespace;
 
    protected final Model model;
-   final KnownVersion bammVersion;
+   final KnownVersion metaModelVersion;
 
    private final SparqlExecutor sparqlExecutor;
 
    public AspectModelDiagramGenerator( final VersionedModel versionedModel ) {
-      final ImmutableList<String> queryFilesForAllBammVersions = ImmutableList.of(
+      final ImmutableList<String> queryFilesForAllMetaModelVersions = ImmutableList.of(
             "aspect",
             "characteristic",
             "collection",
@@ -119,7 +120,7 @@ public class AspectModelDiagramGenerator {
             "characteristic-constraint-edges"
       );
 
-      final ImmutableList<String> queryFilesForBammVersionsAsOf2_0_0 = ImmutableList.of(
+      final ImmutableList<String> queryFilesForMetaModelVersionsAsOf2_0_0 = ImmutableList.of(
             "abstractentity",
             "entity-abstractentity-edges",
             "abstractproperty",
@@ -127,20 +128,20 @@ public class AspectModelDiagramGenerator {
       );
 
       aspectToBoxmodelQueryFiles.put( KnownVersion.SAMM_1_0_0,
-            ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
+            ImmutableList.<String> builder().addAll( queryFilesForAllMetaModelVersions )
                   .build() );
 
       aspectToBoxmodelQueryFiles.put( KnownVersion.SAMM_2_0_0,
-            ImmutableList.<String> builder().addAll( queryFilesForAllBammVersions )
-                  .addAll( queryFilesForBammVersionsAsOf2_0_0 )
+            ImmutableList.<String> builder().addAll( queryFilesForAllMetaModelVersions )
+                  .addAll( queryFilesForMetaModelVersionsAsOf2_0_0 )
                   .build() );
 
       ARQ.init();
       model = versionedModel.getModel();
-      bammVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() )
+      metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() )
             .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getMetaModelVersion() ) );
       boxmodelToDotQuery = QueryFactory.create( getInputStreamAsString( "boxmodel2dot.sparql" ) );
-      boxModelNamespace = new BoxModel( bammVersion );
+      boxModelNamespace = new BoxModel( metaModelVersion );
 
       sparqlExecutor = new SparqlExecutor().useCustomFunction( GET_ELEMENT_NAME_FUNC, new GetElementNameFunctionFactory( model ) );
    }
@@ -151,7 +152,7 @@ public class AspectModelDiagramGenerator {
 
    String getInputStreamAsString( final String resource ) {
       try ( final InputStream resourceStream = getInputStream(
-            "diagram/" + bammVersion.toString().toLowerCase() + "/" + resource );
+            "diagram/" + metaModelVersion.toString().toLowerCase() + "/" + resource );
             final Scanner scanner = new Scanner( resourceStream, StandardCharsets.UTF_8.name() ) ) {
          return scanner.useDelimiter( "\\A" ).next();
       } catch ( final IOException ioException ) {
@@ -231,7 +232,7 @@ public class AspectModelDiagramGenerator {
     */
    private String generateDot( final Locale language ) {
       final Model targetModel = ModelFactory.createDefaultModel();
-      aspectToBoxmodelQueryFiles.get( bammVersion )
+      aspectToBoxmodelQueryFiles.get( metaModelVersion )
             .stream()
             .map( queryName -> getInputStreamAsString( queryName + "2boxmodel.sparql" ) )
             .map( queryString -> queryString
@@ -242,7 +243,7 @@ public class AspectModelDiagramGenerator {
       breakLongLinesAndEscapeTexts( targetModel );
 
       targetModel.add( targetModel.createResource(), boxModelNamespace.rootElement(), getAspect() );
-      MetaModelUrls.url( "meta-model", bammVersion, "prefix-declarations.ttl" )
+      MetaModelUrls.url( "meta-model", metaModelVersion, "prefix-declarations.ttl" )
             .map( TurtleLoader::openUrl )
             .map( TurtleLoader::loadTurtle )
             .ifPresent( tryModel -> tryModel.forEach( targetModel::add ) );
@@ -255,8 +256,8 @@ public class AspectModelDiagramGenerator {
    }
 
    private Resource getAspect() {
-      final BAMM bamm = new BAMM( bammVersion );
-      return model.listStatements( null, RDF.type, bamm.Aspect() ).nextStatement().getSubject();
+      final SAMM SAMM = new SAMM( metaModelVersion );
+      return model.listStatements( null, RDF.type, SAMM.Aspect() ).nextStatement().getSubject();
    }
 
    private String getAspectName() {

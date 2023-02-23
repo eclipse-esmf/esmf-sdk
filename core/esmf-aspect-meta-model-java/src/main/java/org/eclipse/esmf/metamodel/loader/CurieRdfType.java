@@ -19,9 +19,9 @@ import org.apache.jena.datatypes.DatatypeFormatException;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.impl.LiteralLabel;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.TypedRdfDatatype;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
 
 public class CurieRdfType implements TypedRdfDatatype<Curie> {
@@ -40,7 +40,7 @@ public class CurieRdfType implements TypedRdfDatatype<Curie> {
 
    @Override
    public String getURI() {
-      return new BAMM( KnownVersion.getLatest() ).curie().getURI();
+      return new SAMM( KnownVersion.getLatest() ).curie().getURI();
    }
 
    @Override

@@ -46,36 +46,36 @@ public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGetBammVersionExpectSuccess( final KnownVersion metaModelVersion ) {
+   public void testGetMetaModelVersionExpectSuccess( final KnownVersion metaModelVersion ) {
       final Model model = getModel( "valid_aspect.ttl", metaModelVersion );
-      VavrAssertions.assertThat( aspectMetaModelResourceResolver.getBammVersion( model ) ).isSuccess();
-      VavrAssertions.assertThat( aspectMetaModelResourceResolver.getBammVersion( model ) )
+      VavrAssertions.assertThat( aspectMetaModelResourceResolver.getMetaModelVersion( model ) ).isSuccess();
+      VavrAssertions.assertThat( aspectMetaModelResourceResolver.getMetaModelVersion( model ) )
             .contains( VersionNumber.parse( metaModelVersion.toVersionString() ) );
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGetBammVersionInvalidPrefixExpectFailure( final KnownVersion metaModelVersion ) {
+   public void testGetMetaModelVersionInvalidPrefixExpectFailure( final KnownVersion metaModelVersion ) {
       final Model model = getModel( "invalid_aspect_urn_prefix.ttl", metaModelVersion );
-      final Try<VersionNumber> modelVersion = aspectMetaModelResourceResolver.getBammVersion( model );
+      final Try<VersionNumber> modelVersion = aspectMetaModelResourceResolver.getMetaModelVersion( model );
       assertThat( modelVersion ).isFailure();
       assertThat( modelVersion ).failBecauseOf( MissingMetaModelVersionException.class );
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGetBammVersionInvalidUrnExpectFailure( final KnownVersion metaModelVersion ) {
+   public void testGetMetaModelVersionInvalidUrnExpectFailure( final KnownVersion metaModelVersion ) {
       final Model model = getModel( "invalid_aspect_urn.ttl", metaModelVersion );
-      final Try<VersionNumber> modelVersion = aspectMetaModelResourceResolver.getBammVersion( model );
+      final Try<VersionNumber> modelVersion = aspectMetaModelResourceResolver.getMetaModelVersion( model );
       assertThat( modelVersion ).isFailure();
       assertThat( modelVersion ).failBecauseOf( MissingMetaModelVersionException.class );
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
-   public void testGetBammVersionInvalidMetaModelUrnElementExpectFailure( final KnownVersion metaModelVersion ) {
+   public void testGetMetaModelVersionInvalidMetaModelUrnElementExpectFailure( final KnownVersion metaModelVersion ) {
       final Model model = getModel( "invalid_aspect_meta_model_urn_element.ttl", metaModelVersion );
-      final Try<VersionNumber> modelVersion = aspectMetaModelResourceResolver.getBammVersion( model );
+      final Try<VersionNumber> modelVersion = aspectMetaModelResourceResolver.getMetaModelVersion( model );
       assertThat( modelVersion ).isFailure();
       assertThat( modelVersion ).failBecauseOf( MissingMetaModelVersionException.class );
    }
@@ -109,8 +109,8 @@ public class SdsAspectMetaModelResourceResolverTest extends MetaModelVersions {
    public void testGetUnknownVersionExpectFailure() {
       final Model model = ModelFactory.createDefaultModel();
       model.setNsPrefix( "bamm", "urn:bamm:io.openmanufacturing:meta-model:5.0.0#" );
-      final Try<VersionNumber> bammVersion = aspectMetaModelResourceResolver.getBammVersion( model );
-      assertThat( bammVersion ).isFailure();
+      final Try<VersionNumber> metaModelVersion = aspectMetaModelResourceResolver.getMetaModelVersion( model );
+      assertThat( metaModelVersion ).isFailure();
    }
 
    @ParameterizedTest

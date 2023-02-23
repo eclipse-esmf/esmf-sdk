@@ -36,7 +36,7 @@ public class EnumerationInstantiator extends Instantiator<Enumeration> {
    public Enumeration apply( final Resource enumeration ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( enumeration );
       final Type type = getType( enumeration );
-      final List<Value> enumValues = getNodesFromList( enumeration, bammc.values() )
+      final List<Value> enumValues = getNodesFromList( enumeration, SAMMC.values() )
             .map( node -> buildValue( node, Optional.of( enumeration ), type ) )
             .collect( Collectors.toList() );
       return new DefaultEnumeration( metaModelBaseAttributes, type, enumValues );

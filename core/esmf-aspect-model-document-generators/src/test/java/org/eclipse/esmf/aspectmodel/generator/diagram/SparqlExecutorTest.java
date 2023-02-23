@@ -51,15 +51,15 @@ public class SparqlExecutorTest {
    @Test
    void testCustomFunctionIsUniqueForContext() {
       final String modelSource = """
-               @prefix : <urn:bamm:dummy#>.
+               @prefix : <urn:SAMM:dummy#>.
                [
                  a :Object ;
                ]
             """;
 
       final String querySource = """
-               prefix : <urn:bamm:dummy#>
-               prefix func: <urn:bamm:function:2.0.0#>
+               prefix : <urn:SAMM:dummy#>
+               prefix func: <urn:SAMM:function:2.0.0#>
                
                select ?anonName
                where {
@@ -71,9 +71,9 @@ public class SparqlExecutorTest {
             """;
 
       final Model model = TurtleLoader.loadTurtle( new ByteArrayInputStream( modelSource.getBytes( StandardCharsets.UTF_8 ) ) ).get();
-      final SparqlExecutor executor1 = new SparqlExecutor().useCustomFunction( "urn:bamm:function:2.0.0#getElementName",
+      final SparqlExecutor executor1 = new SparqlExecutor().useCustomFunction( "urn:SAMM:function:2.0.0#getElementName",
             new CustomFunctionFactory( "executor1" ) );
-      final SparqlExecutor executor2 = new SparqlExecutor().useCustomFunction( "urn:bamm:function:2.0.0#getElementName",
+      final SparqlExecutor executor2 = new SparqlExecutor().useCustomFunction( "urn:SAMM:function:2.0.0#getElementName",
             new CustomFunctionFactory( "executor2" ) );
       final String result1 = executor1.executeQuery( model, QueryFactory.create( querySource ), "anonName" );
       assertTrue( result1.startsWith( "executor1_" ) );

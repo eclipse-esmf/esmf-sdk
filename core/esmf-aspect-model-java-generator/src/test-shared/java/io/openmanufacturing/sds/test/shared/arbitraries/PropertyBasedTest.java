@@ -22,23 +22,23 @@ import java.util.stream.Collectors;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMMC;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMME;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMME;
 
 public abstract class PropertyBasedTest implements BammArbitraries {
    private final DatatypeFactory datatypeFactory;
-   private final Map<KnownVersion, BAMM> BAMM_VERSIONS;
-   private final Map<KnownVersion, BAMMC> BAMMC_VERSIONS;
-   private final Map<KnownVersion, BAMME> BAMME_VERSIONS;
+   private final Map<KnownVersion, SAMM> BAMM_VERSIONS;
+   private final Map<KnownVersion, SAMMC> BAMMC_VERSIONS;
+   private final Map<KnownVersion, SAMME> BAMME_VERSIONS;
 
    public PropertyBasedTest() {
-      BAMM_VERSIONS = KnownVersion.getVersions().stream().collect( Collectors.toMap( Function.identity(), BAMM::new ) );
+      BAMM_VERSIONS = KnownVersion.getVersions().stream().collect( Collectors.toMap( Function.identity(), SAMM::new ) );
       BAMMC_VERSIONS = KnownVersion.getVersions().stream()
-            .collect( Collectors.toMap( Function.identity(), BAMMC::new ) );
+            .collect( Collectors.toMap( Function.identity(), SAMMC::new ) );
       BAMME_VERSIONS = KnownVersion.getVersions().stream().collect( Collectors.toMap( Function.identity(),
-            version -> new BAMME( version, BAMM_VERSIONS.get( version ) ) ) );
+            version -> new SAMME( version, BAMM_VERSIONS.get( version ) ) ) );
       try {
          datatypeFactory = DatatypeFactory.newInstance();
       } catch ( final DatatypeConfigurationException exception ) {
@@ -48,17 +48,17 @@ public abstract class PropertyBasedTest implements BammArbitraries {
    }
 
    @Override
-   public BAMM bamm( final KnownVersion metaModelVersion ) {
+   public SAMM bamm( final KnownVersion metaModelVersion ) {
       return BAMM_VERSIONS.get( metaModelVersion );
    }
 
    @Override
-   public BAMMC bammc( final KnownVersion metaModelVersion ) {
+   public SAMMC bammc( final KnownVersion metaModelVersion ) {
       return BAMMC_VERSIONS.get( metaModelVersion );
    }
 
    @Override
-   public BAMME bamme( final KnownVersion metaModelVersion ) {
+   public SAMME bamme( final KnownVersion metaModelVersion ) {
       return BAMME_VERSIONS.get( metaModelVersion );
    }
 

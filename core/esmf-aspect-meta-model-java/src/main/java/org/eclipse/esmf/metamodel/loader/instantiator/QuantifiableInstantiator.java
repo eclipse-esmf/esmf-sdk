@@ -35,7 +35,7 @@ public class QuantifiableInstantiator extends Instantiator<Quantifiable> {
    public Quantifiable apply( final Resource quantifiable ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( quantifiable );
       final Type type = getType( quantifiable );
-      final Optional<Unit> unit = optionalAttributeValue( quantifiable, bammc.unit() )
+      final Optional<Unit> unit = optionalAttributeValue( quantifiable, SAMMC.unit() )
             .map( Statement::getResource )
             .map( modelElementFactory::findOrCreateUnit );
       return new DefaultQuantifiable( metaModelBaseAttributes, type, unit );

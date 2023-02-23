@@ -34,9 +34,9 @@ public class LengthConstraintInstantiator extends Instantiator<LengthConstraint>
    @Override
    public LengthConstraint apply( final Resource lengthConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( lengthConstraint );
-      final Optional<BigInteger> minValue = optionalAttributeValue( lengthConstraint, bammc.minValue() )
+      final Optional<BigInteger> minValue = optionalAttributeValue( lengthConstraint, SAMMC.minValue() )
             .map( Statement::getLiteral ).map( Literal::getLong ).map( BigInteger::valueOf );
-      final Optional<BigInteger> maxValue = optionalAttributeValue( lengthConstraint, bammc.maxValue() )
+      final Optional<BigInteger> maxValue = optionalAttributeValue( lengthConstraint, SAMMC.maxValue() )
             .map( Statement::getLiteral ).map( Literal::getLong ).map( BigInteger::valueOf );
       return new DefaultLengthConstraint( metaModelBaseAttributes, minValue, maxValue );
    }

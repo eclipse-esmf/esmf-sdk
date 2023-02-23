@@ -36,7 +36,7 @@ import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.AspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 
 import com.google.common.collect.ImmutableMap;
@@ -80,13 +80,13 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
    /**
     * Loads the Meta Model according to a given {@link KnownVersion}
     *
-    * @param bammVersion The Meta Model
+    * @param metaModelVersion The Meta Model
     * @return The meta model
     */
-   public Try<Model> loadMetaModel( final KnownVersion bammVersion ) {
-      return loadUrlSet( bammVersion, new ClassPathMetaModelUrnResolver() ).map( model -> {
+   public Try<Model> loadMetaModel( final KnownVersion metaModelVersion ) {
+      return loadUrlSet( metaModelVersion, new ClassPathMetaModelUrnResolver() ).map( model -> {
          model.clearNsPrefixMap();
-         model.setNsPrefixes( Namespace.createPrefixMap( bammVersion ) );
+         model.setNsPrefixes( Namespace.createPrefixMap( metaModelVersion ) );
          return model;
       } );
    }
@@ -103,51 +103,51 @@ public class SdsAspectMetaModelResourceResolver implements AspectMetaModelResour
     * the <i>model</i> which is the rawModel merged with the corresponding meta model
     *
     * @param rawModel The given raw Aspect model
-    * @param bammVersion The meta model version the model corresponds to
+    * @param metaModelVersion The meta model version the model corresponds to
     * @return the VersionedModel containing the model, meta model version and raw model
     */
    @Override
-   public Try<VersionedModel> mergeMetaModelIntoRawModel( final Model rawModel, final VersionNumber bammVersion ) {
-      final Try<KnownVersion> bammKnownVersion = KnownVersion.fromVersionString( bammVersion.toString() )
+   public Try<VersionedModel> mergeMetaModelIntoRawModel( final Model rawModel, final VersionNumber metaModelVersion ) {
+      final Try<KnownVersion> bammKnownVersion = KnownVersion.fromVersionString( metaModelVersion.toString() )
             .map( Try::success )
-            .orElse( Try.failure( new UnsupportedVersionException( bammVersion ) ) );
+            .orElse( Try.failure( new UnsupportedVersionException( metaModelVersion ) ) );
 
       return bammKnownVersion.flatMap( this::loadMetaModel ).map( metaModel -> {
          final Model model = deepCopy( rawModel );
          model.add( metaModel );
-         return new VersionedModel( model, bammVersion, rawModel );
+         return new VersionedModel( model, metaModelVersion, rawModel );
       } );
    }
 
    @Override
    public Stream<Statement> listAspectStatements( final Model modelToAdd, final Model target ) {
-      return getBammVersion( modelToAdd )
+      return getMetaModelVersion( modelToAdd )
             .map( versionNumber -> KnownVersion.fromVersionString( versionNumber.toString() ).orElseThrow(
                   () -> new UnsupportedVersionException( versionNumber ) ) )
             .toJavaStream().flatMap( metaModelVersion -> {
-               final BAMM bamm = new BAMM( metaModelVersion );
-               if ( !target.contains( null, RDF.type, bamm.Aspect() ) ) {
+               final SAMM SAMM = new SAMM( metaModelVersion );
+               if ( !target.contains( null, RDF.type, SAMM.Aspect() ) ) {
                   return Streams.stream( modelToAdd.listStatements() );
                }
-               return getModelStatementsWithoutAspectAssertion( modelToAdd, bamm );
+               return getModelStatementsWithoutAspectAssertion( modelToAdd, SAMM );
             } );
    }
 
-   private Stream<Statement> getModelStatementsWithoutAspectAssertion( final Model model, final BAMM bamm ) {
+   private Stream<Statement> getModelStatementsWithoutAspectAssertion( final Model model, final SAMM SAMM ) {
       return Streams.stream( model.listStatements() ).filter( statement ->
             !(statement.getPredicate().equals( RDF.type )
                   && statement.getObject().isURIResource()
-                  && statement.getObject().asResource().equals( bamm.Aspect() )) );
+                  && statement.getObject().asResource().equals( SAMM.Aspect() )) );
    }
 
    /**
     * Loads the Meta Model shapes according to a given {@link KnownVersion}
     *
-    * @param bammVersion The target Meta Model version
+    * @param metaModelVersion The target Meta Model version
     * @return a {@link Model} containing the Shapes
     */
-   public Try<Model> loadShapesModel( final KnownVersion bammVersion ) {
-      return loadUrlSet( bammVersion, new ClassPathMetaModelShapesUrnResolver() ).map( model -> {
+   public Try<Model> loadShapesModel( final KnownVersion metaModelVersion ) {
+      return loadUrlSet( metaModelVersion, new ClassPathMetaModelShapesUrnResolver() ).map( model -> {
          final Set<Tuple2<Statement, Statement>> changeSet = determineBammUrlsToReplace( model );
          changeSet.forEach( urlReplacement -> {
             model.remove( urlReplacement._1() );

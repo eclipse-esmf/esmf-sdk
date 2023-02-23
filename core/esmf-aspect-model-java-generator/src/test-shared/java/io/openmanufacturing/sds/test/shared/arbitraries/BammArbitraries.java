@@ -25,14 +25,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Resource;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.BammDataType;
 import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMMC;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMME;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMME;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Entity;
@@ -64,11 +64,11 @@ import net.jqwik.api.Tuple;
  * Provides {@link Arbitrary}s for Aspect model elements.
  */
 public interface BammArbitraries extends UriArbitraries, XsdArbitraries {
-   BAMM bamm( KnownVersion metaModelVersion );
+   SAMM bamm( KnownVersion metaModelVersion );
 
-   BAMMC bammc( KnownVersion metaModelVersion );
+   SAMMC bammc( KnownVersion metaModelVersion );
 
-   BAMME bamme( KnownVersion metaModelVersion );
+   SAMME bamme( KnownVersion metaModelVersion );
 
    @Provide
    default Arbitrary<Scalar> anyScalar() {

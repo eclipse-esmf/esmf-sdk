@@ -28,7 +28,7 @@ import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import io.vavr.control.Try;
 // end::imports[]
 import org.junit.jupiter.api.Test;
@@ -42,9 +42,9 @@ public class LoadAspectModelRdf {
 
       // Let's do something with the loaded model on RDF level
       tryModel.forEach( versionedModel -> { // <3>
-         final BAMM bamm = new BAMM( KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() ).get() );
+         final SAMM SAMM = new SAMM( KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() ).get() );
          final Model rdfModel = versionedModel.getModel();
-         final List<Statement> result = rdfModel.listStatements( null, RDF.type, bamm.Aspect() ).toList();// <4>
+         final List<Statement> result = rdfModel.listStatements( null, RDF.type, SAMM.Aspect() ).toList();// <4>
       } );
       // end::loadAndResolveFromFile[]
    }

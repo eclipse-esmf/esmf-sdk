@@ -20,12 +20,12 @@ import org.eclipse.esmf.samm.KnownVersion;
 /**
  * The RDF jena vocabulary of the aspect meta model.
  */
-public class BAMM implements Namespace {
-   final KnownVersion bammVersion;
+public class SAMM implements Namespace {
+   final KnownVersion metaModelVersion;
    private static final String BASE_URI = "urn:bamm:io.openmanufacturing:";
 
-   public BAMM( final KnownVersion bammVersion ) {
-      this.bammVersion = bammVersion;
+   public SAMM( final KnownVersion metaModelVersion ) {
+      this.metaModelVersion = metaModelVersion;
    }
 
    public String getBaseUri() {
@@ -34,7 +34,7 @@ public class BAMM implements Namespace {
 
    @Override
    public String getUri() {
-      return getBaseUri() + "meta-model:" + bammVersion.toVersionString();
+      return getBaseUri() + "meta-model:" + metaModelVersion.toVersionString();
    }
 
    @Override

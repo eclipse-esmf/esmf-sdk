@@ -119,7 +119,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
          try ( final InputStream inputStream = new FileInputStream( inputFile ) ) {
             final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
             final Try<VersionedModel> versionedModel = TurtleLoader.loadTurtle( inputStream )
-                  .flatMap( model -> metaModelResourceResolver.getBammVersion( model )
+                  .flatMap( model -> metaModelResourceResolver.getMetaModelVersion( model )
                         .flatMap( metaModelVersion -> metaModelResourceResolver.mergeMetaModelIntoRawModel( model, metaModelVersion ) ) );
             if ( versionedModel.isFailure() ) {
                final String errorMessage = String.format( "Failed to load Aspect Model %s.", aspectModelUrn.getName() );

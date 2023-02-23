@@ -16,16 +16,16 @@ package org.eclipse.esmf.aspectmodel.vocabulary;
 import org.eclipse.esmf.samm.KnownVersion;
 
 public class UNIT implements Namespace {
-   private final KnownVersion bammVersion;
-   private final BAMM bamm;
+   private final KnownVersion metaModelVersion;
+   private final SAMM SAMM;
 
-   public UNIT( final KnownVersion bammVersion, final BAMM bamm ) {
-      this.bammVersion = bammVersion;
-      this.bamm = bamm;
+   public UNIT( final KnownVersion metaModelVersion, final SAMM SAMM ) {
+      this.metaModelVersion = metaModelVersion;
+      this.SAMM = SAMM;
    }
 
    @Override
    public String getUri() {
-      return bamm.getBaseUri() + "unit:" + bammVersion.toVersionString();
+      return SAMM.getBaseUri() + "unit:" + metaModelVersion.toVersionString();
    }
 }

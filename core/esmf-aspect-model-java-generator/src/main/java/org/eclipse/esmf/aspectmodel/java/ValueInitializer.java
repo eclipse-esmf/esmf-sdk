@@ -26,7 +26,7 @@ import org.apache.jena.vocabulary.XSD;
 
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 
 /**
  * Provides the code needed in code generation to create an instance of the Java type corresponding to
@@ -115,8 +115,8 @@ public class ValueInitializer {
     * @param metaModelVersion the used meta model version
     */
    public String apply( final Resource rdfType, final Class<?> javaType, final String valueExpression, final KnownVersion metaModelVersion ) {
-      final BAMM bamm = new BAMM( metaModelVersion );
-      if ( rdfType.equals( bamm.curie() ) ) {
+      final SAMM SAMM = new SAMM( metaModelVersion );
+      if ( rdfType.equals( SAMM.curie() ) ) {
          return String.format( "new Curie( %s )", valueExpression );
       }
       return INITIALIZERS.get( rdfType ).apply( javaType, valueExpression );

@@ -400,7 +400,7 @@ public class AspectModelResolver {
       try ( final InputStream inputStream = new FileInputStream( inputFile ) ) {
          final SdsAspectMetaModelResourceResolver metaModelResourceResolver = new SdsAspectMetaModelResourceResolver();
          return TurtleLoader.loadTurtle( inputStream ).flatMap( model ->
-               metaModelResourceResolver.getBammVersion( model ).flatMap( metaModelVersion ->
+               metaModelResourceResolver.getMetaModelVersion( model ).flatMap( metaModelVersion ->
                      metaModelResourceResolver.mergeMetaModelIntoRawModel( model, metaModelVersion ) ) );
       } catch ( final IOException exception ) {
          return Try.failure( exception );

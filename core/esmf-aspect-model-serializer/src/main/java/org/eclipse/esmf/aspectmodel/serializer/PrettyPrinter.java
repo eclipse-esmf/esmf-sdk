@@ -61,10 +61,10 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import com.google.common.collect.ImmutableList;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMMC;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 
 /**
@@ -84,7 +84,7 @@ public class PrettyPrinter {
    private final AspectModelUrn rootElementUrn;
    private final PrintWriter writer;
    private final Map<String, String> prefixMap;
-   private final BAMM bamm;
+   private final SAMM SAMM;
 
    private final PrintVisitor printVisitor;
 
@@ -115,54 +115,54 @@ public class PrettyPrinter {
       this.rootElementUrn = rootElementUrn;
       printVisitor = new PrintVisitor( model );
 
-      bamm = new BAMM( metaModelVersion );
-      final BAMMC bammc = new BAMMC( metaModelVersion );
+      SAMM = new SAMM( metaModelVersion );
+      final SAMMC SAMMC = new SAMMC( metaModelVersion );
 
       prefixMap = new HashMap<>( Namespace.createPrefixMap( metaModelVersion ) );
       prefixMap.putAll( versionedModel.getModel().getNsPrefixMap() );
       prefixMap.put( "", rootElementUrn.getUrnPrefix() );
       model.setNsPrefixes( prefixMap );
 
-      propertyOrder = createPredefinedPropertyOrder( bammc );
+      propertyOrder = createPredefinedPropertyOrder( SAMMC );
       prefixOrder = createPredefinedPrefixOrder();
    }
 
-   private Comparator<Property> createPredefinedPropertyOrder( final BAMMC bammc ) {
+   private Comparator<Property> createPredefinedPropertyOrder( final SAMMC SAMMC ) {
       final List<Property> predefinedPropertyOrder = new ArrayList<>();
-      predefinedPropertyOrder.add( bamm._extends() );
-      predefinedPropertyOrder.add( bamm.preferredName() );
-      predefinedPropertyOrder.add( bamm.description() );
-      predefinedPropertyOrder.add( bamm.see() );
-      predefinedPropertyOrder.add( bamm.characteristic() );
-      predefinedPropertyOrder.add( bamm.properties() );
-      predefinedPropertyOrder.add( bamm.operations() );
-      predefinedPropertyOrder.add( bamm.events() );
-      predefinedPropertyOrder.add( bamm.input() );
-      predefinedPropertyOrder.add( bamm.output() );
-      predefinedPropertyOrder.add( bamm.baseCharacteristic() );
-      predefinedPropertyOrder.add( bamm.dataType() );
-      predefinedPropertyOrder.add( bamm.exampleValue() );
-      predefinedPropertyOrder.add( bamm.value() );
-      predefinedPropertyOrder.add( bamm.property() );
-      predefinedPropertyOrder.add( bamm.optional() );
+      predefinedPropertyOrder.add( SAMM._extends() );
+      predefinedPropertyOrder.add( SAMM.preferredName() );
+      predefinedPropertyOrder.add( SAMM.description() );
+      predefinedPropertyOrder.add( SAMM.see() );
+      predefinedPropertyOrder.add( SAMM.characteristic() );
+      predefinedPropertyOrder.add( SAMM.properties() );
+      predefinedPropertyOrder.add( SAMM.operations() );
+      predefinedPropertyOrder.add( SAMM.events() );
+      predefinedPropertyOrder.add( SAMM.input() );
+      predefinedPropertyOrder.add( SAMM.output() );
+      predefinedPropertyOrder.add( SAMM.baseCharacteristic() );
+      predefinedPropertyOrder.add( SAMM.dataType() );
+      predefinedPropertyOrder.add( SAMM.exampleValue() );
+      predefinedPropertyOrder.add( SAMM.value() );
+      predefinedPropertyOrder.add( SAMM.property() );
+      predefinedPropertyOrder.add( SAMM.optional() );
 
-      predefinedPropertyOrder.add( bammc.languageCode() );
-      predefinedPropertyOrder.add( bammc.localeCode() );
-      predefinedPropertyOrder.add( bammc.left() );
-      predefinedPropertyOrder.add( bammc.right() );
-      predefinedPropertyOrder.add( bammc.minValue() );
-      predefinedPropertyOrder.add( bammc.maxValue() );
-      predefinedPropertyOrder.add( bammc.lowerBoundDefinition() );
-      predefinedPropertyOrder.add( bammc.upperBoundDefinition() );
-      predefinedPropertyOrder.add( bammc.defaultValue() );
-      predefinedPropertyOrder.add( bammc.unit() );
-      predefinedPropertyOrder.add( bammc.left() );
-      predefinedPropertyOrder.add( bammc.right() );
-      predefinedPropertyOrder.add( bammc.deconstructionRule() );
-      predefinedPropertyOrder.add( bammc.elements() );
-      predefinedPropertyOrder.add( bammc.values() );
-      predefinedPropertyOrder.add( bammc.integer() );
-      predefinedPropertyOrder.add( bammc.scale() );
+      predefinedPropertyOrder.add( SAMMC.languageCode() );
+      predefinedPropertyOrder.add( SAMMC.localeCode() );
+      predefinedPropertyOrder.add( SAMMC.left() );
+      predefinedPropertyOrder.add( SAMMC.right() );
+      predefinedPropertyOrder.add( SAMMC.minValue() );
+      predefinedPropertyOrder.add( SAMMC.maxValue() );
+      predefinedPropertyOrder.add( SAMMC.lowerBoundDefinition() );
+      predefinedPropertyOrder.add( SAMMC.upperBoundDefinition() );
+      predefinedPropertyOrder.add( SAMMC.defaultValue() );
+      predefinedPropertyOrder.add( SAMMC.unit() );
+      predefinedPropertyOrder.add( SAMMC.left() );
+      predefinedPropertyOrder.add( SAMMC.right() );
+      predefinedPropertyOrder.add( SAMMC.deconstructionRule() );
+      predefinedPropertyOrder.add( SAMMC.elements() );
+      predefinedPropertyOrder.add( SAMMC.values() );
+      predefinedPropertyOrder.add( SAMMC.integer() );
+      predefinedPropertyOrder.add( SAMMC.scale() );
 
       return Comparator.<Property> comparingInt( property ->
                   predefinedPropertyOrder.contains( property ) ?

@@ -32,7 +32,7 @@ public class EventInstantiator extends Instantiator<Event> {
    @Override
    public Event apply( final Resource event ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( event );
-      final List<Property> events = getPropertiesModels( event, bamm.parameters() );
+      final List<Property> events = getPropertiesModels( event, SAMM.parameters() );
       return new DefaultEvent( metaModelBaseAttributes, events );
    }
 }

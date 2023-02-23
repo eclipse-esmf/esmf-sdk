@@ -45,15 +45,15 @@ public interface Namespace {
    }
 
    static Map<String, String> createPrefixMap( final KnownVersion metaModelVersion ) {
-      final BAMM bamm = new BAMM( metaModelVersion );
-      final BAMMC bammc = new BAMMC( metaModelVersion );
-      final BAMME bamme = new BAMME( metaModelVersion, bamm );
-      final UNIT unit = new UNIT( metaModelVersion, bamm );
+      final SAMM SAMM = new SAMM( metaModelVersion );
+      final SAMMC SAMMC = new SAMMC( metaModelVersion );
+      final SAMME SAMME = new SAMME( metaModelVersion, SAMM );
+      final UNIT unit = new UNIT( metaModelVersion, SAMM );
 
       final Map<String, String> result = new LinkedHashMap<>();
-      result.put( "bamm", bamm.getUri() + "#" );
-      result.put( "bamm-c", bammc.getUri() + "#" );
-      result.put( "bamm-e", bamme.getUri() + "#" );
+      result.put( "bamm", SAMM.getUri() + "#" );
+      result.put( "bamm-c", SAMMC.getUri() + "#" );
+      result.put( "bamm-e", SAMME.getUri() + "#" );
       result.put( "unit", unit.getUri() + "#" );
       result.put( "rdf", RDF.getURI() );
       result.put( "rdfs", RDFS.getURI() );

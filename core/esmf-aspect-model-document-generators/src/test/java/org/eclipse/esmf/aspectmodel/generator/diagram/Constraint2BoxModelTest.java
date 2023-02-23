@@ -44,7 +44,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ), 5, expectedSeeEntryTitle, "http://example.com/omp" );
+            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ), 5, expectedSeeEntryTitle, "http://example.com/omp" );
    }
 
    @ParameterizedTest
@@ -55,7 +55,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             5,
             expectedSeeEntryTitle,
             "http://example.com/me, http://example.com/omp" );
@@ -68,7 +68,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ), 5 );
+            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ), 5 );
    }
 
    @ParameterizedTest
@@ -79,7 +79,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             4,
             expectedValueEntryTitle, "\\\\d*\\|x" );
    }
@@ -92,12 +92,12 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             8, "scale", "5" );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
-            totalNumberOfExpectedEntriesPerBammVersion.get( metaModelVersion ),
+            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             9, "integer", "3" );
    }
 }

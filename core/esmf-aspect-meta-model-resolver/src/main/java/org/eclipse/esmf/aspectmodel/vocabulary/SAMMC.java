@@ -24,18 +24,18 @@ import org.eclipse.esmf.samm.KnownVersion;
  * The RDF jena vocabulary of the Characteristic meta model.
  */
 @SuppressWarnings( "squid:S00100" ) // Method names should match model element
-public class BAMMC implements Namespace {
-   private final KnownVersion bammVersion;
-   private final BAMM bamm;
+public class SAMMC implements Namespace {
+   private final KnownVersion metaModelVersion;
+   private final SAMM SAMM;
 
-   public BAMMC( final KnownVersion bammVersion ) {
-      this.bammVersion = bammVersion;
-      bamm = new BAMM( bammVersion );
+   public SAMMC( final KnownVersion metaModelVersion ) {
+      this.metaModelVersion = metaModelVersion;
+      SAMM = new SAMM( metaModelVersion );
    }
 
    @Override
    public String getUri() {
-      return bamm.getBaseUri() + "characteristic:" + bammVersion.toVersionString();
+      return SAMM.getBaseUri() + "characteristic:" + metaModelVersion.toVersionString();
    }
 
    public Resource RangeConstraint() {

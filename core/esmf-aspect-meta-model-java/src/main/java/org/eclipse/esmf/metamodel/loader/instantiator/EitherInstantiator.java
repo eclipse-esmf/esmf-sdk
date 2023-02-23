@@ -33,9 +33,9 @@ public class EitherInstantiator extends Instantiator<Either> {
    public Either apply( final Resource either ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( either );
       final Characteristic left = modelElementFactory
-            .create( Characteristic.class, attributeValue( either, bammc.left() ).getResource() );
+            .create( Characteristic.class, attributeValue( either, SAMMC.left() ).getResource() );
       final Characteristic right = modelElementFactory
-            .create( Characteristic.class, attributeValue( either, bammc.right() ).getResource() );
+            .create( Characteristic.class, attributeValue( either, SAMMC.right() ).getResource() );
       return new DefaultEither( metaModelBaseAttributes, Optional.empty(), left, right );
    }
 }

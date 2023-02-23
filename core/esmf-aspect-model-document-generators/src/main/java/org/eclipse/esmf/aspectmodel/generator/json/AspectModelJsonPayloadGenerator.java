@@ -46,6 +46,7 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 
@@ -58,7 +59,6 @@ import com.google.common.collect.ImmutableMap;
 
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.characteristic.Either;
 import org.eclipse.esmf.characteristic.Enumeration;
@@ -98,7 +98,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private final ValueToPayloadStructure valueToPayloadStructure = new ValueToPayloadStructure();
 
    public AspectModelJsonPayloadGenerator( final Aspect aspect ) {
-      this( aspect, new BAMM( aspect.getMetaModelVersion() ), new Random() );
+      this( aspect, new SAMM( aspect.getMetaModelVersion() ), new Random() );
    }
 
    public AspectModelJsonPayloadGenerator( final AspectContext context ) {
@@ -106,10 +106,10 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    }
 
    public AspectModelJsonPayloadGenerator( final Aspect aspect, final Random randomStrategy ) {
-      this( aspect, new BAMM( aspect.getMetaModelVersion() ), randomStrategy );
+      this( aspect, new SAMM( aspect.getMetaModelVersion() ), randomStrategy );
    }
 
-   private AspectModelJsonPayloadGenerator( final Aspect aspect, final BAMM bamm, final Random randomStrategy ) {
+   private AspectModelJsonPayloadGenerator( final Aspect aspect, final SAMM SAMM, final Random randomStrategy ) {
       this.aspect = aspect;
       exampleValueGenerator = new ExampleValueGenerator( randomStrategy );
       objectMapper = AspectModelJsonPayloadGenerator.createObjectMapper();

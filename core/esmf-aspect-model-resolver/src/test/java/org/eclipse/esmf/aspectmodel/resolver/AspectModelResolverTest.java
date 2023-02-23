@@ -35,7 +35,7 @@ import com.google.common.collect.Streams;
 
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-import org.eclipse.esmf.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import io.openmanufacturing.sds.test.MetaModelVersions;
 import io.vavr.control.Try;
 
@@ -328,9 +328,9 @@ public class AspectModelResolverTest extends MetaModelVersions {
       assertThat( result ).isSuccess();
 
       final Model model = result.get().getModel();
-      final BAMM bamm = new BAMM( metaModelVersion );
+      final SAMM SAMM = new SAMM( metaModelVersion );
       org.assertj.core.api.Assertions.assertThat(
-            Streams.stream( model.listStatements( null, RDF.type, bamm.Aspect() ) ).count() ).isEqualTo( 2 );
+            Streams.stream( model.listStatements( null, RDF.type, SAMM.Aspect() ) ).count() ).isEqualTo( 2 );
    }
 
    @ParameterizedTest
@@ -367,8 +367,8 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Model model = result.get().getModel();
       final Resource primaryAspect = model.createResource( "urn:bamm:io.openmanufacturing.test:1.0.0#PrimaryAspect" );
-      final BAMM bamm = new BAMM( metaModelVersion );
-      final List<Statement> propertiesAssertions = model.listStatements( primaryAspect, bamm.properties(), (RDFNode) null ).toList();
+      final SAMM SAMM = new SAMM( metaModelVersion );
+      final List<Statement> propertiesAssertions = model.listStatements( primaryAspect, SAMM.properties(), (RDFNode) null ).toList();
       Assertions.assertThat( propertiesAssertions.size() ).isEqualTo( 1 );
    }
 
@@ -390,8 +390,8 @@ public class AspectModelResolverTest extends MetaModelVersions {
       // make sure the source file for the definitions of ModelYear and ModelCode (ModelDef.ttl) is only loaded once
       final Model model = result.get().getModel();
       final Resource entity = model.createResource( "urn:bamm:io.openmanufacturing.test:1.0.0#SomeOtherNonRelatedEntity" );
-      final BAMM bamm = new BAMM( metaModelVersion );
-      final List<Statement> properties = model.listStatements( entity, bamm.properties(), (RDFNode) null ).toList();
+      final SAMM SAMM = new SAMM( metaModelVersion );
+      final List<Statement> properties = model.listStatements( entity, SAMM.properties(), (RDFNode) null ).toList();
       Assertions.assertThat( properties.size() ).isEqualTo( 1 );
    }
 }
