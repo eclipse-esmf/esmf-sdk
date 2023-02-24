@@ -77,6 +77,8 @@ jobs:
           # upload-artifact will upload the one(s) that are actually present
           path: |
             tools/bamm-cli/target/bamm.exe
+            tools/bamm-cli/target/*.dll
+            tools/bamm-cli/target/lib/
 
       - name: Upload binary (Linux/Mac)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-latest'
