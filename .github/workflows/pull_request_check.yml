@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-20.04]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -18,7 +18,7 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.0'
+          version: '22.3.1'
           java-version: '17'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
           disk-root: "C:"
 
       - name: Set Swap Space (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-20.04'
         uses: pierotofy/set-swap-space@master
         with:
           swap-size-gb: 12
@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload executable jar
         # We only need one OS job to upload the jars
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-20.04'
         uses: actions/upload-artifact@v2
         with:
           name: samm-cli-jar
@@ -77,9 +77,11 @@ jobs:
           # upload-artifact will upload the one(s) that are actually present
           path: |
             tools/samm-cli/target/samm.exe
+            tools/samm-cli/target/*.dll
+            tools/samm-cli/target/lib/
 
       - name: Upload binary (Linux/Mac)
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v2
         with:
           name: samm-cli-binary-${{ matrix.os }}

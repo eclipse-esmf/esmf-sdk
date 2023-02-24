@@ -107,9 +107,6 @@ public class AspectModelValidator {
          // To catch false positives, also try to load the model
          final Try<List<ModelElement>> modelElements = AspectModelLoader.getElements( model );
          if ( modelElements.isFailure() && !(modelElements.getCause() instanceof InvalidRootElementCountException) ) {
-            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-            model.getModel().write( out, "ttl" );
-            LOG.debug( out.toString( StandardCharsets.UTF_8 ) );
             return List.of( new ProcessingViolation(
                   "Validation succeeded, but an error was found while processing the model. "
                         + "This indicates an error in the model validation; please consider reporting this issue including the model "
