@@ -58,7 +58,7 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             5,
             expectedSeeEntryTitle,
-            "http://example.com/me, http://example.com/" );
+            "http://example.com/, http://example.com/me" );
    }
 
    @ParameterizedTest

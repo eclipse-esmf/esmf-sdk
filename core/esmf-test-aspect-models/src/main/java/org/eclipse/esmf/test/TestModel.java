@@ -21,7 +21,7 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 @SuppressWarnings( "squid:S1214" ) // Can not be avoided because enums can't inherit from an abstract class
 public interface TestModel {
-   String TEST_NAMESPACE = "urn:samm:org.eclipse.esmf.samm.test:1.0.0#";
+   String TEST_NAMESPACE = "urn:samm:org.eclipse.esmf.test:1.0.0#";
 
    String getName();
 

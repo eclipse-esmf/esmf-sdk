@@ -25,7 +25,7 @@ import com.google.common.base.Strings;
 import org.junit.jupiter.api.Test;
 
 public class AspectModelUrnTest {
-   private final String baseUri = "urn:samm:org.eclipse.esmf.samm.test:";
+   private final String baseUri = "urn:samm:org.eclipse.esmf.test:";
    private final String sammBaseUri = "urn:samm:org.eclipse.esmf.samm:";
 
    @Test

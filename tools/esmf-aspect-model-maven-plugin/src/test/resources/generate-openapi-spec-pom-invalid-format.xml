@@ -29,7 +29,7 @@
             <configuration>
                <modelsRootDirectory>${basedir}/../../core/esmf-test-aspect-models/src/main/resources/valid/samm_2_0_0</modelsRootDirectory>
                <includes>
-                  <include>urn:samm:org.eclipse.esmf.samm.test:1.0.0#Aspect</include>
+                  <include>urn:samm:org.eclipse.esmf.test:1.0.0#Aspect</include>
                </includes>
                <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>

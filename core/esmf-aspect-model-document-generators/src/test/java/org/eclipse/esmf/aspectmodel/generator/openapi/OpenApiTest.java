@@ -382,8 +382,8 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openAPI.getSpecVersion() ).isEqualTo( SpecVersion.V31 );
       assertThat( openAPI.getComponents().getSchemas().get( "AspectWithCollection" ).get$comment() ).isEqualTo( "See: http://example.com/" );
       assertThat( ((Schema) openAPI.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties().get( "testProperty" )).get$comment() )
-            .isEqualTo( "See: http://example.com/me, http://example.com/" );
-      assertThat( openAPI.getComponents().getSchemas().get( "urn_samm_org.eclipse.esmf.samm.test_1.0.0_TestCollection" ).get$comment() )
+            .isEqualTo( "See: http://example.com/, http://example.com/me" );
+      assertThat( openAPI.getComponents().getSchemas().get( "urn_samm_org.eclipse.esmf.test_1.0.0_TestCollection" ).get$comment() )
             .isEqualTo( "See: http://example.com/" );
    }
 

@@ -11,7 +11,7 @@
 
 @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
 @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
-@prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
 
 :TransitiveReferenceTest a samm:Aspect ;
    samm:properties ( :foo :bar :baz ) ;

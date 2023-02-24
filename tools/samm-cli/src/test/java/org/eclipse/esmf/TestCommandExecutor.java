@@ -23,11 +23,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.resolver.CommandExecutor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
-
-import org.eclipse.esmf.aspectmodel.resolver.CommandExecutor;
 
 public class TestCommandExecutor {
 
@@ -58,7 +57,7 @@ public class TestCommandExecutor {
 
    @Test
    void resolve() throws URISyntaxException {
-      DelegatingCommandResolver.main( new String[] { "samm_2_0_0", "urn:samm:org.eclipse.esmf.samm.test:1.0.0#AspectWithEntity" } );
+      DelegatingCommandResolver.main( new String[] { "samm_2_0_0", "urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" } );
    }
 
    @EnabledOnOs( OS.LINUX )

@@ -14,7 +14,7 @@
 @prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#>.
 @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>.
 @prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>.
-@prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
 
 :AspectWithRecursivePropertyWithOptional a samm:Aspect;
     samm:properties ( :testProperty ) ;

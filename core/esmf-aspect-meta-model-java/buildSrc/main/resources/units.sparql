@@ -11,8 +11,8 @@
 
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix samm: <urn:samm:org.eclipse.samm:meta-model:1.0.0#>
-prefix unit: <urn:samm:org.eclipse.samm:unit:1.0.0#>
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#>
 
 select distinct ?unitName ?label ?symbol ?code ?referenceUnitName ?conversionFactor ?quantityKinds
 where {

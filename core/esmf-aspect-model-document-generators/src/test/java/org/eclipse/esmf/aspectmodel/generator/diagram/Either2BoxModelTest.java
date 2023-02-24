@@ -61,7 +61,7 @@ public class Either2BoxModelTest extends MetaModelVersions {
             metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement, totalNumberOfExpectedEntries,
-            indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/me, http://example.com/" );
+            indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/, http://example.com/me" );
    }
 
    @ParameterizedTest

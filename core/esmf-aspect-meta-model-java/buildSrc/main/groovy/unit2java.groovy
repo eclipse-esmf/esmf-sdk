@@ -79,7 +79,7 @@ public class Units {
 
    private static AspectModelUrn urn( final KnownVersion version, final String name ) {
       return AspectModelUrn.fromUrn(
-            String.format( "urn:samm:org.eclipse.samm:unit:%s#%s", version.toVersionString(), name ) );
+            String.format( "urn:samm:org.eclipse.esmf.samm:unit:%s#%s", version.toVersionString(), name ) );
    }
 
    ${initMethods.join("\n")}
@@ -241,7 +241,7 @@ public enum QuantityKinds implements QuantityKind {
 
    @Override
    public Optional<AspectModelUrn> getAspectModelUrn() {
-      return Optional.of( AspectModelUrn.fromUrn( String.format( "urn:samm:org.eclipse.samm:unit:%s#%s", LATEST.toVersionString(), this.name ) ) );
+      return Optional.of( AspectModelUrn.fromUrn( String.format( "urn:samm:org.eclipse.esmf.samm:unit:%s#%s", LATEST.toVersionString(), this.name ) ) );
    }
 
    @Override

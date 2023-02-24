@@ -24,7 +24,7 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testBoundDefinitionAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "RangeConstraintecd22a3";
+      final String constraintIdentifier = "RangeConstraint3509925";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_BOUND_DEFINITION_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
@@ -43,7 +43,7 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
    @MethodSource( value = "allVersions" )
    public void testRangeConstraintWithOnlyLowerBoundDefinitionAndBothValuesExpectSuccess(
          final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "RangeConstrainta825f71";
+      final String constraintIdentifier = "RangeConstraint921729e";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_DEFINITION_AND_BOTH_VALUES, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
@@ -58,7 +58,7 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testRangeConstraintWithOnlyMinValue( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "RangeConstraintdf1bc0b";
+      final String constraintIdentifier = "RangeConstraintd9f2996";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),

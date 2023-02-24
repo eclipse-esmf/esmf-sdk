@@ -61,8 +61,8 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Boolean\")"
             + ".withDescription(Locale.forLanguageTag(\"de\"), \"Test Beschreibung\")"
             + ".withDescription(Locale.forLanguageTag(\"en\"), \"Test Description\")"
-            + ".withSee(\"http://example.com/me\")"
             + ".withSee(\"http://example.com/\")"
+            + ".withSee(\"http://example.com/me\")"
             + ".build()";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithPropertyWithAllBaseAttributes",
@@ -118,8 +118,8 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
       final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builderFor(\"testBoolean\")"
             + ".withMetaModelVersion(KnownVersion." + KnownVersion.getLatest() + ")"
             + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"testBoolean\"))"
-            + ".withSee(\"http://example.com/me\")"
             + ".withSee(\"http://example.com/\")"
+            + ".withSee(\"http://example.com/me\")"
             + ".build()";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithPropertyWithSee",

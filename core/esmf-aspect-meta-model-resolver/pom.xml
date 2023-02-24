@@ -144,6 +144,8 @@
 
          <!-- Download updated meta model shape files -->
          <!-- This refers to the state of the shape files after merging of https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/pull/176 -->
+         <!-- TODO: Enable this section once https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/pull/186 has been merged -->
+         <!--
          <plugin>
             <groupId>com.googlecode.maven-download-plugin</groupId>
             <artifactId>download-maven-plugin</artifactId>
@@ -219,6 +221,7 @@
                </execution>
             </executions>
          </plugin>
+         -->
 
       </plugins>
    </build>

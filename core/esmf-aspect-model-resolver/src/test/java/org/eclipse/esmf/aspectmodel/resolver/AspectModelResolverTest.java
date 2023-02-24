@@ -51,14 +51,14 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .toURI()
                   .getPath() );
 
-      final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#Test" );
+      final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#Test" );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
       assertThat( result ).isSuccess();
 
       final Resource aspect = ResourceFactory
-            .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#Test" );
+            .createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#Test" );
       final Resource sammAspect = ResourceFactory.createResource(
             "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() + "#Aspect" );
       org.assertj.core.api.Assertions
@@ -76,14 +76,14 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .toURI()
                   .getPath() );
 
-      final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm.test:1.1.0#Test" );
+      final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.1.0#Test" );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
       assertThat( result ).isSuccess();
 
       final Resource aspect = ResourceFactory
-            .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.1.0#Test" );
+            .createResource( "urn:samm:org.eclipse.esmf.test:1.1.0#Test" );
       final Resource sammAspect = ResourceFactory.createResource(
             "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() + "#Aspect" );
       org.assertj.core.api.Assertions
@@ -100,7 +100,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final AspectModelUrn inputUrn = AspectModelUrn
-            .fromUrn( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#AnotherTest" );
+            .fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#AnotherTest" );
       final Model model = TurtleLoader.loadTurtle(
             AspectModelResolverTest.class.getResourceAsStream(
                   "/" + metaModelVersion.toString().toLowerCase()
@@ -112,7 +112,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       assertThat( result ).isSuccess();
 
       final Resource aspect = ResourceFactory
-            .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#AnotherTest" );
+            .createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#AnotherTest" );
       final Resource sammAspect = ResourceFactory
             .createResource(
                   "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
@@ -122,7 +122,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
             .isNotEmpty();
 
       final Resource propertyFromReferencedAspect = ResourceFactory
-            .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#foo" );
+            .createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#foo" );
       final Resource sammProperty = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
                   + "#Property" );
@@ -140,7 +140,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
-            .fromUrn( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#AnotherTest" );
+            .fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#AnotherTest" );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
 
@@ -148,7 +148,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       assertThat( result ).isSuccess();
 
       final Resource aspect = ResourceFactory
-            .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#AnotherTest" );
+            .createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#AnotherTest" );
       final Resource sammAspect = ResourceFactory
             .createResource(
                   "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
@@ -158,7 +158,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
             .isNotEmpty();
 
       final Resource propertyFromReferencedAspect = ResourceFactory
-            .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#foo" );
+            .createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#foo" );
       final Resource sammProperty = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
                   + "#Property" );
@@ -178,7 +178,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
-            .fromUrn( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#AnotherFailingTest" );
+            .fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#AnotherFailingTest" );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
@@ -194,7 +194,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
-            .fromUrn( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#FailingTest" );
+            .fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#FailingTest" );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
@@ -210,7 +210,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
-            .fromUrn( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#ReferenceCharacteristicTest" );
+            .fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#ReferenceCharacteristicTest" );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy(
             aspectModelsRootDirectory.toPath() );
@@ -220,7 +220,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Resource aspect = ResourceFactory
             .createResource(
-                  "urn:samm:org.eclipse.esmf.samm.test:1.0.0#ReferenceCharacteristicTest" );
+                  "urn:samm:org.eclipse.esmf.test:1.0.0#ReferenceCharacteristicTest" );
       final Resource sammAspect = ResourceFactory
             .createResource(
                   "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
@@ -230,7 +230,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
             .isNotEmpty();
 
       final Resource referencedCharacteristic = ResourceFactory
-            .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#TestCharacteristic" );
+            .createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#TestCharacteristic" );
       final Resource sammCharacteristic = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
                   + "#Characteristic" );
@@ -257,7 +257,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
-            .fromUrn( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#TransitiveReferenceTest" );
+            .fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#TransitiveReferenceTest" );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
@@ -265,7 +265,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Model model = result.get().getModel();
       final Resource testCharacteristic = ResourceFactory
-            .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#TestCharacteristic" );
+            .createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#TestCharacteristic" );
       org.assertj.core.api.Assertions.assertThat(
                   Streams.stream( model.listStatements( testCharacteristic, RDF.type, (RDFNode) null ) ).count() )
             .isEqualTo( 1 );
@@ -279,7 +279,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
-            .fromUrn( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#ReferenceEntityTest" );
+            .fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#ReferenceEntityTest" );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy(
             aspectModelsRootDirectory.toPath() );
@@ -288,7 +288,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       assertThat( result ).isSuccess();
 
       final Resource aspect = ResourceFactory
-            .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#ReferenceEntityTest" );
+            .createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#ReferenceEntityTest" );
       final Resource sammAspect = ResourceFactory
             .createResource(
                   "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString()
@@ -298,7 +298,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
             .isNotEmpty();
 
       final Resource referencedEntity = ResourceFactory
-            .createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#TestEntity" );
+            .createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#TestEntity" );
       final Resource sammEntity = ResourceFactory
             .createResource( "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() + "#Entity" );
       org.assertj.core.api.Assertions
@@ -312,7 +312,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
                   .toURI().getPath() );
 
-      final String aspectUrn = "urn:samm:org.eclipse.esmf.samm.test:2.0.0#Test";
+      final String aspectUrn = "urn:samm:org.eclipse.esmf.test:2.0.0#Test";
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( aspectUrn );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
@@ -328,7 +328,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testClassPathResolution( final KnownVersion metaModelVersion ) {
-      final String aspectUrn = "urn:samm:org.eclipse.esmf.samm.test:1.0.0#Test";
+      final String aspectUrn = "urn:samm:org.eclipse.esmf.test:1.0.0#Test";
       final AspectModelResolver resolver = new AspectModelResolver();
       final ClasspathStrategy strategy = new ClasspathStrategy( metaModelVersion.toString().toLowerCase() );
       final Try<VersionedModel> result = resolver
@@ -339,7 +339,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testResolveAspectContainingRefinedProperty2( final KnownVersion metaModelVersion ) {
-      final String aspectUrn = "urn:samm:org.eclipse.esmf.samm.test:1.0.0#ReferenceCharacteristicTest";
+      final String aspectUrn = "urn:samm:org.eclipse.esmf.test:1.0.0#ReferenceCharacteristicTest";
       final AspectModelResolver resolver = new AspectModelResolver();
       final ClasspathStrategy strategy = new ClasspathStrategy( metaModelVersion.toString().toLowerCase() );
       final Try<VersionedModel> result = resolver
@@ -350,7 +350,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
    public void testMergingModelsWithBlankNodeValues( final KnownVersion metaModelVersion ) {
-      final String aspectUrn = "urn:samm:org.eclipse.esmf.samm.test:1.0.0#SecondaryAspect";
+      final String aspectUrn = "urn:samm:org.eclipse.esmf.test:1.0.0#SecondaryAspect";
       final AspectModelResolver resolver = new AspectModelResolver();
       final ClasspathStrategy strategy = new ClasspathStrategy( metaModelVersion.toString().toLowerCase() );
       final Try<VersionedModel> result = resolver
@@ -358,7 +358,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       Assertions.assertThat( result.isSuccess() ).isTrue();
 
       final Model model = result.get().getModel();
-      final Resource primaryAspect = model.createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#PrimaryAspect" );
+      final Resource primaryAspect = model.createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#PrimaryAspect" );
       final SAMM samm = new SAMM( metaModelVersion );
       final List<Statement> propertiesAssertions = model.listStatements( primaryAspect, samm.properties(), (RDFNode) null ).toList();
       Assertions.assertThat( propertiesAssertions.size() ).isEqualTo( 1 );
@@ -373,7 +373,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .toURI()
                   .getPath() );
 
-      final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#VehicleInstance" );
+      final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#VehicleInstance" );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
@@ -381,7 +381,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       // make sure the source file for the definitions of ModelYear and ModelCode (ModelDef.ttl) is only loaded once
       final Model model = result.get().getModel();
-      final Resource entity = model.createResource( "urn:samm:org.eclipse.esmf.samm.test:1.0.0#SomeOtherNonRelatedEntity" );
+      final Resource entity = model.createResource( "urn:samm:org.eclipse.esmf.test:1.0.0#SomeOtherNonRelatedEntity" );
       final SAMM samm = new SAMM( metaModelVersion );
       final List<Statement> properties = model.listStatements( entity, samm.properties(), (RDFNode) null ).toList();
       Assertions.assertThat( properties.size() ).isEqualTo( 1 );

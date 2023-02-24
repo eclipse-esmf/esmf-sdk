@@ -58,7 +58,7 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CHARACTERISTIC_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle,
-            "http://example.com/me, http://example.com/" );
+            "http://example.com/, http://example.com/me" );
    }
 
    @ParameterizedTest

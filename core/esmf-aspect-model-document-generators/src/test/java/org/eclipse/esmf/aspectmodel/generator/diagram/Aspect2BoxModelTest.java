@@ -47,7 +47,7 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
       final String entriesSelectorStatement = ":AspectWithMultipleSeeAttributesAspect :entries *";
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle,
-            "http://example.com/me, http://example.com/" );
+            "http://example.com/, http://example.com/me" );
    }
 
    @ParameterizedTest

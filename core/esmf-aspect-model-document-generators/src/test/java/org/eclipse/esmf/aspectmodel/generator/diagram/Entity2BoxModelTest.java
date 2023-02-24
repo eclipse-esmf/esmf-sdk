@@ -46,7 +46,7 @@ public class Entity2BoxModelTest extends MetaModelVersions {
       context.executeAttributeIsPresentTest( sparqlQueryFileName, ":EntityWithMultipleSeeAttributesEntity a :Box",
             ":EntityWithMultipleSeeAttributesEntity :entries *",
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle,
-            "http://example.com/me, http://example.com/" );
+            "http://example.com/, http://example.com/me" );
    }
 
    @ParameterizedTest

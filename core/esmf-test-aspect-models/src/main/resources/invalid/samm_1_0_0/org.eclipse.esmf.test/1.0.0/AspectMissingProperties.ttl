@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-@prefix : <urn:samm:org.eclipse.esmf.samm.test:1.0.0#> .
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
 @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
 
 :AspectMissingProperties a samm:Aspect ;
