@@ -175,7 +175,6 @@ public class Context {
       if ( aspectData == null ) {
          return Optional.empty();
       }
-
       AtomicReference<String> pathExpression = new AtomicReference<>(
             "/" + String.join( "/", propertyPath.stream().map( Property::getPayloadName ).toList() ) );
       indices.entrySet()
@@ -183,7 +182,7 @@ public class Context {
                 pathExpression.getAndUpdate(
                       path -> path.replace( index.getKey().getPayloadName(), index.getKey().getPayloadName() + "/" + index.getValue() ) );
              } );
-
-      return Optional.of( aspectData.at( pathExpression.get() ) );
+      final JsonNode valueNode = aspectData.at( pathExpression.get() );
+      return valueNode.isMissingNode() ? Optional.empty() : Optional.of( valueNode );
    }
 }

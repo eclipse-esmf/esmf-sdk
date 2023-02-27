@@ -39,6 +39,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.LangString;
+import org.eclipse.digitaltwin.aas4j.v3.model.ModelingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.Operation;
 import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
@@ -72,6 +73,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.ImmutableMap;
 
+import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
+import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
+import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
 import io.openmanufacturing.sds.characteristic.Code;
 import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.characteristic.Duration;
@@ -92,6 +96,7 @@ import io.openmanufacturing.sds.metamodel.NamedElement;
 import io.openmanufacturing.sds.metamodel.Property;
 import io.openmanufacturing.sds.metamodel.Scalar;
 import io.openmanufacturing.sds.metamodel.Type;
+import io.openmanufacturing.sds.metamodel.loader.MetaModelBaseAttributes;
 import io.openmanufacturing.sds.metamodel.visitor.AspectVisitor;
 
 public class AspectModelAASVisitor implements AspectVisitor<Environment, Context> {
@@ -572,15 +577,16 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    public Environment visitEither(
          final Either either, final Context context ) {
       final List<SubmodelElement> submodelElements = new ArrayList<>();
-      if ( either.getLeft().getDataType().isPresent() ) {
-         submodelElements.add(
-               decideOnMapping( either.getLeft().getDataType().get(), context.getProperty(), context ) );
-      }
-      if ( either.getRight().getDataType().isPresent() ) {
-         submodelElements.add(
-               decideOnMapping( either.getRight().getDataType().get(), context.getProperty(), context ) );
-      }
-      final SubmodelElementList aasSubModelElementCollection =
+      final var property = context.getProperty();
+      either.getLeft().getDataType()
+            .flatMap( dataType -> handleEitherField( "left", either.getLeft(), property, context ) )
+            .ifPresent( submodelElements::add );
+      either.getRight().getDataType()
+            .flatMap( dataType -> handleEitherField( "right", either.getRight(), property, context ) )
+            .ifPresent( submodelElements::add );
+
+      //context.setProperty( property );
+      final SubmodelElementList eitherSubModelElements =
             new DefaultSubmodelElementList.Builder()
                   .idShort( either.getName() )
                   .displayName( map( either.getPreferredNames() ) )
@@ -588,8 +594,33 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                   .value( submodelElements )
                   .kind( context.getModelingKind() )
                   .build();
-      context.setPropertyResult( aasSubModelElementCollection );
+      context.setPropertyResult( eitherSubModelElements );
       return context.environment;
+   }
+
+   private Optional<SubmodelElement> handleEitherField( final String field, final Characteristic fieldCharacteristic,
+         final Property property, final Context context ) {
+      Optional<SubmodelElement> result = Optional.empty();
+      if ( context.getModelingKind().equals( ModelingKind.INSTANCE ) ) {
+         final var fieldProperty = createProperty( property.getMetaModelVersion(), field, fieldCharacteristic );
+         context.setProperty( fieldProperty );
+         if ( context.getRawPropertyValue().isPresent() ) {
+            result = Optional.ofNullable( decideOnMapping( fieldCharacteristic.getDataType().get(), context.getProperty(), context ) );
+         }
+         context.getPropertyResult();
+      } else {
+         result = Optional.ofNullable( decideOnMapping( fieldCharacteristic.getDataType().get(), context.getProperty(), context ) );
+      }
+
+      return result;
+   }
+
+   private Property createProperty( final KnownVersion modelVersion, final String propertyName, final Characteristic characteristic ) {
+      final MetaModelBaseAttributes propertyAttributes =
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( new BAMM( modelVersion ).Property().getURI() ), propertyName );
+      return new io.openmanufacturing.sds.metamodel.impl.DefaultProperty( propertyAttributes, Optional.of( characteristic ), Optional.empty(), false, false,
+            Optional.empty(), false,
+            Optional.empty() );
    }
 
    @Override
