@@ -12,18 +12,18 @@
  */
 package io.openmanufacturing.sds.aspectmodel.aas;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
@@ -31,6 +31,8 @@ import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIEC61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
 import org.eclipse.digitaltwin.aas4j.v3.model.EmbeddedDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.model.LangString;
+import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
@@ -53,13 +55,71 @@ class AspectModelAASGeneratorTest {
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
    @Test
-   void testGenerateXmlFromBammAspectWithSimpleProperty() throws IOException, DeserializationException {
-      //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_PROPERTY );
-      //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_ENTITY );
-      //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_NESTED_ENTITY );
-      //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_ENTITY_LIST );
-      //getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE );
-      getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST );
+   void generateAasxWithAspectDataForMultilanguageText() throws IOException, DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT );
+      assertThat( env.getSubmodels() )
+            .singleElement()
+            .satisfies( subModel -> {
+               assertThat( subModel.getSubmodelElements() )
+                     .singleElement()
+                     .satisfies( property -> {
+                        assertThat( property ).asInstanceOf( InstanceOfAssertFactories.type( MultiLanguageProperty.class ) )
+                                              .extracting( mlp -> mlp.getValue() )
+                                              .asList()
+                                              .hasSize( 2 )
+                                              .allSatisfy( langString -> {
+                                                 List.of( "en", "de" ).contains( ((LangString) langString).getLanguage() );
+                                              } );
+                     } );
+            } );
+   }
+
+   @Test
+   void generateAasxWithAspectDataForEitherWithEntity() throws IOException, DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
+      assertThat( env.getSubmodels() )
+            .singleElement()
+            .satisfies( subModel -> {
+               assertThat( subModel.getSubmodelElements() )
+                     .anySatisfy( sme -> {
+                        assertThat( sme ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementList.class ) )
+                                         .extracting( smel -> smel.getValue() )
+                                         .asList()
+                                         .anySatisfy( entity -> {
+                                            assertThat( entity ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementCollection.class ) )
+                                                                .extracting( smec -> smec.getValue() )
+                                                                .asList()
+                                                                .singleElement( InstanceOfAssertFactories.type( Property.class ) )
+                                                                .extracting( entityProperty -> entityProperty.getValue() )
+                                                                .isEqualTo( "The result" );
+                                         } );
+                     } );
+            } );
+   }
+
+   @Test
+   void generateAasxWithAspectDataForNestedEntityLists() throws IOException, DeserializationException {
+      final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST );
+      assertThat( env.getSubmodels() )
+            .singleElement()
+            .satisfies( subModel -> {
+               assertThat( subModel.getSubmodelElements() )
+                     .anySatisfy( sme -> {
+                        assertThat( sme ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementList.class ) )
+                                         .extracting( smel -> smel.getValue() )
+                                         .asList()
+                                         .anySatisfy( entity -> {
+                                            assertThat( entity ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementCollection.class ) )
+                                                                .extracting( smec -> smec.getValue() )
+                                                                .asList()
+                                                                .anySatisfy( property -> {
+                                                                   assertThat( property ).asInstanceOf( InstanceOfAssertFactories.type( Property.class ) )
+                                                                                         .extracting( Property::getValue )
+                                                                                         .isEqualTo( "2.25" );
+                                                                } );
+                                         } );
+                     } );
+            } );
    }
 
    @Test
@@ -269,8 +329,6 @@ class AspectModelAASGeneratorTest {
          throws DeserializationException, IOException {
       final Aspect aspect = loadAspect( testAspect );
       final ByteArrayOutputStream out = generator.generateXmlOutput( aspect );
-      //final ByteArrayOutputStream out1 = generator.generateAasxOutput( aspect );
-      //Files.write( Path.of( testAspect.getName() + ".aasx" ), out1.toByteArray() );
       return loadAASX( out, testAspect );
    }
 
@@ -295,7 +353,6 @@ class AspectModelAASGeneratorTest {
          throws DeserializationException, IOException {
       final XmlDeserializer deserializer = new XmlDeserializer();
       final var data = byteStream.toByteArray();
-      Files.write( Path.of( testAspect.getName() + ".xml" ), data );
       return deserializer.read( new ByteArrayInputStream( data ) );
    }
 }
