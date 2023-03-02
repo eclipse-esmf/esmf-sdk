@@ -163,7 +163,8 @@ public class Context {
     * @return the property value at the current property path
     */
    public String getPropertyValue( final String defaultValue ) {
-      return getRawPropertyValue().map( JsonNode::asText ).orElse( defaultValue );
+      return getRawPropertyValue().map( valueNode -> valueNode.asText( defaultValue ) )
+                                  .orElse( defaultValue );
    }
 
    /**

@@ -77,7 +77,7 @@ public class AspectModelAASGenerator {
    }
 
    protected ByteArrayOutputStream generateXmlOutput( final Map<Aspect, JsonNode> aspectsWithData ) throws IOException {
-      final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
+      final AspectModelAASVisitor visitor = new AspectModelAASVisitor().withPropertyMapper( new LangStringPropertyMapper() );
 
       final Map<Aspect, Environment> aspectEnvironments =
             aspectsWithData.entrySet().stream()

@@ -1,0 +1,55 @@
+package io.openmanufacturing.sds.aspectmodel.aas;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.jena.vocabulary.RDF;
+import org.eclipse.digitaltwin.aas4j.v3.model.LangString;
+import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultMultiLanguageProperty;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import io.openmanufacturing.sds.metamodel.Property;
+import io.openmanufacturing.sds.metamodel.Type;
+
+/**
+ * Special mapper to create {@link MultiLanguageProperty}s from Aspect Model properties that carry multiple localized strings.
+ */
+public class LangStringPropertyMapper implements PropertyMapper<MultiLanguageProperty> {
+
+   @Override
+   public boolean canHandle( io.openmanufacturing.sds.metamodel.Property property ) {
+      return property.getDataType()
+                     .map( Type::getUrn )
+                     .filter( RDF.langString.getURI()::equals )
+                     .isPresent();
+   }
+
+   @Override
+   public MultiLanguageProperty mapToAasProperty( Type type, io.openmanufacturing.sds.metamodel.Property property, Context context ) {
+      return new DefaultMultiLanguageProperty.Builder().idShort( context.getPropertyShortId() )
+                                                       .kind( context.getModelingKind() )
+                                                       .description( LANG_STRING_MAPPER.map( property.getDescriptions() ) )
+                                                       .displayName( LANG_STRING_MAPPER.map( property.getPreferredNames() ) )
+                                                       .semanticId( buildReferenceToConceptDescription( property ) )
+                                                       .value( extractLangStrings( property, context ) )
+                                                       .build();
+   }
+
+   private List<LangString> extractLangStrings( Property property, Context context ) {
+      return context.getRawPropertyValue()
+             .filter( JsonNode::isObject )
+             .map( node -> {
+                final Map<String, String> entries = new HashMap<>();
+                node.fields().forEachRemaining( field -> entries.put( field.getKey(), field.getValue().asText() ) );
+                return entries;
+             } )
+             .map( rawEntries -> rawEntries.entrySet()
+                                           .stream()
+                                           .map( entry -> LANG_STRING_MAPPER.createLangString( entry.getValue(), entry.getKey() ) )
+                                           .toList() )
+             .orElseGet( () -> List.of() );
+   }
+}
