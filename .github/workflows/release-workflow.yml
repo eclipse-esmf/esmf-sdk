@@ -34,6 +34,7 @@ jobs:
   # and the Linux-specific bamm-cli binary to the build artifacts
   build-linux:
     name: Linux build
+    needs: [check-preconditions]
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -96,6 +97,7 @@ jobs:
   # and upload the binary binary to the build artifacts
   build-windows:
     name: Windows build
+    needs: [check-preconditions]
     runs-on: windows-latest
     steps:
       - name: Checkout
