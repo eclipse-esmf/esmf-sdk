@@ -6,29 +6,26 @@ on:
         description: 'Version number of the release'
         required: true
 jobs:
-  build:
+  check-preconditions:
+    name: Check preconditions
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.1
-        with:
-          ref: main
-          fetch-depth: 0
+        uses: actions/checkout@v3
+
+      # Required for Maven
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: '17'
-          server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_TOKEN
-          gpg-private-key: ${{ secrets.PGP_KEY }}
-          gpg-passphrase: PGP_KEY_PASSWORD
           overwrite-settings: false
+
       - name: Setup Git
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
+
       - name: Sanity check version
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
@@ -42,9 +39,186 @@ jobs:
             echo release version $release_version is invalid
             exit 1
           fi
-      - name: Create release branch if not exists
+
+  # The Linux build will upload the local Nexus deployment repository
+  # (i.e., what will be deployed to OSSRH/Maven Central)
+  # and the Linux-specific bamm-cli binary to the build artifacts
+  build-linux:
+    name: Linux build
+    needs: [check-preconditions]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.3.1'
+          java-version: '17'
+          components: 'native-image,js'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set Swap Space (Linux)
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 12
+
+      # The Linux build will prepare a local Nexus staging repository
+      # that includes all .jars except the CLI jar
+      - name: Build and run tests
+        run: |
+          export MAVEN_OPTS="-Xmx4096m"
+          # Required for reactor dependencies
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn versions:commit
+
+          # Actual build of core SDK
+          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
+          # Build of CLI
+          cd tools/bamm-cli
+          mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+
+          # Create zip of bamm-cli
+          cd tools/bamm-cli/target
+          chmod a+x bamm
+          tar cfvz bamm-cli-linux.tar.gz bamm
+
+      - name: Upload staging directory and Linux binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-artifacts
+          path: |
+            nexus-staging/
+            tools/bamm-cli/target/bamm-cli-linux.tar.gz
+            tools/bamm-cli/target/bamm-cli-*.jar
+
+  # The Windows build will build the Windows-specific bamm-cli
+  # and upload the binary binary to the build artifacts
+  build-windows:
+    name: Windows build
+    needs: [check-preconditions]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.3.1'
+          java-version: '17'
+          components: 'native-image,js'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Configure Pagefile (Windows)
+        # Fix for "LINK : fatal error LNK1171: unable to load mspdbcore.dll (error code: 1455)":
+        # This seems to be caused by running out of memory; increasing page file
+        # size suggested here:
+        # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
+        uses: al-cheb/configure-pagefile-action@v1.2
+        with:
+          minimum-size: 16GB
+          maximum-size: 16GB
+          disk-root: "C:"
+
+      - name: Build and run tests
+        run: |
+          export MAVEN_OPTS="-Xmx4096m"
+          # Required for reactor dependencies
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn versions:commit
+
+          # Actual build of core SDK
+          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          # Build of CLI
+          cd tools/bamm-cli
+          mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+        shell: bash
+
+      - name: Upload Windows binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-artifacts
+          path: |
+            tools/bamm-cli/target/bamm.exe
+            tools/bamm-cli/target/*.dll
+            tools/bamm-cli/target/lib/
+
+  release:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      # Need to checkout here too, so that we have the pom.xml
+      # with the deployment info available
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          server-id: ossrh
+          server-username: OSSRH_USERNAME
+          server-password: OSSRH_TOKEN
+          gpg-private-key: ${{ secrets.PGP_KEY }}
+          gpg-passphrase: PGP_KEY_PASSWORD
+          overwrite-settings: false
+
+      - name: Fetch Linux Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-artifacts
+
+      - name: Fetch Windows Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-artifacts
+
+      - name: Prepare release
+        run: |
+          # Create Windows CLI zip
+          zip -9 -r bamm-cli-windows.zip bamm.exe *.dll lib/
+
+      # Full release: Maven Central
+      - name: Release to OSSRH/Maven Central
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        run: |
+          mvn nexus-staging:deploy-staged-repository -DrepositoryDirectory=nexus-staging -Prelease-build
+        env:
+          # Workaround for https://issues.sonatype.org/browse/OSSRH-66257
+          # as described in https://stackoverflow.com/a/70157413
+          MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
+
+      - name: Create release commit
         continue-on-error: true
         run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
           release_version=${{ github.event.inputs.release_version }}
           release_branch_name=${release_version%.*}.x
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
@@ -52,65 +226,38 @@ jobs:
           git fetch
           git checkout -b $release_branch_name --track origin/$release_branch_name || true
           git checkout -b $release_branch_name
-      - name: Set Maven version
-        run: |
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true -Dgpg.skip=true
+
+          # Set version in pom.xml files
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
           mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
           mvn versions:commit
-      - name: Set Antora version
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
-      - name: Commit version changes and push to upstream repository
-        run: |
+          # Set version in Antora module
+          yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
+          # Push changes
           git add .
           if git commit -m "Add version ${{ github.event.inputs.release_version}}"; then
             git push origin ${{ env.release_branch_name }}
           fi
-      - name: Run tests and build
-        run: mvn -B clean install
 
-      # release-build
-      - name: Create GitHub release
+      # Full release: Github
+      - name: "Create Github release (full)"
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         uses: softprops/action-gh-release@v1
         id: esmf_sdk_release
-        with: 
-          body: "Release of ESMF SDK in version v${{ github.event.inputs.release_version  }}."
+        with:
+          body: "Release version ${{ github.event.inputs.release_version }}."
           tag_name: v${{ github.event.inputs.release_version }}
           target_commitish: ${{ env.release_branch_name }}
           draft: false
           prerelease: false
           files: |
-            **/target/*-${{ github.event.inputs.release_version }}.jar
+            bamm-cli-windows.zip
+            bamm-cli-linux.tar.gz
+            bamm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-      - name: Publish to OSSRH
-        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
-        run: mvn -B clean -pl '!esmf-sdk-test-report,!documentation,!tools/samm-cli' deploy -DskipTests -Prelease-build,sign
-        env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-          PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
-          # Workaround for https://issues.sonatype.org/browse/OSSRH-66257
-          # as described in https://stackoverflow.com/a/70157413
-          MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
 
-      # milestone-build
-      - name: Create GitHub release
-        if: contains( github.event.inputs.release_version, '-M' )
-        uses: softprops/action-gh-release@v1
-        id: esmf_sdk_milestone_release
-        with:
-          body: "Release of ESMF SDK in version v${{ github.event.inputs.release_version  }}."
-          tag_name: v${{ github.event.inputs.release_version }}
-          target_commitish: ${{ env.release_branch_name }}
-          draft: false
-          prerelease: true
-          files: |
-            **/target/*-${{ github.event.inputs.release_version }}.jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+      # Milestone release: Write settings to deploy to Github repo
       - name: Write settings.xml
         if: contains( github.event.inputs.release_version, '-M' )
         uses: DamianReeves/write-file-action@v1.0
@@ -140,9 +287,29 @@ jobs:
                </servers>
             </settings>
           write-mode: overwrite
+
+      # Milestone release: Maven deploy to Github
       - name: Publish to Github
         if: contains( github.event.inputs.release_version, '-M' )
         run: mvn -s ./settings.xml -B clean -pl '!esmf-sdk-test-report,!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
+
+      # Milestone release: Github
+      - name: "Create Github release (milestone)"
+        if: contains( github.event.inputs.release_version, '-M' )
+        uses: softprops/action-gh-release@v1
+        id: sds_sdk_release
+        with:
+          body: "Release version ${{ github.event.inputs.release_version }}."
+          tag_name: v${{ github.event.inputs.release_version }}
+          target_commitish: ${{ env.release_branch_name }}
+          draft: false
+          prerelease: true
+          files: |
+            bamm-cli-windows.zip
+            bamm-cli-linux.tar.gz
+            bamm-cli-*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

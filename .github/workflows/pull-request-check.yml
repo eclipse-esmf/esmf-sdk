@@ -61,20 +61,19 @@ jobs:
         shell: bash
 
       - name: Upload executable jar
-        # We only need one OS job to upload the jars
+        # We only need one OS job to upload the jar
         if: matrix.os == 'ubuntu-20.04'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: samm-cli-jar
           path: tools/samm-cli/target/samm-cli-*.jar
 
       - name: Upload binary (Windows)
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
+          name: bamm-cli-binary-${{ matrix.os }}
           name: samm-cli-binary-${{ matrix.os }}
-          # We put all the possible binary names in the path,
-          # upload-artifact will upload the one(s) that are actually present
           path: |
             tools/samm-cli/target/samm.exe
             tools/samm-cli/target/*.dll
@@ -82,10 +81,8 @@ jobs:
 
       - name: Upload binary (Linux/Mac)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: samm-cli-binary-${{ matrix.os }}
-          # We put all the possible binary names in the path,
-          # upload-artifact will upload the one(s) that are actually present
           path: |
             tools/samm-cli/target/samm
