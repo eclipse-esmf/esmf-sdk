@@ -105,7 +105,7 @@ jobs:
             tools/bamm-cli/target/bamm-cli-*.jar
 
   # The Windows build will build the Windows-specific bamm-cli
-  # and upload the binary binary to the build artifacts
+  # and upload the binary to the build artifacts
   build-windows:
     name: Windows build
     needs: [check-preconditions]
