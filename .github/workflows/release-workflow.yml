@@ -10,6 +10,14 @@ jobs:
     name: Check preconditions
     runs-on: ubuntu-20.04
     steps:
+      # Required for Maven
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          overwrite-settings: false
+
       - name: Setup Git
         run: |
           git config user.name github-actions
