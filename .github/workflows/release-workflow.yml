@@ -84,7 +84,7 @@ jobs:
           mvn versions:commit
 
           # Actual build of core SDK
-          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging
+          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
           # Build of CLI
           cd tools/bamm-cli
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
@@ -207,7 +207,11 @@ jobs:
       - name: Release to OSSRH/Maven Central
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
-          mvn nexus-staging:deploy-staged-repository -DrepositoryDirectory=nexus-staging
+          mvn nexus-staging:deploy-staged-repository -DrepositoryDirectory=nexus-staging -Prelease-build
+        env:
+          # Workaround for https://issues.sonatype.org/browse/OSSRH-66257
+          # as described in https://stackoverflow.com/a/70157413
+          MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
 
       - name: Create release commit
         continue-on-error: true
