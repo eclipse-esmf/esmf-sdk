@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2021-2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
 package io.openmanufacturing.sds.aspectmodel.aas;
 
 import java.util.HashMap;
@@ -40,16 +52,16 @@ public class LangStringPropertyMapper implements PropertyMapper<MultiLanguagePro
 
    private List<LangString> extractLangStrings( Property property, Context context ) {
       return context.getRawPropertyValue()
-             .filter( JsonNode::isObject )
-             .map( node -> {
-                final Map<String, String> entries = new HashMap<>();
-                node.fields().forEachRemaining( field -> entries.put( field.getKey(), field.getValue().asText() ) );
-                return entries;
-             } )
-             .map( rawEntries -> rawEntries.entrySet()
-                                           .stream()
-                                           .map( entry -> LANG_STRING_MAPPER.createLangString( entry.getValue(), entry.getKey() ) )
-                                           .toList() )
-             .orElseGet( () -> List.of() );
+                    .filter( JsonNode::isObject )
+                    .map( node -> {
+                       final Map<String, String> entries = new HashMap<>();
+                       node.fields().forEachRemaining( field -> entries.put( field.getKey(), field.getValue().asText() ) );
+                       return entries;
+                    } )
+                    .map( rawEntries -> rawEntries.entrySet()
+                                                  .stream()
+                                                  .map( entry -> LANG_STRING_MAPPER.createLangString( entry.getValue(), entry.getKey() ) )
+                                                  .toList() )
+                    .orElseGet( () -> List.of() );
    }
 }
