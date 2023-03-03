@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.collect.ImmutableList;
@@ -30,7 +33,8 @@ import io.vavr.control.Try;
 /**
  * Represents the identifier URN of an Aspect Model.
  *
- * @see <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/v1.0.0/namespaces.html">https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/v1.0.0/namespaces.html</a>
+ * @see
+ * <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/v1.0.0/namespaces.html">https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/v1.0.0/namespaces.html</a>
  *       for the definition of the URN.
  */
 public class AspectModelUrn implements Comparable<AspectModelUrn> {
@@ -63,6 +67,8 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    private static final List<ElementType> MODEL_ELEMENT_TYPES = Arrays
          .asList( ElementType.ASPECT_MODEL_ELEMENT, ElementType.ENTITY_MODEL_ELEMENT,
                ElementType.CHARACTERISTIC_MODEL_ELEMENT );
+
+   private static final Logger LOG = LoggerFactory.getLogger( AspectModelUrn.class );
 
    private final String name;
    private final String version;
@@ -120,7 +126,12 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       checkUrn( protocol.equalsIgnoreCase( VALID_PROTOCOL ), UrnSyntaxException.URN_INVALID_PROTOCOL_MESSAGE,
             VALID_PROTOCOL );
 
-      final String namespaceIdentifier = urnParts.get( 1 );
+      String namespaceIdentifier = urnParts.get( 1 );
+      // This is no public constant, because it's an implementation detail
+      if ( namespaceIdentifier.equals( "bamm" ) ) {
+         LOG.warn( "Encountered legacy BAMM Aspect Model URN: {}. Support for urn:bamm: will be removed!", urn );
+         namespaceIdentifier = "samm";
+      }
       checkUrn( namespaceIdentifier.equals( VALID_NAMESPACE_IDENTIFIER ),
             UrnSyntaxException.URN_INVALID_NAMESPACE_IDENTIFIER_MESSAGE, VALID_NAMESPACE_IDENTIFIER );
 

@@ -40,6 +40,8 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
@@ -47,11 +49,9 @@ import org.eclipse.esmf.aspectmodel.urn.UrnSyntaxException;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorFactory;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorServiceLoader;
+import org.eclipse.esmf.aspectmodel.versionupdate.migrator.BammUriRewriter;
 
 import com.google.common.collect.Streams;
-
-import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 
 import io.vavr.CheckedFunction1;
 import io.vavr.Value;
@@ -65,6 +65,7 @@ import io.vavr.control.Try;
 public class AspectModelResolver {
 
    private final MigratorService migratorService = MigratorServiceLoader.getInstance().getMigratorService();
+   private final BammUriRewriter bammUriRewriter = new BammUriRewriter();
 
    /**
     * Returns all valid model URNs for Aspects and model elements in a model
@@ -166,7 +167,8 @@ public class AspectModelResolver {
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final Model initialModel, final ResolutionStrategy resolutionStrategy, final List<AspectModelUrn> input ) {
-      final Try<Model> mergedModel = resolve( initialModel, input, resolutionStrategy );
+      final Try<Model> mergedModel = resolve( initialModel, input, resolutionStrategy )
+            .map( bammUriRewriter::migrate );
 
       if ( mergedModel.isFailure() ) {
          if ( mergedModel.getCause() instanceof FileNotFoundException ) {
@@ -301,6 +303,7 @@ public class AspectModelResolver {
       }
 
       try {
+//         final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( replaceLegacyBammUrn( urn ) );
          final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( urn );
          if ( aspectModelUrn.getElementType() != ElementType.NONE ) {
             return Try.success( EMPTY_MODEL );
@@ -317,6 +320,18 @@ public class AspectModelResolver {
          // to resolve, so we return just an empty model
          return Try.success( EMPTY_MODEL );
       }
+   }
+
+   /**
+    * Adapter that enables the resolver to handle URNs with the legacy "urn:bamm:" prefix
+    * @param urn the URN to clean up
+    * @return the original URN (if using valid urn:samm: scheme) or the the cleaned up URN
+    */
+   private String replaceLegacyBammUrn( final String urn ) {
+      if ( urn.startsWith( "urn:bamm:" ) ) {
+         return urn.replace( "urn:bamm:", "urn:samm:" );
+      }
+      return urn;
    }
 
    /**

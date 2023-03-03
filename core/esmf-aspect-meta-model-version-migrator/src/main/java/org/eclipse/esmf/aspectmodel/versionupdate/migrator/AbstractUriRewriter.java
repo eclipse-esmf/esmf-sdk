@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.versionupdate.migrator;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,11 +24,10 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Streams;
-
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 
 /**
  * Abstract migration function that is used to apply a change to all URIs in a model
@@ -39,6 +37,12 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
       super( sourceVersion, targetVersion, 100 );
    }
 
+   /**
+    * The URI rewriter implementation decides whether a URI needs to be rewritten, given the map of old to new namespaces
+    * @param oldUri the URI to rewrite
+    * @param oldToNewNamespaces the map of old to new namespaces
+    * @return empty if the URI should be kept as-is, the replacement URI otherwise
+    */
    protected abstract Optional<String> rewriteUri( String oldUri, Map<String, String> oldToNewNamespaces );
 
    protected Resource updateResource( final Resource resource, final Map<String, String> oldToNewNamespaces ) {
@@ -60,23 +64,42 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
       return rdfNode;
    }
 
-   @Override
-   public Model migrate( final Model sourceModel ) {
-      final Model targetModel = ModelFactory.createDefaultModel();
-
-      final Map<String, String> targetPrefixes = Namespace.createPrefixMap( getTargetKnownVersion() );
-
+   protected Map<String, String> buildReplacementPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes ) {
       final Map<String, String> sourcePrefixes = Namespace.createPrefixMap( getSourceKnownVersion() );
       final Map<String, String> oldToNewNamespaces = new HashMap<>();
       for ( final Map.Entry<String, String> targetEntry : targetPrefixes.entrySet() ) {
          final String prefix = targetEntry.getKey();
          if ( prefix != null ) {
             final String sourceUri = sourcePrefixes.get( prefix );
-            if ( sourceUri != null && !sourceUri.equals( targetEntry.getValue() )) {
+            if ( sourceUri != null && !sourceUri.equals( targetEntry.getValue() ) ) {
                oldToNewNamespaces.put( sourceUri, targetEntry.getValue() );
             }
          }
       }
+
+      return oldToNewNamespaces;
+   }
+
+   /**
+    * Builds the map of RDF prefixes to set in the migrated model, e.g. "xsd" -> XSD.NS
+    *
+    * @param sourceModel the source model
+    * @param targetPrefixes the target prefix map, containing e.g. "samm" -> samm.getNamespace()
+    * @param oldToNewNamespaces the map of old RDF namespaces to their new counterparts
+    * @return the prefix map
+    */
+   protected Map<String, String> buildPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes, final Map<String, String> oldToNewNamespaces ) {
+      return sourceModel.getNsPrefixMap().keySet().stream()
+            .map( prefix -> Map.<String, String> entry( prefix, targetPrefixes.getOrDefault( prefix, sourceModel.getNsPrefixURI( prefix ) ) ) )
+            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+   }
+
+   @Override
+   public Model migrate( final Model sourceModel ) {
+      final Model targetModel = ModelFactory.createDefaultModel();
+
+      final Map<String, String> targetPrefixes = Namespace.createPrefixMap( getTargetKnownVersion() );
+      final Map<String, String> oldToNewNamespaces = buildReplacementPrefixMap( sourceModel, targetPrefixes );
 
       Streams.stream( sourceModel.listStatements() ).map( statement -> targetModel
             .createStatement(
@@ -85,13 +108,7 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
                   updateRdfNode( statement.getObject(), oldToNewNamespaces )
             ) ).forEach( targetModel::add );
 
-      final Map<String, String> newPrefixMap =
-            sourceModel.getNsPrefixMap().keySet().stream()
-                  .map( prefix -> new AbstractMap.SimpleEntry<>( prefix,
-                        Optional.ofNullable( targetPrefixes.get( prefix ) ).orElse( sourceModel.getNsPrefixURI( prefix ) ) ) )
-                  .collect( Collectors.toMap( AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue ) );
-      targetModel.setNsPrefixes( newPrefixMap );
-
+      targetModel.setNsPrefixes( buildPrefixMap( sourceModel, targetPrefixes, oldToNewNamespaces ) );
       return targetModel;
    }
 }

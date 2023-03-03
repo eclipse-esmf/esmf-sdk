@@ -20,9 +20,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
-import com.google.common.base.Strings;
-
 import org.junit.jupiter.api.Test;
+
+import com.google.common.base.Strings;
 
 public class AspectModelUrnTest {
    private final String baseUri = "urn:samm:org.eclipse.esmf.test:";
@@ -52,6 +52,11 @@ public class AspectModelUrnTest {
       aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
       assertAspectModelUrn( aspectModelUrn, "E2", "org.eclipse.esmf.test" );
+
+      // Check that URNs using the schema of BAMM (which at the end of 2022 was renamed to SAMM) are still valid
+      final URI validBammUrn = new URI( "urn:bamm:com.example:1.0.0#MyAspect" );
+      final AspectModelUrn bammUrn = AspectModelUrn.fromUrn( validBammUrn );
+      assertModelElementUrn( bammUrn, "MyAspect", "com.example" );
    }
 
    @Test
