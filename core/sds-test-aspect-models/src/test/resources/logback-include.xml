@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+  ~ Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
   ~
   ~ See the AUTHORS file(s) distributed with this work for additional
   ~ information regarding authorship.
@@ -11,8 +11,7 @@
   ~ SPDX-License-Identifier: MPL-2.0
   -->
 
-<configuration>
-
+<included>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <target>System.out</target>
         <encoder>
@@ -23,12 +22,9 @@
     <logger name="org.apache.jena" level="OFF"/>
     <logger name="org.apache.jena.util" level="OFF"/>
     <logger name="org.apache.jena.shared" level="OFF"/>
-    <logger name="io.openmanufacturing.sds.BammCli" level="WARN"/>
     <logger name="guru.nidi.graphviz.service" level="OFF"/>
-    <logger name="io.openmanufacturing.sds.aspectmodel" level="OFF"/>
 
     <root level="warn">
         <appender-ref ref="console"/>
     </root>
-
-</configuration>
+</included>

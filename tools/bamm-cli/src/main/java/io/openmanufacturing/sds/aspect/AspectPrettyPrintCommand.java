@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.PrintWriter;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspectmodel.serializer.PrettyPrinter;
 import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
 import picocli.CommandLine;
@@ -33,8 +34,10 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectPrettyPrintCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "prettyprint";
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path (default: stdout)" )
    private String outputFilePath = "-";

@@ -59,7 +59,7 @@
     $codeGenerationConfig.importTracker().importExplicit( $DatatypeConstants )
     $codeGenerationConfig.importTracker().importExplicit( $DatatypeFactory )
 #end
-#if ( $element.is( $ComplexType ) && $element.getExtends().isPresent() )
+#if ( $element.isComplexType() && $element.getExtends().isPresent() )
 	#set( $allPropertiesInPayload = $util.getAllPropertiesInPayload( $element ) )
 	#set( $allProperties = $util.getAllProperties( $element ) )
 	#set( $elementPropertiesInPayload = $util.getPropertiesInPayload( $element ) )

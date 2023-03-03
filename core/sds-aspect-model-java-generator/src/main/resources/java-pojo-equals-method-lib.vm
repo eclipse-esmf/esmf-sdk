@@ -19,8 +19,8 @@ if (this == o) {
 if (o == null || getClass() != o.getClass()) {
     return false;
 }
-#if ( $element.is( $ComplexType ) )
-#set( $complexElement = $ComplexType.cast( $element ) )
+#if ( $element.isComplexType() )
+#set( $complexElement = $util.castToComplexType( $element ) )
     #if ( $complexElement.getExtends().isPresent() )
         if ( !super.equals( o ) ) {
             return false;

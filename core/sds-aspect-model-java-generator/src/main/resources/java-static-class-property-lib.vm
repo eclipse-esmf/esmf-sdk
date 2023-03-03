@@ -13,7 +13,7 @@
 #macro( propertyDeclaration ) public static final #end
 
 #macro( getConstraintClassName )
-    #set( $trait = $Trait.cast( $property.getCharacteristic().get() ) )
+    #set( $trait = $util.castToTrait( $property.getCharacteristic().get() ) )
     $trait.getConstraints().iterator().next().getClass().getSimpleName()
 #end
 
@@ -25,7 +25,7 @@
     #if( $complexType.getExtends().isPresent() )
         #set( $extendedComplexType = $complexType.getExtends().get() )
         #if ( $Entity.isAssignableFrom( $extendedComplexType.class ) )
-            #set( $entityType = $Entity.cast( $extendedComplexType ) )
+            #set( $entityType = $util.castToEntity( $extendedComplexType ) )
             $codeGenerationConfig.importTracker().importExplicit( $DefaultEntity )
             Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
                 $modelVisitor.elementUrn( $entityType, $context ), "$entityType.getName()" ),
@@ -34,7 +34,7 @@
             )
         )
         #else
-            #set( $abstractEntityType = $AbstractEntity.cast( $extendedComplexType ) )
+            #set( $abstractEntityType = $util.castToAbstractEntity( $extendedComplexType ) )
             $codeGenerationConfig.importTracker().importExplicit( $DefaultAbstractEntity )
             Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
                 $modelVisitor.elementUrn( $abstractEntityType, $context ), "$abstractEntityType.getName()" ),
@@ -186,8 +186,8 @@ public Class<$propertyType> getPropertyType() {
         $codeGenerationConfig.importTracker().importExplicit( $Unit )
         $codeGenerationConfig.importTracker().importExplicit( $Units )
     public Unit getUnit() {
-    return Units.fromName("$Quantifiable.cast( $property.getCharacteristic().get() ).unit.get().getName()")
-    .orElseThrow(() -> new RuntimeException("Unknown unit: $Quantifiable.cast( $property.getCharacteristic().get() ).getUnit().get().getName()"));
+    return Units.fromName("$util.castToQuantifiable( $property.getCharacteristic().get() ).unit.get().getName()")
+    .orElseThrow(() -> new RuntimeException("Unknown unit: $util.castToQuantifiable( $property.getCharacteristic().get() ).getUnit().get().getName()"));
     }
     #end
 

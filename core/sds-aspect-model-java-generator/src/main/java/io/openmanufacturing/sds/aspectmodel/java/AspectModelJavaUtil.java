@@ -45,6 +45,7 @@ import io.openmanufacturing.sds.characteristic.Collection;
 import io.openmanufacturing.sds.characteristic.Either;
 import io.openmanufacturing.sds.characteristic.Enumeration;
 import io.openmanufacturing.sds.characteristic.Quantifiable;
+import io.openmanufacturing.sds.characteristic.State;
 import io.openmanufacturing.sds.characteristic.Trait;
 import io.openmanufacturing.sds.metamodel.AbstractEntity;
 import io.openmanufacturing.sds.metamodel.Characteristic;
@@ -571,5 +572,29 @@ public class AspectModelJavaUtil {
             .filter( property -> !property.isAbstract() )
             .map( property -> toConstant( property.getName() ) )
             .collect( Collectors.joining( ", " ) );
+   }
+
+   public static Trait castToTrait( final Characteristic characteristic ) {
+      return (Trait) characteristic;
+   }
+
+   public static Entity castToEntity( final ComplexType complexType ) {
+      return (Entity) complexType;
+   }
+
+   public static ComplexType castToComplexType( final StructureElement structureElement ) {
+      return (ComplexType) structureElement;
+   }
+
+   public static State castToState( final Enumeration enumeration ) {
+      return (State) enumeration;
+   }
+
+   public static AbstractEntity castToAbstractEntity( final ComplexType complexType ) {
+      return (AbstractEntity) complexType;
+   }
+
+   public static Quantifiable castToQuantifiable( final Characteristic characteristic ) {
+      return (Quantifiable) characteristic;
    }
 }

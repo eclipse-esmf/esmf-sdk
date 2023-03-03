@@ -14,6 +14,7 @@
 package io.openmanufacturing.sds.aspect;
 
 import io.openmanufacturing.sds.AbstractCommand;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspect.to.AspectToAasCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToDotCommand;
 import io.openmanufacturing.sds.aspect.to.AspectToHtmlCommand;
@@ -45,8 +46,10 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectToCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "to";
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @CommandLine.ParentCommand
    public AspectCommand parentCommand;

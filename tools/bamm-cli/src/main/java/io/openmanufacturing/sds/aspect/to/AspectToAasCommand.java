@@ -17,6 +17,7 @@ import java.io.IOException;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.aas.AspectModelAASGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
@@ -31,7 +32,6 @@ import picocli.CommandLine;
       optionListHeading = "%n@|bold Options|@:%n",
       mixinStandardHelpOptions = true )
 public class AspectToAasCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "aas";
    public static final String AASX = "aasx";
    public static final String XML = "xml";
@@ -48,6 +48,9 @@ public class AspectToAasCommand extends AbstractCommand {
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;

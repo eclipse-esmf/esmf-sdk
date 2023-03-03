@@ -13,7 +13,9 @@
 
 package io.openmanufacturing.sds.aspectmodel.validation.services;
 
-import static io.vavr.API.*;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
 import static io.vavr.Predicates.instanceOf;
 
 import java.io.FileNotFoundException;

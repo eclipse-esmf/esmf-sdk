@@ -17,4 +17,14 @@ package io.openmanufacturing.sds.metamodel;
  * Represents structural model elements, i.e. that are named and have {@link Property}s
  */
 public interface StructureElement extends NamedElement, HasProperties {
+   default boolean isComplexType() {
+      return false;
+   }
+
+   /**
+    * @return a {@code boolean} which indicates whether the structure element is a Collection Aspect
+    */
+   default boolean isCollectionAspect() {
+      return false;
+   }
 }

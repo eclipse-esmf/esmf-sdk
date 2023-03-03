@@ -33,7 +33,7 @@
         #end
     #end
     #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
-        $util.buildConstraintsForCharacteristic( $Trait.cast( $property.getCharacteristic().get() ), $codeGenerationConfig )
+        $util.buildConstraintsForCharacteristic( $util.castToTrait( $property.getCharacteristic().get() ), $codeGenerationConfig )
     #end
 private $propertyType $property.getPayloadName();
 #end

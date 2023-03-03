@@ -67,7 +67,33 @@
         </dependency>
         <dependency>
             <groupId>guru.nidi</groupId>
-            <artifactId>graphviz-java-all-j2v8</artifactId>
+            <artifactId>graphviz-java-min-deps</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>guru.nidi.com.eclipsesource.j2v8</groupId>
+                    <artifactId>j2v8_linux_x86_64</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Required by graphviz-java -->
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>viz.js-graphviz-java</artifactId>
+        </dependency>
+        <!-- Required by graphviz-java -->
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-rasterizer</artifactId>
+        </dependency>
+        <!-- Required by graphviz-java -->
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+        </dependency>
+        <!-- Required by graphviz-java -->
+        <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js-scriptengine</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.curious-odd-man</groupId>
