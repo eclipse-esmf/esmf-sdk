@@ -12,8 +12,6 @@
  */
 package io.openmanufacturing.sds.aspectmodel.aas;
 
-import static io.openmanufacturing.sds.aspectmodel.aas.AspectModelAASVisitor.ADMIN_SHELL_NAME;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,10 +23,8 @@ import java.util.stream.Collectors;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.SerializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXSerializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlSerializer;
-import org.eclipse.digitaltwin.aas4j.v3.model.AssetAdministrationShell;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
-import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultAssetAdministrationShell;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultEnvironment;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
 
@@ -104,13 +100,10 @@ public class AspectModelAASGenerator {
    private Environment mergeEnvironments( final Map<Aspect, Environment> aspectEnvironments ) {
       final Submodel submodel = new DefaultSubmodel.Builder().build();
       final Environment environment = new DefaultEnvironment.Builder()
+            .assetAdministrationShells( aspectEnvironments.values().stream().flatMap( e -> e.getAssetAdministrationShells().stream() ).toList() )
             .submodels( aspectEnvironments.values().stream().flatMap( e -> e.getSubmodels().stream() ).toList() )
             .conceptDescriptions( aspectEnvironments.values().stream().flatMap( e -> e.getConceptDescriptions().stream() ).toList() )
             .build();
-
-      final AssetAdministrationShell administrationShell =
-            new DefaultAssetAdministrationShell.Builder().idShort( ADMIN_SHELL_NAME ).build();
-      environment.setAssetAdministrationShells( Collections.singletonList( administrationShell ) );
 
       return environment;
    }

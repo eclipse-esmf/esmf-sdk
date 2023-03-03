@@ -48,6 +48,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 import org.eclipse.digitaltwin.aas4j.v3.model.ValueList;
 import org.eclipse.digitaltwin.aas4j.v3.model.ValueReferencePair;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultAssetAdministrationShell;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultAssetInformation;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultBlob;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultDataSpecificationIEC61360;
@@ -182,7 +183,13 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       createConceptDescription( aspect, context );
 
       final AssetAdministrationShell administrationShell =
-            new DefaultAssetAdministrationShell.Builder().idShort( ADMIN_SHELL_NAME ).build();
+            new DefaultAssetAdministrationShell.Builder()
+                  .id( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
+                  .idShort( ADMIN_SHELL_NAME )
+                  .assetInformation( new DefaultAssetInformation.Builder()
+                        .assetKind( context.getAssetKind() )
+                        .build() )
+                  .build();
       context
             .getEnvironment()
             .setAssetAdministrationShells( Collections.singletonList( administrationShell ) );

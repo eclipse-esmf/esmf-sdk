@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import org.eclipse.digitaltwin.aas4j.v3.model.AssetKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.ModelingKind;
@@ -143,6 +144,14 @@ public class Context {
       }
 
       return ModelingKind.INSTANCE;
+   }
+
+   public AssetKind getAssetKind() {
+      if ( aspectData == null ) {
+         return AssetKind.TYPE;
+      }
+
+      return AssetKind.INSTANCE;
    }
 
    public String getPropertyShortId() {
