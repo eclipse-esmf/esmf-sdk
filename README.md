@@ -41,8 +41,6 @@ This repository contains a detailed developer documentation written in AsciiDoc.
 (AsciiDoc) are located [here](documentation/developer-guide) and are built using
 [Antora](https://antora.org/) which generates the documentation as HTML files.
 
-[//](TODO explain how to build the documentation locally)
-
 ## Getting help
 
 Are you having trouble with ESMF SDK? We want to help!
