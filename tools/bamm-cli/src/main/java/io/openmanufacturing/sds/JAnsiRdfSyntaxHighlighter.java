@@ -17,12 +17,12 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 import org.fusesource.jansi.Ansi;
 
-import io.openmanufacturing.sds.aspectmodel.resolver.parser.IRdfTextFormatter;
+import io.openmanufacturing.sds.aspectmodel.resolver.parser.RdfTextFormatter;
 
 /**
  * RDF syntax highlighting using JAnsi format, usable in JAnsi-enhanced environments.
  */
-public class JAnsiRdfSyntaxHighlighter implements IRdfTextFormatter {
+public class JAnsiRdfSyntaxHighlighter implements RdfTextFormatter {
    private static final Ansi.Color IRI_COLOR = Ansi.Color.GREEN;
    private static final Ansi.Color ERROR_COLOR = Ansi.Color.RED;
    private static final Ansi.Color PREFIX_COLOR = Ansi.Color.BLUE;
@@ -43,49 +43,49 @@ public class JAnsiRdfSyntaxHighlighter implements IRdfTextFormatter {
    }
 
    @Override
-   public IRdfTextFormatter formatIri( final String iri ) {
+   public RdfTextFormatter formatIri( final String iri ) {
       builder.append( coloredFragment( IRI_COLOR, iri ) );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatDirective( final String directive ) {
+   public RdfTextFormatter formatDirective( final String directive ) {
       builder.append( coloredFragment( DIRECTIVE_COLOR, directive ) );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatPrefix( final String prefix ) {
+   public RdfTextFormatter formatPrefix( final String prefix ) {
       builder.append( coloredFragment( PREFIX_COLOR, prefix ) );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatName( final String name ) {
+   public RdfTextFormatter formatName( final String name ) {
       builder.append( ansi().fgBright( PREFIX_COLOR ).a( name ).reset().toString() );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatString( final String string ) {
+   public RdfTextFormatter formatString( final String string ) {
       builder.append( coloredFragment( STRING_COLOR, string ) );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatLangTag( final String langTag ) {
+   public RdfTextFormatter formatLangTag( final String langTag ) {
       builder.append( coloredFragment( LANG_COLOR, langTag ) );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatDefault( final String text ) {
+   public RdfTextFormatter formatDefault( final String text ) {
       builder.append( ansi().a( text ).toString() );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatPrimitive( final String primitive ) {
+   public RdfTextFormatter formatPrimitive( final String primitive ) {
       switch ( primitive ) {
       case "<" -> builder.append( coloredFragment( IRI_COLOR, primitive ) );
       case ">" -> builder.append( coloredFragment( IRI_COLOR, primitive ) );
@@ -101,7 +101,7 @@ public class JAnsiRdfSyntaxHighlighter implements IRdfTextFormatter {
    }
 
    @Override
-   public IRdfTextFormatter formatError( final String text ) {
+   public RdfTextFormatter formatError( final String text ) {
       builder.append( coloredFragment( ERROR_COLOR, text ) );
       return this;
    }

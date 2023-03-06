@@ -16,27 +16,27 @@ package io.openmanufacturing.sds.aspectmodel.resolver.parser;
 /**
  * Interface to allow interested parties to do structured formatting of RDF documents (for example syntax highlighting)
  */
-public interface IRdfTextFormatter {
+public interface RdfTextFormatter {
 
    void reset();
 
    String getResult();
 
-   IRdfTextFormatter formatIri( String iri );
+   RdfTextFormatter formatIri( String iri );
 
-   IRdfTextFormatter formatDirective( String directive );
+   RdfTextFormatter formatDirective( String directive );
 
-   IRdfTextFormatter formatPrefix( String prefix );
+   RdfTextFormatter formatPrefix( String prefix );
 
-   IRdfTextFormatter formatName( String name );
+   RdfTextFormatter formatName( String name );
 
-   IRdfTextFormatter formatString( String string );
+   RdfTextFormatter formatString( String string );
 
-   IRdfTextFormatter formatLangTag( String langTag );
+   RdfTextFormatter formatLangTag( String langTag );
 
-   IRdfTextFormatter formatDefault( String text );
+   RdfTextFormatter formatDefault( String text );
 
-   IRdfTextFormatter formatPrimitive( String primitive );
+   RdfTextFormatter formatPrimitive( String primitive );
 
-   IRdfTextFormatter formatError( String text );
+   RdfTextFormatter formatError( String text );
 }

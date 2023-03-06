@@ -16,7 +16,7 @@ package io.openmanufacturing.sds.aspectmodel.resolver.parser;
 /**
  * Special implementation of the formatter, always returning plain text. Useful in unit tests and on systems which do not support coloring text.
  */
-public class PlainTextFormatter implements IRdfTextFormatter {
+public class PlainTextFormatter implements RdfTextFormatter {
 
    private final StringBuilder builder = new StringBuilder();
 
@@ -31,55 +31,55 @@ public class PlainTextFormatter implements IRdfTextFormatter {
    }
 
    @Override
-   public IRdfTextFormatter formatIri( final String iri ) {
+   public RdfTextFormatter formatIri( final String iri ) {
       builder.append( iri );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatDirective( final String directive ) {
+   public RdfTextFormatter formatDirective( final String directive ) {
       builder.append( directive );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatPrefix( final String prefix ) {
+   public RdfTextFormatter formatPrefix( final String prefix ) {
       builder.append( prefix );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatName( final String name ) {
+   public RdfTextFormatter formatName( final String name ) {
       builder.append( name );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatString( final String string ) {
+   public RdfTextFormatter formatString( final String string ) {
       builder.append( string );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatLangTag( final String langTag ) {
+   public RdfTextFormatter formatLangTag( final String langTag ) {
       builder.append( langTag );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatDefault( final String text ) {
+   public RdfTextFormatter formatDefault( final String text ) {
       builder.append( text );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatPrimitive( final String primitive ) {
+   public RdfTextFormatter formatPrimitive( final String primitive ) {
       builder.append( primitive );
       return this;
    }
 
    @Override
-   public IRdfTextFormatter formatError( final String text ) {
+   public RdfTextFormatter formatError( final String text ) {
       builder.append( text );
       return this;
    }

@@ -20,6 +20,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import org.apache.jena.graph.AnyNode;
 import org.apache.jena.graph.BlankNode;
 import org.apache.jena.graph.LiteralNode;
@@ -34,8 +36,10 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.graph.NodeConst;
 import org.apache.jena.vocabulary.RDF;
 
-import io.openmanufacturing.sds.aspectmodel.resolver.parser.IRdfTextFormatter;
+import com.google.common.collect.Ordering;
+
 import io.openmanufacturing.sds.aspectmodel.resolver.parser.PlainTextFormatter;
+import io.openmanufacturing.sds.aspectmodel.resolver.parser.RdfTextFormatter;
 import io.openmanufacturing.sds.aspectmodel.resolver.parser.SmartToken;
 
 /**
@@ -51,7 +55,7 @@ public class RustLikeFormatter {
 
    private SmartToken highlightToken;
    private int currentColumn;
-   private final IRdfTextFormatter textFormatter;
+   private final RdfTextFormatter textFormatter;
 
    // some statements (like anonymous nodes or lists) can be handled out-of-order, so we remember them to not go over them twice
    private final Set<Statement> seen = new HashSet<>();
@@ -61,11 +65,12 @@ public class RustLikeFormatter {
    // as nice and natural formatting as possible, we look at the available information to achieve the proper spacing.
    private List<Integer> knownPositions;
 
+   // Will use the PlainTextFormatter as default formatter.
    public RustLikeFormatter() {
-      textFormatter = new PlainTextFormatter();
+      this( new PlainTextFormatter() );
    }
 
-   public RustLikeFormatter( final IRdfTextFormatter textFormatter ) {
+   public RustLikeFormatter( final RdfTextFormatter textFormatter ) {
       this.textFormatter = textFormatter;
    }
 
@@ -73,11 +78,8 @@ public class RustLikeFormatter {
       return constructDetailedMessage( highlight, message, highlight.getModel() );
    }
 
-   public String constructDetailedMessage( final RDFNode highlight, final String message, Model rawModel ) {
-      if ( rawModel == null ) {
-         rawModel = highlight.getModel();
-      }
-      
+   public String constructDetailedMessage( final RDFNode highlight, final String message, @Nullable final Model rawModel ) {
+      final Model sourceModel = rawModel == null ? highlight.getModel() : rawModel;
       highlightToken = extractToken( highlight );
 
       if ( highlightToken == null ) {
@@ -85,10 +87,10 @@ public class RustLikeFormatter {
          return message;
       }
 
-      candidateStatements = rawModel.listStatements()
+      candidateStatements = sourceModel.listStatements()
             .filterKeep( statement -> spansLine( statement, highlightToken.line() ) )
             .toList();
-      return formatError( candidateStatements, message );
+      return formatError( message );
    }
 
    private boolean spansLine( final Statement statement, final int lineNumber ) {
@@ -102,12 +104,12 @@ public class RustLikeFormatter {
       return nodePosition != null && nodePosition.line() == lineNumber;
    }
 
-   private String formatError( final List<Statement> statements, final String errorMessage ) {
+   private String formatError( final String errorMessage ) {
       final int prefixWidth = String.valueOf( highlightToken.line() ).length() + 1;
       final String prefix = " ".repeat( prefixWidth ) + "| ";
       return errorStyle( String.format( "%s> Error at line %d column %d%n", "-".repeat( prefixWidth ), highlightToken.line(), highlightToken.column() ) )
             + prefix + System.lineSeparator()
-            + highlightToken.line() + " | " + formatStatements( statements ) + System.lineSeparator()
+            + highlightToken.line() + " | " + formatStatements() + System.lineSeparator()
             + prefix + " ".repeat( highlightToken.column() ) + errorStyle(
             "^".repeat( highlightToken.content().length() ) + " " + errorMessage ) + System.lineSeparator()
             + prefix + System.lineSeparator();
@@ -119,11 +121,11 @@ public class RustLikeFormatter {
       return textFormatter.getResult();
    }
 
-   private String formatStatements( final List<Statement> statements ) {
+   private String formatStatements() {
       currentColumn = 0;
       seen.clear();
-      sortSequentially( candidateStatements );
-      knownPositions = candidateStatements.stream()
+      final List<Statement> inDocumentOrder = sortSequentially( candidateStatements );
+      knownPositions = inDocumentOrder.stream()
             .flatMap( statement -> Stream.of( statement.getSubject(), statement.getPredicate(), statement.getObject() ) )
             .map( RustLikeFormatter::extractToken )
             .filter( Objects::nonNull )
@@ -132,14 +134,14 @@ public class RustLikeFormatter {
             .toList();
 
       textFormatter.reset();
-      statements.forEach( this::formatStatement );
+      inDocumentOrder.forEach( this::formatStatement );
       return textFormatter.getResult();
    }
 
    // model.listStatements() returns the statements in random order, but we want to format them as they appear in the source document,
    // so reconstruct the original sequence
-   private void sortSequentially( final List<Statement> statements ) {
-      statements.sort( this::documentOrder );
+   private List<Statement> sortSequentially( final List<Statement> statements ) {
+      return Ordering.from( this::documentOrder ).immutableSortedCopy( statements );
    }
 
    private int documentOrder( final Statement s1, final Statement s2 ) {
@@ -214,12 +216,12 @@ public class RustLikeFormatter {
       return true;
    }
 
-   // as the "whitespace" si not preserved by the parser ( in this case ';' and '.' ), we have to reconstruct it by looking at the relative positions of the
+   // as the "whitespace" is not preserved by the parser ( in this case ';' and '.' ), we have to reconstruct it by looking at the relative positions of the
    // statements as they would appear in the original document
    private boolean isLastSubjectedStatement( final Statement statement ) {
       final List<Statement> sameSubject = statement.getModel().listStatements( statement.getSubject(), null, (RDFNode) null ).toList();
-      sortSequentially( sameSubject );
-      return sameSubject.indexOf( statement ) == sameSubject.size() - 1;
+      final List<Statement> inDocumentOrder = sortSequentially( sameSubject );
+      return inDocumentOrder.indexOf( statement ) == sameSubject.size() - 1;
    }
 
    private boolean formatNode( final RDFNode node ) {
@@ -294,15 +296,15 @@ public class RustLikeFormatter {
 
    private boolean formatAnonymousNodes( final RDFNode object ) {
       final List<Statement> anons = object.getModel().listStatements( object.asResource(), null, (RDFNode) null ).toList();
-      sortSequentially( anons );
-
       if ( anons.isEmpty() ) {
          spacedIfPossible( "[]" );
          return true;
       }
 
+      final List<Statement> inDocumentOrder = sortSequentially( anons );
+
       int index = 0;
-      for ( final Statement anon : anons ) {
+      for ( final Statement anon : inDocumentOrder ) {
          if ( !formatStatement( anon ) ) {
             seen.addAll( anons );
             return false;

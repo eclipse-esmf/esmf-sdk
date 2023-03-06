@@ -101,7 +101,7 @@ public record SmartToken(Token token) {
     * @param formatter formatter to use for text formatting
     * @return the length of the UNFORMATTED content
     */
-   public int structureContent( final IRdfTextFormatter formatter ) {
+   public int structureContent( final RdfTextFormatter formatter ) {
       switch ( token.getType() ) {
       case IRI -> formatter.formatPrimitive( "<" ).formatIri( token.getImage() ).formatPrimitive( ">" );
       case DIRECTIVE -> formatter.formatPrimitive( "@" ).formatDirective( token.getImage() );

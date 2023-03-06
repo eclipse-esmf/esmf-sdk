@@ -15,7 +15,7 @@ package io.openmanufacturing.sds.aspectmodel.validation.services;
 
 import org.apache.jena.rdf.model.Model;
 
-import io.openmanufacturing.sds.aspectmodel.resolver.parser.IRdfTextFormatter;
+import io.openmanufacturing.sds.aspectmodel.resolver.parser.RdfTextFormatter;
 import io.openmanufacturing.sds.aspectmodel.shacl.RustLikeFormatter;
 import io.openmanufacturing.sds.aspectmodel.shacl.fix.Fix;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.ClassTypeViolation;
@@ -56,7 +56,7 @@ public class ViolationRustLikeFormatter extends ViolationFormatter {
       formatter = new RustLikeFormatter();
    }
 
-   public ViolationRustLikeFormatter( final Model rawModel, final IRdfTextFormatter formatter ) {
+   public ViolationRustLikeFormatter( final Model rawModel, final RdfTextFormatter formatter ) {
       this.rawModel = rawModel;
       this.formatter = new RustLikeFormatter( formatter );
    }
