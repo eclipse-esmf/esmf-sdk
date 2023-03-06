@@ -49,9 +49,22 @@ Are you having trouble with SDS SDK? We want to help!
 
 ## Build and contribute
 
-The top level elements of the SDK structure are all carried out as Maven multimodule projects. Building the SDK components of one group (e.g. all core
-components) then is as easy as running `mvn package` or `mvn install`
-in the root directory of the repository.
+The top level elements of the SDK structure are all carried out as Maven multimodule projects.
+Building the SDK requires a Java 17-compatible [GraalVM JDK](https://www.graalvm.org/) with the 'js'
+component installed. If you want to build the bamm-cli (see below), you will also have to have the
+'native-image' GraalVM component installed.
+
+To build the SDK core components, run the following command:
+```bash
+mvn -pl '!io.openmanufacturing:bamm-cli' clean install
+```
+
+To also build SDK core components and the CLI tool, run the above command, followed by:
+```bash
+cd tools/bamm-cli
+mvn -B clean verify
+mvn -B verify -Pnative
+```
 
 We are always looking forward to your contributions. For more details on how to contribute just take a look at the
 [contribution guidelines](CONTRIBUTING.md). Please create an issue first before opening a pull request.
@@ -67,9 +80,10 @@ sds-sdk
  │     ├─── sds-aspect-meta-model
  │     ├─── sds-aspect-static-meta-model
  │     ├─── ...
- └─── tools                                     # accompanying tools, build system integrations etc.
-       ├─── bamm-cli
-       └─── ...
+ ├─── tools                                     # accompanying tools, build system integrations etc.
+ │     ├─── bamm-cli
+ │     └─── ...
+ └─── documentation                             # the Antora documentation module for the SDK
 ```
 
 ## Java Core Components

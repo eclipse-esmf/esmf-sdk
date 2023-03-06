@@ -106,9 +106,5 @@
             <groupId>io.openmanufacturing</groupId>
             <artifactId>sds-test-resources</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>bamm-cli</artifactId>
-        </dependency>
     </dependencies>
 </project>

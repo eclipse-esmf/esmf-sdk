@@ -116,7 +116,7 @@ public class AspectModelResolver {
    /**
     * Method to load an Aspect Model from an input stream, and resolve it using a suitable {@link ResolutionStrategy}.
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param inputStream the inputs stream to read the RDF/Turtle represenation from
+    * @param inputStream the inputs stream to read the RDF/Turtle representation from
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final InputStream inputStream ) {
@@ -126,7 +126,7 @@ public class AspectModelResolver {
    /**
     * Method to load an Aspect Model from a string, and resolve it using a suitable {@link ResolutionStrategy}.
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param modelContent a string containing the RDF/Turtle represenation
+    * @param modelContent a string containing the RDF/Turtle representation
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final String modelContent ) {

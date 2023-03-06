@@ -23,8 +23,8 @@
 */
 #if ( $element.isCollectionAspect() )
 ${util.determineCollectionAspectClassDefinition( $element, $codeGenerationConfig )} {
-#elseif ( $element.is( $ComplexType ) )
-#set( $complexElement = $ComplexType.cast( $element ) )
+#elseif ( $element.isComplexType() )
+#set( $complexElement = $util.castToComplexType( $element ) )
 ${util.generateAbstractEntityClassAnnotations( $complexElement, $codeGenerationConfig, $extendingEntities )}
 ${util.determineComplexTypeClassDefinition( $complexElement, $codeGenerationConfig )}
 #else

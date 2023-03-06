@@ -18,7 +18,9 @@ import java.util.Properties;
 
 import org.fusesource.jansi.AnsiConsole;
 
+import guru.nidi.graphviz.engine.Graphviz;
 import io.openmanufacturing.sds.aspect.AspectCommand;
+import io.openmanufacturing.sds.substitution.GraalVmJsGraphvizEngine;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = BammCli.COMMAND_NAME,
@@ -33,15 +35,41 @@ import picocli.CommandLine;
 )
 @SuppressWarnings( "squid:S1147" ) // System.exit is really required here, this is a CLI tool
 public class BammCli extends AbstractCommand {
-
    public static final String COMMAND_NAME = "bamm";
 
-   private final CommandLine commandLine = new CommandLine( this )
-         .addSubcommand( new AspectCommand() )
-         .setCaseInsensitiveEnumValuesAllowed( true );
+   private final CommandLine commandLine;
+
+   public BammCli() {
+      final CommandLine initialCommandLine = new CommandLine( this )
+            .addSubcommand( new AspectCommand() )
+            .setCaseInsensitiveEnumValuesAllowed( true )
+            .setExecutionStrategy( LoggingMixin::executionStrategy );
+      final CommandLine.IExecutionExceptionHandler defaultExecutionExceptionHandler = initialCommandLine.getExecutionExceptionHandler();
+      commandLine = initialCommandLine.setExecutionExceptionHandler( new CommandLine.IExecutionExceptionHandler() {
+         @Override
+         public int handleExecutionException( final Exception exception, final CommandLine commandLine, final CommandLine.ParseResult parseResult )
+               throws Exception {
+            if ( exception.getClass().getName()
+                  .equals( String.format( "%s.MainClassProcessLauncher$SystemExitCaptured", BammCli.class.getPackageName() ) ) ) {
+               // If the exception we encounter is a SystemExitCaptured, this is part of the security manager in the test suite that
+               // captures System.exit() calls and throws an exception there. We don't want PicoCli to do anything further with that
+               // (i.e., serialize the stacktrace to stderr), so we'll just return here.
+               return 1;
+            }
+            // Delegate to the default execution exception handler
+            return defaultExecutionExceptionHandler.handleExecutionException( exception, commandLine, parseResult );
+         }
+      } );
+   }
+
+   @CommandLine.Mixin
+   LoggingMixin loggingMixin;
 
    @CommandLine.Option( names = { "--version" }, description = "Show current version" )
    private boolean version;
+
+   @CommandLine.Option( names = { "--disable-color", "-D" }, description = "Disable colored output" )
+   private boolean disableColor;
 
    int run( final String... argv ) {
       return commandLine.execute( argv );
@@ -58,12 +86,32 @@ public class BammCli extends AbstractCommand {
    }
 
    public static void main( final String[] argv ) {
-      AnsiConsole.systemInstall();
+      NativeImageHelpers.ensureRequiredEnvironment();
+
+      setupGraphvizJava();
+
+      // The disabling color switch needs to be checked before PicoCLI initialization
+      boolean disableColor = false;
+      for ( final String arg : argv ) {
+         if ( arg.equals( "--disable-color" ) || arg.equals( "-D" ) ) {
+            disableColor = true;
+         }
+      }
+
+      if ( !disableColor ) {
+         AnsiConsole.systemInstall();
+      }
 
       final BammCli command = new BammCli();
       final int exitCode = command.commandLine.execute( argv );
-      AnsiConsole.systemUninstall();
+      if ( !disableColor ) {
+         AnsiConsole.systemUninstall();
+      }
       System.exit( exitCode );
+   }
+
+   private static void setupGraphvizJava() {
+      Graphviz.useEngine( new GraalVmJsGraphvizEngine() );
    }
 
    protected String format( final String string ) {

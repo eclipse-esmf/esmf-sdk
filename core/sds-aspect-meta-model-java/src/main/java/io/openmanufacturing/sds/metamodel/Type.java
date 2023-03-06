@@ -21,6 +21,14 @@ public interface Type extends ModelElement {
     * @return the URN which identifies the type
     */
    String getUrn();
+
+   default boolean isScalar() {
+      return false;
+   }
+
+   default boolean isComplexType() {
+      return false;
+   }
 }
 
 

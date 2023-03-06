@@ -47,7 +47,7 @@ public $dataType getValue() {
 
 #if( $State.isAssignableFrom( $enumeration.class ) )
 public static $className getDefaultValue() {
-    #set( $state = $State.cast( $enumeration ) )
+    #set( $state = $util.castToState( $enumeration ) )
     return $util.generateEnumKey( $state.getDefaultValue() );
 }
 #end

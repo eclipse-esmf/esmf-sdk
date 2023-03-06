@@ -16,9 +16,13 @@ package io.openmanufacturing.sds.aspect;
 import java.io.File;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
 import io.openmanufacturing.sds.JAnsiRdfSyntaxHighlighter;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
 import io.openmanufacturing.sds.aspectmodel.shacl.violation.Violation;
 import io.openmanufacturing.sds.aspectmodel.validation.services.AspectModelValidator;
@@ -36,11 +40,14 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectValidateCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "validate";
+   private static final Logger LOG = LoggerFactory.getLogger( AspectValidateCommand.class );
 
    @CommandLine.ParentCommand
    private AspectCommand parentCommand;
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;
@@ -55,8 +62,10 @@ public class AspectValidateCommand extends AbstractCommand {
 
       final List<Violation> violations = validator.validateModel( versionedModel );
       if ( details ) {
+         LOG.debug( "Printing detailed validation results" );
          System.out.println( new DetailedViolationFormatter().apply( violations ) );
       } else {
+         LOG.debug( "Printing regular validation results" );
          System.out.println( new ViolationRustLikeFormatter( versionedModel.get().getRawModel(), new JAnsiRdfSyntaxHighlighter() ).apply( violations ) );
       }
 

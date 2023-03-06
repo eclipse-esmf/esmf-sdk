@@ -36,4 +36,9 @@ public interface ComplexType extends Type, StructureElement {
    default Optional<ComplexType> getExtends() {
       return Optional.empty();
    }
+
+   @Override
+   default boolean isComplexType() {
+      return true;
+   }
 }

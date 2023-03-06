@@ -17,6 +17,7 @@ import java.io.IOException;
 
 import io.openmanufacturing.sds.AbstractCommand;
 import io.openmanufacturing.sds.ExternalResolverMixin;
+import io.openmanufacturing.sds.LoggingMixin;
 import io.openmanufacturing.sds.aspect.AspectToCommand;
 import io.openmanufacturing.sds.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import io.openmanufacturing.sds.exception.CommandException;
@@ -30,7 +31,6 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true
 )
 public class AspectToJsonCommand extends AbstractCommand {
-
    public static final String COMMAND_NAME = "json";
 
    @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path" )
@@ -38,6 +38,9 @@ public class AspectToJsonCommand extends AbstractCommand {
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;

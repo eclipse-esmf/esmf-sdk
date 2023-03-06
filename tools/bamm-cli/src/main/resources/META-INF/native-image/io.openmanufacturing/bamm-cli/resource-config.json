@@ -1,0 +1,26 @@
+{
+  "resources":[
+    {"pattern":"\\Qapplication.properties\\E"},
+    {"pattern":"\\Qgit.properties\\E"},
+    {"pattern":"\\Qadminshell.properties\\E"},
+    {"pattern":"\\Qpom.properties\\E"},
+    {"pattern":"\\QMETA-INF/services/com.oracle.truffle.api.TruffleLanguage$Provider\\E"},
+    {"pattern":"\\QMETA-INF/services/com.oracle.truffle.api.instrumentation.TruffleInstrument$Provider\\E"},
+    {"pattern":"\\QMETA-INF/services/javax.script.ScriptEngineFactory\\E"},
+    {"pattern":"\\QMETA-INF/services/org.apache.jena.sys.JenaSubsystemLifecycle\\E"},
+    {"pattern":"bamm/[^/]*/([^/]*/)?[a-zA-Z0-9-]+\\.(ttl|js)"},
+    {"pattern":"\\Qcom/oracle/truffle/nfi/impl/NFILanguageImpl.class\\E"},
+    {"pattern":"\\Qlogback.xml\\E"},
+    {"pattern":"\\Qorg/apache/jena/arq/arq-properties.xml\\E"},
+    {"pattern":"\\Qorg/apache/jena/jena-properties.xml\\E"},
+    {"pattern":"\\Qorg/slf4j/impl/StaticLoggerBinder.class\\E"},
+    {"pattern":"\\Qrdf/dash.ttl\\E"},
+    {"pattern":"\\Qrdf/shacl.ttl\\E"},
+    {"pattern":"\\Qrdf/system-triples.ttl\\E"},
+    {"pattern":"\\Qrdf/tosh.ttl\\E"},
+    {"pattern":"\\Qguru/nidi/graphviz/engine/render.js\\E"},
+    {"pattern":"\\QMETA-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js\\E"},
+    {"pattern":"\\QMETA-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js\\E"}
+  ],
+  "bundles":[{"name":"org.apache.jena.ext.xerces.impl.xpath.regex.message"}]
+}
