@@ -87,7 +87,7 @@ construct {
   } )
 
   bind( func:getElementName( ?constraint ) as ?constraintName )
-  bind( iri( concat( str( : ), ?constraintName ) ) as ?constraintBox )
+  bind( iri( concat( func:getNamespace( ?constraint ), ?constraintName ) ) as ?constraintBox )
 
   optional {
     ?constraint samm:preferredName ?preferredNameValue .

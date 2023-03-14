@@ -16,6 +16,7 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
 
 # Generates edges between Entity Instances and nested Entity Instances
 construct {
@@ -56,9 +57,9 @@ construct {
     bind( strafter( str( ?listValue ), "#" ) as ?nestedInstanceName )
   }
 
-  bind( iri( concat( str( : ), ?instanceBoxName ) ) as ?from )
+  bind( iri( concat( func:getNamespace( ?instance ), ?instanceBoxName ) ) as ?from )
   bind( concat( ?nestedInstanceName, "EntityInstance" ) as ?nestedInstanceBoxName )
-  bind( iri( concat( str( : ), ?nestedInstanceBoxName ) ) as ?to )
-  bind( iri( concat( str( : ), ?instanceBoxName, "_To_", ?nestedInstanceBoxName ) ) as ?edge )
+  bind( iri( concat( func:getNamespace( if(!isBlank( ?propertyValue ), ?propertyValue, ?listValue )), ?nestedInstanceBoxName ) ) as ?to )
+  bind( iri( concat( func:getNamespace( ?instance ), ?instanceBoxName, "_To_", ?nestedInstanceBoxName ) ) as ?edge )
   bind( concat( ?propertyName, " value" ) as ?title )
 }

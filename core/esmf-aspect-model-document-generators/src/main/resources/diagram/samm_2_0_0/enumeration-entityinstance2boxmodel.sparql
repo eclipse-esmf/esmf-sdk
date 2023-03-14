@@ -34,12 +34,12 @@ construct {
 
   bind( func:getElementName( ?characteristic ) as ?characteristicName )
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-  bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName ) ) as ?from )
   ?characteristic samm-c:values/rdf:rest*/rdf:first ?instance .
   bind( strafter( str( ?instance ), "#" ) as ?instanceName )
   bind( concat( ?instanceName, "EntityInstance" ) as ?instanceBoxName )
 
-  bind( iri( concat( str( : ), ?instanceBoxName ) ) as ?to )
-  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?instanceBoxName ) ) as ?edge )
+  bind( iri( concat( func:getNamespace( ?instance ), ?instanceBoxName ) ) as ?to )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName, "_To_", ?instanceBoxName ) ) as ?edge )
   bind( "value" as ?title )
 }

@@ -48,23 +48,23 @@ construct {
   filter( exists { ?entity samm:properties/rdf:rest*/rdf:first/samm:extends ?property } )
 
   bind( concat( ?entityName, "Entity" ) as ?entityBoxName )
-  bind( iri( concat( str( : ), ?entityBoxName ) ) as ?entityBox )
+  bind( iri( concat( func:getNamespace( ?entity ), ?entityBoxName ) ) as ?entityBox )
 
   bind( concat( ?entityName, ?propertyName, "Usage" ) as ?boxName )
-  bind( iri( concat( str( : ), ?boxName ) ) as ?box )
+  bind( iri( concat( func:getNamespace( ?property ), ?boxName ) ) as ?box )
   bind( concat( "Usage of ", ?propertyName, " in ", ?entityName ) as ?boxTitle )
 
   bind( concat( ?propertyName, "AbstractProperty" ) as ?propertyBoxName )
-  bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?propertyBox )
+  bind( iri( concat( func:getNamespace( ?property ), ?propertyBoxName ) ) as ?propertyBox )
 
-  bind( iri( concat( str( : ), ?entityBoxName, "_To_", ?boxName ) ) as ?edge1 )
-  bind( iri( concat( str( : ), ?boxName, "_To_", ?propertyBoxName ) ) as ?edge3 )
+  bind( iri( concat( func:getNamespace( ?entity ), ?entityBoxName, "_To_", ?boxName ) ) as ?edge1 )
+  bind( iri( concat( func:getNamespace( ?property ), ?boxName, "_To_", ?propertyBoxName ) ) as ?edge3 )
 
   ?entity samm:properties/rdf:rest*/rdf:first ?propertyNode .
   ?propertyNode samm:extends ?property .
   ?propertyNode samm:characteristic ?characteristic .
   bind( func:getElementName( ?characteristic ) as ?characteristicName )
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-  bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?characteristicBox )
-  bind( iri( concat( str( : ), ?boxName, "_To_", ?characteristicBoxName ) ) as ?edge2 )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName ) ) as ?characteristicBox )
+  bind( iri( concat( func:getNamespace( ?property ), ?boxName, "_To_", ?characteristicBoxName ) ) as ?edge2 )
 }

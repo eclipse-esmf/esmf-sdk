@@ -71,7 +71,7 @@ construct {
 
   bind( func:getElementName( ?characteristic ) as ?characteristicName )
   bind( concat( ?characteristicName, "Characteristic" ) as ?boxName )
-  bind( iri( concat( str( : ), ?boxName ) ) as ?characteristicBox )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?boxName ) ) as ?characteristicBox )
 
   optional {
     ?characteristic samm:preferredName ?preferredNameValue .

@@ -13,6 +13,7 @@ prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
 
 # Generates edges between Characteristic and Meta Model Properties (dataType)
 construct {
@@ -27,10 +28,10 @@ construct {
   ?metaModelElement rdfs:label ?metaModelElementName .
 
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-  bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName ) ) as ?from )
   bind( concat( ?metaModelElementName, "MetaModelElement" ) as ?metaModelElementBoxName )
-  bind( iri( concat( str( : ), ?metaModelElementBoxName ) ) as ?to )
+  bind( iri( concat( func:getNamespace( ?metaModelElement ), ?metaModelElementBoxName ) ) as ?to )
 
-  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?metaModelElementBoxName ) ) as ?edge )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName, "_To_", ?metaModelElementBoxName ) ) as ?edge )
 }
 
