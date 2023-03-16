@@ -35,13 +35,13 @@ public class EnumerationEntityInstance2BoxModelTest extends MetaModelVersions {
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat( queryResult.listStatements(
-            context.selector( ":EvaluationResultsCharacteristic_To_ResultGoodEntityInstance a :Edge" ) ).toList() )
+            context.selector( "test:EvaluationResultsCharacteristic_To_ResultGoodEntityInstance a :Edge" ) ).toList() )
             .hasSize( 1 );
       assertThat( queryResult.listStatements( context.selector(
-                  ":EvaluationResultsCharacteristic_To_ResultGoodEntityInstance :to :ResultGoodEntityInstance" ) )
+                  "test:EvaluationResultsCharacteristic_To_ResultGoodEntityInstance :to test:ResultGoodEntityInstance" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements( context.selector(
-                  ":EvaluationResultsCharacteristic_To_ResultGoodEntityInstance :from :EvaluationResultsCharacteristic" ) )
+                  "test:EvaluationResultsCharacteristic_To_ResultGoodEntityInstance :from test:EvaluationResultsCharacteristic" ) )
             .toList() ).hasSize( 1 );
    }
 
@@ -55,7 +55,7 @@ public class EnumerationEntityInstance2BoxModelTest extends MetaModelVersions {
 
       // Edge may not be present, as this is a scalar value.
       assertThat( queryResult
-            .listStatements( context.selector( ":TestScalarEnumerationCharacteristic_To_EntityInstance a :Edge" ) )
+            .listStatements( context.selector( "test:TestScalarEnumerationCharacteristic_To_EntityInstance a :Edge" ) )
             .toList() ).hasSize( 0 );
    }
 }

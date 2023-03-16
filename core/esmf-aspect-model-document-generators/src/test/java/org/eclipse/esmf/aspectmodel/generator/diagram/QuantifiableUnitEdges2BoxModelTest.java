@@ -45,18 +45,18 @@ public class QuantifiableUnitEdges2BoxModelTest extends MetaModelVersions {
    private void assertQuantifiableUnitEdgeModel( final TestContext context, final Model queryResult,
          final int expectedOccurance ) {
       assertThat( queryResult
-            .listStatements( context.selector( ":TestQuantifiableCharacteristic_To_PercentUnit :to :PercentUnit" ) )
+            .listStatements( context.selector( "test:TestQuantifiableCharacteristic_To_PercentUnit :to unit:PercentUnit" ) )
             .toList() )
             .hasSize( expectedOccurance );
       assertThat( queryResult.listStatements(
             context.selector(
-                  ":TestQuantifiableCharacteristic_To_PercentUnit :from :TestQuantifiableCharacteristic" ) ).toList() )
+                  "test:TestQuantifiableCharacteristic_To_PercentUnit :from test:TestQuantifiableCharacteristic" ) ).toList() )
             .hasSize( expectedOccurance );
       assertThat( queryResult
-            .listStatements( context.selector( ":TestQuantifiableCharacteristic_To_PercentUnit :title *" ) ).toList() )
+            .listStatements( context.selector( "test:TestQuantifiableCharacteristic_To_PercentUnit :title *" ) ).toList() )
             .hasSize( expectedOccurance );
       assertThat( queryResult
-            .listStatements( context.selector( ":TestQuantifiableCharacteristic_To_PercentUnit rdf:type :Edge" ) )
+            .listStatements( context.selector( "test:TestQuantifiableCharacteristic_To_PercentUnit rdf:type :Edge" ) )
             .toList() )
             .hasSize( expectedOccurance );
    }
@@ -69,19 +69,19 @@ public class QuantifiableUnitEdges2BoxModelTest extends MetaModelVersions {
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat( queryResult
-            .listStatements( context.selector( ":TestMeasurementCharacteristic_To_PercentUnit :to :PercentUnit" ) )
+            .listStatements( context.selector( "test:TestMeasurementCharacteristic_To_PercentUnit :to unit:PercentUnit" ) )
             .toList() )
             .hasSize( 1 );
       assertThat( queryResult.listStatements( context
-                  .selector( ":TestMeasurementCharacteristic_To_PercentUnit :from :TestMeasurementCharacteristic" ) )
+                  .selector( "test:TestMeasurementCharacteristic_To_PercentUnit :from test:TestMeasurementCharacteristic" ) )
             .toList() )
             .hasSize( 1 );
       assertThat( queryResult
-            .listStatements( context.selector( ":TestMeasurementCharacteristic_To_PercentUnit :title *" ) )
+            .listStatements( context.selector( "test:TestMeasurementCharacteristic_To_PercentUnit :title *" ) )
             .toList() )
             .hasSize( 1 );
       assertThat( queryResult
-            .listStatements( context.selector( ":TestMeasurementCharacteristic_To_PercentUnit rdf:type :Edge" ) )
+            .listStatements( context.selector( "test:TestMeasurementCharacteristic_To_PercentUnit rdf:type :Edge" ) )
             .toList() )
             .hasSize( 1 );
    }

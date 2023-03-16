@@ -59,7 +59,7 @@ construct {
 
   bind( iri( concat( func:getNamespace( ?instance ), ?instanceBoxName ) ) as ?from )
   bind( concat( ?nestedInstanceName, "EntityInstance" ) as ?nestedInstanceBoxName )
-  bind( iri( concat( func:getNamespace( if(!isBlank( ?propertyValue ), ?propertyValue, ?listValue )), ?nestedInstanceBoxName ) ) as ?to )
+  bind( iri( concat( func:getNamespace( if( !isBlank( ?propertyValue ), ?propertyValue, ?listValue )), ?nestedInstanceBoxName ) ) as ?to )
   bind( iri( concat( func:getNamespace( ?instance ), ?instanceBoxName, "_To_", ?nestedInstanceBoxName ) ) as ?edge )
   bind( concat( ?propertyName, " value" ) as ?title )
 }

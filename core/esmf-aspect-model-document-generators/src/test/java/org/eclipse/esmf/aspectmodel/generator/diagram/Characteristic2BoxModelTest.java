@@ -25,8 +25,8 @@ import org.eclipse.esmf.test.TestAspect;
 
 public class Characteristic2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "characteristic2boxmodel.sparql";
-   private final String boxSelectorStatement = ":TestCharacteristicCharacteristic a :Box";
-   private final String entriesSelectorStatement = ":TestCharacteristicCharacteristic :entries *";
+   private final String boxSelectorStatement = "test:TestCharacteristicCharacteristic a :Box";
+   private final String entriesSelectorStatement = "test:TestCharacteristicCharacteristic :entries *";
    private final int totalNumberOfExpectedEntries = 4;
    private final int indexOfSeeValueEntry = 3;
    private final String expectedSeeEntryTitle = "see";
@@ -38,8 +38,8 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
 
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
-      assertThat( queryResult.listStatements( context.selector( ":UsedTestCharacteristicCharacteristic a :Box" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":UnusedTestCharacteristicCharacteristic a :Box" ) ).toList() ).hasSize( 0 );
+      assertThat( queryResult.listStatements( context.selector( "test:UsedTestCharacteristicCharacteristic a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:UnusedTestCharacteristicCharacteristic a :Box" ) ).toList() ).hasSize( 0 );
       assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() ).hasSize( totalNumberOfExpectedEntries );
    }
 
@@ -78,13 +78,13 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
       final Model queryResult = context.executeQuery( "characteristic-entity-edges2boxmodel.sparql" );
 
       assertThat( queryResult
-            .listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity a :Edge" ) )
+            .listStatements( context.selector( "test:EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity a :Edge" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult
-            .listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :from :EntityCharacteristicCharacteristic" ) )
+            .listStatements( context.selector( "test:EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :from test:EntityCharacteristicCharacteristic" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult
-            .listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :to :ExtendingTestEntityEntity" ) )
+            .listStatements( context.selector( "test:EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :to test:ExtendingTestEntityEntity" ) )
             .toList() ).hasSize( 1 );
    }
 
@@ -95,13 +95,13 @@ public class Characteristic2BoxModelTest extends MetaModelVersions {
 
       final Model queryResult = context.executeQuery( "characteristic-entity-edges2boxmodel.sparql" );
 
-      assertThat( queryResult.listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity a :Edge" ) )
+      assertThat( queryResult.listStatements( context.selector( "test:EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity a :Edge" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-                  context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :from :EntityCharacteristicCharacteristic" ) )
+                  context.selector( "test:EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :from test:EntityCharacteristicCharacteristic" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-                  context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :to :ExtendingTestEntityEntity" ) )
+                  context.selector( "test:EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :to test:ExtendingTestEntityEntity" ) )
             .toList() ).hasSize( 1 );
    }
 }

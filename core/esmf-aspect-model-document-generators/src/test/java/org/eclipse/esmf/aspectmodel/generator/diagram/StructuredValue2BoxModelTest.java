@@ -25,8 +25,8 @@ import org.eclipse.esmf.test.TestAspect;
 
 public class StructuredValue2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "structuredvalue2boxmodel.sparql";
-   private final String boxSelectorStatement = ":StructuredDateCharacteristic a :Box";
-   private final String entriesSelectorStatement = ":StructuredDateCharacteristic :entries *";
+   private final String boxSelectorStatement = "test:StructuredDateCharacteristic a :Box";
+   private final String entriesSelectorStatement = "test:StructuredDateCharacteristic :entries *";
    private final int totalNumberOfExpectedEntries = 6;
 
    private final int indexOfdeconstructionRuleEntry = 4;

@@ -34,8 +34,8 @@ public class Property2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITH_SEE_ATTRIBUTE, metaModelVersion );
-      context.executeAttributeIsPresentTest( sparqlQueryFileName, ":propertyWithSeeAttributeProperty a :Box",
-            ":propertyWithSeeAttributeProperty :entries *",
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, "test:propertyWithSeeAttributeProperty a :Box",
+            "test:propertyWithSeeAttributeProperty :entries *",
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/" );
    }
 
@@ -43,8 +43,8 @@ public class Property2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
-      context.executeAttributeIsPresentTest( sparqlQueryFileName, ":propertyWithMultipleSeeAttributesProperty a :Box",
-            ":propertyWithMultipleSeeAttributesProperty :entries *",
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, "test:propertyWithMultipleSeeAttributesProperty a :Box",
+            "test:propertyWithMultipleSeeAttributesProperty :entries *",
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle,
             "http://example.com/, http://example.com/me" );
    }
@@ -53,8 +53,8 @@ public class Property2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
-      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, ":propertyWithoutSeeAttributeProperty a :Box",
-            ":propertyWithoutSeeAttributeProperty :entries *",
+      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, "test:propertyWithoutSeeAttributeProperty a :Box",
+            "test:propertyWithoutSeeAttributeProperty :entries *",
             totalNumberOfExpectedEntries, indexOfSeeValueEntry );
    }
 
@@ -66,19 +66,19 @@ public class Property2BoxModelTest extends MetaModelVersions {
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat(
-            queryResult.listStatements( context.selector( ":sharedPropertyWithSeeAttributeProperty a :Box" ) )
+            queryResult.listStatements( context.selector( "test:sharedPropertyWithSeeAttributeProperty a :Box" ) )
                   .toList() )
             .hasSize( 1 );
       assertThat( queryResult.listStatements( context.selector( "samm-e:sharedPropertyProperty a :Box" ) ).toList() )
-            .hasSize( 0 );
+            .hasSize( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ? 1 : 0 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testExampleValueIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITH_EXAMPLE_VALUE, metaModelVersion );
-      context.executeAttributeIsPresentTest( sparqlQueryFileName, ":propertyWithExampleValueProperty a :Box",
-            ":propertyWithExampleValueProperty :entries *",
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, "test:propertyWithExampleValueProperty a :Box",
+            "test:propertyWithExampleValueProperty :entries *",
             totalNumberOfExpectedEntries, 3, "exampleValue", "foo" );
    }
 
@@ -86,8 +86,8 @@ public class Property2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testExampleValueIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITHOUT_EXAMPLE_VALUE, metaModelVersion );
-      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, ":propertyWithoutExampleValueProperty a :Box",
-            ":propertyWithoutExampleValueProperty :entries *",
+      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, "test:propertyWithoutExampleValueProperty a :Box",
+            "test:propertyWithoutExampleValueProperty :entries *",
             totalNumberOfExpectedEntries, 3 );
    }
 
@@ -117,8 +117,8 @@ public class Property2BoxModelTest extends MetaModelVersions {
 
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
-      assertThat( queryResult.listStatements( context.selector( ":entityPropertyProperty a :Box" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":abstractTestPropertyProperty a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:entityPropertyProperty a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:abstractTestPropertyProperty a :Box" ) ).toList() ).hasSize( 1 );
    }
 
    private void testAbstractAndExtendingEntityPropertyEdges( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
@@ -127,29 +127,29 @@ public class Property2BoxModelTest extends MetaModelVersions {
       final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
       assertThat( queryResult.listStatements(
-            context.selector( ":ExtendingTestEntityEntity_To_entityPropertyProperty a :Edge" )
+            context.selector( "test:ExtendingTestEntityEntity_To_entityPropertyProperty a :Edge" )
       ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-            context.selector( ":ExtendingTestEntityEntity_To_entityPropertyProperty :from :ExtendingTestEntityEntity" )
+            context.selector( "test:ExtendingTestEntityEntity_To_entityPropertyProperty :from test:ExtendingTestEntityEntity" )
       ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-            context.selector( ":ExtendingTestEntityEntity_To_entityPropertyProperty :to :entityPropertyProperty" )
+            context.selector( "test:ExtendingTestEntityEntity_To_entityPropertyProperty :to test:entityPropertyProperty" )
       ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-            context.selector( ":ExtendingTestEntityEntity_To_abstractTestPropertyProperty a :Edge" )
+            context.selector( "test:ExtendingTestEntityEntity_To_abstractTestPropertyProperty a :Edge" )
       ).toList() ).hasSize( 0 );
       assertThat( queryResult.listStatements(
-            context.selector( ":AbstractTestEntityAbstractEntity_To_entityPropertyProperty a :Edge" )
+            context.selector( "test:AbstractTestEntityAbstractEntity_To_entityPropertyProperty a :Edge" )
       ).toList() ).hasSize( 0 );
 
       assertThat( queryResult.listStatements(
-            context.selector( ":AbstractTestEntityAbstractEntity_To_abstractTestPropertyProperty a :Edge" )
+            context.selector( "test:AbstractTestEntityAbstractEntity_To_abstractTestPropertyProperty a :Edge" )
       ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-            context.selector( ":AbstractTestEntityAbstractEntity_To_abstractTestPropertyProperty :from :AbstractTestEntityAbstractEntity" )
+            context.selector( "test:AbstractTestEntityAbstractEntity_To_abstractTestPropertyProperty :from test:AbstractTestEntityAbstractEntity" )
       ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
-            context.selector( ":AbstractTestEntityAbstractEntity_To_abstractTestPropertyProperty :to :abstractTestPropertyProperty" )
+            context.selector( "test:AbstractTestEntityAbstractEntity_To_abstractTestPropertyProperty :to test:abstractTestPropertyProperty" )
       ).toList() ).hasSize( 1 );
    }
 }
