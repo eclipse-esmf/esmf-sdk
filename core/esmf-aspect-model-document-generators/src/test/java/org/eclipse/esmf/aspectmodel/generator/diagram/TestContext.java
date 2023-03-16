@@ -13,8 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
-import static io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator.*;
 
 import java.io.InputStream;
 import java.util.List;
@@ -52,11 +52,11 @@ public class TestContext {
       service = new AspectModelDiagramGenerator( versionedModel );
       boxModel = new BoxModel( version );
       service.model.setNsPrefix( "", boxModel.getNamespace() );
-      service.model.setNsPrefix("test", "urn:samm:org.eclipse.esmf.test:1.0.0#");
+      service.model.setNsPrefix( "test", "urn:samm:org.eclipse.esmf.test:1.0.0#" );
 
       sparqlExecutor = new SparqlExecutor()
-            .useCustomFunction( GET_ELEMENT_NAME_FUNC,new GetElementNameFunctionFactory( versionedModel.getModel() ) )
-            .useCustomFunction( GET_NAMESPACE_FUNC,new GetNamespaceFunctionFactory( versionedModel.getModel() ) )
+            .useCustomFunction( GET_ELEMENT_NAME_FUNC, new GetElementNameFunctionFactory( versionedModel.getModel() ) )
+            .useCustomFunction( GET_NAMESPACE_FUNC, new GetNamespaceFunctionFactory( versionedModel.getModel() ) )
       ;
    }
 

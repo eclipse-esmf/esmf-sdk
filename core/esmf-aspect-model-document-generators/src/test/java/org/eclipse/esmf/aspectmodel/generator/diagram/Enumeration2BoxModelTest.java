@@ -38,9 +38,9 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat(
-            queryResult.listStatements( context.selector( ":UsedTestEnumerationCharacteristic a :Box" ) ).toList() )
+            queryResult.listStatements( context.selector( "test:UsedTestEnumerationCharacteristic a :Box" ) ).toList() )
             .hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":UnusedTestEnumerationCharacteristic a :Box" ) )
+      assertThat( queryResult.listStatements( context.selector( "test:UnusedTestEnumerationCharacteristic a :Box" ) )
             .toList() )
             .hasSize( 0 );
       assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() ).hasSize( 5 );
@@ -62,7 +62,7 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
       boolean newerThanSamm1 = metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 );
-      final String characteristicIdentifier = newerThanSamm1 ? "Enumeration14c1cbd" : "TestEnumeration";
+      final String characteristicIdentifier = newerThanSamm1 ? "Enumeration46dba23" : "TestEnumeration";
       final String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier, newerThanSamm1 );
       final String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier, newerThanSamm1 );
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUMERATION_WITH_MULTIPLE_SEE_ATTRIBUTES,

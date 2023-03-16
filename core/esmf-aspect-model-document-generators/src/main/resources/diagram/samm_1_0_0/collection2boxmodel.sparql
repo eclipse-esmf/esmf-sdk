@@ -17,6 +17,7 @@ prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
 prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
 
 # Generates boxes for Collection Characteristics
 construct {
