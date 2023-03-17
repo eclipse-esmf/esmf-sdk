@@ -18,9 +18,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.Result;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
@@ -36,6 +47,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.xml.sax.SAXException;
 
 import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
 import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
@@ -227,9 +239,18 @@ class AspectModelAASGeneratorTest {
          } )
    // anonymous enumeration in test has no urn for enum values but is required for Concept
    // Description referencing
-   public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException {
-      final Environment env = getAssetAdministrationShellFromAspect( testAspect );
+   public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException, SAXException {
+      ByteArrayOutputStream baos = getByteArrayOutputStreamFromAspect( testAspect );
+      byte[] xmlFile = baos.toByteArray();
+      final Environment env = loadAASX( new ByteArrayInputStream( xmlFile ) );
       assertTrue( env.getSubmodels().size() >= 1, "No Submodel in AAS present." );
+      try{
+         validate( new ByteArrayInputStream( xmlFile ) );
+      }catch(SAXException e){
+         String model = "AAS XML file causing the Exception. \n" + new String(xmlFile, StandardCharsets.UTF_8);
+         throw new SAXException(model, e);
+      }
+
    }
 
    private void checkDataSpecificationIEC61360( final Set<String> semanticIds, final Environment env ) {
@@ -258,13 +279,32 @@ class AspectModelAASGeneratorTest {
       return loadAASX( out );
    }
 
+   private ByteArrayOutputStream getByteArrayOutputStreamFromAspect( final TestAspect testAspect )
+         throws IOException {
+      final Aspect aspect = loadAspect( testAspect );
+      return generator.generateXmlOutput( aspect );
+   }
+
+   private void validate(ByteArrayInputStream xmlStream) throws IOException, SAXException {
+         SchemaFactory factory =
+               SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI);
+         Schema schema = factory.newSchema(new URL( "https://raw.githubusercontent.com/admin-shell-io/aas-specs/V3.0.5RC02/schemas/xml/AAS.xsd" ) );
+         Validator validator = schema.newValidator();
+         validator.validate(new StreamSource( xmlStream ), null);
+
+   }
+
    private Aspect loadAspect( final TestAspect testAspect ) {
       final VersionedModel model = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
       return AspectModelLoader.getSingleAspect( model ).get();
    }
 
    private Environment loadAASX( final ByteArrayOutputStream byteStream ) throws DeserializationException {
+      return loadAASX( new ByteArrayInputStream( byteStream.toByteArray() ) );
+   }
+
+   private Environment loadAASX( final ByteArrayInputStream byteStream ) throws DeserializationException {
       final XmlDeserializer deserializer = new XmlDeserializer();
-      return deserializer.read( new ByteArrayInputStream( byteStream.toByteArray() ) );
+      return deserializer.read( byteStream );
    }
 }

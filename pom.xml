@@ -79,8 +79,6 @@
       <graphviz-version>0.18.1</graphviz-version>
       <guava-version>31.1-jre</guava-version>
       <guice-version>5.1.0</guice-version>
-      <io-admin-shell-aas-model>1.2.0</io-admin-shell-aas-model>
-      <io-admin-shell-aas-serializer>1.2.0</io-admin-shell-aas-serializer>
       <javaparser-version>3.24.2</javaparser-version>
       <jena-version>4.4.0</jena-version>
       <jqwik-version>1.6.5</jqwik-version>
@@ -103,8 +101,8 @@
       <vavr-version>0.10.4</vavr-version>
       <!-- TODO remember to update the link to the Velocity engine user guide in the 'java-aspect-tooling.adoc' page -->
       <velocity-version>2.3</velocity-version>
-      <io-admin-shell-aas-model>1.0.0-milestone-01</io-admin-shell-aas-model>
-      <io-admin-shell-aas-serializer>1.0.0-milestone-01</io-admin-shell-aas-serializer>
+      <io-admin-shell-aas-model>1.0.0-milestone-02</io-admin-shell-aas-model>
+      <io-admin-shell-aas-serializer>1.0.0-milestone-02</io-admin-shell-aas-serializer>
 
       <!-- Versions of plugins -->
       <build-helper-maven-plugin-version>3.2.0</build-helper-maven-plugin-version>
