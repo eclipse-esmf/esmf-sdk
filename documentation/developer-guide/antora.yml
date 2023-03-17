@@ -3,6 +3,4 @@ title: ESMF SDK Developer Guide
 version: 'master'
 start_page: ROOT:index.adoc
 nav:
-  - modules/getting-started-guide/nav.adoc
-  - modules/quick-start-guide/nav.adoc
   - modules/tooling-guide/nav.adoc

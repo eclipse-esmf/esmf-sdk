@@ -1,4 +1,3 @@
-.Tooling Guide
 * xref:samm-cli.adoc[SAMM CLI]
 * xref:java-aspect-tooling.adoc[Java APIs for Aspect Models]
 * xref:maven-plugin.adoc[Maven Plugin]
