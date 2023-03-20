@@ -72,7 +72,6 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: bamm-cli-binary-${{ matrix.os }}
           name: samm-cli-binary-${{ matrix.os }}
           path: |
             tools/samm-cli/target/samm.exe
