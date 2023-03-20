@@ -1,5 +1,5 @@
 #macro( fileHeader )
 /*
-* Copyright (c) $currentYear.getValue() OMP Test Inc. All rights reserved.
+* Copyright (c) $currentYear.getValue() Test Inc. All rights reserved.
 */
 #end

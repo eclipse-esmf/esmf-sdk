@@ -15,7 +15,7 @@ jobs:
 
       # Required for Maven
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -42,7 +42,7 @@ jobs:
 
   # The Linux build will upload the local Nexus deployment repository
   # (i.e., what will be deployed to OSSRH/Maven Central)
-  # and the Linux-specific bamm-cli binary to the build artifacts
+  # and the Linux-specific samm-cli binary to the build artifacts
   build-linux:
     name: Linux build
     needs: [check-preconditions]
@@ -84,16 +84,16 @@ jobs:
           mvn versions:commit
 
           # Actual build of core SDK
-          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
           # Build of CLI
-          cd tools/bamm-cli
+          cd tools/samm-cli
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
-          # Create zip of bamm-cli
-          cd tools/bamm-cli/target
-          chmod a+x bamm
-          tar cfvz bamm-cli-linux.tar.gz bamm
+          # Create zip of samm-cli
+          cd tools/samm-cli/target
+          chmod a+x samm
+          tar cfvz samm-cli-linux.tar.gz samm
 
       - name: Upload staging directory and Linux binary
         uses: actions/upload-artifact@v3
@@ -101,10 +101,10 @@ jobs:
           name: linux-artifacts
           path: |
             nexus-staging/
-            tools/bamm-cli/target/bamm-cli-linux.tar.gz
-            tools/bamm-cli/target/bamm-cli-*.jar
+            tools/samm-cli/target/samm-cli-linux.tar.gz
+            tools/samm-cli/target/samm-cli-*.jar
 
-  # The Windows build will build the Windows-specific bamm-cli
+  # The Windows build will build the Windows-specific samm-cli
   # and upload the binary to the build artifacts
   build-windows:
     name: Windows build
@@ -151,9 +151,9 @@ jobs:
           mvn versions:commit
 
           # Actual build of core SDK
-          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build of CLI
-          cd tools/bamm-cli
+          cd tools/samm-cli
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
@@ -163,9 +163,9 @@ jobs:
         with:
           name: windows-artifacts
           path: |
-            tools/bamm-cli/target/bamm.exe
-            tools/bamm-cli/target/*.dll
-            tools/bamm-cli/target/lib/
+            tools/samm-cli/target/samm.exe
+            tools/samm-cli/target/*.dll
+            tools/samm-cli/target/lib/
 
   release:
     needs: [build-linux, build-windows]
@@ -177,7 +177,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -201,7 +201,7 @@ jobs:
       - name: Prepare release
         run: |
           # Create Windows CLI zip
-          zip -9 -r bamm-cli-windows.zip bamm.exe *.dll lib/
+          zip -9 -r samm-cli-windows.zip samm.exe *.dll lib/
 
       # Full release: Maven Central
       - name: Release to OSSRH/Maven Central
@@ -243,7 +243,7 @@ jobs:
       - name: "Create Github release (full)"
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         uses: softprops/action-gh-release@v1
-        id: sds_sdk_release
+        id: esmf_sdk_release
         with:
           body: "Release version ${{ github.event.inputs.release_version }}."
           tag_name: v${{ github.event.inputs.release_version }}
@@ -251,9 +251,9 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            bamm-cli-windows.zip
-            bamm-cli-linux.tar.gz
-            bamm-cli-*.jar
+            samm-cli-windows.zip
+            samm-cli-linux.tar.gz
+            samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
@@ -291,7 +291,7 @@ jobs:
       # Milestone release: Maven deploy to Github
       - name: Publish to Github
         if: contains( github.event.inputs.release_version, '-M' )
-        run: mvn -s ./settings.xml -B clean -pl '!sds-sdk-test-report,!documentation,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build,sign
+        run: mvn -s ./settings.xml -B clean -pl '!esmf-sdk-test-report,!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
@@ -308,8 +308,8 @@ jobs:
           draft: false
           prerelease: true
           files: |
-            bamm-cli-windows.zip
-            bamm-cli-linux.tar.gz
-            bamm-cli-*.jar
+            samm-cli-windows.zip
+            samm-cli-linux.tar.gz
+            samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

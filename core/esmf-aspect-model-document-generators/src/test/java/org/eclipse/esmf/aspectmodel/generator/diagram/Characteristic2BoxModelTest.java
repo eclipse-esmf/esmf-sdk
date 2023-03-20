@@ -1,0 +1,107 @@
+/*
+ * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
+package org.eclipse.esmf.aspectmodel.generator.diagram;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.jena.rdf.model.Model;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+
+public class Characteristic2BoxModelTest extends MetaModelVersions {
+   private final String sparqlQueryFileName = "characteristic2boxmodel.sparql";
+   private final String boxSelectorStatement = ":TestCharacteristicCharacteristic a :Box";
+   private final String entriesSelectorStatement = ":TestCharacteristicCharacteristic :entries *";
+   private final int totalNumberOfExpectedEntries = 4;
+   private final int indexOfSeeValueEntry = 3;
+   private final String expectedSeeEntryTitle = "see";
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testOnlyUsedCharacteristicsAreProcessedExpectSuccess( final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC, metaModelVersion );
+
+      final Model queryResult = context.executeQuery( sparqlQueryFileName );
+
+      assertThat( queryResult.listStatements( context.selector( ":UsedTestCharacteristicCharacteristic a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( ":UnusedTestCharacteristicCharacteristic a :Box" ) ).toList() ).hasSize( 0 );
+      assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() ).hasSize( totalNumberOfExpectedEntries );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CHARACTERISTIC_WITH_SEE_ATTRIBUTE, metaModelVersion );
+      context.executeAttributeIsPresentTest(
+            sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement, totalNumberOfExpectedEntries,
+            indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CHARACTERISTIC_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
+            totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle,
+            "http://example.com/, http://example.com/me" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CHARACTERISTIC_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+      context.executeAttributeIsNotPresentTest(
+            sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement, totalNumberOfExpectedEntries,
+            indexOfSeeValueEntry );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
+
+      final Model queryResult = context.executeQuery( "characteristic-entity-edges2boxmodel.sparql" );
+
+      assertThat( queryResult
+            .listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity a :Edge" ) )
+            .toList() ).hasSize( 1 );
+      assertThat( queryResult
+            .listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :from :EntityCharacteristicCharacteristic" ) )
+            .toList() ).hasSize( 1 );
+      assertThat( queryResult
+            .listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :to :ExtendingTestEntityEntity" ) )
+            .toList() ).hasSize( 1 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
+
+      final Model queryResult = context.executeQuery( "characteristic-entity-edges2boxmodel.sparql" );
+
+      assertThat( queryResult.listStatements( context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity a :Edge" ) )
+            .toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements(
+                  context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :from :EntityCharacteristicCharacteristic" ) )
+            .toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements(
+                  context.selector( ":EntityCharacteristicCharacteristic_To_ExtendingTestEntityEntity :to :ExtendingTestEntityEntity" ) )
+            .toList() ).hasSize( 1 );
+   }
+}

@@ -1,38 +1,22 @@
-# Contribution Guideline SDS SDK
-Thank you for your interest in contributing to the SDS SDK. Use this repository to contribute to the SDK as easy and 
-transparent as possible, whether it is:
+# Contribution Guideline ESMF SDK
+
+Thank you for your interest in contributing to the ESMF SDK. Use this repository to contribute to
+the SDK as easy and transparent as possible, whether it is:
 
 * Reporting a bug
 * Submitting a fix
 * Proposing new features
-* other
+* something else
 
-
-## OMP SDS and Roles
-The SDS SDK is developed in the context of the OMP SDS WG (Open Manufacturing Platform - Semantic Data Structuring - Working Group). 
-More information about the OMP such as its goals or members is available under 
-[open-manufacturing.org](https://open-manufacturing.org). 
-The overall goal of the SDS WG within the OMP is to work on a Semantic Data Structuring Layer that addresses the needs 
-to share, join, and reuse heterogeneous data of the manufacturing. 
-The SDS SDK is based on the BAMM Aspect Meta Model and supports its use. 
-
-### Roles
-The work on the SDS SDK is organized within the OMP SDS WG to which this document simply refers as "`working group`" 
-in the following. The `working group` is currently meeting regularly and may decide on the acceptance of Pull Requests 
-(`PR's`) and `Issues`. Before a release of the specification, the `working group` further needs to agree on a state of 
-the SDK as a release candidate. 
-
-Besides the `working group`, there is a group of people to which this document refers to as "`maintainers`". 
-`Maintainers` manage this repository and therefore have write access and the right to assign labels to `Issues` 
-and `PR's`. 
-
-The working group is led by a `Chair` who facilitates the `working group`'s meetings and organizes the work in the 
-working group. The `Chair` is also a `maintainer` of this repository. 
+The ESMF SDK is developed in the context of the [Eclipse Semantic Modeling
+Framework](https://projects.eclipse.org/projects/dt.esmf/). It is based on the Semantic Aspect Meta
+Model (SAMM) and supports its use.
 
 # Contributing Source Code (using GitHub)
-* We use this GitHub repository to track issues and feature requests, as well as discuss and manage all PR's related to 
-this project.
-* Opening `Issues` and `PRs` in GitHub is the preferred way to interact with the community around the SDS SDK.
+
+* We use this GitHub repository to track issues and feature requests.
+* For general discussions of the ESMF, modeling questions etc. we use the [community forum](https://www.eclipse.org/forums/index.php/f/617/).
+* For discussions specific to development, the preferred way is the [developer mailing list](https://accounts.eclipse.org/mailing-list/esmf-dev).
 
 ## Branching
 We follow the [Git branching guidance](https://docs.microsoft.com/en-us/azure/devops/repos/git/git-branching-guidance?view=azure-devops).
@@ -42,10 +26,16 @@ More specifically the repository has the following branches:
 name of branch | description
 ----| ----
 `main` | Contains the latest state of the repository
-`v{version_number}-RC{rc_number}` | A state on which the working group agreed on as a release candidate but which is missing the approval by the OMP. 
-`v{version_number}` | A release of the respective version which is approved by the working group and the OMP. 
-`feature/#{issue_number}-{feature_name}` | Contains the development on a specific feature and is intended to be merged back into the `main` branch as soon as possible. Note, that it is recommended for contributors to create and develop feature branches in a personal fork and not the upstream repository.
-`bug/#{issue_number}-{bug_name}` | Contains the development of (usually smaller) changes in files of the repository that do not introduce new functionality but fix mistakes, errors or inconsistencies. These branches should be merged back into the `main`branch as soon as possible.
+`v{version_number}-RC{rc_number}` | A "release candidate": A version that freezes major features and
+can be considered a pre-release of the next full release. 
+`v{version_number}` | A full release of the respective version.
+`feature/#{issue_number}-{feature_name}` | Contains the development on a specific feature and is
+intended to be merged back into the `main` branch as soon as possible. Note, that it is recommended
+for contributors to create and develop feature branches in a personal fork and not the upstream
+repository.
+`bug/#{issue_number}-{bug_name}` | Contains the development of (usually smaller) changes in files of
+the repository that do not introduce new functionality but fix mistakes, errors or inconsistencies.
+These branches should be merged back into the `main`branch as soon as possible.
 
 ## Issues
 We use the `Issues` feature of GitHub for tracking all types of work in the repository.
@@ -84,109 +74,41 @@ When opening a `PR` please consider the following topics:
   split up the work into multiple `feature branches`.
 * Commit changes often. A `PR` may contain one or more commits.
 
-## Paperwork and DCO
-The OMP is a [JDF project (Joint Developement Foundation)](https://www.jointdevelopment.org/) following the project and 
-working group charters as defined in JDF charter template 4.0.1
- 
-For source code contribution the project charter requests for non-working group participants the following:
- 
-```
-Non-Working Group Participant Feedback and Participation. Upon the Approval of the Working Group Participants, 
-the Working Group can request feedback from and/or allow Non-Working Group Participant participation in a Working Group, 
-subject to each Non-Working Group Participant executing the Feedback Agreement set forth in Appendix B.
-```
+## Eclipse Development Process
 
-``Appendix B`` with the placeholders set to: 
-- [Project Name] = "OMP" 
-- [Projects’s Source Code License] = "MPL 2.0"
-- [name of deliverable] = "SDS SDK"
+This Eclipse Foundation open project is governed by the Eclipse Foundation Development Process and
+operates under the terms of the Eclipse IP Policy.
 
-states:
+* https://eclipse.org/projects/dev_process
+* https://www.eclipse.org/org/documents/Eclipse_IP_Policy.pdf
 
->### OMP Feedback Agreement
->**
->
->Feedback
-> 
->The OMP (“Project”) is developing the SDS SDK (the “Materials”). Project would like to receive input, 
->suggestions and other feedback (“Feedback”) on the Materials. By signing below, 
->you (on behalf of yourself if you are an individual and your company if you are providing Feedback 
->on behalf of the company) grant the Project under all applicable intellectual property rights owned or controlled by 
->you or your company a non-exclusive, non-transferable, worldwide, perpetual, irrevocable, royalty-free license to use, 
->disclose, copy, publish, license, modify, sublicense or otherwise distribute and exploit Feedback you provide for 
->the purpose of developing and promoting the Materials and in connection with any product that implements and 
->complies with the Materials. You warrant to the best of your knowledge that you have rights to provide this Feedback, 
->and if you are providing Feedback on behalf of a company, you warrant that you have the rights to provide Feedback 
->on behalf of your company. You also acknowledge that the Project is not required to incorporate your Feedback into 
->any version of the Materials. You further agree that you and your company will not disclose it or distribute drafts of 
->the Project Materials to third parties. Unless the parties agree otherwise, this obligation of non-disclosure will 
->expire five (5) years from the date the material was disclosed to you.
->
->Source Code
-> 
->Any source code you provide to the Project is subject to the Developer Certificate of Origin version 1.1, 
->available at http://developercertificate.org/ and the MPL 2.0.
+## Eclipse Contributor Agreement
 
-This means, before making a pull request or providing an issue please sign the OMP Feedback Agreement for the 
-working group “Semantic Data Structuring”.
+In order to be able to contribute to Eclipse Foundation projects you must electronically sign the
+Eclipse Contributor Agreement (ECA).
 
-## Labeling
-After new `Issues` or `PRs` are created, the `bug` and `task` label will be added automatically according to the chosen issue type.
-Later on the Chair or one of the maintainers may further assign a `label` to it according to this table:
+* http://www.eclipse.org/legal/ECA.php
 
-Label Types        | Description
--------------------| ----------------------------------------
-`to be discussed`        | Involvement and Discussion in one of the `working group` meetings are needed.
-`request for information`| The `working group` or the `maintainers` are requesting further information from the creator of the `Issue` or `PR`. If for a pre-defined time no information is received, then the `Issue` or `PR` can be closed.
-`approved` | Has been discussed and approved in the `working group`. 
-`not accepted` | Has been discussed in the `working group` with the decision to close this issue.
+The ECA provides the Eclipse Foundation with a permanent record that you agree that each of your
+contributions will comply with the commitments documented in the Developer Certificate of Origin
+(DCO). Having an ECA on file associated with the email address matching the "Author" field of your
+contribution's Git commits fulfills the DCO's requirement that you sign-off on your contributions.
 
+For more information, please see the Eclipse Committer Handbook:
+https://www.eclipse.org/projects/handbook/#resources-commit
 
-
-### PR or Issue Discussion and Decision
-* You can provide comments to any `PR` or `Issue` via the comment function in GitHub
-* If no further involvement from the working group is required, a `maintainer` may merge a `PR`. 
-This mostly applies to bug fixes and non-API-breaking changes. 
-A `PR` for a bug fix has to reference an issue of type `Bug Report`.
-* The `maintainers` may assign the label `to be discussed` to a proposal when further involvement from 
-  the `working group` is required. This then triggers the following steps:
-  1. The `Chair` of the `working group` puts the proposal up for discussion in one of the next `working group` meetings. 
-  2. The `working group` then uses Consensus Decision-Making with one of the outcomes listed below.
-  3. The label `to be discussed` is removed.
-  
-  | Decision | Next Steps |
-  | ------ | ------- |
-  |`Approved`| The `Issue` or the `PR` gets the label `approved`. In the case of a `PR`, the `maintainers` merge the respective `PR`. |
-  | `Discussion`| The `Issue` or the `PR` get the label `request for information`. 
-  |`Close` | The `Issue` or the `PR` are closed and get the label `not accepted`. |
-
-* If the `working group` or the `maintainers` feel that further information is required to explain a `PR` or an `Issue`, 
-  they may request this information through the comment section of the `PR` or `Issue` and assign the label 
-  `request for information`. The `maintainers` may close the issue if no answer is received after a pre-defined time. 
-
-Note, that merging a `PR` leads to the closing of the `Issue` if it is linked in the `PR`. 
-
-### Review Checklist
-The following checklist can be seen as a basis for performing reviews on new `PRs`:
-
-- [ ] brief and useful commit messages
-- [ ] code convention is followed
-- [ ] the contribution matches to the linked issue and the description of the PR
-- [ ] provide clear documentation of new features (if applicable) 
-- [ ] outline added third party dependencies
-
-### Commit Messages 
-Separate the subject from the body with a blank line because the subject line is shown in the Git history and should 
-summarize the commit body. 
-Use the body to explain what and why with less focus on the details of the how. 
-This [blog post](https://chris.beams.io/posts/git-commit/#seven-rules) has more tips and details.
-Before you push your commits to a repository, you should squash your commits into one or more logical units of work, e.g., 
-you should organize a new feature in a single commit.
+## Commit Messages 
+Separate the subject from the body with a blank line because the subject line is shown in the Git
+history and should summarize the commit body. Use the body to explain what and why with less focus
+on the details of the how. This [blog post](https://chris.beams.io/posts/git-commit/#seven-rules)
+has more tips and details. Before you push your commits to a repository, you should squash your
+commits into one or more logical units of work, e.g., you should organize a new feature in a single
+commit.
 
 ## License Headers & Licensing
-All files contributed require headers - this will ensure the license and copyright clearing at the end. Also, all 
-contributions must have the same license as the source.
-The header should follow the following template:
+All files contributed require headers - this will ensure the license and copyright clearing at the
+end. Also, all contributions must have the same license as the source. The header should follow the
+following template:
 
 ```
 /*
@@ -203,36 +125,27 @@ The header should follow the following template:
  * SPDX-License-Identifier: MPL-2.0
  */
 ```
-When using the template, one must replace "{NAME OF COMPANY X}" with the name of the involved companies and "{YEAR}" 
-with the year of the contribution. For each involved company you need a new line starting with "Copyright" as outlined 
-in the example. 
 
-The example is taken from a Java class file. If your file is of another type you may have to adapt the comment syntax 
-accordingly. 
+When using the template, one must replace "{NAME OF COMPANY X}" with the name of the involved
+companies and "{YEAR}" with the year of the contribution. For each involved company you need a new
+line starting with "Copyright" as outlined in the example.
 
-If you use third-party content (e.g., import / include ...), you are required to list each third-party content 
-explicitly with its version number in the documentation and your pull-request comment. 
-Please also check used third party material for license compatibility with the MPL-2.0.
+The example is taken from a Java source file. If your file is of another type you may have to adapt
+the comment syntax accordingly.
+
+If you use third-party content (e.g., import / include ...), you are required to list each
+third-party content explicitly with its version number in the documentation and your pull-request
+comment. Please also check used third party material for license compatibility with the MPL-2.0.
 E.g. software licensed under GPL, AGPL or, a similar strong copy-left license cannot be approved.
 
 # Code Conventions
-The SDS SDK is written in the Java Programming Language. Please have a look into our [Code Conventions](CONVENTIONS.md).
-
-# Release Process
-The working group may decide that it reached a stable state for the contents of the repository. 
-To settle an agreement on this and provide downstream users with a stable version of the BAMM SDK, 
-a release process can be triggered. 
-
-For such a release the `working group` must approve the current state of the `main` branch as agreement. 
-A `maintainer` of the repository then forks the `main` branch into a new branch that follows the naming 
-convention `v{version_number}-RC`. The organization team of the OMP is then asked to `review & approve` 
-the `v{version_number}-RC` branch. If the organization agrees on the approval the OMP steering committee needs to be 
-notified. After that notification, a `maintainer` triggers the release feature from GitHub based on the commit on 
-which the `v{version_number}-RC` branch is based.
+The ESMF SDK is written in the Java Programming Language. Please have a look into our [Code
+Conventions](CONVENTIONS.md).
 
 ## Versioning
-We use Semantic Versioning to identify released versions of the SDS SDK. Semantic Versioning is documented 
-[here](https://semver.org). It proposes to have a versioning number with the following elements:
+We use Semantic Versioning to identify released versions of the ESMF SDK. Semantic Versioning is
+documented [here](https://semver.org). It proposes to have a versioning number with the following
+elements:
 
 ````
 Given a version number MAJOR.MINOR.PATCH, increment the:
@@ -247,8 +160,10 @@ the Minor version must be changed if new backward-compatible features are introd
 the Patch version must be incremented if backward-compatible bugfixes are introduced.
 
 ### Breaking Changes
-For the definition of a breaking change, we follow the definition as in the 
-[Microsoft REST API Guidelines](https://github.com/Microsoft/api-guidelines/blob/vNext/Guidelines.md#123-definition-of-a-breaking-change) which are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0). This definition states:
+For the definition of a breaking change, we follow the definition as in the [Microsoft REST API
+Guidelines](https://github.com/Microsoft/api-guidelines/blob/vNext/Guidelines.md#123-definition-of-a-breaking-change)
+which are licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0). This definition
+states:
 ````
 Changes to the contract of an API are considered a breaking change. Changes that impact the backwards compatibility 
 of an API are a breaking change.

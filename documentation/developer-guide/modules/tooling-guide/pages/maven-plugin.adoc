@@ -3,27 +3,29 @@
 [[maven-plugin]]
 = Maven Plugin
 
-The `sds-aspect-model-maven-plugin` wraps the functionality provided by the SDS-SDK. Each piece of supported functionality is implemented as a goal. As such, developers can easily work with Aspect Models in the build of their maven projects to, for example, generate code from an Aspect Model.
+The `esmf-aspect-model-maven-plugin` wraps the functionality provided by the ESMF SDK. Each piece of
+supported functionality is implemented as a goal. As such, developers can easily work with Aspect
+Models in the build of their maven projects to, for example, generate code from an Aspect Model.
 
 To include the plugin, use the following dependency:
 
 [source,maven,subs=attributes+]
 ----
 <dependency>
-    <groupId>io.openmanufacturing</groupId>
-    <artifactId>sds-aspect-model-maven-plugin</artifactId>
-    <version>{sds-sdk-version}</version>
+    <groupId>org.eclipse.esmf</groupId>
+    <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+    <version>{esmf-sdk-version}</version>
 </dependency>
 ----
 
-NOTE: the current implementation of the `sds-aspect-model-maven-plugin` uses the
+NOTE: the current implementation of the `esmf-aspect-model-maven-plugin` uses the
 `FileSystemStrategy` to resolve Aspect Models. See
-xref:java-aspect-tooling.adoc#understanding-model-resolution[Understanding Model
-Resolution] for more information.
+xref:java-aspect-tooling.adoc#understanding-model-resolution[Understanding Model Resolution] for
+more information.
 
 == Validating an Aspect Model
 
-The `validate` goal validates whether a given Aspect Model adheres to the BAMM. The default life cycle phase for the goal is `validate`.
+The `validate` goal validates whether a given Aspect Model adheres to the SAMM. The default life cycle phase for the goal is `validate`.
 
 Usage:
 
@@ -32,7 +34,7 @@ Usage:
 <build>
   <plugins>
      <plugin>
-        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
         <executions>
            <execution>
               <id>validate-aspect-model</id>
@@ -66,7 +68,8 @@ Configuration Properties:
 
 === Generate Domain Classes
 
-The `generateJavaClasses` goal generates Java domain classes (POJOs) for a given Aspect Model. The default life cycle phase for the goal is `generate-sources`.
+The `generateJavaClasses` goal generates Java domain classes (POJOs) for a given Aspect Model. The
+default life cycle phase for the goal is `generate-sources`.
 
 Usage:
 
@@ -75,7 +78,7 @@ Usage:
 <build>
   <plugins>
      <plugin>
-        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
         <executions>
            <execution>
               <id>generate-java-classes</id>
@@ -113,7 +116,8 @@ Configuration Properties:
 
 === Generate Static Meta Classes
 
-The `generateStaticJavaClasses` goal generates static meta classes for a given Aspect Model. The default life cycle phase for the goal is `generate-sources`.
+The `generateStaticJavaClasses` goal generates static meta classes for a given Aspect Model. The
+default life cycle phase for the goal is `generate-sources`.
 
 Usage:
 
@@ -122,7 +126,7 @@ Usage:
 <build>
   <plugins>
      <plugin>
-        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
         <executions>
            <execution>
               <id>generate-static-java-classes</id>
@@ -159,7 +163,8 @@ Configuration Properties:
 
 == Generate a JSON Schema for an Aspect Model
 
-The `generateJsonSchema` goal generates a JSON Schema for a given Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+The `generateJsonSchema` goal generates a JSON Schema for a given Aspect Model. The default life
+cycle phase for the goal is `generate-resources`.
 
 Usage:
 
@@ -168,7 +173,7 @@ Usage:
 <build>
   <plugins>
      <plugin>
-        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
         <executions>
            <execution>
               <id>generate-json-schema</id>
@@ -203,7 +208,8 @@ Configuration Properties:
 
 == Generate an OpenAPI Specification from an Aspect Model
 
-The `generateOpenApiSpec` goal generates an OpenAPI Specification for a given Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+The `generateOpenApiSpec` goal generates an OpenAPI Specification for a given Aspect Model. The
+default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 
@@ -212,7 +218,7 @@ Usage:
 <build>
   <plugins>
      <plugin>
-        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
         <executions>
            <execution>
               <id>generate-openapi-spec</id>
@@ -261,7 +267,8 @@ Configuration Properties:
 
 === Generating HTML Documentation
 
-The `generateDocumentation` goal generates HTML reference documentation for a given Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+The `generateDocumentation` goal generates HTML reference documentation for a given Aspect Model.
+The default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 
@@ -270,7 +277,7 @@ Usage:
 <build>
   <plugins>
      <plugin>
-        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
         <executions>
            <execution>
               <id>generate-html-doc</id>
@@ -305,7 +312,9 @@ Configuration Properties:
 
 === Generating SVG or PNG Diagrams
 
-The `generateDiagram` goal generates an automatically layouted diagram for a given Aspect Model in SVG, PNG or https://www.graphviz.org/[Graphviz/DOT]. The default life cycle phase for the goal is `generate-resources`.
+The `generateDiagram` goal generates an automatically layouted diagram for a given Aspect Model in
+SVG, PNG or https://www.graphviz.org/[Graphviz/DOT]. The default life cycle phase for the goal is
+`generate-resources`.
 
 Usage:
 
@@ -314,7 +323,7 @@ Usage:
 <build>
   <plugins>
      <plugin>
-        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
         <executions>
            <execution>
               <id>generate-aspect-model-diagram</id>
@@ -352,7 +361,9 @@ Configuration Properties:
 
 === Generating Sample JSON Payload
 
-The `generateJsonPayload` goal generates a valid sample JSON payload for a given Aspect Model as it could be returned by an Aspect that implements that Aspect Model. The default life cycle phase for the goal is `generate-resources`.
+The `generateJsonPayload` goal generates a valid sample JSON payload for a given Aspect Model as it
+could be returned by an Aspect that implements that Aspect Model. The default life cycle phase for
+the goal is `generate-resources`.
 
 Usage:
 
@@ -361,7 +372,7 @@ Usage:
 <build>
   <plugins>
      <plugin>
-        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
         <executions>
            <execution>
               <id>generate-json-payload</id>
@@ -395,7 +406,8 @@ Configuration Properties:
 
 == Aspect Model Migration
 
-The `migrate` goal migrates the given Aspect Model to the latest version of the meta model. The default life cycle phase for the goal is `initialize`.
+The `migrate` goal migrates the given Aspect Model to the latest version of the meta model. The
+default life cycle phase for the goal is `initialize`.
 
 Usage:
 
@@ -404,7 +416,7 @@ Usage:
 <build>
   <plugins>
      <plugin>
-        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
         <executions>
            <execution>
               <id>migrate-aspect-model</id>
@@ -438,7 +450,9 @@ Configuration Properties:
 
 == Pretty Print
 
-The `prettyPrint` goal formats the given Aspect Model. The formatted file is written to the location specified in the `outputDirectory` property. The default life cycle phase for the goal is `generate-resources`.
+The `prettyPrint` goal formats the given Aspect Model. The formatted file is written to the location
+specified in the `outputDirectory` property. The default life cycle phase for the goal is
+`generate-resources`.
 
 Usage:
 
@@ -447,7 +461,7 @@ Usage:
 <build>
   <plugins>
      <plugin>
-        <artifactId>sds-aspect-model-maven-plugin</artifactId>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
         <executions>
            <execution>
               <id>pretty-print-aspect-model</id>

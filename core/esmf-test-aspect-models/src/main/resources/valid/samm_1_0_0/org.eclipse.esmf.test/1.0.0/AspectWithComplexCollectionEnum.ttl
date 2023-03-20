@@ -1,0 +1,118 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:units:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithComplexCollectionEnum a samm:Aspect ;
+   samm:name "AspectWithComplexCollectionEnum" ;
+   samm:properties ( :myPropertyOne :myPropertyTwo :myPropertyThree :myPropertyFour ) ;
+   samm:operations ( ) .
+
+:myPropertyOne a samm:Property ;
+   samm:name "myPropertyOne" ;
+   samm:characteristic :MyEnumerationOne .
+
+:MyEnumerationOne a samm-c:Enumeration ;
+   samm:name "MyEnumerationOne" ;
+   samm:dataType :MyEntityOne ;
+   samm-c:values ( :entityInstanceOne ) .
+
+:MyEntityOne a samm:Entity ;
+   samm:name "MyEntityOne" ;
+   samm:properties ( :entityPropertyOne ) .
+
+:entityPropertyOne a samm:Property ;
+   samm:name "entityPropertyOne" ;
+   samm:characteristic :ListCharacteristic .
+
+:ListCharacteristic a samm-c:List ;
+   samm:name "ListCharacteristic" ;
+   samm:dataType xsd:string .
+
+:entityInstanceOne a :MyEntityOne ;
+   :entityPropertyOne ( "fooOne" "barOne" "bazOne" ) .
+
+:myPropertyTwo a samm:Property ;
+   samm:name "myPropertyTwo" ;
+   samm:characteristic :MyEnumerationTwo .
+
+:MyEnumerationTwo a samm-c:Enumeration ;
+   samm:name "MyEnumerationTwo" ;
+   samm:dataType :MyEntityTwo ;
+   samm-c:values ( :entityInstanceTwo ) .
+
+:MyEntityTwo a samm:Entity ;
+   samm:name "MyEntityTwo" ;
+   samm:properties ( :entityPropertyTwo ) .
+
+:entityPropertyTwo a samm:Property ;
+   samm:name "entityPropertyTwo" ;
+   samm:characteristic :setCharacteristic .
+
+:setCharacteristic a samm-c:Set ;
+   samm:name "setCharacteristic" ;
+   samm:dataType xsd:string .
+
+:entityInstanceTwo a :MyEntityTwo ;
+   :entityPropertyTwo ( "fooTwo" "barTwo" "bazTwo" ) .
+
+:myPropertyThree a samm:Property ;
+   samm:name "myPropertyThree" ;
+   samm:characteristic :MyEnumerationThree .
+
+:MyEnumerationThree a samm-c:Enumeration ;
+   samm:name "MyEnumerationThree" ;
+   samm:dataType :MyEntityThree ;
+   samm-c:values ( :entityInstanceThree ) .
+
+:MyEntityThree a samm:Entity ;
+   samm:name "MyEntityThree" ;
+   samm:properties ( :entityPropertyThree ) .
+
+:entityPropertyThree a samm:Property ;
+   samm:name "entityPropertyThree" ;
+   samm:characteristic :sortedSetCharacteristic .
+
+:sortedSetCharacteristic a samm-c:SortedSet ;
+   samm:name "sortedSetCharacteristic" ;
+   samm:dataType xsd:string .
+
+:entityInstanceThree a :MyEntityThree ;
+   :entityPropertyThree ( "fooThree" "barThree" "bazThree" ) .
+
+:myPropertyFour a samm:Property ;
+   samm:name "myPropertyFour" ;
+   samm:characteristic :MyEnumerationFour .
+
+:MyEnumerationFour a samm-c:Enumeration ;
+   samm:name "MyEnumerationFour" ;
+   samm:dataType :MyEntityFour ;
+   samm-c:values ( :entityInstanceFour ) .
+
+:MyEntityFour a samm:Entity ;
+   samm:name "MyEntityFour" ;
+   samm:properties ( :entityPropertyFour ) .
+
+:entityPropertyFour a samm:Property ;
+   samm:name "entityPropertyFour" ;
+   samm:characteristic :collectionCharacteristic .
+
+:collectionCharacteristic a samm-c:Collection ;
+   samm:name "collectionCharacteristic" ;
+   samm:dataType xsd:string .
+
+:entityInstanceFour a :MyEntityFour ;
+   :entityPropertyFour ( "fooFour" "barFour" "bazFour" ) .

@@ -1,0 +1,45 @@
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
+
+# Generates edges between Enumerations and Entity instances
+construct {
+  ?edge a :Edge .
+  ?edge :title ?title .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  ?characteristic rdf:type/rdfs:subClassOf* samm:Characteristic .
+
+  filter( exists {
+    ?aspect a samm:Aspect .
+    ?aspect (<>|!<>)* ?characteristic .
+  } )
+
+  # Don't apply to Constraints
+  filter( !exists { ?characteristic samm-c:baseCharacteristic [] } )
+  # Don't apply to Collections
+  filter( !exists { ?characteristic rdf:type/rdfs:subClassOf* samm-c:Collection } )
+  # Apply only to Enumerations
+  filter( exists { ?characteristic a samm-c:Enumeration }
+       || exists { ?characteristic a samm-c:State } )
+
+  # Apply to Enumerations with Complex values
+  ?characteristic samm-c:values/rdf:rest*/rdf:first ?instance .
+  ?instance rdf:type/rdfs:subClassOf* ?instanceClass
+  filter( exists { ?instanceClass  rdf:type/rdfs:subClassOf* samm:Entity} )
+
+  bind( func:getElementName( ?characteristic ) as ?characteristicName )
+  bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+  bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
+  ?characteristic samm-c:values/rdf:rest*/rdf:first ?instance .
+  bind( strafter( str( ?instance ), "#" ) as ?instanceName )
+  bind( concat( ?instanceName, "EntityInstance" ) as ?instanceBoxName )
+
+  bind( iri( concat( str( : ), ?instanceBoxName ) ) as ?to )
+  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?instanceBoxName ) ) as ?edge )
+  bind( "value" as ?title )
+}

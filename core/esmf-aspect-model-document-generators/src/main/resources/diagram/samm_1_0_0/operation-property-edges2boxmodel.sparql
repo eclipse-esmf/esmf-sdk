@@ -1,0 +1,58 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
+
+# Generates edges between Operations and Properties (input and output)
+construct {
+  ?edge a :Edge .
+  ?edge :title ?title .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+
+  # Operation -> Property (input)
+  {
+    ?operation a samm:Operation .
+    ?operation samm:name ?operationName .
+    ?operation samm:input/rdf:rest*/rdf:first ?property .
+    ?property samm:name ?propertyName .
+
+    bind( concat( ?operationName, "Operation" ) as ?operationBoxName )
+    bind( iri( concat( str( : ), ?operationBoxName ) ) as ?from )
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?to )
+    bind( "input" as ?title )
+
+    bind( iri( concat( str( : ), ?operationBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+  }
+
+  union
+
+  # Operation -> Property (output)
+  {
+    ?operation a samm:Operation .
+    ?operation samm:name ?operationName .
+    ?operation samm:output ?property .
+    ?property samm:name ?propertyName .
+
+    bind( concat( ?operationName, "Operation" ) as ?operationBoxName )
+    bind( iri( concat( str( : ), ?operationBoxName ) ) as ?from )
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?to )
+    bind( "output" as ?title )
+
+    bind( iri( concat( str( : ), ?operationBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+  }
+}
+

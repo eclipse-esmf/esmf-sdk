@@ -1,0 +1,31 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
+
+# Generates boxes for QuantityKinds
+construct {
+  ?quantityKindBox a :Box .
+  ?quantityKindBox :prototype "QuantityKind" .
+  ?quantityKindBox :title ?upperQuantityKindName .
+  ?quantityKindBox :modelElement ?quantityKind .
+  ?quantityKindBox :entries ()
+} where {
+  [] samm-c:unit/samm:referenceUnit?/samm:quantityKind ?quantityKind .
+  bind( strafter( str( ?quantityKind ), "#" ) as ?quantityKindName ) .
+  bind( concat( ucase( substr( ?quantityKindName, 1, 1 ) ), substr( ?quantityKindName, 2 ) ) as ?upperQuantityKindName )
+  bind( concat( replace( ?upperQuantityKindName, "-", "" ), "QuantityKind" ) as ?boxName )
+  bind( iri( concat( str( : ), ?boxName ) ) as ?quantityKindBox )
+}

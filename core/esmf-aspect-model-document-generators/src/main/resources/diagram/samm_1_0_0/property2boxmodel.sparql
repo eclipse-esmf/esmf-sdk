@@ -1,0 +1,145 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
+
+# Generates boxes for Properties; excludes Properties which are refined
+construct {
+  ?propertyBox a :Box .
+  ?propertyBox :prototype "Property" .
+  ?propertyBox :title ?propertyName .
+  ?propertyBox :entries (
+     [
+       a :Entry ;
+       :title "preferredName" ;
+       :text ?preferredName
+     ]
+     [
+       a :Entry ;
+       :title "description" ;
+       :text ?description
+     ]
+     [
+       a :Entry ;
+       :title "see" ;
+       :text ?seeValues
+     ]
+     [
+       a :Entry ;
+       :title "exampleValue" ;
+       :text ?exampleValue
+     ]
+  )
+} where {
+  #process Properties defined in the Aspect Model being processed
+  {
+    ?property samm:refines?/rdf:type samm:Property .
+    #exclude properties from our shared name-space
+    filter ( ! strstarts( str( ?property ), str ( samm-e: ) ) )
+    ?property samm:name ?propertyName .
+
+    bind( concat( ?propertyName, "Property" ) as ?boxName )
+    bind( iri( concat( str( : ), ?boxName ) ) as ?propertyBox )
+
+    optional {
+      ?property samm:preferredName ?preferredNameValue .
+      filter( lang( ?preferredNameValue ) = "en" )
+      bind( xsd:string( ?preferredNameValue ) as ?preferredName )
+    }
+
+    optional {
+      ?property samm:description ?descriptionValue .
+      filter( lang( ?descriptionValue ) = "en" )
+      bind( xsd:string( ?descriptionValue ) as ?description )
+    }
+
+    optional {
+      ?property samm:exampleValue ?exampleValue .
+    }
+
+    #subquery which concatenates all values for the samm:see attributes
+    optional {
+      select * where {
+        ?property samm:refines?/rdf:type samm:Property .
+        filter( str( ?subQueryProperty ) = str( ?property ) )
+        {
+          select ?subQueryProperty ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
+          where {
+            select *
+            where {
+              ?subQueryProperty samm:refines?/rdf:type samm:Property .
+              ?subQueryProperty samm:see ?seeValue .
+            }
+            order by str( ?seeValue )
+          }
+          group by ?subQueryProperty
+        }
+      }
+    }
+  }
+
+  union
+
+  #process Properties which are defined in an Entity which is refined, but are themselves not refined
+  {
+    ?refiningEntity samm:refines/rdf:type samm:Entity .
+    ?refiningEntity samm:refines ?refinedEntity .
+
+    ?property samm:refines?/rdf:type samm:Property .
+    filter( exists { ?refinedEntity samm:properties/rdf:rest*/rdf:first ?property } )
+    filter( not exists { [] samm:refines ?property } )
+
+    ?property samm:name ?propertyName .
+
+    bind( concat( ?propertyName, "Property" ) as ?boxName )
+    bind( iri( concat( str( : ), ?boxName ) ) as ?propertyBox )
+
+    optional {
+      ?property samm:preferredName ?preferredNameValue .
+      filter( lang( ?preferredNameValue ) = "en" )
+      bind( xsd:string( ?preferredNameValue ) as ?preferredName )
+    }
+
+    optional {
+      ?property samm:description ?descriptionValue .
+      filter( lang( ?descriptionValue ) = "en" )
+      bind( xsd:string( ?descriptionValue ) as ?description )
+    }
+
+    optional {
+      ?property samm:exampleValue ?exampleValue .
+    }
+
+    #subquery which concatenates all values for the samm:see attributes
+    optional {
+      select * where {
+        ?property samm:refines?/rdf:type samm:Property .
+        filter (str( ?subQueryProperty ) = str( ?property ) )
+        {
+          select ?subQueryProperty ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
+          where {
+            select *
+            where {
+              ?subQueryProperty samm:refines?/rdf:type samm:Property .
+              ?subQueryProperty samm:see ?seeValue .
+            }
+            order by str( ?seeValue )
+          }
+          group by ?subQueryProperty
+        }
+      }
+    }
+  }
+}
