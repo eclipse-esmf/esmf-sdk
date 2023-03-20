@@ -227,19 +227,12 @@ jobs:
           # as described in https://stackoverflow.com/a/70157413
           MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
 
-      - name: Create release commit
+      - name: Set versions
         continue-on-error: true
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-
           release_version=${{ github.event.inputs.release_version }}
           release_branch_name=${release_version%.*}.x
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
-
-          git fetch
-          git checkout -b $release_branch_name --track origin/$release_branch_name || true
-          git checkout -b $release_branch_name
 
           # Set version in pom.xml files
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
@@ -247,11 +240,14 @@ jobs:
           mvn versions:commit
           # Set version in Antora module
           yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
-          # Push changes
-          git add .
-          if git commit -m "Add version ${{ github.event.inputs.release_version}}"; then
-            git push origin ${{ env.release_branch_name }}
-          fi
+
+    - name: Commit version changes and push to upstream repository
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+         branch: ${{ env.release_branch_name }}
+         commit_user_name: github-actions
+         commit_user_email: github-actions@github.com
+         commit_author: Author <actions@github.com>
 
       # Full release: Github
       - name: "Create Github release (full)"
