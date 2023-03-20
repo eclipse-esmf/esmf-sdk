@@ -77,7 +77,10 @@ public class AspectModelJavaUtil {
    public static String getPropertyType( final Property property, final boolean inclValidation, final JavaCodeGenerationConfig codeGenerationConfig ) {
       final String propertyType = determinePropertyType( property.getCharacteristic(), inclValidation, codeGenerationConfig );
       if ( property.isOptional() ) {
-         return containerType( Optional.class, propertyType, Optional.empty() );
+         return containerType( Optional.class, propertyType,
+               inclValidation && property.getCharacteristic().isPresent() && property.getCharacteristic().get() instanceof Trait t ?
+                     Optional.of( buildConstraintsForCharacteristic( t, codeGenerationConfig ) ) :
+                     Optional.empty() );
       }
       return propertyType;
    }

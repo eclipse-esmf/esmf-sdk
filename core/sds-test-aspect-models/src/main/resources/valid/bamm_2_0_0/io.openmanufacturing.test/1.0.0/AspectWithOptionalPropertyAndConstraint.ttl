@@ -1,0 +1,30 @@
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:bamm:io.openmanufacturing.test:1.0.0#> .
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:2.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
+
+:AspectWithOptionalPropertyAndConstraint a bamm:Aspect ;
+   bamm:properties ( [ bamm:property :stringProperty; bamm:optional true ] ) ;
+   bamm:operations ( ) .
+
+:stringProperty a bamm:Property ;
+   bamm:characteristic :TestLengthConstraint .
+
+:TestLengthConstraint a bamm-c:Trait ;
+   bamm-c:constraint [
+      a bamm-c:LengthConstraint ;
+      bamm-c:maxValue "3"^^xsd:nonNegativeInteger
+   ] ;
+   bamm-c:baseCharacteristic bamm-c:Text .

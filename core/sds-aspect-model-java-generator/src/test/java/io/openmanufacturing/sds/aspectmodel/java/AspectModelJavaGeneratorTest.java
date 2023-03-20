@@ -13,8 +13,7 @@
 
 package io.openmanufacturing.sds.aspectmodel.java;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -341,6 +340,24 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    }
 
    @ParameterizedTest
+   @MethodSource( value = "versionsStartingWith2_0_0" )
+   public void testGenerateAspectModelWithOptionalAndConstraints( final KnownVersion metaModelVersion ) throws IOException {
+      final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
+            .put( "stringProperty", "Optional<@Size(max = 3) String>" )
+            .build();
+
+      final TestAspect aspect = TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY_AND_CONSTRAINT;
+      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion,
+            true, false, null ) );
+      result.assertNumberOfFiles( 1 );
+      result.assertFields( "AspectWithOptionalPropertyAndConstraint", expectedFieldsForAspectClass,
+            ImmutableMap.<String, String> builder()
+                  .put( "stringProperty", "" )
+                  .build() );
+      assertConstructor( result, "AspectWithOptionalPropertyAndConstraint", expectedFieldsForAspectClass );
+   }
+
+   @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithConstrainedCollection( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
@@ -396,7 +413,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testGenerateAspectWithEither( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
-            .put( "testProperty", "Either<LeftEntity,RightEntity>" )
+            .put( "testProperty", "Either<LeftEntity, RightEntity>" )
             .build();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES;
