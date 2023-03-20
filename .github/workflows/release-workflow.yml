@@ -51,6 +51,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      # Even though the build itself is done using the GraalVM JDK
+      # (see below), we use the setup-java action to have GPG configured
+      # so that it can be used from the maven-gpg-plugin.
+      - name: Configure GPG
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          gpg-private-key: ${{ secrets.PGP_KEY }}
+          gpg-passphrase: PGP_KEY_PASSWORD
+          overwrite-settings: false
+
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
         with:
@@ -94,6 +106,8 @@ jobs:
           cd tools/samm-cli/target
           chmod a+x samm
           tar cfvz samm-cli-linux.tar.gz samm
+        env:
+          PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
       - name: Upload staging directory and Linux binary
         uses: actions/upload-artifact@v3
@@ -184,8 +198,6 @@ jobs:
           server-id: ossrh
           server-username: OSSRH_USERNAME
           server-password: OSSRH_TOKEN
-          gpg-private-key: ${{ secrets.PGP_KEY }}
-          gpg-passphrase: PGP_KEY_PASSWORD
           overwrite-settings: false
 
       - name: Fetch Linux Artifacts
