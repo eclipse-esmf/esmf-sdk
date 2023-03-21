@@ -98,9 +98,10 @@ jobs:
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
           # Build of CLI
-          cd tools/samm-cli
+          pushd tools/samm-cli
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          popd
 
           # Create zip of samm-cli
           cd tools/samm-cli/target
