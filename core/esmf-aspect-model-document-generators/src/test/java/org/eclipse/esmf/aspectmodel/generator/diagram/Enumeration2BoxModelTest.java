@@ -61,7 +61,7 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String characteristicIdentifier = metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ? "Enumeration14c1cbd" : "TestEnumeration";
+      final String characteristicIdentifier = metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ? "Enumeration46dba23" : "TestEnumeration";
       final String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
       final String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUMERATION_WITH_MULTIPLE_SEE_ATTRIBUTES,

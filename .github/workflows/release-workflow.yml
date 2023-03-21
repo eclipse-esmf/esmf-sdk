@@ -51,6 +51,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      # Even though the build itself is done using the GraalVM JDK
+      # (see below), we use the setup-java action to have GPG configured
+      # so that it can be used from the maven-gpg-plugin.
+      - name: Configure GPG
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          gpg-private-key: ${{ secrets.PGP_KEY }}
+          gpg-passphrase: PGP_KEY_PASSWORD
+          overwrite-settings: false
+
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
         with:
@@ -94,6 +106,8 @@ jobs:
           cd tools/samm-cli/target
           chmod a+x samm
           tar cfvz samm-cli-linux.tar.gz samm
+        env:
+          PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
       - name: Upload staging directory and Linux binary
         uses: actions/upload-artifact@v3
@@ -136,7 +150,7 @@ jobs:
         # This seems to be caused by running out of memory; increasing page file
         # size suggested here:
         # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
-        uses: al-cheb/configure-pagefile-action@v1.2
+        uses: al-cheb/configure-pagefile-action@v1.3
         with:
           minimum-size: 16GB
           maximum-size: 16GB
@@ -184,8 +198,6 @@ jobs:
           server-id: ossrh
           server-username: OSSRH_USERNAME
           server-password: OSSRH_TOKEN
-          gpg-private-key: ${{ secrets.PGP_KEY }}
-          gpg-passphrase: PGP_KEY_PASSWORD
           overwrite-settings: false
 
       - name: Fetch Linux Artifacts
@@ -209,23 +221,18 @@ jobs:
         run: |
           mvn nexus-staging:deploy-staged-repository -DrepositoryDirectory=nexus-staging -Prelease-build
         env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           # Workaround for https://issues.sonatype.org/browse/OSSRH-66257
           # as described in https://stackoverflow.com/a/70157413
           MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
 
-      - name: Create release commit
+      - name: Set versions
         continue-on-error: true
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-
           release_version=${{ github.event.inputs.release_version }}
           release_branch_name=${release_version%.*}.x
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
-
-          git fetch
-          git checkout -b $release_branch_name --track origin/$release_branch_name || true
-          git checkout -b $release_branch_name
 
           # Set version in pom.xml files
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
@@ -233,11 +240,14 @@ jobs:
           mvn versions:commit
           # Set version in Antora module
           yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
-          # Push changes
-          git add .
-          if git commit -m "Add version ${{ github.event.inputs.release_version}}"; then
-            git push origin ${{ env.release_branch_name }}
-          fi
+
+    - name: Commit version changes and push to upstream repository
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+         branch: ${{ env.release_branch_name }}
+         commit_user_name: github-actions
+         commit_user_email: github-actions@github.com
+         commit_author: Author <actions@github.com>
 
       # Full release: Github
       - name: "Create Github release (full)"
