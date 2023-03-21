@@ -183,6 +183,7 @@ jobs:
             tools/samm-cli/target/lib/
 
   release:
+    name: Release
     needs: [build-linux, build-windows]
     runs-on: ubuntu-latest
     steps:
@@ -220,7 +221,14 @@ jobs:
       - name: Release to OSSRH/Maven Central
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
-          mvn nexus-staging:deploy-staged-repository -DrepositoryDirectory=nexus-staging -Prelease-build
+          mkdir deploy
+          mv nexus-staging deploy
+          cd deploy
+          mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
+            -DnexusUrl=https://oss.sonatype.org/ \
+            -DserverId=ossrh \
+            -DrepositoryDirectory=nexus-staging \
+            -DstagingProfileId=org.eclipse.esmf
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}

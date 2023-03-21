@@ -156,3 +156,5 @@ core/esmf-aspect-model-jackson/src/main/java/org/eclipse/esmf/test
 
 # MacOS
 .DS_Store
+
+/deploy

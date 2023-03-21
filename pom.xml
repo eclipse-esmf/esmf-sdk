@@ -133,7 +133,7 @@
       <maven-surefire-plugin-version>3.0.0-M8</maven-surefire-plugin-version>
       <maven-surefire-report-plugin-version>3.0.0-M8</maven-surefire-report-plugin-version>
       <native-maven-plugin-version>0.9.10</native-maven-plugin-version>
-      <nexus-staging-maven-plugin-version>1.6.9</nexus-staging-maven-plugin-version>
+      <nexus-staging-maven-plugin-version>1.6.13</nexus-staging-maven-plugin-version>
 
       <!-- General settings -->
       <testreports.surefire>surefire-report</testreports.surefire>
@@ -728,7 +728,7 @@
             <repository>
                <id>ossrh</id>
                <name>OSSRH</name>
-               <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+               <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
             </repository>
          </distributionManagement>
          <build>
@@ -746,7 +746,8 @@
                   <extensions>true</extensions>
                   <configuration>
                      <serverId>ossrh</serverId>
-                     <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                     <stagingProfileId>org.eclipse.esmf</stagingProfileId>
                      <autoReleaseAfterClose>false</autoReleaseAfterClose>
                   </configuration>
                </plugin>
