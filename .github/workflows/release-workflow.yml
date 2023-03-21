@@ -241,13 +241,13 @@ jobs:
           # Set version in Antora module
           yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
 
-    - name: Commit version changes and push to upstream repository
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-         branch: ${{ env.release_branch_name }}
-         commit_user_name: github-actions
-         commit_user_email: github-actions@github.com
-         commit_author: Author <actions@github.com>
+      - name: Commit version changes and push to upstream repository
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+           branch: ${{ env.release_branch_name }}
+           commit_user_name: github-actions
+           commit_user_email: github-actions@github.com
+           commit_author: Author <actions@github.com>
 
       # Full release: Github
       - name: "Create Github release (full)"
