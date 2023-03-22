@@ -103,10 +103,13 @@ jobs:
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           popd
 
-          # Create zip of samm-cli
-          cd tools/samm-cli/target
+          # Create .tar.gz of samm-cli
+          pushd tools/samm-cli/target
           chmod a+x samm
           tar cfvz samm-cli-linux.tar.gz samm
+          popd
+          mv tools/samm-cli/target/samm-cli-linux.tar.gz .
+          mv tools/samm-cli/target/samm-cli-*.jar .
         env:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
@@ -116,8 +119,8 @@ jobs:
           name: linux-artifacts
           path: |
             nexus-staging/
-            tools/samm-cli/target/samm-cli-linux.tar.gz
-            tools/samm-cli/target/samm-cli-*.jar
+            samm-cli-linux.tar.gz
+            samm-cli-*.jar
 
   # The Windows build will build the Windows-specific samm-cli
   # and upload the binary to the build artifacts
@@ -192,6 +195,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      # Required to have Maven settings.xml set up correctly
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -201,6 +205,17 @@ jobs:
           server-username: OSSRH_USERNAME
           server-password: OSSRH_TOKEN
           overwrite-settings: false
+
+      # Required to run the mvn:versions, since enforcer plugin
+      # will check for GraalVM JDK
+      - name: Setup JDK
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.3.1'
+          java-version: '17'
+          components: 'native-image,js'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'false'
 
       - name: Fetch Linux Artifacts
         uses: actions/download-artifact@v3
@@ -248,9 +263,9 @@ jobs:
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
 
           # Set version in pom.xml files
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
-          mvn versions:commit
+          mvn -B clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn -B versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn -B versions:commit
           # Set version in Antora module
           yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
 
