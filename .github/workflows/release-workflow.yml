@@ -195,6 +195,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      # Required to have Maven settings.xml set up correctly
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -204,6 +205,17 @@ jobs:
           server-username: OSSRH_USERNAME
           server-password: OSSRH_TOKEN
           overwrite-settings: false
+
+      # Required to run the mvn:versions, since enforcer plugin
+      # will check for GraalVM JDK
+      - name: Setup JDK
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.3.1'
+          java-version: '17'
+          components: 'native-image,js'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'false'
 
       - name: Fetch Linux Artifacts
         uses: actions/download-artifact@v3
@@ -251,9 +263,9 @@ jobs:
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
 
           # Set version in pom.xml files
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
-          mvn versions:commit
+          mvn -B clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn -B versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn -B versions:commit
           # Set version in Antora module
           yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
 
