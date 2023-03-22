@@ -103,10 +103,13 @@ jobs:
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           popd
 
-          # Create zip of samm-cli
-          cd tools/samm-cli/target
+          # Create .tar.gz of samm-cli
+          pushd tools/samm-cli/target
           chmod a+x samm
           tar cfvz samm-cli-linux.tar.gz samm
+          popd
+          mv tools/samm-cli/target/samm-cli-linux.tar.gz .
+          mv tools/samm-cli/target/samm-cli-*.jar .
         env:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
@@ -116,8 +119,8 @@ jobs:
           name: linux-artifacts
           path: |
             nexus-staging/
-            tools/samm-cli/target/samm-cli-linux.tar.gz
-            tools/samm-cli/target/samm-cli-*.jar
+            samm-cli-linux.tar.gz
+            samm-cli-*.jar
 
   # The Windows build will build the Windows-specific samm-cli
   # and upload the binary to the build artifacts
