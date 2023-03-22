@@ -218,6 +218,10 @@ jobs:
           zip -9 -r samm-cli-windows.zip samm.exe *.dll lib/
 
       # Full release: Maven Central
+      # The (apparently) only way to retrieve the staging profile id
+      # is the undocumented rc-list-profiles command of the
+      # nexus-staging-maven-plugin:
+      # mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:rc-list-profiles -DnexusUrl=https://oss.sonatype.org/ -DserverId=ossrh
       - name: Release to OSSRH/Maven Central
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
@@ -228,7 +232,7 @@ jobs:
             -DnexusUrl=https://oss.sonatype.org/ \
             -DserverId=ossrh \
             -DrepositoryDirectory=nexus-staging \
-            -DstagingProfileId=org.eclipse.esmf
+            -DstagingProfileId=7e73217781f2e
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
