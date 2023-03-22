@@ -261,6 +261,7 @@ jobs:
            commit_user_name: github-actions
            commit_user_email: github-actions@github.com
            commit_author: Author <actions@github.com>
+           file_pattern: 'documentation/developer-guide/antora.yml pom.xml */*/pom.xml'
 
       # Full release: Github
       - name: "Create Github release (full)"
