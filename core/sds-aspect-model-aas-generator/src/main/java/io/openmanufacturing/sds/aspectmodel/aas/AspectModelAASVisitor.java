@@ -27,6 +27,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
+import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AdministrativeInformation;
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetAdministrationShell;
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetKind;
@@ -101,6 +102,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
    public static final String DEFAULT_LOCALE = "EN";
    public static final String CONCEPT_DESCRIPTION_CATEGORY = "APPLICATION_CLASS";
+   public static final String ID_PREFIX = "id_";
 
    /**
     * Maps Aspect types to DataTypeIEC61360 Schema types, with no explicit mapping defaulting to
@@ -202,7 +204,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
       final AssetAdministrationShell administrationShell =
             new DefaultAssetAdministrationShell.Builder()
-                  .idShort( ADMIN_SHELL_NAME )
+                  .idShort( ID_PREFIX + ADMIN_SHELL_NAME )
                   .description( createLangString( ADMIN_SHELL_NAME, "en" ) )
                   .checksum( "a checksum" )
                   .id( ADMIN_SHELL_NAME )
@@ -291,7 +293,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final List<SubmodelElement> submodelElements =
             visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()
-            .idShort( entity.getName() )
+            .idShort( ID_PREFIX + entity.getName() )
             .displayName( map( entity.getPreferredNames() ) )
             .description( map( entity.getDescriptions() ) )
             .value( submodelElements )
@@ -301,7 +303,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private org.eclipse.digitaltwin.aas4j.v3.model.Property mapToAasProperty( final Property property ) {
       return new DefaultProperty.Builder()
-            .idShort( property.getName() )
+            .idShort( ID_PREFIX + property.getName() )
             .kind( ModelingKind.TEMPLATE )
             .valueType( mapAASXSDataType( property.getCharacteristic().flatMap( Characteristic::getDataType ).map( this::mapType ).orElse( UNKNOWN_TYPE ) )  )
             .displayName( map( property.getPreferredNames() ) )
@@ -325,7 +327,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return new DefaultOperation.Builder()
             .displayName( map( operation.getPreferredNames() ) )
             .description( map( operation.getDescriptions() ) )
-            .idShort( operation.getName() )
+            .idShort( ID_PREFIX + operation.getName() )
             .inputVariables(
                   operation.getInput().stream()
                         .map( i -> mapOperationVariable( i, context ) )
@@ -419,7 +421,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( property.getAspectModelUrn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( characteristic.getName() )
+                     .idShort( ID_PREFIX + characteristic.getName() )
                      .displayName( map( characteristic.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( property ) )
                      .id( extractIdentifier( property ) )
@@ -433,7 +435,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( aspect.getAspectModelUrn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( aspect.getName() )
+                     .idShort( ID_PREFIX + aspect.getName() )
                      .displayName( map( aspect.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( aspect ) )
                      .id( extractIdentifier( aspect ) )
@@ -502,7 +504,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private DataTypeDefXsd mapAASXSDataType( final String urn ) {
       final Resource resource = ResourceFactory.createResource( urn );
-      return AAS_XSD_TYPE_MAP.getOrDefault( resource, DataTypeDefXsd.STRING );
+      DataTypeDefXsd dataTypeDefXsd = AAS_XSD_TYPE_MAP.getOrDefault( resource, DataTypeDefXsd.STRING );
+      return dataTypeDefXsd;
    }
 
    private void createSubmodelElement( final SubmodelElementBuilder op, final Context context ) {
@@ -525,7 +528,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementCollection.Builder()
-                        .idShort( property.getName() )
+                        .idShort( ID_PREFIX + property.getName() )
                         .displayName( map( property.getPreferredNames() ) )
                         .description( map( property.getDescriptions() ) )
                         .value( Collections.singletonList( decideOnMapping( property, context ) ) )
@@ -542,7 +545,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementList.Builder()
-                        .idShort( property.getName() )
+                        .idShort( ID_PREFIX + property.getName() )
+                        .typeValueListElement( AasSubmodelElements.DATA_ELEMENT ) // TODO check if more specific type info is required
                         .displayName( map( property.getPreferredNames() ) )
                         .description( map( property.getDescriptions() ) )
                         .value( Collections.singletonList( decideOnMapping( property, context ) ) )
@@ -557,7 +561,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementCollection.Builder() //TODO according to the standard document this should be SubmodelEleementStruct. However, this type is not available in AAS4J
-                        .idShort( property.getName() )
+                        .idShort( ID_PREFIX + property.getName() )
                         .displayName( map( property.getPreferredNames() ) )
                         .description( map( property.getDescriptions() ) )
                         .value( Collections.singletonList( decideOnMapping( property, context ) ) )
@@ -573,7 +577,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementList.Builder()
-                        .idShort( property.getName() )
+                        .idShort( ID_PREFIX + property.getName() )
+                        .typeValueListElement( AasSubmodelElements.DATA_ELEMENT ) // TODO check if more specific type info is reuired
                         .displayName( map( property.getPreferredNames() ) )
                         .description( map( property.getDescriptions() ) )
                         .value( Collections.singletonList( decideOnMapping( property, context ) ) )
@@ -599,7 +604,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       }
       final SubmodelElementList aasSubModelElementCollection =
             new DefaultSubmodelElementList.Builder()
-                  .idShort( either.getName() )
+                  .idShort( ID_PREFIX + either.getName() )
+                  .typeValueListElement( AasSubmodelElements.DATA_ELEMENT ) // TODO check if more specific type info is rqujried
                   .displayName( map( either.getPreferredNames() ) )
                   .description( map( either.getDescriptions() ) )
                   .value( submodelElements )
