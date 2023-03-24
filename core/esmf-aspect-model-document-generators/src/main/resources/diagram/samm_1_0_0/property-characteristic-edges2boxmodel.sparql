@@ -1,0 +1,65 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
+
+# Generates edges between Properties and Characteristics (characteristic)
+construct {
+  ?edge a :Edge .
+  ?edge :title "characteristic" .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  #process Properties defined in the Aspect Model being processed
+  {
+    ?property samm:refines?/rdf:type samm:Property .
+    #exclude properties from our shared name-space
+    filter ( ! strstarts( str( ?property ), str ( samm-e: ) ) )
+
+    ?property samm:name ?propertyName .
+    ?property samm:characteristic ?characteristic .
+    ?characteristic samm:name ?characteristicName .
+
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?from )
+    bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+    bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?to )
+
+    bind( iri( concat( str( : ), ?propertyBoxName, "_To_", ?characteristicBoxName ) ) as ?edge )
+  }
+
+  union
+
+  #process Properties which are defined in an Entity which is refined, but are themselves not refined
+  {
+    ?refiningEntity samm:refines/rdf:type samm:Entity .
+    ?refiningEntity samm:refines ?refinedEntity .
+
+    ?property samm:refines?/rdf:type samm:Property .
+    filter( exists { ?refinedEntity samm:properties/rdf:rest*/rdf:first ?property } )
+    filter( not exists { [] samm:refines ?property } )
+
+    ?property samm:name ?propertyName .
+    ?property samm:characteristic ?characteristic .
+    ?characteristic samm:name ?characteristicName .
+
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?from )
+    bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+    bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?to )
+
+    bind( iri( concat( str( : ), ?propertyBoxName, "_To_", ?characteristicBoxName ) ) as ?edge )
+  }
+}
+

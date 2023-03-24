@@ -14,12 +14,12 @@
 package examples;
 
 // tag::imports[]
-import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfig;
-import io.openmanufacturing.sds.aspectmodel.java.JavaCodeGenerationConfigBuilder;
-import io.openmanufacturing.sds.aspectmodel.java.pojo.AspectModelJavaGenerator;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
+import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
+import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 // end::imports[]
 import java.io.File;
 import org.apache.commons.io.output.NullOutputStream;
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class GenerateJavaPojo {
    @Test
    public void generate() {
-      final File modelFile = new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" );
+      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
 
       // tag::generate[]
       // Aspect as created by the AspectModelLoader

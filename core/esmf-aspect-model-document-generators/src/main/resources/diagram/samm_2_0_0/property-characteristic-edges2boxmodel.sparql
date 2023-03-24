@@ -1,0 +1,41 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
+
+# Generates edges between Properties and Characteristics (characteristic)
+construct {
+  ?edge a :Edge .
+  ?edge :title "characteristic" .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  #process Properties defined in the Aspect Model being processed
+  {
+    ?property rdf:type samm:Property .
+
+    bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
+    ?property samm:characteristic ?characteristic .
+    bind( func:getElementName( ?characteristic ) as ?characteristicName )
+
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?from )
+    bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+    bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?to )
+
+    bind( iri( concat( str( : ), ?propertyBoxName, "_To_", ?characteristicBoxName ) ) as ?edge )
+  }
+}
+

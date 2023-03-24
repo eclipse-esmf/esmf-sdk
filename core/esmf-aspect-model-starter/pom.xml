@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>org.eclipse.esmf</groupId>
+      <artifactId>esmf-sdk-parent</artifactId>
+      <version>DEV-SNAPSHOT</version>
+      <relativePath>../../pom.xml</relativePath>
+   </parent>
+
+   <artifactId>esmf-aspect-model-starter</artifactId>
+   <name>ESMF Aspect Model Starter</name>
+   <packaging>jar</packaging>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-urn</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-meta-model-resolver</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-resolver</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-meta-model-java</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-document-generators</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-validator</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-generator</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-java-generator</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-java-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-serializer</artifactId>
+      </dependency>
+   </dependencies>
+</project>

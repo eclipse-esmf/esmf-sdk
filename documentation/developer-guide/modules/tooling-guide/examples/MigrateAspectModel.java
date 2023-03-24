@@ -14,12 +14,12 @@
 package examples;
 
 // tag::imports[]
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.FileSystemStrategy;
-import io.openmanufacturing.sds.aspectmodel.resolver.ResolutionStrategy;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
-import io.openmanufacturing.sds.aspectmodel.versionupdate.MigratorService;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import io.vavr.control.Try;
 // end::imports[]
 import java.nio.file.Paths;
@@ -30,7 +30,7 @@ public class MigrateAspectModel {
    public void migrate() {
       final ResolutionStrategy strategy = new FileSystemStrategy( Paths.get( "aspect-models" ) );
       final AspectModelUrn targetAspect
-            = AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing.examples.movement:1.0.0#Movement" );
+            = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.examples.movement:1.0.0#Movement" );
       // tag::migrate[]
       // Try<VersionedModel> as returned by the AspectModelResolver
       final Try<VersionedModel> tryModel = // ...

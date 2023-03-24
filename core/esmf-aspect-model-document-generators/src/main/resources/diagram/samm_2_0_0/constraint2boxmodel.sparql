@@ -1,0 +1,198 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
+
+# Generates boxes for Constraints
+construct {
+  ?constraintBox a :Box .
+  ?constraintBox :prototype "Constraint" .
+  ?constraintBox :title ?constraintName .
+  ?constraintBox :modelElement ?constraint .
+  ?constraintBox :entries (
+     [
+       a :Entry ;
+       :title "preferredName" ;
+       :text ?preferredName
+     ]
+     [
+       a :Entry ;
+       :title "description" ;
+       :text ?description
+     ]
+     [
+       a :Entry ;
+       :title "minValue" ;
+       :text ?minValue
+     ]
+     [
+       a :Entry ;
+       :title "maxValue" ;
+       :text ?maxValue
+     ]
+     [
+       a :Entry ;
+       :title "value" ;
+       :text ?value
+     ]
+     [
+       a :Entry ;
+       :title "see" ;
+       :text ?seeValues
+     ]
+     [
+       a :Entry ;
+       :title "lowerBoundDefinition" ;
+       :text ?lowerBoundDefinitionValue
+     ]
+     [
+       a :Entry ;
+       :title "upperBoundDefinition" ;
+       :text ?upperBoundDefinitionValue
+     ]
+     [
+       a :Entry ;
+       :title "scale" ;
+       :text ?scale
+     ]
+     [
+       a :Entry ;
+       :title "integer" ;
+       :text ?integer
+     ]
+  )
+} where {
+  ?constraint rdf:type/rdfs:subClassOf* samm:Constraint .
+
+  # Apply only to those Constraints which are used in the Aspect model,
+  # i.e. where a directed link from an Aspect to the Constraint exists.
+  # (<>|!<>) matches any RDF property.
+  filter( exists {
+    ?aspect a samm:Aspect .
+    ?aspect (<>|!<>)* ?constraint .
+  } )
+
+  bind( func:getElementName( ?constraint ) as ?constraintName )
+  bind( iri( concat( str( : ), ?constraintName ) ) as ?constraintBox )
+
+  optional {
+    ?constraint samm:preferredName ?preferredNameValue .
+    filter( lang( ?preferredNameValue ) = "en" )
+    bind( xsd:string( ?preferredNameValue ) as ?preferredName )
+  }
+
+  optional {
+    ?constraint samm:description ?descriptionValue .
+    filter( lang( ?descriptionValue ) = "en" )
+    bind( xsd:string( ?descriptionValue ) as ?description )
+  }
+
+  #subquery which concatenates all values for the samm:see attributes
+  optional {
+    {
+      select * where {
+        ?constraint rdf:type/rdfs:subClassOf* samm:Constraint .
+        filter( sameTerm( ?seeSubQueryConstraint, ?constraint ) )
+        {
+          select ?seeSubQueryConstraint ( group_concat( ?seeValue; separator=", " ) as ?seeValues )
+          where {
+            select *
+            where {
+              ?seeSubQueryConstraint rdf:type/rdfs:subClassOf* samm:Constraint .
+              ?seeSubQueryConstraint samm:see ?seeValue .
+            }
+            order by str( ?seeValue )
+          }
+          group by ?seeSubQueryConstraint
+        }
+      }
+    }
+  }
+
+  # minValue (RangeConstraint or LengthConstraint)
+  optional {
+    ?constraint a ?constraintType .
+    filter( ?constraintType in ( samm-c:RangeConstraint, samm-c:LengthConstraint ) )
+    filter( exists { ?constraint samm-c:minValue [] } )
+    ?constraint samm-c:minValue ?numericMinValue .
+    bind( str( ?numericMinValue ) as ?minValue )
+  }
+
+  # maxValue (RangeConstraint or LengthConstraint)
+  optional {
+    ?constraint a ?constraintType .
+    filter( ?constraintType in ( samm-c:RangeConstraint, samm-c:LengthConstraint ) )
+    filter( exists { ?constraint samm-c:maxValue [] } )
+    ?constraint samm-c:maxValue ?numericMaxValue .
+    bind( str( ?numericMaxValue ) as ?maxValue )
+  }
+
+  # value (EncodingConstraint)
+  optional {
+    ?constraint a samm-c:EncodingConstraint .
+    ?constraint samm:value ?givenValue .
+    bind( replace( str( ?givenValue ), "[^#]*#(.*)", "$1" ) as ?value )
+  }
+
+  # value (RegularExpressionConstraint)
+  optional {
+     ?constraint a samm-c:RegularExpressionConstraint .
+     ?constraint samm:value ?givenValue .
+     bind( replace( ?givenValue, "\\\\", "\\\\\\\\" ) as ?value0 )
+     bind( replace( ?value0, "\\|", "\\\\|" ) as ?value )
+  }
+
+  # lowerBoundDefinition (RangeConstraint)
+  optional {
+     ?constraint a samm-c:RangeConstraint .
+     filter( exists { ?constraint samm-c:lowerBoundDefinition [] } )
+     ?constraint samm-c:lowerBoundDefinition ?lowerBoundDefinition .
+     bind( replace( str( ?lowerBoundDefinition ), "[^#]*#(.*)", "$1" ) as ?lowerBoundDefinitionValue )
+  }
+
+  # minValue exists without lowerBoundDefinition (RangeConstraint)
+  optional {
+     ?constraint a samm-c:RangeConstraint .
+     filter( exists { ?constraint samm-c:minValue [] } )
+     filter( not exists { ?constraint samm-c:lowerBoundDefinition [] } )
+     bind( "AT_LEAST" as ?lowerBoundDefinitionValue )
+  }
+
+  # upperBoundDefinition (RangeConstraint)
+  optional {
+     ?constraint a samm-c:RangeConstraint .
+     filter( exists { ?constraint samm-c:upperBoundDefinition [] } )
+     ?constraint samm-c:upperBoundDefinition ?upperBoundDefinition .
+     bind( replace( str( ?upperBoundDefinition ), "[^#]*#(.*)", "$1" ) as ?upperBoundDefinitionValue )
+  }
+
+  # maxValue exists without upperBoundDefinition (RangeConstraint)
+  optional {
+     ?constraint a samm-c:RangeConstraint .
+     filter( exists { ?constraint samm-c:maxValue [] } )
+     filter( not exists { ?constraint samm-c:upperBoundDefinition [] } )
+     bind( "AT_MOST" as ?upperBoundDefinitionValue )
+  }
+
+  # scale and integer (FixedPoint Constraint)
+  optional {
+     ?constraint a samm-c:FixedPointConstraint .
+     ?constraint samm-c:scale ?scale .
+     ?constraint samm-c:integer ?integer .
+  }
+}
+

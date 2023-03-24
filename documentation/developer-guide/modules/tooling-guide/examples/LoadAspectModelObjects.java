@@ -16,9 +16,9 @@ package examples;
 // tag::imports[]
 import java.io.File;
 import java.util.List;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.metamodel.NamedElement;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import io.vavr.collection.Stream;
 // end::imports[]
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ public class LoadAspectModelObjects {
    @Test
    public void loadModel() {
       // tag::loadModel[]
-      final File modelFile = new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" );
+      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
       final List<String> result = AspectModelResolver.loadAndResolveModel( modelFile )
             .flatMap( AspectModelLoader::getElements )
             .toStream()
