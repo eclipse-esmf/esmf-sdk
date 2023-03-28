@@ -50,37 +50,37 @@ public interface PropertyMapper<T extends SubmodelElement> {
     */
    static final Map<Resource, DataTypeDefXsd> AAS_XSD_TYPE_MAP =
          ImmutableMap.<Resource, DataTypeDefXsd> builder()
-                     .put( XSD.anyURI, DataTypeDefXsd.ANY_URI )
-                     .put( XSD.yearMonthDuration, DataTypeDefXsd.YEAR_MONTH_DURATION )
-                     .put( XSD.xboolean, DataTypeDefXsd.BOOLEAN )
-                     .put( XSD.xbyte, DataTypeDefXsd.BYTE )
-                     .put( XSD.date, DataTypeDefXsd.DATE )
-                     .put( XSD.dateTime, DataTypeDefXsd.DATE_TIME )
-                     .put( XSD.dateTimeStamp, DataTypeDefXsd.DATE_TIME_STAMP )
-                     .put( XSD.dayTimeDuration, DataTypeDefXsd.DAY_TIME_DURATION )
-                     .put( XSD.decimal, DataTypeDefXsd.DECIMAL )
-                     .put( XSD.xdouble, DataTypeDefXsd.DOUBLE )
-                     .put( XSD.duration, DataTypeDefXsd.DURATION )
-                     .put( XSD.xfloat, DataTypeDefXsd.FLOAT )
-                     .put( XSD.gMonth, DataTypeDefXsd.GMONTH )
-                     .put( XSD.gMonthDay, DataTypeDefXsd.GMONTH_DAY )
-                     .put( XSD.gYear, DataTypeDefXsd.GYEAR )
-                     .put( XSD.gYearMonth, DataTypeDefXsd.GYEAR_MONTH )
-                     .put( XSD.hexBinary, DataTypeDefXsd.HEX_BINARY )
-                     .put( XSD.xint, DataTypeDefXsd.INT )
-                     .put( XSD.integer, DataTypeDefXsd.INTEGER )
-                     .put( XSD.xlong, DataTypeDefXsd.LONG )
-                     .put( XSD.negativeInteger, DataTypeDefXsd.NEGATIVE_INTEGER )
-                     .put( XSD.nonNegativeInteger, DataTypeDefXsd.NON_NEGATIVE_INTEGER )
-                     .put( XSD.positiveInteger, DataTypeDefXsd.POSITIVE_INTEGER )
-                     .put( XSD.xshort, DataTypeDefXsd.SHORT )
-                     .put( XSD.normalizedString, DataTypeDefXsd.STRING )
-                     .put( XSD.time, DataTypeDefXsd.TIME )
-                     .put( XSD.unsignedByte, DataTypeDefXsd.UNSIGNED_BYTE )
-                     .put( XSD.unsignedInt, DataTypeDefXsd.UNSIGNED_INT )
-                     .put( XSD.unsignedLong, DataTypeDefXsd.UNSIGNED_LONG )
-                     .put( XSD.unsignedShort, DataTypeDefXsd.UNSIGNED_SHORT )
-                     .build();
+               .put( XSD.anyURI, DataTypeDefXsd.ANY_URI )
+               .put( XSD.yearMonthDuration, DataTypeDefXsd.YEAR_MONTH_DURATION )
+               .put( XSD.xboolean, DataTypeDefXsd.BOOLEAN )
+               .put( XSD.xbyte, DataTypeDefXsd.BYTE )
+               .put( XSD.date, DataTypeDefXsd.DATE )
+               .put( XSD.dateTime, DataTypeDefXsd.DATE_TIME )
+               .put( XSD.dateTimeStamp, DataTypeDefXsd.DATE_TIME_STAMP )
+               .put( XSD.dayTimeDuration, DataTypeDefXsd.DAY_TIME_DURATION )
+               .put( XSD.decimal, DataTypeDefXsd.DECIMAL )
+               .put( XSD.xdouble, DataTypeDefXsd.DOUBLE )
+               .put( XSD.duration, DataTypeDefXsd.DURATION )
+               .put( XSD.xfloat, DataTypeDefXsd.FLOAT )
+               .put( XSD.gMonth, DataTypeDefXsd.GMONTH )
+               .put( XSD.gMonthDay, DataTypeDefXsd.GMONTH_DAY )
+               .put( XSD.gYear, DataTypeDefXsd.GYEAR )
+               .put( XSD.gYearMonth, DataTypeDefXsd.GYEAR_MONTH )
+               .put( XSD.hexBinary, DataTypeDefXsd.HEX_BINARY )
+               .put( XSD.xint, DataTypeDefXsd.INT )
+               .put( XSD.integer, DataTypeDefXsd.INTEGER )
+               .put( XSD.xlong, DataTypeDefXsd.LONG )
+               .put( XSD.negativeInteger, DataTypeDefXsd.NEGATIVE_INTEGER )
+               .put( XSD.nonNegativeInteger, DataTypeDefXsd.NON_NEGATIVE_INTEGER )
+               .put( XSD.positiveInteger, DataTypeDefXsd.POSITIVE_INTEGER )
+               .put( XSD.xshort, DataTypeDefXsd.SHORT )
+               .put( XSD.normalizedString, DataTypeDefXsd.STRING )
+               .put( XSD.time, DataTypeDefXsd.TIME )
+               .put( XSD.unsignedByte, DataTypeDefXsd.UNSIGNED_BYTE )
+               .put( XSD.unsignedInt, DataTypeDefXsd.UNSIGNED_INT )
+               .put( XSD.unsignedLong, DataTypeDefXsd.UNSIGNED_LONG )
+               .put( XSD.unsignedShort, DataTypeDefXsd.UNSIGNED_SHORT )
+               .build();
 
    /**
     * Performs the mapping of the given property to a AAS {@link SubmodelElement}.
@@ -100,7 +100,7 @@ public interface PropertyMapper<T extends SubmodelElement> {
     * @param property the property to test
     * @return {@code true} if this property mapper can handle the given property, {@code false} else
     */
-   default boolean canHandle( Property property ) {
+   default boolean canHandle( final Property property ) {
       return true;
    }
 
@@ -110,7 +110,7 @@ public interface PropertyMapper<T extends SubmodelElement> {
     * @param urn the URN to map
     * @return the {@code DataTypeDefXsd} for the given URN
     */
-   default DataTypeDefXsd mapAASXSDataType( String urn ) {
+   default DataTypeDefXsd mapAASXSDataType( final String urn ) {
       final Resource resource = ResourceFactory.createResource( urn );
       return AAS_XSD_TYPE_MAP.getOrDefault( resource, DataTypeDefXsd.STRING );
    }
@@ -121,7 +121,7 @@ public interface PropertyMapper<T extends SubmodelElement> {
     * @param property the property to build the reference for
     * @return the newly created reference
     */
-   default Reference buildReferenceToConceptDescription( Property property ) {
+   default Reference buildReferenceToConceptDescription( final Property property ) {
       final Key key =
             new DefaultKey.Builder()
                   .type( KeyTypes.CONCEPT_DESCRIPTION )
@@ -136,9 +136,9 @@ public interface PropertyMapper<T extends SubmodelElement> {
     * @param element the element to get the identifier for
     * @return the identifier
     */
-   default String determineIdentifierFor( NamedElement element ) {
+   default String determineIdentifierFor( final NamedElement element ) {
       return element.getAspectModelUrn()
-                    .map( AspectModelUrn::toString )
-                    .orElseGet( element::getName );
+            .map( AspectModelUrn::toString )
+            .orElseGet( element::getName );
    }
 }

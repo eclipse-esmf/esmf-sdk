@@ -26,8 +26,8 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangString;
 public class LangStringMapper {
    public List<LangString> map( final Set<io.openmanufacturing.sds.metamodel.datatypes.LangString> localizedStrings ) {
       return localizedStrings.stream()
-                             .map( ( entry ) -> map( entry.getLanguageTag(), entry.getValue() ) )
-                             .collect( Collectors.toList() );
+            .map( ( entry ) -> map( entry.getLanguageTag(), entry.getValue() ) )
+            .collect( Collectors.toList() );
    }
 
    public LangString map( final io.openmanufacturing.sds.metamodel.datatypes.LangString langString ) {

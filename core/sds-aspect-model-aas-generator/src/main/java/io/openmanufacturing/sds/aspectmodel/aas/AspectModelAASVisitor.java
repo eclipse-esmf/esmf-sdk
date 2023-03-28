@@ -110,25 +110,25 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
     */
    private static final Map<Resource, DataTypeIEC61360> TYPE_MAP =
          ImmutableMap.<Resource, DataTypeIEC61360> builder()
-                     .put( XSD.xboolean, DataTypeIEC61360.BOOLEAN )
-                     .put( XSD.decimal, DataTypeIEC61360.INTEGER_MEASURE )
-                     .put( XSD.integer, DataTypeIEC61360.INTEGER_MEASURE )
-                     .put( XSD.xfloat, DataTypeIEC61360.REAL_MEASURE )
-                     .put( XSD.xdouble, DataTypeIEC61360.REAL_MEASURE )
-                     .put( XSD.xbyte, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.xshort, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.xint, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.xlong, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.unsignedByte, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.unsignedShort, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.unsignedInt, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.unsignedLong, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.positiveInteger, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.nonPositiveInteger, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.negativeInteger, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( XSD.nonNegativeInteger, DataTypeIEC61360.INTEGER_COUNT )
-                     .put( RDF.langString, DataTypeIEC61360.STRING )
-                     .build();
+               .put( XSD.xboolean, DataTypeIEC61360.BOOLEAN )
+               .put( XSD.decimal, DataTypeIEC61360.INTEGER_MEASURE )
+               .put( XSD.integer, DataTypeIEC61360.INTEGER_MEASURE )
+               .put( XSD.xfloat, DataTypeIEC61360.REAL_MEASURE )
+               .put( XSD.xdouble, DataTypeIEC61360.REAL_MEASURE )
+               .put( XSD.xbyte, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.xshort, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.xint, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.xlong, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.unsignedByte, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.unsignedShort, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.unsignedInt, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.unsignedLong, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.positiveInteger, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.nonPositiveInteger, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.negativeInteger, DataTypeIEC61360.INTEGER_COUNT )
+               .put( XSD.nonNegativeInteger, DataTypeIEC61360.INTEGER_COUNT )
+               .put( RDF.langString, DataTypeIEC61360.STRING )
+               .build();
 
    private interface SubmodelElementBuilder {
       SubmodelElement build( Property property );
@@ -150,9 +150,9 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    protected <T extends SubmodelElement> PropertyMapper<T> findPropertyMapper( final Property property ) {
       return (PropertyMapper<T>) getCustomPropertyMappers().stream()
-                                                           .filter( mapper -> mapper.canHandle( property ) )
-                                                           .findAny()
-                                                           .orElse( DEFAULT_MAPPER );
+            .filter( mapper -> mapper.canHandle( property ) )
+            .findAny()
+            .orElse( DEFAULT_MAPPER );
    }
 
    protected List<PropertyMapper<?>> getCustomPropertyMappers() {
@@ -212,9 +212,9 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private SubmodelElement map( final Property property, final Context context ) {
       final Supplier<SubmodelElement> defaultResultForProperty = () -> context.getSubmodel().getSubmodelElements().stream()
-                                                                              .filter( i -> i.getIdShort().equals( property.getName() ) )
-                                                                              .findFirst()
-                                                                              .orElse( new DefaultProperty.Builder().build() );
+            .filter( i -> i.getIdShort().equals( property.getName() ) )
+            .findFirst()
+            .orElse( new DefaultProperty.Builder().build() );
       if ( recursiveProperty.contains( property ) ) {
          // The guard checks for recursion in properties. If a recursion happens, the respective
          // property will be excluded from generation.
@@ -284,12 +284,12 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .idShort( operation.getName() )
             .inputVariables(
                   operation.getInput().stream()
-                           .map( i -> mapOperationVariable( i, context ) )
-                           .collect( Collectors.toList() ) )
+                        .map( i -> mapOperationVariable( i, context ) )
+                        .collect( Collectors.toList() ) )
             .outputVariables(
                   operation.getOutput().stream()
-                           .map( i -> mapOperationVariable( i, context ) )
-                           .collect( Collectors.toList() ) )
+                        .map( i -> mapOperationVariable( i, context ) )
+                        .collect( Collectors.toList() ) )
             .build();
    }
 
@@ -363,9 +363,9 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private DataSpecificationIEC61360 extractDataSpecificationContent( final Property property ) {
       final List<LangString> definitions = property.getCharacteristic().stream().flatMap( characteristic ->
-                                                         characteristic.getDescriptions().stream() )
-                                                   .map( langStringMapper::map )
-                                                   .collect( Collectors.toList() );
+                  characteristic.getDescriptions().stream() )
+            .map( langStringMapper::map )
+            .collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIEC61360.Builder()
             .definition( definitions )
@@ -473,23 +473,23 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    private <T extends Collection> List<SubmodelElement> getValues( final T collection, final Property property, final Context context,
          final ArrayNode arrayNode ) {
       return collection.getDataType()
-                       .map( dataType -> {
-                          if ( Scalar.class.isAssignableFrom( dataType.getClass() ) ) {
-                             return List.of( (SubmodelElement) new DefaultBlob.Builder().value( StreamSupport.stream( arrayNode.spliterator(), false )
-                                                                                                             .map( JsonNode::asText )
-                                                                                                             .collect( Collectors.joining( "," ) )
-                                                                                                             .getBytes( StandardCharsets.UTF_8 ) ).build() );
-                          } else {
-                             final var values = StreamSupport.stream( arrayNode.spliterator(), false )
-                                                             .map( n -> {
-                                                                context.iterate( property );
-                                                                return decideOnMapping( property, context );
-                                                             } )
-                                                             .toList();
-                             context.finishIteration( property );
-                             return values;
-                          }
-                       } ).orElseGet( () -> List.of() );
+            .map( dataType -> {
+               if ( Scalar.class.isAssignableFrom( dataType.getClass() ) ) {
+                  return List.of( (SubmodelElement) new DefaultBlob.Builder().value( StreamSupport.stream( arrayNode.spliterator(), false )
+                        .map( JsonNode::asText )
+                        .collect( Collectors.joining( "," ) )
+                        .getBytes( StandardCharsets.UTF_8 ) ).build() );
+               } else {
+                  final var values = StreamSupport.stream( arrayNode.spliterator(), false )
+                        .map( n -> {
+                           context.iterate( property );
+                           return decideOnMapping( property, context );
+                        } )
+                        .toList();
+                  context.finishIteration( property );
+                  return values;
+               }
+            } ).orElseGet( () -> List.of() );
    }
 
    // Either will be mapped by adding both the left and the right side to the SubmodelTemplate.
@@ -603,13 +603,13 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          dataSpecificationContent.setDataType( mapIEC61360DataType( enumeration ) );
          final List<ValueReferencePair> valueReferencePairs =
                enumeration.getValues().stream()
-                          .map(
-                                x ->
-                                      new DefaultValueReferencePair.Builder()
-                                            .value( x.toString() )
-                                            .valueId( buildReferenceToEnumValue( enumeration, x ) )
-                                            .build() )
-                          .collect( Collectors.toList() );
+                     .map(
+                           x ->
+                                 new DefaultValueReferencePair.Builder()
+                                       .value( x.toString() )
+                                       .valueId( buildReferenceToEnumValue( enumeration, x ) )
+                                       .build() )
+                     .collect( Collectors.toList() );
 
          final ValueList valueList =
                new DefaultValueList.Builder().valueReferencePairs( valueReferencePairs ).build();

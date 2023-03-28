@@ -78,14 +78,14 @@ public class Context {
 
    public boolean hasEnvironmentConceptDescription( final String id ) {
       return getEnvironment().getConceptDescriptions().stream()
-                             .anyMatch( x -> x.getId().equals( id ) );
+            .anyMatch( x -> x.getId().equals( id ) );
    }
 
    public ConceptDescription getConceptDescription( final String id ) {
       final Optional<ConceptDescription> optional =
             getEnvironment().getConceptDescriptions().stream()
-                            .filter( x -> x.getId().equals( id ) )
-                            .findFirst();
+                  .filter( x -> x.getId().equals( id ) )
+                  .findFirst();
       if ( optional.isEmpty() ) {
          throw new IllegalArgumentException(
                String.format( "No ConceptDescription with name %s available.", id ) );
@@ -159,10 +159,10 @@ public class Context {
          return property.getName();
       }
       return property.getName() + propertyPath.stream()
-                                              .map( indices::get )
-                                              .filter( Objects::nonNull )
-                                              .map( Objects::toString )
-                                              .collect( Collectors.joining( "_" ) );
+            .map( indices::get )
+            .filter( Objects::nonNull )
+            .map( Objects::toString )
+            .collect( Collectors.joining( "_" ) );
    }
 
    /**
@@ -173,7 +173,7 @@ public class Context {
     */
    public String getPropertyValue( final String defaultValue ) {
       return getRawPropertyValue().map( valueNode -> valueNode.asText( defaultValue ) )
-                                  .orElse( defaultValue );
+            .orElse( defaultValue );
    }
 
    /**
@@ -185,13 +185,13 @@ public class Context {
       if ( aspectData == null ) {
          return Optional.empty();
       }
-      AtomicReference<String> pathExpression = new AtomicReference<>(
+      final AtomicReference<String> pathExpression = new AtomicReference<>(
             "/" + String.join( "/", propertyPath.stream().map( Property::getPayloadName ).toList() ) );
       indices.entrySet()
-             .forEach( index -> {
-                pathExpression.getAndUpdate(
-                      path -> path.replace( index.getKey().getPayloadName(), index.getKey().getPayloadName() + "/" + index.getValue() ) );
-             } );
+            .forEach( index -> {
+               pathExpression.getAndUpdate(
+                     path -> path.replace( index.getKey().getPayloadName(), index.getKey().getPayloadName() + "/" + index.getValue() ) );
+            } );
       final JsonNode valueNode = aspectData.at( pathExpression.get() );
       return valueNode.isMissingNode() ? Optional.empty() : Optional.of( valueNode );
    }

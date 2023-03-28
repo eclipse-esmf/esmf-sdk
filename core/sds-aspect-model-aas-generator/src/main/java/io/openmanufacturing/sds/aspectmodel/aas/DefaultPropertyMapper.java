@@ -22,7 +22,7 @@ import io.openmanufacturing.sds.metamodel.Type;
  */
 public class DefaultPropertyMapper implements PropertyMapper<Property> {
    @Override
-   public Property mapToAasProperty( Type type, io.openmanufacturing.sds.metamodel.Property property, Context context ) {
+   public Property mapToAasProperty( final Type type, final io.openmanufacturing.sds.metamodel.Property property, final Context context ) {
       return new DefaultProperty.Builder()
             .idShort( context.getPropertyShortId() )
             .kind( context.getModelingKind() )

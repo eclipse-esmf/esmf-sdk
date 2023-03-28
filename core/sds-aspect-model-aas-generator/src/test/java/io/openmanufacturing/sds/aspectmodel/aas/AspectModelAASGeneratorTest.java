@@ -40,6 +40,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.xml.sax.SAXException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -55,7 +56,7 @@ class AspectModelAASGeneratorTest {
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
    @Test
-   void generateAasxWithAspectDataForMultilanguageText() throws IOException, DeserializationException {
+   void generateAasxWithAspectDataForMultilanguageText() throws IOException, DeserializationException, SAXException {
       final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT );
       assertThat( env.getSubmodels() )
             .singleElement()
@@ -75,7 +76,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void generateAasxWithAspectDataForEitherWithEntity() throws IOException, DeserializationException {
+   void generateAasxWithAspectDataForEitherWithEntity() throws IOException, DeserializationException, SAXException {
       final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       assertThat( env.getSubmodels() )
             .singleElement()
@@ -98,7 +99,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void generateAasxWithAspectDataForNestedEntityLists() throws IOException, DeserializationException {
+   void generateAasxWithAspectDataForNestedEntityLists() throws IOException, DeserializationException, SAXException {
       final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST );
       assertThat( env.getSubmodels() )
             .singleElement()
@@ -329,15 +330,18 @@ class AspectModelAASGeneratorTest {
          throws DeserializationException, IOException {
       final Aspect aspect = loadAspect( testAspect );
       final ByteArrayOutputStream out = generator.generateXmlOutput( aspect );
-      return loadAASX( out, testAspect );
+      return loadAASX( out.toByteArray(), testAspect );
    }
 
    private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect )
-         throws DeserializationException, IOException {
+         throws DeserializationException, IOException, SAXException {
       final Aspect aspect = loadAspect( testAspect );
       final JsonNode aspectData = loadPayload( testAspect );
       final ByteArrayOutputStream out = generator.generateXmlOutput( Map.of( aspect, aspectData ) );
-      return loadAASX( out, testAspect );
+      final var data = out.toByteArray();
+      final var result = loadAASX( data, testAspect );
+      //new AasXmlValidator().validateXml( data );
+      return result;
    }
 
    private Aspect loadAspect( final TestAspect testAspect ) {
@@ -349,10 +353,10 @@ class AspectModelAASGeneratorTest {
       return TestResources.getPayload( testAspect, KnownVersion.getLatest() ).get();
    }
 
-   private Environment loadAASX( final ByteArrayOutputStream byteStream, final TestAspect testAspect )
+   private Environment loadAASX( final byte[] data, final TestAspect testAspect )
          throws DeserializationException, IOException {
       final XmlDeserializer deserializer = new XmlDeserializer();
-      final var data = byteStream.toByteArray();
+      //Files.write( Path.of( testAspect.getName() + ".xml" ), data );
       return deserializer.read( new ByteArrayInputStream( data ) );
    }
 }

@@ -77,16 +77,16 @@ public class AspectModelAASGenerator {
 
       final Map<Aspect, Environment> aspectEnvironments =
             aspectsWithData.entrySet().stream()
-                           .map( aspectWithData -> {
-                              final Submodel submodel = new DefaultSubmodel.Builder().build();
-                              final Environment environment = new DefaultEnvironment.Builder().submodels( Collections.singletonList( submodel ) ).build();
-                              final Context context = new Context( environment, submodel );
-                              context.setEnvironment( environment );
-                              context.setAspectData( aspectWithData.getValue() );
+                  .map( aspectWithData -> {
+                     final Submodel submodel = new DefaultSubmodel.Builder().build();
+                     final Environment environment = new DefaultEnvironment.Builder().submodels( Collections.singletonList( submodel ) ).build();
+                     final Context context = new Context( environment, submodel );
+                     context.setEnvironment( environment );
+                     context.setAspectData( aspectWithData.getValue() );
 
-                              return Map.entry( aspectWithData.getKey(), visitor.visitAspect( aspectWithData.getKey(), context ) );
-                           } )
-                           .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+                     return Map.entry( aspectWithData.getKey(), visitor.visitAspect( aspectWithData.getKey(), context ) );
+                  } )
+                  .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
       final Environment mergedEnvironment = mergeEnvironments( aspectEnvironments );
       try ( final ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
          final XmlSerializer serializer = new XmlSerializer();

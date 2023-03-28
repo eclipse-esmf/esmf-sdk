@@ -32,36 +32,36 @@ import io.openmanufacturing.sds.metamodel.Type;
 public class LangStringPropertyMapper implements PropertyMapper<MultiLanguageProperty> {
 
    @Override
-   public boolean canHandle( io.openmanufacturing.sds.metamodel.Property property ) {
+   public boolean canHandle( final io.openmanufacturing.sds.metamodel.Property property ) {
       return property.getDataType()
-                     .map( Type::getUrn )
-                     .filter( RDF.langString.getURI()::equals )
-                     .isPresent();
+            .map( Type::getUrn )
+            .filter( RDF.langString.getURI()::equals )
+            .isPresent();
    }
 
    @Override
-   public MultiLanguageProperty mapToAasProperty( Type type, io.openmanufacturing.sds.metamodel.Property property, Context context ) {
+   public MultiLanguageProperty mapToAasProperty( final Type type, final io.openmanufacturing.sds.metamodel.Property property, final Context context ) {
       return new DefaultMultiLanguageProperty.Builder().idShort( context.getPropertyShortId() )
-                                                       .kind( context.getModelingKind() )
-                                                       .description( LANG_STRING_MAPPER.map( property.getDescriptions() ) )
-                                                       .displayName( LANG_STRING_MAPPER.map( property.getPreferredNames() ) )
-                                                       .semanticId( buildReferenceToConceptDescription( property ) )
-                                                       .value( extractLangStrings( property, context ) )
-                                                       .build();
+            .kind( context.getModelingKind() )
+            .description( LANG_STRING_MAPPER.map( property.getDescriptions() ) )
+            .displayName( LANG_STRING_MAPPER.map( property.getPreferredNames() ) )
+            .semanticId( buildReferenceToConceptDescription( property ) )
+            .value( extractLangStrings( property, context ) )
+            .build();
    }
 
-   private List<LangString> extractLangStrings( Property property, Context context ) {
+   private List<LangString> extractLangStrings( final Property property, final Context context ) {
       return context.getRawPropertyValue()
-                    .filter( JsonNode::isObject )
-                    .map( node -> {
-                       final Map<String, String> entries = new HashMap<>();
-                       node.fields().forEachRemaining( field -> entries.put( field.getKey(), field.getValue().asText() ) );
-                       return entries;
-                    } )
-                    .map( rawEntries -> rawEntries.entrySet()
-                                                  .stream()
-                                                  .map( entry -> LANG_STRING_MAPPER.createLangString( entry.getValue(), entry.getKey() ) )
-                                                  .toList() )
-                    .orElseGet( () -> List.of() );
+            .filter( JsonNode::isObject )
+            .map( node -> {
+               final Map<String, String> entries = new HashMap<>();
+               node.fields().forEachRemaining( field -> entries.put( field.getKey(), field.getValue().asText() ) );
+               return entries;
+            } )
+            .map( rawEntries -> rawEntries.entrySet()
+                  .stream()
+                  .map( entry -> LANG_STRING_MAPPER.createLangString( entry.getValue(), entry.getKey() ) )
+                  .toList() )
+            .orElseGet( () -> List.of() );
    }
 }
