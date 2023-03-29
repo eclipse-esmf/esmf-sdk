@@ -73,7 +73,7 @@
       <!-- Versions of third party dependencies -->
       <aspect-meta-model-version>2.0.0</aspect-meta-model-version>
       <assertj-vavr-version>0.4.2</assertj-vavr-version>
-      <batik-version>1.14</batik-version>
+      <batik-version>1.16</batik-version>
       <classgraph-version>4.8.146</classgraph-version>
       <commons-text-version>1.10.0</commons-text-version>
       <easy-random-version>5.0.0</easy-random-version>

@@ -303,8 +303,7 @@ public class AspectModelResolver {
       }
 
       try {
-//         final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( replaceLegacyBammUrn( urn ) );
-         final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( urn );
+         final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( replaceLegacyBammUrn( urn ) );
          if ( aspectModelUrn.getElementType() != ElementType.NONE ) {
             return Try.success( EMPTY_MODEL );
          }
