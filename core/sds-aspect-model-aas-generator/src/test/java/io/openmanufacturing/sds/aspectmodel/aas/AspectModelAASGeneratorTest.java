@@ -13,11 +13,13 @@
 package io.openmanufacturing.sds.aspectmodel.aas;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,12 +67,12 @@ class AspectModelAASGeneratorTest {
                      .singleElement()
                      .satisfies( property -> {
                         assertThat( property ).asInstanceOf( InstanceOfAssertFactories.type( MultiLanguageProperty.class ) )
-                                              .extracting( mlp -> mlp.getValue() )
-                                              .asList()
-                                              .hasSize( 2 )
-                                              .allSatisfy( langString -> {
-                                                 List.of( "en", "de" ).contains( ((LangString) langString).getLanguage() );
-                                              } );
+                              .extracting( mlp -> mlp.getValue() )
+                              .asList()
+                              .hasSize( 2 )
+                              .allSatisfy( langString -> {
+                                 List.of( "en", "de" ).contains( ((LangString) langString).getLanguage() );
+                              } );
                      } );
             } );
    }
@@ -84,16 +86,16 @@ class AspectModelAASGeneratorTest {
                assertThat( subModel.getSubmodelElements() )
                      .anySatisfy( sme -> {
                         assertThat( sme ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementList.class ) )
-                                         .extracting( smel -> smel.getValue() )
-                                         .asList()
-                                         .anySatisfy( entity -> {
-                                            assertThat( entity ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementCollection.class ) )
-                                                                .extracting( smec -> smec.getValue() )
-                                                                .asList()
-                                                                .singleElement( InstanceOfAssertFactories.type( Property.class ) )
-                                                                .extracting( entityProperty -> entityProperty.getValue() )
-                                                                .isEqualTo( "The result" );
-                                         } );
+                              .extracting( smel -> smel.getValue() )
+                              .asList()
+                              .anySatisfy( entity -> {
+                                 assertThat( entity ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementCollection.class ) )
+                                       .extracting( smec -> smec.getValue() )
+                                       .asList()
+                                       .singleElement( InstanceOfAssertFactories.type( Property.class ) )
+                                       .extracting( entityProperty -> entityProperty.getValue() )
+                                       .isEqualTo( "The result" );
+                              } );
                      } );
             } );
    }
@@ -107,18 +109,18 @@ class AspectModelAASGeneratorTest {
                assertThat( subModel.getSubmodelElements() )
                      .anySatisfy( sme -> {
                         assertThat( sme ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementList.class ) )
-                                         .extracting( smel -> smel.getValue() )
-                                         .asList()
-                                         .anySatisfy( entity -> {
-                                            assertThat( entity ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementCollection.class ) )
-                                                                .extracting( smec -> smec.getValue() )
-                                                                .asList()
-                                                                .anySatisfy( property -> {
-                                                                   assertThat( property ).asInstanceOf( InstanceOfAssertFactories.type( Property.class ) )
-                                                                                         .extracting( Property::getValue )
-                                                                                         .isEqualTo( "2.25" );
-                                                                } );
-                                         } );
+                              .extracting( smel -> smel.getValue() )
+                              .asList()
+                              .anySatisfy( entity -> {
+                                 assertThat( entity ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementCollection.class ) )
+                                       .extracting( smec -> smec.getValue() )
+                                       .asList()
+                                       .anySatisfy( property -> {
+                                          assertThat( property ).asInstanceOf( InstanceOfAssertFactories.type( Property.class ) )
+                                                .extracting( Property::getValue )
+                                                .isEqualTo( "2.25" );
+                                       } );
+                              } );
                      } );
             } );
    }
@@ -235,9 +237,9 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 6, "Not exactly six Elements in SubmodelElements." );
       final SubmodelElement submodelElement =
             env.getSubmodels().get( 0 ).getSubmodelElements().stream()
-               .filter( x -> x.getIdShort().equals( "stringLcProperty" ) )
-               .findFirst()
-               .orElseThrow();
+                  .filter( x -> x.getIdShort().equals( "stringLcProperty" ) )
+                  .findFirst()
+                  .orElseThrow();
       assertEquals( "stringLcProperty", submodelElement.getIdShort() );
 
       final Set<String> semanticIds =
@@ -277,14 +279,14 @@ class AspectModelAASGeneratorTest {
 
       final DataSpecificationIEC61360 dataSpecificationContent =
             env.getConceptDescriptions().stream()
-               .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
-               .findFirst()
-               .get()
-               .getEmbeddedDataSpecifications()
-               .stream()
-               .findFirst()
-               .get()
-               .getDataSpecificationContent();
+                  .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
+                  .findFirst()
+                  .get()
+                  .getEmbeddedDataSpecifications()
+                  .stream()
+                  .findFirst()
+                  .get()
+                  .getDataSpecificationContent();
       assertEquals( 3, dataSpecificationContent.getValueList().getValueReferencePairs().size() );
 
       assertEquals( 1, env.getSubmodels().size() );
@@ -302,9 +304,18 @@ class AspectModelAASGeneratorTest {
          } )
    // anonymous enumeration in test has no urn for enum values but is required for Concept
    // Description referencing
-   public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException {
-      final Environment env = getAssetAdministrationShellFromAspect( testAspect );
+   public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException, SAXException {
+      final ByteArrayOutputStream baos = getByteArrayOutputStreamFromAspect( testAspect );
+      final byte[] xmlFile = baos.toByteArray();
+      final Environment env = loadAASX( new ByteArrayInputStream( xmlFile ) );
       assertTrue( env.getSubmodels().size() >= 1, "No Submodel in AAS present." );
+      try {
+         validate( new ByteArrayInputStream( xmlFile ) );
+      } catch ( final SAXException e ) {
+         final String model = "AAS XML file causing the Exception. \n" + new String( xmlFile, StandardCharsets.UTF_8 );
+         throw new SAXException( model, e );
+      }
+
    }
 
    private void checkDataSpecificationIEC61360( final Set<String> semanticIds, final Environment env ) {
@@ -315,8 +326,8 @@ class AspectModelAASGeneratorTest {
       final List<ConceptDescription> conceptDescriptions = env.getConceptDescriptions();
       final List<ConceptDescription> filteredConceptDescriptions =
             conceptDescriptions.stream()
-                               .filter( x -> x.getId().equals( semanticId ) )
-                               .collect( Collectors.toList() );
+                  .filter( x -> x.getId().equals( semanticId ) )
+                  .collect( Collectors.toList() );
       assertEquals( 1, filteredConceptDescriptions.size(), "Not exactly 1 ConceptDescription for semanticId. " + semanticId );
 
       final List<EmbeddedDataSpecification> embeddedDataSpecifications = filteredConceptDescriptions.get( 0 ).getEmbeddedDataSpecifications();
@@ -344,6 +355,21 @@ class AspectModelAASGeneratorTest {
       return result;
    }
 
+   private ByteArrayOutputStream getByteArrayOutputStreamFromAspect( final TestAspect testAspect )
+         throws IOException {
+      final Aspect aspect = loadAspect( testAspect );
+      return generator.generateXmlOutput( aspect );
+   }
+
+   private void validate( final ByteArrayInputStream xmlStream ) throws IOException, SAXException {
+      /*final SchemaFactory factory =
+            SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+      final Schema schema = factory.newSchema( new URL( "https://raw.githubusercontent.com/admin-shell-io/aas-specs/V3.0.5RC02/schemas/xml/AAS.xsd" ) );
+      final Validator validator = schema.newValidator();
+      validator.validate( new StreamSource( xmlStream ), null );*/
+
+   }
+
    private Aspect loadAspect( final TestAspect testAspect ) {
       final VersionedModel model = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
       return AspectModelLoader.getSingleAspectUnchecked( model );
@@ -353,10 +379,13 @@ class AspectModelAASGeneratorTest {
       return TestResources.getPayload( testAspect, KnownVersion.getLatest() ).get();
    }
 
-   private Environment loadAASX( final byte[] data, final TestAspect testAspect )
-         throws DeserializationException, IOException {
+   private Environment loadAASX( final ByteArrayInputStream byteStream ) throws DeserializationException {
       final XmlDeserializer deserializer = new XmlDeserializer();
-      //Files.write( Path.of( testAspect.getName() + ".xml" ), data );
+      return deserializer.read( byteStream );
+   }
+
+   private Environment loadAASX( final byte[] data, final TestAspect testAspect ) throws DeserializationException {
+      final XmlDeserializer deserializer = new XmlDeserializer();
       return deserializer.read( new ByteArrayInputStream( data ) );
    }
 }
