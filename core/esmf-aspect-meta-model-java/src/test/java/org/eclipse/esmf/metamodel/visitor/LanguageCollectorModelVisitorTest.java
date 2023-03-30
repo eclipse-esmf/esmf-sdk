@@ -12,11 +12,11 @@ import java.util.Set;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFLanguages;
-import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.junit.jupiter.api.Test;
 
 class LanguageCollectorModelVisitorTest {
@@ -45,12 +45,12 @@ class LanguageCollectorModelVisitorTest {
                         
             :AEntity a samm:Entity ;
                samm:preferredName "A name"@pt ;
-               samm:preferredName "Ein name"@de ;
+               samm:preferredName "Ein Name"@de ;
                samm:properties ( :AProperty ) .
                         
             :AProperty a samm:Property ;
                samm:preferredName "Common Property"@en ;
-               samm:description "Bon idee"@fr ;
+               samm:description "Descriptif de l'objet"@fr ;
                samm:characteristic :ACharacteristic .
                         
             :ACharacteristic a samm-c:Code ;
@@ -66,7 +66,7 @@ class LanguageCollectorModelVisitorTest {
       final Model model = ModelFactory.createDefaultModel();
       final InputStream in = new ByteArrayInputStream( ttlRepresentation.getBytes( StandardCharsets.UTF_8 ) );
       model.read( in, "", RDFLanguages.strLangTurtle );
-      return new SammAspectMetaModelResourceResolver().mergeMetaModelIntoRawModel( model, VersionNumber.parse( "2.0.0" ) )
+      return new SammAspectMetaModelResourceResolver().mergeMetaModelIntoRawModel( model, KnownVersion.SAMM_2_0_0 )
             .get();
    }
 }

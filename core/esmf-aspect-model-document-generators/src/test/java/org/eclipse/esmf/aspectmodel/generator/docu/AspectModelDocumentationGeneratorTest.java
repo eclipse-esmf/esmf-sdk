@@ -40,7 +40,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = { "MODEL_WITH_CYCLES" } )
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE,
+         names = { "MODEL_WITH_CYCLES" // contains cycles, the calculation of used languages would run into an infinite loop
+         } )
    public void testGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
          final String html = generateHtmlDocumentation( testAspect, KnownVersion.getLatest() );
