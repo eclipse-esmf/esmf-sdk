@@ -37,9 +37,10 @@ code generators, validators etc.
 This document provides an overall overview of the SDK, and the concepts applied throughout it.
 Detailed documentation and concepts for each component can be found in the respective subfolders.
 
-This repository contains a detailed developer documentation written in AsciiDoc. The source files
-(AsciiDoc) are located [here](documentation/developer-guide) and are built using
-[Antora](https://antora.org/) which generates the documentation as HTML files.
+This repository contains a detailed developer documentation written in AsciiDoc. 
+The source files (AsciiDoc) are located [here](documentation/developer-guide) and are built using
+[Antora](https://antora.org/) which generates the documentation as HTML files. A site generated using Antora is self-contained and can be viewed entirely offline via a web browser without setting up a web server.
+To build the documentation locally, please check out and follow the instructions in [sds-documentation]( https://github.com/OpenManufacturingPlatform/sds-documentation).
 
 ## Getting help
 
