@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
 #
 # See the AUTHORS file(s) distributed with this work for additional
 # information regarding authorship.
@@ -16,45 +16,35 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithMultipleEntitiesSameExtend a samm:Aspect ;
-   samm:name "TestAspect" ;
    samm:properties ( :testPropertyOne :testPropertyTwo ) ;
    samm:operations ( ) .
 
 :testPropertyOne a samm:Property ;
-   samm:name "testPropertyOne" ;
    samm:characteristic :testCharacteristicOne .
 
 :testPropertyTwo a samm:Property ;
-   samm:name "testPropertyTwo" ;
    samm:characteristic :testCharacteristicTwo .
 
 :testCharacteristicOne a samm:Characteristic ;
-   samm:name "testCharacteristicOne" ;
    samm:dataType :testEntityOne .
 
 :testCharacteristicTwo a samm:Characteristic ;
-   samm:name "testCharacteristicTwo" ;
    samm:dataType :testEntityTwo .
 
 :testEntityOne a samm:Entity ;
-   samm:name "TestEntityOne" ;
    samm:extends :AbstractTestEntity ;
    samm:properties ( ) .
 
 :testEntityTwo a samm:Entity ;
-   samm:name "TestEntityTwo" ;
    samm:extends :AbstractTestEntity ;
    samm:properties ( ) .
 
 :testEntityThree a samm:Entity ;
-   samm:name "TestEntityThree" ;
    samm:extends :AbstractSecondTestEntity ;
    samm:properties ( ) .
 
 :AbstractTestEntity a samm:AbstractEntity ;
-   samm:name "AbstractTestEntity" ;
    samm:properties ( ).
 
 :AbstractSecondTestEntity a samm:AbstractEntity ;
-   samm:name "AbstractSecondTestEntity" ;
    samm:properties ( ).
