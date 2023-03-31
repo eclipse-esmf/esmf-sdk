@@ -362,11 +362,11 @@ class AspectModelAASGeneratorTest {
    }
 
    private void validate( final ByteArrayInputStream xmlStream ) throws IOException, SAXException {
-      /*final SchemaFactory factory =
+      final SchemaFactory factory =
             SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
       final Schema schema = factory.newSchema( new URL( "https://raw.githubusercontent.com/admin-shell-io/aas-specs/V3.0.5RC02/schemas/xml/AAS.xsd" ) );
       final Validator validator = schema.newValidator();
-      validator.validate( new StreamSource( xmlStream ), null );*/
+      validator.validate( new StreamSource( xmlStream ), null );
 
    }
 
