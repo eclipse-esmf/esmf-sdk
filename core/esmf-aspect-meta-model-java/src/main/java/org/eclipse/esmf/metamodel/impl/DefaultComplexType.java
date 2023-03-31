@@ -17,8 +17,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -33,23 +35,23 @@ public class DefaultComplexType extends ModelElementImpl implements ComplexType 
     * Used to keep track of all {@link ComplexType} instances regardles of whether they are directly or indirectly
     * referenced in the {@link Aspect}.
     */
-   protected static WeakHashMap<AspectModelUrn, ComplexType> instances = new WeakHashMap<>();
+   private static final WeakHashMap<AspectModelUrn, ComplexType> instances = new WeakHashMap<>();
 
    private final List<Property> properties;
    private final Optional<ComplexType> _extends;
+   private final List<AspectModelUrn> extendingElements;
 
-   protected static DefaultComplexType createDefaultComplexType( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final List<? extends Property> properties, final Optional<ComplexType> _extends ) {
-      final DefaultComplexType defaultComplexType = new DefaultComplexType( metaModelBaseAttributes, properties, _extends );
-      instances.put( metaModelBaseAttributes.getUrn().get(), defaultComplexType );
-      return defaultComplexType;
-   }
-
-   protected DefaultComplexType( final MetaModelBaseAttributes metaModelBaseAttributes, final List<? extends Property> properties,
-         final Optional<ComplexType> _extends ) {
+   protected DefaultComplexType(
+         final MetaModelBaseAttributes metaModelBaseAttributes,
+         final List<? extends Property> properties,
+         final Optional<ComplexType> _extends,
+         final List<AspectModelUrn> extendingElements ) {
       super( metaModelBaseAttributes );
+      //noinspection OptionalGetWithoutIsPresent
+      instances.put( metaModelBaseAttributes.getUrn().get(), this );
       this.properties = new ArrayList<>( properties );
       this._extends = _extends;
+      this.extendingElements = extendingElements;
    }
 
    /**
@@ -65,6 +67,15 @@ public class DefaultComplexType extends ModelElementImpl implements ComplexType 
    @Override
    public Optional<ComplexType> getExtends() {
       return _extends;
+   }
+
+   /**
+    * @return all {@link ComplexType} instances from the {@link DefaultComplexType#instances} Map which extend this
+    *       Abstract Entity.
+    */
+   @Override
+   public List<ComplexType> getExtendingElements() {
+      return extendingElements.stream().map( instances::get ).filter( Objects::nonNull ).collect( Collectors.toList() );
    }
 
    public static Map<AspectModelUrn, ComplexType> getInstances() {
