@@ -357,9 +357,13 @@ public class AspectModelResolver {
     */
    public static Try<VersionedModel> loadAndResolveModel( final File input ) {
       final File inputFile = input.getAbsoluteFile();
-      final AspectModelUrn urn = fileToUrn( inputFile );
-      return getModelRoot( inputFile ).flatMap( modelsRoot ->
-            new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ) );
+      return getModelRoot( inputFile ).flatMap( modelsRoot -> {
+         try ( final InputStream inputStream = new FileInputStream( input ) ) {
+            return new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), inputStream );
+         } catch ( final IOException exception ) {
+            throw new ModelResolutionException( "Could not open file " + input, exception );
+         }
+      } );
    }
 
    /**
