@@ -19,18 +19,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.common.collect.Sets;
-
+import org.eclipse.esmf.characteristic.Collection;
+import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.QuantityKind;
-import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
+
+import com.google.common.collect.Sets;
 
 /**
  * Aspect Model Visitor that retrieves all used Locales in an Aspect Model
@@ -100,5 +101,11 @@ public class LanguageCollectorModelVisitor implements AspectVisitor<Set<Locale>,
    @Override
    public Set<Locale> visitQuantityKind( final QuantityKind quantityKind, final Set<Locale> context ) {
       return Collections.emptySet();
+   }
+
+   @Override
+   public Set<Locale> visitCollection( final Collection collection, final Set<Locale> context ) {
+      return collection.getElementCharacteristic().isPresent() ? collection.getElementCharacteristic().get().accept( this, Collections.emptySet() ) :
+            collection.getDataType().get().accept( this, Collections.emptySet() );
    }
 }
