@@ -33,8 +33,8 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_SEE_ATTRIBUTE, metaModelVersion );
-      final String boxSelectorStatement = ":AspectWithSeeAttributeAspect a :Box";
-      final String entriesSelectorStatement = ":AspectWithSeeAttributeAspect :entries *";
+      final String boxSelectorStatement = "test:AspectWithSeeAttributeAspect a :Box";
+      final String entriesSelectorStatement = "test:AspectWithSeeAttributeAspect :entries *";
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "http://example.com/" );
    }
@@ -43,8 +43,8 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
-      final String boxSelectorStatement = ":AspectWithMultipleSeeAttributesAspect a :Box";
-      final String entriesSelectorStatement = ":AspectWithMultipleSeeAttributesAspect :entries *";
+      final String boxSelectorStatement = "test:AspectWithMultipleSeeAttributesAspect a :Box";
+      final String entriesSelectorStatement = "test:AspectWithMultipleSeeAttributesAspect :entries *";
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle,
             "http://example.com/, http://example.com/me" );
@@ -54,8 +54,8 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
-      final String boxSelectorStatement = ":AspectWithoutSeeAttributeAspect a :Box";
-      final String entriesSelectorStatement = ":AspectWithoutSeeAttributeAspect :entries *";
+      final String boxSelectorStatement = "test:AspectWithoutSeeAttributeAspect a :Box";
+      final String entriesSelectorStatement = "test:AspectWithoutSeeAttributeAspect :entries *";
       context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry );
    }
@@ -67,8 +67,8 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
 
       final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
-      assertThat( queryResult.listStatements( context.selector( ":AspectWithPropertyAspect_To_testPropertyProperty a :Edge" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":AspectWithPropertyAspect_To_testPropertyProperty :title property" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:AspectWithPropertyAspect_To_testPropertyProperty a :Edge" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:AspectWithPropertyAspect_To_testPropertyProperty :title property" ) ).toList() ).hasSize( 1 );
    }
 
    @ParameterizedTest
@@ -78,9 +78,9 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
 
       final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
-      assertThat( queryResult.listStatements( context.selector( ":AspectWithOptionalPropertyAspect_To_testPropertyProperty a :Edge" ) )
+      assertThat( queryResult.listStatements( context.selector( "test:AspectWithOptionalPropertyAspect_To_testPropertyProperty a :Edge" ) )
             .toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":AspectWithOptionalPropertyAspect_To_testPropertyProperty :title property (optional)" ) )
+      assertThat( queryResult.listStatements( context.selector( "test:AspectWithOptionalPropertyAspect_To_testPropertyProperty :title property (optional)" ) )
             .toList() ).hasSize( 1 );
    }
 
@@ -91,9 +91,9 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
 
       final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
-      assertThat( queryResult.listStatements( context.selector( ":AspectWithPropertyWithPayloadNameAspect_To_testPropertyProperty a :Edge" ) )
+      assertThat( queryResult.listStatements( context.selector( "test:AspectWithPropertyWithPayloadNameAspect_To_testPropertyProperty a :Edge" ) )
             .toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":AspectWithPropertyWithPayloadNameAspect_To_testPropertyProperty :title property (test)" ) )
+      assertThat( queryResult.listStatements( context.selector( "test:AspectWithPropertyWithPayloadNameAspect_To_testPropertyProperty :title property (test)" ) )
             .toList() ).hasSize( 1 );
    }
 
@@ -104,11 +104,11 @@ public class Aspect2BoxModelTest extends MetaModelVersions {
 
       final Model queryResult = context.executeQuery( "aspect-property-edges2boxmodel.sparql" );
 
-      assertThat( queryResult.listStatements( context.selector( ":AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty a :Edge" ) )
+      assertThat( queryResult.listStatements( context.selector( "test:AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty a :Edge" ) )
             .toList() ).hasSize( 1 );
       assertThat(
             queryResult.listStatements(
-                        context.selector( ":AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty :title property (optional) (test)" ) )
+                        context.selector( "test:AspectWithOptionalPropertyWithPayloadNameAspect_To_testPropertyProperty :title property (optional) (test)" ) )
                   .toList() ).hasSize( 1 );
    }
 }

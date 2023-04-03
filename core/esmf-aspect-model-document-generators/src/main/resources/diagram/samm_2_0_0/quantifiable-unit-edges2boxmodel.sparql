@@ -31,10 +31,10 @@ construct {
   bind( concat( ucase( substr( ?unitName, 1, 1 ) ), substr( ?unitName, 2 ) ) as ?upperUnitName )
 
   bind( concat( ?quantifiableName, "Characteristic" ) as ?quantifiableBoxName )
-  bind( iri( concat( str( : ), ?quantifiableBoxName ) ) as ?from )
+  bind( iri( concat( func:getNamespace( ?quantifiable ), ?quantifiableBoxName ) ) as ?from )
   bind( concat( ?upperUnitName, "Unit" ) as ?unitBoxName )
-  bind( iri( concat( str( : ), ?unitBoxName ) ) as ?to )
+  bind( iri( concat( func:getNamespace( ?unit ), ?unitBoxName ) ) as ?to )
 
-  bind( iri( concat( str( : ), ?quantifiableBoxName, "_To_", ?unitBoxName ) ) as ?edge )
+  bind( iri( concat( func:getNamespace( ?quantifiable ), ?quantifiableBoxName, "_To_", ?unitBoxName ) ) as ?edge )
 }
 

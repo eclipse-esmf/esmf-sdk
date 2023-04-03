@@ -27,14 +27,14 @@ construct {
   bind( func:getElementName( ?characteristic ) as ?characteristicName )
 
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-  bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName ) ) as ?from )
 
-  ?characteristic samm-c:elements/rdf:rest*/rdf:first ?element .
-  filter( exists { ?element a samm:Property } )
-  bind( strafter( str( ?aspect ), "#" ) as ?aspectName ) .
+  ?characteristic samm-c:elements/rdf:rest*/rdf:first ?property .
+  filter( exists { ?property a samm:Property } )
+  bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
   bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
-  bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?to )
+  bind( iri( concat( func:getNamespace( ?property ), ?propertyBoxName ) ) as ?to )
 
-  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
 }
 

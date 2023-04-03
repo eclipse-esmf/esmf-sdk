@@ -14,6 +14,7 @@ prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
 
 # Generates boxes for Entities
 construct {
@@ -43,7 +44,7 @@ construct {
   bind( strafter( str( ?entity ), "#" ) as ?entityName ) .
 
   bind( concat( ?entityName, "Entity" ) as ?boxName )
-  bind( iri( concat( str( : ), ?boxName ) ) as ?entityBox )
+  bind( iri( concat( func:getNamespace( ?entity ), ?boxName ) ) as ?entityBox )
 
   optional {
     ?entity samm:preferredName ?preferredNameValue .

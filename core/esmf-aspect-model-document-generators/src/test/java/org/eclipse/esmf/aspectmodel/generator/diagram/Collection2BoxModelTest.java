@@ -25,8 +25,8 @@ import org.eclipse.esmf.test.TestAspect;
 
 public class Collection2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "collection2boxmodel.sparql";
-   private final String boxSelectorStatement = ":TestCollectionCharacteristic a :Box";
-   private final String entriesSelectorStatement = ":TestCollectionCharacteristic :entries *";
+   private final String boxSelectorStatement = "test:TestCollectionCharacteristic a :Box";
+   private final String entriesSelectorStatement = "test:TestCollectionCharacteristic :entries *";
    private final int totalNumberOfExpectedEntries = 6;
    private final int indexOfSeeValueEntry = 5;
    private final String expectedSeeEntryTitle = "see";
@@ -38,8 +38,8 @@ public class Collection2BoxModelTest extends MetaModelVersions {
 
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
-      assertThat( queryResult.listStatements( context.selector( ":UsedTestCollectionCharacteristic a :Box" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":UnusedTestCollectionCharacteristic a :Box" ) ).toList() ).hasSize( 0 );
+      assertThat( queryResult.listStatements( context.selector( "test:UsedTestCollectionCharacteristic a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:UnusedTestCollectionCharacteristic a :Box" ) ).toList() ).hasSize( 0 );
       assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() ).hasSize( totalNumberOfExpectedEntries );
    }
 
@@ -77,13 +77,13 @@ public class Collection2BoxModelTest extends MetaModelVersions {
 
       final Model queryResult = context.executeQuery( "collection-elementcharacteristic-edges2boxmodel.sparql" );
 
-      assertThat( queryResult.listStatements( context.selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic a :Edge" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic :to :TextCharacteristic" ) )
+      assertThat( queryResult.listStatements( context.selector( "test:TestCollectionTwoCharacteristic_To_TextCharacteristic a :Edge" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:TestCollectionTwoCharacteristic_To_TextCharacteristic :to samm-c:TextCharacteristic" ) )
             .toList() ).hasSize( 1 );
       assertThat(
-            queryResult.listStatements( context.selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic :from :TestCollectionTwoCharacteristic" ) )
+            queryResult.listStatements( context.selector( "test:TestCollectionTwoCharacteristic_To_TextCharacteristic :from test:TestCollectionTwoCharacteristic" ) )
                   .toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":TestCollectionTwoCharacteristic_To_TextCharacteristic :title element Characteristic" ) )
+      assertThat( queryResult.listStatements( context.selector( "test:TestCollectionTwoCharacteristic_To_TextCharacteristic :title element Characteristic" ) )
             .toList() ).hasSize( 1 );
    }
 
@@ -95,15 +95,15 @@ public class Collection2BoxModelTest extends MetaModelVersions {
       final Model queryResult = context.executeQuery( "characteristic-entity-edges2boxmodel.sparql" );
 
       assertThat( queryResult
-            .listStatements( context.selector( ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity a :Edge" ) )
+            .listStatements( context.selector( "test:EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity a :Edge" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult
             .listStatements( context.selector(
-                  ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :from :EntityCollectionCharacteristicCharacteristic" ) )
+                  "test:EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :from test:EntityCollectionCharacteristicCharacteristic" ) )
             .toList() ).hasSize( 1 );
       assertThat( queryResult
             .listStatements( context.selector(
-                  ":EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :to :AbstractTestEntityAbstractEntity" ) )
+                  "test:EntityCollectionCharacteristicCharacteristic_To_AbstractTestEntityAbstractEntity :to test:AbstractTestEntityAbstractEntity" ) )
             .toList() ).hasSize( 1 );
    }
 }

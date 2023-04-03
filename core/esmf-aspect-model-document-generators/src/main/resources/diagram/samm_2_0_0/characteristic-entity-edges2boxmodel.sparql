@@ -30,13 +30,13 @@ construct {
   bind( func:getElementName( ?characteristic ) as ?characteristicName )
   bind( strafter( str( ?entityOrAbstractEntity ), "#" ) as ?entityOrAbstractEntityName ) .
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-  bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName ) ) as ?from )
 
   ?entityOrAbstractEntity rdf:type ?entityOrAbstractEntityClass
   bind( str(?entityOrAbstractEntityClass) as ?entityOrAbstractEntityFullClassName ) .
   bind( strafter(?entityOrAbstractEntityFullClassName, "#") as ?entityOrAbstractEntityTypeName ) .
   bind( concat( ?entityOrAbstractEntityName, ?entityOrAbstractEntityTypeName ) as ?entityOrAbstractEntityBoxName )
-  bind( iri( concat( str( : ), ?entityOrAbstractEntityBoxName ) ) as ?to )
+  bind( iri( concat( func:getNamespace( ?entityOrAbstractEntity ), ?entityOrAbstractEntityBoxName ) ) as ?to )
 
-  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?entityOrAbstractEntityBoxName ) ) as ?edge )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName, "_To_", ?entityOrAbstractEntityBoxName ) ) as ?edge )
 }

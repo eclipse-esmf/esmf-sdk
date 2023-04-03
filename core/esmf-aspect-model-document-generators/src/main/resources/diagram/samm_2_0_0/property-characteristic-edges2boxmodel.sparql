@@ -31,11 +31,11 @@ construct {
     bind( func:getElementName( ?characteristic ) as ?characteristicName )
 
     bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
-    bind( iri( concat( str( : ), ?propertyBoxName ) ) as ?from )
+    bind( iri( concat( func:getNamespace( ?property ), ?propertyBoxName ) ) as ?from )
     bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-    bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?to )
+    bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName ) ) as ?to )
 
-    bind( iri( concat( str( : ), ?propertyBoxName, "_To_", ?characteristicBoxName ) ) as ?edge )
+    bind( iri( concat( func:getNamespace( ?property ), ?propertyBoxName, "_To_", ?characteristicBoxName ) ) as ?edge )
   }
 }
 

@@ -22,8 +22,8 @@ import org.eclipse.esmf.test.TestAspect;
 
 public class Operation2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "operation2boxmodel.sparql";
-   private final String boxSelectorStatement = ":testOperationOperation a :Box";
-   private final String entriesSelectorStatement = ":testOperationOperation :entries *";
+   private final String boxSelectorStatement = "test:testOperationOperation a :Box";
+   private final String entriesSelectorStatement = "test:testOperationOperation :entries *";
    private final int totalNumberOfExpectedEntries = 3;
    private final int indexOfSeeValueEntry = 2;
    private final String expectedSeeEntryTitle = "see";

@@ -26,11 +26,11 @@ construct {
   ?characteristic samm-c:baseCharacteristic ?baseCharacteristic .
   bind( func:getElementName( ?baseCharacteristic ) as ?baseCharacteristicName )
   bind( concat( ?characteristicName, "Characteristic" ) as ?box1Name )
-  bind( iri( concat( str( : ), ?box1Name ) ) as ?from )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?box1Name ) ) as ?from )
 
   bind( concat( ?baseCharacteristicName, "Characteristic" ) as ?box2Name )
-  bind( iri( concat( str( : ), ?box2Name ) ) as ?to )
+  bind( iri( concat( func:getNamespace( ?baseCharacteristic ), ?box2Name ) ) as ?to )
 
-  bind( iri( concat( str( : ), ?box1Name, "_To_", ?box2Name ) ) as ?edge )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?box1Name, "_To_", ?box2Name ) ) as ?edge )
 }
 
