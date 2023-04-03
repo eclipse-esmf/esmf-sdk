@@ -61,7 +61,7 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      boolean newerThanSamm1 = metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 );
+      final boolean newerThanSamm1 = metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 );
       final String characteristicIdentifier = newerThanSamm1 ? "Enumeration46dba23" : "TestEnumeration";
       final String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier, newerThanSamm1 );
       final String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier, newerThanSamm1 );

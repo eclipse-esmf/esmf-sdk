@@ -13,10 +13,7 @@
 
 package org.eclipse.esmf.metamodel.loader.instantiator;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -37,11 +34,11 @@ import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
 
 public class AbstractEntityInstantiator extends Instantiator<AbstractEntity> {
 
-   private final Set<Resource> processedExtendingElements;
+   private final Set<Resource> processedExtendingElements = new HashSet<>();
+   private final Map<Resource, AbstractEntity> creatingElements = new HashMap<>();
 
    public AbstractEntityInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, AbstractEntity.class );
-      processedExtendingElements = new HashSet<>();
    }
 
    /**
@@ -67,36 +64,35 @@ public class AbstractEntityInstantiator extends Instantiator<AbstractEntity> {
     */
    @Override
    public AbstractEntity apply( final Resource abstractEntity ) {
+      if ( creatingElements.containsKey( abstractEntity ) )
+         return creatingElements.get( abstractEntity );
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( abstractEntity );
       final List<Property> properties = getPropertiesModels( abstractEntity, samm.properties() );
 
-      final Optional<ComplexType> extendedEntity = optionalAttributeValue( abstractEntity, samm._extends() )
-            .map( Statement::getResource )
-            .map( extendedEntityResource -> attributeValue( extendedEntityResource, RDF.type ) )
-            .map( entityStatement -> {
+      final Optional<ComplexType> extendedEntity = optionalAttributeValue( abstractEntity, samm._extends() ).map( Statement::getResource )
+            .map( extendedEntityResource -> attributeValue( extendedEntityResource, RDF.type ) ).map( entityStatement -> {
                if ( samm.AbstractEntity().equals( entityStatement.getObject().asResource() ) ) {
                   return modelElementFactory.create( AbstractEntity.class, entityStatement.getSubject() );
                }
                return modelElementFactory.create( Entity.class, entityStatement.getSubject() );
             } );
 
-      final List<AspectModelUrn> extendingComplexTypes = model
-            .listSubjectsWithProperty( samm._extends(), abstractEntity )
-            .mapWith( extendingComplexType -> attributeValue( extendingComplexType, RDF.type ) )
-            .mapWith( statement -> {
+      final List<AspectModelUrn> extendingComplexTypes = new ArrayList<>();
+      DefaultAbstractEntity entity = DefaultAbstractEntity.createDefaultAbstractEntity( metaModelBaseAttributes, properties, extendedEntity,
+            extendingComplexTypes );
+      creatingElements.put( abstractEntity, entity );
+      extendingComplexTypes.addAll( model.listSubjectsWithProperty( samm._extends(), abstractEntity )
+            .mapWith( extendingComplexType -> attributeValue( extendingComplexType, RDF.type ) ).mapWith( statement -> {
                if ( processedExtendingElements.contains( statement.getSubject() ) ) {
                   return AspectModelUrn.fromUrn( statement.getSubject().getURI() );
                }
                processedExtendingElements.add( statement.getSubject() );
                if ( samm.AbstractEntity().equals( statement.getObject().asResource() ) ) {
-                  return modelElementFactory.create( AbstractEntity.class,
-                        statement.getSubject() ).getAspectModelUrn().get();
+                  return modelElementFactory.create( AbstractEntity.class, statement.getSubject() ).getAspectModelUrn().get();
                }
                return modelElementFactory.create( Entity.class, statement.getSubject() ).getAspectModelUrn().get();
-            } )
-            .toList();
-
-      return DefaultAbstractEntity.createDefaultAbstractEntity( metaModelBaseAttributes, properties, extendedEntity,
-            extendingComplexTypes );
+            } ).toList() );
+      creatingElements.remove( abstractEntity );
+      return entity;
    }
 }
