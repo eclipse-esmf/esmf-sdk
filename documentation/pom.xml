@@ -31,7 +31,6 @@
       <skip.generate.report.css>false</skip.generate.report.css>
       <skip.maven.surefire.report.plugin>false</skip.maven.surefire.report.plugin>
       <skip.generated.bom>false</skip.generated.bom>
-      <poi-version>4.1.2</poi-version>
    </properties>
 
    <dependencies>
