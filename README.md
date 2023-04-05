@@ -124,7 +124,7 @@ The model validator is also available through the [SAMM CLI](#samm-cli).
 
 ## Version Handling
 
-SAMM and its SDKs evolv over time. While measures are taken to do this in a non-breaking manner,
+SAMM and its SDKs evolve over time. While measures are taken to do this in a non-breaking manner,
 some changes cannot be carried out without the need to define a new, breaking version. Due to this
 fact it is important to understand the versioning concept that is applied to the SAMM, APIs and SDK
 components that are derived from them.
