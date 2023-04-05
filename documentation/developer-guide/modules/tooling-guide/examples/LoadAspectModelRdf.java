@@ -22,13 +22,13 @@ import java.util.List;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.FileSystemStrategy;
-import io.openmanufacturing.sds.aspectmodel.resolver.ResolutionStrategy;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.urn.AspectModelUrn;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import io.vavr.control.Try;
 // end::imports[]
 import org.junit.jupiter.api.Test;
@@ -37,14 +37,14 @@ public class LoadAspectModelRdf {
    @Test
    public void loadAndResolveFromFile() {
       // tag::loadAndResolveFromFile[]
-      final File modelFile = new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" ); // <1>
+      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ); // <1>
       final Try<VersionedModel> tryModel = AspectModelResolver.loadAndResolveModel( modelFile ); // <2>
 
       // Let's do something with the loaded model on RDF level
       tryModel.forEach( versionedModel -> { // <3>
-         final BAMM bamm = new BAMM( KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() ).get() );
+         final SAMM samm = new SAMM( KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() ).get() );
          final Model rdfModel = versionedModel.getModel();
-         final List<Statement> result = rdfModel.listStatements( null, RDF.type, bamm.Aspect() ).toList();// <4>
+         final List<Statement> result = rdfModel.listStatements( null, RDF.type, samm.Aspect() ).toList();// <4>
       } );
       // end::loadAndResolveFromFile[]
    }
@@ -53,11 +53,11 @@ public class LoadAspectModelRdf {
    public void loadAndResolveFromUrn() {
       // tag::loadAndResolveFromUrn[]
       // The directory containing the models folder structure,
-      // see [.underline]#xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory structure]#
+      // see [.underline]#xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory structure]#
       final Path modelsRoot = Paths.get( "aspect-models" );
       final ResolutionStrategy fileSystemStrategy = new FileSystemStrategy( modelsRoot );
       final Try<VersionedModel> tryModel = new AspectModelResolver().resolveAspectModel( fileSystemStrategy,
-            AspectModelUrn.fromUrn( "urn:bamm:io.openmanufacturing.examples.movement:1.0.0#Movement" ) );
+            AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.examples.movement:1.0.0#Movement" ) );
       // end::loadAndResolveFromUrn[]
    }
 }

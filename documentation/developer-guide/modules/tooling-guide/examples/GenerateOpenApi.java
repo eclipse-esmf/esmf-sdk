@@ -19,11 +19,11 @@ import java.util.Optional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.openmanufacturing.sds.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
-import io.openmanufacturing.sds.aspectmodel.generator.openapi.PagingOption;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
+import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 // end::imports[]
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 public class GenerateOpenApi {
    @Test
    public void generateYaml() throws JsonProcessingException {
-      final File modelFile = new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" );
+      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
 
       // tag::generateYaml[]
       // Aspect as created by the AspectModelLoader
@@ -81,7 +81,7 @@ public class GenerateOpenApi {
 
    @Test
    public void generateJson() throws IOException {
-      final File modelFile = new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" );
+      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
       // tag::generateJson[]
       // Aspect as created by the AspectModelLoader
       final Aspect aspect = // ...

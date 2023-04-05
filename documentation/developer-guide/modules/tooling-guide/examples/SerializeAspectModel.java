@@ -20,21 +20,21 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.apache.jena.rdf.model.Model;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
-import io.openmanufacturing.sds.aspectmodel.serializer.PrettyPrinter;
-import io.openmanufacturing.sds.aspectmodel.serializer.RdfModelCreatorVisitor;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.Namespace;
-import io.openmanufacturing.sds.metamodel.Aspect;
-import io.openmanufacturing.sds.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
+import org.eclipse.esmf.aspectmodel.serializer.RdfModelCreatorVisitor;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 // end::imports[]
 import org.junit.jupiter.api.Test;
 
 public class SerializeAspectModel {
    @Test
    public void serializeAspectModel() {
-      final File modelFile = new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" );
+      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
 
       // tag::serialize[]
       // Aspect as created by the AspectModelLoader
@@ -56,7 +56,7 @@ public class SerializeAspectModel {
       // Second step: Serialize RDF model into nicely formatted Turtle
       final StringWriter stringWriter = new StringWriter();
       final PrintWriter printWriter = new PrintWriter( stringWriter );
-      final VersionedModel versionedModel = new SdsAspectMetaModelResourceResolver()
+      final VersionedModel versionedModel = new SammAspectMetaModelResourceResolver()
             .mergeMetaModelIntoRawModel( model, aspect.getMetaModelVersion() ).get();
       final PrettyPrinter prettyPrinter = new PrettyPrinter(
             versionedModel, aspect.getAspectModelUrn().get(), printWriter );
@@ -65,7 +65,7 @@ public class SerializeAspectModel {
 
       final String result = stringWriter.toString();
       // end::serialize[]
-      assertThat( result ).contains( ":Movement a bamm:Aspect" );
-      assertThat( result ).contains( ":isMoving a bamm:Property" );
+      assertThat( result ).contains( ":Movement a samm:Aspect" );
+      assertThat( result ).contains( ":isMoving a samm:Property" );
    }
 }

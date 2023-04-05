@@ -15,7 +15,7 @@ jobs:
 
       # Required for Maven
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -42,7 +42,7 @@ jobs:
 
   # The Linux build will upload the local Nexus deployment repository
   # (i.e., what will be deployed to OSSRH/Maven Central)
-  # and the Linux-specific bamm-cli binary to the build artifacts
+  # and the Linux-specific samm-cli binary to the build artifacts
   build-linux:
     name: Linux build
     needs: [check-preconditions]
@@ -50,6 +50,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      # Even though the build itself is done using the GraalVM JDK
+      # (see below), we use the setup-java action to have GPG configured
+      # so that it can be used from the maven-gpg-plugin.
+      - name: Configure GPG
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          gpg-private-key: ${{ secrets.PGP_KEY }}
+          gpg-passphrase: PGP_KEY_PASSWORD
+          overwrite-settings: false
 
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
@@ -84,16 +96,22 @@ jobs:
           mvn versions:commit
 
           # Actual build of core SDK
-          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
           # Build of CLI
-          cd tools/bamm-cli
+          pushd tools/samm-cli
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          popd
 
-          # Create zip of bamm-cli
-          cd tools/bamm-cli/target
-          chmod a+x bamm
-          tar cfvz bamm-cli-linux.tar.gz bamm
+          # Create .tar.gz of samm-cli
+          pushd tools/samm-cli/target
+          chmod a+x samm
+          tar cfvz samm-cli-linux.tar.gz samm
+          popd
+          mv tools/samm-cli/target/samm-cli-linux.tar.gz .
+          mv tools/samm-cli/target/samm-cli-*.jar .
+        env:
+          PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
       - name: Upload staging directory and Linux binary
         uses: actions/upload-artifact@v3
@@ -101,10 +119,10 @@ jobs:
           name: linux-artifacts
           path: |
             nexus-staging/
-            tools/bamm-cli/target/bamm-cli-linux.tar.gz
-            tools/bamm-cli/target/bamm-cli-*.jar
+            samm-cli-linux.tar.gz
+            samm-cli-*.jar
 
-  # The Windows build will build the Windows-specific bamm-cli
+  # The Windows build will build the Windows-specific samm-cli
   # and upload the binary to the build artifacts
   build-windows:
     name: Windows build
@@ -136,7 +154,7 @@ jobs:
         # This seems to be caused by running out of memory; increasing page file
         # size suggested here:
         # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
-        uses: al-cheb/configure-pagefile-action@v1.2
+        uses: al-cheb/configure-pagefile-action@v1.3
         with:
           minimum-size: 16GB
           maximum-size: 16GB
@@ -151,9 +169,9 @@ jobs:
           mvn versions:commit
 
           # Actual build of core SDK
-          mvn -B -pl '!io.openmanufacturing:bamm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build of CLI
-          cd tools/bamm-cli
+          cd tools/samm-cli
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
@@ -163,11 +181,12 @@ jobs:
         with:
           name: windows-artifacts
           path: |
-            tools/bamm-cli/target/bamm.exe
-            tools/bamm-cli/target/*.dll
-            tools/bamm-cli/target/lib/
+            tools/samm-cli/target/samm.exe
+            tools/samm-cli/target/*.dll
+            tools/samm-cli/target/lib/
 
   release:
+    name: Release
     needs: [build-linux, build-windows]
     runs-on: ubuntu-latest
     steps:
@@ -176,17 +195,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      # Required to have Maven settings.xml set up correctly
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
           server-id: ossrh
           server-username: OSSRH_USERNAME
           server-password: OSSRH_TOKEN
-          gpg-private-key: ${{ secrets.PGP_KEY }}
-          gpg-passphrase: PGP_KEY_PASSWORD
           overwrite-settings: false
+
+      # Required to run the mvn:versions, since enforcer plugin
+      # will check for GraalVM JDK
+      - name: Setup JDK
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.3.1'
+          java-version: '17'
+          components: 'native-image,js'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'false'
 
       - name: Fetch Linux Artifacts
         uses: actions/download-artifact@v3
@@ -201,49 +230,59 @@ jobs:
       - name: Prepare release
         run: |
           # Create Windows CLI zip
-          zip -9 -r bamm-cli-windows.zip bamm.exe *.dll lib/
+          zip -9 -r samm-cli-windows.zip samm.exe *.dll lib/
 
       # Full release: Maven Central
+      # The (apparently) only way to retrieve the staging profile id
+      # is the undocumented rc-list-profiles command of the
+      # nexus-staging-maven-plugin:
+      # mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:rc-list-profiles -DnexusUrl=https://oss.sonatype.org/ -DserverId=ossrh
       - name: Release to OSSRH/Maven Central
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         run: |
-          mvn nexus-staging:deploy-staged-repository -DrepositoryDirectory=nexus-staging -Prelease-build
+          mkdir deploy
+          mv nexus-staging deploy
+          cd deploy
+          mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
+            -DnexusUrl=https://oss.sonatype.org/ \
+            -DserverId=ossrh \
+            -DrepositoryDirectory=nexus-staging \
+            -DstagingProfileId=7e73217781f2e
         env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           # Workaround for https://issues.sonatype.org/browse/OSSRH-66257
           # as described in https://stackoverflow.com/a/70157413
           MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
 
-      - name: Create release commit
+      - name: Set versions
         continue-on-error: true
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-
           release_version=${{ github.event.inputs.release_version }}
           release_branch_name=${release_version%.*}.x
           echo "release_branch_name=$release_branch_name" >> $GITHUB_ENV
 
-          git fetch
-          git checkout -b $release_branch_name --track origin/$release_branch_name || true
-          git checkout -b $release_branch_name
-
           # Set version in pom.xml files
-          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
-          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
-          mvn versions:commit
+          mvn -B clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn -B versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn -B versions:commit
           # Set version in Antora module
           yq eval -i '.version = "${{ github.event.inputs.release_version }}"' documentation/developer-guide/antora.yml
-          # Push changes
-          git add .
-          if git commit -m "Add version ${{ github.event.inputs.release_version}}"; then
-            git push origin ${{ env.release_branch_name }}
-          fi
+
+      - name: Commit version changes and push to upstream repository
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+           branch: ${{ env.release_branch_name }}
+           commit_user_name: github-actions
+           commit_user_email: github-actions@github.com
+           commit_author: Author <actions@github.com>
+           file_pattern: 'documentation/developer-guide/antora.yml pom.xml */*/pom.xml'
 
       # Full release: Github
       - name: "Create Github release (full)"
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
         uses: softprops/action-gh-release@v1
-        id: sds_sdk_release
+        id: esmf_sdk_release
         with:
           body: "Release version ${{ github.event.inputs.release_version }}."
           tag_name: v${{ github.event.inputs.release_version }}
@@ -251,9 +290,9 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            bamm-cli-windows.zip
-            bamm-cli-linux.tar.gz
-            bamm-cli-*.jar
+            samm-cli-windows.zip
+            samm-cli-linux.tar.gz
+            samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
@@ -291,7 +330,7 @@ jobs:
       # Milestone release: Maven deploy to Github
       - name: Publish to Github
         if: contains( github.event.inputs.release_version, '-M' )
-        run: mvn -s ./settings.xml -B clean -pl '!sds-sdk-test-report,!documentation,!tools/bamm-cli' deploy -DskipTests -Pmilestone-build,sign
+        run: mvn -s ./settings.xml -B clean -pl '!esmf-sdk-test-report,!documentation,!tools/samm-cli' deploy -DskipTests -Pmilestone-build,sign
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
@@ -308,8 +347,8 @@ jobs:
           draft: false
           prerelease: true
           files: |
-            bamm-cli-windows.zip
-            bamm-cli-linux.tar.gz
-            bamm-cli-*.jar
+            samm-cli-windows.zip
+            samm-cli-linux.tar.gz
+            samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

@@ -16,14 +16,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
-   <groupId>io.openmanufacturing</groupId>
-   <artifactId>sds-sdk-parent</artifactId>
-   <name>SDS SDK Parent</name>
+   <groupId>org.eclipse.esmf</groupId>
+   <artifactId>esmf-sdk-parent</artifactId>
+   <name>ESMF SDK Parent</name>
    <version>DEV-SNAPSHOT</version>
    <packaging>pom</packaging>
 
-   <description>OMP SDS SDK</description>
-   <url>https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/dev-snapshot/index.html</url>
+   <description>ESMF SDK</description>
+   <url>https://eclipse-esmf.github.io/</url>
    <licenses>
       <license>
          <name>MPL-2.0</name>
@@ -32,39 +32,40 @@
    </licenses>
    <developers>
       <developer>
-         <name>Semantic Data Structuring Working Group</name>
-         <email>artifacts@open-manufacturing.org</email>
-         <organization>Open Manufacturing Platform</organization>
-         <organizationUrl>https://open-manufacturing.org</organizationUrl>
+         <name>Eclipse Semantic Modeling Framework Team</name>
+         <email>esmf-dev@eclipse.org</email>
+         <organization>Eclipse Semantic Modeling Framework</organization>
+         <organizationUrl>https://projects.eclipse.org/projects/dt.esmf</organizationUrl>
       </developer>
    </developers>
    <scm>
-      <url>https://github.com/OpenManufacturingPlatform/sds-sdk</url>
+      <url>https://github.com/eclipse-esmf/esmf-sdk</url>
+      <connection>scm:git:git://github.com:eclipse-esmf/esmf-sdk.git</connection>
+      <developerConnection>scm:git:ssh://git@github.com:eclipse-esmf/esmf-sdk.git</developerConnection>
    </scm>
 
    <modules>
-      <module>core/sds-aspect-meta-model-interface</module>
-      <module>core/sds-aspect-meta-model-java</module>
-      <module>core/sds-aspect-meta-model-resolver</module>
-      <module>core/sds-aspect-meta-model-types</module>
-      <module>core/sds-aspect-meta-model-version-migrator</module>
-      <module>core/sds-aspect-model-aas-generator</module>
-      <module>core/sds-aspect-model-document-generators</module>
-      <module>core/sds-aspect-model-generator</module>
-      <module>core/sds-aspect-model-jackson</module>
-      <module>core/sds-aspect-model-java-core</module>
-      <module>core/sds-aspect-model-java-generator</module>
-      <module>core/sds-aspect-model-resolver</module>
-      <module>core/sds-aspect-model-serializer</module>
-      <module>core/sds-aspect-model-starter</module>
-      <module>core/sds-aspect-model-urn</module>
-      <module>core/sds-aspect-model-validator</module>
-      <module>core/sds-aspect-static-meta-model-java</module>
-      <module>core/sds-test-aspect-models</module>
-      <module>core/sds-test-resources</module>
-      <module>tools/sds-aspect-model-maven-plugin</module>
-      <module>tools/bamm-cli</module>
-      <module>sds-sdk-test-report</module>
+      <module>core/esmf-aspect-meta-model-interface</module>
+      <module>core/esmf-aspect-meta-model-java</module>
+      <module>core/esmf-aspect-meta-model-resolver</module>
+      <module>core/esmf-aspect-meta-model-types</module>
+      <module>core/esmf-aspect-meta-model-version-migrator</module>
+      <module>core/esmf-aspect-model-aas-generator</module>
+      <module>core/esmf-aspect-model-document-generators</module>
+      <module>core/esmf-aspect-model-generator</module>
+      <module>core/esmf-aspect-model-jackson</module>
+      <module>core/esmf-aspect-model-java-core</module>
+      <module>core/esmf-aspect-model-java-generator</module>
+      <module>core/esmf-aspect-model-resolver</module>
+      <module>core/esmf-aspect-model-serializer</module>
+      <module>core/esmf-aspect-model-starter</module>
+      <module>core/esmf-aspect-model-urn</module>
+      <module>core/esmf-aspect-model-validator</module>
+      <module>core/esmf-aspect-static-meta-model-java</module>
+      <module>core/esmf-test-aspect-models</module>
+      <module>core/esmf-test-resources</module>
+      <module>tools/esmf-aspect-model-maven-plugin</module>
+      <module>tools/samm-cli</module>
       <module>documentation</module>
    </modules>
 
@@ -72,7 +73,7 @@
       <!-- Versions of third party dependencies -->
       <aspect-meta-model-version>2.0.0</aspect-meta-model-version>
       <assertj-vavr-version>0.4.2</assertj-vavr-version>
-      <batik-version>1.14</batik-version>
+      <batik-version>1.16</batik-version>
       <classgraph-version>4.8.146</classgraph-version>
       <commons-text-version>1.10.0</commons-text-version>
       <easy-random-version>5.0.0</easy-random-version>
@@ -94,7 +95,6 @@
       <rgxgen-version>1.3</rgxgen-version>
       <rhino-version>1.7.14</rhino-version>
       <roaster-version>2.24.0.Final</roaster-version>
-      <shacl-version>1.4.2</shacl-version>
       <spring-boot-version>2.6.7</spring-boot-version>
       <swagger-parser-version>2.1.9</swagger-parser-version>
       <tika-version>2.6.0</tika-version>
@@ -133,10 +133,9 @@
       <maven-surefire-plugin-version>3.0.0-M8</maven-surefire-plugin-version>
       <maven-surefire-report-plugin-version>3.0.0-M8</maven-surefire-report-plugin-version>
       <native-maven-plugin-version>0.9.10</native-maven-plugin-version>
-      <nexus-staging-maven-plugin-version>1.6.9</nexus-staging-maven-plugin-version>
+      <nexus-staging-maven-plugin-version>1.6.13</nexus-staging-maven-plugin-version>
 
       <!-- General settings -->
-      <testreports.directory>test-reports</testreports.directory>
       <testreports.surefire>surefire-report</testreports.surefire>
       <skip.generated.bom>true</skip.generated.bom>
       <skip.maven.surefire.report.plugin>true</skip.maven.surefire.report.plugin>
@@ -147,119 +146,114 @@
 
       <java-target-version>17</java-target-version>
       <java-source-version>17</java-source-version>
-
-      <sonar.coverage.jacoco.xmlReportPaths>
-         ${project.basedir}/../sds-sdk-test-report/target/site/jacoco-aggregate/jacoco.xml,
-         ${project.basedir}/../../sds-sdk-test-report/target/site/jacoco-aggregate/jacoco.xml
-      </sonar.coverage.jacoco.xmlReportPaths>
    </properties>
 
    <dependencyManagement>
       <!-- Internal projects -->
       <dependencies>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-semantic-aspect-meta-model</artifactId>
             <version>${aspect-meta-model-version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-urn</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-urn</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-interface</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-meta-model-interface</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-resolver</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-meta-model-resolver</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-resolver</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-resolver</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-types</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-meta-model-types</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-version-migrator</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-meta-model-version-migrator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-java</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-meta-model-java</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-generator</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-generator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-document-generators</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-document-generators</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-validator</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-validator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-java-generator</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-java-generator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-starter</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-starter</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-static-meta-model-java</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-static-meta-model-java</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-java-core</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-java-core</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-serializer</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-serializer</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-jackson</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-jackson</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-test-aspect-models</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-test-aspect-models</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-test-resources</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-test-resources</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>bamm-cli</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>samm-cli</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-aas-generator</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-aas-generator</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
          </dependency>
@@ -287,11 +281,6 @@
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-core</artifactId>
             <version>${jena-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.topbraid</groupId>
-            <artifactId>shacl</artifactId>
-            <version>${shacl-version}</version>
          </dependency>
          <dependency>
             <groupId>io.vavr</groupId>
@@ -565,7 +554,7 @@
             <artifactId>maven-enforcer-plugin</artifactId>
             <executions>
                <execution>
-                  <id>sds-parent-enforce-groupId</id>
+                  <id>esmf-parent-enforce-groupId</id>
                   <goals>
                      <goal>enforce</goal>
                   </goals>
@@ -574,11 +563,11 @@
                         <requireProperty>
                            <property>project.groupId</property>
                            <message>You must follow Maven naming convention and set the groupId to
-                              io.openmanufacturing or extend it!
+                              org.eclipse.esmf or extend it!
                            </message>
-                           <regex>io.openmanufacturing(.[a-z]+)*</regex>
+                           <regex>org.eclipse.esmf(.[a-z]+)*</regex>
                            <regexMessage>You must follow Maven naming convention and set the groupId to
-                              'io.openmanufacturing' or an extended form, e.g. io.openmanufacturing.sds!
+                              'org.eclipse.esmf' or an extended form, e.g. org.eclipse.esmf.foo!
                            </regexMessage>
                         </requireProperty>
                         <requireProperty>
@@ -739,7 +728,7 @@
             <repository>
                <id>ossrh</id>
                <name>OSSRH</name>
-               <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+               <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
             </repository>
          </distributionManagement>
          <build>
@@ -757,7 +746,8 @@
                   <extensions>true</extensions>
                   <configuration>
                      <serverId>ossrh</serverId>
-                     <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                     <stagingProfileId>org.eclipse.esmf</stagingProfileId>
                      <autoReleaseAfterClose>false</autoReleaseAfterClose>
                   </configuration>
                </plugin>
@@ -770,7 +760,7 @@
             <repository>
                <id>github</id>
                <name>Github</name>
-               <url>https://maven.pkg.github.com/OpenManufacturingPlatform/sds-sdk</url>
+               <url>https://maven.pkg.github.com/eclipse-esmf/esmf-sdk</url>
             </repository>
          </distributionManagement>
       </profile>

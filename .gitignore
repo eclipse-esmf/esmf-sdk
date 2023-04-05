@@ -145,8 +145,8 @@ build
 /core/sds-aspect-meta-model-legacy*/target
 
 # Directories where classes are generated during unit tests
-core/sds-aspect-model-java-generator/src/test/java/io/openmanufacturing/test
-core/sds-aspect-model-jackson/src/main/java/io/openmanufacturing/test
+core/esmf-aspect-model-java-generator/src/test/java/org/eclipse/esmf/test
+core/esmf-aspect-model-jackson/src/main/java/org/eclipse/esmf/test
 
 # jqwik
 .jqwik-database
@@ -156,3 +156,5 @@ core/sds-aspect-model-jackson/src/main/java/io/openmanufacturing/test
 
 # MacOS
 .DS_Store
+
+/deploy
