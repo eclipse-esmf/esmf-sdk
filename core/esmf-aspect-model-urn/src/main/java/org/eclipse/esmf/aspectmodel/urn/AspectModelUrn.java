@@ -161,7 +161,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
 
    /**
     * Checked version of {@link #fromUrn(URI)}
-    * @param urn the lexical representation of the Aspect Model URN
+    * @param uri the lexical representation of the Aspect Model URN
     * @return the Aspect Model URN or a {@link UrnSyntaxException}
     */
    public static Try<AspectModelUrn> from( final URI uri ) {

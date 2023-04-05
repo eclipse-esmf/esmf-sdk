@@ -18,12 +18,12 @@ import java.time.Month;
 import java.time.YearMonth;
 import java.util.stream.Stream;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import jakarta.xml.bind.DatatypeConverter;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
@@ -70,13 +70,13 @@ public interface XsdArbitraries {
    @Provide
    default Arbitrary<String> anyHexBinary() {
       return Arbitraries.strings().ofMinLength( 1 )
-                        .map( string -> DatatypeConverter.printHexBinary( string.getBytes() ) );
+            .map( string -> DatatypeConverter.printHexBinary( string.getBytes() ) );
    }
 
    @Provide
    default Arbitrary<String> anyBase64Binary() {
       return Arbitraries.strings().ofMinLength( 1 )
-                        .map( string -> DatatypeConverter.printBase64Binary( string.getBytes() ) );
+            .map( string -> DatatypeConverter.printBase64Binary( string.getBytes() ) );
    }
 
    @Provide
@@ -135,15 +135,15 @@ public interface XsdArbitraries {
    @Provide
    default Arbitrary<XMLGregorianCalendar> anyDate() {
       return Combinators.combine( anyYearMonthDay(), anyTimezone() )
-                        .as( ( yearMonthDay, timezone ) ->
-                              getDatatypeFactory().newXMLGregorianCalendarDate(
-                                    yearMonthDay.get1(), yearMonthDay.get2(), yearMonthDay.get3(), timezone ) );
+            .as( ( yearMonthDay, timezone ) ->
+                  getDatatypeFactory().newXMLGregorianCalendarDate(
+                        yearMonthDay.get1(), yearMonthDay.get2(), yearMonthDay.get3(), timezone ) );
    }
 
    @Provide
    default Arbitrary<XMLGregorianCalendar> anyTime() {
       return Combinators.combine( anyHour(), anyMinute(), anySecond(), anyTimezone() )
-                        .as( getDatatypeFactory()::newXMLGregorianCalendarTime );
+            .as( getDatatypeFactory()::newXMLGregorianCalendarTime );
    }
 
    @Provide
@@ -163,50 +163,50 @@ public interface XsdArbitraries {
    @Provide
    default Arbitrary<XMLGregorianCalendar> anyGYear() {
       return Combinators.combine( anyYear(), anyTimezone().optional() )
-                        .as( ( year, optionalTimezone ) -> {
-                           final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
-                           return getDatatypeFactory().newXMLGregorianCalendar( year, DatatypeConstants.FIELD_UNDEFINED,
-                                 DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                                 DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                                 DatatypeConstants.FIELD_UNDEFINED, timezone );
-                        } );
+            .as( ( year, optionalTimezone ) -> {
+               final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
+               return getDatatypeFactory().newXMLGregorianCalendar( year, DatatypeConstants.FIELD_UNDEFINED,
+                     DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
+                     DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
+                     DatatypeConstants.FIELD_UNDEFINED, timezone );
+            } );
    }
 
    @Provide
    default Arbitrary<XMLGregorianCalendar> anyGMonth() {
       return Combinators.combine( anyMonth(), anyTimezone().optional() )
-                        .as( ( month, optionalTimezone ) -> {
-                           final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
-                           return getDatatypeFactory()
-                                 .newXMLGregorianCalendar( DatatypeConstants.FIELD_UNDEFINED, month,
-                                       DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                                       DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                                       DatatypeConstants.FIELD_UNDEFINED, timezone );
-                        } );
+            .as( ( month, optionalTimezone ) -> {
+               final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
+               return getDatatypeFactory()
+                     .newXMLGregorianCalendar( DatatypeConstants.FIELD_UNDEFINED, month,
+                           DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
+                           DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
+                           DatatypeConstants.FIELD_UNDEFINED, timezone );
+            } );
    }
 
    @Provide
    default Arbitrary<XMLGregorianCalendar> anyGDay() {
       return Combinators.combine( anyDayInMonth(), anyTimezone().optional() )
-                        .as( ( day, optionalTimezone ) -> {
-                           final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
-                           return getDatatypeFactory().newXMLGregorianCalendar( DatatypeConstants.FIELD_UNDEFINED,
-                                 DatatypeConstants.FIELD_UNDEFINED, day, DatatypeConstants.FIELD_UNDEFINED,
-                                 DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                                 DatatypeConstants.FIELD_UNDEFINED, timezone );
-                        } );
+            .as( ( day, optionalTimezone ) -> {
+               final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
+               return getDatatypeFactory().newXMLGregorianCalendar( DatatypeConstants.FIELD_UNDEFINED,
+                     DatatypeConstants.FIELD_UNDEFINED, day, DatatypeConstants.FIELD_UNDEFINED,
+                     DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
+                     DatatypeConstants.FIELD_UNDEFINED, timezone );
+            } );
    }
 
    @Provide
    default Arbitrary<XMLGregorianCalendar> anyGYearMonth() {
       return Combinators.combine( anyYear(), anyMonth(), anyTimezone().optional() )
-                        .as( ( year, month, optionalTimezone ) -> {
-                           final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
-                           return getDatatypeFactory().newXMLGregorianCalendar( year, month,
-                                 DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                                 DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                                 DatatypeConstants.FIELD_UNDEFINED, timezone );
-                        } );
+            .as( ( year, month, optionalTimezone ) -> {
+               final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
+               return getDatatypeFactory().newXMLGregorianCalendar( year, month,
+                     DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
+                     DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
+                     DatatypeConstants.FIELD_UNDEFINED, timezone );
+            } );
    }
 
    @Provide
@@ -220,7 +220,7 @@ public interface XsdArbitraries {
             return day <= 29;
          }
          if ( Stream.of( Month.APRIL, Month.JUNE, Month.SEPTEMBER, Month.NOVEMBER )
-                    .anyMatch( theMonth -> theMonth.getValue() == month ) ) {
+               .anyMatch( theMonth -> theMonth.getValue() == month ) ) {
             return day <= 30;
          }
          return day <= 31;
@@ -230,13 +230,13 @@ public interface XsdArbitraries {
    @Provide
    default Arbitrary<XMLGregorianCalendar> anyGMonthDay() {
       return Combinators.combine( anyMonthDay(), anyTimezone().optional() )
-                        .as( ( monthDay, optionalTimezone ) -> {
-                           final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
-                           return getDatatypeFactory().newXMLGregorianCalendar( DatatypeConstants.FIELD_UNDEFINED,
-                                 monthDay.get1(), monthDay.get2(), DatatypeConstants.FIELD_UNDEFINED,
-                                 DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                                 DatatypeConstants.FIELD_UNDEFINED, timezone );
-                        } );
+            .as( ( monthDay, optionalTimezone ) -> {
+               final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
+               return getDatatypeFactory().newXMLGregorianCalendar( DatatypeConstants.FIELD_UNDEFINED,
+                     monthDay.get1(), monthDay.get2(), DatatypeConstants.FIELD_UNDEFINED,
+                     DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
+                     DatatypeConstants.FIELD_UNDEFINED, timezone );
+            } );
    }
 
    @Provide
@@ -247,12 +247,12 @@ public interface XsdArbitraries {
    @Provide
    default Arbitrary<Duration> anyYearMonthDuration() {
       return Combinators.combine( anyBoolean(), anyYear(), anyMonth() )
-                        .as( getDatatypeFactory()::newDurationYearMonth );
+            .as( getDatatypeFactory()::newDurationYearMonth );
    }
 
    @Provide
    default Arbitrary<Duration> anyDayTimeDuration() {
       return Combinators.combine( anyBoolean(), anyDayInMonth(), anyHour(), anyMinute(), anySecond() )
-                        .as( getDatatypeFactory()::newDurationDayTime );
+            .as( getDatatypeFactory()::newDurationDayTime );
    }
 }
