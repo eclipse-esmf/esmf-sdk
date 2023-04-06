@@ -65,19 +65,9 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_CONSTRAINTS",
-         // uses samm-c:OPEN which is not specified, see https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/issues/174
          "ASPECT_WITH_FIXED_POINT",
          "ASPECT_WITH_FIXED_POINT_CONSTRAINT",
          "ASPECT_WITH_LANGUAGE_CONSTRAINT",
-         "ASPECT_WITH_RANGE_CONSTRAINT_ON_CONSTRAINED_NUMERIC_TYPE", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_DOUBLE_VALUE", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_INTEGER_VALUE", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_INCL_BOUND_DEFINITION", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND_INCL_BOUND_DEFINITION", // uses samm-c:OPEN
          "MODEL_WITH_CYCLES",
          "MODEL_WITH_BROKEN_CYCLES"// contains cycles
    } )
