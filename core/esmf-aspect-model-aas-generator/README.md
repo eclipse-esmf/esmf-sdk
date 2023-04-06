@@ -30,8 +30,8 @@ proper entry point. It expects an `org.eclipse.esmf.metamodel.Aspect` and return
 
 
 ## Details of the Mapping Concept
-The mapping rules applied by the generator are explained in the [user documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/tooling-guide/java-aspect-tooling.html#details-mapping-aas).
-The rules apply to SAMM v1.0.0 [6] and  AAS Specification Part 1 V3.0RC01 [7].
+The mapping rules applied by the generator are explained in the [user documentation](https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/java-aspect-tooling.html#mapping-aas).
+The rules apply to SAMM v2.0.0 [5] and  AAS Specification Part 1 V3.0RC01 [6].
 
 
 ## References
@@ -43,8 +43,6 @@ The rules apply to SAMM v1.0.0 [6] and  AAS Specification Part 1 V3.0RC01 [7].
 
 [4] https://github.com/admin-shell-io/java-serializer
 
-[5] https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/characteristics.html
+[5] https://eclipse-esmf.github.io/samm-specification/2.0.0/index.html
 
-[6] https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/index.html
-
-[7] https://www.plattform-i40.de/IP/Redaktion/EN/Downloads/Publikation/Details_of_the_Asset_Administration_Shell_Part1_V3.html
+[6] https://www.plattform-i40.de/IP/Redaktion/EN/Downloads/Publikation/Details_of_the_Asset_Administration_Shell_Part1_V3.html

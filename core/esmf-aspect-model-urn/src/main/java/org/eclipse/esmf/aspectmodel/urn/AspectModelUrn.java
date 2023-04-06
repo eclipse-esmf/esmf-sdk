@@ -33,9 +33,7 @@ import io.vavr.control.Try;
 /**
  * Represents the identifier URN of an Aspect Model.
  *
- * @see
- * <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/v1.0.0/namespaces.html">https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/v1.0.0/namespaces.html</a>
- *       for the definition of the URN.
+ * @see <a href="https://eclipse-esmf.github.io/samm-specification/2.0.0/namespaces.html">Definition of the URN</a>
  */
 public class AspectModelUrn implements Comparable<AspectModelUrn> {
    public static final String NAMESPACE_REGEX = "([a-zA-Z0-9()+,\\-.:=@;$_!*']|%[0-9a-fA-F]{2})+";
