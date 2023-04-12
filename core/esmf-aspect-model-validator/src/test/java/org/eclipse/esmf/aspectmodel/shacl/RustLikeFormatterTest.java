@@ -56,7 +56,7 @@ public class RustLikeFormatterTest {
       final Model dataModel = model( """            
             @prefix : <http://example.com#> .
                         
-            :Foo a :TestClass;
+            :Foo a :TestClass ;
               :firstProperty 1 ;
               :secondProperty 2 .
             """ );
