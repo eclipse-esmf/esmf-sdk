@@ -45,9 +45,9 @@ This repository contains a detailed developer documentation written in AsciiDoc.
 
 Are you having trouble with ESMF SDK? We want to help!
 
-* Check the [ESMF SDK developer documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/index.html)
+* Check the [ESMF SDK developer documentation](https://eclipse-esmf.github.io/esmf-developer-guide/index.html)
 * Ask a question the [community forum](https://www.eclipse.org/forums/index.php/f/617/).
-* Check the SAMM [specification](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/index.html)
+* Check the SAMM [specification](https://eclipse-esmf.github.io/samm-specification/snapshot/index.html)
 * Having issues with the ESMF SDK? Open a [GitHub issue](https://github.com/eclipse-esmf/esmf-sdk/issues).
 
 ## Build and contribute
@@ -235,7 +235,7 @@ GitHub](https://github.com/eclipse-esmf/esmf-sdk/releases).
 
 For information regarding running the command line tool, the available commands and their
 description, please have a look at the
-[documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/tooling-guide/bamm-cli.html).
+[documentation](https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/samm-cli.html).
 
 ## License
 

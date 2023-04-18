@@ -40,7 +40,6 @@
       samm:description "This is a test range constraint."@en ;
       samm:see <http://example.com/> ;
       samm-c:minValue "2.3"^^xsd:float ;
-      samm-c:upperBoundDefinition samm-c:OPEN ;
       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
    samm-c:baseCharacteristic :Measurement .

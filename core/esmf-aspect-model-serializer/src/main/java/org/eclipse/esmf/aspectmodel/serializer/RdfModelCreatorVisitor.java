@@ -37,47 +37,22 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMME;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
-import org.eclipse.esmf.metamodel.AbstractEntity;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.characteristic.Code;
 import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.metamodel.CollectionValue;
-import org.eclipse.esmf.metamodel.ComplexType;
-import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.characteristic.Duration;
 import org.eclipse.esmf.characteristic.Either;
-import org.eclipse.esmf.constraint.EncodingConstraint;
-import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.metamodel.Event;
-import org.eclipse.esmf.constraint.FixedPointConstraint;
-import org.eclipse.esmf.metamodel.HasProperties;
-import org.eclipse.esmf.metamodel.NamedElement;
-import org.eclipse.esmf.constraint.LanguageConstraint;
-import org.eclipse.esmf.constraint.LengthConstraint;
-import org.eclipse.esmf.constraint.LocaleConstraint;
 import org.eclipse.esmf.characteristic.Measurement;
-import org.eclipse.esmf.metamodel.Operation;
-import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.characteristic.Quantifiable;
-import org.eclipse.esmf.metamodel.QuantityKind;
-import org.eclipse.esmf.constraint.RangeConstraint;
-import org.eclipse.esmf.constraint.RegularExpressionConstraint;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.characteristic.Set;
 import org.eclipse.esmf.characteristic.SingleEntity;
 import org.eclipse.esmf.characteristic.SortedSet;
@@ -85,10 +60,35 @@ import org.eclipse.esmf.characteristic.State;
 import org.eclipse.esmf.characteristic.StructuredValue;
 import org.eclipse.esmf.characteristic.TimeSeries;
 import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.constraint.EncodingConstraint;
+import org.eclipse.esmf.constraint.FixedPointConstraint;
+import org.eclipse.esmf.constraint.LanguageConstraint;
+import org.eclipse.esmf.constraint.LengthConstraint;
+import org.eclipse.esmf.constraint.LocaleConstraint;
+import org.eclipse.esmf.constraint.RangeConstraint;
+import org.eclipse.esmf.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.AbstractEntity;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.CollectionValue;
+import org.eclipse.esmf.metamodel.ComplexType;
+import org.eclipse.esmf.metamodel.Constraint;
+import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.Event;
+import org.eclipse.esmf.metamodel.HasProperties;
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.Operation;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.QuantityKind;
+import org.eclipse.esmf.metamodel.Scalar;
+import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * AspectVisitor that translates an {@link Aspect} into the corresponding {@link Model}.
@@ -175,7 +175,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @SuppressWarnings( "squid:S2250" )
    // Amount of elements in list is regarding amount of properties in Aspect Model. Even in bigger aspects this should not lead to performance issues
-   private Model serializePropertiesOrParameters( final Resource elementResource, final HasProperties element, final org.apache.jena.rdf.model.Property theProperty ) {
+   private Model serializePropertiesOrParameters( final Resource elementResource, final HasProperties element,
+         final org.apache.jena.rdf.model.Property theProperty ) {
       final Model model = ModelFactory.createDefaultModel();
       final List<RDFNode> propertiesList = new ArrayList<>();
       if ( resourceList.contains( elementResource ) ) {
@@ -388,10 +389,14 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
             .flatMap( maxValue -> maxValue.accept( this, rangeConstraint ).getFocusElement().stream() )
             .map( literal -> createStatement( resource, sammc.maxValue(), literal ) )
             .forEach( model::add );
-      model.add( resource, sammc.lowerBoundDefinition(),
-            sammc.resource( rangeConstraint.getLowerBoundDefinition().toString().replace( " ", "_" ).toUpperCase() ) );
-      model.add( resource, sammc.upperBoundDefinition(),
-            sammc.resource( rangeConstraint.getUpperBoundDefinition().toString().replace( " ", "_" ).toUpperCase() ) );
+      if ( rangeConstraint.getLowerBoundDefinition() != BoundDefinition.OPEN ) {
+         model.add( resource, sammc.lowerBoundDefinition(),
+               sammc.resource( rangeConstraint.getLowerBoundDefinition().toString().replace( " ", "_" ).toUpperCase() ) );
+      }
+      if ( rangeConstraint.getUpperBoundDefinition() != BoundDefinition.OPEN ) {
+         model.add( resource, sammc.upperBoundDefinition(),
+               sammc.resource( rangeConstraint.getUpperBoundDefinition().toString().replace( " ", "_" ).toUpperCase() ) );
+      }
       return new ElementModel( model, Optional.of( resource ) );
    }
 
