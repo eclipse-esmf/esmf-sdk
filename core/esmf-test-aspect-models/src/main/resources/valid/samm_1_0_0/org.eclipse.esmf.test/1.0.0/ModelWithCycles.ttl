@@ -17,7 +17,7 @@
 
 :ModelWithCycles a samm:Aspect ;
    samm:name "ModelWithCycles" ;
-   samm:properties ( :a :e :h :l :n ) ;
+   samm:properties ( :a :e :h :l :n [ samm:property :p ; samm:optional true ; ] ) ;
    samm:operations ( ) .
 
 #####################################
@@ -173,8 +173,47 @@
    samm:dataType :OEntity.
 
 :OEntity a samm:Entity;
-    samm:name "MEntity" ;
+    samm:name "OEntity" ;
     samm:properties ( :n ) .
+
+######################################################
+# optional property *before* a cycle does not break it
+######################################################
+:p a samm:Property ;
+   samm:name "p" ;
+   samm:characteristic :pCharacteristic .
+
+:pCharacteristic a samm:Characteristic;
+   samm:name "pCharacteristic" ;
+   samm:dataType :PEntity.
+
+:PEntity a samm:Entity;
+    samm:name "PEntity" ;
+    samm:properties ( :q ) .
+
+:q a samm:Property ;
+   samm:name "q" ;
+   samm:characteristic :qCharacteristic .
+
+:qCharacteristic a samm:Characteristic;
+   samm:name "qCharacteristic" ;
+   samm:dataType :QEntity.
+
+:QEntity a samm:Entity;
+    samm:name "QEntity" ;
+    samm:properties ( :r ) .
+
+:r a samm:Property ;
+   samm:name "rEntity" ;
+   samm:characteristic :rCharacteristic .
+
+:rCharacteristic a samm:Characteristic;
+   samm:name "rCharacteristic" ;
+   samm:dataType :REntity.
+
+:REntity a samm:Entity;
+   samm:name "REntity" ;
+   samm:properties ( :q ) .
 
 
 

@@ -13,8 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.validation.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,19 +34,18 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestProperty;
 import org.eclipse.esmf.test.TestResources;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import io.vavr.control.Try;
 
 public class AspectModelValidatorTest extends MetaModelVersions {
@@ -261,7 +259,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    void testCycleDetection( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> versionedModel = TestResources.getModel( TestAspect.MODEL_WITH_CYCLES, metaModelVersion );
       final List<Violation> report = service.get( metaModelVersion ).validateModel( versionedModel );
-      assertThat( report.size() ).isEqualTo( 6 );
+      assertThat( report.size() ).isEqualTo( 7 );
       assertThat( report ).containsAll( cycles(
             ":a -> :b -> :a",
             ":e -> :f -> :g -> :e",
@@ -269,7 +267,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             ":h -> :i -> :h",
             ":l -> :l",
             // TimeSeries are handled differently between v1 and v2 meta models.
-            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 ) ? ":n -> :refinedValue -> :n" : ":n -> :NTimeSeriesEntity|samm-e:value -> :n" ) );
+            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 ) ? ":n -> :refinedValue -> :n" : ":n -> :NTimeSeriesEntity|samm-e:value -> :n",
+            ":p -> :q -> :r -> :q" ) );
    }
 
    @ParameterizedTest
