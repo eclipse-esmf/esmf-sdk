@@ -11,7 +11,7 @@
     - [esmf-aspect-static-meta-model](#esmf-aspect-static-meta-model)
     - [esmf-aspect-model-validator](#esmf-aspect-model-validator)
 - [Version Handling](#version-handling)
-    - [SAMM Versioning](#samm-versioning)
+    - [esmf-sdk Versioning](#esmf-sdk-versioning)
     - [SAMM Java Implementation Packaging](#samm-java-implementation-packaging)
 - [SAMM CLI](#samm-cli)
 - [Artifact Generation facilities](#artifact-generation-facilities)
@@ -124,29 +124,26 @@ The model validator is also available through the [SAMM CLI](#samm-cli).
 
 ## Version Handling
 
-SAMM does evolve over time. While measures are made to do this in a non-breaking manner, some
-changes cannot be carried out without the need to define a new, breaking version. Due to this fact
-it is important to understand the versioning concept that is applied to the SAMM, APIs and SDK
+SAMM and its SDKs evolve over time. While measures are taken to do this in a non-breaking manner,
+some changes cannot be carried out without the need to define a new, breaking version. Due to this
+fact it is important to understand the versioning concept that is applied to the SAMM, APIs and SDK
 components that are derived from them.
 
-In case of a prerelease there will be a postfix added and it will be released on Github. The way to
-access the artifact is described in [Github-Installing a
-package](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package)
+In case of a prerelease a postfix will be added to the version, such as `-M1`, and it will be
+released on Github. The way to access the artifact is described in the [Java Aspect Tooling
+Guide](https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/java-aspect-tooling.html#versioning).
 
-### SAMM Versioning
+### esmf-sdk Versioning
 
-For SAMM, semantic versioning (`major.minor.micro`) is applied with the following rules:
+For the esmf-sdk, semantic versioning (`major.minor.micro`) is applied with the following rules:
 
-* A breaking change increases the `major` part
-* Backwards compatible new features increase the `minor` part
-* Changes to existing features or bug fixes increase the `micro` part
+* The `major` part designates the supported SAMM major version
+* A breaking change increases the `minor` part
+* Backwards compatible new features, changes to existing features or bugfixes increase the `minor` part
 
-A new SAMM version always comprises new releases of the SDK components that depend on SAMM, however
-not the other way round. New releases of SDK components may be crafted that are built on the
+A new SAMM version implies new releases of the SDK components that depend on this SAMM version,
+however not the other way round. New releases of SDK components may be released that are built on an
 existing SAMM version.
-
-The SDK component versions are otherwise not tied to the SAMM version, i.e., they may differ in any
-part of the version.
 
 ### SAMM Java Implementation Packaging
 
