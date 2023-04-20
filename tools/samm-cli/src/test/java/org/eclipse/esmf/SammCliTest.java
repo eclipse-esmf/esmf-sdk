@@ -32,22 +32,20 @@ import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
-import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.eclipse.esmf.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspect.AspectValidateCommand;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * The tests for the CLI that are executed by Maven Surefire. They work using the {@link MainClassProcessLauncher}, i.e. directly call
@@ -171,13 +169,12 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   @DisabledOnOs( OS.WINDOWS )
    public void testAspectValidateInvalidModel() {
       final File invalidModel = inputFile( InvalidTestAspect.INVALID_SYNTAX );
       final ExecutionResult result = sammCli.apply( "aspect", invalidModel.getAbsolutePath(), "validate" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( result.stdout() ).contains( "Syntax error" );
+      assertThat( result.stderr() ).contains( "Triples not terminated by DOT" );
+      assertThat( result.stdout() ).isEmpty();
    }
 
    @Test
