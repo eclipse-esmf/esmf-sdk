@@ -87,6 +87,7 @@ public class RustLikeFormatter {
       }
 
       candidateStatements = sourceModel.listStatements()
+            .filterDrop( statement -> Objects.equals( statement.getPredicate(), RDF.rest ) ) // internal Jena list bookkeeping, nothing interesting for us
             .filterKeep( statement -> spansLine( statement, highlightToken.line() ) )
             .toList();
       return formatError( message );
