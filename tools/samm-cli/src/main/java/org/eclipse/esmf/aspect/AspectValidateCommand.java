@@ -21,12 +21,13 @@ import org.slf4j.LoggerFactory;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
+import org.eclipse.esmf.JAnsiRdfSyntaxHighlighter;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
-import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
+import org.eclipse.esmf.aspectmodel.validation.services.ViolationRustLikeFormatter;
 import io.vavr.control.Try;
 import picocli.CommandLine;
 
@@ -65,7 +66,7 @@ public class AspectValidateCommand extends AbstractCommand {
          System.out.println( new DetailedViolationFormatter().apply( violations ) );
       } else {
          LOG.debug( "Printing regular validation results" );
-         System.out.println( new ViolationFormatter().apply( violations ) );
+         System.out.println( new ViolationRustLikeFormatter( versionedModel.get().getRawModel(), new JAnsiRdfSyntaxHighlighter() ).apply( violations ) );
       }
 
       if ( !violations.isEmpty() ) {

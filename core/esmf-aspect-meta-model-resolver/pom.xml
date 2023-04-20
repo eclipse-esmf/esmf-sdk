@@ -29,7 +29,7 @@
    <packaging>jar</packaging>
 
    <properties>
-      <samm-revision>https://raw.githubusercontent.com/eclipse-esmf/esmf-semantic-aspect-meta-model/5c097dd7357b129ba1771985a9ab1d29fcc32bcd</samm-revision>
+      <samm-revision>https://raw.githubusercontent.com/eclipse-esmf/esmf-semantic-aspect-meta-model/34468bf</samm-revision>
    </properties>
 
    <dependencies>

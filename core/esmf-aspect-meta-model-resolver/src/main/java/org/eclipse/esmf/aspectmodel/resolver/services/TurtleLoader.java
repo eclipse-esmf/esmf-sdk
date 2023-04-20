@@ -25,12 +25,15 @@ import javax.annotation.Nullable;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.riot.RiotException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
+import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
 import io.vavr.control.Try;
 
 public final class TurtleLoader {
@@ -59,6 +62,7 @@ public final class TurtleLoader {
             .collect( Collectors.joining( "\n" ) );
 
       final Model streamModel = ModelFactory.createDefaultModel();
+      RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRIOTTurtle.factory );
       try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes() ) ) {
          streamModel.read( turtleInputStream, "", RDFLanguages.TURTLE.getName() );
          return Try.success( streamModel );
