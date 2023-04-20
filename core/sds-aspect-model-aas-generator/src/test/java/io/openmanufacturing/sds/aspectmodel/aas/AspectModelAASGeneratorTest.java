@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -26,8 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.Result;
-import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -36,8 +35,9 @@ import javax.xml.validation.Validator;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
-import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIEC61360;
-import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
+import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationContent;
+import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
+import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXSD;
 import org.eclipse.digitaltwin.aas4j.v3.model.EmbeddedDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
@@ -57,6 +57,9 @@ import io.openmanufacturing.sds.test.TestAspect;
 import io.openmanufacturing.sds.test.TestResources;
 
 class AspectModelAASGeneratorTest {
+
+   public static final String XML_XSD_AAS_SCHEMA_LOCATION =
+         "https://raw.githubusercontent.com/admin-shell-io/aas-specs/v3.0.6/schemas/xml/AAS.xsd";
 
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
@@ -158,11 +161,11 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 1, "Not exactly one Element in SubmodelElements." );
       final SubmodelElement element = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertEquals( "testProperty", element.getIdShort() );
+      assertEquals( "id_testProperty", element.getIdShort() );
 
-      final DataSpecificationIEC61360 dataSpecificationContent = getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+      final DataSpecificationContent dataSpecificationContent = getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
 
-      assertEquals( "percent", dataSpecificationContent.getUnit(), "Unit is not percent" );
+      assertEquals( "percent", ((DataSpecificationIec61360)dataSpecificationContent).getUnit(), "Unit is not percent" );
    }
 
    @Test
@@ -201,7 +204,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size() );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size() );
       final Property submodelElement = (Property) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertEquals( DataTypeDefXsd.INT, submodelElement.getValueType(), "Value type not int" );
+      assertEquals( DataTypeDefXSD.INT, submodelElement.getValueType(), "Value type not int" );
 
       getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
    }
@@ -212,8 +215,9 @@ class AspectModelAASGeneratorTest {
 
       assertEquals( 2, env.getConceptDescriptions().size() );
 
-      final DataSpecificationIEC61360 dataSpecificationContent =
-            env.getConceptDescriptions().stream()
+      final DataSpecificationIec61360 dataSpecificationContent =
+            (DataSpecificationIec61360)
+                  env.getConceptDescriptions().stream()
                   .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
                   .findFirst()
                   .get()
@@ -227,7 +231,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size() );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size() );
       final Property submodelElement = (Property) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertEquals( DataTypeDefXsd.INTEGER, submodelElement.getValueType(), "Value type not int" );
+      assertEquals( DataTypeDefXSD.INTEGER, submodelElement.getValueType(), "Value type not int" );
    }
 
    @ParameterizedTest
@@ -257,7 +261,7 @@ class AspectModelAASGeneratorTest {
       semanticIds.forEach( x -> getDataSpecificationIEC61360( x, env ) );
    }
 
-   private DataSpecificationIEC61360 getDataSpecificationIEC61360( final String semanticId, final Environment env ) {
+   private DataSpecificationContent getDataSpecificationIEC61360( final String semanticId, final Environment env ) {
       final List<ConceptDescription> conceptDescriptions = env.getConceptDescriptions();
       final List<ConceptDescription> filteredConceptDescriptions =
             conceptDescriptions.stream()
@@ -288,11 +292,12 @@ class AspectModelAASGeneratorTest {
    private void validate(ByteArrayInputStream xmlStream) throws IOException, SAXException {
          SchemaFactory factory =
                SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI);
-         Schema schema = factory.newSchema(new URL( "https://raw.githubusercontent.com/admin-shell-io/aas-specs/V3.0.5RC02/schemas/xml/AAS.xsd" ) );
+         Schema schema = factory.newSchema(new URL( XML_XSD_AAS_SCHEMA_LOCATION ) );
          Validator validator = schema.newValidator();
          validator.validate(new StreamSource( xmlStream ), null);
 
    }
+
 
    private Aspect loadAspect( final TestAspect testAspect ) {
       final VersionedModel model = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
@@ -307,4 +312,5 @@ class AspectModelAASGeneratorTest {
       final XmlDeserializer deserializer = new XmlDeserializer();
       return deserializer.read( byteStream );
    }
+
 }
