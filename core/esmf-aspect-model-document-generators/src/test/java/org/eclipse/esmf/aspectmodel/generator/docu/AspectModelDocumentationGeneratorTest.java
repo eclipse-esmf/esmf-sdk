@@ -194,6 +194,12 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       }
    }
 
+   @ParameterizedTest
+   @MethodSource( "allVersions" )
+   public void testAspectWithConstraintWithSeeAttribute( final KnownVersion metaModelVersion ) throws IOException {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE, metaModelVersion );
+   }
+
    private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion ) throws IOException {
       final VersionedModel versionedModel = TestResources.getModel( model, testedVersion ).get();
       final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
