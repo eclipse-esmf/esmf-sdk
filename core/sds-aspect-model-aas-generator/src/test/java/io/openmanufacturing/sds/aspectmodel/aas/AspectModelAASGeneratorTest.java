@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -59,7 +57,8 @@ import io.openmanufacturing.sds.test.TestResources;
 class AspectModelAASGeneratorTest {
 
    public static final String XML_XSD_AAS_SCHEMA_LOCATION =
-         "https://raw.githubusercontent.com/admin-shell-io/aas-specs/v3.0.6/schemas/xml/AAS.xsd";
+         "https://raw.githubusercontent.com/aas-core-works/aas-core3.0-testgen/403a0a7cca4a787f642b226bc940ae2d2b319dad/test_data/schema.xsd";
+       //  "https://raw.githubusercontent.com/admin-shell-io/aas-specs/v3.0.6/schemas/xml/AAS.xsd";
 
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
@@ -86,7 +85,7 @@ class AspectModelAASGeneratorTest {
             "SubmodelElement is not a SubmodelElementCollection." );
       final SubmodelElementCollection collection = (SubmodelElementCollection) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertEquals( 1, collection.getValue().size(), "Not exactly one Element in SubmodelElementCollection" );
-      assertEquals( "entityProperty", collection.getValue().stream().findFirst().get().getIdShort() );
+      assertEquals( "id_entityProperty", collection.getValue().stream().findFirst().get().getIdShort() );
 
       getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
    }
@@ -98,7 +97,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertTrue( submodelElement instanceof SubmodelElementCollection, "SubmodelElement is not a SubmodelElementCollection" );
-      assertEquals( "testProperty", submodelElement.getIdShort() );
+      assertEquals( "id_testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
    }
@@ -110,7 +109,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementCollection" );
-      assertEquals( "testProperty", submodelElement.getIdShort() );
+      assertEquals( "id_testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
    }
@@ -122,7 +121,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertTrue( submodelElement instanceof SubmodelElementCollection, "SubmodelElement is not a SubmodelElementCollection" );
-      assertEquals( "testProperty", submodelElement.getIdShort() );
+      assertEquals( "id_testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
    }
@@ -134,7 +133,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementCollection" );
-      assertEquals( "testProperty", submodelElement.getIdShort() );
+      assertEquals( "id_testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
    }
@@ -145,7 +144,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 1, "Not exactly one Element in SubmodelElements." );
       final SubmodelElementList elementCollection = ((SubmodelElementList) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ));
-      final Set<String> testValues = Set.of( "RightEntity", "LeftEntity" );
+      final Set<String> testValues = Set.of( "id_RightEntity", "id_LeftEntity" );
       assertTrue( elementCollection.getValue().stream().anyMatch( x -> testValues.contains( x.getIdShort() ) ), "Neither left nor right entity contained." );
 
       final Set<String> semanticIds =
@@ -175,10 +174,10 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 6, "Not exactly six Elements in SubmodelElements." );
       final SubmodelElement submodelElement =
             env.getSubmodels().get( 0 ).getSubmodelElements().stream()
-                  .filter( x -> x.getIdShort().equals( "stringLcProperty" ) )
+                  .filter( x -> x.getIdShort().equals( "id_stringLcProperty" ) )
                   .findFirst()
                   .orElseThrow();
-      assertEquals( "stringLcProperty", submodelElement.getIdShort() );
+      assertEquals( "id_stringLcProperty", submodelElement.getIdShort() );
 
       final Set<String> semanticIds =
             Set.of( "urn:bamm:io.openmanufacturing.test:1.0.0#stringLcProperty",
@@ -218,7 +217,7 @@ class AspectModelAASGeneratorTest {
       final DataSpecificationIec61360 dataSpecificationContent =
             (DataSpecificationIec61360)
                   env.getConceptDescriptions().stream()
-                  .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
+                  .filter( x -> x.getIdShort().equals( "id_TestEnumeration" ) )
                   .findFirst()
                   .get()
                   .getEmbeddedDataSpecifications()

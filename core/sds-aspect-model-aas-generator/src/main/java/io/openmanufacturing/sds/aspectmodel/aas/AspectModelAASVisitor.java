@@ -248,16 +248,17 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          // property will be excluded from generation.
          recursiveProperty.remove( property );
          if ( property.isOptional() ) {
-            LOG.warn( String.format( "Having a recursive Property %s which is optional. Will be excluded from AAS mapping.", property ) );
+            LOG.warn( String.format( "Having a recursive property %s which is optional. Will be excluded from AAS mapping.", property ) );
          } else {
-            LOG.error( String.format( "Having a recursive Property: %s which is not optional is not valid. Check the model. Property will be excluded from AAS mapping.", property ) );
+            LOG.error( String.format( "Having a recursive property: %s which is not optional is not valid. Check the model. Property will be excluded from AAS mapping.", property ) );
+            LOG.error( String.format( "Having a recursive property: %s which is not optional is not valid. Check the model. Property will be excluded from AAS mapping.", property ) );
          }
          return defaultResultForProperty;
       }
       recursiveProperty.add( property );
 
       if ( property.getCharacteristic().isEmpty() || property.isAbstract() ) {
-         LOG.warn( String.format( "Having an Abstract Property. Will be excluded from AAS mapping." ) );
+         LOG.warn( "Having an abstract property. Will be excluded from AAS mapping." );
          return Optional.empty();
       }
 
@@ -278,7 +279,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          return new DefaultProperty.Builder().build();
       }
 
-      final Type type = property.getCharacteristic().get().getDataType().get();
+      final Type type = property.getCharacteristic().get().getDataType().orElseThrow();
       return decideOnMapping( type, property, context );
    }
 
@@ -341,7 +342,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    private OperationVariable mapOperationVariable( final Property property, final Context context ) {
-      return new DefaultOperationVariable.Builder().value( mapText( property, context ).get() ).build();
+      return new DefaultOperationVariable.Builder().value( mapText( property, context ).orElseThrow() ).build();
    }
 
    private List<LangStringTextType> mapText( final Set<io.openmanufacturing.sds.metamodel.datatypes.LangString> localizedStrings ) {
@@ -500,20 +501,29 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .map( this::mapDefinitionIec61360 )
             .collect( Collectors.toList() );
 
+      final List<LangStringPreferredNameTypeIec61360> preferredNames = property.getPreferredNames().size() > 0 ?
+            property.getPreferredNames().stream().map( this::mapLangStringPreferredNameTypeIec61360  ).collect( Collectors.toList()) :
+            Collections.singletonList(createLangStringPreferredNameTypeIec61360(DEFAULT_LOCALE, property.getName()));
+
       return new DefaultDataSpecificationIec61360.Builder()
             .definition( definitions )
-            .preferredName( property.getPreferredNames().stream().map( this::mapLangStringPreferredNameTypeIec61360 ).collect( Collectors.toList()) )
-            .shortName( createLangStringShortNameTypeIec61360( property.getName(), DEFAULT_LOCALE ) )
+            .preferredName( preferredNames )
+            .shortName( createLangStringShortNameTypeIec61360( DEFAULT_LOCALE, property.getName() ) )
             .dataType( mapIEC61360DataType( property.getCharacteristic() ) )
             .build();
    }
 
 
    private DataSpecificationIec61360 extractDataSpecificationContent( final Aspect aspect ) {
-      return new DefaultDataSpecificationIec61360.Builder()
-            .definition(  aspect.getDescriptions().stream().map( this::mapDefinitionIec61360 ).collect( Collectors.toList()) )
-            .preferredName( aspect.getPreferredNames().stream().map( this::mapLangStringPreferredNameTypeIec61360  ).collect( Collectors.toList()) )
-            .build();
+    List<LangStringPreferredNameTypeIec61360> preferredNames = aspect.getPreferredNames().size() > 0 ?
+          aspect.getPreferredNames().stream().map( this::mapLangStringPreferredNameTypeIec61360  ).collect( Collectors.toList()) :
+          Collections.singletonList(createLangStringPreferredNameTypeIec61360(DEFAULT_LOCALE, aspect.getName()));
+
+     return new DefaultDataSpecificationIec61360.Builder()
+           .definition(  aspect.getDescriptions().stream().map( this::mapDefinitionIec61360 ).collect( Collectors.toList()) )
+           .preferredName( preferredNames )
+           .build();
+
    }
 
    private DataTypeIec61360 mapIEC61360DataType( final Optional<Characteristic> characteristic ) {
@@ -571,7 +581,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             ( property ) ->
                   new DefaultSubmodelElementList.Builder()
                         .idShort( ID_PREFIX + property.getName() )
-                        .typeValueListElement( AASSubmodelElements.DATA_ELEMENT ) // TODO check if more specific type info is required
+                        .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
                         .displayName( mapName( property.getPreferredNames() ) )
                         .description( mapText( property.getDescriptions() ) )
                         .value( Collections.singletonList( decideOnMapping( property, context ) ) )
