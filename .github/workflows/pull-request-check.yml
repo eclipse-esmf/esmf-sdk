@@ -1,0 +1,87 @@
+name: Check New Pull Request
+on:
+  pull_request:
+    branches:
+    - main
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }} build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [windows-latest, ubuntu-20.04]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.3.1'
+          java-version: '17'
+          components: 'native-image,js'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Configure Pagefile (Windows)
+        if: matrix.os == 'windows-latest'
+        # Fix for "LINK : fatal error LNK1171: unable to load mspdbcore.dll (error code: 1455)":
+        # This seems to be caused by running out of memory; increasing page file
+        # size suggested here:
+        # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
+        uses: al-cheb/configure-pagefile-action@v1.3
+        with:
+          minimum-size: 16GB
+          maximum-size: 16GB
+          disk-root: "C:"
+
+      - name: Set Swap Space (Linux)
+        if: matrix.os == 'ubuntu-20.04'
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 12
+
+      - name: Build and run tests
+        run: |
+          java --version
+          export MAVEN_OPTS="-Xmx4096m"
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          cd tools/samm-cli
+          mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+        shell: bash
+
+      - name: Upload executable jar
+        # We only need one OS job to upload the jar
+        if: matrix.os == 'ubuntu-20.04'
+        uses: actions/upload-artifact@v3
+        with:
+          name: samm-cli-jar
+          path: tools/samm-cli/target/samm-cli-*.jar
+
+      - name: Upload binary (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: samm-cli-binary-${{ matrix.os }}
+          path: |
+            tools/samm-cli/target/samm.exe
+            tools/samm-cli/target/*.dll
+            tools/samm-cli/target/lib/
+
+      - name: Upload binary (Linux/Mac)
+        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: samm-cli-binary-${{ matrix.os }}
+          path: |
+            tools/samm-cli/target/samm

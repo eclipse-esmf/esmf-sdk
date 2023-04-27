@@ -1,0 +1,139 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
+
+# Generates edges between Aspects or Entites and Properties
+construct {
+  ?edge a :Edge .
+  ?edge :title ?title .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  # Aspect/Entity -> Property Edges (properties); excludes Entities which are refined
+  {
+    ?aspectOrEntity samm:refines?/rdf:type ?class .
+    filter( ?class in ( samm:Aspect, samm:Entity ) )
+    #exclude entities from our shared name-space
+    filter ( ! strstarts( str( ?aspectOrEntity ), str ( samm-e: ) ) )
+
+    ?aspectOrEntity samm:name ?aspectOrEntityName .
+
+    ?property samm:refines?/rdf:type samm:Property .
+    ?property samm:name ?propertyName .
+    filter( exists { ?aspectOrEntity samm:properties/rdf:rest*/rdf:first/samm:property? ?property } )
+    filter( not exists { [] samm:refines ?aspectOrEntity } )
+
+    bind( if( ?class = samm:Aspect, "Aspect", "Entity" ) as ?typeName )
+    bind( concat( ?aspectOrEntityName, ?typeName ) as ?aspectOrEntityBoxName )
+    bind( iri( concat( func:getNamespace( ?aspectOrEntity ), ?aspectOrEntityBoxName ) ) as ?from )
+
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( func:getNamespace( ?property ), ?propertyBoxName ) ) as ?to )
+
+    bind( iri( concat( func:getNamespace( ?aspectOrEntity ), ?aspectOrEntityBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+
+    optional {
+      ?aspectOrEntity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode samm:property ?property .
+      ?propertyNode samm:optional "true"^^xsd:boolean .
+      ?propertyNode samm:payloadName ?payloadName
+      bind( concat("property (optional) (", str(?payloadName), ")") as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode samm:property ?property .
+      ?propertyNode samm:optional "true"^^xsd:boolean .
+      bind( "property (optional)" as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode samm:property ?property .
+      ?propertyNode samm:notInPayload "true"^^xsd:boolean .
+      bind( "property (not in payload)" as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode samm:property ?property .
+      ?propertyNode samm:payloadName ?payloadName
+      bind( concat("property (", str(?payloadName), ")") as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+      bind( "property" as ?title )
+    }
+  }
+
+  union
+
+  # add Properties which are defined in an Entity A which is refined, but are themselves not refined,
+  # to the Entity B which refines Entity A
+  {
+    ?refiningEntity samm:refines/rdf:type samm:Entity .
+    ?refiningEntity samm:refines ?refinedEntity .
+    ?property samm:refines?/rdf:type samm:Property .
+    filter( exists { ?refinedEntity samm:properties/rdf:rest*/rdf:first/samm:property? ?property } )
+    filter( not exists { [] samm:refines ?property } )
+
+    ?refiningEntity samm:name ?entityName .
+    ?property samm:name ?propertyName .
+    bind( concat( ?entityName, "Entity" ) as ?entityBoxName )
+    bind( iri( concat( func:getNamespace( ?refiningEntity ), ?entityBoxName ) ) as ?from )
+
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( func:getNamespace( ?property ), ?propertyBoxName ) ) as ?to )
+
+    bind( iri( concat( func:getNamespace( ?refiningEntity ), ?entityBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+
+    optional {
+      ?aspectOrEntity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode samm:property ?property .
+      ?propertyNode samm:optional "true"^^xsd:boolean .
+      ?propertyNode samm:payloadName ?payloadName
+      bind( concat("property (optional) (", str(?payloadName), ")") as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode samm:property ?property .
+      ?propertyNode samm:optional "true"^^xsd:boolean .
+      bind( "property (optional)" as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode samm:property ?property .
+      ?propertyNode samm:notInPayload "true"^^xsd:boolean .
+      bind( "property (not in payload)" as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+      ?propertyNode samm:property ?property .
+      ?propertyNode samm:payloadName ?payloadName
+      bind( concat("property (", str(?payloadName), ")") as ?title )
+    }
+
+    optional {
+      ?aspectOrEntity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+      bind( "property" as ?title )
+    }
+  }
+}

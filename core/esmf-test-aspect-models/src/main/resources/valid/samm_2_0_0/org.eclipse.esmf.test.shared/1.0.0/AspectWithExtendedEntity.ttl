@@ -1,0 +1,50 @@
+# Copyright (c) 2022 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test.shared:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithExtendedEntity a samm:Aspect ;
+    samm:properties ( :testProperty ) ;
+    samm:operations ( ) .
+
+:testProperty a samm:Property ;
+              samm:preferredName "Test Property"@en ;
+              samm:description "This is a test property."@en ;
+              samm:see <http://example.com/> ;
+              samm:see <http://example.com/me> ;
+              samm:characteristic [ a             samm-c:SortedSet ;
+                                    samm:dataType :TestEntity ] .
+
+:TestEntity a samm:Entity ;
+    samm:extends :ParentTestEntity ;
+    samm:properties ( ) .
+
+:ParentTestEntity a samm:AbstractEntity ;
+    samm:extends :ParentOfParentEntity ;
+    samm:properties ( :parentString ) .
+
+:ParentOfParentEntity a samm:AbstractEntity ;
+    samm:properties ( :booleanProperty ) .
+
+:StringCode a samm-c:Code ;
+    samm:dataType xsd:string .
+
+:parentString a samm:Property ;
+    samm:characteristic :StringCode .
+
+:parentOfParentString a samm:Property ;
+    samm:characteristic :StringCode .
+

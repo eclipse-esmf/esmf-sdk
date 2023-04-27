@@ -1,0 +1,66 @@
+#**
+ ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
+#macro( javaEnumerationClassBody )
+$codeGenerationConfig.importTracker().importExplicit( $Optional )
+$codeGenerationConfig.importTracker().importExplicit( $Arrays )
+#if( $codeGenerationConfig.enableJacksonAnnotations() )
+    $codeGenerationConfig.importTracker().importExplicit( $JsonValue )
+    $codeGenerationConfig.importTracker().importExplicit( $JsonFormat )
+    $codeGenerationConfig.importTracker().importExplicit( $JsonCreator )
+#end
+
+/**
+* Generated class {@link ${enumeration.name}}.
+*/
+#if( $codeGenerationConfig.enableJacksonAnnotations() )@JsonFormat(shape = JsonFormat.Shape.OBJECT) #end
+public enum ${enumeration.name} {
+#foreach( $value in $enumeration.values )
+    $util.generateEnumKey($value)($util.generateEnumValue($value, $codeGenerationConfig))
+    #if( $foreach.hasNext), #end
+#end;
+
+private $dataType value;
+
+$className($dataType value) {
+    this.value = value;
+}
+
+#if( $codeGenerationConfig.enableJacksonAnnotations() )@JsonCreator #end
+static ${className} enumDeserializationConstructor($dataType value) {
+    return fromValue(value).orElseThrow(() -> new EnumAttributeNotFoundException("Tried to parse value \"" + value + "\", but there is no enum field like that in ${className}"));
+}
+
+#if( $codeGenerationConfig.enableJacksonAnnotations() )@JsonValue #end
+public $dataType getValue() {
+    return value;
+}
+
+#if( $State.isAssignableFrom( $enumeration.class ) )
+public static $className getDefaultValue() {
+    #set( $state = $util.castToState( $enumeration ) )
+    return $util.generateEnumKey( $state.getDefaultValue() );
+}
+#end
+
+public static Optional<$className> fromValue($dataType value) {
+    return Arrays.stream(${className}.values())
+        .filter(enumValue -> compareEnumValues(enumValue, value))
+        .findAny();
+}
+
+private static boolean compareEnumValues($className enumValue, $dataType value) {
+    return $util.generateFilterCompare( $enumeration.getDataType() );
+}
+
+}
+#end

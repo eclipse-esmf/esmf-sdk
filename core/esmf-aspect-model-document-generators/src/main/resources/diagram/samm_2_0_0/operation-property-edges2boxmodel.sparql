@@ -1,0 +1,59 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
+
+# Generates edges between Operations and Properties (input and output)
+construct {
+  ?edge a :Edge .
+  ?edge :title ?title .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+
+  # Operation -> Property (input)
+  {
+    ?operation a samm:Operation .
+    bind( strafter( str( ?operation ), "#" ) as ?operationName ) .
+    ?operation samm:input/rdf:rest*/rdf:first ?property .
+    bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
+
+    bind( concat( ?operationName, "Operation" ) as ?operationBoxName )
+    bind( iri( concat( func:getNamespace( ?operation ), ?operationBoxName ) ) as ?from )
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( func:getNamespace( ?property ), ?propertyBoxName ) ) as ?to )
+    bind( "input" as ?title )
+
+    bind( iri( concat( func:getNamespace( ?operation ), ?operationBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+  }
+
+  union
+
+  # Operation -> Property (output)
+  {
+    ?operation a samm:Operation .
+    bind( strafter( str( ?operation ), "#" ) as ?operationName ) .
+    ?operation samm:output ?property .
+    bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
+
+    bind( concat( ?operationName, "Operation" ) as ?operationBoxName )
+    bind( iri( concat( func:getNamespace( ?operation ), ?operationBoxName ) ) as ?from )
+    bind( concat( ?propertyName, "Property" ) as ?propertyBoxName )
+    bind( iri( concat( func:getNamespace( ?property ), ?propertyBoxName ) ) as ?to )
+    bind( "output" as ?title )
+
+    bind( iri( concat( func:getNamespace( ?operation ), ?operationBoxName, "_To_", ?propertyBoxName ) ) as ?edge )
+  }
+}
+

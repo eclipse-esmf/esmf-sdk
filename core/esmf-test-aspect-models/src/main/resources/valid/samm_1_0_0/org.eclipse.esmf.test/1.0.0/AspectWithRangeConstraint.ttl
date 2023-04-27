@@ -1,0 +1,52 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
+
+:AspectWithRangeConstraint a samm:Aspect ;
+   samm:name "AspectWithRangeConstraint" ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:description "This is a test description"@en ;
+   samm:see <http://example.com/> ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
+
+:testProperty a samm:Property ;
+   samm:name "testProperty" ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/> ;
+   samm:see <http://example.com/me> ;
+   samm:exampleValue "5.7"^^xsd:float ;
+   samm:characteristic :TestRangeConstraint .
+
+:TestRangeConstraint a samm-c:Trait ;
+   samm:name "TestRangeConstraint" ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:preferredName "Test Range Constraint"@en ;
+      samm:description "This is a test range constraint."@en ;
+      samm:see <http://example.com/> ;
+      samm-c:minValue "2.3"^^xsd:float ;
+      samm-c:maxValue "10.5"^^xsd:float ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
+   ] ;
+   samm-c:baseCharacteristic :Measurement .
+
+:Measurement a samm-c:Measurement ;
+   samm:name "Measurement" ;
+   samm:dataType xsd:float ;
+   samm-c:unit unit:metrePerSecond .

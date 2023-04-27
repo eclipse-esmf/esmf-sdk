@@ -1,0 +1,65 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
+
+# Generates edges between Entity Instances and nested Entity Instances
+construct {
+  ?edge a :Edge .
+  ?edge :title ?title .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  ?instance a ?entity .
+  ?entity a samm:Entity .
+
+  filter( exists {
+    ?aspect a samm:Aspect .
+    ?aspect (<>|!<>)* ?instance .
+  } && exists {
+    ?aspect a samm:Aspect .
+    ?aspect (<>|!<>)* ?entity .
+  } )
+
+  ?entity samm:properties/rdf:rest*/rdf:first*/samm:property* ?property .
+  ?property samm:name ?propertyName .
+  ?property samm:characteristic/samm-c:baseCharacteristc*/samm:dataType ?dataType .
+  filter ( exists { ?dataType rdf:type/rdfs:subclassOf* samm:Entity } ) .
+
+  bind( strafter( str( ?instance ), "#" ) as ?instanceName )
+  bind( concat( ?instanceName, "EntityInstance" ) as ?instanceBoxName )
+
+  ?instance ?property ?propertyValue
+  optional {
+    ?instance ?property ?propertyValue
+    filter ( !isBlank( ?propertyValue ) )
+    bind( strafter( str( ?propertyValue ), "#" ) as ?nestedInstanceName )
+  }
+
+  optional {
+    ?propertyValue rdf:rest*/rdf:first ?listValue
+    filter ( isBlank( ?propertyValue ) )
+    bind( strafter( str( ?listValue ), "#" ) as ?nestedInstanceName )
+  }
+
+  bind( iri( concat( func:getNamespace( ?instance ), ?instanceBoxName ) ) as ?from )
+  bind( concat( ?nestedInstanceName, "EntityInstance" ) as ?nestedInstanceBoxName )
+  bind( iri( concat( func:getNamespace( if( !isBlank( ?propertyValue ), ?propertyValue, ?listValue )), ?nestedInstanceBoxName ) ) as ?to )
+  bind( iri( concat( func:getNamespace( ?instance ), ?instanceBoxName, "_To_", ?nestedInstanceBoxName ) ) as ?edge )
+  bind( concat( ?propertyName, " value" ) as ?title )
+}

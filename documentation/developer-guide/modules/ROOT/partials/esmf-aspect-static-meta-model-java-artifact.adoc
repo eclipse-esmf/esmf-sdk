@@ -1,0 +1,31 @@
+[tabs]
+====
+Maven::
++
+--
+[source,maven,subs=attributes+]
+----
+<dependency>
+    <groupId>org.eclipse.esmf</groupId>
+    <artifactId>esmf-aspect-static-meta-model-java</artifactId>
+    <version>{esmf-sdk-version}</version>
+</dependency>
+----
+--
+Gradle Groovy DSL::
++
+--
+[source,gradle,subs=attributes+]
+----
+implementation 'org.eclipse.esmf:esmf-aspect-static-meta-model-java:{esmf-sdk-version}'
+----
+--
+Gradle Kotlin DSL::
++
+--
+[source,gradle,subs=attributes+]
+----
+implementation("org.eclipse.esmf:esmf-aspect-static-meta-model-java:{esmf-sdk-version}")
+----
+--
+====
