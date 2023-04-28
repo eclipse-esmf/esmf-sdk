@@ -198,6 +198,12 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testAspectWithConstraintWithSeeAttribute( final KnownVersion metaModelVersion ) throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE, metaModelVersion );
+      assertThat( documentation ).contains(
+              "<h3 id=\"org-eclipse-esmf-test-AspectWithConstraintWithSeeAttribute-org-eclipse-esmf-test-testPropertyTwo-property\">testPropertyTwo</h3>" );
+      assertThat( documentation ).contains(
+              "<div class=\"table-cell pb-3 col-span-2\">Trait</div>" );
+      assertThat( documentation ).contains(
+              "<li>http://example.com/omp2</li>" );
    }
 
    private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion ) throws IOException {

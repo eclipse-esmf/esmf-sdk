@@ -45,7 +45,6 @@
    ] ;
    samm-c:baseCharacteristic :TestCharacteristicTwo .
 :TestCharacteristicTwo a samm:Characteristic;
-    samm:name "TestCharacteristicTwo";
     samm:preferredName "Test Characteristic Two"@en;
     samm:description "Test Characteristic Two"@en;
     samm:dataType xsd:string;
