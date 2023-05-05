@@ -17,7 +17,7 @@ import java.util.Map;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
-import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
+import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXSD;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
@@ -42,44 +42,42 @@ public interface PropertyMapper<T extends SubmodelElement> {
 
    static final String UNKNOWN_EXAMPLE = UNKNOWN_TYPE;
 
-   static final LangStringMapper LANG_STRING_MAPPER = new LangStringMapper();
-
    /**
-    * Maps Aspect types to DataTypeDefXsd Schema types, with no explicit mapping defaulting to
+    * Maps Aspect types to DataTypeDefXSD Schema types, with no explicit mapping defaulting to
     * string
     */
-   static final Map<Resource, DataTypeDefXsd> AAS_XSD_TYPE_MAP =
-         ImmutableMap.<Resource, DataTypeDefXsd> builder()
-               .put( XSD.anyURI, DataTypeDefXsd.ANY_URI )
-               .put( XSD.yearMonthDuration, DataTypeDefXsd.YEAR_MONTH_DURATION )
-               .put( XSD.xboolean, DataTypeDefXsd.BOOLEAN )
-               .put( XSD.xbyte, DataTypeDefXsd.BYTE )
-               .put( XSD.date, DataTypeDefXsd.DATE )
-               .put( XSD.dateTime, DataTypeDefXsd.DATE_TIME )
-               .put( XSD.dateTimeStamp, DataTypeDefXsd.DATE_TIME_STAMP )
-               .put( XSD.dayTimeDuration, DataTypeDefXsd.DAY_TIME_DURATION )
-               .put( XSD.decimal, DataTypeDefXsd.DECIMAL )
-               .put( XSD.xdouble, DataTypeDefXsd.DOUBLE )
-               .put( XSD.duration, DataTypeDefXsd.DURATION )
-               .put( XSD.xfloat, DataTypeDefXsd.FLOAT )
-               .put( XSD.gMonth, DataTypeDefXsd.GMONTH )
-               .put( XSD.gMonthDay, DataTypeDefXsd.GMONTH_DAY )
-               .put( XSD.gYear, DataTypeDefXsd.GYEAR )
-               .put( XSD.gYearMonth, DataTypeDefXsd.GYEAR_MONTH )
-               .put( XSD.hexBinary, DataTypeDefXsd.HEX_BINARY )
-               .put( XSD.xint, DataTypeDefXsd.INT )
-               .put( XSD.integer, DataTypeDefXsd.INTEGER )
-               .put( XSD.xlong, DataTypeDefXsd.LONG )
-               .put( XSD.negativeInteger, DataTypeDefXsd.NEGATIVE_INTEGER )
-               .put( XSD.nonNegativeInteger, DataTypeDefXsd.NON_NEGATIVE_INTEGER )
-               .put( XSD.positiveInteger, DataTypeDefXsd.POSITIVE_INTEGER )
-               .put( XSD.xshort, DataTypeDefXsd.SHORT )
-               .put( XSD.normalizedString, DataTypeDefXsd.STRING )
-               .put( XSD.time, DataTypeDefXsd.TIME )
-               .put( XSD.unsignedByte, DataTypeDefXsd.UNSIGNED_BYTE )
-               .put( XSD.unsignedInt, DataTypeDefXsd.UNSIGNED_INT )
-               .put( XSD.unsignedLong, DataTypeDefXsd.UNSIGNED_LONG )
-               .put( XSD.unsignedShort, DataTypeDefXsd.UNSIGNED_SHORT )
+   static final Map<Resource, DataTypeDefXSD> AAS_XSD_TYPE_MAP =
+         ImmutableMap.<Resource, DataTypeDefXSD> builder()
+               .put( XSD.anyURI, DataTypeDefXSD.ANY_URI )
+               .put( XSD.yearMonthDuration, DataTypeDefXSD.DURATION )
+               .put( XSD.xboolean, DataTypeDefXSD.BOOLEAN )
+               .put( XSD.xbyte, DataTypeDefXSD.BYTE )
+               .put( XSD.date, DataTypeDefXSD.DATE )
+               .put( XSD.dateTime, DataTypeDefXSD.DATE_TIME )
+               .put( XSD.dateTimeStamp, DataTypeDefXSD.DATE_TIME )
+               .put( XSD.dayTimeDuration, DataTypeDefXSD.DURATION )
+               .put( XSD.decimal, DataTypeDefXSD.DECIMAL )
+               .put( XSD.xdouble, DataTypeDefXSD.DOUBLE )
+               .put( XSD.duration, DataTypeDefXSD.DURATION )
+               .put( XSD.xfloat, DataTypeDefXSD.FLOAT )
+               .put( XSD.gMonth, DataTypeDefXSD.GMONTH )
+               .put( XSD.gMonthDay, DataTypeDefXSD.GMONTH_DAY )
+               .put( XSD.gYear, DataTypeDefXSD.GYEAR )
+               .put( XSD.gYearMonth, DataTypeDefXSD.GYEAR_MONTH )
+               .put( XSD.hexBinary, DataTypeDefXSD.HEX_BINARY )
+               .put( XSD.xint, DataTypeDefXSD.INT )
+               .put( XSD.integer, DataTypeDefXSD.INTEGER )
+               .put( XSD.xlong, DataTypeDefXSD.LONG )
+               .put( XSD.negativeInteger, DataTypeDefXSD.NEGATIVE_INTEGER )
+               .put( XSD.nonNegativeInteger, DataTypeDefXSD.NON_NEGATIVE_INTEGER )
+               .put( XSD.positiveInteger, DataTypeDefXSD.POSITIVE_INTEGER )
+               .put( XSD.xshort, DataTypeDefXSD.SHORT )
+               .put( XSD.normalizedString, DataTypeDefXSD.STRING )
+               .put( XSD.time, DataTypeDefXSD.TIME )
+               .put( XSD.unsignedByte, DataTypeDefXSD.UNSIGNED_BYTE )
+               .put( XSD.unsignedInt, DataTypeDefXSD.UNSIGNED_INT )
+               .put( XSD.unsignedLong, DataTypeDefXSD.UNSIGNED_LONG )
+               .put( XSD.unsignedShort, DataTypeDefXSD.UNSIGNED_SHORT )
                .build();
 
    /**
@@ -105,14 +103,14 @@ public interface PropertyMapper<T extends SubmodelElement> {
    }
 
    /**
-    * Maps the given URN to a {@link DataTypeDefXsd} schema type.
+    * Maps the given URN to a {@link DataTypeDefXSD} schema type.
     *
     * @param urn the URN to map
-    * @return the {@code DataTypeDefXsd} for the given URN
+    * @return the {@code DataTypeDefXSD} for the given URN
     */
-   default DataTypeDefXsd mapAASXSDataType( final String urn ) {
+   default DataTypeDefXSD mapAASXSDataType( final String urn ) {
       final Resource resource = ResourceFactory.createResource( urn );
-      return AAS_XSD_TYPE_MAP.getOrDefault( resource, DataTypeDefXsd.STRING );
+      return AAS_XSD_TYPE_MAP.getOrDefault( resource, DataTypeDefXSD.STRING );
    }
 
    /**

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.jena.vocabulary.RDF;
-import org.eclipse.digitaltwin.aas4j.v3.model.LangString;
+import org.eclipse.digitaltwin.aas4j.v3.model.LangStringTextType;
 import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultMultiLanguageProperty;
 
@@ -42,15 +42,14 @@ public class LangStringPropertyMapper implements PropertyMapper<MultiLanguagePro
    @Override
    public MultiLanguageProperty mapToAasProperty( final Type type, final io.openmanufacturing.sds.metamodel.Property property, final Context context ) {
       return new DefaultMultiLanguageProperty.Builder().idShort( context.getPropertyShortId() )
-            .kind( context.getModelingKind() )
-            .description( LANG_STRING_MAPPER.map( property.getDescriptions() ) )
-            .displayName( LANG_STRING_MAPPER.map( property.getPreferredNames() ) )
-            .semanticId( buildReferenceToConceptDescription( property ) )
+            .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
+            .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
+            .semanticID( buildReferenceToConceptDescription( property ) )
             .value( extractLangStrings( property, context ) )
             .build();
    }
 
-   private List<LangString> extractLangStrings( final Property property, final Context context ) {
+   private List<LangStringTextType> extractLangStrings( final Property property, final Context context ) {
       return context.getRawPropertyValue()
             .filter( JsonNode::isObject )
             .map( node -> {
@@ -60,7 +59,7 @@ public class LangStringPropertyMapper implements PropertyMapper<MultiLanguagePro
             } )
             .map( rawEntries -> rawEntries.entrySet()
                   .stream()
-                  .map( entry -> LANG_STRING_MAPPER.createLangString( entry.getValue(), entry.getKey() ) )
+                  .map( entry -> LangStringMapper.TEXT.createLangString( entry.getValue(), entry.getKey() ) )
                   .toList() )
             .orElseGet( () -> List.of() );
    }

@@ -25,12 +25,11 @@ public class DefaultPropertyMapper implements PropertyMapper<Property> {
    public Property mapToAasProperty( final Type type, final io.openmanufacturing.sds.metamodel.Property property, final Context context ) {
       return new DefaultProperty.Builder()
             .idShort( context.getPropertyShortId() )
-            .kind( context.getModelingKind() )
             .valueType( mapAASXSDataType( mapType( type ) ) )
-            .displayName( LANG_STRING_MAPPER.map( property.getPreferredNames() ) )
+            .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
             .value( context.getPropertyValue( UNKNOWN_EXAMPLE ) )
-            .description( LANG_STRING_MAPPER.map( property.getDescriptions() ) )
-            .semanticId( buildReferenceToConceptDescription( property ) )
+            .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
+            .semanticID( buildReferenceToConceptDescription( property ) )
             .build();
    }
 

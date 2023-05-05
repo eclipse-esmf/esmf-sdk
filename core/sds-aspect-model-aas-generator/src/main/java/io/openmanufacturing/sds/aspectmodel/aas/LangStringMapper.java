@@ -17,28 +17,74 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.digitaltwin.aas4j.v3.model.LangString;
-import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangString;
+import org.eclipse.digitaltwin.aas4j.v3.model.AbstractLangString;
+import org.eclipse.digitaltwin.aas4j.v3.model.LangStringDefinitionTypeIec61360;
+import org.eclipse.digitaltwin.aas4j.v3.model.LangStringNameType;
+import org.eclipse.digitaltwin.aas4j.v3.model.LangStringPreferredNameTypeIec61360;
+import org.eclipse.digitaltwin.aas4j.v3.model.LangStringShortNameTypeIec61360;
+import org.eclipse.digitaltwin.aas4j.v3.model.LangStringTextType;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringDefinitionTypeIec61360;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringNameType;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringPreferredNameTypeIec61360;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringShortNameTypeIec61360;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultLangStringTextType;
+
+import io.openmanufacturing.sds.metamodel.datatypes.LangString;
 
 /**
  * Default implementation of multiple ways to map Aspect Model {@code LangString}s to AAS4J {@link LangString}s.
  */
-public class LangStringMapper {
-   public List<LangString> map( final Set<io.openmanufacturing.sds.metamodel.datatypes.LangString> localizedStrings ) {
-      return localizedStrings.stream()
-            .map( ( entry ) -> map( entry.getLanguageTag(), entry.getValue() ) )
-            .collect( Collectors.toList() );
-   }
+public final class LangStringMapper {
+   public static final Mapper<LangStringTextType> TEXT = new Mapper<>() {
+      @Override
+      public LangStringTextType createLangString( final String text, final String locale ) {
+         return new DefaultLangStringTextType.Builder().text( text ).language( locale ).build();
+      }
+   };
 
-   public LangString map( final io.openmanufacturing.sds.metamodel.datatypes.LangString langString ) {
-      return map( langString.getLanguageTag(), langString.getValue() );
-   }
+   public static final Mapper<LangStringNameType> NAME = new Mapper<>() {
+      @Override
+      public LangStringNameType createLangString( final String text, final String locale ) {
+         return new DefaultLangStringNameType.Builder().text( text ).language( locale ).build();
+      }
+   };
 
-   public LangString map( final Locale locale, final String value ) {
-      return createLangString( value, locale.getLanguage() );
-   }
+   public static final Mapper<LangStringShortNameTypeIec61360> SHORT_NAME = new Mapper<>() {
+      @Override
+      public LangStringShortNameTypeIec61360 createLangString( final String text, final String locale ) {
+         return new DefaultLangStringShortNameTypeIec61360.Builder().text( text ).language( locale ).build();
+      }
+   };
 
-   public LangString createLangString( final String text, final String locale ) {
-      return new DefaultLangString.Builder().language( locale ).text( text ).build();
+   public static final Mapper<LangStringPreferredNameTypeIec61360> PREFERRED_NAME = new Mapper<>() {
+      @Override
+      public LangStringPreferredNameTypeIec61360 createLangString( final String text, final String locale ) {
+         return new DefaultLangStringPreferredNameTypeIec61360.Builder().text( text ).language( locale ).build();
+      }
+   };
+
+   public static final Mapper<LangStringDefinitionTypeIec61360> DEFINITION = new Mapper<>() {
+      @Override
+      public LangStringDefinitionTypeIec61360 createLangString( final String text, final String locale ) {
+         return new DefaultLangStringDefinitionTypeIec61360.Builder().text( text ).language( locale ).build();
+      }
+   };
+
+   public interface Mapper<T extends AbstractLangString> {
+      default List<T> map( final Set<LangString> langStrings ) {
+         return langStrings.stream()
+               .map( ( entry ) -> map( entry.getLanguageTag(), entry.getValue() ) )
+               .collect( Collectors.toList() );
+      }
+
+      default T map( final LangString langString ) {
+         return map( langString.getLanguageTag(), langString.getValue() );
+      }
+
+      default T map( final Locale locale, final String text ) {
+         return createLangString( text, locale.getLanguage() );
+      }
+
+      T createLangString( String text, String locale );
    }
 }

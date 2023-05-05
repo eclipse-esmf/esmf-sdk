@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
-import org.eclipse.digitaltwin.aas4j.v3.model.ModelingKind;
+import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 
@@ -138,12 +138,12 @@ public class Context {
       this.aspectData = aspectData;
    }
 
-   public ModelingKind getModelingKind() {
+   public ModellingKind getModelingKind() {
       if ( aspectData == null ) {
-         return ModelingKind.TEMPLATE;
+         return ModellingKind.TEMPLATE;
       }
 
-      return ModelingKind.INSTANCE;
+      return ModellingKind.INSTANCE;
    }
 
    public AssetKind getAssetKind() {
@@ -155,14 +155,18 @@ public class Context {
    }
 
    public String getPropertyShortId() {
-      if ( ModelingKind.TEMPLATE.equals( getModelingKind() ) ) {
-         return property.getName();
+      final String shortId;
+      if ( ModellingKind.TEMPLATE.equals( getModelingKind() ) ) {
+         shortId = property.getName();
+      } else {
+         shortId = property.getName() + propertyPath.stream()
+               .map( indices::get )
+               .filter( Objects::nonNull )
+               .map( Objects::toString )
+               .collect( Collectors.joining( "_" ) );
       }
-      return property.getName() + propertyPath.stream()
-            .map( indices::get )
-            .filter( Objects::nonNull )
-            .map( Objects::toString )
-            .collect( Collectors.joining( "_" ) );
+
+      return "id_" + shortId;
    }
 
    /**
