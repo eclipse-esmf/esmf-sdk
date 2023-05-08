@@ -42,21 +42,6 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.assertj.core.api.Condition;
 import org.assertj.core.data.Percentage;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.common.collect.Lists;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AbstractTestEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithAbstractEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithAbstractSingleEntity;
@@ -94,14 +79,16 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.NestedEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.TestEntityWithSimpleTypes;
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.constraint.RangeConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.ExtendedAspectContext;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
@@ -114,9 +101,21 @@ import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.common.collect.Lists;
+
 import io.vavr.collection.HashMap;
 
 public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
@@ -450,9 +449,10 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final Pair<Number, Number> randomRange = generateRandomRangeForType( numericType, nativeType, boundKind.orElse( null ) );
 
       final Aspect dynamicAspect = createAspectWithDynamicNumericProperty( modelVersion, numericType, boundKind.orElse( null ), randomRange );
-      final AspectModelJsonPayloadGenerator randomGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect );
-      final AspectModelJsonPayloadGenerator minGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect, new MinValueRandomStrategy() );
-      final AspectModelJsonPayloadGenerator maxGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect, new MaxValueRandomStrategy() );
+      final ExtendedAspectContext context = new ExtendedAspectContext( null, dynamicAspect, Map.of() );
+      final AspectModelJsonPayloadGenerator randomGenerator = new AspectModelJsonPayloadGenerator( context );
+      final AspectModelJsonPayloadGenerator minGenerator = new AspectModelJsonPayloadGenerator( context, new MinValueRandomStrategy() );
+      final AspectModelJsonPayloadGenerator maxGenerator = new AspectModelJsonPayloadGenerator( context, new MaxValueRandomStrategy() );
       try {
          final String generatedJson = randomGenerator.generateJson();
          final String minValue = minGenerator.generateJson();
@@ -583,8 +583,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    private String generateJsonForModel( final TestAspect model, final KnownVersion testedVersion ) {
       final VersionedModel versionedModel = TestResources.getModel( model, testedVersion ).get();
-      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( versionedModel );
-      final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( new AspectContext( versionedModel, aspect ) );
+      final ExtendedAspectContext context = AspectModelLoader.getSingleAspectUncheckedWithContext( versionedModel );
+      final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( context );
       try {
          return jsonGenerator.generateJson();
       } catch ( final IOException e ) {

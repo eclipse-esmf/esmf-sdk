@@ -26,9 +26,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
@@ -41,7 +38,11 @@ import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.ExtendedAspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.vavr.control.Try;
 
 public abstract class AbstractCommand implements Runnable {
@@ -79,6 +80,33 @@ public abstract class AbstractCommand implements Runnable {
 
          // Another exception, e.g. syntax error. Let the validator handle this
          final List<Violation> violations = new AspectModelValidator().validateModel( context.map( AspectContext::rdfModel ) );
+         System.out.println( new ViolationFormatter().apply( violations ) );
+
+         System.exit( 1 );
+         return null;
+      } ).get();
+   }
+
+   protected ExtendedAspectContext loadModelWithContext( final String modelFileName, final ExternalResolverMixin resolverConfig ) {
+      final File inputFile = new File( modelFileName );
+      final Try<VersionedModel> versionedModel = loadAndResolveModel( inputFile, resolverConfig );
+      final Try<ExtendedAspectContext> context = versionedModel.flatMap( model -> {
+         final AspectModelUrn urn = fileToUrn( inputFile.getAbsoluteFile() );
+         return AspectModelLoader.getSingleAspectWithContext( model, aspect -> aspect.getName().equals( urn.getName() ) );
+      } );
+
+      return context.recover( throwable -> {
+         // Model can not be loaded, root cause e.g. File not found
+         if ( throwable instanceof IllegalArgumentException ) {
+            throw new CommandException( "Can not open file for reading: " + modelFileName, throwable );
+         }
+
+         if ( throwable instanceof ModelResolutionException ) {
+            throw new CommandException( "Could not resolve all model elements", throwable );
+         }
+
+         // Another exception, e.g. syntax error. Let the validator handle this
+         final List<Violation> violations = new AspectModelValidator().validateModel( context.map( ExtendedAspectContext::rdfModel ) );
          System.out.println( new ViolationFormatter().apply( violations ) );
 
          System.exit( 1 );

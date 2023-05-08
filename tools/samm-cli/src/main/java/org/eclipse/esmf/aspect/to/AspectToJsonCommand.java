@@ -21,6 +21,7 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import org.eclipse.esmf.exception.CommandException;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToJsonCommand.COMMAND_NAME,
@@ -48,7 +49,7 @@ public class AspectToJsonCommand extends AbstractCommand {
    @Override
    public void run() {
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
-            loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
+            loadModelWithContext( parentCommand.parentCommand.getInput(), customResolver ) );
       try {
          // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
          // as opposed to what the model thinks it should be called (name)

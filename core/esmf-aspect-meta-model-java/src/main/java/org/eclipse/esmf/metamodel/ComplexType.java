@@ -32,6 +32,10 @@ public interface ComplexType extends Type, StructureElement {
       return Collections.emptyList();
    }
 
+   default List<ComplexType> getExtendingElements( final ExtendedAspectContext context ) {
+      return Collections.emptyList();
+   }
+
    default boolean isAbstractEntity() {
       return false;
    }

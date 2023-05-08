@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ComplexType;
+import org.eclipse.esmf.metamodel.ExtendedAspectContext;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
@@ -73,9 +74,19 @@ public class DefaultComplexType extends ModelElementImpl implements ComplexType 
     * @return all {@link ComplexType} instances from the {@link DefaultComplexType#instances} Map which extend this
     *       Abstract Entity.
     */
+   @Deprecated( forRemoval = true )
    @Override
    public List<ComplexType> getExtendingElements() {
       return extendingElements.stream().map( instances::get ).filter( Objects::nonNull ).collect( Collectors.toList() );
+   }
+
+   @Override
+   public List<ComplexType> getExtendingElements( final ExtendedAspectContext context ) {
+      return extendingElements.stream()
+            .map( urn -> context.loadedElements().get( urn ) )
+            .filter( Objects::nonNull )
+            .map( modelElement -> (ComplexType) modelElement )
+            .collect( Collectors.toList() );
    }
 
    public static Map<AspectModelUrn, ComplexType> getInstances() {

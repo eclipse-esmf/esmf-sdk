@@ -13,8 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator.jsonschema;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
@@ -26,6 +25,13 @@ import java.util.Map;
 import org.assertj.core.data.Percentage;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.ExtendedAspectContext;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -46,13 +52,6 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.PathNotFoundException;
-
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.eclipse.esmf.test.MetaModelVersions;
-import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
 
 public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    private final ObjectMapper objectMapper = new ObjectMapper();
@@ -84,8 +83,13 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       return AspectModelLoader.getSingleAspect( versionedModel ).get();
    }
 
-   private JsonNode generatePayload( final Aspect aspect ) {
-      final AspectModelJsonPayloadGenerator payloadGenerator = new AspectModelJsonPayloadGenerator( aspect );
+   private ExtendedAspectContext loadAspectWithContext( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
+      final VersionedModel versionedModel = TestResources.getModel( testAspect, metaModelVersion ).get();
+      return AspectModelLoader.getSingleAspectWithContext( versionedModel ).get();
+   }
+
+   private JsonNode generatePayload( final ExtendedAspectContext context ) {
+      final AspectModelJsonPayloadGenerator payloadGenerator = new AspectModelJsonPayloadGenerator( context );
       try {
          return parseJson( payloadGenerator.generateJson() );
       } catch ( final IOException e ) {
@@ -126,8 +130,8 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       }
    }
 
-   private void assertPayloadIsValid( final JsonNode schema, final Aspect aspect ) {
-      assertPayloadIsValid( schema, generatePayload( aspect ) );
+   private void assertPayloadIsValid( final JsonNode schema, final ExtendedAspectContext context ) {
+      assertPayloadIsValid( schema, generatePayload( context ) );
    }
 
    /**
@@ -145,13 +149,13 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
          "MODEL_WITH_BROKEN_CYCLES" // also contains cycles, but all of them should be "breakable", need to be investigated
    } )
    public void testGeneration( final TestAspect testAspect ) {
-      final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );
-      final JsonNode schema = buildJsonSchema( aspect );
+      final ExtendedAspectContext aspectContext = loadAspectWithContext( testAspect, KnownVersion.getLatest() );
+      final JsonNode schema = buildJsonSchema( aspectContext.aspect() );
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['$schema']" ) )
             .isEqualTo( AspectModelJsonSchemaVisitor.JSON_SCHEMA_VERSION );
       assertThat( context.<String> read( "$['type']" ) ).isEqualTo( "object" );
-      assertPayloadIsValid( schema, aspect );
+      assertPayloadIsValid( schema, aspectContext );
    }
 
    @ParameterizedTest

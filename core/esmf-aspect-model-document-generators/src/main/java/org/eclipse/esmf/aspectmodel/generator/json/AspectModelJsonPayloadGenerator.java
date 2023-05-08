@@ -46,17 +46,6 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.jeasy.random.EasyRandom;
-import org.jeasy.random.EasyRandomParameters;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.curiousoddman.rgxgen.RgxGen;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.characteristic.Collection;
@@ -68,12 +57,11 @@ import org.eclipse.esmf.constraint.LengthConstraint;
 import org.eclipse.esmf.constraint.RangeConstraint;
 import org.eclipse.esmf.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.AbstractEntity;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.ExtendedAspectContext;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
@@ -81,6 +69,15 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.curiousoddman.rgxgen.RgxGen;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    /**
@@ -90,27 +87,20 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private static final String EITHER_LEFT = "left";
    private static final double THRESHOLD = .0001;
 
-   private final Aspect aspect;
    private final List<Transformer> transformers;
    private final ExampleValueGenerator exampleValueGenerator;
    private final ObjectMapper objectMapper;
    private final List<Property> recursiveProperty;
    private final ValueToPayloadStructure valueToPayloadStructure = new ValueToPayloadStructure();
 
-   public AspectModelJsonPayloadGenerator( final Aspect aspect ) {
-      this( aspect, new SAMM( aspect.getMetaModelVersion() ), new Random() );
+   private final ExtendedAspectContext context;
+   
+   public AspectModelJsonPayloadGenerator( final ExtendedAspectContext context ) {
+      this( context, new Random() );
    }
 
-   public AspectModelJsonPayloadGenerator( final AspectContext context ) {
-      this( context.aspect() );
-   }
-
-   public AspectModelJsonPayloadGenerator( final Aspect aspect, final Random randomStrategy ) {
-      this( aspect, new SAMM( aspect.getMetaModelVersion() ), randomStrategy );
-   }
-
-   private AspectModelJsonPayloadGenerator( final Aspect aspect, final SAMM samm, final Random randomStrategy ) {
-      this.aspect = aspect;
+   public AspectModelJsonPayloadGenerator( final ExtendedAspectContext context, final Random randomStrategy ) {
+      this.context = context;
       exampleValueGenerator = new ExampleValueGenerator( randomStrategy );
       objectMapper = AspectModelJsonPayloadGenerator.createObjectMapper();
       objectMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
@@ -129,7 +119,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
     * @param nameMapper The callback function that maps the Aspect name to an OutputStream
     */
    public void generateJson( final Function<String, OutputStream> nameMapper ) throws IOException {
-      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
+      try ( final OutputStream output = nameMapper.apply( context.aspect().getName() ) ) {
          output.write( generateJson().getBytes() );
       }
    }
@@ -140,7 +130,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
     * @see #generateJson(Function)
     */
    public void generateJsonPretty( final Function<String, OutputStream> nameMapper ) throws IOException {
-      try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
+      try ( final OutputStream output = nameMapper.apply( context.aspect().getName() ) ) {
          output.write( generateJsonPretty().getBytes() );
       }
    }
@@ -162,7 +152,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    }
 
    private Map<String, Object> transformAspectProperties() {
-      return transformProperties( aspect.getProperties() );
+      return transformProperties( context.aspect().getProperties() );
    }
 
    /**
@@ -228,7 +218,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       final Optional<AbstractEntity> dataType = getForCharacteristic( property.getCharacteristic(), AbstractEntity.class );
       if ( dataType.isPresent() ) {
          final AbstractEntity abstractEntity = dataType.get();
-         final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
+         final ComplexType extendingComplexType = abstractEntity.getExtendingElements( context ).get( 0 );
          final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties() );
          generatedProperties.put( "@type", extendingComplexType.getName() );
          return toMap( property.getName(), generatedProperties );
@@ -304,7 +294,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       final Type dataType = collection.getDataType().orElseThrow( () -> new IllegalArgumentException( "DataType for collection is required." ) );
       if ( dataType.is( AbstractEntity.class ) ) {
          final AbstractEntity abstractEntity = dataType.as( AbstractEntity.class );
-         final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
+         final ComplexType extendingComplexType = abstractEntity.getExtendingElements( context ).get( 0 );
          final Map<String, Object> propertyValueMap = transformProperties( extendingComplexType.getAllProperties() );
          propertyValueMap.put( "@type", extendingComplexType.getName() );
          return ImmutableList.of( propertyValueMap );
