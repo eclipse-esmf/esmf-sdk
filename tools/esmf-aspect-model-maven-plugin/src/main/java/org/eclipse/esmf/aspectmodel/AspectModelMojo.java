@@ -90,7 +90,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
       final Set<AspectContext> result = new HashSet<>();
       for ( final Try<AspectContext> context : loadAndResolveModels() ) {
          if ( context.isFailure() ) {
-            handleFailedModelResolution( context.getCause(), context.map( AspectContext::rdfModel ).get() );
+            handleFailedModelResolution( context.getCause(), context.map( AspectContext::rdfModel ) );
          }
          result.add( context.get() );
       }
@@ -101,14 +101,14 @@ public abstract class AspectModelMojo extends AbstractMojo {
       final Set<ExtendedAspectContext> result = new HashSet<>();
       for ( final Try<ExtendedAspectContext> context : loadAndResolveModelsWithContext() ) {
          if ( context.isFailure() ) {
-            handleFailedModelResolution( context.getCause(), context.map( ExtendedAspectContext::rdfModel ).get() );
+            handleFailedModelResolution( context.getCause(), context.map( ExtendedAspectContext::rdfModel ) );
          }
          result.add( context.get() );
       }
       return result;
    }
 
-   private void handleFailedModelResolution( final Throwable loadModelFailureCause, final VersionedModel versionedModel ) throws MojoExecutionException {
+   private void handleFailedModelResolution( final Throwable loadModelFailureCause, final Try<VersionedModel> versionedModel ) throws MojoExecutionException {
       // Model can not be loaded, root cause e.g. File not found
       if ( loadModelFailureCause instanceof IllegalArgumentException ) {
          throw new MojoExecutionException( "Can not open file in models root directory.", loadModelFailureCause );
