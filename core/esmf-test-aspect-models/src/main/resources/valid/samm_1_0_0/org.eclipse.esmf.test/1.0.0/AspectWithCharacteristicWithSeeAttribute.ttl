@@ -35,6 +35,7 @@
    samm:dataType xsd:string .
 
 :TestCharacteristicTwo a samm:Characteristic ;
+   samm:name "TestCharacteristicTwo" ;
    samm:preferredName "Test Characteristic Two"@en ;
    samm:description "Test Characteristic Two"@en ;
    samm:see <http://example.com/> ;

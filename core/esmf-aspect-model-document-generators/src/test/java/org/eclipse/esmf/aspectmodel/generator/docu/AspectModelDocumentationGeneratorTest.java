@@ -203,7 +203,7 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       assertThat( documentation ).contains(
               "<div class=\"table-cell pb-3 col-span-2\">Trait</div>" );
       assertThat( documentation ).contains(
-              "<li>http://example.com/omp2</li>" );
+              "<li>http://example.com/me2</li>" );
    }
 
    private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion ) throws IOException {
