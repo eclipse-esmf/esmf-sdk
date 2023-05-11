@@ -1,4 +1,4 @@
-# Authors 
+# Authors
 
 The following people have contributed to this repository:
 
@@ -9,11 +9,11 @@ The following people have contributed to this repository:
 * Fethuallah Misir, Robert Bosch GmbH, Fethullah.Misir@de.bosch.com
 * Michele Santoro
 * Andreas Schilling, andreas.schilling3@de.bosch.com
-* Georg Schmidt-Dumont, Robert Bosch GmbH, georg.schmidt-dumont@de.bosch.com 
-* David Schmitt, Systecs Informationssysteme GmbH
+* Georg Schmidt-Dumont, Robert Bosch GmbH, georg.schmidt-dumont@de.bosch.com
+* David Schmitt, Robert Bosch GmbH, david.schmitt3@bosch.com
 * Andreas Textor, Andreas.Textor@de.bosch.com
 * Peter Triebe, Peter.Triebe@de.bosch.com
-* Julian Walbrecht,  ulian.Walbrecht@de.bosch.com
+* Julian Walbrecht, ulian.Walbrecht@de.bosch.com
 * Sven Walter, Sven.Walter4@de.bosch.com
 * Sven Erik Jeroschewski, Bosch.IO GmbH
 * Lukas Römer, Bosch.IO GmbH, Lukas.roemer@bosch.io
