@@ -4,7 +4,7 @@ The following people have contributed to this repository:
 
 * Birgit Boss, Robert Bosch GmbH
 * Daniel Ewert, Robert Bosch GmbH, daniel.ewert@bosch.com
-* Dennis Melzer, Robert Bosch GmbH, georg.schmidt-dumont@de.bosch.com
+* Dennis Melzer, Robert Bosch GmbH, Dennis.Melzer@de.bosch.com
 * Misecka Rastislav, Systecs Informationssysteme GmbH
 * Fethuallah Misir, Robert Bosch GmbH, Fethullah.Misir@de.bosch.com
 * Michele Santoro
