@@ -15,11 +15,11 @@ package org.eclipse.esmf.metamodel.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -35,7 +35,7 @@ public class DefaultComplexType extends ModelElementImpl implements ComplexType 
     * Used to keep track of all {@link ComplexType} instances regardles of whether they are directly or indirectly
     * referenced in the {@link Aspect}.
     */
-   private static final WeakHashMap<AspectModelUrn, ComplexType> instances = new WeakHashMap<>();
+   private static final HashMap<AspectModelUrn, ComplexType> instances = new HashMap<>();
 
    private final List<Property> properties;
    private final Optional<ComplexType> _extends;
