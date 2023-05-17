@@ -74,6 +74,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollect
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueReferencePair;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -226,7 +227,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    private List<SubmodelElement> visitOperations(
-         final List<io.openmanufacturing.sds.metamodel.Operation> elements, final Context context ) {
+         final List<org.eclipse.esmf.metamodel.Operation> elements, final Context context ) {
       return elements.stream().map( i -> mapText( i, context ) ).collect( Collectors.toList() );
    }
 
@@ -250,9 +251,9 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          if ( property.isOptional() ) {
             LOG.warn( String.format( "Having a recursive Property %s which is optional. Will be excluded from AAS mapping.",
                   property.getAspectModelUrn().map( AspectModelUrn::toString ).orElse( "(unknown)" ) ) );
-            return defaultResultForProperty.get();
+            return Optional.of(defaultResultForProperty.get());
          } else {
-            throw new IllegalArgumentException( String.format( "Having a recursive Property %s which is not optional is not valid.",
+            LOG.error( String.format( "Having a recursive property: %s which is not optional is not valid. Check the model. Property will be excluded from AAS mapping.",
                   property.getAspectModelUrn().map( AspectModelUrn::toString ).orElse( "(unknown)" ) ) );
          }
          return defaultResultForProperty;
@@ -344,7 +345,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return new DefaultOperationVariable.Builder().value( mapText( property, context ).orElseThrow() ).build();
    }
 
-   private List<LangStringTextType> mapText( final Set<io.openmanufacturing.sds.metamodel.datatypes.LangString> localizedStrings ) {
+   private List<LangStringTextType> mapText( final Set<org.eclipse.esmf.metamodel.datatypes.LangString> localizedStrings ) {
       return localizedStrings.stream()
             .map( this::mapText )
             .collect( Collectors.toList() );
@@ -356,19 +357,19 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .collect( Collectors.toList() );
    }
 
-   private LangStringTextType mapText( final io.openmanufacturing.sds.metamodel.datatypes.LangString langString ) {
+   private LangStringTextType mapText( final org.eclipse.esmf.metamodel.datatypes.LangString langString ) {
       return createLangStringTextType( langString.getLanguageTag().getLanguage(), langString.getValue() );
    }
 
-   private LangStringNameType mapName( final io.openmanufacturing.sds.metamodel.datatypes.LangString langString ) {
+   private LangStringNameType mapName( final org.eclipse.esmf.metamodel.datatypes.LangString langString ) {
       return createLangStringNameType( langString.getLanguageTag().getLanguage(), langString.getValue() );
    }
 
-   private LangStringDefinitionTypeIec61360 mapDefinitionIec61360( final io.openmanufacturing.sds.metamodel.datatypes.LangString langString ) {
+   private LangStringDefinitionTypeIec61360 mapDefinitionIec61360( final org.eclipse.esmf.metamodel.datatypes.LangString langString ) {
       return createLangStringDefinitionTypeIec61360( langString.getLanguageTag().getLanguage(), langString.getValue() );
    }
 
-   private LangStringPreferredNameTypeIec61360 mapLangStringPreferredNameTypeIec61360( final io.openmanufacturing.sds.metamodel.datatypes.LangString langString ) {
+   private LangStringPreferredNameTypeIec61360 mapLangStringPreferredNameTypeIec61360( final org.eclipse.esmf.metamodel.datatypes.LangString langString ) {
       return createLangStringPreferredNameTypeIec61360( langString.getLanguageTag().getLanguage(), langString.getValue() );
    }
 
