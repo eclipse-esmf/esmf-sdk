@@ -24,7 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import io.adminshell.aas.v3.dataformat.core.ReflectionHelper;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 
 /**
  * An instance of this class encapsulates the information normally stored by {@link ReflectionHelper}. It is used in its substitution class,

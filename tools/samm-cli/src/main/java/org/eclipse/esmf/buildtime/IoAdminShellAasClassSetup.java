@@ -13,13 +13,13 @@
 
 package org.eclipse.esmf.buildtime;
 
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.DEFAULT_IMPLEMENTATION_PACKAGE_NAME;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.DEFAULT_IMPLEMENTATION_PREFIX;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.JSON_MIXINS_PACKAGE_NAME;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.MIXIN_SUFFIX;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.MODEL_PACKAGE_NAME;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.MODEL_TYPE_SUPERCLASSES;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.XML_MIXINS_PACKAGE_NAME;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.DEFAULT_IMPLEMENTATION_PACKAGE_NAME;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.DEFAULT_IMPLEMENTATION_PREFIX;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.JSON_MIXINS_PACKAGE_NAME;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.MIXIN_SUFFIX;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.MODEL_PACKAGE_NAME;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.MODEL_TYPE_SUPERCLASSES;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.XML_MIXINS_PACKAGE_NAME;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,7 +38,7 @@ import org.eclipse.esmf.substitution.AdminShellConfig;
 import org.eclipse.esmf.substitution.ImplementationInfo;
 import org.eclipse.esmf.substitution.Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper;
 
-import io.adminshell.aas.v3.dataformat.core.ReflectionHelper;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;

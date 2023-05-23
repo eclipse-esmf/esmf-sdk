@@ -15,7 +15,7 @@ package org.eclipse.esmf.substitution;
 
 import java.util.Objects;
 
-import io.adminshell.aas.v3.dataformat.core.ReflectionHelper;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 
 /**
  * This is used as a stand-in/replacement for its superclass {@link ReflectionHelper.ImplementationInfo}, which unfortunately can't be
