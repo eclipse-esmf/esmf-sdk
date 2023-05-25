@@ -216,12 +216,12 @@
          <dependency>
             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>model</artifactId>
-            <version>${io-admin-shell-aas-model}</version>
+            <version>${aas4j-version}</version>
          </dependency>
          <dependency>
             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>dataformat-xml</artifactId>
-            <version>${io-admin-shell-aas-serializer}</version>
+            <version>${aas4j-version}</version>
             <exclusions>
                <exclusion>
                   <groupId>org.slf4j</groupId>
@@ -232,7 +232,7 @@
          <dependency>
             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
             <artifactId>dataformat-aasx</artifactId>
-            <version>${io-admin-shell-aas-serializer}</version>
+            <version>${aas4j-version}</version>
             <exclusions>
                <exclusion>
                   <groupId>org.slf4j</groupId>
