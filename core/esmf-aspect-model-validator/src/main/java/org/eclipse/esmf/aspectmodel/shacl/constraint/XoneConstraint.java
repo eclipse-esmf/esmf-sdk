@@ -19,6 +19,7 @@ import java.util.List;
 import org.apache.jena.rdf.model.RDFNode;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.XoneViolation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#XoneConstraintComponent">sh:xone</a>
@@ -32,7 +33,7 @@ public record XoneConstraint(List<Constraint> constraints) implements Constraint
       if ( numberOfEmptyViolationLists == 1 ) {
          return List.of();
       }
-      return violationsPerConstraint.stream().flatMap( Collection::stream ).toList();
+      return List.of( new XoneViolation( context, violationsPerConstraint.stream().flatMap( Collection::stream ).toList() ) );
    }
 
    @Override

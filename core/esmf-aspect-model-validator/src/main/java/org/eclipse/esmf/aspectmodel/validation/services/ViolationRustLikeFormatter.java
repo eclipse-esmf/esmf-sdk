@@ -43,6 +43,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.UniqueLanguageViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ValueFromListViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.XoneViolation;
 
 public class ViolationRustLikeFormatter extends ViolationFormatter {
 
@@ -197,6 +198,13 @@ public class ViolationRustLikeFormatter extends ViolationFormatter {
 
    @Override
    public String visitNotViolation( final NotViolation violation ) {
+      return formatter.constructDetailedMessage(
+            violation.context().property().isPresent() ? violation.context().property().get() : violation.context().element(),
+            violation.message(), rawModel );
+   }
+
+   @Override
+   public String visitXoneViolation( final XoneViolation violation ) {
       return formatter.constructDetailedMessage(
             violation.context().property().isPresent() ? violation.context().property().get() : violation.context().element(),
             violation.message(), rawModel );

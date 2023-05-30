@@ -148,6 +148,10 @@ public interface Violation {
          return visit( violation );
       }
 
+      default T visitXoneViolation( final XoneViolation violation ) {
+         return visit( violation );
+      }
+
       default T visitJsViolation( final JsConstraintViolation violation ) {
          return visit( violation );
       }
