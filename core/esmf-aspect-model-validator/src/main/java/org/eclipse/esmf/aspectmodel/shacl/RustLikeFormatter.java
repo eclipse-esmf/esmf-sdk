@@ -260,15 +260,16 @@ public class RustLikeFormatter {
       return node.equals( RDF.nil ) || (node.isResource() && model.contains( node.asResource(), RDF.rest, (RDFNode) null ));
    }
 
-   private Statement findListHead( Statement listElement ) {
+   private Statement findListHead( final Statement listElement ) {
+      Statement listElementStatement = listElement;
       while ( true ) {
-         final StmtIterator iter = listElement.getModel().listStatements( null, RDF.rest, listElement.getSubject() );
+         final StmtIterator iter = listElementStatement.getModel().listStatements( null, RDF.rest, listElementStatement.getSubject() );
          if ( !iter.hasNext() ) {
             break;
          }
-         listElement = iter.nextStatement();
+         listElementStatement = iter.nextStatement();
       }
-      return listElement;
+      return listElementStatement;
    }
 
    private boolean formatList( final RDFNode listNode ) {
@@ -347,17 +348,17 @@ public class RustLikeFormatter {
       currentColumn += reconstructedText.length();
    }
 
-   private static SmartToken extractToken( final RDFNode node ) {
-      final Node n = node.asNode();
-      if ( n instanceof AnyNode an ) {
+   private static SmartToken extractToken( final RDFNode rdfNode ) {
+      final Node node = rdfNode.asNode();
+      if ( node instanceof final AnyNode an ) {
          return an.getToken();
-      } else if ( n instanceof BlankNode bn ) {
+      } else if ( node instanceof final BlankNode bn ) {
          return bn.getToken();
-      } else if ( n instanceof LiteralNode ln ) {
+      } else if ( node instanceof final LiteralNode ln ) {
          return ln.getToken();
-      } else if ( n instanceof UriNode un ) {
+      } else if ( node instanceof final UriNode un ) {
          return un.getToken();
-      } else if ( n instanceof VariableNode vn ) {
+      } else if ( node instanceof final VariableNode vn ) {
          return vn.getToken();
       } else {
          return null;

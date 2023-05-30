@@ -32,7 +32,7 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.vocabulary.XSD;
-import org.assertj.core.api.Assertions;
+import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
@@ -62,10 +62,8 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.UniqueLanguageViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ValueFromListViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.junit.jupiter.api.Test;
-
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationRustLikeFormatter;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class tests the internals of the {@link ShaclValidator}
@@ -110,11 +108,11 @@ public class ShaclValidatorTest {
       final Shape.Property property = shape.properties().get( 0 );
       assertThat( property.attributes().name() ).hasValue( "Test property" );
       assertThat( property.attributes().description() ).hasValue( "Test description" );
-      Assertions.assertThat( property.attributes().constraints() ).hasOnlyElementsOfTypes( DatatypeConstraint.class, MinCountConstraint.class );
-      Assertions.assertThat( property.attributes().constraints() ).hasAtLeastOneElementOfType( DatatypeConstraint.class );
-      Assertions.assertThat( property.attributes().constraints() ).hasAtLeastOneElementOfType( MinCountConstraint.class );
+      assertThat( property.attributes().constraints() ).hasOnlyElementsOfTypes( DatatypeConstraint.class, MinCountConstraint.class );
+      assertThat( property.attributes().constraints() ).hasAtLeastOneElementOfType( DatatypeConstraint.class );
+      assertThat( property.attributes().constraints() ).hasAtLeastOneElementOfType( MinCountConstraint.class );
 
-      Assertions.assertThat( property.path() ).isEqualTo( new PredicatePath( ResourceFactory.createProperty( namespace + "testProperty" ) ) );
+      assertThat( property.path() ).isEqualTo( new PredicatePath( ResourceFactory.createProperty( namespace + "testProperty" ) ) );
    }
 
    @Test
@@ -159,7 +157,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( ClassTypeViolation.class );
       final ClassTypeViolation violation = (ClassTypeViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actualClass().getURI() ).isEqualTo( "http://example.com#SomethingElse" );
@@ -205,7 +203,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( DatatypeViolation.class );
       final DatatypeViolation violation = (DatatypeViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actualTypeUri() ).isEqualTo( XSD.integer.getURI() );
@@ -251,11 +249,11 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
-      Assertions.assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.IRI );
-      Assertions.assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
+      assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.IRI );
+      assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
       assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo is a value, but it must be a named element." );
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
@@ -294,7 +292,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( MinCountViolation.class );
       final MinCountViolation violation = (MinCountViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.message() ).isEqualTo( "Mandatory property :testProperty is missing on :Foo." );
@@ -337,7 +335,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( MaxCountViolation.class );
       final MaxCountViolation violation = (MaxCountViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.message() ).isEqualTo( "Property :testProperty is used 2 times on :Foo, but may only be used 1 time." );
@@ -379,7 +377,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( MinExclusiveViolation.class );
       final MinExclusiveViolation violation = (MinExclusiveViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual().getInt() ).isEqualTo( 42 );
@@ -423,7 +421,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( MinInclusiveViolation.class );
       final MinInclusiveViolation violation = (MinInclusiveViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual().getInt() ).isEqualTo( 41 );
@@ -467,7 +465,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( MaxExclusiveViolation.class );
       final MaxExclusiveViolation violation = (MaxExclusiveViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual().getInt() ).isEqualTo( 42 );
@@ -511,7 +509,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( MaxInclusiveViolation.class );
       final MaxInclusiveViolation violation = (MaxInclusiveViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual().getInt() ).isEqualTo( 43 );
@@ -555,7 +553,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( MinLengthViolation.class );
       final MinLengthViolation violation = (MinLengthViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual() ).isEqualTo( 3 );
@@ -599,7 +597,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( MaxLengthViolation.class );
       final MaxLengthViolation violation = (MaxLengthViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual() ).isEqualTo( 6 );
@@ -647,7 +645,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( PatternViolation.class );
       final PatternViolation violation = (PatternViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual() ).isEqualTo( "y" );
@@ -694,7 +692,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( LanguageFromListViolation.class );
       final LanguageFromListViolation violation = (LanguageFromListViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual() ).isEqualTo( "fr" );
@@ -744,7 +742,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( EqualsViolation.class );
       final EqualsViolation violation = (EqualsViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.allowedValue().asLiteral().getString() ).isEqualTo( "a different value" );
@@ -794,7 +792,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( DisjointViolation.class );
       final DisjointViolation violation = (DisjointViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.otherValue().asLiteral().getString() ).isEqualTo( "some value" );
@@ -843,7 +841,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( LessThanViolation.class );
       final LessThanViolation violation = (LessThanViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actualValue().getInt() ).isEqualTo( 10 );
@@ -893,7 +891,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( LessThanOrEqualsViolation.class );
       final LessThanOrEqualsViolation violation = (LessThanOrEqualsViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actualValue().getInt() ).isEqualTo( 10 );
@@ -943,7 +941,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( UniqueLanguageViolation.class );
       final UniqueLanguageViolation violation = (UniqueLanguageViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.duplicates() ).containsExactly( "en" );
@@ -989,7 +987,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
       final InvalidValueViolation violation = (InvalidValueViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.allowed().asLiteral().getInt() ).isEqualTo( 42 );
@@ -1033,7 +1031,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( ValueFromListViolation.class );
       final ValueFromListViolation violation = (ValueFromListViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.allowed() ).containsExactly( ResourceFactory.createStringLiteral( "foo" ), ResourceFactory.createStringLiteral( "bar" ) );
@@ -1081,7 +1079,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
       final InvalidValueViolation violation = (InvalidValueViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "AnotherNodeShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "AnotherNodeShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.allowed().asLiteral().getString() ).isEqualTo( "foo" );
@@ -1232,7 +1230,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( ClosedViolation.class );
       final ClosedViolation violation = (ClosedViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.allowedProperties() ).hasSize( 1 );
       assertThat( violation.allowedProperties().iterator().next().getURI() ).isEqualTo( namespace + "testProperty" );
@@ -1303,7 +1301,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( SparqlConstraintViolation.class );
       final SparqlConstraintViolation violation = (SparqlConstraintViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.message() ).isEqualTo( "Constraint was violated on :Foo, value was foo." );
       assertThat( violation.errorCode() ).isEqualTo( "ERR_CUSTOM" );
@@ -1357,7 +1355,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( JsConstraintViolation.class );
       final JsConstraintViolation violation = (JsConstraintViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.message() ).isEqualTo( "JavaScript constraint validation failed." );
       assertThat( violation.errorCode() ).isEqualTo( "ERR_JAVASCRIPT" );
@@ -1411,7 +1409,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( JsConstraintViolation.class );
       final JsConstraintViolation violation = (JsConstraintViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       // Note that the message given in the shape is overridden in the JavaScript function
       assertThat( violation.message() ).isEqualTo( "Invalid value: some value on :testProperty." );
@@ -1458,7 +1456,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
       final InvalidValueViolation violation = (InvalidValueViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":prop2" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.allowed().asLiteral().getInt() ).isEqualTo( 42 );
@@ -1503,7 +1501,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
       final InvalidValueViolation violation = (InvalidValueViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":prop2" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.allowed().asLiteral().getInt() ).isEqualTo( 42 );
@@ -1548,7 +1546,7 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
       final InvalidValueViolation violation = (InvalidValueViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty2" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.allowed().asLiteral().getInt() ).isEqualTo( 42 );
@@ -1596,11 +1594,11 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty2" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
-      Assertions.assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
-      Assertions.assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
+      assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
+      assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
       assertThat( violation.message() ).isEqualTo( "Property :testProperty2 on :Foo is a value, but it must be an anonymous node." );
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
@@ -1644,11 +1642,11 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty2" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
-      Assertions.assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
-      Assertions.assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
+      assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
+      assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
       assertThat( violation.message() ).isEqualTo( "Property :testProperty2 on :Foo is a value, but it must be an anonymous node." );
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
@@ -1690,11 +1688,11 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty2" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
-      Assertions.assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
-      Assertions.assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
+      assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
+      assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
       assertThat( violation.message() ).isEqualTo( "Property :testProperty2 on :Foo is a value, but it must be an anonymous node." );
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
@@ -1738,11 +1736,11 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( NotViolation.class );
       final NotViolation violation = (NotViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       final NodeKindConstraint nestedConstraint = (NodeKindConstraint) violation.negatedConstraint();
-      Assertions.assertThat( nestedConstraint.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
+      assertThat( nestedConstraint.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
       assertThat( violation.message() ).isEqualTo( "Expected violation of constraint sh:nodeKind on :testProperty on :Foo, but it did not occur." );
       assertThat( violation.errorCode() ).isEqualTo( NotViolation.ERROR_CODE );
 
@@ -1788,11 +1786,11 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
-      Assertions.assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.IRI );
-      Assertions.assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
+      assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.IRI );
+      assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
       assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo is an anonymous node, but it must be a named element." );
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
@@ -1837,7 +1835,7 @@ public class ShaclValidatorTest {
       violations.forEach( violation -> {
          assertThat( violation ).isOfAnyClassIn( NodeKindViolation.class, InvalidValueViolation.class );
          assertThat( violation.context().element() ).isEqualTo( element );
-         Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+         assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
          assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
          assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       } );
@@ -1880,11 +1878,11 @@ public class ShaclValidatorTest {
       assertThat( finding ).isInstanceOf( NodeKindViolation.class );
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
-      Assertions.assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
-      Assertions.assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
-      Assertions.assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
+      assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
+      assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
       assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo is an anonymous node, but it must be a value." );
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
@@ -2060,7 +2058,7 @@ public class ShaclValidatorTest {
       final Model dataModel = model( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-            :Foo a :TestClass.              
+            :Foo a :TestClass.
 
             :Bar a :TestClass ;
               :testProperty "secret valid value" .

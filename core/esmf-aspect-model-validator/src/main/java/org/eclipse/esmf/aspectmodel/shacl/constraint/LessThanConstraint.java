@@ -36,6 +36,7 @@ public record LessThanConstraint(Property otherProperty) implements Constraint {
 
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
+      //noinspection DuplicatedCode
       final List<Violation> nodeKindViolations = new NodeKindConstraint( Shape.NodeKind.Literal ).apply( rdfNode, context );
       if ( !nodeKindViolations.isEmpty() ) {
          return nodeKindViolations;

@@ -44,12 +44,6 @@ public record ClosedConstraint(Set<Property> ignoredProperties) implements Const
       }
 
       final Resource resource = rdfNode.asResource();
-      final PathNodeRetriever retriever = new PathNodeRetriever();
-      // All statements that lead to (i.e. have as their object) nodes that are reachable via the paths of the property shapes
-      final List<Statement> allowedNodes = shapeNode.properties().stream()
-            .flatMap( property -> property.path().accept( resource, retriever ).stream() )
-            .toList();
-
       final FirstEffectiveProperty allowedFirstProperties = new FirstEffectiveProperty();
       final Set<Property> allowedProperties = shapeNode.properties().stream()
             .flatMap( property -> property.path().accept( resource, allowedFirstProperties ).stream() ).collect( Collectors.toSet() );

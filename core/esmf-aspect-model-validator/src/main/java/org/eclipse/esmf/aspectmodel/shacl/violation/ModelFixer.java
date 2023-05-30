@@ -42,13 +42,7 @@ public class ModelFixer implements BiFunction<Model, List<Fix>, Model> {
       }
    }
 
-   private static class FixVisitor implements Fix.Visitor<ModelChange> {
-      private final Model oldModel;
-
-      FixVisitor( final Model oldModel ) {
-         this.oldModel = oldModel;
-      }
-
+   private record FixVisitor(Model oldModel) implements Fix.Visitor<ModelChange> {
       @Override
       public ModelChange visit( final Fix fix ) {
          return new ModelChange();

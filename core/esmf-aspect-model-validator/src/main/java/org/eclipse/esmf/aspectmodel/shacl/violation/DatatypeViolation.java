@@ -59,7 +59,6 @@ public record DatatypeViolation(EvaluationContext context, String allowedTypeUri
       }
 
       final List<Fix> fixes = new ArrayList<>();
-      final Property property = context.property().get();
 
       // value is string but should be langString
       if ( allowedTypeUri.equals( RDF.langString.getURI() ) && actualTypeUri.equals( XSD.xstring.getURI() ) ) {

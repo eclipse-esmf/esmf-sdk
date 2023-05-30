@@ -22,7 +22,7 @@ import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
  * Vocabulary for the Shapes Constraint Language (SHACL)
  */
 public class SHACL implements Namespace {
-   public final String NS = "http://www.w3.org/ns/shacl#";
+   public static final String NS = "http://www.w3.org/ns/shacl#";
 
    @Override
    public String getUri() {

@@ -34,9 +34,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
@@ -52,7 +49,6 @@ import com.google.common.collect.Streams;
  * results only for this specific resource.
  */
 public class ShaclValidator {
-   private static final Logger LOG = LoggerFactory.getLogger( ShaclValidator.class );
    private final List<Shape.Node> shapes;
    private final Map<Resource, List<Shape.Node>> shapesWithClassTargets;
    private final Model shapesModel;
@@ -78,7 +74,7 @@ public class ShaclValidator {
 
    /**
     * Validates a model element using the SHACL shapes the validator was initialized with.
-    * If you have more than one element to validate, prefer the method {@link this.validateElements( final List<Resource>  )} to calling this method in a loop
+    * If you have more than one element to validate, prefer the method {@link #validateElements(List)} to calling this method in a loop
     * for better performance.
     * {@link Resource#getModel()} on the element must not return null, i.e., the resource may not be created using
     * {@link org.apache.jena.rdf.model.ResourceFactory#createProperty(String)}, but instead must be created via {@link Model#createResource(String)}.
@@ -129,7 +125,8 @@ public class ShaclValidator {
    private Map<Resource, List<Shape.Node>> findSparqlTargets( final Model model ) {
       final Map<Resource, List<Shape.Node>> resourceShapes = new HashMap<>();
       for ( final Shape.Node shape : targetSparqlShapes() ) {
-         final List<Resource> shapeTargets = querySparqlTargets( model, shape.attributes().targetSparql().get() );
+         final List<Resource> shapeTargets = querySparqlTargets( model, shape.attributes().targetSparql().orElseThrow( () ->
+               new RuntimeException( "SPARQL node shape is missing a target SPARQL expression" ) ) );
          for ( final Resource node : shapeTargets ) {
             addResourceShape( resourceShapes, node, shape );
          }
@@ -161,7 +158,7 @@ public class ShaclValidator {
    }
 
    public List<Violation> validateElements( final List<Resource> elements ) {
-      final Map<Resource, List<Shape.Node>> sparqlTargets = elements.size() > 0 ? findSparqlTargets( elements.get( 0 ).getModel() ) : Map.of();
+      final Map<Resource, List<Shape.Node>> sparqlTargets = !elements.isEmpty() ? findSparqlTargets( elements.get( 0 ).getModel() ) : Map.of();
       return elements.stream().flatMap( element -> validateElement( element, sparqlTargets, element.getModel() ).stream() ).toList();
    }
 
@@ -186,7 +183,7 @@ public class ShaclValidator {
 
             // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints >= 1
             // exists, a violation must be emitted even though no value for the property exists
-            if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint && property.path() instanceof PredicatePath predicatePath ) {
+            if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint && property.path() instanceof final PredicatePath predicatePath ) {
                final Property rdfProperty = resolvedModel.createProperty( predicatePath.predicate().getURI() );
                final EvaluationContext context = new EvaluationContext( element, shape, Optional.of( rdfProperty ), List.of(), this, resolvedModel );
                violations.addAll( constraint.apply( null, context ) );

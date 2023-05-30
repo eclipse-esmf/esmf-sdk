@@ -48,7 +48,7 @@ public interface Path {
          return visit( resource, path );
       }
 
-      default T visitZeroOrOnePath( Resource resource, final ZeroOrOnePath path ) {
+      default T visitZeroOrOnePath( final Resource resource, final ZeroOrOnePath path ) {
          return visit( resource, path );
       }
    }
