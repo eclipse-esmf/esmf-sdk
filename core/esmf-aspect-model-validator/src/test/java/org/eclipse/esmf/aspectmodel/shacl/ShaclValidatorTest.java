@@ -62,6 +62,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.UniqueLanguageViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ValueFromListViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.XoneViolation;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationRustLikeFormatter;
 import org.junit.jupiter.api.Test;
 
@@ -1875,16 +1876,19 @@ public class ShaclValidatorTest {
 
       assertThat( violations.size() ).isEqualTo( 1 );
       final Violation finding = violations.get( 0 );
-      assertThat( finding ).isInstanceOf( NodeKindViolation.class );
-      final NodeKindViolation violation = (NodeKindViolation) finding;
+      assertThat( finding ).isInstanceOf( XoneViolation.class );
+      final XoneViolation violation = (XoneViolation) finding;
       assertThat( violation.context().element() ).isEqualTo( element );
       assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
-      assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
-      assertThat( violation.actualNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
-      assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo is an anonymous node, but it must be a value." );
-      assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
+      assertThat( violation.violations() ).hasSize( 1 );
+      assertThat( violation.violations().get( 0 ) ).isInstanceOf( NodeKindViolation.class );
+      final NodeKindViolation nestedViolation = (NodeKindViolation) violation.violations().get( 0 );
+      assertThat( nestedViolation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.Literal );
+      assertThat( nestedViolation.actualNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
+      assertThat( nestedViolation.message() ).isEqualTo( "Property :testProperty on :Foo is an anonymous node, but it must be a value." );
+      assertThat( nestedViolation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
       assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty [", ":testProperty".length() ) );
@@ -1919,18 +1923,14 @@ public class ShaclValidatorTest {
                sh:description "Test shape description" ;
                sh:property [
                  sh:path :testProperty ;
-                 sh:xone (
-                   [ sh:nodeKind sh:Literal ]
-                 ) ;
+                 sh:maxLength 2 ;
                ] .
             """ );
 
       final Model dataModel = model( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
-              :testProperty [
-                 :testProperty2 42 ;
-              ] .
+              :testProperty "abc" .
             """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
@@ -1939,7 +1939,7 @@ public class ShaclValidatorTest {
 
       assertThat( violations.size() ).isEqualTo( 1 );
       final Violation finding = violations.get( 0 );
-      assertThat( finding ).isInstanceOf( NodeKindViolation.class );
+      assertThat( finding ).isInstanceOf( MaxLengthViolation.class );
    }
 
    @Test
