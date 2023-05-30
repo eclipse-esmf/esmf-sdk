@@ -231,6 +231,12 @@ public class RustLikeFormatter {
          if ( node.asNode().equals( NodeConst.nodeRDFType ) ) {
             spacedIfPossible( "a " );
          }
+         if ( node.asNode().equals( NodeConst.nodeTrue ) ) {
+            spacedIfPossible( "true" );
+         }
+         if ( node.asNode().equals( NodeConst.nodeFalse ) ) {
+            spacedIfPossible( "false" );
+         }
          return true;
       }
 
