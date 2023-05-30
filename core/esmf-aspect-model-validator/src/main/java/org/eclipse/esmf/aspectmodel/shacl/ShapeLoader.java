@@ -121,7 +121,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
          .put( SHACL.and(), context -> new AndConstraint( nestedConstraintList( context.statement(), context.path() ) ) )
          .put( SHACL.or(), context -> new OrConstraint( nestedConstraintList( context.statement(), context.path() ) ) )
          .put( SHACL.xone(), context -> new XoneConstraint( nestedConstraintList( context.statement(), context.path() ) ) )
-         .put( SHACL.node(), context -> new NodeConstraint( context.path(), nodeShape( context.statement().getObject().asResource() ) ) )
+         .put( SHACL.node(), context -> new NodeConstraint( nodeShape( context.statement().getObject().asResource() ), context.path() ) )
          .put( SHACL.in(), context -> new AllowedValuesConstraint( context.statement().getResource().as( RDFList.class ).asJavaList() ) )
          .put( SHACL.closed(), context -> {
             boolean closed = context.statement().getBoolean();

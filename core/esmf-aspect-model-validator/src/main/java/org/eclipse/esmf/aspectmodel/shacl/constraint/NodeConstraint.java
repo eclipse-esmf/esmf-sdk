@@ -27,7 +27,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
  * Implements <a href="https://www.w3.org/TR/shacl/#NodeConstraintComponent">sh:node</a>
  * @param targetShape the node shape this sh:node refers to
  */
-public record NodeConstraint(Optional<Path> path, Shape.Node targetShape) implements Constraint {
+public record NodeConstraint(Shape.Node targetShape, Optional<Path> path) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       // Having a path means that the node constraint is used inside a property shape, i.e., it applies to the element the
