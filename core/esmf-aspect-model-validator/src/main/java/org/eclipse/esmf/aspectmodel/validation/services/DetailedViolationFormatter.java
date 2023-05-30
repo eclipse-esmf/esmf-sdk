@@ -541,7 +541,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
       @Override
       public String visitNodeConstraint( final NodeConstraint constraint ) {
-         return String.format( "shape-node: %s%n", constraint.shape().attributes().uri().map( violation::shortUri ).orElse( "(anonymous shape)" ) );
+         return String.format( "shape-node: %s%n", constraint.targetShape().attributes().uri().map( violation::shortUri ).orElse( "(anonymous shape)" ) );
       }
 
       @Override

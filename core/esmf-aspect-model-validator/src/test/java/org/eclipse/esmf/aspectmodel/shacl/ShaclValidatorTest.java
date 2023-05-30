@@ -1046,7 +1046,7 @@ public class ShaclValidatorTest {
    }
 
    @Test
-   public void testNodeConstraint() {
+   public void testNodeConstraintForNodeShape() {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
@@ -1091,6 +1091,60 @@ public class ShaclValidatorTest {
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
       assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty \"bar\" .", "\"bar\"".length() ) );
+   }
+
+   @Test
+   public void testNodeConstraintForPropertyShape() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix : <http://example.com#> .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:targetClass :TestClass ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:property [
+                 sh:path :testProperty ;
+                 sh:node :AnotherNodeShape ;
+               ] .
+
+            :AnotherNodeShape
+              a sh:NodeShape ;
+              sh:property [
+                sh:path :nestedProperty ;
+                sh:hasValue "foo" ;
+              ] .
+            """ );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            :Foo a :TestClass ;
+              :testProperty :Bar .
+               
+            :Bar :nestedProperty "bar" .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      final Violation finding = violations.get( 0 );
+      assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
+      final InvalidValueViolation violation = (InvalidValueViolation) finding;
+      final Resource nestedElement = dataModel.createResource( namespace + "Bar" );
+      assertThat( violation.context().element() ).isEqualTo( nestedElement );
+      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "AnotherNodeShape" );
+      assertThat( violation.propertyName() ).isEqualTo( ":nestedProperty" );
+      assertThat( violation.elementName() ).isEqualTo( ":Bar" );
+      assertThat( violation.allowed().asLiteral().getString() ).isEqualTo( "foo" );
+      assertThat( violation.actual() ).isEqualTo( ResourceFactory.createStringLiteral( "bar" ) );
+      assertThat( violation.message() ).isEqualTo( "Property :nestedProperty on :Bar has value bar, but only foo is allowed." );
+      assertThat( violation.errorCode() ).isEqualTo( InvalidValueViolation.ERROR_CODE );
+
+      final String formattedMessage = rustLikeFormatter.visit( finding );
+      assertTrue( formattedMessageIsCorrect( formattedMessage, 5, ":nestedProperty \"bar\" .", "\"bar\"".length() ) );
    }
 
    @Test

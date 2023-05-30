@@ -37,8 +37,6 @@ import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Streams;
-
 import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
@@ -46,6 +44,8 @@ import org.eclipse.esmf.aspectmodel.shacl.path.PathNodeRetriever;
 import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import com.google.common.collect.Streams;
 
 /**
  * Implementation of a SHACL engine that allows validation on a per-element basis: {@link #validateElement(Resource)} can be used to retrieve validation
@@ -56,6 +56,7 @@ public class ShaclValidator {
    private final List<Shape.Node> shapes;
    private final Map<Resource, List<Shape.Node>> shapesWithClassTargets;
    private final Model shapesModel;
+   private final PathNodeRetriever retriever = new PathNodeRetriever();
 
    /**
     * Constructor to provide a custom RDF model containing SHACL shapes
@@ -166,7 +167,6 @@ public class ShaclValidator {
 
    public List<Violation> validateShapeForElement( final Resource element, final Shape.Node shape, final Model resolvedModel ) {
       final List<Violation> violations = new ArrayList<>();
-      final PathNodeRetriever retriever = new PathNodeRetriever();
       for ( final Shape.Property property : shape.properties() ) {
          for ( final Constraint constraint : property.attributes().constraints() ) {
             final List<Statement> reachableNodes = property.path().accept( element, retriever );
@@ -256,5 +256,9 @@ public class ShaclValidator {
 
    public Model getShapesModel() {
       return shapesModel;
+   }
+
+   public PathNodeRetriever getPathNodeRetriever() {
+      return retriever;
    }
 }
