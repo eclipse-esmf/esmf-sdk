@@ -39,7 +39,6 @@
    samm-c:constraint [
       a samm-c:RangeConstraint ;
       samm-c:minValue "5"^^xsd:short ;
-      samm-c:upperBoundDefinition samm-c:OPEN ;
       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
    ] ;
    samm-c:baseCharacteristic :Measurement .

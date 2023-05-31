@@ -607,7 +607,7 @@ public class AspectModelAASVisitor implements AspectVisitor<AssetAdministrationS
 
    @Override
    public AssetAdministrationShellEnvironment visitStructuredValue( final StructuredValue structuredValue, final Context context ) {
-      // https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/modeling-guidelines.html#declaring-structured-value
+      // https://eclipse-esmf.github.io/samm-specification/2.0.0/modeling-guidelines.html#declaring-structured-value
       // AAS cannot handle structuredValues, so we can handle them as ordinary Characteristics
       return visitCharacteristic( structuredValue, context );
    }

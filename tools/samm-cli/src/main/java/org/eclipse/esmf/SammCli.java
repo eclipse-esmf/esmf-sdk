@@ -31,7 +31,7 @@ import picocli.CommandLine;
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n",
       footer = "%nRun @|bold " + SammCli.COMMAND_NAME + " help <command>|@ to display its help."
-            + "%nDocumentation: https://openmanufacturingplatform.github.io/sds-documentation/"
+            + "%nDocumentation: https://eclipse-esmf.github.io/esmf-documentation/index.html"
 )
 @SuppressWarnings( "squid:S1147" ) // System.exit is really required here, this is a CLI tool
 public class SammCli extends AbstractCommand {

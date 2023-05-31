@@ -58,7 +58,7 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testRangeConstraintWithOnlyMinValue( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "RangeConstraint45aa6b0";
+      final String constraintIdentifier = "RangeConstraint65abcea";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),

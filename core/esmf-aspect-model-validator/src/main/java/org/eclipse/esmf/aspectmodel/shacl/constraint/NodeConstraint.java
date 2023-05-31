@@ -27,7 +27,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 public record NodeConstraint(Shape.Node shape) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
-      return context.validator().validateShapeForElement( context.element(), shape );
+      return context.validator().validateShapeForElement( context.element(), shape, context.resolvedModel() );
    }
 
    @Override

@@ -78,8 +78,6 @@ public abstract class ComplexTypeInstantiator<T extends ComplexType> extends Ins
 
       extending.addAll( modelElementFactory.getExtendingElements( getExtending( resource ) ) );
 
-      creatingElements.remove( resource );
-
       return entity;
    }
 

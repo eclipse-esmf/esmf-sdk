@@ -218,6 +218,22 @@ construct {
      bind( "AT_MOST" as ?upperBoundDefinitionValue )
   }
 
+  # no lowerBoundDefinition exists (RangeConstraint)
+  optional {
+    ?constraint a samm-c:RangeConstraint .
+    filter( not exists { ?constraint samm-c:minValue [] } )
+    filter( not exists { ?constraint samm-c:lowerBoundDefinition [] } )
+    bind( "OPEN" as ?lowerBoundDefinitionValue )
+  }
+
+  # no upperBoundDefinition exists (RangeConstraint)
+  optional {
+    ?constraint a samm-c:RangeConstraint .
+    filter( not exists { ?constraint samm-c:maxValue [] } )
+    filter( not exists { ?constraint samm-c:upperBoundDefinition [] } )
+    bind( "OPEN" as ?upperBoundDefinitionValue )
+  }
+
   # scale and integer (FixedPoint Constraint)
   optional {
      ?constraint a samm-c:FixedPointConstraint .

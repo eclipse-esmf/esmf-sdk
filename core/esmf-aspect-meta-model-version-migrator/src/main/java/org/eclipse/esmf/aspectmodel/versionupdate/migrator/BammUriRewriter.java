@@ -13,11 +13,15 @@
 
 package org.eclipse.esmf.aspectmodel.versionupdate.migrator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 import org.eclipse.esmf.samm.KnownVersion;
 
 /**
@@ -66,5 +70,25 @@ public class BammUriRewriter extends AbstractUriRewriter {
       // This catches the regular (i.e., non meta-model) URNs
       result = result.replace( "urn:bamm:", "urn:samm:" );
       return Optional.of( result );
+   }
+
+   @Override
+   public Model migrate( final Model sourceModel ) {
+      final Map<String, String> targetPrefixes = Namespace.createPrefixMap( getTargetKnownVersion() );
+      final Map<String, String> oldToNewNamespaces = buildReplacementPrefixMap( sourceModel, targetPrefixes );
+
+      final List<Statement> remappedStatements = new ArrayList<>();
+
+      // it is important to do the remapping "in situ" (in the same model), because otherwise the position information would be lost.
+      sourceModel.listStatements().forEach( statement ->
+            remappedStatements.add( sourceModel.createStatement( updateResource( statement.getSubject(), oldToNewNamespaces ),
+                  updateProperty( statement.getPredicate(), oldToNewNamespaces ),
+                  updateRdfNode( statement.getObject(), oldToNewNamespaces ) ) )
+      );
+
+      sourceModel.removeAll();
+      remappedStatements.forEach( sourceModel::add );
+      sourceModel.setNsPrefixes( buildPrefixMap( sourceModel, targetPrefixes, oldToNewNamespaces ) );
+      return sourceModel;
    }
 }

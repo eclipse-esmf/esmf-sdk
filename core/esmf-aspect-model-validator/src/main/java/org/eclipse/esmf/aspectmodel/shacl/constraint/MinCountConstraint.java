@@ -40,7 +40,7 @@ public record MinCountConstraint(int minCount) implements Constraint {
          return List.of( new MinCountViolation( context, minCount, 0 ) );
       }
       final Property property = context.property().get();
-      final int count = property.getModel().listStatements( null, property, (RDFNode) null ).toList().size();
+      final int count = property.getModel().listStatements( context.element(), property, (RDFNode) null ).toList().size();
       if ( count < minCount ) {
          return List.of( new MinCountViolation( context, minCount, count ) );
       }

@@ -32,13 +32,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
-
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Converter;
-
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.characteristic.Collection;
@@ -59,6 +52,12 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Converter;
 
 public class AspectModelJavaUtil {
 
@@ -77,7 +76,10 @@ public class AspectModelJavaUtil {
    public static String getPropertyType( final Property property, final boolean inclValidation, final JavaCodeGenerationConfig codeGenerationConfig ) {
       final String propertyType = determinePropertyType( property.getCharacteristic(), inclValidation, codeGenerationConfig );
       if ( property.isOptional() ) {
-         return containerType( Optional.class, propertyType, Optional.empty() );
+         return containerType( Optional.class, propertyType,
+               inclValidation && property.getCharacteristic().isPresent() && property.getCharacteristic().get() instanceof Trait t ?
+                     Optional.of( buildConstraintsForCharacteristic( t, codeGenerationConfig ) ) :
+                     Optional.empty() );
       }
       return propertyType;
    }
