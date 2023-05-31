@@ -251,7 +251,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          if ( property.isOptional() ) {
             LOG.warn( String.format( "Having a recursive Property %s which is optional. Will be excluded from AAS mapping.",
                   property.getAspectModelUrn().map( AspectModelUrn::toString ).orElse( "(unknown)" ) ) );
-            return Optional.of(defaultResultForProperty.get());
+            return defaultResultForProperty;
          } else {
             LOG.error( String.format( "Having a recursive property: %s which is not optional is not valid. Check the model. Property will be excluded from AAS mapping.",
                   property.getAspectModelUrn().map( AspectModelUrn::toString ).orElse( "(unknown)" ) ) );

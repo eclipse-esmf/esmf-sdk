@@ -162,7 +162,7 @@ class AspectModelAASGeneratorTest {
       final SubmodelElement element = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertEquals( "id_testProperty", element.getIdShort() );
 
-      final DataSpecificationContent dataSpecificationContent = getDataSpecificationIEC61360( "urn:bamm:io.openmanufacturing.test:1.0.0#testProperty", env );
+      final DataSpecificationContent dataSpecificationContent = getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
 
       assertEquals( "percent", ((DataSpecificationIec61360)dataSpecificationContent).getUnit(), "Unit is not percent" );
    }
