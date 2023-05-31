@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -35,12 +34,10 @@ import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidNamespaceException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
-import org.eclipse.esmf.metamodel.ExtendedAspectContext;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelNamespace;
 import org.eclipse.esmf.metamodel.NamedElement;
@@ -204,19 +201,6 @@ public class AspectModelLoader {
    }
 
    /**
-    * Convenience method to load the single Aspect + it's extended context from a model, when the model contains exactly one Aspect.
-    *
-    * <b>Caution:</b> The method handles this special case. Aspect Models are allowed to contain any number of Aspects (including zero),
-    * so for the general case you should use {@link #getElements(VersionedModel)} instead.
-    *
-    * @param versionedModel The RDF model representation of the Aspect model
-    * @return the single Aspect contained in the model together with it's extended context
-    */
-   public static Try<ExtendedAspectContext> getSingleAspectWithContext( final VersionedModel versionedModel ) {
-      return getSingleAspectWithContext( versionedModel, aspect -> true );
-   }
-
-   /**
     * Convenience method to load the single Aspect from a model, when the model contains exactly one Aspect. Does the same as
     * {@link #getSingleAspect(VersionedModel)} but throws an exception on failure.
     *
@@ -232,24 +216,7 @@ public class AspectModelLoader {
          throw new AspectLoadingException( cause );
       } );
    }
-
-   /**
-    * Convenience method to load the single Aspect from a model, when the model contains exactly one Aspect. Does the same as
-    * {@link #getSingleAspectWithContext(VersionedModel)} but throws an exception on failure.
-    *
-    * <b>Caution:</b> The method handles this special case. Aspect Models are allowed to contain any number of Aspects (including zero),
-    * so for the general case you should use {@link #getElementsUnchecked(VersionedModel)} instead.
-    *
-    * @param versionedModel The RDF model representation of the Aspect model
-    * @return the single Aspect contained in the model plus it's extended context (elements loaded in the context of this model)
-    */
-   public static ExtendedAspectContext getSingleAspectUncheckedWithContext( final VersionedModel versionedModel ) {
-      return getSingleAspectWithContext( versionedModel ).getOrElseThrow( cause -> {
-         LOG.error( "Could not load aspect", cause );
-         throw new AspectLoadingException( cause );
-      } );
-   }
-
+   
    /**
     * Similar to {@link #getSingleAspect(VersionedModel)}, except that a predicate can be provided to select which of potentially
     * multiple aspects should be selected
@@ -284,33 +251,5 @@ public class AspectModelLoader {
       return AspectModelResolver.loadAndResolveModel( input ).flatMap( versionedModel ->
             getSingleAspect( versionedModel, aspect -> aspect.getName().equals( input.getName() ) )
                   .map( aspect -> new AspectContext( versionedModel, aspect ) ) );
-   }
-
-   /**
-    * Similar to {@link #getSingleAspectWithContext(VersionedModel)}, except that a predicate can be provided to select which of potentially
-    * multiple aspects should be selected
-    * @param versionedModel the RDF model reprensentation of the Aspect model
-    * @param selector the predicate to select an Aspect
-    * @return the extended context, or a failure if 0 or more than 1 matching Aspects were found
-    */
-   public static Try<ExtendedAspectContext> getSingleAspectWithContext( final VersionedModel versionedModel, final Predicate<Aspect> selector ) {
-      final Try<List<ModelElement>> allElements = getElements( versionedModel );
-      final List<Aspect> aspects = allElements.map( elements -> elements.stream().filter( element -> element.is( Aspect.class ) )
-            .map( element -> element.as( Aspect.class ) )
-            .filter( selector )
-            .toList() ).get();
-      return switch ( aspects.size() ) {
-         case 1 -> Try.success( new ExtendedAspectContext( versionedModel, aspects.iterator().next(), getLoadedElementMap( allElements.get() ) ) );
-         case 0 -> Try.failure( new InvalidRootElementCountException( "No Aspects were found in the model" ) );
-         default -> Try.failure( new AspectLoadingException( "Multiple Aspects were found in the resolved model" ) );
-      };
-   }
-
-   private static Map<AspectModelUrn, ModelElement> getLoadedElementMap( final List<ModelElement> loadedElements ) {
-      return loadedElements.stream()
-            .filter( element -> element.is( NamedElement.class ) )
-            .map( element -> element.as( NamedElement.class ) )
-            .filter( element -> element.getAspectModelUrn().isPresent() )
-            .collect( Collectors.toMap( element -> element.getAspectModelUrn().get(), Function.identity() ) );
    }
 }

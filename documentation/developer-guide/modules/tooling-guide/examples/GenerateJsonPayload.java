@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.metamodel.ExtendedAspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.junit.jupiter.api.Test;
 
@@ -31,13 +31,13 @@ public class GenerateJsonPayload extends AbstractGenerator {
 
       // tag::generate[]
       // Aspect as created by the AspectModelLoader
-      final ExtendedAspectContext aspectContext = // ...
+      final Aspect aspect = // ...
             // end::generate[]
             // exclude the actual loading from the example to reduce noise
-            AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspectWithContext ).get();
+            AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
       // tag::generate[]
 
-      final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( aspectContext );
+      final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( aspect );
 
       // Variant 1: Direct generation into a String
       final String jsonString = generator.generateJson();

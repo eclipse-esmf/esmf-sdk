@@ -16,7 +16,6 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Property;
@@ -32,10 +31,10 @@ public class AbstractEntityInstantiator extends ComplexTypeInstantiator<Abstract
 
    @Override
    protected AbstractEntity createDefaultEntity(
-         MetaModelBaseAttributes metaModelBaseAttributes,
-         List<Property> properties,
-         Optional<ComplexType> extendedEntity,
-         List<AspectModelUrn> extendingComplexTypes ) {
+         final MetaModelBaseAttributes metaModelBaseAttributes,
+         final List<Property> properties,
+         final Optional<ComplexType> extendedEntity,
+         final List<ComplexType> extendingComplexTypes ) {
       return new DefaultAbstractEntity(
             metaModelBaseAttributes,
             properties,

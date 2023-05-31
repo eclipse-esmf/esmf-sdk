@@ -43,7 +43,6 @@ import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.metamodel.AspectContext;
-import org.eclipse.esmf.metamodel.ExtendedAspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 
 import io.vavr.control.Try;
@@ -77,38 +76,20 @@ public abstract class AspectModelMojo extends AbstractMojo {
             .collect( Collectors.toSet() );
    }
 
-   protected Set<Try<ExtendedAspectContext>> loadAndResolveModelsWithContext() {
-      final Path modelsRoot = Path.of( modelsRootDirectory );
-      return includes.stream().map( AspectModelUrn::fromUrn )
-            .map( urn -> new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ).flatMap( versionedModel ->
-                  AspectModelLoader.getSingleAspectWithContext( versionedModel, aspect -> aspect.getName().equals( urn.getName() ) )
-            ) )
-            .collect( Collectors.toSet() );
-   }
-
    protected Set<AspectContext> loadModelsOrFail() throws MojoExecutionException {
       final Set<AspectContext> result = new HashSet<>();
       for ( final Try<AspectContext> context : loadAndResolveModels() ) {
          if ( context.isFailure() ) {
-            handleFailedModelResolution( context.getCause(), context.map( AspectContext::rdfModel ) );
+            handleFailedModelResolution( context );
          }
          result.add( context.get() );
       }
       return result;
    }
 
-   protected Set<ExtendedAspectContext> loadModelsWithContextOrFail() throws MojoExecutionException {
-      final Set<ExtendedAspectContext> result = new HashSet<>();
-      for ( final Try<ExtendedAspectContext> context : loadAndResolveModelsWithContext() ) {
-         if ( context.isFailure() ) {
-            handleFailedModelResolution( context.getCause(), context.map( ExtendedAspectContext::rdfModel ) );
-         }
-         result.add( context.get() );
-      }
-      return result;
-   }
+   private void handleFailedModelResolution( final Try<AspectContext> failedModel ) throws MojoExecutionException {
+      final Throwable loadModelFailureCause = failedModel.getCause();
 
-   private void handleFailedModelResolution( final Throwable loadModelFailureCause, final Try<VersionedModel> versionedModel ) throws MojoExecutionException {
       // Model can not be loaded, root cause e.g. File not found
       if ( loadModelFailureCause instanceof IllegalArgumentException ) {
          throw new MojoExecutionException( "Can not open file in models root directory.", loadModelFailureCause );
@@ -120,7 +101,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
       // Another exception, e.g. syntax error. Let the validator handle this
       final AspectModelValidator validator = new AspectModelValidator();
-      final List<Violation> violations = validator.validateModel( versionedModel );
+      final List<Violation> violations = validator.validateModel( failedModel.map( AspectContext::rdfModel ) );
       final String errorMessage = detailedValidationMessages
             ? new DetailedViolationFormatter().apply( violations )
             : new ViolationFormatter().apply( violations );
@@ -169,5 +150,4 @@ public abstract class AspectModelMojo extends AbstractMojo {
       final FileOutputStream streamForFile = getStreamForFile( aspectModelFileName, outputDirectory );
       return new PrintWriter( streamForFile );
    }
-
 }

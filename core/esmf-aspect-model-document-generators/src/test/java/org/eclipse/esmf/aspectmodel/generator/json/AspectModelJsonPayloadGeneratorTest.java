@@ -87,8 +87,8 @@ import org.eclipse.esmf.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.constraint.RangeConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.ExtendedAspectContext;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
@@ -449,10 +449,9 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final Pair<Number, Number> randomRange = generateRandomRangeForType( numericType, nativeType, boundKind.orElse( null ) );
 
       final Aspect dynamicAspect = createAspectWithDynamicNumericProperty( modelVersion, numericType, boundKind.orElse( null ), randomRange );
-      final ExtendedAspectContext context = new ExtendedAspectContext( null, dynamicAspect, Map.of() );
-      final AspectModelJsonPayloadGenerator randomGenerator = new AspectModelJsonPayloadGenerator( context );
-      final AspectModelJsonPayloadGenerator minGenerator = new AspectModelJsonPayloadGenerator( context, new MinValueRandomStrategy() );
-      final AspectModelJsonPayloadGenerator maxGenerator = new AspectModelJsonPayloadGenerator( context, new MaxValueRandomStrategy() );
+      final AspectModelJsonPayloadGenerator randomGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect );
+      final AspectModelJsonPayloadGenerator minGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect, new MinValueRandomStrategy() );
+      final AspectModelJsonPayloadGenerator maxGenerator = new AspectModelJsonPayloadGenerator( dynamicAspect, new MaxValueRandomStrategy() );
       try {
          final String generatedJson = randomGenerator.generateJson();
          final String minValue = minGenerator.generateJson();
@@ -583,8 +582,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    private String generateJsonForModel( final TestAspect model, final KnownVersion testedVersion ) {
       final VersionedModel versionedModel = TestResources.getModel( model, testedVersion ).get();
-      final ExtendedAspectContext context = AspectModelLoader.getSingleAspectUncheckedWithContext( versionedModel );
-      final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( context );
+      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( versionedModel );
+      final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( new AspectContext( versionedModel, aspect ) );
       try {
          return jsonGenerator.generateJson();
       } catch ( final IOException e ) {
