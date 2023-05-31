@@ -32,7 +32,6 @@ import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.impl.DefaultAbstractEntity;
-import org.eclipse.esmf.metamodel.impl.DefaultComplexType;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
@@ -59,38 +58,32 @@ public abstract class ComplexTypeInstantiator<T extends ComplexType> extends Ins
     * {@link Aspect} whether they are directly linked to that Aspect or not. This
     * scenario may occur for example when the Aspect Model contains a {@link Collection}
     * with an {@link AbstractEntity} as its data type with multiple Entities extending the {@link AbstractEntity}.
-    *
-    * In order to prevent processing elements in this circular dependency more than once, causing an infinite loop,
-    * the elements which are processed are tracked in the {@link AbstractEntityInstantiator#processedExtendingElements}
-    * {@link Set}.
-    * Using the {@link DefaultComplexType#instances} Map to check whether an
-    * element has been processed does not work since the instance is only created once the `create` method of the
-    * corresponding {@link ComplexType} has been called. Creating the child elements however happens before this call.
     */
    @Override
    public T apply( final Resource resource ) {
-      if ( creatingElements.containsKey( resource ) )
+      if ( creatingElements.containsKey( resource ) ) {
          return creatingElements.get( resource );
+      }
 
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( resource );
       final List<Property> properties = getPropertiesModels( resource, samm.properties() );
 
       final Optional<ComplexType> extendedEntity = getExtendedEntity( resource );
 
-      final List<AspectModelUrn> extending = new ArrayList<>();
+      final List<ComplexType> extending = new ArrayList<>();
 
-      T entity = createDefaultEntity( metaModelBaseAttributes, properties, extendedEntity, extending );
+      final T entity = createDefaultEntity( metaModelBaseAttributes, properties, extendedEntity, extending );
 
       creatingElements.put( resource, entity );
 
-      extending.addAll( getExtending( resource ) );
+      extending.addAll( modelElementFactory.getExtendingElements( getExtending( resource ) ) );
 
       creatingElements.remove( resource );
 
       return entity;
    }
 
-   private List<AspectModelUrn> getExtending( Resource resource ) {
+   private List<AspectModelUrn> getExtending( final Resource resource ) {
       return model.listSubjectsWithProperty( samm._extends(), resource )
             .mapWith( extendingComplexType -> attributeValue( extendingComplexType, RDF.type ) ).mapWith( statement -> {
                if ( processedExtendingElements.contains( statement.getSubject() ) ) {
@@ -104,7 +97,7 @@ public abstract class ComplexTypeInstantiator<T extends ComplexType> extends Ins
             } ).toList();
    }
 
-   protected Optional<ComplexType> getExtendedEntity( Resource resource ) {
+   protected Optional<ComplexType> getExtendedEntity( final Resource resource ) {
       return optionalAttributeValue( resource, samm._extends() )
             .map( Statement::getResource )
             .map( extendedEntityResource -> attributeValue( extendedEntityResource, RDF.type ) )
@@ -120,5 +113,5 @@ public abstract class ComplexTypeInstantiator<T extends ComplexType> extends Ins
          MetaModelBaseAttributes metaModelBaseAttributes,
          List<Property> properties,
          Optional<ComplexType> extendedEntity,
-         List<AspectModelUrn> extendingComplexTypes );
+         List<ComplexType> extendingComplexTypes );
 }

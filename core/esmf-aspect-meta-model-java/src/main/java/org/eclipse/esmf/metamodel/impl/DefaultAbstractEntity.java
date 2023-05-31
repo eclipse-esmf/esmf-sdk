@@ -16,7 +16,6 @@ package org.eclipse.esmf.metamodel.impl;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Property;
@@ -28,14 +27,14 @@ public class DefaultAbstractEntity extends DefaultComplexType implements Abstrac
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
          final Optional<ComplexType> _extends,
-         final List<AspectModelUrn> extendingElements ) {
+         final List<ComplexType> extendingElements ) {
       return new DefaultAbstractEntity( metaModelBaseAttributes, properties, _extends, extendingElements );
    }
 
    public DefaultAbstractEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
          final Optional<ComplexType> _extends,
-         final List<AspectModelUrn> extendingElements ) {
+         final List<ComplexType> extendingElements ) {
       super( metaModelBaseAttributes, properties, _extends, extendingElements );
    }
 

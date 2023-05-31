@@ -49,7 +49,7 @@ public class AspectToJsonCommand extends AbstractCommand {
    @Override
    public void run() {
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
-            loadModelWithContext( parentCommand.parentCommand.getInput(), customResolver ) );
+            loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
       try {
          // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
          // as opposed to what the model thinks it should be called (name)
