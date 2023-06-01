@@ -55,11 +55,10 @@ import org.eclipse.esmf.samm.KnownVersion;
  * So a depth-first traversal of the "resolved" (via Characteristics/Entities etc.) property references is able to deliver all cycles present in the model.
  */
 public class ModelCycleDetector {
-
-   static String ERR_CYCLE_DETECTED =
+   final static String ERR_CYCLE_DETECTED =
          "The Aspect Model contains a cycle which includes following properties: %s. Please remove any cycles that do not allow a finite json payload.";
 
-   private final static String prefixes = """
+   private final static String PREFIXES = """
          prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#>
          prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%s#>
          prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -74,7 +73,7 @@ public class ModelCycleDetector {
    private SAMM samm;
    private Model model;
 
-   List<Violation> cycleDetectionReport = new ArrayList<>();
+   final List<Violation> cycleDetectionReport = new ArrayList<>();
 
    public List<Violation> validateModel( final VersionedModel versionedModel ) {
       discovered.clear();
@@ -221,7 +220,8 @@ public class ModelCycleDetector {
    }
 
    private void initializeQuery( final KnownVersion metaModelVersion ) {
-      final String currentVersionPrefixes = String.format( prefixes, metaModelVersion.toVersionString(), metaModelVersion.toVersionString() );
+      final String currentVersionPrefixes = String.format( PREFIXES, metaModelVersion.toVersionString(), metaModelVersion.toVersionString() );
+      //noinspection LongLine
       final String queryString = String.format( """
                   %s select ?reachableProperty ?viaEither
                       where {
@@ -266,7 +266,7 @@ public class ModelCycleDetector {
       public final Resource propertyNode;
       public final int eitherStatus;
 
-      public NextHopProperty( final Resource propertyNode, final int viaEither ) {
+      private NextHopProperty( final Resource propertyNode, final int viaEither ) {
          this.propertyNode = propertyNode;
          eitherStatus = viaEither;
       }

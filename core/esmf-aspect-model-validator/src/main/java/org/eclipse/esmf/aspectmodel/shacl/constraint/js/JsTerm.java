@@ -19,7 +19,7 @@ import org.apache.jena.graph.Node;
  * Base class for <a href="https://www.w3.org/TR/shacl-js/#js-api-terms">RDF Terms</a>
  */
 public abstract class JsTerm {
-   protected Node node;
+   protected final Node node;
 
    protected JsTerm( final Node node ) {
       this.node = node;

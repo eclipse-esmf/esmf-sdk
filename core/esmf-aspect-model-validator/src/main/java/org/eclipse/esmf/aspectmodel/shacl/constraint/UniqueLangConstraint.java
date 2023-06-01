@@ -51,7 +51,7 @@ public record UniqueLangConstraint() implements Constraint {
             .filter( e -> !seen.add( e ) )
             .collect( Collectors.toSet() );
 
-      return duplicates.size() == 0 ?
+      return duplicates.isEmpty() ?
             List.of() :
             List.of( new UniqueLanguageViolation( context, seen ) );
    }

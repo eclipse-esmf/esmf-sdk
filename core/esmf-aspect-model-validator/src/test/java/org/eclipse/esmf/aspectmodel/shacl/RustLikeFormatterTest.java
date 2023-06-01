@@ -36,7 +36,7 @@ public class RustLikeFormatterTest {
    private final RustLikeFormatter formatter = new RustLikeFormatter();
 
    @Test
-   void testMidleStatement() {
+   void testMiddleStatement() {
       final Model dataModel = model( """            
             @prefix : <http://example.com#> .
                         

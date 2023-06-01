@@ -74,7 +74,7 @@ public record SparqlConstraint(String message, Query query) implements Constrain
    }
 
    /**
-    * Perform proper query substitutions; unfortunately the substutions done by {@see org.apache.jena.query.ParameterizedSparqlString} are not always correct.
+    * Perform proper query substitutions; unfortunately the substitutions done by {@see org.apache.jena.query.ParameterizedSparqlString} are not always correct.
     * @param query the query
     * @param substitutions the map of substitutions to perform
     * @return the updated query

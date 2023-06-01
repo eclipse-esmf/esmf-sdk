@@ -43,12 +43,14 @@ import com.google.common.collect.Ordering;
 
 /**
  * Rust-like message formatter. Formatted messages look something like the following example:
- *
+ * <br/><br/>
+ * <pre>
  * ---> Error at line 11 column 20
  *    |
  * 11 |   :testProperty [ a :SomethingElse ]
  *    |                     ^^^^^^^^^^^^^^ Property ':testProperty' on ':Foo' has type ':SomethingElse', but only ':TestClass2' is allowed.
  *    |
+ * </pre>
  */
 public class RustLikeFormatter {
 
@@ -228,8 +230,14 @@ public class RustLikeFormatter {
       final SmartToken nodePosition = extractToken( node );
       if ( null == nodePosition ) {
          // ugly special case: Jena internally replaces the RDF keyword 'a' with 'rdf:type' without position information
-         if ( node.asNode().equals( NodeConst.nodeRDFType ) ) {
+         if ( NodeConst.nodeRDFType.equals( node.asNode() ) ) {
             spacedIfPossible( "a " );
+         }
+         if ( NodeConst.nodeTrue.equals( node.asNode() ) ) {
+            spacedIfPossible( "true" );
+         }
+         if ( NodeConst.nodeFalse.equals( node.asNode() ) ) {
+            spacedIfPossible( "false" );
          }
          return true;
       }
@@ -254,15 +262,16 @@ public class RustLikeFormatter {
       return node.equals( RDF.nil ) || (node.isResource() && model.contains( node.asResource(), RDF.rest, (RDFNode) null ));
    }
 
-   private Statement findListHead( Statement listElement ) {
+   private Statement findListHead( final Statement listElement ) {
+      Statement listElementStatement = listElement;
       while ( true ) {
-         final StmtIterator iter = listElement.getModel().listStatements( null, RDF.rest, listElement.getSubject() );
+         final StmtIterator iter = listElementStatement.getModel().listStatements( null, RDF.rest, listElementStatement.getSubject() );
          if ( !iter.hasNext() ) {
             break;
          }
-         listElement = iter.nextStatement();
+         listElementStatement = iter.nextStatement();
       }
-      return listElement;
+      return listElementStatement;
    }
 
    private boolean formatList( final RDFNode listNode ) {
@@ -341,17 +350,17 @@ public class RustLikeFormatter {
       currentColumn += reconstructedText.length();
    }
 
-   private static SmartToken extractToken( final RDFNode node ) {
-      final Node n = node.asNode();
-      if ( n instanceof AnyNode an ) {
+   private static SmartToken extractToken( final RDFNode rdfNode ) {
+      final Node node = rdfNode.asNode();
+      if ( node instanceof final AnyNode an ) {
          return an.getToken();
-      } else if ( n instanceof BlankNode bn ) {
+      } else if ( node instanceof final BlankNode bn ) {
          return bn.getToken();
-      } else if ( n instanceof LiteralNode ln ) {
+      } else if ( node instanceof final LiteralNode ln ) {
          return ln.getToken();
-      } else if ( n instanceof UriNode un ) {
+      } else if ( node instanceof final UriNode un ) {
          return un.getToken();
-      } else if ( n instanceof VariableNode vn ) {
+      } else if ( node instanceof final VariableNode vn ) {
          return vn.getToken();
       } else {
          return null;
