@@ -126,7 +126,7 @@ public class ShaclValidator {
       final Map<Resource, List<Shape.Node>> resourceShapes = new HashMap<>();
       for ( final Shape.Node shape : targetSparqlShapes() ) {
          final List<Resource> shapeTargets = querySparqlTargets( model, shape.attributes().targetSparql().orElseThrow( () ->
-               new RuntimeException( "SPARQL node shape is missing a target SPARQL expression" ) ) );
+               new ShaclValidationException( "SPARQL node shape is missing a target SPARQL expression" ) ) );
          for ( final Resource node : shapeTargets ) {
             addResourceShape( resourceShapes, node, shape );
          }

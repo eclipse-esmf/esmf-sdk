@@ -43,12 +43,14 @@ import com.google.common.collect.Ordering;
 
 /**
  * Rust-like message formatter. Formatted messages look something like the following example:
- *
+ * <br/><br/>
+ * <pre>
  * ---> Error at line 11 column 20
  *    |
  * 11 |   :testProperty [ a :SomethingElse ]
  *    |                     ^^^^^^^^^^^^^^ Property ':testProperty' on ':Foo' has type ':SomethingElse', but only ':TestClass2' is allowed.
  *    |
+ * </pre>
  */
 public class RustLikeFormatter {
 
@@ -228,13 +230,13 @@ public class RustLikeFormatter {
       final SmartToken nodePosition = extractToken( node );
       if ( null == nodePosition ) {
          // ugly special case: Jena internally replaces the RDF keyword 'a' with 'rdf:type' without position information
-         if ( node.asNode().equals( NodeConst.nodeRDFType ) ) {
+         if ( NodeConst.nodeRDFType.equals( node.asNode() ) ) {
             spacedIfPossible( "a " );
          }
-         if ( node.asNode().equals( NodeConst.nodeTrue ) ) {
+         if ( NodeConst.nodeTrue.equals( node.asNode() ) ) {
             spacedIfPossible( "true" );
          }
-         if ( node.asNode().equals( NodeConst.nodeFalse ) ) {
+         if ( NodeConst.nodeFalse.equals( node.asNode() ) ) {
             spacedIfPossible( "false" );
          }
          return true;
