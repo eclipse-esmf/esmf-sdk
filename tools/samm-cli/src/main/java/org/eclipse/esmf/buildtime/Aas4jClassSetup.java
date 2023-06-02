@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.esmf.substitution.AdminShellConfig;
 import org.eclipse.esmf.substitution.ImplementationInfo;
-import org.eclipse.esmf.substitution.Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper;
+import org.eclipse.esmf.substitution.Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper;
 
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 import io.github.classgraph.ClassGraph;
@@ -47,14 +47,14 @@ import io.github.classgraph.ScanResult;
 /**
  * This class generates the reflection information normally stored by {@link ReflectionHelper} and serializes it into a .properties file.
  * It is part of the substitution logic for this class, see
- * {@link Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper} for more information.
+ * {@link Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper} for more information.
  * Note that this class is <i>only</i> supposed to run at build time (via execution from the Maven build) and is not part of the
  * resulting CLI codebase. Running this class is configured in the pom.xml of the CLI Maven module (via exec-maven-plugin).
  */
-public class IoAdminShellAasClassSetup {
+public class Aas4jClassSetup {
    private final AdminShellConfig config;
 
-   public IoAdminShellAasClassSetup() {
+   public Aas4jClassSetup() {
       // The following replicates the logic from ReflectionHelper's static constructor, but instead stores its result
       // in the AdminShellConfig object that can then be written to a .properties file
       final ScanResult modelScan = new ClassGraph()
@@ -73,7 +73,7 @@ public class IoAdminShellAasClassSetup {
    }
 
    public static void main( final String[] args ) throws IOException {
-      final AdminShellConfig config = new IoAdminShellAasClassSetup().config;
+      final AdminShellConfig config = new Aas4jClassSetup().config;
       final Properties p = config.toProperties();
       final File out = new File( args[0] );
       final FileOutputStream outputStream = new FileOutputStream( out );

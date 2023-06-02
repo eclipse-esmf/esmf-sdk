@@ -198,7 +198,7 @@
                   </goals>
                   <configuration>
                      <!-- The main class of your build-time scanning code -->
-                     <mainClass>org.eclipse.esmf.buildtime.IoAdminShellAasClassSetup</mainClass>
+                     <mainClass>org.eclipse.esmf.buildtime.Aas4jClassSetup</mainClass>
                      <!-- Pass the build target file as a commandline param -->
                      <commandlineArgs>${project.build.outputDirectory}/adminshell.properties</commandlineArgs>
                      <cleanupDaemonThreads>false</cleanupDaemonThreads>
