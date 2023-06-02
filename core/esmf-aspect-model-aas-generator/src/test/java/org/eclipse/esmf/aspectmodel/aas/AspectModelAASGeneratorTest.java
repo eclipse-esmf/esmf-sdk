@@ -163,7 +163,7 @@ class AspectModelAASGeneratorTest {
 
       final DataSpecificationContent dataSpecificationContent = getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
 
-      assertEquals( "percent", ((DataSpecificationIec61360)dataSpecificationContent).getUnit(), "Unit is not percent" );
+      assertEquals( "percent", ((DataSpecificationIec61360) dataSpecificationContent).getUnit(), "Unit is not percent" );
    }
 
    @Test
@@ -216,14 +216,14 @@ class AspectModelAASGeneratorTest {
       final DataSpecificationIec61360 dataSpecificationContent =
             (DataSpecificationIec61360)
                   env.getConceptDescriptions().stream()
-                  .filter( x -> x.getIdShort().equals( "id_TestEnumeration" ) )
-                  .findFirst()
-                  .get()
-                  .getEmbeddedDataSpecifications()
-                  .stream()
-                  .findFirst()
-                  .get()
-                  .getDataSpecificationContent();
+                        .filter( x -> x.getIdShort().equals( "id_TestEnumeration" ) )
+                        .findFirst()
+                        .get()
+                        .getEmbeddedDataSpecifications()
+                        .stream()
+                        .findFirst()
+                        .get()
+                        .getDataSpecificationContent();
       assertEquals( 3, dataSpecificationContent.getValueList().getValueReferencePairs().size() );
 
       assertEquals( 1, env.getSubmodels().size() );
@@ -246,11 +246,11 @@ class AspectModelAASGeneratorTest {
       byte[] xmlFile = baos.toByteArray();
       final Environment env = loadAASX( new ByteArrayInputStream( xmlFile ) );
       assertTrue( env.getSubmodels().size() >= 1, "No Submodel in AAS present." );
-      try{
+      try {
          validate( new ByteArrayInputStream( xmlFile ) );
-      }catch(SAXException e){
-         String model = "AAS XML file causing the Exception. \n" + new String(xmlFile, StandardCharsets.UTF_8);
-         throw new SAXException(model, e);
+      } catch ( SAXException e ) {
+         String model = "AAS XML file causing the Exception. \n" + new String( xmlFile, StandardCharsets.UTF_8 );
+         throw new SAXException( model, e );
       }
 
    }
@@ -287,17 +287,16 @@ class AspectModelAASGeneratorTest {
       return generator.generateXmlOutput( aspect );
    }
 
-   private void validate(ByteArrayInputStream xmlStream) throws IOException, SAXException {
-         SchemaFactory factory =
-               SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI);
+   private void validate( ByteArrayInputStream xmlStream ) throws IOException, SAXException {
+      SchemaFactory factory =
+            SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
 
-         Schema schema = factory.newSchema(
-               new StreamSource(getClass().getResourceAsStream( XML_XSD_AAS_SCHEMA_LOCATION ) ) );
-         Validator validator = schema.newValidator();
-         validator.validate(new StreamSource( xmlStream ), null);
+      Schema schema = factory.newSchema(
+            new StreamSource( getClass().getResourceAsStream( XML_XSD_AAS_SCHEMA_LOCATION ) ) );
+      Validator validator = schema.newValidator();
+      validator.validate( new StreamSource( xmlStream ), null );
 
    }
-
 
    private Aspect loadAspect( final TestAspect testAspect ) {
       final VersionedModel model = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();

@@ -162,7 +162,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                .put( XSD.xint, DataTypeDefXSD.INT )
                .put( XSD.integer, DataTypeDefXSD.INTEGER )
                .put( XSD.xlong, DataTypeDefXSD.LONG )
-               .put( XSD.negativeInteger, DataTypeDefXSD.NEGATIVE_INTEGER)
+               .put( XSD.negativeInteger, DataTypeDefXSD.NEGATIVE_INTEGER )
                .put( XSD.nonNegativeInteger, DataTypeDefXSD.NON_NEGATIVE_INTEGER )
                .put( XSD.positiveInteger, DataTypeDefXSD.POSITIVE_INTEGER )
                .put( XSD.xshort, DataTypeDefXSD.SHORT )
@@ -193,8 +193,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       if ( context == null ) {
          final Submodel submodel = new DefaultSubmodel.Builder().build();
          Environment environment = new DefaultEnvironment.Builder().submodels( Collections.singletonList( submodel ) ).build();
-         context = new Context(environment, submodel );
-         context.setEnvironment(environment);
+         context = new Context( environment, submodel );
+         context.setEnvironment( environment );
       }
 
       final Submodel submodel = context.getSubmodel();
@@ -210,7 +210,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final AssetAdministrationShell administrationShell =
             new DefaultAssetAdministrationShell.Builder()
                   .idShort( ID_PREFIX + ADMIN_SHELL_NAME )
-                  .description( createLangStringTextType(  "en", ADMIN_SHELL_NAME) )
+                  .description( createLangStringTextType( "en", ADMIN_SHELL_NAME ) )
                   .id( ADMIN_SHELL_NAME )
                   .administration( new DefaultAdministrativeInformation.Builder().build() )
                   .assetInformation( new DefaultAssetInformation.Builder().assetKind( AssetKind.INSTANCE ).build() )
@@ -234,8 +234,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    private List<SubmodelElement> visitProperties(
          final List<Property> elements, final Context context ) {
       return elements.stream().map( i -> mapText( i, context ) )
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .filter( Optional::isPresent )
+            .map( Optional::get )
             .collect( Collectors.toList() );
    }
 
@@ -253,7 +253,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                   property.getAspectModelUrn().map( AspectModelUrn::toString ).orElse( "(unknown)" ) ) );
             return defaultResultForProperty;
          } else {
-            LOG.error( String.format( "Having a recursive property: %s which is not optional is not valid. Check the model. Property will be excluded from AAS mapping.",
+            LOG.error( String.format(
+                  "Having a recursive property: %s which is not optional is not valid. Check the model. Property will be excluded from AAS mapping.",
                   property.getAspectModelUrn().map( AspectModelUrn::toString ).orElse( "(unknown)" ) ) );
          }
          return defaultResultForProperty;
@@ -308,17 +309,17 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    private org.eclipse.digitaltwin.aas4j.v3.model.Property mapToAasProperty( final Property property ) {
       return new DefaultProperty.Builder()
             .idShort( ID_PREFIX + property.getName() )
-            .valueType( mapAASXSDataType( property.getCharacteristic().flatMap( Characteristic::getDataType ).map( this::mapType ).orElse( UNKNOWN_TYPE ) )  )
+            .valueType( mapAASXSDataType( property.getCharacteristic().flatMap( Characteristic::getDataType ).map( this::mapType ).orElse( UNKNOWN_TYPE ) ) )
             .displayName( mapName( property.getPreferredNames() ) )
             .value( property.getExampleValue().map( i -> i.getValue().toString() ).orElse( UNKNOWN_EXAMPLE ) )
             .description( mapText( property.getDescriptions() ) )
             .semanticID( buildReferenceToConceptDescription( property ) ) // link to the conceptDescription containing the details for the Characteristic
-            .supplementalSemanticIds( buildReferencesForSeeElements(property.getSee()) )
+            .supplementalSemanticIds( buildReferencesForSeeElements( property.getSee() ) )
             .build();
    }
 
    private String extractIdentifier( final NamedElement element ) {
-      return  determineIdentifierFor( element );
+      return determineIdentifierFor( element );
    }
 
    private String mapType( final Type type ) {
@@ -373,28 +374,25 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return createLangStringPreferredNameTypeIec61360( langString.getLanguageTag().getLanguage(), langString.getValue() );
    }
 
-
-   private LangStringTextType createLangStringTextType(String locale, String text){
+   private LangStringTextType createLangStringTextType( String locale, String text ) {
       return new DefaultLangStringTextType.Builder().language( locale ).text( text ).build();
    }
 
-   private LangStringNameType createLangStringNameType(String locale, String text){
+   private LangStringNameType createLangStringNameType( String locale, String text ) {
       return new DefaultLangStringNameType.Builder().language( locale ).text( text ).build();
    }
 
-   private LangStringShortNameTypeIec61360 createLangStringShortNameTypeIec61360(String locale, String text){
+   private LangStringShortNameTypeIec61360 createLangStringShortNameTypeIec61360( String locale, String text ) {
       return new DefaultLangStringShortNameTypeIec61360.Builder().language( locale ).text( text ).build();
    }
 
-   private LangStringDefinitionTypeIec61360 createLangStringDefinitionTypeIec61360(String locale, String text){
+   private LangStringDefinitionTypeIec61360 createLangStringDefinitionTypeIec61360( String locale, String text ) {
       return new DefaultLangStringDefinitionTypeIec61360.Builder().language( locale ).text( text ).build();
    }
 
-   private LangStringPreferredNameTypeIec61360 createLangStringPreferredNameTypeIec61360(String locale, String text){
+   private LangStringPreferredNameTypeIec61360 createLangStringPreferredNameTypeIec61360( String locale, String text ) {
       return new DefaultLangStringPreferredNameTypeIec61360.Builder().language( locale ).text( text ).build();
    }
-
-
 
    private Reference buildReferenceToEnumValue( final Enumeration enumeration, final Object value ) {
       final Key key =
@@ -483,14 +481,14 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private EmbeddedDataSpecification extractEmbeddedDataSpecification( final Property property ) {
       return new DefaultEmbeddedDataSpecification.Builder()
-            .dataSpecification( buildReferenceForSeeElement( property.getAspectModelUrn().toString() )  )
+            .dataSpecification( buildReferenceForSeeElement( property.getAspectModelUrn().toString() ) )
             .dataSpecificationContent( extractDataSpecificationContent( property ) )
             .build();
    }
 
    private EmbeddedDataSpecification extractEmbeddedDataSpecification( final Aspect aspect ) {
       return new DefaultEmbeddedDataSpecification.Builder()
-            .dataSpecification( buildReferenceForSeeElement( aspect.getAspectModelUrn().toString() )  )
+            .dataSpecification( buildReferenceForSeeElement( aspect.getAspectModelUrn().toString() ) )
             .dataSpecificationContent( extractDataSpecificationContent( aspect ) )
             .build();
    }
@@ -502,8 +500,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .collect( Collectors.toList() );
 
       final List<LangStringPreferredNameTypeIec61360> preferredNames = property.getPreferredNames().size() > 0 ?
-            property.getPreferredNames().stream().map( this::mapLangStringPreferredNameTypeIec61360  ).collect( Collectors.toList()) :
-            Collections.singletonList(createLangStringPreferredNameTypeIec61360(DEFAULT_LOCALE, property.getName()));
+            property.getPreferredNames().stream().map( this::mapLangStringPreferredNameTypeIec61360 ).collect( Collectors.toList() ) :
+            Collections.singletonList( createLangStringPreferredNameTypeIec61360( DEFAULT_LOCALE, property.getName() ) );
 
       return new DefaultDataSpecificationIec61360.Builder()
             .definition( definitions )
@@ -513,16 +511,15 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .build();
    }
 
-
    private DataSpecificationIec61360 extractDataSpecificationContent( final Aspect aspect ) {
-    List<LangStringPreferredNameTypeIec61360> preferredNames = aspect.getPreferredNames().size() > 0 ?
-          aspect.getPreferredNames().stream().map( this::mapLangStringPreferredNameTypeIec61360  ).collect( Collectors.toList()) :
-          Collections.singletonList(createLangStringPreferredNameTypeIec61360(DEFAULT_LOCALE, aspect.getName()));
+      List<LangStringPreferredNameTypeIec61360> preferredNames = aspect.getPreferredNames().size() > 0 ?
+            aspect.getPreferredNames().stream().map( this::mapLangStringPreferredNameTypeIec61360 ).collect( Collectors.toList() ) :
+            Collections.singletonList( createLangStringPreferredNameTypeIec61360( DEFAULT_LOCALE, aspect.getName() ) );
 
-     return new DefaultDataSpecificationIec61360.Builder()
-           .definition(  aspect.getDescriptions().stream().map( this::mapDefinitionIec61360 ).collect( Collectors.toList()) )
-           .preferredName( preferredNames )
-           .build();
+      return new DefaultDataSpecificationIec61360.Builder()
+            .definition( aspect.getDescriptions().stream().map( this::mapDefinitionIec61360 ).collect( Collectors.toList() ) )
+            .preferredName( preferredNames )
+            .build();
 
    }
 
@@ -595,7 +592,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          final org.eclipse.esmf.characteristic.Set set, final Context context ) {
       final SubmodelElementBuilder builder =
             ( property ) ->
-                  new DefaultSubmodelElementCollection.Builder() //TODO according to the standard document this should be SubmodelEleementStruct. However, this type is not available in AAS4J
+                  new DefaultSubmodelElementCollection.Builder() //TODO according to the standard document this should be SubmodelEleementStruct. However,
+                        // this type is not available in AAS4J
                         .idShort( ID_PREFIX + property.getName() )
                         .displayName( mapName( property.getPreferredNames() ) )
                         .description( mapText( property.getDescriptions() ) )
