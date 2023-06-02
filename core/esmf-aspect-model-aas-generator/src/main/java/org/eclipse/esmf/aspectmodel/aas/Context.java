@@ -15,33 +15,34 @@ package org.eclipse.esmf.aspectmodel.aas;
 import java.util.List;
 import java.util.Optional;
 
-import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
-import io.adminshell.aas.v3.model.ConceptDescription;
-import io.adminshell.aas.v3.model.Submodel;
-import io.adminshell.aas.v3.model.SubmodelElement;
+import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
+import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
+import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
+
 import org.eclipse.esmf.metamodel.Property;
 
 public class Context {
 
-   AssetAdministrationShellEnvironment environment;
+   Environment environment;
    Submodel submodel;
    Property property;
    SubmodelElement propertyResult;
 
-   public Context( AssetAdministrationShellEnvironment environment, Submodel ofInterest ) {
+   public Context( Environment environment, Submodel ofInterest ) {
       this.environment = environment;
       this.submodel = ofInterest;
    }
 
    public boolean hasEnvironmentConceptDescription( final String id ) {
       return getEnvironment().getConceptDescriptions().stream()
-            .anyMatch( x -> x.getIdentification().getIdentifier().equals( id ) );
+            .anyMatch( x -> x.getId().equals( id ) );
    }
 
    public ConceptDescription getConceptDescription( final String id ) {
       final Optional<ConceptDescription> optional =
             getEnvironment().getConceptDescriptions().stream()
-                  .filter( x -> x.getIdentification().getIdentifier().equals( id ) )
+                  .filter( x -> x.getId().equals( id ) )
                   .findFirst();
       if ( optional.isEmpty() ) {
          throw new IllegalArgumentException(
@@ -50,8 +51,12 @@ public class Context {
       return optional.get();
    }
 
-   public AssetAdministrationShellEnvironment getEnvironment() {
+   public Environment getEnvironment() {
       return environment;
+   }
+
+   public void setEnvironment( Environment environment ) {
+      this.environment = environment;
    }
 
    public Submodel getSubmodel() {

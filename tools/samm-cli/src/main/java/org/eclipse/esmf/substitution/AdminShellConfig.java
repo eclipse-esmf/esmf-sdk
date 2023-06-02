@@ -24,11 +24,11 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import io.adminshell.aas.v3.dataformat.core.ReflectionHelper;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 
 /**
  * An instance of this class encapsulates the information normally stored by {@link ReflectionHelper}. It is used in its substitution class,
- * see {@link Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper} for more information.
+ * see {@link Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper} for more information.
  * This class provides capabilities to serialize and deserialize its objects to/from a {@link Properties} object; more convenient serialization
  * (e.g., Java's builtin serialization or Jackson's ObjectMapper) can't be used here due to the limitations of the GraalVM substitution classes.
  */

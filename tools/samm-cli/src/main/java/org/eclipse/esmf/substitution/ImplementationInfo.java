@@ -15,12 +15,12 @@ package org.eclipse.esmf.substitution;
 
 import java.util.Objects;
 
-import io.adminshell.aas.v3.dataformat.core.ReflectionHelper;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 
 /**
  * This is used as a stand-in/replacement for its superclass {@link ReflectionHelper.ImplementationInfo}, which unfortunately can't be
- * instantiated directly due to its protected constructor. This class is used in the substition class for {@link ReflectionHelper}, see
- * {@link Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper} for more information.
+ * instantiated directly due to its protected constructor. This class is used in the substitution class for {@link ReflectionHelper}, see
+ * {@link Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper} for more information.
  */
 public class ImplementationInfo<T> extends ReflectionHelper.ImplementationInfo<T> {
    public ImplementationInfo( final Class<?> interfaceType, final Class<?> implementationType ) {

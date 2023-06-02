@@ -17,10 +17,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.Function;
 
-import io.adminshell.aas.v3.dataformat.SerializationException;
-import io.adminshell.aas.v3.dataformat.aasx.AASXSerializer;
-import io.adminshell.aas.v3.dataformat.xml.XmlSerializer;
-import io.adminshell.aas.v3.model.AssetAdministrationShellEnvironment;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.SerializationException;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXSerializer;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlSerializer;
+import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+
 import org.eclipse.esmf.metamodel.Aspect;
 
 /** Generator that generates an AASX file containing an AAS submodel for a given Aspect model */
@@ -56,7 +57,7 @@ public class AspectModelAASGenerator {
 
    protected ByteArrayOutputStream generateAasxOutput( Aspect aspect ) throws IOException {
       final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
-      AssetAdministrationShellEnvironment environment = visitor.visitAspect( aspect, null );
+      Environment environment = visitor.visitAspect( aspect, null );
 
       try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
          AASXSerializer serializer = new AASXSerializer();
@@ -69,7 +70,7 @@ public class AspectModelAASGenerator {
 
    protected ByteArrayOutputStream generateXmlOutput( Aspect aspect ) throws IOException {
       final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
-      AssetAdministrationShellEnvironment environment = visitor.visitAspect( aspect, null );
+      Environment environment = visitor.visitAspect( aspect, null );
 
       try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
          XmlSerializer serializer = new XmlSerializer();
