@@ -70,13 +70,13 @@ public abstract class ComplexTypeInstantiator<T extends ComplexType> extends Ins
 
       final Optional<ComplexType> extendedEntity = getExtendedEntity( resource );
 
-      final List<ComplexType> extending = new ArrayList<>();
+      final List<AspectModelUrn> extending = new ArrayList<>();
 
       final T entity = createDefaultEntity( metaModelBaseAttributes, properties, extendedEntity, extending );
 
       creatingElements.put( resource, entity );
 
-      extending.addAll( modelElementFactory.getExtendingElements( getExtending( resource ) ) );
+      extending.addAll( getExtending( resource ) );
 
       return entity;
    }
@@ -111,5 +111,5 @@ public abstract class ComplexTypeInstantiator<T extends ComplexType> extends Ins
          MetaModelBaseAttributes metaModelBaseAttributes,
          List<Property> properties,
          Optional<ComplexType> extendedEntity,
-         List<ComplexType> extendingComplexTypes );
+         List<AspectModelUrn> extendingComplexTypes );
 }

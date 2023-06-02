@@ -16,10 +16,12 @@ package org.eclipse.esmf.metamodel.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultAbstractEntity extends DefaultComplexType implements AbstractEntity {
@@ -27,15 +29,16 @@ public class DefaultAbstractEntity extends DefaultComplexType implements Abstrac
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
          final Optional<ComplexType> _extends,
-         final List<ComplexType> extendingElements ) {
-      return new DefaultAbstractEntity( metaModelBaseAttributes, properties, _extends, extendingElements );
+         final List<AspectModelUrn> extendingElements ) {
+      return new DefaultAbstractEntity( metaModelBaseAttributes, properties, _extends, extendingElements, null );
    }
 
    public DefaultAbstractEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
          final Optional<ComplexType> _extends,
-         final List<ComplexType> extendingElements ) {
-      super( metaModelBaseAttributes, properties, _extends, extendingElements );
+         final List<AspectModelUrn> extendingElements,
+         final ModelElementFactory loadedElements ) {
+      super( metaModelBaseAttributes, properties, _extends, extendingElements, loadedElements );
    }
 
    /**

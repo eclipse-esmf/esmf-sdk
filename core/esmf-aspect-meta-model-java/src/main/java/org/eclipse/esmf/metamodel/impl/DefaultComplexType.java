@@ -17,25 +17,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultComplexType extends ModelElementImpl implements ComplexType {
    private final List<Property> properties;
    private final Optional<ComplexType> _extends;
-   private final List<ComplexType> extendingElements;
+   private final List<AspectModelUrn> extendingElements;
+   private final ModelElementFactory loadedElements;
 
    protected DefaultComplexType(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
          final Optional<ComplexType> _extends,
-         final List<ComplexType> extendingElements ) {
+         final List<AspectModelUrn> extendingElements,
+         final ModelElementFactory loadedElements ) {
       super( metaModelBaseAttributes );
       this.properties = new ArrayList<>( properties );
       this._extends = _extends;
       this.extendingElements = extendingElements;
+      this.loadedElements = loadedElements;
    }
 
    /**
@@ -58,7 +63,10 @@ public class DefaultComplexType extends ModelElementImpl implements ComplexType 
     */
    @Override
    public List<ComplexType> getExtendingElements() {
-      return extendingElements;
+      if ( loadedElements == null ) {
+         throw new RuntimeException( "No inheritance information is available." );
+      }
+      return loadedElements.getExtendingElements( extendingElements );
    }
 
    @Override
