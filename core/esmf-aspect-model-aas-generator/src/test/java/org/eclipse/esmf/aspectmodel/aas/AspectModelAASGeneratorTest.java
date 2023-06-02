@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
@@ -56,9 +55,9 @@ import org.eclipse.esmf.test.TestResources;
 
 class AspectModelAASGeneratorTest {
 
-   public static final String XML_XSD_AAS_SCHEMA_LOCATION =
-         "https://raw.githubusercontent.com/aas-core-works/aas-core3.0-testgen/403a0a7cca4a787f642b226bc940ae2d2b319dad/test_data/schema.xsd";
-       //  "https://raw.githubusercontent.com/admin-shell-io/aas-specs/v3.0.6/schemas/xml/AAS.xsd";
+   // The AAS XML Schema is also present in the AAS4j library for testing purposes. So we can read
+   // the file from the classpath
+   public static final String XML_XSD_AAS_SCHEMA_LOCATION = "/AAS.xsd";
 
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
@@ -291,7 +290,9 @@ class AspectModelAASGeneratorTest {
    private void validate(ByteArrayInputStream xmlStream) throws IOException, SAXException {
          SchemaFactory factory =
                SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI);
-         Schema schema = factory.newSchema(new URL( XML_XSD_AAS_SCHEMA_LOCATION ) );
+
+         Schema schema = factory.newSchema(
+               new StreamSource(getClass().getResourceAsStream( XML_XSD_AAS_SCHEMA_LOCATION ) ) );
          Validator validator = schema.newValidator();
          validator.validate(new StreamSource( xmlStream ), null);
 
@@ -311,5 +312,4 @@ class AspectModelAASGeneratorTest {
       final XmlDeserializer deserializer = new XmlDeserializer();
       return deserializer.read( byteStream );
    }
-
 }
