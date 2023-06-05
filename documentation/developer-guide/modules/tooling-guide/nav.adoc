@@ -1,5 +1,4 @@
-.Tooling Guide
-* xref:bamm-cli.adoc[BAMM CLI]
-* xref:java-aspect-tooling.adoc[Java Tooling for Aspect Models]
-* Java Build Tooling
-** xref:maven-plugin.adoc[Maven Plugin]
+* xref:samm-cli.adoc[SAMM CLI]
+* xref:java-aspect-tooling.adoc[Java APIs for Aspect Models]
+* xref:maven-plugin.adoc[Maven Plugin]
+* xref:bamm-migration.adoc[Migration from BAMM]

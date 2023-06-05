@@ -1,0 +1,287 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithSimpleTypes a samm:Aspect ;
+   samm:name "AspectWithSimpleTypes" ;
+   samm:properties ( :anyUriProperty :base64BinaryProperty :booleanProperty :byteProperty :curieProperty :dateProperty :dateTimeProperty :dateTimeStampProperty :dayTimeDuration :decimalProperty :doubleProperty :durationProperty :floatProperty :gDayProperty :gMonthDayProperty :gMonthProperty :gYearMonthProperty :gYearProperty :hexBinaryProperty :intProperty :integerProperty :langStringProperty :longProperty :negativeIntegerProperty :nonNegativeIntegerProperty :nonPositiveInteger :positiveIntegerProperty :shortProperty :stringProperty :timeProperty :unsignedByteProperty :unsignedIntProperty :unsignedLongProperty :unsignedShortProperty :yearMonthDurationProperty ) ;
+   samm:operations ( ) .
+
+:stringProperty a samm:Property ;
+   samm:name "stringProperty" ;
+   samm:characteristic samm-c:Text .
+
+:booleanProperty a samm:Property ;
+   samm:name "booleanProperty" ;
+   samm:characteristic samm-c:Boolean .
+
+:decimalProperty a samm:Property ;
+   samm:name "decimalProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeDecimal" ;
+      samm:dataType xsd:decimal
+   ] .
+
+:integerProperty a samm:Property ;
+   samm:name "integerProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeInteger" ;
+      samm:dataType xsd:integer
+   ] .
+
+:doubleProperty a samm:Property ;
+   samm:name "doubleProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeDouble" ;
+      samm:dataType xsd:double
+   ] .
+
+:floatProperty a samm:Property ;
+   samm:name "floatProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeFloat" ;
+      samm:dataType xsd:float
+   ] .
+
+:dateProperty a samm:Property ;
+   samm:name "dateProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "DateValue" ;
+      samm:dataType xsd:date
+] .
+
+:timeProperty a samm:Property ;
+   samm:name "timeProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeTime" ;
+      samm:dataType xsd:time
+   ] .
+
+:dateTimeProperty a samm:Property ;
+   samm:name "dateTimeProperty" ;
+   samm:characteristic samm-c:Timestamp .
+
+:dateTimeStampProperty a samm:Property ;
+   samm:name "dateTimeStampProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeDateTimeStamp" ;
+      samm:dataType xsd:dateTimeStamp
+   ] .
+
+:gYearProperty a samm:Property ;
+   samm:name "gYearProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeGYear" ;
+      samm:dataType xsd:gYear
+   ] .
+
+:gMonthProperty a samm:Property ;
+   samm:name "gMonthProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeGMonth" ;
+      samm:dataType xsd:gMonth
+   ] .
+
+:gDayProperty a samm:Property ;
+   samm:name "gDayProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeGDay" ;
+      samm:dataType xsd:gDay
+   ] .
+
+:gYearMonthProperty a samm:Property ;
+   samm:name "gYearMonthProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeGYearMonth" ;
+      samm:dataType xsd:gYearMonth
+   ] .
+
+:gMonthDayProperty a samm:Property ;
+   samm:name "gMonthDayProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeGMonthDay" ;
+      samm:dataType xsd:gMonthDay
+   ] .
+
+:durationProperty a samm:Property ;
+   samm:name "durationProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeDuration" ;
+      samm:dataType xsd:duration
+   ] .
+
+:yearMonthDurationProperty a samm:Property ;
+   samm:name "yearMonthDurationProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeYearMonthDuration" ;
+      samm:dataType xsd:yearMonthDuration
+   ] .
+
+:dayTimeDuration a samm:Property ;
+   samm:name "dayTimeDuration" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeDayTimeDuration" ;
+      samm:dataType xsd:dayTimeDuration
+   ] .
+
+:byteProperty a samm:Property ;
+   samm:name "byteProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeByte" ;
+      samm:description "This is a byteProperty characteristic."@en ;
+      samm:dataType xsd:byte
+   ] .
+
+:shortProperty a samm:Property ;
+   samm:name "shortProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeShort" ;
+      samm:dataType xsd:short
+   ] .
+
+:intProperty a samm:Property ;
+   samm:name "intProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeInt" ;
+      samm:dataType xsd:int
+   ] .
+
+:longProperty a samm:Property ;
+   samm:name "longProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeLong" ;
+      samm:dataType xsd:long
+   ] .
+
+:unsignedByteProperty a samm:Property ;
+   samm:name "unsignedByteProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeUnsignedByte" ;
+      samm:dataType xsd:unsignedByte
+   ] .
+
+:unsignedShortProperty a samm:Property ;
+   samm:name "unsignedShortProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeUnsignedShort" ;
+      samm:dataType xsd:unsignedShort
+   ] .
+
+:unsignedIntProperty a samm:Property ;
+   samm:name "unsignedIntProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeUnsignedInt" ;
+      samm:dataType xsd:unsignedInt
+   ] .
+
+:unsignedLongProperty a samm:Property ;
+   samm:name "unsignedLongProperty" ;
+   samm:characteristic [
+     a samm-c:Quantifiable ;
+     samm:name "SomeLength" ;
+     samm:dataType xsd:unsignedLong ;
+     samm-c:unit unit:metre
+   ] .
+
+:positiveIntegerProperty a samm:Property ;
+   samm:name "positiveIntegerProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomePositiveInteger" ;
+      samm:dataType xsd:positiveInteger
+   ] .
+
+:nonNegativeIntegerProperty a samm:Property ;
+   samm:name "nonNegativeIntegerProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeNonNegativeInteger" ;
+      samm:dataType xsd:nonNegativeInteger
+   ] .
+
+:negativeIntegerProperty a samm:Property ;
+   samm:name "negativeIntegerProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeNegativeInteger" ;
+      samm:dataType xsd:negativeInteger
+   ] .
+
+:nonPositiveInteger a samm:Property ;
+   samm:name "nonPositiveInteger" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeNonPositiveInteger" ;
+      samm:dataType xsd:nonPositiveInteger
+   ] .
+
+:hexBinaryProperty a samm:Property ;
+   samm:name "hexBinaryProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "HexBinaryValue" ;
+      samm:dataType xsd:hexBinary
+   ] .
+
+:base64BinaryProperty a samm:Property ;
+   samm:name "base64BinaryProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "Base64BinaryValue" ;
+      samm:description "This is a base64Binary characteristic."@en ;
+      samm:dataType xsd:base64Binary
+   ] .
+
+:anyUriProperty a samm:Property ;
+   samm:name "anyUriProperty" ;
+   samm:characteristic [
+      a samm:Characteristic ;
+      samm:name "SomeAnyUri" ;
+      samm:description "This is an anyURI characteristic."@en ;
+      samm:dataType xsd:anyURI
+   ] .
+
+:curieProperty a samm:Property ;
+   samm:name "curieProperty" ;
+   samm:characteristic samm-c:UnitReference .
+
+:langStringProperty a samm:Property ;
+   samm:name "langStringProperty" ;
+   samm:characteristic samm-c:MultiLanguageText .
+

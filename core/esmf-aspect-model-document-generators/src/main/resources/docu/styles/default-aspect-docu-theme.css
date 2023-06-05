@@ -1,0 +1,68 @@
+h1 {
+    color: #0028cd;
+    font-size: 2rem;
+}
+
+h2 {
+    color: #0028cd;
+    font-size: 1.5rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+h4 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+h5 {
+    font-size: 1.2rem;
+}
+
+.heading {
+    padding-top: 45px;
+}
+
+#content-title {
+    margin-top: 15px;
+}
+
+a.toc-link {
+    padding-left: 15px;
+}
+
+.is-position-fixed {
+    top: 9rem;
+    position: unset;
+}
+
+#documentation-toc {
+    padding-top: 15px;
+}
+
+#documentation-toc > ol {
+    margin-top: 15px;
+}
+
+.text-gray {
+    color: #0028CD;
+}
+
+.page-top {
+    background-color: #0028cd;
+    height: 14px;
+}
+
+.logo-header {
+    background: left no-repeat url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0xLjAgZW5jb2Rpbmc9VVRGLTg/PjxzdmcgeG1sbnM9aHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcgd2lkdGg9MSBoZWlnaHQ9MS8+Cg==');
+    background-size: contain;
+    height: 1px;
+    width: 1px;
+    right: 1px;
+}

@@ -1,0 +1,133 @@
+:page-partial:
+
+[[migration-from-bamm]]
+= Migration from BAMM Aspect Meta Model
+
+[quote]
+BAMM is now known as SAMM.
+
+Since january 2023, the Semantic Aspect Meta Model (SAMM) is developed by the
+Eclipse Semantic Modeling Framework (ESMF) project. However, SAMM and its
+accompanying tooling was not developed from scratch here but is based on what
+was previously known as the _BAMM Aspect Meta Model_. BAMM was developed and
+maintained by the Semantic Data Structuring (SDS) working group of the Open
+Manufacturing Platform (OMP). With the transition from OMP to ESMF, identifiers
+and artifact names changed. The following sections guide you through the
+necessary changes in order to migrate from BAMM to SAMM.
+
+[[changes-in-semantics]]
+==  Changes in semantics
+
+Meta model semantics have not changed between BAMM 2.0.0 and SAMM 2.0.0. This
+means that the way an Aspect Model is constructed remains the same after
+updating to SAMM. However, since the meta model namespaces have changed, models
+need to be updated to use the new namespaces.
+
+== Namespaces and artifacts
+
+=== Meta model namespaces
+
+As a rule of thumb, every occurence of `io.openmanufacturing` changes to
+`org.eclipse.esmf.samm` and every occurence of `bamm` changes to `samm`.
+
+The RDF namespaces have changed as follows:
+
+.Prefixes
+[options="header"]
+|===
+| BAMM prefix | SAMM prefix
+| `bamm` | `samm`
+| `bamm-c` | `samm-c`
+| `bamm-e` | `samm-e`
+| `unit` | `unit`
+|===
+
+.Meta model URNs
+[options="header"]
+|===
+| BAMM namespace | SAMM namespace
+| `urn:bamm:io.openmanufacturing:meta-model:2.0.0#` | `urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#`
+| `urn:bamm:io.openmanufacturing:characteristic:2.0.0#` | `urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#`
+| `urn:bamm:io.openmanufacturing:entity:2.0.0#` | `urn:samm:org.eclipse.esmf.samm:entity:2.0.0#`
+| `urn:bamm:io.openmanufacturing:unit:2.0.0#` | `urn:samm:org.eclipse.esmf.samm:unit:2.0.0#`
+|===
+
+=== Aspect model namespaces
+
+The change of the URN schema part from `urn:bamm` to `urn:samm` implies that
+Aspect Model elements now must use the URN schema:
+
+`urn:samm:<namespace>:<version>#<element-name>`
+
+=== Java artifact names
+
+The Maven groupId has changed from `io.openmanufacturing` to `org.eclipse.esmf`.
+Every occurence of `sds` in the artifactIds has changed to `esmf`.
+
+What as previously known as the `sds-sdk` is now the `esmf-sdk`.
+
+.Java artifacts
+[options="header"]
+|===
+| BAMM Java artifact | SAMM Java artifact
+| `io.openmanufacturing:sds-aspect-meta-model` | `org.eclipse.esmf:esmf-semantic-aspect-meta-model`
+| `io.openmanufacturing:sds-aspect-model-urn` | `org:eclipse.esmf:esmf-aspect-model-urn`
+| `io.openmanufacturing:sds-aspect-meta-model-interface` | `org:eclipse.esmf:esmf-aspect-meta-model-interface`
+| `io.openmanufacturing:sds-aspect-meta-model-resolver` | `org:eclipse.esmf:esmf-aspect-meta-model-resolver`
+| `io.openmanufacturing:sds-aspect-model-resolver` | `org:eclipse.esmf:esmf-aspect-model-resolver`
+| `io.openmanufacturing:sds-aspect-meta-model-types` | `org:eclipse.esmf:esmf-aspect-meta-model-types`
+| `io.openmanufacturing:sds-aspect-meta-model-version-migrator` | `org:eclipse.esmf:esmf-aspect-meta-model-version-migrator`
+| `io.openmanufacturing:sds-aspect-meta-model-java` | `org:eclipse.esmf:esmf-aspect-meta-model-java`
+| `io.openmanufacturing:sds-aspect-model-generator` | `org:eclipse.esmf:esmf-aspect-model-generator`
+| `io.openmanufacturing:sds-aspect-model-document-generators` | `org:eclipse.esmf:esmf-aspect-model-document-generators`
+| `io.openmanufacturing:sds-aspect-model-validator` | `org:eclipse.esmf:esmf-aspect-model-validator`
+| `io.openmanufacturing:sds-aspect-model-java-generator` | `org:eclipse.esmf:esmf-aspect-model-java-generator`
+| `io.openmanufacturing:sds-aspect-model-starter` | `org:eclipse.esmf:esmf-aspect-model-starter`
+| `io.openmanufacturing:sds-aspect-static-meta-model-java` | `org:eclipse.esmf:esmf-aspect-static-meta-model-java`
+| `io.openmanufacturing:sds-aspect-model-java-core` | `org:eclipse.esmf:esmf-aspect-model-java-core`
+| `io.openmanufacturing:sds-aspect-model-serializer` | `org:eclipse.esmf:esmf-aspect-model-serializer`
+| `io.openmanufacturing:sds-aspect-model-jackson` | `org:eclipse.esmf:esmf-aspect-model-jackson`
+| `io.openmanufacturing:sds-test-aspect-models` | `org:eclipse.esmf:esmf-test-aspect-models`
+| `io.openmanufacturing:sds-test-resources` | `org:eclipse.esmf:esmf-test-resources`
+| `io.openmanufacturing:sds-aspect-model-aas-generator` | `org.eclipse.esmf:esmf-aspect-model-aas-generator`
+| `io.openmanufacturing:bamm-cli` | `org:eclipse.esmf:samm-cli`
+|===
+
+=== Java packages and classes
+
+For the esmf-sdk, as a rule of thumb, every occurence of
+`io.openmanufacturing.sds` in package names was renamed to `org.eclipse.esmf`.
+In addition to that, several classes were renamed.
+
+.Renamed specific classes
+[options="header"]
+|===
+| BAMM Java class | SAMM Java class
+| `io.openmanufacturing.sds.aspectmetamodel.KnownVersion` | `org.eclipse.esmf.samm.KnownVersion`
+| `io.openmanufacturing.sds.aspectmodel.resolver.services.SdsAspectMetaModelResourceResolver` | `org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver`
+| `io.openmanufacturing.sds.aspectmodel.versionupdate.migrator.SdsMetaModelVersionUriRewriter` | `org.eclipse.esmf.aspectmodel.versionupdate.migrator.SammMetaModelVersionUriRewriter`
+| `io.openmanufacturing.sds.aspectmodel.versionupdate.SdsMigratorFactory` | `org.eclipse.esmf.aspectmodel.versionupdate.SammMigratorFactory`
+|===
+
+== Compatibility
+
+* Since BAMM 2.0.0 and SAMM 2.0.0 are structurally and semantically identically,
+  migrating an BAMM-based Aspect Model is done by simply renaming RDF prefixes
+  and namespaces.
+* ESMF SDK 2.2.0 (including SAMM CLI 2.2.0) has the ability to load BAMM-based
+  Aspect Models and convert them on-the-fly to SAMM-based Aspect Models.
+
+[options="header"]
+|===
+|  | sds-sdk/bamm-cli 2.1.3 | esmf-sdk/samm-cli 2.2.0
+| Read BAMM 1.0.0 | {ok} | {ok}
+| Write BAMM 1.0.0 | {nok} | {nok}
+| Read BAMM 2.0.0 | {ok} | {ok}
+| Write BAMM 2.0.0 | {ok} | {nok}
+| Read SAMM 2.0.0 | {nok} | {ok}
+| Write SAMM 2.0.0 | {nok} | {ok}
+|===
+
+NOTE: _Read_ refers to the capability to load, validate and generate artifacts for
+an Aspect Model. _Write_ refers to the capability to pretty-print and write out
+Aspect Models after meta model version migration.

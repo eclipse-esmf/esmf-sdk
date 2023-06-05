@@ -1,0 +1,58 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:1.0.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:units:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithComplexEntityCollectionEnum a samm:Aspect ;
+   samm:name "AspectWithComplexEntityCollectionEnum" ;
+   samm:properties ( :myPropertyOne ) ;
+   samm:operations ( ) .
+
+:myPropertyOne a samm:Property ;
+   samm:name "myPropertyOne" ;
+   samm:characteristic :MyEnumerationOne .
+
+:MyEnumerationOne a samm-c:Enumeration ;
+   samm:name "MyEnumerationOne" ;
+   samm:description "This is my enumeration one"@en ;
+   samm:dataType :MyEntityOne ;
+   samm-c:values ( :entityInstanceOne ) .
+
+:MyEntityOne a samm:Entity ;
+   samm:name "MyEntityOne" ;
+   samm:properties ( :entityPropertyOne ) .
+
+:entityPropertyOne a samm:Property ;
+   samm:name "entityPropertyOne" ;
+   samm:characteristic :ListCharacteristic .
+
+:ListCharacteristic a samm-c:List ;
+   samm:name "ListCharacteristic" ;
+   samm:dataType :MyEntityTwo .
+
+:MyEntityTwo a samm:Entity ;
+   samm:name "MyEntityTwo" ;
+   samm:properties ( :entityPropertyTwo ) .
+
+:entityPropertyTwo a samm:Property ;
+   samm:name "entityPropertyTwo" ;
+   samm:characteristic samm-c:Text .
+
+:entityInstanceOne a :MyEntityOne ;
+   :entityPropertyOne ( :entityInstanceTwo ) .
+
+:entityInstanceTwo a :MyEntityTwo ;
+   :entityPropertyTwo "foo" .

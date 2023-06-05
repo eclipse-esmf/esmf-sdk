@@ -15,15 +15,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>org.eclipse.esmf</groupId>
+      <artifactId>esmf-parent</artifactId>
+      <version>3</version>
+   </parent>
 
-   <groupId>io.openmanufacturing</groupId>
-   <artifactId>sds-sdk-parent</artifactId>
-   <name>SDS SDK Parent</name>
+   <artifactId>esmf-sdk-parent</artifactId>
+   <name>ESMF SDK Parent</name>
    <version>DEV-SNAPSHOT</version>
    <packaging>pom</packaging>
 
-   <description>OMP SDS SDK</description>
-   <url>https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/dev-snapshot/index.html</url>
+   <description>ESMF SDK</description>
+   <url>https://eclipse-esmf.github.io/</url>
    <licenses>
       <license>
          <name>MPL-2.0</name>
@@ -32,227 +36,160 @@
    </licenses>
    <developers>
       <developer>
-         <name>Semantic Data Structuring Working Group</name>
-         <email>artifacts@open-manufacturing.org</email>
-         <organization>Open Manufacturing Platform</organization>
-         <organizationUrl>https://open-manufacturing.org</organizationUrl>
+         <name>Eclipse Semantic Modeling Framework Team</name>
+         <email>esmf-dev@eclipse.org</email>
+         <organization>Eclipse Semantic Modeling Framework</organization>
+         <organizationUrl>https://projects.eclipse.org/projects/dt.esmf</organizationUrl>
       </developer>
    </developers>
    <scm>
-      <url>https://github.com/OpenManufacturingPlatform/sds-sdk</url>
+      <url>https://github.com/eclipse-esmf/esmf-sdk</url>
+      <connection>scm:git:git://github.com:eclipse-esmf/esmf-sdk.git</connection>
+      <developerConnection>scm:git:ssh://git@github.com:eclipse-esmf/esmf-sdk.git</developerConnection>
    </scm>
 
    <modules>
-      <module>core/sds-aspect-model-urn</module>
-      <module>core/sds-aspect-meta-model-types</module>
-      <module>core/sds-aspect-meta-model-interface</module>
-      <module>core/sds-aspect-meta-model-resolver</module>
-      <module>core/sds-aspect-meta-model-version-migrator</module>
-      <module>core/sds-aspect-meta-model-java</module>
-      <module>core/sds-aspect-model-generator</module>
-      <module>core/sds-aspect-model-document-generators</module>
-      <module>core/sds-aspect-model-validator</module>
-      <module>core/sds-aspect-model-java-generator</module>
-      <module>core/sds-aspect-model-starter</module>
-      <module>core/sds-aspect-static-meta-model-java</module>
-      <module>core/sds-aspect-model-resolver</module>
-      <module>core/sds-aspect-model-serializer</module>
-      <module>core/sds-aspect-model-java-core</module>
-      <module>core/sds-aspect-model-jackson</module>
-      <module>core/sds-test-aspect-models</module>
-      <module>core/sds-test-resources</module>
-      <module>tools/bamm-cli</module>
-      <module>tools/sds-aspect-model-maven-plugin</module>
-      <module>sds-sdk-test-report</module>
-      <module>core/sds-aspect-model-aas-generator</module>
-
+      <module>core/esmf-aspect-meta-model-interface</module>
+      <module>core/esmf-aspect-meta-model-java</module>
+      <module>core/esmf-aspect-meta-model-resolver</module>
+      <module>core/esmf-aspect-meta-model-types</module>
+      <module>core/esmf-aspect-meta-model-version-migrator</module>
+      <module>core/esmf-aspect-model-aas-generator</module>
+      <module>core/esmf-aspect-model-document-generators</module>
+      <module>core/esmf-aspect-model-generator</module>
+      <module>core/esmf-aspect-model-jackson</module>
+      <module>core/esmf-aspect-model-java-core</module>
+      <module>core/esmf-aspect-model-java-generator</module>
+      <module>core/esmf-aspect-model-resolver</module>
+      <module>core/esmf-aspect-model-serializer</module>
+      <module>core/esmf-aspect-model-starter</module>
+      <module>core/esmf-aspect-model-urn</module>
+      <module>core/esmf-aspect-model-validator</module>
+      <module>core/esmf-aspect-static-meta-model-java</module>
+      <module>core/esmf-test-aspect-models</module>
+      <module>core/esmf-test-resources</module>
+      <module>tools/esmf-aspect-model-maven-plugin</module>
+      <module>tools/samm-cli</module>
+      <module>documentation</module>
    </modules>
 
    <properties>
       <!-- Versions of third party dependencies -->
-      <aspect-meta-model-version>2.0.0</aspect-meta-model-version>
-      <assertj-vavr-version>0.4.2</assertj-vavr-version>
-      <classgraph-version>4.8.146</classgraph-version>
-      <commons-text-version>1.10.0</commons-text-version>
-      <easy-random-version>5.0.0</easy-random-version>
-      <graalvm-version>22.3.0</graalvm-version>
-      <graphviz-version>0.18.1</graphviz-version>
-      <guava-version>31.1-jre</guava-version>
-      <guice-version>5.1.0</guice-version>
-      <javaparser-version>3.24.2</javaparser-version>
-      <jena-version>4.4.0</jena-version>
-      <jqwik-version>1.6.5</jqwik-version>
-      <json-path-version>2.4.0</json-path-version>
-      <json-schema-validator-version>2.2.14</json-schema-validator-version>
-      <lombok-version>1.18.24</lombok-version>
-      <maven-plugin-annotations-version>3.5</maven-plugin-annotations-version>
-      <maven-plugin-depdendencies-version>3.3.9</maven-plugin-depdendencies-version>
-      <maven-plugin-flatten-version>1.2.7</maven-plugin-flatten-version>
-      <maven-plugin-plugin-version>3.6.4</maven-plugin-plugin-version>
-      <maven-plugin-testing-harness-version>3.3.0</maven-plugin-testing-harness-version>
-      <record-builder-version>35</record-builder-version>
-      <rgxgen-version>1.3</rgxgen-version>
-      <rhino-version>1.7.14</rhino-version>
-      <roaster-version>2.24.0.Final</roaster-version>
-      <shacl-version>1.4.2</shacl-version>
-      <spring-boot-version>2.6.7</spring-boot-version>
-      <swagger-parser-version>2.0.32</swagger-parser-version>
-      <system-lambda-version>1.2.1</system-lambda-version>
-      <vavr-version>0.10.4</vavr-version>
-      <!-- TODO remember to update the link to the Velocity engine user guide in the 'java-aspect-tooling.adoc' page -->
-      <velocity-version>2.3</velocity-version>
-      <io-admin-shell-aas-model>1.0.0-milestone-03</io-admin-shell-aas-model>
-      <io-admin-shell-aas-serializer>1.0.0-milestone-03</io-admin-shell-aas-serializer>
-
-      <!-- Versions of plugins -->
-      <build-helper-maven-plugin-version>3.2.0</build-helper-maven-plugin-version>
-      <cyclonedx-maven-plugin-version>1.4.1</cyclonedx-maven-plugin-version>
-      <download-maven-plugin-version>1.6.8</download-maven-plugin-version>
-      <git-commit-id-plugin-version>4.0.5</git-commit-id-plugin-version>
-      <groovy-maven-plugin-version>2.1.1</groovy-maven-plugin-version>
-      <jacoco-maven-plugin-version>0.8.7</jacoco-maven-plugin-version>
-      <maven-clean-plugin-version>3.1.0</maven-clean-plugin-version>
-      <maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
-      <maven-dependency-plugin-version>3.3.0</maven-dependency-plugin-version>
-      <maven-enforcer-plugin-version>3.0.0</maven-enforcer-plugin-version>
-      <maven-jar-plugin-version>3.2.2</maven-jar-plugin-version>
-      <maven-javadoc-plugin-version>3.3.0</maven-javadoc-plugin-version>
-      <maven-resources-plugin-version>3.2.0</maven-resources-plugin-version>
-      <maven-scm-plugin-version>1.11.2</maven-scm-plugin-version>
-      <maven-site-plugin-version>3.9.1</maven-site-plugin-version>
-      <maven-source-plugin-version>2.2.1</maven-source-plugin-version>
-      <maven-surefire-plugin-version>2.22.2</maven-surefire-plugin-version>
-      <maven-surefire-report-plugin-version>2.22.2</maven-surefire-report-plugin-version>
+      <hibernate-validator-version>6.2.3.Final</hibernate-validator-version>
+      <jakarta-el-version>3.0.4</jakarta-el-version>
+      <poi-version>4.1.2</poi-version>
 
       <!-- General settings -->
-      <testreports.directory>test-reports</testreports.directory>
-      <testreports.surefire>surefire-report</testreports.surefire>
-      <skip.generated.bom>true</skip.generated.bom>
-      <skip.maven.surefire.report.plugin>true</skip.maven.surefire.report.plugin>
-      <skip.generate.report.css>true</skip.generate.report.css>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-      <java-target-version>17</java-target-version>
-      <java-source-version>17</java-source-version>
-
-      <sonar.coverage.jacoco.xmlReportPaths>
-         ${project.basedir}/../sds-sdk-test-report/target/site/jacoco-aggregate/jacoco.xml,
-         ${project.basedir}/../../sds-sdk-test-report/target/site/jacoco-aggregate/jacoco.xml
-      </sonar.coverage.jacoco.xmlReportPaths>
+      <skip.gpg.skip>true</skip.gpg.skip>
    </properties>
 
    <dependencyManagement>
       <!-- Internal projects -->
       <dependencies>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model</artifactId>
-            <version>${aspect-meta-model-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-urn</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-urn</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-interface</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-meta-model-interface</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-resolver</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-meta-model-resolver</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-resolver</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-resolver</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-types</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-meta-model-types</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-version-migrator</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-meta-model-version-migrator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-meta-model-java</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-meta-model-java</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-generator</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-generator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-document-generators</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-document-generators</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-validator</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-validator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-java-generator</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-java-generator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-starter</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-starter</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-static-meta-model-java</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-static-meta-model-java</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-java-core</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-java-core</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-serializer</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-serializer</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-jackson</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-jackson</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-test-aspect-models</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-test-aspect-models</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-test-resources</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-test-resources</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>bamm-cli</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>samm-cli</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>
-            <groupId>io.openmanufacturing</groupId>
-            <artifactId>sds-aspect-model-aas-generator</artifactId>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-aas-generator</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
          </dependency>
 
          <!-- Third party dependencies -->
+         <!-- This meta dependency imports sane versions for many dependencies -->
          <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-dependencies</artifactId>
@@ -260,417 +197,49 @@
             <type>pom</type>
             <scope>import</scope>
          </dependency>
+
          <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava-version}</version>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator-version}</version>
          </dependency>
          <dependency>
-            <groupId>net.jqwik</groupId>
-            <artifactId>jqwik</artifactId>
-            <version>${jqwik-version}</version>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+            <version>${jakarta-el-version}</version>
          </dependency>
          <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>
-            <version>${jena-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.topbraid</groupId>
-            <artifactId>shacl</artifactId>
-            <version>${shacl-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>io.vavr</groupId>
-            <artifactId>vavr</artifactId>
-            <version>${vavr-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-vavr</artifactId>
-            <version>${assertj-vavr-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.mozilla</groupId>
-            <artifactId>rhino</artifactId>
-            <version>${rhino-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.graalvm.sdk</groupId>
-            <artifactId>graal-sdk</artifactId>
-            <version>${graalvm-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.graalvm.js</groupId>
-            <artifactId>js</artifactId>
-            <version>${graalvm-version}</version>
-            <scope>runtime</scope>
-         </dependency>
-         <dependency>
-            <groupId>org.graalvm.js</groupId>
-            <artifactId>js-scriptengine</artifactId>
-            <version>${graalvm-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity-engine-core</artifactId>
-            <version>${velocity-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.jboss.forge.roaster</groupId>
-            <artifactId>roaster-jdt</artifactId>
-            <version>${roaster-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.jboss.forge.roaster</groupId>
-            <artifactId>roaster-api</artifactId>
-            <version>${roaster-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.jeasy</groupId>
-            <artifactId>easy-random-core</artifactId>
-            <version>${easy-random-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-arq</artifactId>
-            <version>${jena-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>${commons-text-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>guru.nidi</groupId>
-            <artifactId>graphviz-java-all-j2v8</artifactId>
-            <version>${graphviz-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>com.github.curious-odd-man</groupId>
-            <artifactId>rgxgen</artifactId>
-            <version>${rgxgen-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>${guice-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>com.github.javaparser</groupId>
-            <artifactId>javaparser-symbol-solver-core</artifactId>
-            <version>${javaparser-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-lambda</artifactId>
-            <version>${system-lambda-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>io.github.classgraph</groupId>
-            <artifactId>classgraph</artifactId>
-            <version>${classgraph-version}</version>
-         </dependency>
-         <dependency>
-             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
-             <artifactId>model</artifactId>
-             <version>${io-admin-shell-aas-model}</version>
-         </dependency>
-         <dependency>
-             <groupId>org.eclipse.digitaltwin.aas4j</groupId>
-             <artifactId>dataformat-xml</artifactId>
-             <version>${io-admin-shell-aas-serializer}</version>
-             <exclusions>
-                 <exclusion>
-                     <groupId>org.slf4j</groupId>
-                     <artifactId>slf4j-simple</artifactId>
-                 </exclusion>
-             </exclusions>
-         </dependency>
-         <dependency>
-            <groupId>org.eclipse.digitaltwin.aas4j</groupId>
-            <artifactId>dataformat-aasx</artifactId>
-            <version>${io-admin-shell-aas-serializer}</version>
-            <exclusions>
-               <exclusion>
-                  <groupId>org.slf4j</groupId>
-                  <artifactId>slf4j-simple</artifactId>
-               </exclusion>
-            </exclusions>
-         </dependency>
-         <dependency>
-            <groupId>io.swagger.parser.v3</groupId>
-            <artifactId>swagger-parser</artifactId>
-            <version>${swagger-parser-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>com.github.java-json-tools</groupId>
-            <artifactId>json-schema-validator</artifactId>
-            <version>${json-schema-validator-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>${json-path-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>io.soabase.record-builder</groupId>
-            <artifactId>record-builder-processor</artifactId>
-            <version>${record-builder-version}</version>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi-version}</version>
          </dependency>
       </dependencies>
    </dependencyManagement>
+
    <build>
-      <pluginManagement>
-         <plugins>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-resources-plugin</artifactId>
-               <version>${maven-resources-plugin-version}</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-clean-plugin</artifactId>
-               <version>${maven-clean-plugin-version}</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-enforcer-plugin</artifactId>
-               <version>${maven-enforcer-plugin-version}</version>
-            </plugin>
-            <plugin>
-               <groupId>org.codehaus.mojo</groupId>
-               <artifactId>build-helper-maven-plugin</artifactId>
-               <version>${build-helper-maven-plugin-version}</version>
-            </plugin>
-            <plugin>
-               <groupId>org.codehaus.mojo</groupId>
-               <artifactId>flatten-maven-plugin</artifactId>
-               <version>${maven-plugin-flatten-version}</version>
-            </plugin>
-            <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-jar-plugin</artifactId>
-               <version>${maven-jar-plugin-version}</version>
-            </plugin>
-            <plugin>
-               <groupId>pl.project13.maven</groupId>
-               <artifactId>git-commit-id-plugin</artifactId>
-               <version>${git-commit-id-plugin-version}</version>
-            </plugin>
-            <plugin>
-               <groupId>org.springframework.boot</groupId>
-               <artifactId>spring-boot-maven-plugin</artifactId>
-               <version>${spring-boot-version}</version>
-            </plugin>
-         </plugins>
-      </pluginManagement>
       <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-scm-plugin</artifactId>
-            <version>${maven-scm-plugin-version}</version>
-            <configuration>
-               <tag>${project.version}</tag>
-            </configuration>
-         </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
             <executions>
                <execution>
-                  <id>sds-parent-enforce-groupId</id>
+                  <id>esmf-enforce-graalvm</id>
                   <goals>
                      <goal>enforce</goal>
                   </goals>
                   <configuration>
                      <rules>
                         <requireProperty>
-                           <property>project.groupId</property>
-                           <message>You must follow Maven naming convention and set the groupId to
-                              io.openmanufacturing or extend it!
-                           </message>
-                           <regex>io.openmanufacturing(.[a-z]+)*</regex>
-                           <regexMessage>You must follow Maven naming convention and set the groupId to
-                              'io.openmanufacturing' or an extended form, e.g. io.openmanufacturing.sds!
-                           </regexMessage>
+                           <property>java.vm.vendor</property>
+                           <message>Could not determine JDK vendor (java.vm.vendor property)</message>
+                           <regex>GraalVM.*</regex>
+                           <regexMessage>A GraalVM JDK is required to build this project</regexMessage>
                         </requireProperty>
                      </rules>
                   </configuration>
                </execution>
             </executions>
          </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>${maven-surefire-plugin-version}</version>
-            <configuration>
-               <skip>false</skip>
-               <reportsDirectory>${project.build.directory}/${testreports.surefire}</reportsDirectory>
-               <includes>
-                  <include>**/*Tests.java</include>
-                  <include>**/*Test.java</include>
-               </includes>
-            </configuration>
-         </plugin>
-
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>${maven-compiler-plugin-version}</version>
-            <configuration>
-               <source>${java-source-version}</source>
-               <target>${java-target-version}</target>
-               <showWarnings>true</showWarnings>
-               <showDeprecation>true</showDeprecation>
-               <annotationProcessorPaths>
-                  <path>
-                     <groupId>org.springframework.boot</groupId>
-                     <artifactId>spring-boot-configuration-processor</artifactId>
-                     <version>${spring-boot-version}</version>
-                  </path>
-               </annotationProcessorPaths>
-               <compilerArgs>
-                  <arg>-Xlint:all</arg>
-               </compilerArgs>
-            </configuration>
-         </plugin>
-         <!-- jacoco plugin required for unit test coverage on SonarQube. -->
-         <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>${jacoco-maven-plugin-version}</version>
-            <executions>
-               <!-- In here the JaCoCo Agent is prepared before starting your Tests -->
-               <execution>
-                  <id>default-prepare-agent</id>
-                  <goals>
-                     <goal>prepare-agent</goal>
-                  </goals>
-
-                  <!-- Maybe you will have to make some configurations, like setting where the jacoco.exec should be stored then you can
-                     use <configuration> otherwise defaults will be used. -->
-                  <configuration>
-                     <destFile>${project.build.directory}/jacoco.exec</destFile>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-         <plugin>
-            <!--
-              This plugin strips down original pom.xml to a required minimum and stores it within the final artifact in favor of the original one.
-              Original pom.xml will be kept untouched. For convenience you'll find the flattened version after a Maven build next to the original pom.xml.
-              This results in a more streamlined POM which is much easier to grasp as a consuming developer of the SDK.
-            -->
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>flatten-maven-plugin</artifactId>
-            <configuration>
-               <!-- see https://central.sonatype.org/publish/requirements -->
-               <flattenMode>ossrh</flattenMode>
-            </configuration>
-            <executions>
-               <execution>
-                  <id>flatten</id>
-                  <phase>process-resources</phase>
-                  <goals>
-                     <goal>flatten</goal>
-                  </goals>
-               </execution>
-               <execution>
-                  <id>clean-flatten</id>
-                  <phase>clean</phase>
-                  <goals>
-                     <goal>clean</goal>
-                  </goals>
-               </execution>
-            </executions>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>${maven-source-plugin-version}</version>
-            <executions>
-               <execution>
-                  <id>attach-sources</id>
-                  <goals>
-                     <goal>jar-no-fork</goal>
-                  </goals>
-               </execution>
-            </executions>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>${maven-javadoc-plugin-version}</version>
-            <executions>
-               <execution>
-                  <id>attach-javadocs</id>
-                  <goals>
-                     <goal>jar</goal>
-                  </goals>
-                  <configuration>
-                     <doclint>none</doclint>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>3.0.1</version>
-            <executions>
-               <execution>
-                  <id>sign-artifacts</id>
-                  <phase>verify</phase>
-                  <goals>
-                     <goal>sign</goal>
-                  </goals>
-               </execution>
-            </executions>
-            <configuration>
-               <gpgArguments>
-                  <arg>--pinentry-mode</arg>
-                  <arg>loopback</arg>
-               </gpgArguments>
-            </configuration>
-         </plugin>
       </plugins>
    </build>
-   <profiles>
-      <profile>
-         <id>release-build</id>
-         <distributionManagement>
-            <repository>
-               <id>ossrh</id>
-               <name>OSSRH</name>
-               <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-            </repository>
-         </distributionManagement>
-         <build>
-            <plugins>
-               <plugin>
-                  <groupId>org.sonatype.plugins</groupId>
-                  <artifactId>nexus-staging-maven-plugin</artifactId>
-                  <version>1.6.9</version>
-                  <extensions>true</extensions>
-                  <configuration>
-                     <serverId>ossrh</serverId>
-                     <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                     <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                  </configuration>
-               </plugin>
-            </plugins>
-         </build>
-      </profile>
-      <profile>
-         <id>milestone-build</id>
-         <distributionManagement>
-            <repository>
-               <id>github</id>
-               <name>Github</name>
-               <url>https://maven.pkg.github.com/OpenManufacturingPlatform/sds-sdk</url>
-            </repository>
-         </distributionManagement>
-      </profile>
-   </profiles>
 </project>

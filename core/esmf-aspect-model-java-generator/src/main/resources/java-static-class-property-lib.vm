@@ -1,0 +1,195 @@
+#**
+ ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
+#macro( propertyDeclaration ) public static final #end
+
+#macro( getConstraintClassName )
+    #set( $trait = $util.castToTrait( $property.getCharacteristic().get() ) )
+    $trait.getConstraints().iterator().next().getClass().getSimpleName()
+#end
+
+#macro( getCharacteristicClassName )
+    $property.getEffectiveCharacteristic().get().getClass().getSimpleName()
+#end
+
+#macro( extendsComplexType $complexType )
+    #if( $complexType.getExtends().isPresent() )
+        #set( $extendedComplexType = $complexType.getExtends().get() )
+        #if ( $Entity.isAssignableFrom( $extendedComplexType.class ) )
+            #set( $entityType = $util.castToEntity( $extendedComplexType ) )
+            $codeGenerationConfig.importTracker().importExplicit( $DefaultEntity )
+            Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
+                $modelVisitor.elementUrn( $entityType, $context ), "$entityType.getName()" ),
+            Meta${entityType.getName()}.INSTANCE.getProperties(),
+            #extendsComplexType( $entityType )
+            )
+        )
+        #else
+            #set( $abstractEntityType = $util.castToAbstractEntity( $extendedComplexType ) )
+            $codeGenerationConfig.importTracker().importExplicit( $DefaultAbstractEntity )
+            Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
+                $modelVisitor.elementUrn( $abstractEntityType, $context ), "$abstractEntityType.getName()" ),
+            Meta${abstractEntityType.name}.INSTANCE.getProperties(),
+            #extendsComplexType( $abstractEntityType ),
+            List.of(
+            #foreach( $extendingComplexType in $abstractEntityType.getExtendingElements() )
+                AspectModelUrn.fromUrn( "$extendingComplexType.getUrn()" )
+                #if( $foreach.hasNext ), #end
+            #end
+            ))
+            )
+        #end
+    #else
+        Optional.empty()
+    #end
+#end
+
+#* @vtlvariable name="characteristic" type="org.eclipse.esmf.metamodel.Characteristic" *#
+#macro( propertyCharacteristic $characteristic $propertyTypeName )
+    $characteristic.accept($modelVisitor, $context)
+#end
+
+#macro( javaStaticClassProperty $property $codeGenerationConfig )
+#set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
+
+## public static final $type $property = (definition)
+#if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
+    $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintProperty )
+    #if( $util.hasContainerType( $property ) )
+        $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintContainerProperty )
+        #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
+        #propertyDeclaration() StaticConstraintContainerProperty<$containedType, $propertyType, #getCharacteristicClassName()>
+          $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
+    #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
+        $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintUnitProperty )
+        $codeGenerationConfig.importTracker().importExplicit( $Unit )
+        #propertyDeclaration() StaticConstraintUnitProperty<$propertyType, #getCharacteristicClassName()>
+          $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
+    #else
+        #propertyDeclaration() StaticConstraintProperty<$propertyType, #getCharacteristicClassName()>
+          $util.toConstant( $property.getName() ) = #staticProperty( $property $codeGenerationConfig );
+    #end
+#else
+    #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
+        $codeGenerationConfig.importTracker().importExplicit( $StaticContainerProperty )
+        #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
+        #propertyDeclaration() StaticContainerProperty<$containedType, java.util.$propertyType> $util.toConstant( $property.getName() ) =
+          #staticProperty( $property $codeGenerationConfig );
+    #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
+        $codeGenerationConfig.importTracker().importExplicit( $StaticUnitProperty )
+        $codeGenerationConfig.importTracker().importExplicit( $Unit )
+        #propertyDeclaration() StaticUnitProperty<$propertyType> $util.toConstant( $property.getName() ) =
+          #staticProperty( $property $codeGenerationConfig );
+    #else
+        #propertyDeclaration() StaticProperty<$propertyType> $util.toConstant( $property.getName() ) =
+          #staticProperty( $property $codeGenerationConfig );
+    #end
+#end
+
+#end
+
+## -------------------------------------------------
+
+#macro( staticProperty $property $codeGenerationConfig )
+    #set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
+
+    ## new $type(
+    #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
+        $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintProperty )
+        #if( $util.hasContainerType( $property ) )
+            $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintContainerProperty )
+            #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
+            new StaticConstraintContainerProperty<$containedType, $propertyType, #getCharacteristicClassName()>(
+        #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
+            $codeGenerationConfig.importTracker().importExplicit( $StaticConstraintUnitProperty )
+            $codeGenerationConfig.importTracker().importExplicit( $Unit )
+            new StaticConstraintUnitProperty<$propertyType, #getCharacteristicClassName()>(
+        #else
+            new StaticConstraintProperty<$propertyType, #getCharacteristicClassName()>(
+        #end
+    #else
+        #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
+            $codeGenerationConfig.importTracker().importExplicit( $StaticContainerProperty )
+            #set( $containedType = $util.getCharacteristicJavaType( $property, $codeGenerationConfig ) )
+        new StaticContainerProperty<$containedType, $propertyType> (
+        #elseif( $util.hasUnit( $property.getCharacteristic().get() ) )
+            $codeGenerationConfig.importTracker().importExplicit( $StaticUnitProperty )
+            $codeGenerationConfig.importTracker().importExplicit( $Unit )
+        new StaticUnitProperty<$propertyType>(
+        #else
+        new StaticProperty<$propertyType>(
+        #end
+    #end
+
+    ## $arg1, $arg2, ... ) {
+    $modelVisitor.metaModelBaseAttributes( $property, $context ),
+    #propertyCharacteristic( $property.getCharacteristic().get(), $propertyType ),
+Optional.empty(),
+    $property.isOptional(),
+    $property.isNotInPayload(),
+Optional.of("$property.getPayloadName()"),
+    $property.isAbstract(),
+    #if ( $property.getExtends().isEmpty() )
+        Optional.empty()
+    #else
+        Optional.of( #staticProperty( $property.getExtends().get(), $codeGenerationConfig ) )
+    #end
+) {
+
+    ## Body
+    #if( $Trait.isAssignableFrom( $property.getCharacteristic().get().getClass() ) )
+    @Override
+    public List<Constraint> getConstraints() {
+    return ((Trait)getCharacteristic().get()).getConstraints();
+    }
+
+    @Override
+    public #getCharacteristicClassName() getBaseCharacteristic() {
+    return (#getCharacteristicClassName())((Trait)getCharacteristic().get()).getBaseCharacteristic();
+    }
+    #end
+
+    #if( $util.hasContainerType( $property ) || ${propertyType.contains( "Either" )} )
+    @SuppressWarnings("unchecked")
+    #end
+@Override
+    #set( $propertyType = $util.getPropertyType( $property, $codeGenerationConfig ) )
+public Class<$propertyType> getPropertyType() {
+    #if( $util.hasContainerType( $property ) )
+    return (Class)${codeGenerationConfig.importTracker().getRawContainerType( $propertyType )}.class;
+    #else
+        #if( ${propertyType.contains( "Either" )} )
+        return (Class)Either.class;
+        #else
+        return ${propertyType}.class;
+        #end
+    #end
+}
+
+    #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
+    @Override
+    public Class<$containedType> getContainedType() {
+    return ${containedType}.class;
+    }
+    #end
+
+    #if( $util.hasUnit( $property.getCharacteristic().get() ) )
+        $codeGenerationConfig.importTracker().importExplicit( $Unit )
+        $codeGenerationConfig.importTracker().importExplicit( $Units )
+    public Unit getUnit() {
+    return Units.fromName("$util.castToQuantifiable( $property.getCharacteristic().get() ).unit.get().getName()")
+    .orElseThrow(() -> new RuntimeException("Unknown unit: $util.castToQuantifiable( $property.getCharacteristic().get() ).getUnit().get().getName()"));
+    }
+    #end
+
+}
+#end
