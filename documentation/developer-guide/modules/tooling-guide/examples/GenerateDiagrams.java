@@ -17,10 +17,10 @@ package examples;
 import java.io.OutputStream;
 import java.util.Locale;
 import java.util.Set;
-import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
-import io.openmanufacturing.sds.aspectmodel.generator.diagram.AspectModelDiagramGenerator.Format;
-import io.openmanufacturing.sds.aspectmodel.resolver.AspectModelResolver;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
+import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator.Format;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 // end::imports[]
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class GenerateDiagrams extends AbstractGenerator {
       final VersionedModel model = // ...
             // end::generate[]
             AspectModelResolver.loadAndResolveModel(
-                  new File( "aspect-models/io.openmanufacturing.examples.movement/1.0.0/Movement.ttl" ) ).get();
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) ).get();
       // tag::generate[]
 
       final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( model ); // <1>

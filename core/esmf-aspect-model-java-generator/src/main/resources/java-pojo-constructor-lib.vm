@@ -1,0 +1,79 @@
+#**
+ ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+ ~
+ ~ See the AUTHORS file(s) distributed with this work for additional
+ ~ information regarding authorship.
+ ~
+ ~ This Source Code Form is subject to the terms of the Mozilla Public
+ ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+ ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ ~
+ ~ SPDX-License-Identifier: MPL-2.0
+ *#
+#* @vtlvariable name="deconstructionSets" type="java.util.List<org.eclipse.esmf.aspectmodel.java.DeconstructionSet>" *#
+#* Note that in this macro $enableJacksonAnnotations overrides the value given in $codeGenerationConfig *#
+#macro( constructorContent $deconstructionSets $needInitializer $allProperties $codeGenerationConfig $enableJacksonAnnotations $elementProperties )
+    #if( $enableJacksonAnnotations )
+        $codeGenerationConfig.importTracker().importExplicit( $JsonProperty )
+        $codeGenerationConfig.importTracker().importExplicit( $JsonCreator )
+        @JsonCreator
+    #end
+    public ${element.name}(
+    $util.constructorArguments( $allProperties, $codeGenerationConfig, $enableJacksonAnnotations )
+    ) #if( $needInitializer ) throws DatatypeConfigurationException #end {
+    super(
+    ${util.superConstructorCallExpression( $allProperties, $elementProperties )}
+	);
+    #foreach( $property in $elementProperties )
+        #if( !$property.isAbstract() )
+        this.$property.getPayloadName() = $property.getPayloadName();
+        #end
+    #end
+    #if( $needInitializer )
+        final DatatypeFactory _datatypeFactory = DatatypeFactory.newInstance();
+    #end
+    #foreach( $deconstructionSet in $deconstructionSets )
+    {
+        final Pattern pattern = Pattern.compile( "${deconstructionSet.getDeconstructionRule().replaceAll("\\", "\\\\")}" );
+        final Matcher matcher = pattern.matcher( ${deconstructionSet.getOriginalProperty().getName()}.toString() );
+        if ( matcher.find() ) {
+        #foreach( $property in $deconstructionSet.getElementProperties() )
+            #set( $value = "matcher.group( ${foreach.count} )" )
+            this.${property.name} = $util.generateInitializer( $property, $value, $codeGenerationConfig, $valueInitializer );
+        #end
+        }
+    }
+    #end
+    }
+#end
+
+#macro( javaPojoConstructor )
+#if ( $deconstructor.isApplicable() )
+    $codeGenerationConfig.importTracker().importExplicit( $Matcher )
+    $codeGenerationConfig.importTracker().importExplicit( $Pattern )
+#end
+#set( $deconstructionSets = $deconstructor.getDeconstructionSets() )
+#set( $needInitializer = $valueInitializer.needInitializationToConstructor( $deconstructionSets ) )
+#if ( $needInitializer )
+    $codeGenerationConfig.importTracker().importExplicit( $DatatypeConfigurationException )
+    $codeGenerationConfig.importTracker().importExplicit( $DatatypeConstants )
+    $codeGenerationConfig.importTracker().importExplicit( $DatatypeFactory )
+#end
+#if ( $element.isComplexType() && $element.getExtends().isPresent() )
+	#set( $allPropertiesInPayload = $util.getAllPropertiesInPayload( $element ) )
+	#set( $allProperties = $util.getAllProperties( $element ) )
+	#set( $elementPropertiesInPayload = $util.getPropertiesInPayload( $element ) )
+	#set( $elementProperties = $element.properties )
+#else
+	#set( $allPropertiesInPayload = $util.getPropertiesInPayload( $element ) )
+	#set( $allProperties = $element.properties )
+	#set( $elementPropertiesInPayload = $allPropertiesInPayload )
+	#set( $elementProperties = $allProperties )
+#end
+#if ( $util.anyPropertyNotInPayload( $element ) )
+    #constructorContent( $deconstructionSets $needInitializer $allProperties $codeGenerationConfig false $elementProperties )
+    #constructorContent( $deconstructionSets $needInitializer $allPropertiesInPayload $codeGenerationConfig $codeGenerationConfig.enableJacksonAnnotations() $elementPropertiesInPayload )
+#else
+    #constructorContent( $deconstructionSets $needInitializer $allProperties $codeGenerationConfig $codeGenerationConfig.enableJacksonAnnotations() $elementProperties )
+#end
+#end

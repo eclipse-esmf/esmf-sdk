@@ -14,15 +14,15 @@
 package examples;
 
 // tag::imports[]
-import static io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader.loadTurtle;
-import static io.openmanufacturing.sds.aspectmodel.resolver.services.TurtleLoader.openUrl;
+import static org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader.loadTurtle;
+import static org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader.openUrl;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Optional;
 import org.apache.jena.vocabulary.RDF;
-import io.openmanufacturing.sds.aspectmetamodel.KnownVersion;
-import io.openmanufacturing.sds.aspectmodel.resolver.services.MetaModelUrls;
-import io.openmanufacturing.sds.aspectmodel.vocabulary.BAMM;
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 // end::imports[]
 import org.junit.jupiter.api.Test;
 
@@ -38,9 +38,9 @@ public class LoadMetaModelRdf {
          final InputStream inputStream = openUrl( url );
          loadTurtle( inputStream ).forEach( model -> {
             // Do something with the org.apache.jena.org.rdf.model.Model
-            final BAMM bamm = new BAMM( metaModelVersion );
+            final SAMM samm = new SAMM( metaModelVersion );
             final int numberOfCharacteristicInstances =
-                  model.listStatements( null, RDF.type, bamm.Characteristic() ).toList().size();
+                  model.listStatements( null, RDF.type, samm.Characteristic() ).toList().size();
             final String result = String.format( "Meta Model Version " + metaModelVersion.toVersionString()
                   + " defines " + numberOfCharacteristicInstances + " Characteristic instances" );
          } );

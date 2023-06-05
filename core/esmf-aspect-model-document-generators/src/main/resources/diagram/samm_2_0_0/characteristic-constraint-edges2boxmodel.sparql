@@ -1,0 +1,41 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#>
+prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.0.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
+
+# Generates edges between Trait and Constraints (constraint)
+construct {
+  ?edge a :Edge .
+  ?edge :title "constraint" .
+  ?edge :from ?from .
+  ?edge :to ?to .
+} where {
+  ?characteristic samm-c:constraint ?constraint .
+  bind( func:getElementName( ?characteristic ) as ?characteristicName )
+
+  bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName ) ) as ?from )
+
+  bind( func:getElementName( ?constraint ) as ?constraintName )
+  bind( concat( ?constraintName, "Constraint" ) as ?constraintBoxName )
+
+  bind( iri( concat( func:getNamespace( ?constraint ), ?constraintBoxName ) ) as ?to )
+
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName, "_To_", ?constraintBoxName ) ) as ?edge )
+}
+

@@ -10,7 +10,7 @@ In this section, the Java APIs for working with Aspect Models are described. All
 following subsections can either be included in your project using a dedicated dependency (as described in the
 respective subsection), _or_ you can use the `aspect-model-starter` artifact that aggregates all necessary dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-starter-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-starter-artifact.adoc[]
 
 The error handling in many APIs is done using the
 `https://javadoc.io/doc/io.vavr/vavr/0.10.3/io/vavr/control/Try.html[Try]` type provided by the Java
@@ -45,15 +45,15 @@ include::example$HandlingTry.java[tags=handlingTry]
 The tooling can be made available in two different versions: `release` and `milestone`. The release version represents a stable version of the product
 and can be referenced in your projects in the usual way from the Maven Central repository. There is also the possibility to have the intermediate builds
 made available, these are called `milestone` builds. Instead of Maven Central, these are released via 
-https://github.com/orgs/OpenManufacturingPlatform/packages?repo_name=sds-sdk[GitHub Packages] mechanism. +
+https://github.com/orgs/eclipse-esmf/packages?repo_name=esmf-sdk[GitHub Packages] mechanism. +
 To be able to use the artifacts released in this way in your projects, first the right repository has to be added to your `pom.xml` file:
 [source, xml]
 ----
 <repositories>
   <repository>
     <id>github</id>
-    <name>OpenManufacturingPlatform SDS-SDK</name>
-    <url>https://maven.pkg.github.com/OpenManufacturingPlatform/sds-sdk</url>
+    <name>ESMF SDK</name>
+    <url>https://maven.pkg.github.com/eclipse-esmf/esmf-sdk</url>
     <releases><enabled>true</enabled></releases>
     <snapshots><enabled>true</enabled></snapshots>
   </repository>
@@ -65,16 +65,16 @@ https://docs.github.com/en/packages/working-with-a-github-packages-registry/work
 [[jdk-requirements]]
 == JDK requirements
 
-The sds-sdk components are built with Java 17 and require a JDK >= 17 such as
+The esmf-sdk components are built with Java 17 and require a JDK >= 17 such as
 https://adoptium.net/[Adoptium Temurin].
 
-The sds-sdk can also be used with a Java 17-compatible https://www.graalvm.org/[GraalVM JDK]. With
+The esmf-sdk can also be used with a Java 17-compatible https://www.graalvm.org/[GraalVM JDK]. With
 GraalVM you need to make the Graal JavaScript component available, as parts of the SDK such as the
 Aspect Model validation component require embedded JavaScript execution:
 
-* For using the sds-sdk in the GraalVM itself, install the JS component using the
+* For using the esmf-sdk in the GraalVM itself, install the JS component using the
   https://www.graalvm.org/22.3/reference-manual/js/[GraalVM Updater]: `gu install js`
-* For using the sds-sdk with GraalVM `native-image`, be sure to use the `--language:js` option when
+* For using the esmf-sdk with GraalVM `native-image`, be sure to use the `--language:js` option when
   building the native image; for more information see
   https://www.graalvm.org/22.3/reference-manual/polyglot-programming/[polyglot programming].
 
@@ -82,7 +82,7 @@ Aspect Model validation component require embedded JavaScript execution:
 == Parsing Aspect Model URNs
 
 The `aspect-model-urn` artifact provides a way to parse and validate Aspect model element URNs as described in the
-xref:bamm-specification:ROOT:namespaces.adoc[specification].
+xref:samm-specification:ROOT:namespaces.adoc[specification].
 
 ++++
 <details>
@@ -103,17 +103,17 @@ include::example$ParseAspectModelUrn.java[tags=parseAspectModelUrn]
 
 To include the artifact, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-urn-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-urn-artifact.adoc[]
 
 [[loading-and-saving]]
 == Loading and Saving Aspect Models
 
 Aspect models are, like their Meta Model, described using the Resource Description Format (RDF,
-xref:bamm-specification:appendix:appendix.adoc#rdf11[[rdf11\]]) and the Terse RDF Triple Language syntax (TTL,
-xref:bamm-specification:appendix:appendix.adoc#turtle[[turtle\]]). There are two ways of working with Aspect models:
+xref:samm-specification:appendix:appendix.adoc#rdf11[[rdf11\]]) and the Terse RDF Triple Language syntax (TTL,
+xref:samm-specification:appendix:appendix.adoc#turtle[[turtle\]]). There are two ways of working with Aspect models:
 Either the model is loaded as an RDF model where the abstraction level directly corresponds to the RDF/Turtle
 serialization, or the RDF is parsed into a native Java Aspect model representation where the abstraction level
-corresponds to the BAMM concepts. Both approaches have different use cases and advantages and both are supported by the
+corresponds to the SAMM concepts. Both approaches have different use cases and advantages and both are supported by the
 Aspect model Java tooling:
 
 [width="100%", options="header", cols="50,50"]
@@ -123,7 +123,7 @@ a|
 * Low level, focus on power and flexibility
 * Flexibly navigate and filter the model on the RDF statements level
 * Work with models that are valid RDF, but incomplete Aspect models, e.g. in Aspect model editors
-* Use SPARQL xref:bamm-specification:appendix:appendix.adoc#sparql[[sparql\]] to execute complex queries on Aspect models
+* Use SPARQL xref:samm-specification:appendix:appendix.adoc#sparql[[sparql\]] to execute complex queries on Aspect models
 a|
 * High level, focus on convenience and type-safety
 * Use Aspect-model specific interfaces for type-safe code
@@ -140,8 +140,8 @@ model, if you _create_ or _edit_ Aspect models, this is better done using the RD
 Loading an Aspect model in either the RDF-based or the Java Aspect model-based APIs does not only comprise parsing the
 Turtle file, but also the resolution of elements on the RDF level:
 
-* An Aspect model refers to meta model elements (everything that starts with `bamm:`), and can refer to namespaces of
-  shared elements (`bamm-c`, `bamm-e` and `unit`)
+* An Aspect model refers to meta model elements (everything that starts with `samm:`), and can refer to namespaces of
+  shared elements (`samm-c`, `samm-e` and `unit`)
 * It can also refer to elements from other Aspect models or model elements defined in separate Turtle files
 
 You use the _model resolver_ to load an Aspect model, which takes care of the first point: The used meta model elements
@@ -151,7 +151,7 @@ file system, in a remote model repository etc. This is done using a _resolution 
 type `T` to a `Try` of a RDF model. Several commonly used resolution strategies are readily available:
 
 * The `FileSystemStrategy` resolves a `java.nio.file.Path` for a file relative
-  to the xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory]
+  to the xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory]
 * The `ClassPathStrategy` resolves a model from resources in the Java class path
 * The `EitherStrategy` can be used to chain two different strategies of different types
 
@@ -184,12 +184,12 @@ include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromFile]
 ----
 
 <1> The file must be located in a directory according to the
-xref:tooling-guide:bamm-cli.adoc#models-directory-structure[models directory] structure.
+xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory] structure.
 <2> You can check if loading succeeded using `versionedModel.isSuccess()` and
 `versionedModel.isFailure()`. If loading fails, `versionedModel.getCause()` provides more
 information.
 <3> The code inside `forEach` is only executed if the model could be loaded successfully.
-<4> List all statements in the RDF model that declare a `bamm:Aspect`.
+<4> List all statements in the RDF model that declare a `samm:Aspect`.
 
 If you want to choose which model resolution strategy is used, you use the `resolveAspectModel()`
 method of the `AspectModelResolver`. In this case, you need to provide the resolution strategy and
@@ -215,7 +215,7 @@ include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromUrn]
 
 To include the model resolver artifact, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-resolver-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-resolver-artifact.adoc[]
 
 [[loading-an-aspect-model-java-model-level]]
 === Loading an Aspect Model to work on the Java Aspect Model Level
@@ -244,14 +244,14 @@ include::example$LoadAspectModelObjects.java[tags=loadModel]
 
 To include the Java Aspect model artifact, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-meta-model-java-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-java-artifact.adoc[]
 
 [[serializing-an-aspect-model]]
 === Serializing a Java Aspect Model into a RDF/Turtle Aspect Model
 
 There are two serialization components available: One to turn a Java Aspect model into a Jena RDF model (the reverse
 operation of what the `AspectModelLoader` does) and one to serialize the resulting Jena RDF model in Turtle syntax,
-formatted according to the guidelines described in the BAMM specification.
+formatted according to the guidelines described in the SAMM specification.
 
 ++++
 <details>
@@ -272,7 +272,7 @@ include::example$SerializeAspectModel.java[tags=serialize]
 
 To include the serializer artifact, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-serializer-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-serializer-artifact.adoc[]
 
 [[validating-aspect-models]]
 == Validating Aspect Models
@@ -315,7 +315,7 @@ Violations in a type-safe way.
 
 To include the model validator, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-validator-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-validator-artifact.adoc[]
 
 [[generating-documentation]]
 == Generating Documentation for Aspect Models
@@ -323,7 +323,7 @@ include::sds-developer-guide:ROOT:partial$sds-aspect-model-validator-artifact.ad
 Different types of artifacts can be generated from an Aspect model. All corresponding generators are included in the
 following dependency:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-document-generators-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-document-generators-artifact.adoc[]
 
 The documentation generation APIs provide methods that take as an argument a `Function<String, java.io.OutputStream>`.
 This is a mapping function that takes a file name as an input (which is determined by the respective generator) and
@@ -401,8 +401,8 @@ selected Aspect.
 
 The sample JSON payload generator is used to create a valid JSON payload for an Aspect model as it could be returned by
 an Aspect that implements that Aspect model. This follows the
-xref:bamm-specification:ROOT:payloads.adoc#mapping-to-json[mapping rules] as defined in the Meta Model specification.
-The generator uses `bamm:exampleValue`&#8203;s of Properties if present, otherwise random values corresponding to the
+xref:samm-specification:ROOT:payloads.adoc#mapping-to-json[mapping rules] as defined in the Meta Model specification.
+The generator uses `samm:exampleValue`&#8203;s of Properties if present, otherwise random values corresponding to the
 respective data types are generated.
 
 ++++
@@ -476,7 +476,7 @@ include::example$GenerateOpenApi.java[tags=generateJson]
 ----
 
 NOTE: For Enumerations with complex data types, the values are modelled as instances of the Entity defined as the
-Enumeration's data type (see xref:bamm-specification:ROOT:modeling-guidelines.adoc#declaring-enumerations[Declaring
+Enumeration's data type (see xref:samm-specification:ROOT:modeling-guidelines.adoc#declaring-enumerations[Declaring
 Enumerations] for more information). In case the Entity instances contain Properties with a sorted collection as their
 data type, the order of the values of said collection in the Entity instances is not preserved in the generated OpenAPI
 specification. Preserving this order in OpenAPI is not possible at this point.
@@ -504,13 +504,13 @@ Depending on the use case, you would either use one or both of the types simulta
 
 To include the Java generator, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-java-generator-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-java-generator-artifact.adoc[]
 
 [[type-mapping]]
 === Type Mapping
 
 In the Java code generated from an Aspect model, the scalar Aspect model
-xref:bamm-specification:ROOT:datatypes.adoc#data-types[data types] are mapped to native Java types. The following table
+xref:samm-specification:ROOT:datatypes.adoc#data-types[data types] are mapped to native Java types. The following table
 lists the correspondences.
 
 [width="100%", options="header", cols="50,50"]
@@ -549,7 +549,7 @@ lists the correspondences.
 | `xsd:hexBinary` | `byte[]`
 | `xsd:base64Binary` | `byte[]`
 | `xsd:anyURI` | `java.net.URI`
-| `bamm:curie` | `io.openmanufacturing.metamodel.datatypes.Curie`
+| `samm:curie` | `org.eclipse.esmf.metamodel.datatypes.Curie`
 |===
 
 [[generating-pojos]]
@@ -602,14 +602,14 @@ include::example$GenerateJavaStaticClass.java[tags=generate]
 
 To use the generated static meta classes, you need the following additional dependency:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-static-meta-model-java-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-static-meta-model-java-artifact.adoc[]
 
 [[providing-custom-macros-for-code-generation]]
 ==== Providing Custom Macros for Code Generation
 
 It is possible to change predefined sections of the generated classes by providing custom https://velocity.apache.org/[Velocity] templates; see the https://velocity.apache.org/engine/2.3/user-guide.html[Velocity User Guide] for more information.
 The custom macros must be defined in a single template file.
-The path to the template file as well as its name may be passed as arguments to the code generation, e.g. using the xref:bamm-cli.adoc#bamm-cli[BAMM-CLI].
+The path to the template file as well as its name may be passed as arguments to the code generation, e.g. using the xref:samm-cli.adoc#samm-cli[SAMM-CLI].
 
 Custom macros may be provided for the following sections:
 
@@ -659,16 +659,16 @@ include::example$MigrateAspectModel.java[tags=migrate]
 
 To use the meta model version migrator, you need the following dependency:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-meta-model-version-migrator-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-version-migrator-artifact.adoc[]
 
-[[accessing-bamm-programmatically]]
-== Accessing the BAMM programmatically
+[[accessing-samm-programmatically]]
+== Accessing the SAMM programmatically
 
-In order to access the source RDF files that describe the BAMM vocabulary, shared Characteristics and Entities as well
-as Units, you can add a dependency to the `sds-aspect-meta-model` artifact. Note that this artifact does not contain any
+In order to access the source RDF files that describe the SAMM vocabulary, shared Characteristics and Entities as well
+as Units, you can add a dependency to the `esmf-aspect-meta-model` artifact. Note that this artifact does not contain any
 Java classes.
 
-include::sds-developer-guide:ROOT:partial$aspect-meta-model-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$aspect-meta-model-artifact.adoc[]
 
 In order to access the files via `java.lang.Class#getResourceAsStream`, you can refer to the following directory
 structure that is present in the artifact:
@@ -727,81 +727,81 @@ model] is a widely recognized standard developed by the https://industrialdigita
 Digital Twin Association (IDTA)] to express and handle Digital Twins. Central element of the AAS is
 the concept of Submodels, which describe certain aspects of a Digital Twin.
 
-The BAMM Aspect Meta Model allows to specify aspects of a digital twin and its semantics. The AAS
-Generator module provides mapping implementations to derive AAS Submodels from BAMM Aspect Models.
-On the one hand, this allows to integrate BAMM models in AAS environments and on the other hand it
-allows AAS submodels to be described with rich semantics, as it is possible with BAMM.
+The SAMM Aspect Meta Model allows to specify aspects of a digital twin and its semantics. The AAS
+Generator module provides mapping implementations to derive AAS Submodels from SAMM Aspect Models.
+On the one hand, this allows to integrate SAMM models in AAS environments and on the other hand it
+allows AAS submodels to be described with rich semantics, as it is possible with SAMM.
 
 [[details-mapping-aas]]
 === Details of the Mapping Concept
 
 In the following section, the mapping rules applied by the generator are explained. The rules apply
-to https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/index.html[BAMM v1.0.0] and
+to https://eclipse-esmf.github.io/samm-specification/2.0.0/index.html[SAMM v2.0.0] and
 https://www.plattform-i40.de/IP/Redaktion/EN/Downloads/Publikation/Details_of_the_Asset_Administration_Shell_Part1_V3.html[AAS
 Specification Part 1 V3.0RC01].
 
 [cols="1,1,2"]
 |===
-| BAMM  | AAS  | Comment
+| SAMM  | AAS  | Comment
 
-| **bamm:Aspect**  |  aas:Submodel with kind=Template  | Empty Asset and AssetAdministrationShell entries are added to the output file
+| **samm:Aspect**  |  aas:Submodel with kind=Template  | Empty Asset and AssetAdministrationShell entries are added to the output file
 
-| bamm:name   | aas:Submodel.idShort  |
+| samm:name   | aas:Submodel.idShort  |
 
-| bamm:preferredName   | aas:Submodel.displayName  |
+| samm:preferredName   | aas:Submodel.displayName  |
 
-| bamm:description   | aas:Submodel.description  |
+| samm:description   | aas:Submodel.description  |
 
-| bamm:property   | see **bamm:Property**  |
+| samm:property   | see **samm:Property**  |
 
-| bamm:operation   | see **bamm:Operation**   |
+| samm:operation   | see **samm:Operation**   |
 
-| bamm:Aspect.urn  | aas:Submodel.semanticId  |
+| samm:Aspect.urn  | aas:Submodel.semanticId  |
 
-| **bamm:Property**  | aas:Property, aas:SubmodelElementCollection   | The AAS type is derived from the type of the BAMM Characteristic specifying the BAMM property. Depending on the type it is decided what the resulting AAS element will be. In case of an Entity it will result in a SubmodelElementCollection. It will also be a SubmodelElementCollection if the BAMM Characteristic is of a Collection type (see the https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/characteristics.html[Characteristics taxonomy]). In all other cases an aas:Property will be generated
+| **samm:Property**  | aas:Property, aas:SubmodelElementCollection   | The AAS type is derived from the type of the SAMM Characteristic specifying the SAMM property. Depending on the type it is decided what the resulting AAS element will be. In case of an Entity it will result in a SubmodelElementCollection. It will also be a SubmodelElementCollection if the SAMM Characteristic is of a Collection type (see the https://eclipse-esmf.github.io/samm-specification/2.0.0/characteristics.html[Characteristics taxonomy]). In all other cases an aas:Property will be generated
 
-| bamm:Property.name  | aas:Property.idShort |
+| samm:Property.name  | aas:Property.idShort |
 
-| bamm:Property.urn  | aas:ConceptDescription.identification.id, aas:Property.semanticId|
+| samm:Property.urn  | aas:ConceptDescription.identification.id, aas:Property.semanticId|
 
-| bamm:Property.preferredName   | aas:Property.displayName  |
+| samm:Property.preferredName   | aas:Property.displayName  |
 
-| bamm:Property.description   | aas:Property.description  |  Note: Also mapped to aas:DataSpecificationIEC61360.definition of the aas:ConceptDescription of this property
+| samm:Property.description   | aas:Property.description  |  Note: Also mapped to aas:DataSpecificationIEC61360.definition of the aas:ConceptDescription of this property
 
-| bamm:Property.exampleValue  |aas:Property.value  |
+| samm:Property.exampleValue  |aas:Property.value  |
 
-| bamm:Characteristic.dataType  | aas:Property.valueType |
+| samm:Characteristic.dataType  | aas:Property.valueType |
 
-| **bamm:Operation** |  Operation  | in/out parameters are not used in BAMM so the mapping only generates input variables and output variables in AAS
+| **samm:Operation** |  Operation  | in/out parameters are not used in SAMM so the mapping only generates input variables and output variables in AAS
 
-| xref:bamm-specification:ROOT:characteristics.adoc#characteristic-characteristic[**bamm-c:Characteristic**]  | aas:SubmodelElement, aas:ConceptDescription  | Characteristics in BAMM define the semantics of a property, which includes there types as well as links to further definitions (standards, dictionaries, etc), a natural language description and name in different languages. Type and description are separated in AAS, which is why there is not a one-to-one mapping of a Characteristic to one element in AAS but rather Characteristics are used in the mapping of Properties, first, to guide the generation process and, second, to capture semantics in ConceptDescriptions of properties with data specification "DataSpecificationIEC61360" of the AAS.
+| xref:samm-specification:ROOT:characteristics.adoc#characteristic-characteristic[**samm-c:Characteristic**]  | aas:SubmodelElement, aas:ConceptDescription  | Characteristics in SAMM define the semantics of a property, which includes there types as well as links to further definitions (standards, dictionaries, etc), a natural language description and name in different languages. Type and description are separated in AAS, which is why there is not a one-to-one mapping of a Characteristic to one element in AAS but rather Characteristics are used in the mapping of Properties, first, to guide the generation process and, second, to capture semantics in ConceptDescriptions of properties with data specification "DataSpecificationIEC61360" of the AAS.
 
-| xref:bamm-specification:ROOT:characteristics.adoc#collection-characteristic[**bamm-c:Collection**] | aas:SubmodelElementList, aas:ConceptDescription  | The general remarks to Characteristics apply also to Collection type Characteristics. However, properties referencing Collections are mapped to SubmodelElementLists. Specific properties of collections are mapped. bamm:Set is unique, bamm:SortedSet is unique and sorted, bamm:List is sorted.
+| xref:samm-specification:ROOT:characteristics.adoc#collection-characteristic[**samm-c:Collection**] | aas:SubmodelElementList, aas:ConceptDescription  | The general remarks to Characteristics apply also to Collection type Characteristics. However, properties referencing Collections are mapped to SubmodelElementLists. Specific properties of collections are mapped. samm:Set is unique, samm:SortedSet is unique and sorted, samm:List is sorted.
 
-| xref:bamm-specification:ROOT:characteristics.adoc#quantifiable-characteristic[**bamm-c:Quantifiable**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Quantifiable type Characteristics. Quantifiables (also Duration and Measurement) reference a unit, which is added to the ConceptDescription corresponding the mapped Characteristic.
+| xref:samm-specification:ROOT:characteristics.adoc#quantifiable-characteristic[**samm-c:Quantifiable**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Quantifiable type Characteristics. Quantifiables (also Duration and Measurement) reference a unit, which is added to the ConceptDescription corresponding the mapped Characteristic.
 
-| xref:bamm-specification:ROOT:characteristics.adoc#either-characteristic[**bamm-c:Either**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Either. However, the Either characteristic has two distinct entries of which one is to be selected. This concept is not present in AAS. Thus, both entries will be written to a Submodel template, where one has to be ignored.
+| xref:samm-specification:ROOT:characteristics.adoc#either-characteristic[**samm-c:Either**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Either. However, the Either characteristic has two distinct entries of which one is to be selected. This concept is not present in AAS. Thus, both entries will be written to a Submodel template, where one has to be ignored.
 
-| xref:bamm-specification:ROOT:characteristics.adoc#trait-characteristic[**bamm-c:Trait**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Trait. However, the constraint of a trait will be ignored and only the base type will be evaluated, which will act as the characteristic of a property.
+| xref:samm-specification:ROOT:characteristics.adoc#trait-characteristic[**samm-c:Trait**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Trait. However, the constraint of a trait will be ignored and only the base type will be evaluated, which will act as the characteristic of a property.
 
-| xref:bamm-specification:ROOT:characteristics.adoc#code-characteristic[**bamm-c:Code**] | aas:SubmodelElement, aas:ConceptDescription | Similar to plain Characteristic.
+| xref:samm-specification:ROOT:characteristics.adoc#code-characteristic[**samm-c:Code**] | aas:SubmodelElement, aas:ConceptDescription | Similar to plain Characteristic.
 
-| xref:bamm-specification:ROOT:characteristics.adoc#structured-value-characteristic[**bamm-c:StructuredValue**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to StructuredValue. However, AAS has no concpet like deconstruction rule. Thus, the deconstruction rule and the sub properties of the deconstruction entity will be ignored and only the Characteristic is mapped.
+| xref:samm-specification:ROOT:characteristics.adoc#structured-value-characteristic[**samm-c:StructuredValue**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to StructuredValue. However, AAS has no concpet like deconstruction rule. Thus, the deconstruction rule and the sub properties of the deconstruction entity will be ignored and only the Characteristic is mapped.
 
-| xref:bamm-specification:ROOT:characteristics.adoc#enumeration-characteristic[**bamm-c:Enumeration**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Enumerations. Additionally, the values of an Enumeration are mapped to a valueList of a DataSpecificationIEC61360.
+| xref:samm-specification:ROOT:characteristics.adoc#enumeration-characteristic[**samm-c:Enumeration**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Enumerations. Additionally, the values of an Enumeration are mapped to a valueList of a DataSpecificationIEC61360.
 
-| xref:bamm-specification:ROOT:characteristics.adoc#state-characteristic[**bamm-c:State**]  | aas:SubmodelElement, aas:ConceptDescription | Same as Enumeration.
+| xref:samm-specification:ROOT:characteristics.adoc#state-characteristic[**samm-c:State**]  | aas:SubmodelElement, aas:ConceptDescription | Same as Enumeration.
 
-| xref:bamm-specification:ROOT:characteristics.adoc#MultiLanguageText[bamm-c:MultiLanguageText]  | aas:MultiLanguageProperty | if a MultiLanguageText is used in BAMM it is mapped to the MultiLanguageProperty in AAS.
+| xref:samm-specification:ROOT:characteristics.adoc#MultiLanguageText[samm-c:MultiLanguageText]  | aas:MultiLanguageProperty | if a MultiLanguageText is used in SAMM it is mapped to the MultiLanguageProperty in AAS.
 |===
 
 === Known Limitations
-The AAS Generator implements a base set of features, which are mapped from BAMM to AAS.
+The AAS Generator implements a base set of features, which are mapped from SAMM to AAS.
 However, there are still limitations:
 
 * Predefined entity mapping (FileResource would be mapped to aas:File)
-* bamm-c:Either is mapped to aas:SubmodelElementCollection with two entries for left and right side
-* Recursive optional properties of BAMM model are not included in output but dropped straight away
+* samm-c:Either is mapped to aas:SubmodelElementCollection with two entries for left and right side
+* Recursive optional properties of SAMM model are not included in output but dropped straight away
 
 === Calling AAS generation from Java
 
@@ -826,4 +826,4 @@ include::example$GenerateAas.java[tags=generate]
 
 To include the serializer artifact, use the following dependencies:
 
-include::sds-developer-guide:ROOT:partial$sds-aspect-model-aas-generator-artifact.adoc[]
+include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-aas-generator-artifact.adoc[]

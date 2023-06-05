@@ -16,15 +16,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <parent>
-      <artifactId>sds-sdk-parent</artifactId>
-      <groupId>io.openmanufacturing</groupId>
+      <artifactId>esmf-sdk-parent</artifactId>
+      <groupId>org.eclipse.esmf</groupId>
       <version>DEV-SNAPSHOT</version>
       <relativePath>../pom.xml</relativePath>
    </parent>
    <modelVersion>4.0.0</modelVersion>
 
    <!-- Note that this module is not deployed -->
-   <artifactId>sds-documentation</artifactId>
+   <artifactId>esmf-documentation</artifactId>
    <name>Documentation</name>
 
    <properties>
@@ -35,12 +35,12 @@
 
    <dependencies>
       <dependency>
-         <groupId>io.openmanufacturing</groupId>
-         <artifactId>sds-aspect-model-starter</artifactId>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-starter</artifactId>
       </dependency>
       <dependency>
-         <groupId>io.openmanufacturing</groupId>
-         <artifactId>sds-aspect-model-aas-generator</artifactId>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-aas-generator</artifactId>
       </dependency>
       <dependency>
          <groupId>org.slf4j</groupId>
@@ -49,6 +49,10 @@
       <dependency>
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-nop</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.poi</groupId>
+         <artifactId>poi</artifactId>
       </dependency>
 
       <dependency>
@@ -144,6 +148,18 @@
                         <source>developer-guide/modules/tooling-guide</source>
                      </sources>
                   </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${maven-gpg-plugin-version}</version>
+            <executions>
+               <execution>
+                  <id>sign-artifacts</id>
+                  <phase>none</phase>
                </execution>
             </executions>
          </plugin>

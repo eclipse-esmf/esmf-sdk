@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>org.eclipse.esmf</groupId>
+      <artifactId>esmf-sdk-parent</artifactId>
+      <version>DEV-SNAPSHOT</version>
+      <relativePath>../../pom.xml</relativePath>
+   </parent>
+
+   <artifactId>esmf-aspect-model-document-generators</artifactId>
+   <name>ESMF Aspect Model Document Generators</name>
+   <packaging>jar</packaging>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-meta-model-java</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-meta-model-resolver</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-jackson</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-generator</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.datatype</groupId>
+         <artifactId>jackson-datatype-jsr310</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jeasy</groupId>
+         <artifactId>easy-random-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.jena</groupId>
+         <artifactId>jena-arq</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.jena</groupId>
+         <artifactId>jena-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-text</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>guru.nidi</groupId>
+         <artifactId>graphviz-java-min-deps</artifactId>
+         <exclusions>
+            <exclusion>
+               <groupId>guru.nidi.com.eclipsesource.j2v8</groupId>
+               <artifactId>j2v8_linux_x86_64</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <!-- Required by graphviz-java -->
+      <dependency>
+         <groupId>org.webjars.npm</groupId>
+         <artifactId>viz.js-graphviz-java</artifactId>
+      </dependency>
+      <!-- Required by graphviz-java -->
+      <dependency>
+         <groupId>org.apache.xmlgraphics</groupId>
+         <artifactId>batik-rasterizer</artifactId>
+      </dependency>
+      <!-- Required by graphviz-java -->
+      <dependency>
+         <groupId>org.graalvm.js</groupId>
+         <artifactId>js</artifactId>
+      </dependency>
+      <!-- Required by graphviz-java -->
+      <dependency>
+         <groupId>org.graalvm.js</groupId>
+         <artifactId>js-scriptengine</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.github.curious-odd-man</groupId>
+         <artifactId>rgxgen</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>io.vavr</groupId>
+         <artifactId>vavr</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.dataformat</groupId>
+         <artifactId>jackson-dataformat-yaml</artifactId>
+      </dependency>
+
+      <!-- Test dependencies -->
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.assertj</groupId>
+         <artifactId>assertj-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-test-resources</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.github.java-json-tools</groupId>
+         <artifactId>json-schema-validator</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.jayway.jsonpath</groupId>
+         <artifactId>json-path</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-java-generator</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-java-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>io.swagger.parser.v3</groupId>
+         <artifactId>swagger-parser</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>ch.qos.logback</groupId>
+         <artifactId>logback-classic</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>ch.qos.logback</groupId>
+         <artifactId>logback-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <plugins>
+         <!-- Disable surefire report plugin. The report is created in the esmf-sdk-test-report module -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-report-plugin</artifactId>
+            <version>${maven-surefire-plugin-version}</version>
+            <configuration>
+               <skipFailsafeReport>true</skipFailsafeReport>
+               <skipSurefireReport>true</skipSurefireReport>
+            </configuration>
+         </plugin>
+         <!-- Disable maven site plugin. It is not required since the report is created in the
+         esmf-sdk-test-report module -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>${maven-site-plugin-version}</version>
+            <configuration>
+               <skip>true</skip>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+</project>

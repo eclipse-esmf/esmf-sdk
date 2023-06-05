@@ -1,0 +1,120 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:1.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:1.0.0#> .
+
+:AspectWithExclusiveRangeConstraint a samm:Aspect ;
+   samm:name "AspectWithExclusiveRangeConstraint" ;
+   samm:properties ( :floatProp :doubleProp :decimalProp :integerProp :intProp ) ;
+   samm:operations ( ) .
+
+:floatProp a samm:Property ;
+   samm:name "floatProp" ;
+   samm:characteristic :FloatRange .
+
+:doubleProp a samm:Property ;
+   samm:name "doubleProp" ;
+   samm:characteristic :DoubleRange .
+
+:decimalProp a samm:Property ;
+   samm:name "decimalProp" ;
+   samm:characteristic :DecimalRange .
+
+:integerProp a samm:Property ;
+   samm:name "integerProp" ;
+   samm:characteristic :IntegerRange .
+
+:intProp a samm:Property ;
+   samm:name "intProp" ;
+   samm:characteristic :IntRange .
+
+:FloatRange a samm-c:Trait;
+   samm:name "FloatRange" ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:description "This is a floating range constraint"@en ;
+      samm-c:minValue "12.3"^^xsd:float ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "23.45"^^xsd:float ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
+   ] ;
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:name "Float" ;
+      samm:dataType xsd:float
+   ] .
+
+:DoubleRange a samm-c:Trait ;
+   samm:name "DoubleRange" ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:description "This is a double range constraint"@en ;
+      samm-c:minValue "12.3"^^xsd:double ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "23.45"^^xsd:double ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
+   ] ;
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:name "Double" ;
+      samm:dataType xsd:double
+   ] .
+
+:DecimalRange a samm-c:Trait ;
+   samm:name "DecimalRange" ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:description "This is a decimal range constraint"@en ;
+      samm-c:minValue "12.3"^^xsd:decimal ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "23.45"^^xsd:decimal ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
+   ] ;
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:name "Decimal" ;
+      samm:dataType xsd:decimal
+   ] .
+
+:IntegerRange a samm-c:Trait ;
+   samm:name "IntegerRange" ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm:description "This is a integer range constraint"@en ;
+      samm-c:minValue "12"^^xsd:integer ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "23"^^xsd:integer ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
+   ] ;
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:name "Integer" ;
+      samm:dataType xsd:integer
+   ] .
+
+:IntRange a samm-c:Trait ;
+   samm:name "IntRange" ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "12"^^xsd:int ;
+      samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
+      samm-c:maxValue "23"^^xsd:int ;
+      samm-c:upperBoundDefinition samm-c:LESS_THAN ;
+   ] ;
+   samm-c:baseCharacteristic [
+      a samm:Characteristic ;
+      samm:name "Int" ;
+      samm:dataType xsd:int
+   ] .

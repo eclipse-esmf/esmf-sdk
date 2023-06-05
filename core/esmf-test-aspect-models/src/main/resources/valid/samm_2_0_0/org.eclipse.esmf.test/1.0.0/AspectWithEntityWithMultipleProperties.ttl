@@ -1,0 +1,56 @@
+# Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithEntityWithMultipleProperties a samm:Aspect ;
+   samm:properties ( :testEntity ) ;
+   samm:operations ( ) .
+
+:testEntity a samm:Property ;
+   samm:characteristic :TestEntityCharacteristic .
+
+:TestEntity a samm:Entity ;
+   samm:properties ( :testString :testInt :testFloat :testLocalDateTime :randomValue ) .
+
+:testString a samm:Property ;
+   samm:exampleValue "Example Value Test" ;
+   samm:characteristic samm-c:Text .
+
+:testInt a samm:Property ;
+   samm:exampleValue "3"^^xsd:int ;
+   samm:characteristic :Int .
+
+:testFloat a samm:Property ;
+   samm:exampleValue "2.25"^^xsd:float ;
+   samm:characteristic :Float .
+
+:testLocalDateTime a samm:Property ;
+   samm:exampleValue "2018-02-28T14:23:32.918Z"^^xsd:dateTimeStamp ;
+   samm:characteristic :LocalDateTime .
+
+:randomValue a samm:Property ;
+   samm:characteristic samm-c:Text .
+
+:Int a samm:Characteristic ;
+   samm:dataType xsd:int .
+
+:Float a samm:Characteristic ;
+   samm:dataType xsd:float .
+
+:LocalDateTime a samm:Characteristic ;
+   samm:dataType xsd:dateTimeStamp .
+
+:TestEntityCharacteristic a samm:Characteristic ;
+   samm:dataType :TestEntity .
