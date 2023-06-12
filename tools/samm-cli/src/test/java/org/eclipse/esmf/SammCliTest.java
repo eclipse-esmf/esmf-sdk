@@ -219,7 +219,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAasAasxToFile() throws TikaException, IOException {
+   public void testAspectToAasAasxToFile() {
       final File targetFile = outputFile( "output.aasx" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "aasx", "-o",
             targetFile.getAbsolutePath() );
@@ -230,10 +230,28 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAasAasxToStdout() throws TikaException, IOException {
+   public void testAspectToAasAasxToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "aasx" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.application( "x-tika-ooxml" ) );
+   }
+
+   @Test
+   public void testAspectToAasJsonToFile() {
+      final File targetFile = outputFile( "output.json" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "json", "-o",
+            targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists();
+      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
+   }
+
+   @Test
+   public void testAspectToAasJsonToStdout() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "json" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
    }
 
    @Test
@@ -585,7 +603,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToPngWithDefaultLanguage() throws TikaException, IOException {
+   public void testAspectToPngWithDefaultLanguage() {
       final File targetFile = outputFile( "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
             targetFile.getAbsolutePath() );
@@ -596,7 +614,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToPngWithGivenLanguage() throws TikaException, IOException {
+   public void testAspectToPngWithGivenLanguage() {
       final File targetFile = outputFile( "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
             targetFile.getAbsolutePath(),
@@ -619,7 +637,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToPngToStdout() throws TikaException, IOException {
+   public void testAspectToPngToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.image( "png" ) );
