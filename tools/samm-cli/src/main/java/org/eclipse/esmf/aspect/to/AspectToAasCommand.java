@@ -35,6 +35,8 @@ public class AspectToAasCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "aas";
    public static final String AASX = "aasx";
    public static final String XML = "xml";
+   public static final String JSON = "json";
+
 
    @CommandLine.Option(
          names = { "--output", "-o" },
@@ -43,7 +45,7 @@ public class AspectToAasCommand extends AbstractCommand {
 
    @CommandLine.Option(
          names = { "--format", "-f" },
-         description = "The file format the AAS is to be generated. Valid options are \"" + AASX + "\" and \"" + XML + "\". Default is \"" + XML + "\"." )
+         description = "The file format the AAS is to be generated. Valid options are \"" + AASX + "\", \"" + JSON + "\", and \"" + XML + "\". Default is \"" + XML + "\"." )
    private String format = XML;
 
    @CommandLine.ParentCommand
@@ -63,9 +65,14 @@ public class AspectToAasCommand extends AbstractCommand {
          // we intentionally override the name of the generated artifact here to the name explicitly
          // desired by the user (outputFilePath), as opposed to what the model thinks it should be
          // called (name)
-         if ( format.equals( AASX ) ) {
+         switch ( format ) {
+         case AASX:
             generator.generateAASXFile( aspect, name -> getStreamForFile( outputFilePath ) );
-         } else {
+            break;
+         case JSON:
+            generator.generateAasJsonFile( aspect, name -> getStreamForFile( outputFilePath ) );
+            break;
+         default:
             generator.generateAasXmlFile( aspect, name -> getStreamForFile( outputFilePath ) );
          }
       } catch ( final IOException e ) {
