@@ -23,6 +23,7 @@ import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.junit.jupiter.api.Test;
+// end::imports[]
 
 public class GenerateJsonPayload extends AbstractGenerator {
    @Test
