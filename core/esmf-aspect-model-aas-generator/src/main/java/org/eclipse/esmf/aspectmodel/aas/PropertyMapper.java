@@ -38,9 +38,9 @@ import com.google.common.collect.ImmutableMap;
  * @param <T> the concrete type of {@link SubmodelElement} the implementing mapper produces
  */
 public interface PropertyMapper<T extends SubmodelElement> {
-   static final String UNKNOWN_TYPE = "Unknown";
+   static String UNKNOWN_TYPE = "Unknown";
 
-   static final String UNKNOWN_EXAMPLE = UNKNOWN_TYPE;
+   static String UNKNOWN_EXAMPLE = UNKNOWN_TYPE;
 
    /**
     * Maps Aspect types to DataTypeDefXSD Schema types, with no explicit mapping defaulting to

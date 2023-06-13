@@ -143,12 +143,13 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private final List<PropertyMapper<?>> customPropertyMappers = new ArrayList<>();
 
-   public AspectModelAASVisitor withPropertyMapper( final PropertyMapper propertyMapper ) {
+   public AspectModelAASVisitor withPropertyMapper( final PropertyMapper<?> propertyMapper ) {
       customPropertyMappers.add( propertyMapper );
 
       return this;
    }
 
+   @SuppressWarnings( "unchecked" )
    protected <T extends SubmodelElement> PropertyMapper<T> findPropertyMapper( final Property property ) {
       return (PropertyMapper<T>) getCustomPropertyMappers().stream()
             .filter( mapper -> mapper.canHandle( property ) )
@@ -167,23 +168,24 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    @Override
-   public Environment visitAspect( final Aspect aspect, Context context ) {
-      if ( context == null ) {
+   public Environment visitAspect( final Aspect aspect, final Context context ) {
+      Context usedContext = context;
+      if ( usedContext == null ) {
          final Submodel submodel = new DefaultSubmodel.Builder().build();
          final Environment environment = new DefaultEnvironment.Builder().submodels( Collections.singletonList( submodel ) ).build();
-         context = new Context( environment, submodel );
-         context.setEnvironment( environment );
+         usedContext = new Context( environment, submodel );
+         usedContext.setEnvironment( environment );
       }
 
-      final Submodel submodel = context.getSubmodel();
+      final Submodel submodel = usedContext.getSubmodel();
       submodel.setIdShort( aspect.getName() );
       submodel.setId( aspect.getAspectModelUrn().toString() + "/submodel" );
       submodel.setSemanticID( buildReferenceToConceptDescription( aspect ) );
       submodel.setDescription( LangStringMapper.TEXT.map( aspect.getDescriptions() ) );
-      submodel.setKind( context.getModelingKind() );
+      submodel.setKind( usedContext.getModelingKind() );
       submodel.setAdministration( new DefaultAdministrativeInformation.Builder().build() );
 
-      createConceptDescription( aspect, context );
+      createConceptDescription( aspect, usedContext );
 
       final AssetAdministrationShell administrationShell =
             new DefaultAssetAdministrationShell.Builder()
@@ -192,18 +194,17 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                   .description( LangStringMapper.TEXT.createLangString( ADMIN_SHELL_NAME, "en" ) )
                   .administration( new DefaultAdministrativeInformation.Builder().build() )
                   .assetInformation( new DefaultAssetInformation.Builder()
-                        .assetKind( context.getAssetKind() )
+                        .assetKind( usedContext.getAssetKind() )
                         .build() )
                   .embeddedDataSpecifications( extractEmbeddedDataSpecification( aspect ) )
                   .build();
-      context
-            .getEnvironment()
+      usedContext.getEnvironment()
             .setAssetAdministrationShells( Collections.singletonList( administrationShell ) );
 
-      context.appendToSubModelElements( visitProperties( aspect.getProperties(), context ) );
-      context.appendToSubModelElements( visitOperations( aspect.getOperations(), context ) );
+      usedContext.appendToSubModelElements( visitProperties( aspect.getProperties(), usedContext ) );
+      usedContext.appendToSubModelElements( visitOperations( aspect.getOperations(), usedContext ) );
 
-      return context.getEnvironment();
+      return usedContext.getEnvironment();
    }
 
    private List<SubmodelElement> visitOperations(
@@ -394,9 +395,9 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .map( LangStringMapper.DEFINITION::map )
             .collect( Collectors.toList() );
 
-      final List<LangStringPreferredNameTypeIec61360> preferredNames = property.getPreferredNames().size() > 0 ?
-            property.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() ) :
-            Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) );
+      final List<LangStringPreferredNameTypeIec61360> preferredNames = property.getPreferredNames().isEmpty() ?
+            Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) ) :
+            property.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIec61360.Builder()
             .definition( definitions )
@@ -408,9 +409,9 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    private DataSpecificationIec61360 extractDataSpecificationContent( final Aspect aspect ) {
-      final List<LangStringPreferredNameTypeIec61360> preferredNames = aspect.getPreferredNames().size() > 0 ?
-            aspect.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() ) :
-            Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( aspect.getName(), DEFAULT_LOCALE ) );
+      final List<LangStringPreferredNameTypeIec61360> preferredNames = aspect.getPreferredNames().isEmpty() ?
+            Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( aspect.getName(), DEFAULT_LOCALE ) ) :
+            aspect.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIec61360.Builder()
             .definition( aspect.getDescriptions().stream().map( LangStringMapper.DEFINITION::map ).collect( Collectors.toList() ) )
@@ -478,14 +479,14 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             ( property ) ->
                   new DefaultSubmodelElementList.Builder()
                         .idShort( ID_PREFIX + property.getName() )
-                        .typeValueListElement( AASSubmodelElements.DATA_ELEMENT ) // TODO check if more specific type info is reuired
+                        .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
                         .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                         .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                         .value( List.of( decideOnMapping( property, context ) ) )
                         .build();
       final Optional<JsonNode> rawValue = context.getRawPropertyValue();
       return rawValue.map( node -> {
-         if ( node instanceof ArrayNode arrayNode ) {
+         if ( node instanceof final ArrayNode arrayNode ) {
             final SubmodelElementBuilder listBuilder =
                   ( property ) -> {
                      final var values = getValues( collection, property, context, arrayNode );
@@ -526,7 +527,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                   context.finishIteration( property );
                   return values;
                }
-            } ).orElseGet( () -> List.of() );
+            } ).orElseGet( List::of );
    }
 
    // Either will be mapped by adding both the left and the right side to the SubmodelTemplate.
@@ -548,7 +549,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementList eitherSubModelElements =
             new DefaultSubmodelElementList.Builder()
                   .idShort( ID_PREFIX + either.getName() )
-                  .typeValueListElement( AASSubmodelElements.DATA_ELEMENT ) // TODO check if more specific type info is rqujried
+                  .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( either.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( either.getDescriptions() ) )
                   .value( submodelElements )

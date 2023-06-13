@@ -114,13 +114,11 @@ public class AspectModelAASGenerator {
 
    private Environment mergeEnvironments( final Map<Aspect, Environment> aspectEnvironments ) {
       final Submodel submodel = new DefaultSubmodel.Builder().build();
-      final Environment environment = new DefaultEnvironment.Builder()
+      return new DefaultEnvironment.Builder()
             .assetAdministrationShells( aspectEnvironments.values().stream().flatMap( e -> e.getAssetAdministrationShells().stream() ).toList() )
             .submodels( aspectEnvironments.values().stream().flatMap( e -> e.getSubmodels().stream() ).toList() )
             .conceptDescriptions( aspectEnvironments.values().stream().flatMap( e -> e.getConceptDescriptions().stream() ).toList() )
             .build();
-
-      return environment;
    }
 
    protected ByteArrayOutputStream generateAasxOutput( final Aspect aspect ) throws IOException {
