@@ -365,9 +365,7 @@ class AspectModelAASGeneratorTest {
       final JsonNode aspectData = loadPayload( testAspect );
       final ByteArrayOutputStream out = generator.generateXmlOutput( Map.of( aspect, aspectData ) );
       final var data = out.toByteArray();
-      final var result = loadAASX( data, testAspect );
-      //new AasXmlValidator().validateXml( data );
-      return result;
+      return loadAASX( data, testAspect );
    }
 
    private ByteArrayOutputStream getByteArrayOutputStreamFromAspect( final TestAspect testAspect )

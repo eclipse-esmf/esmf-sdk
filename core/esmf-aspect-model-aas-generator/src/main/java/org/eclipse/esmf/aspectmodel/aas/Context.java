@@ -27,9 +27,9 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
+import org.eclipse.esmf.metamodel.Property;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.eclipse.esmf.metamodel.Property;
 
 
 /**
@@ -38,12 +38,12 @@ import org.eclipse.esmf.metamodel.Property;
 public class Context {
 
    Environment environment;
-   Submodel submodel;
+   final Submodel submodel;
    Property property;
    SubmodelElement propertyResult;
-   List<Property> propertyPath = new ArrayList<>();
+   final List<Property> propertyPath = new ArrayList<>();
    JsonNode aspectData;
-   Map<Property, Integer> indices = new HashMap<>();
+   final Map<Property, Integer> indices = new HashMap<>();
 
    public Context( final Environment environment, final Submodel ofInterest ) {
       this.environment = environment;

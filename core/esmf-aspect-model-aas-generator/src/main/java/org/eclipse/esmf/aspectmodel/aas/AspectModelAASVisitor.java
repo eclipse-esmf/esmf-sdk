@@ -576,11 +576,11 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          final var fieldProperty = createProperty( eitherProperty.getMetaModelVersion(), field, fieldCharacteristic );
          context.setProperty( fieldProperty );
          if ( context.getRawPropertyValue().isPresent() ) {
-            result = Optional.ofNullable( decideOnMapping( fieldCharacteristic.getDataType().get(), context.getProperty(), context ) );
+            result = fieldCharacteristic.getDataType().map( dataType -> decideOnMapping( dataType, context.getProperty(), context ) );
          }
          context.getPropertyResult();
       } else {
-         result = Optional.ofNullable( decideOnMapping( fieldCharacteristic.getDataType().get(), context.getProperty(), context ) );
+         result = fieldCharacteristic.getDataType().map( dataType -> decideOnMapping( dataType, context.getProperty(), context ) );
       }
 
       return result;
