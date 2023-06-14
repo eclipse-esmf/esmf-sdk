@@ -15,13 +15,17 @@ package org.eclipse.esmf.test;
 
 import java.io.InputStream;
 
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Resources;
 
 import io.vavr.control.Try;
 
@@ -36,15 +40,21 @@ public class TestResources {
             model.getUrn().getNamespace(), model.getUrn().getVersion(), model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       return TurtleLoader.loadTurtle( inputStream ).flatMap( rawModel ->
-            metaModelResourceResolver
-                  .mergeMetaModelIntoRawModel( rawModel, VersionNumber.parse( knownVersion.toVersionString() ) ) )
-                         .get();
+                  metaModelResourceResolver
+                        .mergeMetaModelIntoRawModel( rawModel, VersionNumber.parse( knownVersion.toVersionString() ) ) )
+            .get();
    }
 
    public static Try<VersionedModel> getModel( final TestModel model, final KnownVersion knownVersion ) {
       final String baseDirectory = model instanceof InvalidTestAspect ? "invalid" : "valid";
       final String modelsRoot = baseDirectory + "/" + knownVersion.toString().toLowerCase();
       return new AspectModelResolver().resolveAspectModel( new ClasspathStrategy( modelsRoot ), model.getUrn() );
+   }
+
+   public static Try<JsonNode> getPayload( final TestModel model, final KnownVersion knownVersion ) {
+      final String baseDirectory = "payloads/" + (model instanceof InvalidTestAspect ? "invalid" : "valid");
+      final String modelsRoot = baseDirectory + "/" + knownVersion.toString().toLowerCase();
+      return Try.of( () -> new ObjectMapper().readTree( Resources.getResource( modelsRoot + "/" + model.getName() + ".json" ) ) );
    }
 
    public static Try<VersionedModel> getModel( final TestSharedModel model, final KnownVersion knownVersion ) {
