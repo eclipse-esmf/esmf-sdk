@@ -24,7 +24,7 @@ public record LanguageFromListViolation( EvaluationContext context, List<String>
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s has language tag %s, which is not in the list of allowed languages: %s.",
             propertyName(), elementName(), actual, allowed );
    }

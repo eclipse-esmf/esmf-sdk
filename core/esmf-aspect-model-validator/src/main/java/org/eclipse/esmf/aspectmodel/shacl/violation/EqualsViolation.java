@@ -26,7 +26,7 @@ public record EqualsViolation( EvaluationContext context, Property otherProperty
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s must have the same value as property %s (%s), but has value %s.",
             propertyName(), elementName(), shortUri( otherProperty.getURI() ), allowedValue, actualValue );
    }

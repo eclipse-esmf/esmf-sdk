@@ -34,7 +34,7 @@ public interface Violation {
 
    EvaluationContext context();
 
-   String message();
+   String violationSpecificMessage();
 
    <T> T accept( Visitor<T> visitor );
 
@@ -194,6 +194,14 @@ public interface Violation {
 
    default String value( final Literal literal ) {
       return literal.getLexicalForm();
+   }
+
+   default String message() {
+      final String nodeShapeMessage = context().shape().attributes().message().map( message -> message.replaceAll( "\\.$", "" )
+            + ", more specifically: " ).orElse( "" );
+      final String propertyShapeMessage = context().propertyShape().flatMap( propertyShape -> propertyShape.attributes().message() )
+            .orElseGet( this::violationSpecificMessage );
+      return nodeShapeMessage + propertyShapeMessage;
    }
 
    default List<Fix> fixes() {

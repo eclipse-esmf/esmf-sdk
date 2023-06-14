@@ -26,7 +26,7 @@ public record XoneViolation( EvaluationContext context, List<Violation> violatio
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return "One of the following violations" +
             (context.property().isPresent() ? " for " + propertyName() : "")
             + " must be fixed: " +

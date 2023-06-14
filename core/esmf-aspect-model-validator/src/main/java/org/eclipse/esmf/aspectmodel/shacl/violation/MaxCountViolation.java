@@ -22,7 +22,7 @@ public record MaxCountViolation( EvaluationContext context, int allowed, int act
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return allowed == 0 ?
             String.format( "Property %s may not be used on %s.", propertyName(), elementName() ) :
             String.format( "Property %s is used %d time%s on %s, but may only be used %d time%s.",

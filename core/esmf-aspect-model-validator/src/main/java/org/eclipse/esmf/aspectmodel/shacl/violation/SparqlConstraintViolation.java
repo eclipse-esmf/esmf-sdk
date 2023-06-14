@@ -32,7 +32,7 @@ public record SparqlConstraintViolation( EvaluationContext context, String const
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       if ( constraintMessage().isEmpty() ) {
          if ( context.property().isPresent() ) {
             return String.format( "Property %s on %s is invalid.", propertyName(), elementName() );
@@ -42,7 +42,9 @@ public record SparqlConstraintViolation( EvaluationContext context, String const
 
       String interpolatedMessage = constraintMessage();
       for ( final Map.Entry<String, RDFNode> entry : bindings.entrySet() ) {
-         final String value = entry.getValue().isURIResource() ? shortUri( entry.getValue().asResource().getURI() ) : entry.getValue().toString();
+         final String value = entry.getValue().isURIResource() ?
+               shortUri( entry.getValue().asResource().getURI() ) :
+               entry.getValue().toString();
          interpolatedMessage = interpolatedMessage.replaceAll( "\\{[$?]" + entry.getKey() + "\\}", value );
       }
       return interpolatedMessage;

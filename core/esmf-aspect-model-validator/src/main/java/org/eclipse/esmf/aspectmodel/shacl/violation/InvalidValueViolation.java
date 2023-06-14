@@ -24,7 +24,7 @@ public record InvalidValueViolation( EvaluationContext context, RDFNode allowed,
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s, but only %s is allowed.",
             propertyName(), elementName(), value( actual ), value( allowed ) );
    }

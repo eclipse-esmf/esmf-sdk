@@ -37,7 +37,7 @@ public record JsConstraintViolation( EvaluationContext context, String constrain
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       if ( constraintMessage().isEmpty() ) {
          return context.property().isPresent() ?
                String.format( "Property %s on %s is invalid.", propertyName(), elementName() ) :
@@ -45,7 +45,7 @@ public record JsConstraintViolation( EvaluationContext context, String constrain
       }
       String interpolatedMessage = bindings.getOrDefault( "message", constraintMessage() ).toString();
       for ( final Map.Entry<String, Object> entry : bindings.entrySet() ) {
-         String value = "";
+         final String value;
          if ( entry.getValue() instanceof final Node_Literal literal ) {
             value = literal.getLiteralLexicalForm();
          } else if ( entry.getValue() instanceof final Node_URI namedNode ) {

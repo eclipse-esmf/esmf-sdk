@@ -27,14 +27,15 @@ import org.apache.jena.rdf.model.Statement;
 public record EvaluationContext( Resource element, Shape shape, Optional<Shape.Property> propertyShape, Optional<Property> property,
       List<Statement> offendingStatements, ShaclValidator validator, Model resolvedModel ) {
    public EvaluationContext withProperty( final Property newProperty ) {
-      return new EvaluationContext( element(), shape(), Optional.of( newProperty ), offendingStatements(), validator(), resolvedModel );
+      return new EvaluationContext( element(), shape(), propertyShape(), Optional.of( newProperty ), offendingStatements(), validator(),
+            resolvedModel );
    }
 
    public EvaluationContext withElement( final Resource newElement ) {
-      return new EvaluationContext( newElement, shape(), property(), offendingStatements(), validator(), resolvedModel );
+      return new EvaluationContext( newElement, shape(), propertyShape(), property(), offendingStatements(), validator(), resolvedModel );
    }
 
    public EvaluationContext withOffendingStatements( final List<Statement> newOffendingStatements ) {
-      return new EvaluationContext( element(), shape(), property(), newOffendingStatements, validator(), resolvedModel );
+      return new EvaluationContext( element(), shape(), propertyShape(), property(), newOffendingStatements, validator(), resolvedModel );
    }
 }

@@ -33,6 +33,11 @@ public record InvalidSyntaxViolation( String violationSpecificMessage, String so
    }
 
    @Override
+   public String message() {
+      return violationSpecificMessage;
+   }
+
+   @Override
    public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitInvalidSyntaxViolation( this );
    }

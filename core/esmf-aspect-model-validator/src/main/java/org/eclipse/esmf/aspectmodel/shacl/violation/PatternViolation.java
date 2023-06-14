@@ -22,7 +22,7 @@ public record PatternViolation( EvaluationContext context, String actual, String
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s, which does not match the required pattern %s.",
             propertyName(), elementName(), actual, pattern );
    }

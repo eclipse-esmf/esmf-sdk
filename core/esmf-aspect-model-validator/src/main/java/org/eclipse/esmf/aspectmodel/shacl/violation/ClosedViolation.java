@@ -29,13 +29,22 @@ public record ClosedViolation( EvaluationContext context, Set<Property> allowedP
    }
 
    @Override
-   public String message() {
-      final Set<String> allowed = Stream.concat( allowedProperties().stream(), ignoredProperties().stream() )
+   public String violationSpecificMessage() {
+      final List<String> allowed = allowedProperties().stream()
             .map( Property::getURI )
             .map( this::shortUri )
-            .collect( Collectors.toSet() );
-      return String.format( "%s is used on %s. It is not allowed there; allowed are only %s.",
-            shortUri( actual.getURI() ), elementName(), allowed );
+            .collect( Collectors.toSet() )
+            .stream()
+            .sorted()
+            .toList();
+      final String allowedText = switch ( allowed.size() ) {
+         case 0 -> "no properties are allowed";
+         case 1 -> "only " + allowed.iterator().next() + " is allowed";
+         default -> "allowed are only " + allowed;
+      };
+
+      return String.format( "%s is used on %s. It is not allowed there; %s.",
+            shortUri( actual.getURI() ), elementName(), allowedText );
    }
 
    @Override

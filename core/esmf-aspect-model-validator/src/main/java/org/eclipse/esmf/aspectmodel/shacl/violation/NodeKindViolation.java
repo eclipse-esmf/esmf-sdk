@@ -27,7 +27,7 @@ public record NodeKindViolation( EvaluationContext context, Shape.NodeKind allow
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       final Function<Shape.NodeKind, String> nodeKindString = nodeKind -> switch ( nodeKind ) {
          case BlankNode -> "an anonymous node";
          case BlankNodeOrIRI -> "an anonymous node or a named element";

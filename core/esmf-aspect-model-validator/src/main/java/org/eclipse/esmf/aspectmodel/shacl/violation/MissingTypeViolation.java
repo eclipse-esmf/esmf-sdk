@@ -22,7 +22,7 @@ public record MissingTypeViolation( EvaluationContext context ) implements Viola
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Could not determine type of %s.", elementName() );
    }
 

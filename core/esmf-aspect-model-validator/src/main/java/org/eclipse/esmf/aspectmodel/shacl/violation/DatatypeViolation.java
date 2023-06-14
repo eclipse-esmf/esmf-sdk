@@ -36,13 +36,16 @@ public record DatatypeViolation( EvaluationContext context, String allowedTypeUr
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       if ( context.property().isPresent() ) {
-         return allowedTypeUri.equals( RDF.langString.getURI() ) && actualTypeUri.equals( XSD.xstring.getURI() ) ?
-               String.format( "Property %s on %s is missing a language tag.",
-                     propertyName(), elementName() ) :
-               String.format( "Property %s on %s uses data type %s, but only %s is allowed.",
-                     propertyName(), elementName(), shortUri( actualTypeUri ), shortUri( allowedTypeUri ) );
+         if ( allowedTypeUri.equals( RDF.langString.getURI() ) && actualTypeUri.equals( XSD.xstring.getURI() ) ) {
+            return String.format( "Property %s on %s is missing a language tag.", propertyName(), elementName() );
+         } else if ( allowedTypeUri.equals( XSD.xstring.getURI() ) && actualTypeUri.equals( RDF.langString.getURI() ) ) {
+            return String.format( "Property %s on %s must not have a language tag.", propertyName(), elementName() );
+         } else {
+            return String.format( "Property %s on %s uses data type %s, but only %s is allowed.",
+                  propertyName(), elementName(), shortUri( actualTypeUri ), shortUri( allowedTypeUri ) );
+         }
       }
       return String.format( "%s uses data type %s, but only %s is allowed.",
             elementName(), shortUri( actualTypeUri ), shortUri( allowedTypeUri ) );

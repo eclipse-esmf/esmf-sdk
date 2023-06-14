@@ -31,6 +31,11 @@ public record ProcessingViolation( String violationSpecificMessage, Throwable ca
    }
 
    @Override
+   public String message() {
+      return violationSpecificMessage;
+   }
+
+   @Override
    public <T> T accept( final Visitor<T> visitor ) {
       return visitor.visitProcessingViolation( this );
    }
