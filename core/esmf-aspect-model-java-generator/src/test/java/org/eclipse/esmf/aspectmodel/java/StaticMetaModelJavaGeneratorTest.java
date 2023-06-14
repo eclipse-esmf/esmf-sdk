@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.java;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 import java.io.IOException;
@@ -546,5 +547,16 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertCopyright( "EvaluationResult", expectedCopyright );
       result.assertCopyright( "MetaAspectWithComplexEnum", expectedCopyright );
       result.assertCopyright( "MetaEvaluationResult", expectedCopyright );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGenerateStaticMetaModelWithUmlauts( final KnownVersion metaModelVersion ) throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_UMLAUT_DESCRIPTION;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      result.assertMethodBody( "MetaAspectWithUmlautDescription", "getDescriptions", true, Optional.empty(), 0,
+            List.of( "returnnewHashSet<>(){{add(newLangString(\"ImWortEntitätisteinUmlaut\",Locale.forLanguageTag(\"de\")));add(newLangString"
+                  + "(\"Thisisatestdescription\",Locale.forLanguageTag(\"en\")));}};" ) );
    }
 }
