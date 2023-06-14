@@ -21,6 +21,7 @@ import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultAbstractEntity extends DefaultComplexType implements AbstractEntity {
@@ -29,14 +30,15 @@ public class DefaultAbstractEntity extends DefaultComplexType implements Abstrac
          final List<? extends Property> properties,
          final Optional<ComplexType> _extends,
          final List<AspectModelUrn> extendingElements ) {
-      return new DefaultAbstractEntity( metaModelBaseAttributes, properties, _extends, extendingElements );
+      return new DefaultAbstractEntity( metaModelBaseAttributes, properties, _extends, extendingElements, null );
    }
 
    public DefaultAbstractEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
          final Optional<ComplexType> _extends,
-         final List<AspectModelUrn> extendingElements ) {
-      super( metaModelBaseAttributes, properties, _extends, extendingElements );
+         final List<AspectModelUrn> extendingElements,
+         final ModelElementFactory loadedElements ) {
+      super( metaModelBaseAttributes, properties, _extends, extendingElements, loadedElements );
    }
 
    /**

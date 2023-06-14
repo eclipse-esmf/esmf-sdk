@@ -26,9 +26,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
@@ -42,6 +39,9 @@ import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.vavr.control.Try;
 
 public abstract class AbstractCommand implements Runnable {

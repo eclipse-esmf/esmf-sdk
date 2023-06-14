@@ -32,14 +32,15 @@ public class AbstractEntityInstantiator extends ComplexTypeInstantiator<Abstract
 
    @Override
    protected AbstractEntity createDefaultEntity(
-         MetaModelBaseAttributes metaModelBaseAttributes,
-         List<Property> properties,
-         Optional<ComplexType> extendedEntity,
-         List<AspectModelUrn> extendingComplexTypes ) {
+         final MetaModelBaseAttributes metaModelBaseAttributes,
+         final List<Property> properties,
+         final Optional<ComplexType> extendedEntity,
+         final List<AspectModelUrn> extendingComplexTypes ) {
       return new DefaultAbstractEntity(
             metaModelBaseAttributes,
             properties,
             extendedEntity,
-            extendingComplexTypes );
+            extendingComplexTypes,
+            modelElementFactory );
    }
 }

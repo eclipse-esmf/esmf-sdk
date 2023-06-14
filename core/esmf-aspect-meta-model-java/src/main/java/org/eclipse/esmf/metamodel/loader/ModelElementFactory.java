@@ -14,7 +14,9 @@
 package org.eclipse.esmf.metamodel.loader;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -27,19 +29,18 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-
-import com.google.common.collect.Streams;
-
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
+import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelNamespace;
 import org.eclipse.esmf.metamodel.QuantityKind;
+import org.eclipse.esmf.metamodel.QuantityKinds;
 import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.Units;
 import org.eclipse.esmf.metamodel.impl.DefaultUnit;
 import org.eclipse.esmf.metamodel.loader.instantiator.AbstractEntityInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.AspectInstantiator;
@@ -72,9 +73,9 @@ import org.eclipse.esmf.metamodel.loader.instantiator.StateInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.StructuredValueInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.TimeSeriesInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.TraitInstantiator;
+import org.eclipse.esmf.samm.KnownVersion;
 
-import org.eclipse.esmf.metamodel.QuantityKinds;
-import org.eclipse.esmf.metamodel.Units;
+import com.google.common.collect.Streams;
 
 public class ModelElementFactory extends AttributeValueRetriever {
    private final KnownVersion metaModelVersion;
@@ -223,5 +224,13 @@ public class ModelElementFactory extends AttributeValueRetriever {
 
    public UNIT getUnit() {
       return unit;
+   }
+
+   public List<ComplexType> getExtendingElements( final List<AspectModelUrn> extendingElements ) {
+      return extendingElements.stream().map( urn -> getModel().createResource( urn.toString() ) )
+            .map( loadedElements::get )
+            .filter( Objects::nonNull )
+            .map( modelElement -> (ComplexType) modelElement )
+            .collect( Collectors.toList() );
    }
 }
