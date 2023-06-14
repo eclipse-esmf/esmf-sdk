@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.RDFNode;
 
-public record ValueFromListViolation(EvaluationContext context, List<RDFNode> allowed, RDFNode actual) implements Violation {
+public record ValueFromListViolation( EvaluationContext context, List<RDFNode> allowed, RDFNode actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_VALUE_FROM_LIST";
 
    @Override

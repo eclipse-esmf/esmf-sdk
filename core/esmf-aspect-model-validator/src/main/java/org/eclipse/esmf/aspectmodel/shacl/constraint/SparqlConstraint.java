@@ -34,16 +34,18 @@ import org.apache.jena.sparql.syntax.syntaxtransform.ElementTransform;
 import org.apache.jena.sparql.syntax.syntaxtransform.ElementTransformSubst;
 import org.apache.jena.sparql.syntax.syntaxtransform.ExprTransformNodeElement;
 import org.apache.jena.sparql.syntax.syntaxtransform.QueryTransformOps;
+
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#sparql-constraints">sh:sparql</a>
+ *
  * @param message the message returned by the SPARQL query
  * @param query the query
  */
-public record SparqlConstraint(String message, Query query) implements Constraint {
+public record SparqlConstraint( String message, Query query ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final Map<Var, Node> substitutions = Map.of( Var.alloc( "this" ), context.element().asNode() );
@@ -74,7 +76,9 @@ public record SparqlConstraint(String message, Query query) implements Constrain
    }
 
    /**
-    * Perform proper query substitutions; unfortunately the substitutions done by {@see org.apache.jena.query.ParameterizedSparqlString} are not always correct.
+    * Perform proper query substitutions; unfortunately the substitutions done by {@see org.apache.jena.query.ParameterizedSparqlString} are
+    * not always correct.
+    *
     * @param query the query
     * @param substitutions the map of substitutions to perform
     * @return the updated query
@@ -84,7 +88,8 @@ public record SparqlConstraint(String message, Query query) implements Constrain
 
       if ( result.hasHaving() ) {
          final ElementTransform elementTransform = new ElementTransformSubst( substitutions );
-         final ExprTransform exprTransform = new ExprTransformNodeElement( node -> substitutions.getOrDefault( node, node ), elementTransform );
+         final ExprTransform exprTransform = new ExprTransformNodeElement( node -> substitutions.getOrDefault( node, node ),
+               elementTransform );
          final List<Expr> havingExpressions = result.getHavingExprs();
          for ( int i = 0; i < havingExpressions.size(); i++ ) {
             final Expr expression = havingExpressions.get( i );

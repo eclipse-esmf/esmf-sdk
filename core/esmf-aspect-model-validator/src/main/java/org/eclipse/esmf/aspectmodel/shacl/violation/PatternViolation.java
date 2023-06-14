@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
-public record PatternViolation(EvaluationContext context, String actual, String pattern) implements Violation {
+public record PatternViolation( EvaluationContext context, String actual, String pattern ) implements Violation {
    public static final String ERROR_CODE = "ERR_PATTERN";
 
    @Override

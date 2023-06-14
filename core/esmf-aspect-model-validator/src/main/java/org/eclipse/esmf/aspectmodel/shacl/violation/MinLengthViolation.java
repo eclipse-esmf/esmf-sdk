@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
-public record MinLengthViolation(EvaluationContext context, int min, int actual) implements Violation {
+public record MinLengthViolation( EvaluationContext context, int min, int actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MIN_LENGTH";
 
    @Override

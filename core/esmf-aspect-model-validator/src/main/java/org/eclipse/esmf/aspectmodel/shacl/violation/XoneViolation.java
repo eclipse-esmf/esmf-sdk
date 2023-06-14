@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public record XoneViolation(EvaluationContext context, List<Violation> violations) implements Violation {
+public record XoneViolation( EvaluationContext context, List<Violation> violations ) implements Violation {
    public static final String ERROR_CODE = "ERR_XONE";
 
    @Override

@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import java.util.List;
 
-public record LanguageFromListViolation(EvaluationContext context, List<String> allowed, String actual) implements Violation {
+public record LanguageFromListViolation( EvaluationContext context, List<String> allowed, String actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_LANGUAGE";
 
    @Override

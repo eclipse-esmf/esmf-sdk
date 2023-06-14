@@ -14,15 +14,9 @@
 package org.eclipse.esmf.aspectmodel.validation.services;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.jena.query.ARQ;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
@@ -36,6 +30,8 @@ import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import io.vavr.control.Try;
+import org.apache.jena.query.ARQ;
+import org.apache.jena.rdf.model.Resource;
 
 /**
  * Uses SHACL to validate an Aspect Model against the defined semantics of the Aspect Meta Model.

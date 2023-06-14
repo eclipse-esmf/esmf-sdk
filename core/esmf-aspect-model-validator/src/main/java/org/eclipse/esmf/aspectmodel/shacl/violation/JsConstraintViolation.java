@@ -27,8 +27,8 @@ import org.eclipse.esmf.aspectmodel.shacl.JsLibrary;
  * the corresponding Java types: Scalars (string, numbers) will be native Java types, Named nodes (RDF resources, RDF properties) will be of type
  * {@link Node_URI}, blank nodes will be of type {@link Node_Blank}, RDF literals will be of type {@link Node_Literal}.
  */
-public record JsConstraintViolation(EvaluationContext context, String constraintMessage, JsLibrary library, String functionName, Map<String, Object> bindings)
-      implements Violation {
+public record JsConstraintViolation( EvaluationContext context, String constraintMessage, JsLibrary library, String functionName,
+      Map<String, Object> bindings ) implements Violation {
    public static final String ERROR_CODE = "ERR_JAVASCRIPT";
 
    @Override

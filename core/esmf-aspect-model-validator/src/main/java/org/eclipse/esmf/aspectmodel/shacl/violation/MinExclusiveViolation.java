@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import org.apache.jena.rdf.model.Literal;
 
-public record MinExclusiveViolation(EvaluationContext context, Literal min, Literal actual) implements Violation {
+public record MinExclusiveViolation( EvaluationContext context, Literal min, Literal actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MIN_EXCLUSIVE";
 
    @Override

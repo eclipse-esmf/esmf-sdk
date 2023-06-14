@@ -16,11 +16,12 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
+
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 
 /**
  * Represents a single violation raised by one or more SHACL shapes against an RDF model.

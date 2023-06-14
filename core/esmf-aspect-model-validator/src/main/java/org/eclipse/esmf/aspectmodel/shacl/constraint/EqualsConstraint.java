@@ -17,15 +17,17 @@ import java.util.List;
 
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.violation.EqualsViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#EqualsConstraintComponent">sh:equals</a>
+ *
  * @param otherProperty this value nodes' value must be less than otherProperty's value
  */
-public record EqualsConstraint(Property otherProperty) implements Constraint {
+public record EqualsConstraint( Property otherProperty ) implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
       return false;

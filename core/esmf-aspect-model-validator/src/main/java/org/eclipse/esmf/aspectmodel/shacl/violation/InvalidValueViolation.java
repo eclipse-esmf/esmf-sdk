@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import org.apache.jena.rdf.model.RDFNode;
 
-public record InvalidValueViolation(EvaluationContext context, RDFNode allowed, RDFNode actual) implements Violation {
+public record InvalidValueViolation( EvaluationContext context, RDFNode allowed, RDFNode actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_VALUE";
 
    @Override

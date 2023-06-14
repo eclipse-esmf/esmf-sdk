@@ -16,7 +16,8 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 
-public record LessThanViolation(EvaluationContext context, Property otherProperty, Literal otherValue, Literal actualValue) implements Violation {
+public record LessThanViolation( EvaluationContext context, Property otherProperty, Literal otherValue, Literal actualValue )
+      implements Violation {
    public static final String ERROR_CODE = "ERR_LESS_THAN";
 
    @Override

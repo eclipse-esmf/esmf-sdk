@@ -19,7 +19,8 @@ import java.util.Optional;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 
-public record SparqlConstraintViolation(EvaluationContext context, String constraintMessage, Map<String, RDFNode> bindings) implements Violation {
+public record SparqlConstraintViolation( EvaluationContext context, String constraintMessage, Map<String, RDFNode> bindings )
+      implements Violation {
    public static final String ERROR_CODE = "ERR_UNSPECIFIED_SPARQL_CONSTRAINT_VIOLATION";
 
    @Override

@@ -37,6 +37,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.binding.Binding;
 import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
@@ -45,18 +46,20 @@ import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * Cycle detector for SAMM models.
- *
+ * <br/>
  * Because of the limitations of the property paths in Sparql queries, it is impossible to realize the cycle detection together with
  * other validations via Shacl shapes.
- *
+ * <br/>
  * According to graph theory:
- *    A directed graph G is acyclic if and only if a depth-first search of G yields no back edges.
- *
- * So a depth-first traversal of the "resolved" (via Characteristics/Entities etc.) property references is able to deliver all cycles present in the model.
+ * A directed graph G is acyclic if and only if a depth-first search of G yields no back edges.
+ * <br/>
+ * So a depth-first traversal of the "resolved" (via Characteristics/Entities etc.) property references is able to deliver all cycles
+ * present in the model.
  */
 public class ModelCycleDetector {
    final static String ERR_CYCLE_DETECTED =
-         "The Aspect Model contains a cycle which includes following properties: %s. Please remove any cycles that do not allow a finite json payload.";
+         "The Aspect Model contains a cycle which includes following properties: %s. Please remove any cycles that do not allow a finite "
+               + "json payload.";
 
    private final static String PREFIXES = """
          prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#>
@@ -104,7 +107,9 @@ public class ModelCycleDetector {
    }
 
    private void depthFirstTraversal( final Resource currentProperty, final BiConsumer<String, Set<String>> cycleHandler ) {
-      final Resource resolvedProperty = currentProperty.isAnon() ? resolvePropertyReference( currentProperty.asResource() ) : currentProperty.asResource();
+      final Resource resolvedProperty = currentProperty.isAnon() ?
+            resolvePropertyReference( currentProperty.asResource() ) :
+            currentProperty.asResource();
       final String currentPropertyName = getUniqueName( resolvedProperty );
       if ( finished.contains( currentPropertyName ) ) {
          return;
@@ -190,11 +195,13 @@ public class ModelCycleDetector {
    }
 
    private String getUniqueName( final Resource property ) {
-      // Ugly special case: when extending Entities, the property name will always be the same ([ samm:extends samm-e:value ; samm:characteristic :someChara ]),
+      // Ugly special case: when extending Entities, the property name will always be the same ([ samm:extends samm-e:value ;
+      // samm:characteristic :someChara ]),
       // so we need a unique name in case more than one extending Entity exists in the model
       if ( property.isAnon() ) {
          if ( property.getProperty( samm._extends() ) != null ) {
-            return findExtendingEntityName( property ) + "|" + model.shortForm( property.getProperty( samm._extends() ).getObject().asResource().getURI() );
+            return findExtendingEntityName( property ) + "|" + model.shortForm(
+                  property.getProperty( samm._extends() ).getObject().asResource().getURI() );
          }
          // safety net
          return property.toString();
@@ -220,7 +227,8 @@ public class ModelCycleDetector {
    }
 
    private void initializeQuery( final KnownVersion metaModelVersion ) {
-      final String currentVersionPrefixes = String.format( PREFIXES, metaModelVersion.toVersionString(), metaModelVersion.toVersionString() );
+      final String currentVersionPrefixes = String.format( PREFIXES, metaModelVersion.toVersionString(),
+            metaModelVersion.toVersionString() );
       //noinspection LongLine
       final String queryString = String.format( """
                   %s select ?reachableProperty ?viaEither
@@ -256,7 +264,8 @@ public class ModelCycleDetector {
          final ResultSet results = qexec.execSelect();
          while ( results.hasNext() ) {
             final QuerySolution solution = results.nextSolution();
-            nextHopProperties.add( new NextHopProperty( solution.getResource( "reachableProperty" ), solution.getLiteral( "viaEither" ).getInt() ) );
+            nextHopProperties.add(
+                  new NextHopProperty( solution.getResource( "reachableProperty" ), solution.getLiteral( "viaEither" ).getInt() ) );
          }
       }
       return nextHopProperties;
@@ -290,7 +299,8 @@ public class ModelCycleDetector {
          }
       }
 
-      // Cycles involving samm-c:Either can be considered breakable only if they "encompass" the property characterized by the Either construct.
+      // Cycles involving samm-c:Either can be considered breakable only if they "encompass" the property characterized by the Either
+      // construct.
       // Consider these two examples: ( E is the Either property )
       // a -> E -> b -> c -> a : this cycle can be broken by the other branch of the Either construct
       // a -> E -> b -> c -> b : this cycle is unbreakable and can be reported immediately

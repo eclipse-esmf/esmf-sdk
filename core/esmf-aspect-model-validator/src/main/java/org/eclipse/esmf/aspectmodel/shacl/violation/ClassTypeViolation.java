@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import org.apache.jena.rdf.model.Resource;
 
-public record ClassTypeViolation(EvaluationContext context, Resource allowedClass, Resource actualClass) implements Violation {
+public record ClassTypeViolation( EvaluationContext context, Resource allowedClass, Resource actualClass ) implements Violation {
    public static final String ERROR_CODE = "ERR_CLASS_TYPE";
 
    @Override

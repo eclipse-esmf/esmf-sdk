@@ -17,9 +17,10 @@ import org.apache.jena.rdf.model.Resource;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#property-path-one-or-more">One-Or-More Path</a>
+ *
  * @param path the path which can be repeated zero or more times
  */
-public record OneOrMorePath(Path path) implements Path {
+public record OneOrMorePath( Path path ) implements Path {
    @Override
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitOneOrMorePath( resource, this );

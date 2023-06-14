@@ -19,7 +19,7 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
  * @param line
  * @param column
  */
-public record InvalidSyntaxViolation(String message, String source, long line, long column) implements Violation {
+public record InvalidSyntaxViolation( String violationSpecificMessage, String source, long line, long column ) implements Violation {
    public static final String ERROR_CODE = "ERR_SYNTAX";
 
    @Override

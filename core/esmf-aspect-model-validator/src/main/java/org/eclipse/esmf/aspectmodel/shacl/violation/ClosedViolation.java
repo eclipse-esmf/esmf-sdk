@@ -19,8 +19,8 @@ import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Property;
 
-public record ClosedViolation(EvaluationContext context, Set<Property> allowedProperties, Set<Property> ignoredProperties, Property actual)
-      implements Violation {
+public record ClosedViolation( EvaluationContext context, Set<Property> allowedProperties, Set<Property> ignoredProperties,
+      Property actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_CLOSED";
 
    @Override

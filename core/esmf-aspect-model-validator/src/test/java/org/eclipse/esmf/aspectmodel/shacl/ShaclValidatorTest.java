@@ -22,16 +22,6 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.apache.jena.graph.Node_URI;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.RDFParserRegistry;
-import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
@@ -64,6 +54,17 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.ValueFromListViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.XoneViolation;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationRustLikeFormatter;
+
+import org.apache.jena.graph.Node_URI;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.riot.RDFParserRegistry;
+import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -163,7 +164,8 @@ public class ShaclValidatorTest {
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actualClass().getURI() ).isEqualTo( "http://example.com#SomethingElse" );
       assertThat( violation.allowedClass().getURI() ).isEqualTo( "http://example.com#TestClass2" );
-      assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo has type :SomethingElse, but only :TestClass2 is allowed." );
+      assertThat( violation.message() ).isEqualTo(
+            "Property :testProperty on :Foo has type :SomethingElse, but only :TestClass2 is allowed." );
       assertThat( violation.errorCode() ).isEqualTo( ClassTypeViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -209,7 +211,8 @@ public class ShaclValidatorTest {
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actualTypeUri() ).isEqualTo( XSD.integer.getURI() );
       assertThat( violation.allowedTypeUri() ).isEqualTo( XSD.xstring.getURI() );
-      assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo uses data type xsd:integer, but only xsd:string is allowed." );
+      assertThat( violation.message() ).isEqualTo(
+            "Property :testProperty on :Foo uses data type xsd:integer, but only xsd:string is allowed." );
       assertThat( violation.errorCode() ).isEqualTo( DatatypeViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -427,7 +430,8 @@ public class ShaclValidatorTest {
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual().getInt() ).isEqualTo( 41 );
       assertThat( violation.min().getInt() ).isEqualTo( 42 );
-      assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo has value 41, but it must be greater than or equal to 42." );
+      assertThat( violation.message() ).isEqualTo(
+            "Property :testProperty on :Foo has value 41, but it must be greater than or equal to 42." );
       assertThat( violation.errorCode() ).isEqualTo( MinInclusiveViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -515,7 +519,8 @@ public class ShaclValidatorTest {
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual().getInt() ).isEqualTo( 43 );
       assertThat( violation.max().getInt() ).isEqualTo( 42 );
-      assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo has value 43, but it must be less than or equal to 42." );
+      assertThat( violation.message() ).isEqualTo(
+            "Property :testProperty on :Foo has value 43, but it must be less than or equal to 42." );
       assertThat( violation.errorCode() ).isEqualTo( MaxInclusiveViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -559,7 +564,8 @@ public class ShaclValidatorTest {
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual() ).isEqualTo( 3 );
       assertThat( violation.min() ).isEqualTo( 5 );
-      assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo has length 3, but its length must be greater than or equal to 5." );
+      assertThat( violation.message() ).isEqualTo(
+            "Property :testProperty on :Foo has length 3, but its length must be greater than or equal to 5." );
       assertThat( violation.errorCode() ).isEqualTo( MinLengthViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -603,7 +609,8 @@ public class ShaclValidatorTest {
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual() ).isEqualTo( 6 );
       assertThat( violation.max() ).isEqualTo( 5 );
-      assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo has length 6, but its length must be less than or equal to 5." );
+      assertThat( violation.message() ).isEqualTo(
+            "Property :testProperty on :Foo has length 6, but its length must be less than or equal to 5." );
       assertThat( violation.errorCode() ).isEqualTo( MaxLengthViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -651,7 +658,8 @@ public class ShaclValidatorTest {
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       assertThat( violation.actual() ).isEqualTo( "y" );
       assertThat( violation.pattern() ).isEqualTo( "^x" );
-      assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo has value y, which does not match the required pattern ^x." );
+      assertThat( violation.message() ).isEqualTo(
+            "Property :testProperty on :Foo has value y, which does not match the required pattern ^x." );
       assertThat( violation.errorCode() ).isEqualTo( PatternViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -749,7 +757,8 @@ public class ShaclValidatorTest {
       assertThat( violation.allowedValue().asLiteral().getString() ).isEqualTo( "a different value" );
       assertThat( violation.actualValue().asLiteral().getString() ).isEqualTo( "some value" );
       assertThat( violation.message() ).isEqualTo(
-            "Property :testProperty on :Foo must have the same value as property :anotherTestProperty (a different value), but has value some value." );
+            "Property :testProperty on :Foo must have the same value as property :anotherTestProperty (a different value), but has value "
+            + "some value." );
       assertThat( violation.errorCode() ).isEqualTo( EqualsViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -898,7 +907,8 @@ public class ShaclValidatorTest {
       assertThat( violation.actualValue().getInt() ).isEqualTo( 10 );
       assertThat( violation.otherValue().getInt() ).isEqualTo( 5 );
       assertThat( violation.message() ).isEqualTo(
-            "Property :testProperty on :Foo must have a value that is less than or equal to that of :anotherTestProperty: 10 must be less than 5." );
+            "Property :testProperty on :Foo must have a value that is less than or equal to that of :anotherTestProperty: 10 must be less"
+            + " than 5." );
       assertThat( violation.errorCode() ).isEqualTo( LessThanOrEqualsViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -1035,9 +1045,11 @@ public class ShaclValidatorTest {
       assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
       assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
-      assertThat( violation.allowed() ).containsExactly( ResourceFactory.createStringLiteral( "foo" ), ResourceFactory.createStringLiteral( "bar" ) );
+      assertThat( violation.allowed() ).containsExactly( ResourceFactory.createStringLiteral( "foo" ),
+            ResourceFactory.createStringLiteral( "bar" ) );
       assertThat( violation.actual() ).isEqualTo( ResourceFactory.createStringLiteral( "baz" ) );
-      assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo has value baz which is not in the list of allowed values: [foo, bar]." );
+      assertThat( violation.message() ).isEqualTo(
+            "Property :testProperty on :Foo has value baz which is not in the list of allowed values: [foo, bar]." );
       assertThat( violation.errorCode() ).isEqualTo( ValueFromListViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -1072,7 +1084,7 @@ public class ShaclValidatorTest {
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty :Bar .
-               
+
             :Bar :nestedProperty "bar" .
             """ );
 
@@ -1149,8 +1161,9 @@ public class ShaclValidatorTest {
          final MinInclusiveViolation violation = (MinInclusiveViolation) finding;
          assertThat( violation.context().element() ).isEqualTo( element );
          assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
-         assertThat( violation.elementName() ).isEqualTo( ":Foo" );
-         assertThat( violation.actual().getLexicalForm() ).isEqualTo( ResourceFactory.createTypedLiteral( new BigInteger( "1" ) ).getLexicalForm() );
+         assertThat( violation.elementName() ).isEqualTo( ":element" );
+         assertThat( violation.actual().getLexicalForm() ).isEqualTo(
+               ResourceFactory.createTypedLiteral( new BigInteger( "1" ) ).getLexicalForm() );
       } );
    }
 
@@ -1195,7 +1208,7 @@ public class ShaclValidatorTest {
       assertThat( violation.allowedProperties().iterator().next().getURI() ).isEqualTo( namespace + "testProperty" );
       assertThat( violation.actual().getURI() ).isEqualTo( namespace + "aDifferentProperty" );
       assertThat( violation.message() ).isEqualTo(
-            ":aDifferentProperty is used on :Foo. It is not allowed there; allowed are only [:testProperty, rdf:type]." );
+            ":aDifferentProperty is used on :Foo. It is not allowed there; only :testProperty is allowed." );
       assertThat( violation.errorCode() ).isEqualTo( ClosedViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -1700,7 +1713,8 @@ public class ShaclValidatorTest {
       assertThat( violation.elementName() ).isEqualTo( ":Foo" );
       final NodeKindConstraint nestedConstraint = (NodeKindConstraint) violation.negatedConstraint();
       assertThat( nestedConstraint.allowedNodeKind() ).isEqualTo( Shape.NodeKind.BlankNode );
-      assertThat( violation.message() ).isEqualTo( "Expected violation of constraint sh:nodeKind on :testProperty on :Foo, but it did not occur." );
+      assertThat( violation.message() ).isEqualTo(
+            "Expected violation of constraint sh:nodeKind on :testProperty on :Foo, but it did not occur." );
       assertThat( violation.errorCode() ).isEqualTo( NotViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
@@ -1858,7 +1872,7 @@ public class ShaclValidatorTest {
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
-                        
+
             :prefixDeclarations
                sh:declare [
                   sh:prefix "" ;
@@ -2183,7 +2197,8 @@ public class ShaclValidatorTest {
       return model;
    }
 
-   private boolean formattedMessageIsCorrect( final String message, final int lineNumber, final String context, final int highlightLength ) {
+   private boolean formattedMessageIsCorrect( final String message, final int lineNumber, final String context,
+         final int highlightLength ) {
       return message.contains( String.format( "Error at line %d", lineNumber ) ) &&
             message.contains( context ) &&
             message.contains( " " + "^".repeat( highlightLength ) + " " );

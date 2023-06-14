@@ -25,6 +25,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedLanguagesConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedValuesConstraint;
@@ -214,6 +215,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
    /**
     * Processing violation, e.g. a model element that could not be resolved
+    *
     * @param violation the violation
     * @return formatted representation
     */
@@ -232,6 +234,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
    /**
     * Syntax error in the source file
+    *
     * @param violation the violation
     * @return formatted representation
     */
@@ -541,7 +544,8 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
       @Override
       public String visitNodeConstraint( final NodeConstraint constraint ) {
-         return String.format( "shape-node: %s%n", constraint.targetShape().attributes().uri().map( violation::shortUri ).orElse( "(anonymous shape)" ) );
+         return String.format( "shape-node: %s%n",
+               constraint.targetShape().get().attributes().uri().map( violation::shortUri ).orElse( "(anonymous shape)" ) );
       }
 
       @Override

@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
-public record MissingTypeViolation(EvaluationContext context) implements Violation {
+public record MissingTypeViolation( EvaluationContext context ) implements Violation {
    public static final String ERROR_CODE = "ERR_NO_TYPE";
 
    @Override

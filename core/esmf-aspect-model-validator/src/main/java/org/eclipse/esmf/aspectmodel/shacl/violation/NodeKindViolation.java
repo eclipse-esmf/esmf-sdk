@@ -17,7 +17,8 @@ import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 
-public record NodeKindViolation(EvaluationContext context, Shape.NodeKind allowedNodeKind, Shape.NodeKind actualNodeKind) implements Violation {
+public record NodeKindViolation( EvaluationContext context, Shape.NodeKind allowedNodeKind, Shape.NodeKind actualNodeKind )
+      implements Violation {
    public static final String ERROR_CODE = "ERR_NODEKIND";
 
    @Override

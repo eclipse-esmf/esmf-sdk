@@ -16,7 +16,7 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 
-public record DisjointViolation(EvaluationContext context, Property otherProperty, RDFNode otherValue) implements Violation {
+public record DisjointViolation( EvaluationContext context, Property otherProperty, RDFNode otherValue ) implements Violation {
    public static final String ERROR_CODE = "ERR_DISJOINT";
 
    @Override

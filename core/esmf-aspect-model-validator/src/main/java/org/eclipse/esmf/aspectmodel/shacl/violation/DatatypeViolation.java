@@ -19,14 +19,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.fix.ReplaceValue;
 
-public record DatatypeViolation(EvaluationContext context, String allowedTypeUri, String actualTypeUri) implements Violation {
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+
+public record DatatypeViolation( EvaluationContext context, String allowedTypeUri, String actualTypeUri ) implements Violation {
    public static final String ERROR_CODE = "ERR_TYPE";
 
    @Override

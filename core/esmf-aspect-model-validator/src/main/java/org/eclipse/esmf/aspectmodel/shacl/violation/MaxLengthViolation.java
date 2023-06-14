@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
-public record MaxLengthViolation(EvaluationContext context, int max, int actual) implements Violation {
+public record MaxLengthViolation( EvaluationContext context, int max, int actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MAX_LENGTH";
 
    @Override

@@ -16,15 +16,16 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.shacl.ShaclValidator;
+import org.eclipse.esmf.aspectmodel.shacl.Shape;
+
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.eclipse.esmf.aspectmodel.shacl.ShaclValidator;
-import org.eclipse.esmf.aspectmodel.shacl.Shape;
 
-public record EvaluationContext(Resource element, Shape shape, Optional<Property> property, List<Statement> offendingStatements, ShaclValidator validator,
-                                Model resolvedModel) {
+public record EvaluationContext( Resource element, Shape shape, Optional<Shape.Property> propertyShape, Optional<Property> property,
+      List<Statement> offendingStatements, ShaclValidator validator, Model resolvedModel ) {
    public EvaluationContext withProperty( final Property newProperty ) {
       return new EvaluationContext( element(), shape(), Optional.of( newProperty ), offendingStatements(), validator(), resolvedModel );
    }
