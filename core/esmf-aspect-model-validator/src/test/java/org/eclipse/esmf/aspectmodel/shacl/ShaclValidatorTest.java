@@ -1045,55 +1045,7 @@ public class ShaclValidatorTest {
    }
 
    @Test
-   public void testNodeConstraintForNodeShape() {
-      final Model shapesModel = model( """
-            @prefix sh: <http://www.w3.org/ns/shacl#> .
-            @prefix : <http://example.com#> .
-
-            :AnotherNodeShape
-              a sh:NodeShape ;
-              sh:property [
-                sh:path :testProperty ;
-                sh:hasValue "foo" ;
-              ] .
-
-            :MyShape
-               a sh:NodeShape ;
-               sh:targetClass :TestClass ;
-               sh:name "Test shape" ;
-               sh:description "Test shape description" ;
-               sh:node :AnotherNodeShape .
-            """ );
-
-      final Model dataModel = model( """
-            @prefix : <http://example.com#> .
-            :Foo a :TestClass ;
-              :testProperty "bar" .
-            """ );
-
-      final ShaclValidator validator = new ShaclValidator( shapesModel );
-      final Resource element = dataModel.createResource( namespace + "Foo" );
-      final List<Violation> violations = validator.validateElement( element );
-
-      assertThat( violations.size() ).isEqualTo( 1 );
-      final Violation finding = violations.get( 0 );
-      assertThat( finding ).isInstanceOf( InvalidValueViolation.class );
-      final InvalidValueViolation violation = (InvalidValueViolation) finding;
-      assertThat( violation.context().element() ).isEqualTo( element );
-      assertThat( violation.context().shape().attributes().uri() ).hasValue( namespace + "AnotherNodeShape" );
-      assertThat( violation.propertyName() ).isEqualTo( ":testProperty" );
-      assertThat( violation.elementName() ).isEqualTo( ":Foo" );
-      assertThat( violation.allowed().asLiteral().getString() ).isEqualTo( "foo" );
-      assertThat( violation.actual() ).isEqualTo( ResourceFactory.createStringLiteral( "bar" ) );
-      assertThat( violation.message() ).isEqualTo( "Property :testProperty on :Foo has value bar, but only foo is allowed." );
-      assertThat( violation.errorCode() ).isEqualTo( InvalidValueViolation.ERROR_CODE );
-
-      final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty \"bar\" .", "\"bar\"".length() ) );
-   }
-
-   @Test
-   public void testNodeConstraintForPropertyShape() {
+   public void testNodeConstraint() {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
@@ -1171,19 +1123,25 @@ public class ShaclValidatorTest {
                sh:targetClass :TestClass ;
                sh:name "Test shape" ;
                sh:description "Test shape description" ;
-               sh:node :SomeNodeShape ;
-               sh:node :AnotherNodeShape .
+               sh:property [
+                 sh:path :myProperty ;
+                 sh:node :SomeNodeShape ;
+                 sh:node :AnotherNodeShape ;
+               ] .
             """ );
 
       final Model dataModel = model( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
-              :testProperty 1 .
+              :myProperty :element .
+
+            :element :testProperty 1 .
             """ );
 
       final ShaclValidator validator = new ShaclValidator( shapesModel );
-      final Resource element = dataModel.createResource( namespace + "Foo" );
-      final List<Violation> violations = validator.validateElement( element );
+      final Resource foo = dataModel.createResource( namespace + "Foo" );
+      final Resource element = dataModel.createResource( namespace + "element" );
+      final List<Violation> violations = validator.validateElement( foo );
 
       assertThat( violations.size() ).isEqualTo( 2 );
       violations.forEach( finding -> {

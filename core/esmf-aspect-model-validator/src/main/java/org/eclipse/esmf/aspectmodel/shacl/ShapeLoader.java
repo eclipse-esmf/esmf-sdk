@@ -13,7 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.shacl;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,8 +82,13 @@ import com.google.common.collect.Streams;
 public class ShapeLoader implements Function<Model, List<Shape.Node>> {
    private static final SHACL SHACL = new SHACL();
 
+   private final Map<Resource, JsLibrary> jsLibraries = new HashMap<>();
+   private final Map<Resource, Shape.Node> nodeShapes = new HashMap<>();
+   private final Set<Resource> seenNodeShapes = new HashSet<>();
+
    /**
     * When constraints are instantiated for a shape, the context is passed as input
+    *
     * @param path If the parent shape of the constraint is a property shape, the path determines what the property shape refers to
     */
    private record ShapeContext(Statement statement, Optional<Path> path) {
@@ -121,17 +128,28 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
          .put( SHACL.and(), context -> new AndConstraint( nestedConstraintList( context.statement(), context.path() ) ) )
          .put( SHACL.or(), context -> new OrConstraint( nestedConstraintList( context.statement(), context.path() ) ) )
          .put( SHACL.xone(), context -> new XoneConstraint( nestedConstraintList( context.statement(), context.path() ) ) )
-         .put( SHACL.node(), context -> new NodeConstraint( nodeShape( context.statement().getObject().asResource() ), context.path() ) )
+         .put( SHACL.node(), context -> {
+            // Since sh:node can recursively refer to the same NodeShape is used in when shapes define recursive structures,
+            // the NodeConstraint is built using a Supplier for the actual NodeShape. Only if the NodeShape has not yet been
+            // seen (i.e., it could be in the process of being built right now), create it now.
+            final Resource resource = context.statement().getObject().asResource();
+            if ( !seenNodeShapes.contains( resource ) ) {
+               nodeShape( resource );
+            }
+            return new NodeConstraint( () -> nodeShapes.get( resource ), context.path() );
+         } )
          .put( SHACL.in(), context -> new AllowedValuesConstraint( context.statement().getResource().as( RDFList.class ).asJavaList() ) )
          .put( SHACL.closed(), context -> {
             boolean closed = context.statement().getBoolean();
             if ( !closed ) {
                throw new RuntimeException();
             }
-            Set<Property> ignoredProperties = context.statement().getSubject().getProperty( SHACL.ignoredProperties() ).getResource()
-                  .as( RDFList.class )
-                  .asJavaList()
+            Set<Property> ignoredProperties = Optional.ofNullable( context.statement().getSubject().getProperty( SHACL.ignoredProperties() ) )
+                  .map( Statement::getResource )
+                  .map( resource -> resource.as( RDFList.class ) )
+                  .map( RDFList::asJavaList )
                   .stream()
+                  .flatMap( Collection::stream )
                   .map( RDFNode::asResource )
                   .map( Resource::getURI )
                   .map( uri -> context.statement().getModel().createProperty( uri ) )
@@ -145,29 +163,31 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
             return new SparqlConstraint( message, sparqlQuery( constraintNode ) );
          } )
          .put( SHACL.js(), context -> {
-            Resource constraintNode = context.statement().getResource();
-            JsLibrary library = jsLibrary( constraintNode.getProperty( SHACL.jsLibrary() ).getResource() );
-            String functionName = constraintNode.getProperty( SHACL.jsFunctionName() ).getString();
+            final Resource constraintNode = context.statement().getResource();
+            final JsLibrary library = jsLibrary( constraintNode.getProperty( SHACL.jsLibrary() ).getResource() );
+            final String functionName = constraintNode.getProperty( SHACL.jsFunctionName() ).getString();
             final String message = Optional.ofNullable( constraintNode.getProperty( SHACL.message() ) ).map( Statement::getString ).orElse( "" );
             return new JsConstraint( message, library, functionName );
          } )
          .build();
 
-   private final Map<Resource, JsLibrary> jsLibraries = new HashMap<>();
-
    private List<Constraint> nestedConstraintList( final Statement statement, final Optional<Path> path ) {
       return statement.getObject().as( RDFList.class ).asJavaList().stream()
             .filter( RDFNode::isResource )
             .map( RDFNode::asResource )
-            .flatMap( resource -> resource.isURIResource()
-                  ? nodeShape( resource ).attributes().constraints().stream()
-                  : shapeAttributes( resource, path ).constraints().stream() )
+            .flatMap( resource -> {
+               if ( resource.isURIResource() ) {
+                  return nodeShape( resource ).attributes().constraints().stream();
+               }
+               return shapeAttributes( resource, path ).constraints().stream();
+            } )
             .toList();
    }
 
    /**
     * Builds a {@link Pattern} from a pattern string and a flags string as specified in
     * <a href="https://www.w3.org/TR/xpath-functions/#func-matches">xpath functions</a>.
+    *
     * @param patternString the pattern string
     * @param flagsString the flags string
     * @return the pattern
@@ -190,6 +210,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
    }
 
    @Override
+   @SuppressWarnings( "UnstableApiUsage" ) // Usage of Streams.stream is deemed ok
    public List<Shape.Node> apply( final Model model ) {
       return Streams.stream( model.listStatements( null, RDF.type, SHACL.NodeShape() ) )
             .map( Statement::getSubject )
@@ -225,12 +246,16 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
             defaultValue, deactivated, message, severity, constraints );
    }
 
+   @SuppressWarnings( "UnstableApiUsage" ) // Usage of Streams.stream is deemed ok
    private Shape.Node nodeShape( final Resource shapeNode ) {
+      seenNodeShapes.add( shapeNode );
       final Shape.Attributes attributes = shapeAttributes( shapeNode, Optional.empty() );
       final List<Shape.Property> properties = Streams.stream( shapeNode.listProperties( SHACL.property() ) )
             .map( Statement::getResource )
             .map( this::propertyShape ).toList();
-      return new Shape.Node( attributes, properties );
+      final Shape.Node node = new Shape.Node( attributes, properties );
+      nodeShapes.put( shapeNode, node );
+      return node;
    }
 
    private Shape.Property propertyShape( final Resource shapeNode ) {
@@ -291,6 +316,7 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
             || resource.hasProperty( RDF.rest ) || resource.hasProperty( RDF.first );
    }
 
+   @SuppressWarnings( "UnstableApiUsage" ) // Usage of Streams.stream is deemed ok
    private List<Constraint> constraints( final Resource valueNode, final Optional<Path> path ) {
       return constraintLoaders.entrySet().stream()
             .flatMap( entry -> {
