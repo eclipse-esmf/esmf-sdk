@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.generator;
 
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -61,7 +62,7 @@ public class TemplateEngine implements UnaryOperator<String> {
     */
    @Override
    public String apply( final String templateName ) {
-      final Template template = engine.getTemplate( templateName + ".vm" );
+      final Template template = engine.getTemplate( templateName + ".vm", StandardCharsets.UTF_8.name() );
       final StringWriter stringWriter = new StringWriter();
       final Map<String, Object> mutableContext = new HashMap<>( context );
       final VelocityContext velocityContext = new VelocityContext( mutableContext );
