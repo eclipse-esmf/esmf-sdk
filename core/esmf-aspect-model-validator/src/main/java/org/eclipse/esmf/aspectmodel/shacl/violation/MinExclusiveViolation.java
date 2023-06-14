@@ -13,8 +13,17 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MinExclusiveConstraint;
+
 import org.apache.jena.rdf.model.Literal;
 
+/**
+ * Violation of a {@link MinExclusiveConstraint}
+ *
+ * @param context the evaluation context
+ * @param min the given minimum value
+ * @param actual the encountered value
+ */
 public record MinExclusiveViolation( EvaluationContext context, Literal min, Literal actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MIN_EXCLUSIVE";
 

@@ -24,6 +24,17 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
+/**
+ * The state during the evaluation of SHACL constraints
+ *
+ * @param element the resource a constraint is evaluated on
+ * @param shape the shape that is being evaluated
+ * @param propertyShape if a property shape for a given node shape is evaluated, it is given here
+ * @param property if a property shape for a given node shape is evaluated, this is the corresponding property
+ * @param offendingStatements one ore more statements that are the cause of the violation if one occurs
+ * @param validator the validator
+ * @param resolvedModel the model being evaluated
+ */
 public record EvaluationContext( Resource element, Shape shape, Optional<Shape.Property> propertyShape, Optional<Property> property,
       List<Statement> offendingStatements, ShaclValidator validator, Model resolvedModel ) {
    public EvaluationContext withProperty( final Property newProperty ) {

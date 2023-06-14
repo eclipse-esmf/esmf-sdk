@@ -16,8 +16,17 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedValuesConstraint;
+
 import org.apache.jena.rdf.model.RDFNode;
 
+/**
+ * Violation of a {@link AllowedValuesConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowed the list of allowed values
+ * @param actual the encountered value
+ */
 public record ValueFromListViolation( EvaluationContext context, List<RDFNode> allowed, RDFNode actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_VALUE_FROM_LIST";
 

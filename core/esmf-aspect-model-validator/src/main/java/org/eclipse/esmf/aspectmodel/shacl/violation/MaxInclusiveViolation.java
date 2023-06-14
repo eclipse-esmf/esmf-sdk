@@ -13,8 +13,17 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxInclusiveConstraint;
+
 import org.apache.jena.rdf.model.Literal;
 
+/**
+ * Violation of a {@link MaxInclusiveConstraint}
+ *
+ * @param context the evaluation context
+ * @param max the given maximum value
+ * @param actual the encountered value
+ */
 public record MaxInclusiveViolation( EvaluationContext context, Literal max, Literal actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MAX_INCLUSIVE";
 

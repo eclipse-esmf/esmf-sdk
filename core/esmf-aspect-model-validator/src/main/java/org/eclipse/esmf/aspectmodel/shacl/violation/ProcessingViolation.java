@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 /**
  * Meta violation: The validation was unsuccessful, for example because the model could not be loaded or not be resolved
+ *
  * @param cause the cause
  */
 public record ProcessingViolation( String violationSpecificMessage, Throwable cause ) implements Violation {

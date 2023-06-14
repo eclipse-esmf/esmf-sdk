@@ -14,7 +14,14 @@
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.NotConstraint;
 
+/**
+ * Violation of a {@link NotConstraint}
+ *
+ * @param context the evaluation context
+ * @param negatedConstraint the constraint that was given as negated
+ */
 public record NotViolation( EvaluationContext context, Constraint negatedConstraint ) implements Violation {
    public static final String ERROR_CODE = "ERR_NOT";
 

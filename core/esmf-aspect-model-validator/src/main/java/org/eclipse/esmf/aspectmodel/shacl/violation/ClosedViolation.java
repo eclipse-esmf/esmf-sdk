@@ -13,14 +13,27 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import org.eclipse.esmf.aspectmodel.shacl.constraint.ClosedConstraint;
 
 import org.apache.jena.rdf.model.Property;
 
+/**
+ * Violation of a {@link ClosedConstraint}
+ *
+ * @param context the evaluation context of this violation
+ * @param allowedProperties the properties that are allowed on the value node
+ * @param ignoredProperties the properties that were ignored in the validation
+ * @param actual the actually encountered property
+ */
 public record ClosedViolation( EvaluationContext context, Set<Property> allowedProperties, Set<Property> ignoredProperties,
       Property actual ) implements Violation {
+   /**
+    * The error code for this violation
+    */
    public static final String ERROR_CODE = "ERR_CLOSED";
 
    @Override

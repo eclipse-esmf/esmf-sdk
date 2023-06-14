@@ -13,9 +13,19 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.EqualsConstraint;
+
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 
+/**
+ * Violation of a {@link EqualsConstraint}
+ *
+ * @param context the evaluation context
+ * @param otherProperty the property the context.property()'s value must be equal to
+ * @param allowedValue the allowed value
+ * @param actualValue the encountered value
+ */
 public record EqualsViolation( EvaluationContext context, Property otherProperty, RDFNode allowedValue, RDFNode actualValue )
       implements Violation {
    public static final String ERROR_CODE = "ERR_EQUALS";

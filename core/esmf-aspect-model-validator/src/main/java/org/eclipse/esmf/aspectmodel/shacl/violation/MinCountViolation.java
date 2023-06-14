@@ -13,6 +13,15 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
+
+/**
+ * Violation of a {@link MinCountConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowed the allowed value
+ * @param actual the encountered value
+ */
 public record MinCountViolation( EvaluationContext context, int allowed, int actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MIN_COUNT";
 

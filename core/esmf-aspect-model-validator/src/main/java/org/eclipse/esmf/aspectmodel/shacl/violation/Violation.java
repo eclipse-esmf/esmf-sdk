@@ -25,9 +25,10 @@ import org.apache.jena.rdf.model.Resource;
 
 /**
  * Represents a single violation raised by one or more SHACL shapes against an RDF model.
- * A human-readable representation of the violation is available via {@link #message()} while details about the context in which the violation
- * occured (such as offending model element, RDF statements and the SHACL shape that raised the violation) are available via {@link #context()}.
- * To handle information specific to each type of violation, implement {@link Visitor} and call {@link #accept(Visitor)} on the violation(s).
+ * A human-readable representation of the violation is available via {@link #message()} while details about the context
+ * in which the violation occurred (such as offending model element, RDF statements and the SHACL shape that raised the
+ * violation) are available via {@link #context()}. To handle information specific to each type of violation,
+ * implement {@link Visitor} and call {@link #accept(Visitor)} on the violation(s).
  */
 public interface Violation {
    String errorCode();

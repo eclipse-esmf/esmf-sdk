@@ -17,6 +17,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.XoneConstraint;
+
+/**
+ * Violation of a {@link XoneConstraint}
+ *
+ * @param context the evaluation context
+ * @param violations the list of violations that were encountered
+ */
 public record XoneViolation( EvaluationContext context, List<Violation> violations ) implements Violation {
    public static final String ERROR_CODE = "ERR_XONE";
 

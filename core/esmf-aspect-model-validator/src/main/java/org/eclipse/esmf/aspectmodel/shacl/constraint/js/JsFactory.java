@@ -16,6 +16,9 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint.js;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 
+/**
+ * Utility class that translates between SHACL JS objects and their RDF representation
+ */
 public class JsFactory {
    public static JsTerm asJsTerm( final Node node ) {
       if ( node.isURI() ) {

@@ -13,6 +13,15 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxLengthConstraint;
+
+/**
+ * Violation of a {@link MaxLengthConstraint}
+ *
+ * @param context the evaluation context
+ * @param max the given maximum value
+ * @param actual the encountered value
+ */
 public record MaxLengthViolation( EvaluationContext context, int max, int actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MAX_LENGTH";
 

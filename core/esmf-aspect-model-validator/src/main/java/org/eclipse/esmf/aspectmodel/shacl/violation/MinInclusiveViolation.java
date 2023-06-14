@@ -13,8 +13,17 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MinInclusiveConstraint;
+
 import org.apache.jena.rdf.model.Literal;
 
+/**
+ * Violation of a {@link MinInclusiveConstraint}
+ *
+ * @param context the evaluation context
+ * @param min the given minimum value
+ * @param actual the encountered value
+ */
 public record MinInclusiveViolation( EvaluationContext context, Literal min, Literal actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MIN_INCLUSIVE";
 

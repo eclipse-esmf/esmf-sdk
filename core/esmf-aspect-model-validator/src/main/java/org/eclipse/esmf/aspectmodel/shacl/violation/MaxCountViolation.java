@@ -13,6 +13,15 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxCountConstraint;
+
+/**
+ * Violation of a {@link MaxCountConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowed the allowed number repetitions of a property
+ * @param actual the encountered number
+ */
 public record MaxCountViolation( EvaluationContext context, int allowed, int actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MAX_COUNT";
 

@@ -16,9 +16,18 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
+
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 
+/**
+ * Violation of a {@link SparqlConstraint}
+ *
+ * @param context the evaluation context
+ * @param constraintMessage the message as given by the SPARQL constraint
+ * @param bindings the variable bindings produced by the SPARQL query
+ */
 public record SparqlConstraintViolation( EvaluationContext context, String constraintMessage, Map<String, RDFNode> bindings )
       implements Violation {
    public static final String ERROR_CODE = "ERR_UNSPECIFIED_SPARQL_CONSTRAINT_VIOLATION";

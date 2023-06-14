@@ -13,6 +13,15 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MinLengthConstraint;
+
+/**
+ * Violation of a {@link MinLengthConstraint}
+ *
+ * @param context the evaluation context
+ * @param min the given minimum value
+ * @param actual the encountered value
+ */
 public record MinLengthViolation( EvaluationContext context, int min, int actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MIN_LENGTH";
 

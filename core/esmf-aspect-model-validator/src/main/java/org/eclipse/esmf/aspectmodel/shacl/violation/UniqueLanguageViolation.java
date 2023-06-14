@@ -15,6 +15,14 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import java.util.Set;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.UniqueLangConstraint;
+
+/**
+ * Violation of a {@link UniqueLangConstraint}
+ *
+ * @param context the evaluation context
+ * @param duplicates the set of duplicate language tags
+ */
 public record UniqueLanguageViolation( EvaluationContext context, Set<String> duplicates ) implements Violation {
    public static final String ERROR_CODE = "ERR_DUPLICATE_LANGUAGE";
 

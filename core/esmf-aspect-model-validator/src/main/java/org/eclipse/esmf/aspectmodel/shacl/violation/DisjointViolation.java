@@ -13,9 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.DisjointConstraint;
+
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 
+/**
+ * Violation of a {@link DisjointConstraint}
+ *
+ * @param context the evaluation context
+ * @param otherProperty the property the context.property()'s value must be disjunct with
+ * @param otherValue the corresponding other value
+ */
 public record DisjointViolation( EvaluationContext context, Property otherProperty, RDFNode otherValue ) implements Violation {
    public static final String ERROR_CODE = "ERR_DISJOINT";
 

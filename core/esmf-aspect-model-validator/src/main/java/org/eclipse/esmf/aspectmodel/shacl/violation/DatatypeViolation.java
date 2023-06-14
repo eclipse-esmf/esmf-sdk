@@ -27,6 +27,13 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
+/**
+ * Violation of a {@link DatatypeConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowedTypeUri the URI of the XSD or RDF class type that was allowed
+ * @param actualTypeUri the URI that was encountered instead
+ */
 public record DatatypeViolation( EvaluationContext context, String allowedTypeUri, String actualTypeUri ) implements Violation {
    public static final String ERROR_CODE = "ERR_TYPE";
 

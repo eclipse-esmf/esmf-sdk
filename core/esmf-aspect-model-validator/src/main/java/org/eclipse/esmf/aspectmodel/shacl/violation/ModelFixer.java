@@ -21,6 +21,11 @@ import org.eclipse.esmf.aspectmodel.shacl.fix.ReplaceValue;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+
+/**
+ * Function that takes a model (which includes violations) and a list of applicable fixes as input and produces a new model with the
+ * fixes applied
+ */
 public class ModelFixer implements BiFunction<Model, List<Fix>, Model> {
    @Override
    public Model apply( final Model model, final List<Fix> fixes ) {

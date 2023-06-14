@@ -16,7 +16,15 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
 
+/**
+ * Violation of a {@link NodeKindConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowedNodeKind the allowed kind of node
+ * @param actualNodeKind the encountered kind of node
+ */
 public record NodeKindViolation( EvaluationContext context, Shape.NodeKind allowedNodeKind, Shape.NodeKind actualNodeKind )
       implements Violation {
    public static final String ERROR_CODE = "ERR_NODEKIND";
