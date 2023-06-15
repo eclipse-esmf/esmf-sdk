@@ -16,17 +16,15 @@ package org.eclipse.esmf.aspectmodel.java;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
-
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Value;
@@ -72,14 +70,14 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
          context.getCodeGenerationConfig().importTracker().importExplicit( LangString.class );
          context.getCodeGenerationConfig().importTracker().importExplicit( Locale.class );
          final LangString langStringValue = (LangString) value.as( ScalarValue.class ).getValue();
-         return String.format( "new LangString(\"%s\", Locale.forLanguageTag(\"%s\"))", StringEscapeUtils.escapeJava( langStringValue.getValue() ),
+         return String.format( "new LangString(\"%s\", Locale.forLanguageTag(\"%s\"))", AspectModelJavaUtil.escapeForLiteral( langStringValue.getValue() ),
                langStringValue.getLanguageTag().toLanguageTag() );
       }
 
       final Resource typeResource = ResourceFactory.createResource( typeUri );
       final Class<?> javaType = DataType.getJavaTypeForMetaModelType( typeResource, value.getMetaModelVersion() );
       context.getCodeGenerationConfig().importTracker().importExplicit( javaType );
-      return valueInitializer.apply( typeResource, javaType, "\"" + StringEscapeUtils.escapeJava( value.getValue().toString() ) + "\"",
+      return valueInitializer.apply( typeResource, javaType, AspectModelJavaUtil.createLiteral( value.getValue().toString() ),
             value.getMetaModelVersion() );
    }
 

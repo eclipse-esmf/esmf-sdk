@@ -29,11 +29,11 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.riot.RiotException;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
+import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
 import io.vavr.control.Try;
 
 public final class TurtleLoader {
@@ -63,7 +63,7 @@ public final class TurtleLoader {
 
       final Model streamModel = ModelFactory.createDefaultModel();
       RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRIOTTurtle.factory );
-      try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes() ) ) {
+      try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes( StandardCharsets.UTF_8 ) ) ) {
          streamModel.read( turtleInputStream, "", RDFLanguages.TURTLE.getName() );
          return Try.success( streamModel );
       } catch ( final IllegalArgumentException exception ) {

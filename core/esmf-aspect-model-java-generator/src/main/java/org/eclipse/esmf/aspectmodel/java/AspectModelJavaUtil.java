@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.translate.UnicodeUnescaper;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
@@ -62,6 +63,8 @@ import com.google.common.base.Converter;
 public class AspectModelJavaUtil {
 
    public static final Converter<String, String> TO_CONSTANT = CaseFormat.UPPER_CAMEL.converterTo( CaseFormat.UPPER_UNDERSCORE );
+
+   public static final UnicodeUnescaper UNESCAPER = new UnicodeUnescaper();
 
    private AspectModelJavaUtil() {
    }
@@ -336,8 +339,29 @@ public class AspectModelJavaUtil {
       return TO_CONSTANT.convert( StringUtils.capitalize( upperOrLowerCamelString ) );
    }
 
+   /**
+    * Creates a string literal with escaped double quotes around the given string.
+    *
+    * The string is escaped using {@link #escapeForLiteral(String)}.
+    *
+    * @param value the string to create the literal for
+    * @return the literal
+    */
    public static String createLiteral( final String value ) {
-      return "\"" + StringEscapeUtils.escapeJava( value ) + "\"";
+      return "\"" + escapeForLiteral( value ) + "\"";
+   }
+
+   /**
+    * Escapes a string properly to be used as a literal.
+    *
+    * Performs escaping according to Java String rules and afterwards additionally translates escaped Unicode characters back to Unicode. The latter step is
+    * necessary to avoid Unicode escape sequences within the String literal.
+    *
+    * @param value the string to be escaped
+    * @return the escaped string
+    */
+   public static String escapeForLiteral( final String value ) {
+      return UNESCAPER.translate( StringEscapeUtils.escapeJava( value ) );
    }
 
    /**
@@ -460,7 +484,7 @@ public class AspectModelJavaUtil {
 
    public static String printStructuredValueElement( final Object object ) {
       if ( object instanceof String ) {
-         return "\"" + StringEscapeUtils.escapeJava( object.toString() ) + "\"";
+         return createLiteral( object.toString() );
       }
       return toConstant( ((Property) object).getName() );
    }
@@ -484,7 +508,7 @@ public class AspectModelJavaUtil {
                         XSD.dayTimeDuration.getURI() ) );
    }
 
-   public static boolean doesValueNeedsToBeQuoted( final String typeUrn ) {
+   public static boolean doesValueNeedToBeQuoted( final String typeUrn ) {
       return typeUrn.equals( XSD.integer.getURI() )
             || typeUrn.equals( XSD.xshort.getURI() )
             || typeUrn.equals( XSD.decimal.getURI() )
