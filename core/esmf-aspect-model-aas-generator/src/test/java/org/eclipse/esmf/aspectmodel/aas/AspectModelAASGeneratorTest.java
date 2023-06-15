@@ -12,6 +12,7 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,29 +31,34 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
+import org.eclipse.digitaltwin.aas4j.v3.model.AbstractLangString;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationContent;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXSD;
 import org.eclipse.digitaltwin.aas4j.v3.model.EmbeddedDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
+import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
+import com.fasterxml.jackson.databind.JsonNode;
 
 class AspectModelAASGeneratorTest {
 
@@ -60,6 +67,74 @@ class AspectModelAASGeneratorTest {
    public static final String XML_XSD_AAS_SCHEMA_LOCATION = "/AAS.xsd";
 
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
+
+   @Test
+   void generateAasxWithAspectDataForMultilanguageText() throws IOException, DeserializationException, SAXException {
+      final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT );
+      assertThat( env.getSubmodels() )
+            .singleElement()
+            .satisfies( subModel -> {
+               assertThat( subModel.getSubmodelElements() )
+                     .singleElement()
+                     .satisfies( property -> {
+                        assertThat( property ).asInstanceOf( InstanceOfAssertFactories.type( MultiLanguageProperty.class ) )
+                              .extracting( mlp -> mlp.getValue() )
+                              .asList()
+                              .hasSize( 2 )
+                              .allSatisfy( langString -> {
+                                 List.of( "en", "de" ).contains( ((AbstractLangString) langString).getLanguage() );
+                              } );
+                     } );
+            } );
+   }
+
+   @Test
+   void generateAasxWithAspectDataForEitherWithEntity() throws IOException, DeserializationException, SAXException {
+      final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
+      assertThat( env.getSubmodels() )
+            .singleElement()
+            .satisfies( subModel -> {
+               assertThat( subModel.getSubmodelElements() )
+                     .anySatisfy( sme -> {
+                        assertThat( sme ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementList.class ) )
+                              .extracting( smel -> smel.getValue() )
+                              .asList()
+                              .anySatisfy( entity -> {
+                                 assertThat( entity ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementCollection.class ) )
+                                       .extracting( smec -> smec.getValue() )
+                                       .asList()
+                                       .singleElement( InstanceOfAssertFactories.type( Property.class ) )
+                                       .extracting( entityProperty -> entityProperty.getValue() )
+                                       .isEqualTo( "The result" );
+                              } );
+                     } );
+            } );
+   }
+
+   @Test
+   void generateAasxWithAspectDataForNestedEntityLists() throws IOException, DeserializationException, SAXException {
+      final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST );
+      assertThat( env.getSubmodels() )
+            .singleElement()
+            .satisfies( subModel -> {
+               assertThat( subModel.getSubmodelElements() )
+                     .anySatisfy( sme -> {
+                        assertThat( sme ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementList.class ) )
+                              .extracting( smel -> smel.getValue() )
+                              .asList()
+                              .anySatisfy( entity -> {
+                                 assertThat( entity ).asInstanceOf( InstanceOfAssertFactories.type( SubmodelElementCollection.class ) )
+                                       .extracting( smec -> smec.getValue() )
+                                       .asList()
+                                       .anySatisfy( property -> {
+                                          assertThat( property ).asInstanceOf( InstanceOfAssertFactories.type( Property.class ) )
+                                                .extracting( Property::getValue )
+                                                .isEqualTo( "2.25" );
+                                       } );
+                              } );
+                     } );
+            } );
+   }
 
    @Test
    void testGenerateAasxFromBammAspectWithListAndAdditionalProperty() throws IOException, DeserializationException {
@@ -95,7 +170,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertTrue( submodelElement instanceof SubmodelElementCollection, "SubmodelElement is not a SubmodelElementCollection" );
+      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
       assertEquals( "id_testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
@@ -107,7 +182,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementCollection" );
+      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
       assertEquals( "id_testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
@@ -119,7 +194,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertTrue( submodelElement instanceof SubmodelElementCollection, "SubmodelElement is not a SubmodelElementCollection" );
+      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
       assertEquals( "id_testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
@@ -131,7 +206,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementCollection" );
+      assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
       assertEquals( "id_testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
@@ -242,14 +317,17 @@ class AspectModelAASGeneratorTest {
    // anonymous enumeration in test has no urn for enum values but is required for Concept
    // Description referencing
    public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException, SAXException {
-      ByteArrayOutputStream baos = getByteArrayOutputStreamFromAspect( testAspect );
-      byte[] xmlFile = baos.toByteArray();
+      final ByteArrayOutputStream baos = getByteArrayOutputStreamFromAspect( testAspect );
+      final byte[] xmlFile = baos.toByteArray();
       final Environment env = loadAASX( new ByteArrayInputStream( xmlFile ) );
       assertTrue( env.getSubmodels().size() >= 1, "No Submodel in AAS present." );
       try {
          validate( new ByteArrayInputStream( xmlFile ) );
-      } catch ( SAXException e ) {
-         String model = "AAS XML file causing the Exception. \n" + new String( xmlFile, StandardCharsets.UTF_8 );
+      } catch ( final SAXException e ) {
+         final String xmlContent = new String( xmlFile, StandardCharsets.UTF_8 );
+         final int line = ((SAXParseException) e).getLineNumber();
+         final String faultyLine = xmlContent.lines().skip( line - 1 ).findFirst().orElse( "" );
+         final String model = "AAS XML file causing the Exception. \nProblem within line " + line + ": " + faultyLine + "\n" + xmlContent;
          throw new SAXException( model, e );
       }
 
@@ -278,7 +356,16 @@ class AspectModelAASGeneratorTest {
          throws DeserializationException, IOException {
       final Aspect aspect = loadAspect( testAspect );
       final ByteArrayOutputStream out = generator.generateXmlOutput( aspect );
-      return loadAASX( out );
+      return loadAASX( out.toByteArray(), testAspect );
+   }
+
+   private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect )
+         throws DeserializationException, IOException, SAXException {
+      final Aspect aspect = loadAspect( testAspect );
+      final JsonNode aspectData = loadPayload( testAspect );
+      final ByteArrayOutputStream out = generator.generateXmlOutput( Map.of( aspect, aspectData ) );
+      final var data = out.toByteArray();
+      return loadAASX( data, testAspect );
    }
 
    private ByteArrayOutputStream getByteArrayOutputStreamFromAspect( final TestAspect testAspect )
@@ -288,27 +375,32 @@ class AspectModelAASGeneratorTest {
    }
 
    private void validate( ByteArrayInputStream xmlStream ) throws IOException, SAXException {
-      SchemaFactory factory =
+      final SchemaFactory factory =
             SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
 
-      Schema schema = factory.newSchema(
+      final Schema schema = factory.newSchema(
             new StreamSource( getClass().getResourceAsStream( XML_XSD_AAS_SCHEMA_LOCATION ) ) );
-      Validator validator = schema.newValidator();
+      final Validator validator = schema.newValidator();
       validator.validate( new StreamSource( xmlStream ), null );
 
    }
 
    private Aspect loadAspect( final TestAspect testAspect ) {
       final VersionedModel model = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
-      return AspectModelLoader.getSingleAspect( model ).get();
+      return AspectModelLoader.getSingleAspectUnchecked( model );
    }
 
-   private Environment loadAASX( final ByteArrayOutputStream byteStream ) throws DeserializationException {
-      return loadAASX( new ByteArrayInputStream( byteStream.toByteArray() ) );
+   private JsonNode loadPayload( final TestAspect testAspect ) {
+      return TestResources.getPayload( testAspect, KnownVersion.getLatest() ).get();
    }
 
    private Environment loadAASX( final ByteArrayInputStream byteStream ) throws DeserializationException {
       final XmlDeserializer deserializer = new XmlDeserializer();
       return deserializer.read( byteStream );
+   }
+
+   private Environment loadAASX( final byte[] data, final TestAspect testAspect ) throws DeserializationException {
+      final XmlDeserializer deserializer = new XmlDeserializer();
+      return deserializer.read( new ByteArrayInputStream( data ) );
    }
 }

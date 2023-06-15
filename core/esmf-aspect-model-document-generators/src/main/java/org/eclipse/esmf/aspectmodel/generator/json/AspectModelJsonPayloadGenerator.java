@@ -46,19 +46,9 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.jeasy.random.EasyRandom;
-import org.jeasy.random.EasyRandomParameters;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.curiousoddman.rgxgen.RgxGen;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.characteristic.Either;
 import org.eclipse.esmf.characteristic.Enumeration;
@@ -81,6 +71,15 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.curiousoddman.rgxgen.RgxGen;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    /**
@@ -90,12 +89,13 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private static final String EITHER_LEFT = "left";
    private static final double THRESHOLD = .0001;
 
-   private final Aspect aspect;
    private final List<Transformer> transformers;
    private final ExampleValueGenerator exampleValueGenerator;
    private final ObjectMapper objectMapper;
    private final List<Property> recursiveProperty;
    private final ValueToPayloadStructure valueToPayloadStructure = new ValueToPayloadStructure();
+
+   private final Aspect aspect;
 
    public AspectModelJsonPayloadGenerator( final Aspect aspect ) {
       this( aspect, new SAMM( aspect.getMetaModelVersion() ), new Random() );

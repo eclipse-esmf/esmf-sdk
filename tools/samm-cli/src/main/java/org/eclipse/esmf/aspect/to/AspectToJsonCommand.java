@@ -21,6 +21,7 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import org.eclipse.esmf.exception.CommandException;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToJsonCommand.COMMAND_NAME,
