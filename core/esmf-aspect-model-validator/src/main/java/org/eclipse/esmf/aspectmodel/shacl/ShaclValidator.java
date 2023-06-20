@@ -22,6 +22,16 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.path.PathNodeRetriever;
+import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
+import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import com.google.common.collect.Streams;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -33,20 +43,10 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.path.PathNodeRetriever;
-import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
-import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-
-import com.google.common.collect.Streams;
 
 /**
- * Implementation of a SHACL engine that allows validation on a per-element basis: {@link #validateElement(Resource)} can be used to retrieve validation
- * results only for this specific resource.
+ * Implementation of a SHACL engine that allows validation on a per-element basis: {@link #validateElement(Resource)} can be used to
+ * retrieve validation results only for this specific resource.
  */
 public class ShaclValidator {
    private final List<Shape.Node> shapes;
@@ -56,6 +56,7 @@ public class ShaclValidator {
 
    /**
     * Constructor to provide a custom RDF model containing SHACL shapes
+    *
     * @param shapesModel the shapes model
     */
    public ShaclValidator( final Model shapesModel ) {
@@ -77,7 +78,9 @@ public class ShaclValidator {
     * If you have more than one element to validate, prefer the method {@link #validateElements(List)} to calling this method in a loop
     * for better performance.
     * {@link Resource#getModel()} on the element must not return null, i.e., the resource may not be created using
-    * {@link org.apache.jena.rdf.model.ResourceFactory#createProperty(String)}, but instead must be created via {@link Model#createResource(String)}.
+    * {@link org.apache.jena.rdf.model.ResourceFactory#createProperty(String)}, but instead must be created via
+    * {@link Model#createResource(String)}.
+    *
     * @param element the element to be validated
     * @return the list of {@link Violation}s if there are violations
     */
@@ -86,7 +89,8 @@ public class ShaclValidator {
       return validateElement( element, sparqlTargets, element.getModel() );
    }
 
-   private List<Violation> validateElement( final Resource element, final Map<Resource, List<Shape.Node>> sparqlTargets, final Model resolvedModel ) {
+   private List<Violation> validateElement( final Resource element, final Map<Resource, List<Shape.Node>> sparqlTargets,
+         final Model resolvedModel ) {
       final List<Violation> violations = new ArrayList<>();
       for ( final Shape.Node shape : targetClassShapesThatApplyToElement( element, resolvedModel ) ) {
          violations.addAll( validateShapeForElement( element, shape, resolvedModel ) );
@@ -110,9 +114,11 @@ public class ShaclValidator {
 
    /**
     * Validates a model using the SHACL shapes the validator was initialized with.
+    *
     * @param model the model to be validated
     * @return the list of {@link Violation}s if there are violations
     */
+   @SuppressWarnings( "UnstableApiUsage" ) // Usage of Streams.stream is deemed ok
    public List<Violation> validateModel( final VersionedModel model ) {
       final Map<Resource, List<Shape.Node>> sparqlTargetsWithShapes = findSparqlTargets( model.getRawModel() );
       return Streams.stream( model.getRawModel().listStatements( null, RDF.type, (RDFNode) null ) )
@@ -158,41 +164,46 @@ public class ShaclValidator {
    }
 
    public List<Violation> validateElements( final List<Resource> elements ) {
-      final Map<Resource, List<Shape.Node>> sparqlTargets = !elements.isEmpty() ? findSparqlTargets( elements.get( 0 ).getModel() ) : Map.of();
+      final Map<Resource, List<Shape.Node>> sparqlTargets = !elements.isEmpty() ?
+            findSparqlTargets( elements.get( 0 ).getModel() ) : Map.of();
       return elements.stream().flatMap( element -> validateElement( element, sparqlTargets, element.getModel() ).stream() ).toList();
    }
 
-   public List<Violation> validateShapeForElement( final Resource element, final Shape.Node shape, final Model resolvedModel ) {
+   public List<Violation> validateShapeForElement( final Resource element, final Shape.Node nodeShape, final Model resolvedModel ) {
       final List<Violation> violations = new ArrayList<>();
-      for ( final Shape.Property property : shape.properties() ) {
-         for ( final Constraint constraint : property.attributes().constraints() ) {
-            final List<Statement> reachableNodes = property.path().accept( element, retriever );
+      for ( final Shape.Property propertyShape : nodeShape.properties() ) {
+         for ( final Constraint constraint : propertyShape.attributes().constraints() ) {
+            final List<Statement> reachableNodes = propertyShape.path().accept( element, retriever );
             // For all values that are present on the target node, check the applicable shapes and collect violations
             for ( final Statement assertion : reachableNodes ) {
-               final EvaluationContext context = new EvaluationContext( element, shape, Optional.of( assertion.getPredicate() ), reachableNodes, this,
-                     resolvedModel );
+               final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
+                     Optional.of( assertion.getPredicate() ), List.of( assertion ), this, resolvedModel );
                violations.addAll( constraint.apply( assertion.getObject(), context ) );
             }
 
             // important detail: Sparql constraints must run independent of whether there are any matches via the sh:path property or not
             // ( the check could be the verification whether the property exists )
             if ( reachableNodes.isEmpty() && constraint instanceof SparqlConstraint ) {
-               final EvaluationContext context = new EvaluationContext( element, shape, Optional.empty(), List.of(), this, resolvedModel );
+               final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ), Optional.empty(),
+                     List.of(), this, resolvedModel );
                violations.addAll( constraint.apply( null, context ) );
             }
 
-            // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints >= 1
-            // exists, a violation must be emitted even though no value for the property exists
-            if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint && property.path() instanceof final PredicatePath predicatePath ) {
+            // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints
+            // >= 1 exists, a violation must be emitted even though no value for the property exists
+            if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint
+                  && propertyShape.path() instanceof final PredicatePath predicatePath ) {
                final Property rdfProperty = resolvedModel.createProperty( predicatePath.predicate().getURI() );
-               final EvaluationContext context = new EvaluationContext( element, shape, Optional.of( rdfProperty ), List.of(), this, resolvedModel );
+               final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
+                     Optional.of( rdfProperty ), List.of(), this, resolvedModel );
                violations.addAll( constraint.apply( null, context ) );
             }
          }
       }
 
-      final EvaluationContext context = new EvaluationContext( element, shape, Optional.empty(), List.of(), this, resolvedModel );
-      for ( final Constraint constraint : shape.attributes().constraints() ) {
+      final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.empty(), Optional.empty(), List.of(), this,
+            resolvedModel );
+      for ( final Constraint constraint : nodeShape.attributes().constraints() ) {
          if ( !constraint.canBeUsedOnNodeShapes() ) {
             continue;
          }
@@ -205,6 +216,7 @@ public class ShaclValidator {
    /**
     * Returns the shapes that apply to the element because the element has a type (or the type has a transitive supertype) that
     * is given as sh:targetClass
+    *
     * @param element a model element
     * @return the stream of shapes
     */
@@ -217,6 +229,7 @@ public class ShaclValidator {
 
    /**
     * Returns the shapes that apply to the element because the element uses a property which is given as sh:targetSubjectsOf
+    *
     * @param element a model element
     * @return the stream of shapes
     */
@@ -253,9 +266,5 @@ public class ShaclValidator {
 
    public Model getShapesModel() {
       return shapesModel;
-   }
-
-   public PathNodeRetriever getPathNodeRetriever() {
-      return retriever;
    }
 }

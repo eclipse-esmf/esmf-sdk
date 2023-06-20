@@ -17,13 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#OrConstraintComponent">sh:or</a>
  */
-public record OrConstraint(List<Constraint> constraints) implements Constraint {
+public record OrConstraint( List<Constraint> constraints ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<Violation> result = new ArrayList<>();

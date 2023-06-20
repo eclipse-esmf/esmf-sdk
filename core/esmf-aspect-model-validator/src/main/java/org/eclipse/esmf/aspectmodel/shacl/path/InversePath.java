@@ -17,9 +17,10 @@ import org.apache.jena.rdf.model.Resource;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#property-path-inverse">Inverse Path</a>
+ *
  * @param path the path of which this is an inverse
  */
-public record InversePath(Path path) implements Path {
+public record InversePath( Path path ) implements Path {
    @Override
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitInversePath( resource, this );

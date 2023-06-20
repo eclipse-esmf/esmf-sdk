@@ -18,6 +18,7 @@ import java.util.List;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.LiteralComparator;
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
@@ -27,9 +28,10 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.LessThanOrEqualsViolation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#LessThanOrEqualsConstraintComponent">sh:lessThanOrEquals</a>
+ *
  * @param otherProperty the other property to compare with
  */
-public record LessThanOrEqualsConstraint(Property otherProperty) implements Constraint {
+public record LessThanOrEqualsConstraint( Property otherProperty ) implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
       return false;

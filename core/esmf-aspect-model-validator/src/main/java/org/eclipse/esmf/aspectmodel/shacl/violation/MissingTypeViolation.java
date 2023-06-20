@@ -13,7 +13,12 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
-public record MissingTypeViolation(EvaluationContext context) implements Violation {
+/**
+ * Violation that is emitted when the value of a property is missing a type, but it's required
+ *
+ * @param context the evaluation context
+ */
+public record MissingTypeViolation( EvaluationContext context ) implements Violation {
    public static final String ERROR_CODE = "ERR_NO_TYPE";
 
    @Override
@@ -22,7 +27,7 @@ public record MissingTypeViolation(EvaluationContext context) implements Violati
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Could not determine type of %s.", elementName() );
    }
 

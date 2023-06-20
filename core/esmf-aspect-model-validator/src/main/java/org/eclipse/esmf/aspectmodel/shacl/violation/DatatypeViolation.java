@@ -19,14 +19,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.fix.ReplaceValue;
 
-public record DatatypeViolation(EvaluationContext context, String allowedTypeUri, String actualTypeUri) implements Violation {
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+
+/**
+ * Violation of a {@link DatatypeConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowedTypeUri the URI of the XSD or RDF class type that was allowed
+ * @param actualTypeUri the URI that was encountered instead
+ */
+public record DatatypeViolation( EvaluationContext context, String allowedTypeUri, String actualTypeUri ) implements Violation {
    public static final String ERROR_CODE = "ERR_TYPE";
 
    @Override
@@ -35,13 +43,16 @@ public record DatatypeViolation(EvaluationContext context, String allowedTypeUri
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       if ( context.property().isPresent() ) {
-         return allowedTypeUri.equals( RDF.langString.getURI() ) && actualTypeUri.equals( XSD.xstring.getURI() ) ?
-               String.format( "Property %s on %s is missing a language tag.",
-                     propertyName(), elementName() ) :
-               String.format( "Property %s on %s uses data type %s, but only %s is allowed.",
-                     propertyName(), elementName(), shortUri( actualTypeUri ), shortUri( allowedTypeUri ) );
+         if ( allowedTypeUri.equals( RDF.langString.getURI() ) && actualTypeUri.equals( XSD.xstring.getURI() ) ) {
+            return String.format( "Property %s on %s is missing a language tag.", propertyName(), elementName() );
+         } else if ( allowedTypeUri.equals( XSD.xstring.getURI() ) && actualTypeUri.equals( RDF.langString.getURI() ) ) {
+            return String.format( "Property %s on %s must not have a language tag.", propertyName(), elementName() );
+         } else {
+            return String.format( "Property %s on %s uses data type %s, but only %s is allowed.",
+                  propertyName(), elementName(), shortUri( actualTypeUri ), shortUri( allowedTypeUri ) );
+         }
       }
       return String.format( "%s uses data type %s, but only %s is allowed.",
             elementName(), shortUri( actualTypeUri ), shortUri( allowedTypeUri ) );

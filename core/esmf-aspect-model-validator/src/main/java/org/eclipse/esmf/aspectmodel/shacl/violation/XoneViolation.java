@@ -17,7 +17,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public record XoneViolation(EvaluationContext context, List<Violation> violations) implements Violation {
+import org.eclipse.esmf.aspectmodel.shacl.constraint.XoneConstraint;
+
+/**
+ * Violation of a {@link XoneConstraint}
+ *
+ * @param context the evaluation context
+ * @param violations the list of violations that were encountered
+ */
+public record XoneViolation( EvaluationContext context, List<Violation> violations ) implements Violation {
    public static final String ERROR_CODE = "ERR_XONE";
 
    @Override
@@ -26,7 +34,7 @@ public record XoneViolation(EvaluationContext context, List<Violation> violation
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return "One of the following violations" +
             (context.property().isPresent() ? " for " + propertyName() : "")
             + " must be fixed: " +

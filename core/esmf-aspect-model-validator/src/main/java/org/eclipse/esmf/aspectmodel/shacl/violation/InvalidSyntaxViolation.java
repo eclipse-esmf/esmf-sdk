@@ -15,11 +15,12 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 /**
  * Meta violation: Syntax error in source file
- * @param message
- * @param line
- * @param column
+ *
+ * @param violationSpecificMessage the message for this violation
+ * @param line the line in the source file
+ * @param column the column in the source file
  */
-public record InvalidSyntaxViolation(String message, String source, long line, long column) implements Violation {
+public record InvalidSyntaxViolation( String violationSpecificMessage, String source, long line, long column ) implements Violation {
    public static final String ERROR_CODE = "ERR_SYNTAX";
 
    @Override
@@ -30,6 +31,11 @@ public record InvalidSyntaxViolation(String message, String source, long line, l
    @Override
    public EvaluationContext context() {
       return null;
+   }
+
+   @Override
+   public String message() {
+      return violationSpecificMessage;
    }
 
    @Override

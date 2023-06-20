@@ -13,10 +13,19 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.DisjointConstraint;
+
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 
-public record DisjointViolation(EvaluationContext context, Property otherProperty, RDFNode otherValue) implements Violation {
+/**
+ * Violation of a {@link DisjointConstraint}
+ *
+ * @param context the evaluation context
+ * @param otherProperty the property the context.property()'s value must be disjunct with
+ * @param otherValue the corresponding other value
+ */
+public record DisjointViolation( EvaluationContext context, Property otherProperty, RDFNode otherValue ) implements Violation {
    public static final String ERROR_CODE = "ERR_DISJOINT";
 
    @Override
@@ -25,7 +34,7 @@ public record DisjointViolation(EvaluationContext context, Property otherPropert
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s may not have the same value as property %s (%s).",
             propertyName(), elementName(), shortUri( otherProperty.getURI() ), otherValue );
    }

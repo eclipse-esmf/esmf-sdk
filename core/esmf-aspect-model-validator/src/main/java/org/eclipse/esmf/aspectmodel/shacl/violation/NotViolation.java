@@ -14,8 +14,15 @@
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.NotConstraint;
 
-public record NotViolation(EvaluationContext context, Constraint negatedConstraint) implements Violation {
+/**
+ * Violation of a {@link NotConstraint}
+ *
+ * @param context the evaluation context
+ * @param negatedConstraint the constraint that was given as negated
+ */
+public record NotViolation( EvaluationContext context, Constraint negatedConstraint ) implements Violation {
    public static final String ERROR_CODE = "ERR_NOT";
 
    @Override
@@ -24,10 +31,13 @@ public record NotViolation(EvaluationContext context, Constraint negatedConstrai
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return context.property().isPresent() ?
-            String.format( "Expected violation of constraint %s on %s on %s, but it did not occur.", negatedConstraint.name(), propertyName(), elementName() ) :
-            String.format( "Expected violation of constraint %s on element %s, but it did not occur.", negatedConstraint.name(), elementName() );
+            String.format( "Expected violation of constraint %s on %s on %s, but it did not occur.", negatedConstraint.name(),
+                  propertyName(),
+                  elementName() ) :
+            String.format( "Expected violation of constraint %s on element %s, but it did not occur.", negatedConstraint.name(),
+                  elementName() );
    }
 
    @Override

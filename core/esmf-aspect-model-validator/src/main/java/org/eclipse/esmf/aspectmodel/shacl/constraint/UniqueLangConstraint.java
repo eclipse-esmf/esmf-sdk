@@ -18,18 +18,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Statement;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.UniqueLanguageViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#UniqueLangConstraintComponent">sh:uniqueLang</a>
  */
-public record UniqueLangConstraint() implements Constraint {
+public record UniqueLangConstraint( ) implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
       return false;

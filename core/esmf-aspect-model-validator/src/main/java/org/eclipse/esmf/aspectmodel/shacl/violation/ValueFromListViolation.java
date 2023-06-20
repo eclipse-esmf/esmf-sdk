@@ -16,9 +16,18 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedValuesConstraint;
+
 import org.apache.jena.rdf.model.RDFNode;
 
-public record ValueFromListViolation(EvaluationContext context, List<RDFNode> allowed, RDFNode actual) implements Violation {
+/**
+ * Violation of a {@link AllowedValuesConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowed the list of allowed values
+ * @param actual the encountered value
+ */
+public record ValueFromListViolation( EvaluationContext context, List<RDFNode> allowed, RDFNode actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_VALUE_FROM_LIST";
 
    @Override
@@ -27,9 +36,10 @@ public record ValueFromListViolation(EvaluationContext context, List<RDFNode> al
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s which is not in the list of allowed values: %s.",
-            propertyName(), elementName(), value( actual ), allowed.stream().map( this::value ).collect( Collectors.joining( ", ", "[", "]" ) ) );
+            propertyName(), elementName(), value( actual ),
+            allowed.stream().map( this::value ).collect( Collectors.joining( ", ", "[", "]" ) ) );
    }
 
    @Override

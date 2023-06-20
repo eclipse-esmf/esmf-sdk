@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.LiteralComparator;
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
@@ -27,9 +28,10 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#MaxInclusiveConstraintComponent">sh:maxInclusive</a>
+ *
  * @param maxValue the max value
  */
-public record MaxInclusiveConstraint(Literal maxValue) implements Constraint {
+public record MaxInclusiveConstraint( Literal maxValue ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<Violation> nodeKindViolations = new NodeKindConstraint( Shape.NodeKind.Literal ).apply( rdfNode, context );

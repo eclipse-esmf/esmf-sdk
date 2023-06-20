@@ -16,11 +16,16 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.fix.ReplaceValue;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+
+/**
+ * Function that takes a model (which includes violations) and a list of applicable fixes as input and produces a new model with the
+ * fixes applied
+ */
 public class ModelFixer implements BiFunction<Model, List<Fix>, Model> {
    @Override
    public Model apply( final Model model, final List<Fix> fixes ) {
@@ -36,13 +41,13 @@ public class ModelFixer implements BiFunction<Model, List<Fix>, Model> {
       return result;
    }
 
-   private record ModelChange(Model toAdd, Model toRemove) {
+   private record ModelChange( Model toAdd, Model toRemove ) {
       ModelChange() {
          this( ModelFactory.createDefaultModel(), ModelFactory.createDefaultModel() );
       }
    }
 
-   private record FixVisitor(Model oldModel) implements Fix.Visitor<ModelChange> {
+   private record FixVisitor( Model oldModel ) implements Fix.Visitor<ModelChange> {
       @Override
       public ModelChange visit( final Fix fix ) {
          return new ModelChange();

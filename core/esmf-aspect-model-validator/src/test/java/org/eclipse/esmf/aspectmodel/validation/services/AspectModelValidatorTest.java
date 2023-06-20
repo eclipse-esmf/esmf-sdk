@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
@@ -41,6 +42,7 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestProperty;
 import org.eclipse.esmf.test.TestResources;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -113,7 +115,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             .flatMap( testModel -> KnownVersion.getVersions().stream().flatMap( metaModelVersion -> {
                // Filter the arguments: Aspects missing samm:named and/or samm:properties is only invalid in SAMM 1.0.0
                if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 )
-                     && (testModel == InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES || testModel == InvalidTestAspect.ASPECT_MISSING_PROPERTIES) ) {
+                     && (testModel == InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES
+                     || testModel == InvalidTestAspect.ASPECT_MISSING_PROPERTIES) ) {
                   return Stream.of();
                }
                return Stream.of( Arguments.of( testModel, metaModelVersion ) );
@@ -220,7 +223,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testAspectWithInvalidMetaModelVersion( final KnownVersion metaModelVersion ) {
-      final Try<VersionedModel> invalidTurtleSyntax = TestResources.getModel( InvalidTestAspect.ASPECT_WITH_INVALID_VERSION, metaModelVersion );
+      final Try<VersionedModel> invalidTurtleSyntax = TestResources.getModel( InvalidTestAspect.ASPECT_WITH_INVALID_VERSION,
+            metaModelVersion );
       assertThat( invalidTurtleSyntax.isFailure() ).isEqualTo( true );
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidTurtleSyntax );
       assertThat( violations ).hasSize( 1 );
@@ -267,7 +271,9 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             ":h -> :i -> :h",
             ":l -> :l",
             // TimeSeries are handled differently between v1 and v2 meta models.
-            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 ) ? ":n -> :refinedValue -> :n" : ":n -> :NTimeSeriesEntity|samm-e:value -> :n",
+            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 ) ?
+                  ":n -> :refinedValue -> :n" :
+                  ":n -> :NTimeSeriesEntity|samm-e:value -> :n",
             ":p -> :q -> :r -> :q" ) );
    }
 
@@ -281,7 +287,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    private List<Violation> cycles( final String... cycles ) {
       final List<Violation> errors = new ArrayList<>();
-      Arrays.stream( cycles ).forEach( cycle -> errors.add( new ProcessingViolation( String.format( ModelCycleDetector.ERR_CYCLE_DETECTED, cycle ), null ) ) );
+      Arrays.stream( cycles ).forEach(
+            cycle -> errors.add( new ProcessingViolation( String.format( ModelCycleDetector.ERR_CYCLE_DETECTED, cycle ), null ) ) );
       return errors;
    }
 }

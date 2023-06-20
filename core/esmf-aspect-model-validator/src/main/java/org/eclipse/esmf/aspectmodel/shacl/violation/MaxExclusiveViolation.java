@@ -13,9 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxExclusiveConstraint;
+
 import org.apache.jena.rdf.model.Literal;
 
-public record MaxExclusiveViolation(EvaluationContext context, Literal max, Literal actual) implements Violation {
+/**
+ * Violation of a {@link MaxExclusiveConstraint}
+ *
+ * @param context the evaluation context
+ * @param max the given maximum value
+ * @param actual the encountered value
+ */
+public record MaxExclusiveViolation( EvaluationContext context, Literal max, Literal actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MAX_EXCLUSIVE";
 
    @Override
@@ -24,7 +33,7 @@ public record MaxExclusiveViolation(EvaluationContext context, Literal max, Lite
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s, but it must be less than %s.",
             propertyName(), elementName(), value( actual ), value( max ) );
    }

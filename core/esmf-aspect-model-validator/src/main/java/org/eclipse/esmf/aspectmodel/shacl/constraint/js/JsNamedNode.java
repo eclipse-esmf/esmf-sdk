@@ -15,6 +15,9 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint.js;
 
 import org.apache.jena.graph.Node;
 
+/**
+ * Represents a <a href="https://www.w3.org/TR/shacl-js/#js-api-iri">SHACL JS Named Node</a>
+ */
 public class JsNamedNode extends JsTerm {
    public final String uri;
 
