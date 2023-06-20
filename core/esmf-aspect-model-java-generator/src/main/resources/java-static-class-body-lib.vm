@@ -97,7 +97,7 @@ static {
     public java.util.Set<LangString> getPreferredNames() {
        return new HashSet<>() {{
           #foreach( $langString in $element.getPreferredNames() )
-          add( new LangString( "$StringEscapeUtils.escapeJava( $langString.getValue() )", Locale.forLanguageTag( "$langString.getLanguageTag().toLanguageTag()" ) ) );
+          add( new LangString( "$util.escapeForLiteral( $langString.getValue() )", Locale.forLanguageTag( "$langString.getLanguageTag().toLanguageTag()" ) ) );
           #end
        }};
     }
@@ -111,7 +111,7 @@ static {
     public java.util.Set<LangString> getDescriptions() {
        return new HashSet<>() {{
        #foreach( $langString in $element.getDescriptions() )
-       add( new LangString( "$StringEscapeUtils.escapeJava( $langString.getValue() )", Locale.forLanguageTag( "$langString.getLanguageTag().toLanguageTag()" ) ) );
+       add( new LangString( "$util.escapeForLiteral( $langString.getValue() )", Locale.forLanguageTag( "$langString.getLanguageTag().toLanguageTag()" ) ) );
        #end
        }};
     }
