@@ -13,8 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator.docu;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.BufferedWriter;
@@ -27,22 +26,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.eclipse.esmf.test.MetaModelVersions;
-import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
-
 public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class )
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE,
+         names = { "MODEL_WITH_CYCLES" // contains cycles, the calculation of used languages would run into an infinite loop
+         } )
    public void testGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
          final String html = generateHtmlDocumentation( testAspect, KnownVersion.getLatest() );
@@ -192,6 +192,18 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
          System.setOut( new PrintStream( stdOut ) );
          assertDoesNotThrow( () -> generateHtmlDocumentation( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITHOUT_UNIT, metaModelVersion ) );
       }
+   }
+
+   @ParameterizedTest
+   @MethodSource( "allVersions" )
+   public void testAspectWithConstraintWithSeeAttribute( final KnownVersion metaModelVersion ) throws IOException {
+      final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE, metaModelVersion );
+      assertThat( documentation ).contains(
+              "<h3 id=\"org-eclipse-esmf-test-AspectWithConstraintWithSeeAttribute-org-eclipse-esmf-test-testPropertyTwo-property\">testPropertyTwo</h3>" );
+      assertThat( documentation ).contains(
+              "<div class=\"table-cell pb-3 col-span-2\">Trait</div>" );
+      assertThat( documentation ).contains(
+              "<li>http://example.com/me2</li>" );
    }
 
    private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion ) throws IOException {

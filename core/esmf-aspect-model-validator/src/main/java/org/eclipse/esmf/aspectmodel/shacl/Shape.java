@@ -79,7 +79,7 @@ public interface Shape {
    }
 
    /**
-    * Implements <code>sh:property</code>
+    * Implements {@code sh:property}
     */
    record Property(
          Attributes attributes,

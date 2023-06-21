@@ -27,18 +27,20 @@ public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions 
 
    final String sparqlQueryFileName = "constraint2boxmodel.sparql";
 
-   protected String boxSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier ) {
+   protected String boxSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier, boolean isConstraintAnonymous ) {
+      String ns = isConstraintAnonymous ? ":" : "test:";
       if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ) {
-         return String.format( "%s a :Box", constraintIdentifier.equals( "*" ) ? "*" : ":" + constraintIdentifier );
+         return String.format( "%s a :Box", constraintIdentifier.equals( "*" ) ? "*" : ns + constraintIdentifier );
       }
-      return ":TestConstraintConstraint a :Box";
+      return ns + "TestConstraintConstraint a :Box";
    }
 
-   protected String entriesSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier ) {
+   protected String entriesSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier, boolean isConstraintAnonymous ) {
+      String ns = isConstraintAnonymous ? ":" : "test:";
       if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ) {
-         return String.format( "%s :entries *", constraintIdentifier.equals( "*" ) ? "*" : ":" + constraintIdentifier );
+         return String.format( "%s :entries *", constraintIdentifier.equals( "*" ) ? "*" : ns + constraintIdentifier );
       }
-      return ":TestConstraintConstraint :entries *";
+      return ns + "TestConstraintConstraint :entries *";
    }
 
    @BeforeAll

@@ -21,9 +21,9 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.path.FirstEffectiveProperty;
-import org.eclipse.esmf.aspectmodel.shacl.path.PathNodeRetriever;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ClosedViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.NodeKindViolation;
@@ -31,9 +31,10 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#ClosedConstraintComponent">sh:closed</a>
+ *
  * @param ignoredProperties allowed ignored properties
  */
-public record ClosedConstraint(Set<Property> ignoredProperties) implements Constraint {
+public record ClosedConstraint( Set<Property> ignoredProperties ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       if ( !rdfNode.isResource() ) {
@@ -44,15 +45,11 @@ public record ClosedConstraint(Set<Property> ignoredProperties) implements Const
       }
 
       final Resource resource = rdfNode.asResource();
-      final PathNodeRetriever retriever = new PathNodeRetriever();
-      // All statements that lead to (i.e. have as their object) nodes that are reachable via the paths of the property shapes
-      final List<Statement> allowedNodes = shapeNode.properties().stream()
-            .flatMap( property -> property.path().accept( resource, retriever ).stream() )
-            .toList();
-
       final FirstEffectiveProperty allowedFirstProperties = new FirstEffectiveProperty();
       final Set<Property> allowedProperties = shapeNode.properties().stream()
-            .flatMap( property -> property.path().accept( resource, allowedFirstProperties ).stream() ).collect( Collectors.toSet() );
+            .flatMap( property -> property.path().accept( resource, allowedFirstProperties ).stream() )
+            .filter( property -> !ignoredProperties.contains( property ) )
+            .collect( Collectors.toSet() );
 
       return resource.getModel().listStatements( resource, null, (RDFNode) null )
             .mapWith( Statement::getPredicate )

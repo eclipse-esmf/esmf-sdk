@@ -13,10 +13,21 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.LessThanConstraint;
+
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 
-public record LessThanViolation(EvaluationContext context, Property otherProperty, Literal otherValue, Literal actualValue) implements Violation {
+/**
+ * Violation of a {@link LessThanConstraint}
+ *
+ * @param context the evaluation context
+ * @param otherProperty the property providing the value is compared to
+ * @param otherValue the other value the value is compared to
+ * @param actualValue the encountered value
+ */
+public record LessThanViolation( EvaluationContext context, Property otherProperty, Literal otherValue, Literal actualValue )
+      implements Violation {
    public static final String ERROR_CODE = "ERR_LESS_THAN";
 
    @Override
@@ -25,7 +36,7 @@ public record LessThanViolation(EvaluationContext context, Property otherPropert
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s must have a value that is less than that of %s: %s must be less than %s.",
             propertyName(), elementName(), shortUri( otherProperty.getURI() ), value( actualValue ), value( otherValue ) );
    }

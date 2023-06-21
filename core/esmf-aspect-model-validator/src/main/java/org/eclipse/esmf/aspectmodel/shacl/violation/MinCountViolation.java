@@ -13,7 +13,16 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
-public record MinCountViolation(EvaluationContext context, int allowed, int actual) implements Violation {
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
+
+/**
+ * Violation of a {@link MinCountConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowed the allowed value
+ * @param actual the encountered value
+ */
+public record MinCountViolation( EvaluationContext context, int allowed, int actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MIN_COUNT";
 
    @Override
@@ -22,7 +31,7 @@ public record MinCountViolation(EvaluationContext context, int allowed, int actu
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return allowed == 1 ?
             String.format( "Mandatory property %s is missing on %s.", propertyName(), elementName() ) :
             String.format( "Property %s must be present on %s at least %d time%s, but is present only %d time%s.",

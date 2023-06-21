@@ -78,6 +78,7 @@ public class AspectModelDiagramGenerator {
    private static final String FONT_FILE = "diagram/RobotoCondensed-Regular.ttf";
 
    static final String GET_ELEMENT_NAME_FUNC = "urn:samm:org.eclipse.esmf.samm:function:2.0.0#getElementName";
+   static final String GET_NAMESPACE_FUNC = "urn:samm:org.eclipse.esmf.samm:function:2.0.0#getNamespace";
 
    private final Query boxmodelToDotQuery;
    private final BoxModel boxModelNamespace;
@@ -143,7 +144,10 @@ public class AspectModelDiagramGenerator {
       boxmodelToDotQuery = QueryFactory.create( getInputStreamAsString( "boxmodel2dot.sparql" ) );
       boxModelNamespace = new BoxModel( metaModelVersion );
 
-      sparqlExecutor = new SparqlExecutor().useCustomFunction( GET_ELEMENT_NAME_FUNC, new GetElementNameFunctionFactory( model ) );
+      sparqlExecutor = new SparqlExecutor()
+            .useCustomFunction( GET_ELEMENT_NAME_FUNC, new GetElementNameFunctionFactory( model ) )
+            .useCustomFunction( GET_NAMESPACE_FUNC, new GetNamespaceFunctionFactory( model ) )
+      ;
    }
 
    InputStream getInputStream( final String resource ) {

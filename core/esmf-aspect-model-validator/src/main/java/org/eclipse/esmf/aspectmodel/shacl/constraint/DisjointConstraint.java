@@ -17,15 +17,17 @@ import java.util.List;
 
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.violation.DisjointViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#DisjointConstraintComponent">sh:disjoint</a>
+ *
  * @param otherProperty the property of which the value must not match the given property value
  */
-public record DisjointConstraint(Property otherProperty) implements Constraint {
+public record DisjointConstraint( Property otherProperty ) implements Constraint {
    @Override
    public boolean canBeUsedOnNodeShapes() {
       return false;

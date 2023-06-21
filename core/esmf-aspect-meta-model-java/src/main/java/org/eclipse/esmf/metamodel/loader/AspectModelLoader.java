@@ -27,7 +27,14 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
+import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
+import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidNamespaceException;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
@@ -35,20 +42,11 @@ import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelNamespace;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.impl.DefaultModelNamespace;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableSet;
-
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidNamespaceException;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 
 import io.vavr.control.Try;
 
@@ -218,7 +216,7 @@ public class AspectModelLoader {
          throw new AspectLoadingException( cause );
       } );
    }
-
+   
    /**
     * Similar to {@link #getSingleAspect(VersionedModel)}, except that a predicate can be provided to select which of potentially
     * multiple aspects should be selected
@@ -228,7 +226,7 @@ public class AspectModelLoader {
     */
    public static Try<Aspect> getSingleAspect( final VersionedModel versionedModel, final Predicate<Aspect> selector ) {
       return getAspects( versionedModel ).flatMap( allAspects -> {
-         final List<Aspect> aspects = allAspects.stream().filter( selector::test ).toList();
+         final List<Aspect> aspects = allAspects.stream().filter( selector ).toList();
          return switch ( aspects.size() ) {
             case 1 -> Try.success( aspects.iterator().next() );
             case 0 -> Try.failure( new InvalidRootElementCountException( "No Aspects were found in the model" ) );

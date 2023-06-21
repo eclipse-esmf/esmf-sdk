@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.LiteralComparator;
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
@@ -26,9 +27,10 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#MinExclusiveConstraintComponent">sh:minExclusive</a>
+ *
  * @param minValue the min value
  */
-public record MinExclusiveConstraint(Literal minValue) implements Constraint {
+public record MinExclusiveConstraint( Literal minValue ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final List<Violation> nodeKindViolations = new NodeKindConstraint( Shape.NodeKind.Literal ).apply( rdfNode, context );

@@ -124,7 +124,7 @@ class GenerationResult {
                   field -> {
                      final Object fieldTypeOrTypeName = fieldTypesOrTypeNames.get( field.resolve().getName() );
                      if ( fieldTypeOrTypeName instanceof String ) {
-                        assertThat( field.getElementType().asString() ).isEqualTo( fieldTypeOrTypeName );
+                        assertThat( field.getElementType().toString() ).isEqualTo( fieldTypeOrTypeName );
                      } else if ( fieldTypeOrTypeName instanceof ResolvedType ) {
                         assertThat( field.resolve().getType() ).isEqualTo( fieldTypeOrTypeName );
                      } else {
@@ -194,7 +194,7 @@ class GenerationResult {
 
       final MethodDeclaration methodDeclaration = possibleMethodDeclaration.get();
       assertThat( methodDeclaration.isPublic() ).isTrue();
-      expectedReturnType.ifPresent(returnType -> assertThat( methodDeclaration.getType() ).isEqualTo( returnType ));
+      expectedReturnType.ifPresent( returnType -> assertThat( methodDeclaration.getType() ).isEqualTo( returnType ) );
       assertThat( methodDeclaration.getParameters() ).hasSize( expectedNumberOfParameters );
       assertThat( methodDeclaration.getBody() ).isPresent();
       if ( override ) {

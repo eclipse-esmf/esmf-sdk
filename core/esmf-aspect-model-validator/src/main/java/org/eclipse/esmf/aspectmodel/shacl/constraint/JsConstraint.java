@@ -27,11 +27,13 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.JsLibrary;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.JsConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +44,10 @@ import org.eclipse.esmf.aspectmodel.shacl.constraint.js.TermFactory;
 
 /**
  * Represents a SHACL JavaScript constraint as specified by the <a href="https://www.w3.org/TR/shacl-js/">SHACL JavaScript Extensions</a>.
- * The given JavaScript function can refer to the variables "TermFactory" (see {@link TermFactory}), "$data" (the data graph) and "$shapes" (the shapes graph).
- * It can return either a boolean (with true indicating successfull validation and false a validation error) or a JavaScript object with context information;
+ * The given JavaScript function can refer to the variables "TermFactory" (see {@link TermFactory}), "$data" (the data graph) and "$shapes"
+ * (the shapes graph).
+ * It can return either a boolean (with true indicating successfull validation and false a validation error) or a JavaScript object with
+ * context information;
  * every key in the object must be a string.
  * The JavaScript object can contain a key "message" which, if present, overrides the sh:message defined in the shape.
  */
@@ -67,7 +71,8 @@ public class JsConstraint implements Constraint {
 
       // The guest application (i.e., the JavaScript) can only be compiled at runtime if either the host application runs via GraalVM
       // or, on a regular JVMCI-enabled JDK, the Graal Compiler is set up (additional JIT compilers are added). Otherwise, the script runs
-      // in interpreted mode, which will be slower and print a corresponding warning. Since in the SHACL validation only very little JavaScript
+      // in interpreted mode, which will be slower and print a corresponding warning. Since in the SHACL validation only very little
+      // JavaScript
       // code is executed, this is not a problem. The following the property disables the corresponding warning.
       // See https://www.graalvm.org/22.3/reference-manual/js/FAQ/#warning-implementation-does-not-support-runtime-compilation
       System.setProperty( "polyglot.engine.WarnInterpreterOnly", "false" );
@@ -86,6 +91,7 @@ public class JsConstraint implements Constraint {
 
    /**
     * Globally enables or disables evaluation of JavaScript constraints.
+    *
     * @param doEvaluate configure whether to evaluate JavaScript or not
     */
    public static void setEvaluateJavaScript( final boolean doEvaluate ) {
@@ -93,6 +99,7 @@ public class JsConstraint implements Constraint {
       JsConstraint.evaluateJavaScript = doEvaluate;
    }
 
+   @SuppressWarnings( "LocalVariableNamingConvention" )  // use this_
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       if ( !evaluateJavaScript ) {

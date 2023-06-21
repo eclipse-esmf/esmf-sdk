@@ -53,7 +53,7 @@ public interface Property extends NamedElement {
     *       By default Properties are included in the runtime data.
     *
     * @see
-    * <a href="https://openmanufacturingplatform.github.io/sds-bamm-aspect-meta-model/bamm-specification/snapshot/modeling-guidelines.html#declaring-enumerations">BAMM Aspect Meta Model
+    * <a href="https://eclipse-esmf.github.io/samm-specification/2.0.0/modeling-guidelines.html#declaring-enumerations">Semantic Aspect Meta Model
     *       Specification - Declaring Enumerations</a>
     * @since SAMM 1.0.0
     */

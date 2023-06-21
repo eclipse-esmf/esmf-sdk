@@ -21,9 +21,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 public record ReplaceValue(EvaluationContext context, Literal oldValue, Literal newValue, Optional<String> customDescription) implements Fix {
    @Override
    public String description() {
-      return customDescription.orElseGet( () -> {
-         return String.format( "Change %s's value from %s to %s", context.property(), oldValue, newValue );
-      } );
+      return customDescription.orElseGet( () -> String.format( "Change %s's value from %s to %s", context.property(), oldValue, newValue ) );
    }
 
    @Override

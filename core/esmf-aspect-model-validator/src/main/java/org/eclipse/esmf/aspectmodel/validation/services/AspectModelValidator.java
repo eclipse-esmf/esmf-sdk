@@ -13,18 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.validation.services;
 
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.jena.query.ARQ;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
@@ -36,23 +28,28 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.vavr.control.Try;
+import org.apache.jena.query.ARQ;
+import org.apache.jena.rdf.model.Resource;
 
 /**
  * Uses SHACL to validate an Aspect Model against the defined semantics of the Aspect Meta Model.
  */
 public class AspectModelValidator {
-
-   private static final Logger LOG = LoggerFactory.getLogger( AspectModelValidator.class );
    private final ShaclValidator shaclValidator;
 
+   /**
+    * Default constructor that will use the latest meta model version
+    */
    public AspectModelValidator() {
       this( KnownVersion.getLatest() );
    }
 
+   /**
+    * Constructor to choose the meta model version to use for validation
+    * @param metaModelVersion the meta model version
+    */
    public AspectModelValidator( final KnownVersion metaModelVersion ) {
       ARQ.init();
       shaclValidator = new ShaclValidator( new SammAspectMetaModelResourceResolver().loadShapesModel( metaModelVersion )
@@ -71,17 +68,17 @@ public class AspectModelValidator {
    /**
     * Validates an Aspect Model that is provided as a {@link Try} of a {@link VersionedModel} that can
     * contain either a syntactically valid (but semantically invalid) Aspect model, or a Throwable
-    * if an error during parsing or resolution occured.
-    * @param versionedModel the Aspect Model or the corresonding error
+    * if an error during parsing or resolution occurred.
+    * @param versionedModel the Aspect Model or the corresponding error
     * @return a list of {@link Violation}s. An empty list indicates that the model is valid.
     */
    public List<Violation> validateModel( final Try<VersionedModel> versionedModel ) {
       if ( versionedModel.isFailure() ) {
          final Throwable cause = versionedModel.getCause();
-         if ( cause instanceof ParserException exception ) {
-            // RiotExeception's message looks like this:
+         if ( cause instanceof final ParserException exception ) {
+            // RiotException's message looks like this:
             // [line: 17, col: 2 ] Triples not terminated by DOT
-            final Pattern pattern = Pattern.compile( "\\[\s*line:\s*(\\d+),\s*col:\s*(\\d+)\s*]\s*(.*)" );
+            final Pattern pattern = Pattern.compile( "\\[ *line: *(\\d+), *col: *(\\d+) *] *(.*)" );
             final Matcher matcher = pattern.matcher( cause.getMessage() );
             if ( matcher.find() ) {
                final long line = Long.parseLong( matcher.group( 1 ) );
@@ -139,12 +136,5 @@ public class AspectModelValidator {
          }
       }
       return builder.toString();
-   }
-
-   private String getValidationResultField( final Resource validationResultResource, final Property property ) {
-      return Optional.ofNullable( validationResultResource.getProperty( property ) )
-            .map( Statement::getObject )
-            .map( RDFNode::toString )
-            .orElse( "" );
    }
 }

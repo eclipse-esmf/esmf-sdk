@@ -29,7 +29,6 @@
       samm:see <http://example.com/> ;
       samm-c:minValue "5"^^xsd:nonNegativeInteger ;
       samm-c:lowerBoundDefinition samm-c:GREATER_THAN ;
-      samm-c:upperBoundDefinition samm-c:OPEN ;
    ] ;
    samm-c:baseCharacteristic [
       a samm:Characteristic ;

@@ -41,7 +41,6 @@
       samm:see <http://example.com/> ;
       samm-c:maxValue "2.3"^^xsd:float ;
       samm-c:upperBoundDefinition samm-c:LESS_THAN ;
-      samm-c:lowerBoundDefinition samm-c:OPEN ;
    ] ;
    samm-c:baseCharacteristic :Measurement .
 

@@ -15,7 +15,16 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import java.util.List;
 
-public record LanguageFromListViolation(EvaluationContext context, List<String> allowed, String actual) implements Violation {
+import org.eclipse.esmf.aspectmodel.shacl.constraint.UniqueLangConstraint;
+
+/**
+ * Violation of a {@link UniqueLangConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowed the list of allowed languages
+ * @param actual the encountered language
+ */
+public record LanguageFromListViolation( EvaluationContext context, List<String> allowed, String actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_LANGUAGE";
 
    @Override
@@ -24,7 +33,7 @@ public record LanguageFromListViolation(EvaluationContext context, List<String> 
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s has language tag %s, which is not in the list of allowed languages: %s.",
             propertyName(), elementName(), actual, allowed );
    }

@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.substitution;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -21,7 +20,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.eclipse.esmf.buildtime.IoAdminShellAasClassSetup;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
+import org.eclipse.esmf.buildtime.Aas4jClassSetup;
 
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.KeepOriginal;
@@ -29,15 +29,13 @@ import com.oracle.svm.core.annotate.RecomputeFieldValue;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
-import io.adminshell.aas.v3.dataformat.core.ReflectionHelper;
-
 /**
  * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
  * for {@link ReflectionHelper}, the central point of reflection information of the io.admin-shell.aas library. The original ReflectionHelper
  * has a static constructor that initializes several maps and collections (using ClassGraph scans) that hold information about implementations
  * of interfaces etc.. For the build of the native image, this logic is replaced by the following logic:
  * <ol>
- *    <li>At build time, the {@link IoAdminShellAasClassSetup} is ran (as a standalone program).
+ *    <li>At build time, the {@link Aas4jClassSetup} is ran (as a standalone program).
  *    This creates an instance of {@link AdminShellConfig} which contains all the information extracted from the ClassGraph scans.</li>
  *    <li>The AdminShellConfig is serialized into a .properties file.</li>
  *    <li>The .properties file is then included as a regular resource in the build.</li>
@@ -53,52 +51,89 @@ import io.adminshell.aas.v3.dataformat.core.ReflectionHelper;
 @TargetClass( ReflectionHelper.class )
 @SuppressWarnings( {
       "unused",
-      "squid:S00101" // Class name uses GraalVM substitution class naming schema, see
+      "squid:S00101", "NewClassNamingConvention"  // Class name uses GraalVM substitution class naming schema, see
       // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
 } )
-public final class Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper {
+public final class Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper {
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
-   private static final String ROOT_PACKAGE_NAME = "io.adminshell.aas.v3";
+   private static final String ROOT_PACKAGE_NAME = "org.eclipse.digitaltwin.aas4j.v3";
 
+   /**
+    * @see ReflectionHelper#MODEL_PACKAGE_NAME
+    */
+   @SuppressWarnings( "NonConstantFieldWithUpperCaseName" ) // Field name must match substituted class
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    public static String MODEL_PACKAGE_NAME = ROOT_PACKAGE_NAME + ".model";
 
+   /**
+    * @see ReflectionHelper#TYPES_WITH_MODEL_TYPE
+    */
+   @SuppressWarnings( "NonConstantFieldWithUpperCaseName" ) // Field name must match substituted class
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    public static Set<Class<?>> TYPES_WITH_MODEL_TYPE;
 
+   /**
+    * @see ReflectionHelper#SUBTYPES
+    */
+   @SuppressWarnings( "NonConstantFieldWithUpperCaseName" ) // Field name must match substituted class
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    public static Map<Class<?>, Set<Class<?>>> SUBTYPES;
 
+   /**
+    * @see ReflectionHelper#INTERFACES
+    */
+   @SuppressWarnings( { "NonConstantFieldWithUpperCaseName", "rawtypes" } ) // Field name and signature must match substituted class
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    public static Set<Class> INTERFACES;
 
+   /**
+    * @see ReflectionHelper#SUBTYPES
+    */
+   @SuppressWarnings( "NonConstantFieldWithUpperCaseName" ) // Field name must match substituted class
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    public static Map<Class<?>, Class<?>> JSON_MIXINS;
 
+   /**
+    * @see ReflectionHelper#XML_MIXINS
+    */
+   @SuppressWarnings( "NonConstantFieldWithUpperCaseName" ) // Field name must match substituted class
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    public static Map<Class<?>, Class<?>> XML_MIXINS;
 
+   /**
+    * @see ReflectionHelper#DEFAULT_IMPLEMENTATIONS
+    */
+   @SuppressWarnings( { "NonConstantFieldWithUpperCaseName", "rawtypes" } ) // Field name and signature must match substituted class
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    public static List<ReflectionHelper.ImplementationInfo> DEFAULT_IMPLEMENTATIONS;
 
+   /**
+    * @see ReflectionHelper#INTERFACES_WITHOUT_DEFAULT_IMPLEMENTATION
+    */
+   @SuppressWarnings( "NonConstantFieldWithUpperCaseName" ) // Field name must match substituted class
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    public static Set<Class<?>> INTERFACES_WITHOUT_DEFAULT_IMPLEMENTATION;
 
+   /**
+    * @see ReflectionHelper#ENUMS
+    */
+   @SuppressWarnings( { "NonConstantFieldWithUpperCaseName", "rawtypes" } ) // Field name and signature must match substituted class
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    public static List<Class<Enum>> ENUMS;
 
    static {
-      try ( final InputStream input = Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper.class.getResourceAsStream( "/adminshell.properties" ) ) {
+      try ( final InputStream input = Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper.class.getResourceAsStream(
+            "/adminshell.properties" ) ) {
          final Properties properties = new Properties();
          properties.load( input );
          final AdminShellConfig config = AdminShellConfig.fromProperties( properties );
@@ -110,40 +145,97 @@ public final class Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper 
          DEFAULT_IMPLEMENTATIONS = config.defaultImplementations;
          INTERFACES_WITHOUT_DEFAULT_IMPLEMENTATION = config.interfacesWithoutDefaultImplementation;
          ENUMS = config.enums;
-      } catch ( final FileNotFoundException e ) {
-         throw new RuntimeException( e );
       } catch ( final IOException e ) {
          throw new RuntimeException( e );
       }
    }
 
+   /**
+    * @see ReflectionHelper#isModelInterface(Class)
+    * @param type see {@link ReflectionHelper#isModelInterface(Class)}
+    * @return see {@link ReflectionHelper#isModelInterface(Class)}
+    */
    @KeepOriginal
    public static native boolean isModelInterface( final Class<?> type );
 
+   /**
+    * @see ReflectionHelper#isDefaultImplementation(Class)
+    * @param type see {@link ReflectionHelper#isDefaultImplementation(Class)}
+    * @return see {@link ReflectionHelper#isDefaultImplementation(Class)}
+    */
    @KeepOriginal
    public static native boolean isDefaultImplementation( final Class<?> type );
 
+   /**
+    * @see ReflectionHelper#hasDefaultImplementation(Class)
+    * @param interfaceType see {@link ReflectionHelper#hasDefaultImplementation(Class)}
+    * @return see {@link ReflectionHelper#hasDefaultImplementation(Class)}
+    */
    @KeepOriginal
    public static native boolean hasDefaultImplementation( final Class<?> interfaceType );
 
+   /**
+    * @see ReflectionHelper#getDefaultImplementation(Class)
+    * @param <T> see {@link ReflectionHelper#getDefaultImplementation(Class)}
+    * @param interfaceType see {@link ReflectionHelper#getDefaultImplementation(Class)}
+    * @return see {@link ReflectionHelper#getDefaultImplementation(Class)}
+    */
    @KeepOriginal
    public static native <T> Class<? extends T> getDefaultImplementation( final Class<T> interfaceType );
 
+   /**
+    * @see ReflectionHelper#hasDefaultImplementation(Class)
+    * @param type see {@link ReflectionHelper#hasDefaultImplementation(Class)}
+    * @return see {@link ReflectionHelper#hasDefaultImplementation(Class)}
+    */
    @KeepOriginal
    public static native boolean isModelInterfaceOrDefaultImplementation( final Class<?> type );
 
+   /**
+    * @see ReflectionHelper#getAasInterface(Class)
+    * @param type see {@link ReflectionHelper#getAasInterface(Class)}
+    * @return see {@link ReflectionHelper#getAasInterface(Class)}
+    */
    @KeepOriginal
    public static native Class<?> getAasInterface( final Class<?> type );
 
+   /**
+    * @see ReflectionHelper#getAasInterfaces(Class)
+    * @param type see {@link ReflectionHelper#getAasInterfaces(Class)}
+    * @return see {@link ReflectionHelper#getAasInterfaces(Class)}
+    */
    @KeepOriginal
    public static native Set<Class<?>> getAasInterfaces( final Class<?> type );
 
+   /**
+    * @see ReflectionHelper#getModelType(Class)
+    * @param clazz see {@link ReflectionHelper#getModelType(Class)}
+    * @return see {@link ReflectionHelper#getModelType(Class)}
+    */
    @KeepOriginal
    public static native String getModelType( final Class<?> clazz );
 
+   /**
+    * @see ReflectionHelper#getMostSpecificTypeWithModelType(Class)
+    * @param clazz see {@link ReflectionHelper#getMostSpecificTypeWithModelType(Class)}
+    * @return see {@link ReflectionHelper#getMostSpecificTypeWithModelType(Class)}
+    */
    @KeepOriginal
    public static native Class<?> getMostSpecificTypeWithModelType( final Class<?> clazz );
 
+   /**
+    * @see ReflectionHelper#getSuperTypes(Class, boolean)
+    * @param clazz see {@link ReflectionHelper#getSuperTypes(Class, boolean)}
+    * @param recursive {@link ReflectionHelper#getSuperTypes(Class, boolean)}
+    * @return see {@link ReflectionHelper#getSuperTypes(Class, boolean)}
+    */
    @KeepOriginal
    public static native Set<Class<?>> getSuperTypes( final Class<?> clazz, final boolean recursive );
+
+   /**
+    * @see ReflectionHelper#setEmptyListsToNull(Object)
+    * @param element see {@link ReflectionHelper#setEmptyListsToNull(Object)}
+    */
+   @KeepOriginal
+   public static native void setEmptyListsToNull( Object element );
 }

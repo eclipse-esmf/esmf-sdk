@@ -16,15 +16,17 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 import java.util.List;
 
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidValueViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#HasValueConstraintComponent">sh:hasValue</a>
+ *
  * @param allowedValue the allowed value
  */
-public record HasValueConstraint(RDFNode allowedValue) implements Constraint {
+public record HasValueConstraint( RDFNode allowedValue ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       return rdfNode.equals( allowedValue ) ?

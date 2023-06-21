@@ -13,11 +13,12 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.path;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.RDFNode;
@@ -32,6 +33,7 @@ public class PathNodeRetriever implements Path.Visitor<List<Statement>> {
 
    /**
     * Returns a list of Statements with a path length of 1 for each property assertion
+    *
     * @param resource the origin
     * @param path the predicate path
     * @return the list of concrete paths
@@ -69,11 +71,12 @@ public class PathNodeRetriever implements Path.Visitor<List<Statement>> {
 
    @Override
    public List<Statement> visitInversePath( final Resource resource, final InversePath path ) {
-      if ( path.path() instanceof PredicatePath predicatePath ) {
+      if ( path.path() instanceof final PredicatePath predicatePath ) {
          return resource.getModel().listStatements( null, predicatePath.predicate(), resource )
                .filterKeep( statement -> statement.getObject().isResource() )
                .mapWith( statement ->
-                     resource.getModel().createStatement( statement.getObject().asResource(), statement.getPredicate(), statement.getSubject() ) )
+                     resource.getModel()
+                           .createStatement( statement.getObject().asResource(), statement.getPredicate(), statement.getSubject() ) )
                .toList();
       }
       throw new UnsupportedOperationException( "Inverse property path is only supported for named properties" );
@@ -84,7 +87,7 @@ public class PathNodeRetriever implements Path.Visitor<List<Statement>> {
       final Statement zeroStatement = resource.getModel().createStatement(
             resource, resource.getModel().createProperty( "urn:internal" ), resource );
 
-      final Stack<Statement> toProcess = new Stack<>();
+      final Deque<Statement> toProcess = new ArrayDeque<>();
       final Set<Resource> processedResources = new HashSet<>();
       final List<Statement> result = new ArrayList<>();
       toProcess.push( zeroStatement );

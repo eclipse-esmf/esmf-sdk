@@ -13,8 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.validation.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +25,7 @@ import java.util.stream.Stream;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
@@ -35,19 +35,19 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestProperty;
 import org.eclipse.esmf.test.TestResources;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import io.vavr.control.Try;
 
 public class AspectModelValidatorTest extends MetaModelVersions {
@@ -65,19 +65,9 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_CONSTRAINTS",
-         // uses samm-c:OPEN which is not specified, see https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/issues/174
          "ASPECT_WITH_FIXED_POINT",
          "ASPECT_WITH_FIXED_POINT_CONSTRAINT",
          "ASPECT_WITH_LANGUAGE_CONSTRAINT",
-         "ASPECT_WITH_RANGE_CONSTRAINT_ON_CONSTRAINED_NUMERIC_TYPE", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_DOUBLE_VALUE", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITHOUT_MIN_MAX_INTEGER_VALUE", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_INCL_BOUND_DEFINITION", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND", // uses samm-c:OPEN
-         "ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_UPPER_BOUND_INCL_BOUND_DEFINITION", // uses samm-c:OPEN
          "MODEL_WITH_CYCLES",
          "MODEL_WITH_BROKEN_CYCLES"// contains cycles
    } )
@@ -125,7 +115,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             .flatMap( testModel -> KnownVersion.getVersions().stream().flatMap( metaModelVersion -> {
                // Filter the arguments: Aspects missing samm:named and/or samm:properties is only invalid in SAMM 1.0.0
                if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 )
-                     && (testModel == InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES || testModel == InvalidTestAspect.ASPECT_MISSING_PROPERTIES) ) {
+                     && (testModel == InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES
+                     || testModel == InvalidTestAspect.ASPECT_MISSING_PROPERTIES) ) {
                   return Stream.of();
                }
                return Stream.of( Arguments.of( testModel, metaModelVersion ) );
@@ -232,7 +223,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testAspectWithInvalidMetaModelVersion( final KnownVersion metaModelVersion ) {
-      final Try<VersionedModel> invalidTurtleSyntax = TestResources.getModel( InvalidTestAspect.ASPECT_WITH_INVALID_VERSION, metaModelVersion );
+      final Try<VersionedModel> invalidTurtleSyntax = TestResources.getModel( InvalidTestAspect.ASPECT_WITH_INVALID_VERSION,
+            metaModelVersion );
       assertThat( invalidTurtleSyntax.isFailure() ).isEqualTo( true );
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidTurtleSyntax );
       assertThat( violations ).hasSize( 1 );
@@ -271,7 +263,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    void testCycleDetection( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> versionedModel = TestResources.getModel( TestAspect.MODEL_WITH_CYCLES, metaModelVersion );
       final List<Violation> report = service.get( metaModelVersion ).validateModel( versionedModel );
-      assertThat( report.size() ).isEqualTo( 6 );
+      assertThat( report.size() ).isEqualTo( 7 );
       assertThat( report ).containsAll( cycles(
             ":a -> :b -> :a",
             ":e -> :f -> :g -> :e",
@@ -279,7 +271,10 @@ public class AspectModelValidatorTest extends MetaModelVersions {
             ":h -> :i -> :h",
             ":l -> :l",
             // TimeSeries are handled differently between v1 and v2 meta models.
-            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 ) ? ":n -> :refinedValue -> :n" : ":n -> :NTimeSeriesEntity|samm-e:value -> :n" ) );
+            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 ) ?
+                  ":n -> :refinedValue -> :n" :
+                  ":n -> :NTimeSeriesEntity|samm-e:value -> :n",
+            ":p -> :q -> :r -> :q" ) );
    }
 
    @ParameterizedTest
@@ -292,7 +287,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    private List<Violation> cycles( final String... cycles ) {
       final List<Violation> errors = new ArrayList<>();
-      Arrays.stream( cycles ).forEach( cycle -> errors.add( new ProcessingViolation( String.format( ModelCycleDetector.ERR_CYCLE_DETECTED, cycle ), null ) ) );
+      Arrays.stream( cycles ).forEach(
+            cycle -> errors.add( new ProcessingViolation( String.format( ModelCycleDetector.ERR_CYCLE_DETECTED, cycle ), null ) ) );
       return errors;
    }
 }

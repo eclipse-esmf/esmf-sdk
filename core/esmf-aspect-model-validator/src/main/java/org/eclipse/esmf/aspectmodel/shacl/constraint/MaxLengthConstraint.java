@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 import java.util.List;
 
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.MaxLengthViolation;
@@ -23,9 +24,10 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#MaxLengthConstraintComponent">sh:maxLength</a>
+ *
  * @param maxLength the max length
  */
-public record MaxLengthConstraint(int maxLength) implements Constraint {
+public record MaxLengthConstraint( int maxLength ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       // sh:maxLength is applicable to literals and IRIs, but not blank nodes

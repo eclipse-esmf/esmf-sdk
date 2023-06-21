@@ -18,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,21 +45,6 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.assertj.core.api.Condition;
 import org.assertj.core.data.Percentage;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.common.collect.Lists;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AbstractTestEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithAbstractEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithAbstractSingleEntity;
@@ -94,7 +82,9 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.NestedEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.TestEntityWithSimpleTypes;
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.constraint.RangeConstraint;
@@ -114,9 +104,21 @@ import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.common.collect.Lists;
+
 import io.vavr.collection.HashMap;
 
 public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
@@ -586,7 +588,9 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( versionedModel );
       final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( new AspectContext( versionedModel, aspect ) );
       try {
-         return jsonGenerator.generateJson();
+         final var payload = jsonGenerator.generateJson();
+         Files.write( Path.of( model.getName() + ".json" ), payload.getBytes( StandardCharsets.UTF_8 ) );
+         return payload;
       } catch ( final IOException e ) {
          throw new RuntimeException( e );
       }
@@ -615,16 +619,16 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    private static List<Arguments> rangeTestSource() {
       final List<Arguments> result = new ArrayList<>();
       Lists.cartesianProduct( getMetaModelNumericTypes(), RANGE_CONSTRAINTS_TO_TEST )
-            .forEach( list -> result.add( Arguments.of( list.get( 0 ), list.get( 1 ) ) ) );
+           .forEach( list -> result.add( Arguments.of( list.get( 0 ), list.get( 1 ) ) ) );
       return result;
    }
 
    private static List<RDFDatatype> getMetaModelNumericTypes() {
       return DataType.getAllSupportedTypes()
-            .stream()
-            .filter( dataType -> dataType.getJavaClass() != null )
-            .filter( dataType -> Number.class.isAssignableFrom( dataType.getJavaClass() ) )
-            .collect( Collectors.toList() );
+                     .stream()
+                     .filter( dataType -> dataType.getJavaClass() != null )
+                     .filter( dataType -> Number.class.isAssignableFrom( dataType.getJavaClass() ) )
+                     .collect( Collectors.toList() );
    }
 
    private static final List<Optional<BoundDefinition>> RANGE_CONSTRAINTS_TO_TEST = Arrays.asList(
@@ -677,11 +681,11 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    Characteristic createBasicCharacteristic( final KnownVersion modelVersion, final Type dataType, final SAMM samm ) {
       return new DefaultCharacteristic( MetaModelBaseAttributes.builderFor( "NumberCharacteristic" )
-            .withMetaModelVersion( modelVersion )
-            .withUrn( AspectModelUrn.fromUrn( samm.baseCharacteristic().getURI() ) )
-            .withPreferredName( Locale.forLanguageTag( "en" ), "NumberCharacteristic" )
-            .withDescription( Locale.forLanguageTag( "en" ), "A simple numeric property." )
-            .build(),
+                                                               .withMetaModelVersion( modelVersion )
+                                                               .withUrn( AspectModelUrn.fromUrn( samm.baseCharacteristic().getURI() ) )
+                                                               .withPreferredName( Locale.forLanguageTag( "en" ), "NumberCharacteristic" )
+                                                               .withDescription( Locale.forLanguageTag( "en" ), "A simple numeric property." )
+                                                               .build(),
             Optional.of( dataType ) );
    }
 

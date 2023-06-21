@@ -42,8 +42,8 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE, metaModelVersion );
-      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ), 5, expectedSeeEntryTitle, "http://example.com/" );
    }
 
@@ -53,8 +53,8 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             5,
             expectedSeeEntryTitle,
@@ -66,8 +66,8 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
    public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
-      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
+      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ), 5 );
    }
 
@@ -77,8 +77,8 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_NUMERIC_REGULAR_EXPRESSION_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             4,
             expectedValueEntryTitle, "\\\\d*\\|x" );
@@ -90,13 +90,13 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_FIXED_POINT_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             8, "scale", "5" );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier ),
+            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             9, "integer", "3" );
    }

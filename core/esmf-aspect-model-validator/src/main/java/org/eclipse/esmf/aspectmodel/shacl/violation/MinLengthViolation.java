@@ -13,7 +13,16 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
-public record MinLengthViolation(EvaluationContext context, int min, int actual) implements Violation {
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MinLengthConstraint;
+
+/**
+ * Violation of a {@link MinLengthConstraint}
+ *
+ * @param context the evaluation context
+ * @param min the given minimum value
+ * @param actual the encountered value
+ */
+public record MinLengthViolation( EvaluationContext context, int min, int actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MIN_LENGTH";
 
    @Override
@@ -22,7 +31,7 @@ public record MinLengthViolation(EvaluationContext context, int min, int actual)
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s has length %s, but its length must be greater than or equal to %s.",
             propertyName(), elementName(), actual, min );
    }

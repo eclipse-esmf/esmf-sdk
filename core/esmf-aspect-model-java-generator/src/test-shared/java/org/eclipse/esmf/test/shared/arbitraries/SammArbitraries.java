@@ -54,6 +54,7 @@ import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
@@ -327,7 +328,7 @@ public interface SammArbitraries extends UriArbitraries, XsdArbitraries {
             .as( ( metaModelVersion, entityUrn, preferredNames, descriptions, see, properties ) -> {
                final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
                      metaModelVersion, entityUrn, entityUrn.getName(), preferredNames, descriptions, see );
-               return DefaultEntity.createDefaultEntity( baseAttributes, properties, Optional.empty() );
+               return new DefaultEntity( baseAttributes, properties );
             } );
    }
 

@@ -22,6 +22,13 @@
                     #list( $characteristic.getSee() )
                 </div>
             </div>
+        #elseif($characteristic.getBaseCharacteristic())
+            <div class="table-row-group">
+                <div class="table-cell pb-3 col-span-2">
+                    $i18n.getText( "docu.label.see" )
+                    #list( $characteristic.getBaseCharacteristic().getSee() )
+                </div>
+            </div>
         #end
         #if( $characteristic.getDataType().isPresent() && !$characteristicClass.equals( "Either" )  )
             <div class="table-row-group">
@@ -38,7 +45,7 @@
         #if( !$characteristic.getDataType().get().is( $Scalar ) )
             <a href="#$aspectModelHelper.getNameFromURN( $characteristic.getDataType().get().getUrn() )-entity"
         #else
-            <a href="https://openmanufacturingplatform.github.io/sds-SAMM-aspect-meta-model/SAMM-specification/v$aspectModelHelper.getMetaModelVersion().toString()/datatypes.html" target="_blank"
+            <a href="https://eclipse-esmf.github.io/samm-specification/$aspectModelHelper.getMetaModelVersion().toString()/datatypes.html" target="_blank"
         #end
         class="break-all underline">$characteristic.getDataType().get().getUrn()</a>
     #end

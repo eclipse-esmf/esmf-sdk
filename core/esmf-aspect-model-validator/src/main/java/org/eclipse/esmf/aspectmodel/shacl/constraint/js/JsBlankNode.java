@@ -15,6 +15,9 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint.js;
 
 import org.apache.jena.graph.Node;
 
+/**
+ * Represents a <a href="https://www.w3.org/TR/shacl-js/#js-api-bnode">SHACL JS BlankNode</a>.
+ */
 public class JsBlankNode extends JsTerm {
    public final String id;
 

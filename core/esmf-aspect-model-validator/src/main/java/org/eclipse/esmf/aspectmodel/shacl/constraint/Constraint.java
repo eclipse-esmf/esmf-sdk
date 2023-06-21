@@ -16,25 +16,49 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import org.apache.jena.rdf.model.RDFNode;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
+import org.apache.jena.rdf.model.RDFNode;
+
 /**
- * Represents a SHACL constraint component as a function that takes the <a href="https://www.w3.org/TR/shacl/#value-nodes">value node</a> as input
- * and returns a (possibly empty) list of violations.
- *
+ * Represents a SHACL constraint component as a function that takes the <a href="https://www.w3.org/TR/shacl/#value-nodes">value node</a> as
+ * input and returns a (possibly empty) list of violations.
+ * <br/>
  * Not implemented: sh:qualifiedValueShape, sh:qualifiedMinCount, sh:qualifiedMaxCount
  */
 public interface Constraint extends BiFunction<RDFNode, EvaluationContext, List<Violation>> {
+   /**
+    * Determines whether this constraint can be used on a node shape, as certain constraints (e.g., sh:minCount) can only be used on
+    * property shapes.
+    *
+    * @return the allowed value
+    */
    default boolean canBeUsedOnNodeShapes() {
       return true;
    }
 
+   /**
+    * The name of the constraint as given by sh:name
+    *
+    * @return the name
+    */
    String name();
 
+   /**
+    * Visitor pattern for Constraints: Accept the constraint visitor
+    *
+    * @param visitor the visitor
+    * @param <T> the visitor's result type
+    * @return the value corresponding to the visitor
+    */
    <T> T accept( Visitor<T> visitor );
 
+   /**
+    * The visitor interface for Constraints
+    *
+    * @param <T> the return type for the visitor
+    */
    interface Visitor<T> {
       T visit( Constraint constraint );
 

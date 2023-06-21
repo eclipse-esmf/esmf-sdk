@@ -16,24 +16,26 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
+
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 
 /**
  * Represents a single violation raised by one or more SHACL shapes against an RDF model.
- * A human-readable representation of the violation is available via {@link #message()} while details about the context in which the violation
- * occured (such as offending model element, RDF statements and the SHACL shape that raised the violation) are available via {@link #context()}.
- * To handle information specific to each type of violation, implement {@link Visitor} and call {@link #accept(Visitor)} on the violation(s).
+ * A human-readable representation of the violation is available via {@link #message()} while details about the context
+ * in which the violation occurred (such as offending model element, RDF statements and the SHACL shape that raised the
+ * violation) are available via {@link #context()}. To handle information specific to each type of violation,
+ * implement {@link Visitor} and call {@link #accept(Visitor)} on the violation(s).
  */
 public interface Violation {
    String errorCode();
 
    EvaluationContext context();
 
-   String message();
+   String violationSpecificMessage();
 
    <T> T accept( Visitor<T> visitor );
 
@@ -148,6 +150,10 @@ public interface Violation {
          return visit( violation );
       }
 
+      default T visitXoneViolation( final XoneViolation violation ) {
+         return visit( violation );
+      }
+
       default T visitJsViolation( final JsConstraintViolation violation ) {
          return visit( violation );
       }
@@ -189,6 +195,14 @@ public interface Violation {
 
    default String value( final Literal literal ) {
       return literal.getLexicalForm();
+   }
+
+   default String message() {
+      final String nodeShapeMessage = context().shape().attributes().message().map( message -> message.replaceAll( "\\.$", "" )
+            + ", more specifically: " ).orElse( "" );
+      final String propertyShapeMessage = context().propertyShape().flatMap( propertyShape -> propertyShape.attributes().message() )
+            .orElseGet( this::violationSpecificMessage );
+      return nodeShapeMessage + propertyShapeMessage;
    }
 
    default List<Fix> fixes() {

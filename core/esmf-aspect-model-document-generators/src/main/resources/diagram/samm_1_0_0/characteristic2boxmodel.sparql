@@ -15,6 +15,7 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
 
 # Generates boxes for Characteristics that are not Collections, Constraints, Enumeration/State or StructuredValue
 construct {
@@ -67,7 +68,7 @@ construct {
 
   ?characteristic samm:name ?characteristicName .
   bind( concat( ?characteristicName, "Characteristic" ) as ?boxName )
-  bind( iri( concat( str( : ), ?boxName ) ) as ?characteristicBox )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?boxName ) ) as ?characteristicBox )
 
   optional {
     ?characteristic samm:preferredName ?preferredNameValue .

@@ -45,7 +45,7 @@ include::example$HandlingTry.java[tags=handlingTry]
 The tooling can be made available in two different versions: `release` and `milestone`. The release version represents a stable version of the product
 and can be referenced in your projects in the usual way from the Maven Central repository. There is also the possibility to have the intermediate builds
 made available, these are called `milestone` builds. Instead of Maven Central, these are released via 
-https://github.com/orgs/OpenManufacturingPlatform/packages?repo_name=sds-sdk[GitHub Packages] mechanism. +
+https://github.com/orgs/eclipse-esmf/packages?repo_name=esmf-sdk[GitHub Packages] mechanism. +
 To be able to use the artifacts released in this way in your projects, first the right repository has to be added to your `pom.xml` file:
 [source, xml]
 ----
@@ -736,7 +736,7 @@ allows AAS submodels to be described with rich semantics, as it is possible with
 === Details of the Mapping Concept
 
 In the following section, the mapping rules applied by the generator are explained. The rules apply
-to https://openmanufacturingplatform.github.io/sds-documentation/samm-specification/v1.0.0/index.html[SAMM v1.0.0] and
+to https://eclipse-esmf.github.io/samm-specification/2.0.0/index.html[SAMM v2.0.0] and
 https://www.plattform-i40.de/IP/Redaktion/EN/Downloads/Publikation/Details_of_the_Asset_Administration_Shell_Part1_V3.html[AAS
 Specification Part 1 V3.0RC01].
 
@@ -758,7 +758,7 @@ Specification Part 1 V3.0RC01].
 
 | samm:Aspect.urn  | aas:Submodel.semanticId  |
 
-| **samm:Property**  | aas:Property, aas:SubmodelElementCollection   | The AAS type is derived from the type of the SAMM Characteristic specifying the SAMM property. Depending on the type it is decided what the resulting AAS element will be. In case of an Entity it will result in a SubmodelElementCollection. It will also be a SubmodelElementCollection if the SAMM Characteristic is of a Collection type (see the https://openmanufacturingplatform.github.io/sds-documentation/samm-specification/v1.0.0/characteristics.html[Characteristics taxonomy]). In all other cases an aas:Property will be generated
+| **samm:Property**  | aas:Property, aas:SubmodelElementCollection   | The AAS type is derived from the type of the SAMM Characteristic specifying the SAMM property. Depending on the type it is decided what the resulting AAS element will be. In case of an Entity it will result in a SubmodelElementCollection. It will also be a SubmodelElementCollection if the SAMM Characteristic is of a Collection type (see the https://eclipse-esmf.github.io/samm-specification/2.0.0/characteristics.html[Characteristics taxonomy]). In all other cases an aas:Property will be generated
 
 | samm:Property.name  | aas:Property.idShort |
 
@@ -776,7 +776,7 @@ Specification Part 1 V3.0RC01].
 
 | xref:samm-specification:ROOT:characteristics.adoc#characteristic-characteristic[**samm-c:Characteristic**]  | aas:SubmodelElement, aas:ConceptDescription  | Characteristics in SAMM define the semantics of a property, which includes there types as well as links to further definitions (standards, dictionaries, etc), a natural language description and name in different languages. Type and description are separated in AAS, which is why there is not a one-to-one mapping of a Characteristic to one element in AAS but rather Characteristics are used in the mapping of Properties, first, to guide the generation process and, second, to capture semantics in ConceptDescriptions of properties with data specification "DataSpecificationIEC61360" of the AAS.
 
-| xref:samm-specification:ROOT:characteristics.adoc#collection-characteristic[**samm-c:Collection**] | aas:SubmodelElementCollection, aas:ConceptDescription  | The general remarks to Characteristics apply also to Collection type Characteristics. However, properties referencing Collections are mapped to SubmodelElementCollections. Specific properties of collections are mapped. samm:Set is unique, samm:SortedSet is unique and sorted, samm:List is sorted.
+| xref:samm-specification:ROOT:characteristics.adoc#collection-characteristic[**samm-c:Collection**] | aas:SubmodelElementList, aas:ConceptDescription  | The general remarks to Characteristics apply also to Collection type Characteristics. However, properties referencing Collections are mapped to SubmodelElementLists. Specific properties of collections are mapped. samm:Set is unique, samm:SortedSet is unique and sorted, samm:List is sorted.
 
 | xref:samm-specification:ROOT:characteristics.adoc#quantifiable-characteristic[**samm-c:Quantifiable**]  | aas:SubmodelElement, aas:ConceptDescription | The general remarks to Characteristics apply also to Quantifiable type Characteristics. Quantifiables (also Duration and Measurement) reference a unit, which is added to the ConceptDescription corresponding the mapped Characteristic.
 

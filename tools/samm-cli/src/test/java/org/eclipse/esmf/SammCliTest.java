@@ -32,6 +32,14 @@ import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
+import org.eclipse.esmf.ProcessLauncher.ExecutionResult;
+import org.eclipse.esmf.aspect.AspectValidateCommand;
+import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.InvalidTestAspect;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestModel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,15 +47,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.eclipse.esmf.ProcessLauncher.ExecutionResult;
-import org.eclipse.esmf.aspect.AspectValidateCommand;
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
-import org.eclipse.esmf.test.InvalidTestAspect;
-import org.eclipse.esmf.test.MetaModelVersions;
-import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestModel;
 
 /**
  * The tests for the CLI that are executed by Maven Surefire. They work using the {@link MainClassProcessLauncher}, i.e. directly call
@@ -176,8 +175,8 @@ public class SammCliTest extends MetaModelVersions {
       final File invalidModel = inputFile( InvalidTestAspect.INVALID_SYNTAX );
       final ExecutionResult result = sammCli.apply( "aspect", invalidModel.getAbsolutePath(), "validate" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( result.stdout() ).contains( "Syntax error" );
+      assertThat( result.stderr() ).contains( "Triples not terminated by DOT" );
+      assertThat( result.stdout() ).isEmpty();
    }
 
    @Test
@@ -220,7 +219,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAasAasxToFile() throws TikaException, IOException {
+   public void testAspectToAasAasxToFile() {
       final File targetFile = outputFile( "output.aasx" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "aasx", "-o",
             targetFile.getAbsolutePath() );
@@ -231,10 +230,28 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAasAasxToStdout() throws TikaException, IOException {
+   public void testAspectToAasAasxToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "aasx" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.application( "x-tika-ooxml" ) );
+   }
+
+   @Test
+   public void testAspectToAasJsonToFile() {
+      final File targetFile = outputFile( "output.json" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "json", "-o",
+            targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists();
+      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
+   }
+
+   @Test
+   public void testAspectToAasJsonToStdout() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format", "json" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
    }
 
    @Test
@@ -586,7 +603,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToPngWithDefaultLanguage() throws TikaException, IOException {
+   public void testAspectToPngWithDefaultLanguage() {
       final File targetFile = outputFile( "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
             targetFile.getAbsolutePath() );
@@ -597,7 +614,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToPngWithGivenLanguage() throws TikaException, IOException {
+   public void testAspectToPngWithGivenLanguage() {
       final File targetFile = outputFile( "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
             targetFile.getAbsolutePath(),
@@ -620,7 +637,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToPngToStdout() throws TikaException, IOException {
+   public void testAspectToPngToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.image( "png" ) );

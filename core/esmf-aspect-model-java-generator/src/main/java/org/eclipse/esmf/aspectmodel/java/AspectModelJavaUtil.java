@@ -28,17 +28,11 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.translate.UnicodeUnescaper;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
-
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Converter;
-
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.characteristic.Collection;
@@ -59,10 +53,18 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Converter;
 
 public class AspectModelJavaUtil {
 
    public static final Converter<String, String> TO_CONSTANT = CaseFormat.UPPER_CAMEL.converterTo( CaseFormat.UPPER_UNDERSCORE );
+
+   public static final UnicodeUnescaper UNESCAPER = new UnicodeUnescaper();
 
    private AspectModelJavaUtil() {
    }
@@ -77,7 +79,10 @@ public class AspectModelJavaUtil {
    public static String getPropertyType( final Property property, final boolean inclValidation, final JavaCodeGenerationConfig codeGenerationConfig ) {
       final String propertyType = determinePropertyType( property.getCharacteristic(), inclValidation, codeGenerationConfig );
       if ( property.isOptional() ) {
-         return containerType( Optional.class, propertyType, Optional.empty() );
+         return containerType( Optional.class, propertyType,
+               inclValidation && property.getCharacteristic().isPresent() && property.getCharacteristic().get() instanceof Trait t ?
+                     Optional.of( buildConstraintsForCharacteristic( t, codeGenerationConfig ) ) :
+                     Optional.empty() );
       }
       return propertyType;
    }
@@ -212,14 +217,13 @@ public class AspectModelJavaUtil {
    public static String generateAbstractEntityClassAnnotations( final ComplexType element, final JavaCodeGenerationConfig codeGenerationConfig,
          final Set<ComplexType> extendingEntities ) {
       final StringBuilder classAnnotationBuilder = new StringBuilder();
-      if ( element.isAbstractEntity() ) {
+      if ( element.isAbstractEntity() || !element.getExtendingElements().isEmpty() ) {
          codeGenerationConfig.importTracker().importExplicit( JsonTypeInfo.class );
          codeGenerationConfig.importTracker().importExplicit( JsonSubTypes.class );
 
-         final AbstractEntity abstractEntity = (AbstractEntity) element;
          classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)" );
          classAnnotationBuilder.append( "@JsonSubTypes({" );
-         final Iterator<ComplexType> extendingComplexTypeIterator = getExtendingClosure( abstractEntity, extendingEntities ).iterator();
+         final Iterator<ComplexType> extendingComplexTypeIterator = getExtendingClosure( element, extendingEntities ).iterator();
          while ( extendingComplexTypeIterator.hasNext() ) {
             final ComplexType extendingComplexType = extendingComplexTypeIterator.next();
             classAnnotationBuilder.append( "@JsonSubTypes.Type(value = " );
@@ -335,8 +339,29 @@ public class AspectModelJavaUtil {
       return TO_CONSTANT.convert( StringUtils.capitalize( upperOrLowerCamelString ) );
    }
 
+   /**
+    * Creates a string literal with escaped double quotes around the given string.
+    *
+    * The string is escaped using {@link #escapeForLiteral(String)}.
+    *
+    * @param value the string to create the literal for
+    * @return the literal
+    */
    public static String createLiteral( final String value ) {
-      return "\"" + StringEscapeUtils.escapeJava( value ) + "\"";
+      return "\"" + escapeForLiteral( value ) + "\"";
+   }
+
+   /**
+    * Escapes a string properly to be used as a literal.
+    *
+    * Performs escaping according to Java String rules and afterwards additionally translates escaped Unicode characters back to Unicode. The latter step is
+    * necessary to avoid Unicode escape sequences within the String literal.
+    *
+    * @param value the string to be escaped
+    * @return the escaped string
+    */
+   public static String escapeForLiteral( final String value ) {
+      return UNESCAPER.translate( StringEscapeUtils.escapeJava( value ) );
    }
 
    /**
@@ -459,7 +484,7 @@ public class AspectModelJavaUtil {
 
    public static String printStructuredValueElement( final Object object ) {
       if ( object instanceof String ) {
-         return "\"" + StringEscapeUtils.escapeJava( object.toString() ) + "\"";
+         return createLiteral( object.toString() );
       }
       return toConstant( ((Property) object).getName() );
    }
@@ -483,7 +508,7 @@ public class AspectModelJavaUtil {
                         XSD.dayTimeDuration.getURI() ) );
    }
 
-   public static boolean doesValueNeedsToBeQuoted( final String typeUrn ) {
+   public static boolean doesValueNeedToBeQuoted( final String typeUrn ) {
       return typeUrn.equals( XSD.integer.getURI() )
             || typeUrn.equals( XSD.xshort.getURI() )
             || typeUrn.equals( XSD.decimal.getURI() )

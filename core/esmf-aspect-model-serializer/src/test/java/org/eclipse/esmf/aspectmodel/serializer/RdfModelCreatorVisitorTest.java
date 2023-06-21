@@ -22,18 +22,17 @@ import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
 import io.vavr.control.Try;
 
 public class RdfModelCreatorVisitorTest extends MetaModelVersions {
@@ -59,15 +58,14 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
          "ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY",
          "ASPECT_WITH_ABSTRACT_SINGLE_ENTITY",
          "ASPECT_WITH_ABSTRACT_PROPERTY",
+         "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND",
+         "ASPECT_WITH_UMLAUT_DESCRIPTION",
          "MODEL_WITH_CYCLES",
          "MODEL_WITH_BROKEN_CYCLES",
          "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES"
    } )
-   public void testRdfModelCreatorVisitor( final TestAspect aspect ) {
-      testRdfCreation( aspect, KnownVersion.getLatest() );
-   }
-
-   private void testRdfCreation( final TestAspect testAspect, final KnownVersion knownVersion ) {
+   public void testRdfModelCreatorVisitor( final TestAspect testAspect ) {
+      final KnownVersion knownVersion = KnownVersion.getLatest();
       final VersionedModel versionedModel = TestResources.getModel( testAspect, knownVersion ).get();
 
       final Try<Aspect> tryAspect = AspectModelLoader.getSingleAspect( versionedModel );

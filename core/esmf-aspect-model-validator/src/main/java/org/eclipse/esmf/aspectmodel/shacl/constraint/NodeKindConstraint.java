@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 import java.util.List;
 
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.NodeKindViolation;
@@ -23,9 +24,10 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#NodeKindConstraintComponent">sh:nodeKind</a>
+ *
  * @param allowedNodeKind the allowed node kind
  */
-public record NodeKindConstraint(Shape.NodeKind allowedNodeKind) implements Constraint {
+public record NodeKindConstraint( Shape.NodeKind allowedNodeKind ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final Shape.NodeKind actualNodeKind = Shape.NodeKind.forNode( rdfNode );

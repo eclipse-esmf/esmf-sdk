@@ -13,7 +13,16 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
-public record MaxCountViolation(EvaluationContext context, int allowed, int actual) implements Violation {
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxCountConstraint;
+
+/**
+ * Violation of a {@link MaxCountConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowed the allowed number repetitions of a property
+ * @param actual the encountered number
+ */
+public record MaxCountViolation( EvaluationContext context, int allowed, int actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MAX_COUNT";
 
    @Override
@@ -22,7 +31,7 @@ public record MaxCountViolation(EvaluationContext context, int allowed, int actu
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return allowed == 0 ?
             String.format( "Property %s may not be used on %s.", propertyName(), elementName() ) :
             String.format( "Property %s is used %d time%s on %s, but may only be used %d time%s.",

@@ -25,8 +25,8 @@ import org.eclipse.esmf.test.TestAspect;
 
 public class Either2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "either2boxmodel.sparql";
-   private final String boxSelectorStatement = ":TestEitherCharacteristic a :Box";
-   private final String entriesSelectorStatement = ":TestEitherCharacteristic :entries *";
+   private final String boxSelectorStatement = "test:TestEitherCharacteristic a :Box";
+   private final String entriesSelectorStatement = "test:TestEitherCharacteristic :entries *";
    private final int totalNumberOfExpectedEntries = 3;
    private final int indexOfSeeValueEntry = 2;
    private final String expectedSeeEntryTitle = "see";
@@ -38,8 +38,8 @@ public class Either2BoxModelTest extends MetaModelVersions {
 
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
-      assertThat( queryResult.listStatements( context.selector( ":UsedTestEitherCharacteristic a :Box" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":UnusedTestEitherCharacteristic a :Box" ) ).toList() )
+      assertThat( queryResult.listStatements( context.selector( "test:UsedTestEitherCharacteristic a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:UnusedTestEitherCharacteristic a :Box" ) ).toList() )
             .hasSize( 0 );
       assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() )
             .hasSize( totalNumberOfExpectedEntries );

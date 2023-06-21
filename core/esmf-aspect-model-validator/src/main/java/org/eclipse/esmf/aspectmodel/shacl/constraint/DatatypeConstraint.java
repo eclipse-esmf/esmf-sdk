@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
+
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
@@ -25,9 +26,10 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#DatatypeConstraintComponent">sh:datatype</a>
+ *
  * @param allowedTypeUri the allowed data type URI
  */
-public record DatatypeConstraint(String allowedTypeUri) implements Constraint {
+public record DatatypeConstraint( String allowedTypeUri ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       if ( !rdfNode.isLiteral() ) {

@@ -13,7 +13,16 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
-public record MaxLengthViolation(EvaluationContext context, int max, int actual) implements Violation {
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxLengthConstraint;
+
+/**
+ * Violation of a {@link MaxLengthConstraint}
+ *
+ * @param context the evaluation context
+ * @param max the given maximum value
+ * @param actual the encountered value
+ */
+public record MaxLengthViolation( EvaluationContext context, int max, int actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_MAX_LENGTH";
 
    @Override
@@ -22,7 +31,7 @@ public record MaxLengthViolation(EvaluationContext context, int max, int actual)
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s has length %s, but its length must be less than or equal to %s.",
             propertyName(), elementName(), actual, max );
    }

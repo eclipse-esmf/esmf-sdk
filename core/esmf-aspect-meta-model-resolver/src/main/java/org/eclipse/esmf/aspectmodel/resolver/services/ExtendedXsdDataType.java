@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -32,6 +31,8 @@ import org.apache.jena.datatypes.xsd.impl.RDFLangString;
 import org.apache.jena.ext.xerces.impl.dv.XSSimpleType;
 import org.apache.jena.ext.xerces.impl.dv.xs.ExtendedSchemaDVFactoryImpl;
 import org.apache.jena.rdf.model.Resource;
+
+import jakarta.xml.bind.DatatypeConverter;
 
 @SuppressWarnings( "squid:S1213" )
 // the order of the variables is required because of the way they reference each other

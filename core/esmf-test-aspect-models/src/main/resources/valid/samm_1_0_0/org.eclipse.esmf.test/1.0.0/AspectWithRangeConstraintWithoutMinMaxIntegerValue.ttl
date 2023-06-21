@@ -37,8 +37,6 @@
    samm:description "Beschränkt einen numerischen Wert auf Werte zwischen 0 und 100."@de ;
    samm-c:constraint [
       a samm-c:RangeConstraint ;
-      samm-c:upperBoundDefinition samm-c:OPEN ;
-      samm-c:lowerBoundDefinition samm-c:OPEN ;
    ] ;
    samm-c:baseCharacteristic :IntegerCharacteristic .
 

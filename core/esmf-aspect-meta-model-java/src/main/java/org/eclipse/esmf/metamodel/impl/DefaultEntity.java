@@ -12,28 +12,38 @@
  */
 package org.eclipse.esmf.metamodel.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultEntity extends DefaultComplexType implements Entity {
 
    public static DefaultEntity createDefaultEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties, final Optional<ComplexType> _extends ) {
-      final DefaultEntity defaultEntity = new DefaultEntity( metaModelBaseAttributes, properties, _extends );
-      instances.put( metaModelBaseAttributes.getUrn().get(), defaultEntity );
-      return defaultEntity;
+      return new DefaultEntity( metaModelBaseAttributes, properties, _extends, Collections.emptyList(), null );
    }
 
-   private DefaultEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
+   public DefaultEntity(
+         final MetaModelBaseAttributes metaModelBaseAttributes,
+         final List<? extends Property> properties ) {
+      this( metaModelBaseAttributes, properties, Optional.empty(), Collections.emptyList(), null );
+   }
+
+   public DefaultEntity(
+         final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
-         final Optional<ComplexType> _extends ) {
-      super( metaModelBaseAttributes, properties, _extends );
+         final Optional<ComplexType> _extends,
+         final List<AspectModelUrn> extendingElements,
+         final ModelElementFactory loadedElements ) {
+      super( metaModelBaseAttributes, properties, _extends, extendingElements, loadedElements );
    }
 
    /**

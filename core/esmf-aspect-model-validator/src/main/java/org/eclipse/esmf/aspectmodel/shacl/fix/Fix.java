@@ -15,6 +15,9 @@ package org.eclipse.esmf.aspectmodel.shacl.fix;
 
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 
+/**
+ * A fix that can be applied to a violation to remove it
+ */
 public interface Fix {
    EvaluationContext context();
 

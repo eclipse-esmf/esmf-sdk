@@ -25,6 +25,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.XSD;
+
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedLanguagesConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedValuesConstraint;
@@ -131,7 +132,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
                builder.append( String.format( "  context-property: %s%n", violation.shortUri( property.getURI() ) ) );
                builder.append( String.format( "  context-property-full: %s%n", property.getURI() ) );
             } );
-            if ( violation.fixes().size() > 0 ) {
+            if ( !violation.fixes().isEmpty() ) {
                builder.append( String.format( "  possible-fixes:%n" ) );
                for ( final Fix fix : violation.fixes() ) {
                   builder.append( String.format( "  - %s%n", fix.description() ) );
@@ -184,7 +185,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
             }
          }
       }
-      if ( shape instanceof Shape.Node nodeShape ) {
+      if ( shape instanceof final Shape.Node nodeShape ) {
          if ( !nodeShape.properties().isEmpty() ) {
             builder.append( String.format( "property-constraints: %n" ) );
          }
@@ -214,6 +215,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
    /**
     * Processing violation, e.g. a model element that could not be resolved
+    *
     * @param violation the violation
     * @return formatted representation
     */
@@ -232,6 +234,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
    /**
     * Syntax error in the source file
+    *
     * @param violation the violation
     * @return formatted representation
     */
@@ -541,7 +544,8 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
       @Override
       public String visitNodeConstraint( final NodeConstraint constraint ) {
-         return String.format( "shape-node: %s%n", constraint.shape().attributes().uri().map( violation::shortUri ).orElse( "(anonymous shape)" ) );
+         return String.format( "shape-node: %s%n",
+               constraint.targetShape().get().attributes().uri().map( violation::shortUri ).orElse( "(anonymous shape)" ) );
       }
 
       @Override
@@ -563,9 +567,9 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
       private void printNestedConstraints( final StringBuilder builder, final List<Constraint> constraints ) {
          builder.append( String.format( "constraints:%n" ) );
-         for ( final Constraint c : constraints ) {
-            builder.append( String.format( "  - %s%n", c.getClass().getSimpleName() ) );
-            for ( final String line : c.accept( this ).split( "\n" ) ) {
+         for ( final Constraint constraint : constraints ) {
+            builder.append( String.format( "  - %s%n", constraint.getClass().getSimpleName() ) );
+            for ( final String line : constraint.accept( this ).split( "\n" ) ) {
                builder.append( String.format( "    %s%n", line ) );
             }
          }

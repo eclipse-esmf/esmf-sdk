@@ -13,11 +13,6 @@
    <artifactId>esmf-aspect-model-aas-generator</artifactId>
    <name>ESMF Aspect Model AAS Generator</name>
 
-   <properties>
-      <maven.compiler.source>11</maven.compiler.source>
-      <maven.compiler.target>11</maven.compiler.target>
-   </properties>
-
    <dependencies>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
@@ -28,16 +23,20 @@
          <artifactId>esmf-aspect-meta-model-java</artifactId>
       </dependency>
       <dependency>
-         <groupId>io.admin-shell.aas</groupId>
+         <groupId>org.eclipse.digitaltwin.aas4j</groupId>
          <artifactId>model</artifactId>
       </dependency>
       <dependency>
-         <groupId>io.admin-shell.aas</groupId>
+         <groupId>org.eclipse.digitaltwin.aas4j</groupId>
          <artifactId>dataformat-xml</artifactId>
       </dependency>
       <dependency>
-         <groupId>io.admin-shell.aas</groupId>
+         <groupId>org.eclipse.digitaltwin.aas4j</groupId>
          <artifactId>dataformat-aasx</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.digitaltwin.aas4j</groupId>
+         <artifactId>dataformat-json</artifactId>
       </dependency>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>

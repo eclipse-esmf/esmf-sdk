@@ -11,7 +11,7 @@
     - [esmf-aspect-static-meta-model](#esmf-aspect-static-meta-model)
     - [esmf-aspect-model-validator](#esmf-aspect-model-validator)
 - [Version Handling](#version-handling)
-    - [SAMM Versioning](#samm-versioning)
+    - [esmf-sdk Versioning](#esmf-sdk-versioning)
     - [SAMM Java Implementation Packaging](#samm-java-implementation-packaging)
 - [SAMM CLI](#samm-cli)
 - [Artifact Generation facilities](#artifact-generation-facilities)
@@ -37,17 +37,18 @@ code generators, validators etc.
 This document provides an overall overview of the SDK, and the concepts applied throughout it.
 Detailed documentation and concepts for each component can be found in the respective subfolders.
 
-This repository contains a detailed developer documentation written in AsciiDoc. The source files
-(AsciiDoc) are located [here](documentation/developer-guide) and are built using
-[Antora](https://antora.org/) which generates the documentation as HTML files.
+This repository contains a detailed developer documentation written in AsciiDoc. 
+The source files (AsciiDoc) are located [here](documentation/developer-guide) and are built using
+[Antora](https://antora.org/) which generates the documentation as HTML files. A site generated using Antora is self-contained and can be viewed entirely offline via a web browser without setting up a web server.
+To build the documentation locally, please check out and follow the instructions in [ESMF documentation repository](https://github.com/eclipse-esmf/eclipse-esmf.github.io).
 
 ## Getting help
 
 Are you having trouble with ESMF SDK? We want to help!
 
-* Check the [ESMF SDK developer documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/index.html)
+* Check the [ESMF SDK developer documentation](https://eclipse-esmf.github.io/esmf-developer-guide/index.html)
 * Ask a question the [community forum](https://www.eclipse.org/forums/index.php/f/617/).
-* Check the SAMM [specification](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/index.html)
+* Check the SAMM [specification](https://eclipse-esmf.github.io/samm-specification/snapshot/index.html)
 * Having issues with the ESMF SDK? Open a [GitHub issue](https://github.com/eclipse-esmf/esmf-sdk/issues).
 
 ## Build and contribute
@@ -124,29 +125,26 @@ The model validator is also available through the [SAMM CLI](#samm-cli).
 
 ## Version Handling
 
-SAMM does evolve over time. While measures are made to do this in a non-breaking manner, some
-changes cannot be carried out without the need to define a new, breaking version. Due to this fact
-it is important to understand the versioning concept that is applied to the SAMM, APIs and SDK
+SAMM and its SDKs evolve over time. While measures are taken to do this in a non-breaking manner,
+some changes cannot be carried out without the need to define a new, breaking version. Due to this
+fact it is important to understand the versioning concept that is applied to the SAMM, APIs and SDK
 components that are derived from them.
 
-In case of a prerelease there will be a postfix added and it will be released on Github. The way to
-access the artifact is described in [Github-Installing a
-package](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package)
+In case of a prerelease a postfix will be added to the version, such as `-M1`, and it will be
+released on Github. The way to access the artifact is described in the [Java Aspect Tooling
+Guide](https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/java-aspect-tooling.html#versioning).
 
-### SAMM Versioning
+### esmf-sdk Versioning
 
-For SAMM, semantic versioning (`major.minor.micro`) is applied with the following rules:
+For the esmf-sdk, semantic versioning (`major.minor.micro`) is applied with the following rules:
 
-* A breaking change increases the `major` part
-* Backwards compatible new features increase the `minor` part
-* Changes to existing features or bug fixes increase the `micro` part
+* The `major` part designates the supported SAMM major version
+* A breaking change increases the `minor` part
+* Backwards compatible new features, changes to existing features or bugfixes increase the `minor` part
 
-A new SAMM version always comprises new releases of the SDK components that depend on SAMM, however
-not the other way round. New releases of SDK components may be crafted that are built on the
+A new SAMM version implies new releases of the SDK components that depend on this SAMM version,
+however not the other way round. New releases of SDK components may be released that are built on an
 existing SAMM version.
-
-The SDK component versions are otherwise not tied to the SAMM version, i.e., they may differ in any
-part of the version.
 
 ### SAMM Java Implementation Packaging
 
@@ -238,7 +236,7 @@ GitHub](https://github.com/eclipse-esmf/esmf-sdk/releases).
 
 For information regarding running the command line tool, the available commands and their
 description, please have a look at the
-[documentation](https://openmanufacturingplatform.github.io/sds-documentation/sds-developer-guide/tooling-guide/bamm-cli.html).
+[documentation](https://eclipse-esmf.github.io/esmf-developer-guide/tooling-guide/samm-cli.html).
 
 ## License
 

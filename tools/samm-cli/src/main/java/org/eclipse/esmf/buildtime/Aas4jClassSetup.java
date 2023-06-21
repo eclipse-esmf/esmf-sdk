@@ -13,19 +13,20 @@
 
 package org.eclipse.esmf.buildtime;
 
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.DEFAULT_IMPLEMENTATION_PACKAGE_NAME;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.DEFAULT_IMPLEMENTATION_PREFIX;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.JSON_MIXINS_PACKAGE_NAME;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.MIXIN_SUFFIX;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.MODEL_PACKAGE_NAME;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.MODEL_TYPE_SUPERCLASSES;
-import static io.adminshell.aas.v3.dataformat.core.ReflectionHelper.XML_MIXINS_PACKAGE_NAME;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.DEFAULT_IMPLEMENTATION_PACKAGE_NAME;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.DEFAULT_IMPLEMENTATION_PREFIX;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.JSON_MIXINS_PACKAGE_NAME;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.MIXIN_SUFFIX;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.MODEL_PACKAGE_NAME;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.MODEL_TYPE_SUPERCLASSES;
+import static org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper.XML_MIXINS_PACKAGE_NAME;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,30 +34,27 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.substitution.Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper;
-import org.slf4j.LoggerFactory;
+import org.eclipse.esmf.substitution.AdminShellConfig;
+import org.eclipse.esmf.substitution.ImplementationInfo;
+import org.eclipse.esmf.substitution.Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import io.adminshell.aas.v3.dataformat.core.ReflectionHelper;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
-import org.eclipse.esmf.substitution.AdminShellConfig;
-import org.eclipse.esmf.substitution.ImplementationInfo;
 
 /**
  * This class generates the reflection information normally stored by {@link ReflectionHelper} and serializes it into a .properties file.
  * It is part of the substitution logic for this class, see
- * {@link Target_io_adminshell_aas_v3_dataformat_core_ReflectionHelper} for more information.
+ * {@link Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper} for more information.
  * Note that this class is <i>only</i> supposed to run at build time (via execution from the Maven build) and is not part of the
  * resulting CLI codebase. Running this class is configured in the pom.xml of the CLI Maven module (via exec-maven-plugin).
  */
-public class IoAdminShellAasClassSetup {
+public class Aas4jClassSetup {
    private final AdminShellConfig config;
 
-   public IoAdminShellAasClassSetup() {
+   public Aas4jClassSetup() {
       // The following replicates the logic from ReflectionHelper's static constructor, but instead stores its result
       // in the AdminShellConfig object that can then be written to a .properties file
       final ScanResult modelScan = new ClassGraph()
@@ -75,11 +73,7 @@ public class IoAdminShellAasClassSetup {
    }
 
    public static void main( final String[] args ) throws IOException {
-      // Disable logging, otherwise io.admin-shell spams the build log with unneeded stuff
-      final Logger root = (Logger) LoggerFactory.getLogger( org.slf4j.Logger.ROOT_LOGGER_NAME );
-      root.setLevel( Level.OFF );
-
-      final AdminShellConfig config = new IoAdminShellAasClassSetup().config;
+      final AdminShellConfig config = new Aas4jClassSetup().config;
       final Properties p = config.toProperties();
       final File out = new File( args[0] );
       final FileOutputStream outputStream = new FileOutputStream( out );
@@ -118,12 +112,10 @@ public class IoAdminShellAasClassSetup {
     * Logic duplicated from {@link ReflectionHelper#getSubclasses(ClassInfo)}
     */
    private Set<Class<?>> getSubclasses( final ClassInfo clazzInfo ) {
-      return clazzInfo.getClassesImplementing()
+      return new HashSet<>( clazzInfo.getClassesImplementing()
             .directOnly()
             .filter( ClassInfo::isInterface )
-            .loadClasses()
-            .stream()
-            .collect( Collectors.toSet() );
+            .loadClasses() );
    }
 
    /**
@@ -160,7 +152,6 @@ public class IoAdminShellAasClassSetup {
       defaulImplementationScan.getAllClasses()
             .filter( x -> x.getSimpleName().startsWith( DEFAULT_IMPLEMENTATION_PREFIX ) )
             .loadClasses()
-            .stream()
             .forEach( x -> {
                final String interfaceName = x.getSimpleName().substring( DEFAULT_IMPLEMENTATION_PREFIX.length() );// using conventions
                final ClassInfoList interfaceClassInfos = modelScan.getAllClasses()
@@ -177,7 +168,7 @@ public class IoAdminShellAasClassSetup {
     * Logic duplicated from {@link ReflectionHelper#scanAasInterfaces()}
     */
    private Set<Class> scanAasInterfaces() {
-      return config.defaultImplementations.stream().map( x -> x.getInterfaceType() ).collect( Collectors.toSet() );
+      return config.defaultImplementations.stream().map( ReflectionHelper.ImplementationInfo::getInterfaceType ).collect( Collectors.toSet() );
    }
 
    /**

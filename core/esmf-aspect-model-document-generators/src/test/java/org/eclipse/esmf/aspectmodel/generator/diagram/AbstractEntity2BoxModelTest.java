@@ -49,7 +49,7 @@ public class AbstractEntity2BoxModelTest extends MetaModelVersions {
       
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
-      assertThat( queryResult.listStatements( context.selector( ":AbstractTestEntityAbstractEntity a :Box" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":AbstractTestEntityAbstractEntity :title AbstractTestEntity" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:AbstractTestEntityAbstractEntity a :Box" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:AbstractTestEntityAbstractEntity :title AbstractTestEntity" ) ).toList() ).hasSize( 1 );
    }
 }

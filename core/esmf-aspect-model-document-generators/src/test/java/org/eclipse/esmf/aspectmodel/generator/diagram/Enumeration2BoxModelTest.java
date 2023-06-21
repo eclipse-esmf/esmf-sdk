@@ -38,9 +38,9 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
 
       assertThat(
-            queryResult.listStatements( context.selector( ":UsedTestEnumerationCharacteristic a :Box" ) ).toList() )
+            queryResult.listStatements( context.selector( "test:UsedTestEnumerationCharacteristic a :Box" ) ).toList() )
             .hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":UnusedTestEnumerationCharacteristic a :Box" ) )
+      assertThat( queryResult.listStatements( context.selector( "test:UnusedTestEnumerationCharacteristic a :Box" ) )
             .toList() )
             .hasSize( 0 );
       assertThat( queryResult.listStatements( context.selector( "* :text *" ) ).toList() ).hasSize( 5 );
@@ -50,8 +50,8 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final String characteristicIdentifier = "TestEnumeration";
-      final String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
-      final String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );
+      final String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier, false );
+      final String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier, false );
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUMERATION_WITH_SEE_ATTRIBUTE,
             metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
@@ -61,9 +61,10 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String characteristicIdentifier = metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ? "Enumeration46dba23" : "TestEnumeration";
-      final String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
-      final String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );
+      final boolean newerThanSamm1 = metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 );
+      final String characteristicIdentifier = newerThanSamm1 ? "Enumeration46dba23" : "TestEnumeration";
+      final String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier, newerThanSamm1 );
+      final String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier, newerThanSamm1 );
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUMERATION_WITH_MULTIPLE_SEE_ATTRIBUTES,
             metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
@@ -75,8 +76,8 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final String characteristicIdentifier = "TestEnumeration";
-      final String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
-      final String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );
+      final String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier, false );
+      final String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier, false );
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUMERATION_WITHOUT_SEE_ATTRIBUTE,
             metaModelVersion );
       context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
@@ -89,25 +90,24 @@ public class Enumeration2BoxModelTest extends MetaModelVersions {
       // See attribute was rendered also on elements on which it was not declared:
       // https://github.com/eclipse-esmf/esmf-sdk/issues/196
       String characteristicIdentifier = "Enum1";
-      String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
-      String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );
+      String boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier, false );
+      String entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier, false );
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_ENUM_ONLY_ONE_SEE, metaModelVersion );
       context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry );
 
       characteristicIdentifier = "Enum2";
-      boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier );
-      entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier );
+      boxSelectorStatement = getBoxSelectorStatement( characteristicIdentifier, false );
+      entriesSelectorStatement = getEntriesSelectorStatement( characteristicIdentifier, false );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement, entriesSelectorStatement,
             totalNumberOfExpectedEntries, indexOfSeeValueEntry, expectedSeeEntryTitle, "https://test.com" );
    }
 
-   private String getBoxSelectorStatement( final String characteristicIdentifier ) {
-      return String.format( ":%sCharacteristic a :Box", characteristicIdentifier );
+   private String getBoxSelectorStatement( final String characteristicIdentifier, boolean isAnonymous ) {
+      return String.format( "%s:%sCharacteristic a :Box",isAnonymous?"":"test", characteristicIdentifier );
    }
 
-   private String getEntriesSelectorStatement( final String characteristicIdentifier ) {
-      return String.format( ":%sCharacteristic :entries *", characteristicIdentifier );
+   private String getEntriesSelectorStatement( final String characteristicIdentifier, boolean isAnonymous ) {
+      return String.format( "%s:%sCharacteristic :entries *",isAnonymous?"":"test", characteristicIdentifier );
    }
-
 }

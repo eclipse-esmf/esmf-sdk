@@ -81,7 +81,13 @@
     #if( !$property.getSee().isEmpty() )
         <div class="flex border-b pb-1 py-4">
             <div class="w-80">$i18n.getText( "docu.label.see" )</div>
-            #list( $property.getSee() )
+            <div class="w-full">
+                #foreach($item in $property.getSee())
+                    <ul class="reset-all-styles m-0 list">
+                        <li>$item</li>
+                    </ul>
+                #end
+            </div>
         </div>
     #end
 

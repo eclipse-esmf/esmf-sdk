@@ -15,6 +15,7 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:1.0.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
 
 # Generates boxes for Constraints
 construct {
@@ -116,7 +117,7 @@ construct {
   ?constraint a ?constraintType .
   bind( coalesce( ?givenConstraintName, strafter( str( ?constraintType ), "#" ) ) as ?constraintName )
 
-  bind( iri( concat( str( : ), ?boxName ) ) as ?constraintBox )
+  bind( iri( concat( func:getNamespace( ?constraint ), ?boxName ) ) as ?constraintBox )
 
   optional {
     ?constraint samm:preferredName ?preferredNameValue .
@@ -215,6 +216,22 @@ construct {
      filter( exists { ?constraint samm-c:maxValue [] } )
      filter( not exists { ?constraint samm-c:upperBoundDefinition [] } )
      bind( "AT_MOST" as ?upperBoundDefinitionValue )
+  }
+
+  # no lowerBoundDefinition exists (RangeConstraint)
+  optional {
+    ?constraint a samm-c:RangeConstraint .
+    filter( not exists { ?constraint samm-c:minValue [] } )
+    filter( not exists { ?constraint samm-c:lowerBoundDefinition [] } )
+    bind( "OPEN" as ?lowerBoundDefinitionValue )
+  }
+
+  # no upperBoundDefinition exists (RangeConstraint)
+  optional {
+    ?constraint a samm-c:RangeConstraint .
+    filter( not exists { ?constraint samm-c:maxValue [] } )
+    filter( not exists { ?constraint samm-c:upperBoundDefinition [] } )
+    bind( "OPEN" as ?upperBoundDefinitionValue )
   }
 
   # scale and integer (FixedPoint Constraint)

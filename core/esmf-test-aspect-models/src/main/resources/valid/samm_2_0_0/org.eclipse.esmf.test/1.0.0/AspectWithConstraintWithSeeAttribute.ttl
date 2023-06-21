@@ -37,11 +37,15 @@
 
 :TestTraitTwo a samm-c:Trait ;
    samm-c:constraint [
-      a samm-c:LengthConstraint ;
+      a samm-c:RegularExpressionConstraint ;
       samm:preferredName "Test Constraint Two"@en ;
       samm:description "Test Constraint Two"@en ;
-      samm:see <http://example.com/> ;
-      samm-c:minValue "5"^^xsd:nonNegativeInteger ;
-      samm-c:maxValue "10"^^xsd:nonNegativeInteger ;
+      samm:see <http://example.com/me> ;
+      samm:value "^[A-Z][A-Z][A-Z]$" ;
    ] ;
-   samm-c:baseCharacteristic samm-c:Text .
+   samm-c:baseCharacteristic :TestCharacteristicTwo .
+:TestCharacteristicTwo a samm:Characteristic;
+    samm:preferredName "Test Characteristic Two"@en;
+    samm:description "Test Characteristic Two"@en;
+    samm:dataType xsd:string;
+    samm:see <http://example.com/me2> .

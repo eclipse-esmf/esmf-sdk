@@ -29,13 +29,13 @@ construct {
   bind( func:getElementName( ?characteristic ) as ?characteristicName )
 
   bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
-  bind( iri( concat( str( : ), ?characteristicBoxName ) ) as ?from )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName ) ) as ?from )
 
   bind( func:getElementName( ?constraint ) as ?constraintName )
   bind( concat( ?constraintName, "Constraint" ) as ?constraintBoxName )
 
-  bind( iri( concat( str( : ), ?constraintBoxName ) ) as ?to )
+  bind( iri( concat( func:getNamespace( ?constraint ), ?constraintBoxName ) ) as ?to )
 
-  bind( iri( concat( str( : ), ?characteristicBoxName, "_To_", ?constraintBoxName ) ) as ?edge )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName, "_To_", ?constraintBoxName ) ) as ?edge )
 }
 

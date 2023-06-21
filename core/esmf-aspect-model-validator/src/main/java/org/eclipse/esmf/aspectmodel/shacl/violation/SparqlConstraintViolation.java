@@ -16,10 +16,20 @@ package org.eclipse.esmf.aspectmodel.shacl.violation;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
+
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.RDFNode;
 
-public record SparqlConstraintViolation(EvaluationContext context, String constraintMessage, Map<String, RDFNode> bindings) implements Violation {
+/**
+ * Violation of a {@link SparqlConstraint}
+ *
+ * @param context the evaluation context
+ * @param constraintMessage the message as given by the SPARQL constraint
+ * @param bindings the variable bindings produced by the SPARQL query
+ */
+public record SparqlConstraintViolation( EvaluationContext context, String constraintMessage, Map<String, RDFNode> bindings )
+      implements Violation {
    public static final String ERROR_CODE = "ERR_UNSPECIFIED_SPARQL_CONSTRAINT_VIOLATION";
 
    @Override
@@ -31,7 +41,7 @@ public record SparqlConstraintViolation(EvaluationContext context, String constr
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       if ( constraintMessage().isEmpty() ) {
          if ( context.property().isPresent() ) {
             return String.format( "Property %s on %s is invalid.", propertyName(), elementName() );
@@ -41,7 +51,9 @@ public record SparqlConstraintViolation(EvaluationContext context, String constr
 
       String interpolatedMessage = constraintMessage();
       for ( final Map.Entry<String, RDFNode> entry : bindings.entrySet() ) {
-         final String value = entry.getValue().isURIResource() ? shortUri( entry.getValue().asResource().getURI() ) : entry.getValue().toString();
+         final String value = entry.getValue().isURIResource() ?
+               shortUri( entry.getValue().asResource().getURI() ) :
+               entry.getValue().toString();
          interpolatedMessage = interpolatedMessage.replaceAll( "\\{[$?]" + entry.getKey() + "\\}", value );
       }
       return interpolatedMessage;

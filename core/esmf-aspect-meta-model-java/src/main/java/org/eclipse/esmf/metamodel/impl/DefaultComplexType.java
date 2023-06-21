@@ -14,42 +14,33 @@
 package org.eclipse.esmf.metamodel.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.WeakHashMap;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultComplexType extends ModelElementImpl implements ComplexType {
-
-   /**
-    * Used to keep track of all {@link ComplexType} instances regardles of whether they are directly or indirectly
-    * referenced in the {@link Aspect}.
-    */
-   protected static WeakHashMap<AspectModelUrn, ComplexType> instances = new WeakHashMap<>();
-
    private final List<Property> properties;
    private final Optional<ComplexType> _extends;
+   private final List<AspectModelUrn> extendingElements;
+   private final ModelElementFactory loadedElements;
 
-   protected static DefaultComplexType createDefaultComplexType( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final List<? extends Property> properties, final Optional<ComplexType> _extends ) {
-      final DefaultComplexType defaultComplexType = new DefaultComplexType( metaModelBaseAttributes, properties, _extends );
-      instances.put( metaModelBaseAttributes.getUrn().get(), defaultComplexType );
-      return defaultComplexType;
-   }
-
-   protected DefaultComplexType( final MetaModelBaseAttributes metaModelBaseAttributes, final List<? extends Property> properties,
-         final Optional<ComplexType> _extends ) {
+   protected DefaultComplexType(
+         final MetaModelBaseAttributes metaModelBaseAttributes,
+         final List<? extends Property> properties,
+         final Optional<ComplexType> _extends,
+         final List<AspectModelUrn> extendingElements,
+         final ModelElementFactory loadedElements ) {
       super( metaModelBaseAttributes );
       this.properties = new ArrayList<>( properties );
       this._extends = _extends;
+      this.extendingElements = extendingElements;
+      this.loadedElements = loadedElements;
    }
 
    /**
@@ -67,8 +58,15 @@ public class DefaultComplexType extends ModelElementImpl implements ComplexType 
       return _extends;
    }
 
-   public static Map<AspectModelUrn, ComplexType> getInstances() {
-      return Collections.unmodifiableMap( instances );
+   /**
+    * @return all {@link ComplexType} instances which extend this Abstract Entity.
+    */
+   @Override
+   public List<ComplexType> getExtendingElements() {
+      if ( loadedElements == null ) {
+         throw new RuntimeException( "No inheritance information is available." );
+      }
+      return loadedElements.getExtendingElements( extendingElements );
    }
 
    @Override

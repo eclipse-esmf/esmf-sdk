@@ -17,10 +17,11 @@ import org.apache.jena.rdf.model.Resource;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#property-path-alternative">Alternative Path</a>
+ *
  * @param path1 option one of the two paths
  * @param path2 option two of the two paths
  */
-public record AlternativePath(Path path1, Path path2) implements Path {
+public record AlternativePath( Path path1, Path path2 ) implements Path {
    @Override
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitAlternativePath( resource, this );

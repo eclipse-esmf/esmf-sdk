@@ -13,9 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.HasValueConstraint;
+
 import org.apache.jena.rdf.model.RDFNode;
 
-public record InvalidValueViolation(EvaluationContext context, RDFNode allowed, RDFNode actual) implements Violation {
+/**
+ * Violation of a {@link HasValueConstraint}
+ *
+ * @param context the evaluation context
+ * @param allowed the allowed value
+ * @param actual the encountered value
+ */
+public record InvalidValueViolation( EvaluationContext context, RDFNode allowed, RDFNode actual ) implements Violation {
    public static final String ERROR_CODE = "ERR_VALUE";
 
    @Override
@@ -24,7 +33,7 @@ public record InvalidValueViolation(EvaluationContext context, RDFNode allowed, 
    }
 
    @Override
-   public String message() {
+   public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s, but only %s is allowed.",
             propertyName(), elementName(), value( actual ), value( allowed ) );
    }

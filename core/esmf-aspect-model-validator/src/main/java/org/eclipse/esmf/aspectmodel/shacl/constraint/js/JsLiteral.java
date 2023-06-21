@@ -16,6 +16,9 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint.js;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 
+/**
+ * Represents a <a href="https://www.w3.org/TR/shacl-js/#js-api-literals">SHACL JS Literal</a>
+ */
 public class JsLiteral extends JsTerm {
    public final String lex;
    public final String language;

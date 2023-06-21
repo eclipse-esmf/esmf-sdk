@@ -14,20 +14,38 @@
 package org.eclipse.esmf.aspectmodel.shacl.constraint;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
+import org.eclipse.esmf.aspectmodel.shacl.path.Path;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
+import org.eclipse.esmf.aspectmodel.shacl.violation.NodeKindViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#NodeConstraintComponent">sh:node</a>
- * @param shape the node shape this sh:node refers to
+ *
+ * @param targetShape the node shape this sh:node refers to
  */
-public record NodeConstraint(Shape.Node shape) implements Constraint {
+public record NodeConstraint( Supplier<Shape.Node> targetShape, Optional<Path> path ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
-      return context.validator().validateShapeForElement( context.element(), shape );
+      // Having a path means that the node constraint is used inside a property shape, i.e., it applies to the element the
+      // shape's path points to
+      if ( path.isPresent() && !rdfNode.isResource() ) {
+         return List.of( new NodeKindViolation( context, Shape.NodeKind.BlankNodeOrIRI, Shape.NodeKind.forNode( rdfNode ) ) );
+      }
+
+      return context.offendingStatements().stream()
+            .filter( statement -> statement.getObject().isResource() )
+            .map( Statement::getResource )
+            .flatMap( element ->
+                  context.validator().validateShapeForElement( element, targetShape.get(), context.resolvedModel() ).stream() )
+            .toList();
    }
 
    @Override

@@ -33,8 +33,8 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "entityinstance2boxmodel.sparql";
    private final String entityInstance2EntityInstanceEdgesSparqlQueryFileName = "entityinstance-nestedentityinstance-edges2boxmodel.sparql";
    private final String entityInstance2EntityEdgesSparqlQueryFileName = "entityinstance-entity-edges2boxmodel.sparql";
-   private final String boxSelectorStatement = ":TestEntityInstanceEntityInstance a :Box";
-   private final String entriesSelectorStatement = ":TestEntityInstanceEntityInstance :entry *";
+   private final String boxSelectorStatement = "test:TestEntityInstanceEntityInstance a :Box";
+   private final String entriesSelectorStatement = "test:TestEntityInstanceEntityInstance :entry *";
    private final String codePropertyTitleSelectorStatement = "* :title code";
    private final String codePropertyTestSelectorStatement = "* :text 3";
 
@@ -110,11 +110,11 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
    private void assertNestedEntityInstanceBox( final Model queryResult, final TestContext context,
          final String expectedInstanceBoxName, final String expectedPropertyValue ) {
       final StmtIterator nestedEntityBoxStatement = queryResult
-            .listStatements( context.selector( ":" + expectedInstanceBoxName + " a :Box" ) );
+            .listStatements( context.selector( "test:" + expectedInstanceBoxName + " a :Box" ) );
       assertThat( nestedEntityBoxStatement.toList() ).hasSize( 1 );
 
       final List<Statement> nestedEntityEntries = queryResult
-            .listStatements( context.selector( ":" + expectedInstanceBoxName + " :entry *" ) ).toList();
+            .listStatements( context.selector( "test:" + expectedInstanceBoxName + " :entry *" ) ).toList();
       assertThat( nestedEntityEntries ).hasSize( 1 );
 
       final RDFNode entryNode = nestedEntityEntries.get( 0 ).getObject();
@@ -177,12 +177,12 @@ public class EntityInstance2BoxModelTest extends MetaModelVersions {
          final String toBoxName, final String title ) {
       final String edgeName = fromBoxName + "_To_" + toBoxName;
 
-      assertThat( queryResult.listStatements( context.selector( ":" + edgeName + " a :Edge" ) ).toList() ).hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":" + edgeName + " :to :" + toBoxName ) ).toList() )
+      assertThat( queryResult.listStatements( context.selector( "test:" + edgeName + " a :Edge" ) ).toList() ).hasSize( 1 );
+      assertThat( queryResult.listStatements( context.selector( "test:" + edgeName + " :to test:" + toBoxName ) ).toList() )
             .hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":" + edgeName + " :from :" + fromBoxName ) ).toList() )
+      assertThat( queryResult.listStatements( context.selector( "test:" + edgeName + " :from test:" + fromBoxName ) ).toList() )
             .hasSize( 1 );
-      assertThat( queryResult.listStatements( context.selector( ":" + edgeName + " :title " + title ) ).toList() )
+      assertThat( queryResult.listStatements( context.selector( "test:" + edgeName + " :title " + title ) ).toList() )
             .hasSize( 1 );
    }
 }
