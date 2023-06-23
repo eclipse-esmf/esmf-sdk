@@ -41,6 +41,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
@@ -78,8 +79,7 @@ public class ShaclValidator {
     * If you have more than one element to validate, prefer the method {@link #validateElements(List)} to calling this method in a loop
     * for better performance.
     * {@link Resource#getModel()} on the element must not return null, i.e., the resource may not be created using
-    * {@link org.apache.jena.rdf.model.ResourceFactory#createProperty(String)}, but instead must be created via
-    * {@link Model#createResource(String)}.
+    * {@link ResourceFactory#createProperty(String)}, but instead must be created via {@link Model#createResource(String)}.
     *
     * @param element the element to be validated
     * @return the list of {@link Violation}s if there are violations
@@ -170,44 +170,58 @@ public class ShaclValidator {
    }
 
    public List<Violation> validateShapeForElement( final Resource element, final Shape.Node nodeShape, final Model resolvedModel ) {
+      return validateShapeForElement( element, nodeShape, resolvedModel, Optional.empty(), Optional.empty() );
+   }
+
+   public List<Violation> validateShapeForElement( final Resource element, final Shape.Node nodeShape, final Model resolvedModel,
+         final Optional<Resource> parentElement, final Optional<Property> parentProperty ) {
       final List<Violation> violations = new ArrayList<>();
       for ( final Shape.Property propertyShape : nodeShape.properties() ) {
-         for ( final Constraint constraint : propertyShape.attributes().constraints() ) {
-            final List<Statement> reachableNodes = propertyShape.path().accept( element, retriever );
-            // For all values that are present on the target node, check the applicable shapes and collect violations
-            for ( final Statement assertion : reachableNodes ) {
-               final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
-                     Optional.of( assertion.getPredicate() ), List.of( assertion ), this, resolvedModel );
-               violations.addAll( constraint.apply( assertion.getObject(), context ) );
-            }
-
-            // important detail: Sparql constraints must run independent of whether there are any matches via the sh:path property or not
-            // ( the check could be the verification whether the property exists )
-            if ( reachableNodes.isEmpty() && constraint instanceof SparqlConstraint ) {
-               final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ), Optional.empty(),
-                     List.of(), this, resolvedModel );
-               violations.addAll( constraint.apply( null, context ) );
-            }
-
-            // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints
-            // >= 1 exists, a violation must be emitted even though no value for the property exists
-            if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint
-                  && propertyShape.path() instanceof final PredicatePath predicatePath ) {
-               final Property rdfProperty = resolvedModel.createProperty( predicatePath.predicate().getURI() );
-               final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
-                     Optional.of( rdfProperty ), List.of(), this, resolvedModel );
-               violations.addAll( constraint.apply( null, context ) );
-            }
-         }
+         violations.addAll( validateShapeForElement( element, nodeShape, propertyShape, resolvedModel, parentElement, parentProperty ) );
       }
 
-      final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.empty(), Optional.empty(), List.of(), this,
-            resolvedModel );
+      final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.empty(), Optional.empty(),
+            parentElement, parentProperty, List.of(), this, resolvedModel );
       for ( final Constraint constraint : nodeShape.attributes().constraints() ) {
          if ( !constraint.canBeUsedOnNodeShapes() ) {
             continue;
          }
          violations.addAll( constraint.apply( element, context ) );
+      }
+      return violations;
+   }
+
+   public List<Violation> validateShapeForElement( final Resource element, final Shape.Node nodeShape, final Shape.Property propertyShape,
+         final Model resolvedModel, final Optional<Resource> parentElement, final Optional<Property> parentProperty ) {
+      final List<Violation> violations = new ArrayList<>();
+
+      for ( final Constraint constraint : propertyShape.attributes().constraints() ) {
+         final List<Statement> reachableNodes = propertyShape.path().accept( element, retriever );
+         // For all values that are present on the target node, check the applicable shapes and collect violations
+         for ( final Statement assertion : reachableNodes ) {
+            final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
+                  Optional.of( assertion.getPredicate() ),
+                  parentElement, parentProperty, List.of( assertion ), this, resolvedModel );
+            violations.addAll( constraint.apply( assertion.getObject(), context ) );
+         }
+
+         // important detail: Sparql constraints must run independent of whether there are any matches via the sh:path property or not
+         // ( the check could be the verification whether the property exists )
+         if ( reachableNodes.isEmpty() && constraint instanceof SparqlConstraint ) {
+            final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ), Optional.empty(),
+                  parentElement, parentProperty, List.of(), this, resolvedModel );
+            violations.addAll( constraint.apply( null, context ) );
+         }
+
+         // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints
+         // >= 1 exists, a violation must be emitted even though no value for the property exists
+         if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint
+               && propertyShape.path() instanceof final PredicatePath predicatePath ) {
+            final Property rdfProperty = resolvedModel.createProperty( predicatePath.predicate().getURI() );
+            final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
+                  Optional.of( rdfProperty ), parentElement, parentProperty, List.of(), this, resolvedModel );
+            violations.addAll( constraint.apply( null, context ) );
+         }
       }
 
       return violations;
@@ -266,5 +280,9 @@ public class ShaclValidator {
 
    public Model getShapesModel() {
       return shapesModel;
+   }
+
+   public PathNodeRetriever getRetriever() {
+      return retriever;
    }
 }
