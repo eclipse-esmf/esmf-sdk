@@ -175,8 +175,18 @@ public interface Violation {
             .orElse( "anonymous element" );
    }
 
+   default String parentElementName() {
+      return context().parentElement().map( Resource::getURI )
+            .map( this::shortUri )
+            .orElse( "anonymous element" );
+   }
+
    default String propertyName() {
       return context().property().map( Resource::getURI ).map( this::shortUri ).orElse( elementName() );
+   }
+
+   default String parentPropertyName() {
+      return context().parentProperty().map( Resource::getURI ).map( this::shortUri ).orElse( propertyName() );
    }
 
    default String value( final Property property ) {

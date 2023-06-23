@@ -48,6 +48,9 @@ public record NodeKindViolation( EvaluationContext context, Shape.NodeKind allow
          return String.format( "Property %s on %s is %s, but it must be %s.",
                propertyName(), context.element().isAnon() ? "the element" : elementName(),
                nodeKindString.apply( actualNodeKind ), nodeKindString.apply( allowedNodeKind ) );
+      } else if ( context.parentProperty().isPresent() ) {
+         return String.format( "Property %s on %s is %s, but it must be %s.",
+               parentPropertyName(), parentElementName(), nodeKindString.apply( actualNodeKind ), nodeKindString.apply( allowedNodeKind ) );
       }
       return context.element().isAnon() ?
             String.format( "The element is %s, but it must be %s.",
