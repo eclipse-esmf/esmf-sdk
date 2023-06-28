@@ -23,5 +23,5 @@
    bamm:operations ( ) .
 
 :property a bamm:Property ;
-   bamm:name "TestProperty" ;
+   bamm:name "property" ;
    bamm:characteristic bamm-c:Text .
