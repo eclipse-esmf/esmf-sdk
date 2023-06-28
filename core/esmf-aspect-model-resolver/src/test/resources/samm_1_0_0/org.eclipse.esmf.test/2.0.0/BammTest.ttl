@@ -17,6 +17,7 @@
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
 :BammTest a bamm:Aspect ;
+   bamm:name "BammTest" ;
    bamm:preferredName "BAMM Test"@en ;
    bamm:properties ( :property ) ;
    bamm:operations ( ) .
