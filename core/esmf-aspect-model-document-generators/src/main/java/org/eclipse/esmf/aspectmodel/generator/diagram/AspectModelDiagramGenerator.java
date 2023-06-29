@@ -17,6 +17,8 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -79,6 +81,8 @@ public class AspectModelDiagramGenerator {
 
    static final String GET_ELEMENT_NAME_FUNC = "urn:samm:org.eclipse.esmf.samm:function:2.0.0#getElementName";
    static final String GET_NAMESPACE_FUNC = "urn:samm:org.eclipse.esmf.samm:function:2.0.0#getNamespace";
+
+   private static final  String TMP_FONT_FILE = "/tmp/Font-RobotoCondensed-Regular.tmp";
 
    private final Query boxmodelToDotQuery;
    private final BoxModel boxModelNamespace;
@@ -168,8 +172,9 @@ public class AspectModelDiagramGenerator {
    private void generatePng( final String dotInput, final OutputStream output ) throws IOException {
       // To make the font available during PNG generation, it needs to be registered
       // in Java Runtime's graphics environment
-      try ( final InputStream fontStream = getInputStream( FONT_FILE ) ) {
-         final Font f = Font.createFont( Font.TRUETYPE_FONT, fontStream );
+      try{
+         File tmpFontFile = gnererateTmpFontFile();
+         final Font f = Font.createFont( Font.TRUETYPE_FONT, tmpFontFile );
          final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
          ge.registerFont( f );
       } catch ( final FontFormatException e ) {
@@ -180,7 +185,18 @@ public class AspectModelDiagramGenerator {
       final Graphviz graphviz = Graphviz.fromGraph( g );
       graphviz.render( guru.nidi.graphviz.engine.Format.PNG ).toOutputStream( output );
    }
-
+   private File gnererateTmpFontFile() throws IOException {
+      File tempFontFile =  new File(TMP_FONT_FILE);
+      if (!tempFontFile.exists()){
+         try (InputStream fontStream =  getInputStream(FONT_FILE)){
+            try (OutputStream output = new FileOutputStream(tempFontFile, false)){
+               fontStream.transferTo(output);
+            }
+         }
+      }
+      tempFontFile.deleteOnExit();
+      return  tempFontFile;
+   }
    private String base64EncodeInputStream( final InputStream in ) throws IOException {
       try ( final ByteArrayOutputStream os = new ByteArrayOutputStream() ) {
          final byte[] buffer = new byte[1024];
