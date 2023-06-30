@@ -13,6 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import static io.vavr.API.*;
+import static io.vavr.Predicates.instanceOf;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -357,14 +360,40 @@ public class AspectModelResolver {
     * @return the resolved model on success
     */
    public static Try<VersionedModel> loadAndResolveModel( final File input ) {
+      return loadAndResolveModelFromUrnLikeDir(input)
+            .orElse(() -> loadAndResolveModelFromDir(input)  );
+
+   }
+   private static Try<VersionedModel> loadAndResolveModelFromUrnLikeDir( final File input ) {
+      final AspectModelResolver resolver = new AspectModelResolver();
       final File inputFile = input.getAbsoluteFile();
-      return getModelRoot( inputFile ).flatMap( modelsRoot -> {
-         try ( final InputStream inputStream = new FileInputStream( input ) ) {
-            return new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), inputStream );
-         } catch ( final IOException exception ) {
-            throw new ModelResolutionException( "Could not open file " + input, exception );
-         }
-      } );
+      final Try<AspectModelUrn> urnTry = Try.of( () -> fileToUrn( inputFile ) );
+      final Try<FileSystemStrategy> strategyTry = getModelRoot( inputFile ).map( FileSystemStrategy::new );
+      //noinspection unchecked
+      return urnTry
+            .flatMap( urn -> strategyTry
+                  .flatMap( strategy -> resolver.resolveAspectModel( strategy, urn ) )
+                  .mapFailure(
+                        Case( $( instanceOf( IOException.class ) ),
+                              e -> new ModelResolutionException( "Could not load model " + urn + " from file " + input, e ) )
+                  )
+            );
+   }
+
+   private static Try<VersionedModel> loadAndResolveModelFromDir( final File input) {
+      final AspectModelResolver resolver = new AspectModelResolver();
+      final File inputFile = input.getAbsoluteFile();
+      final Try<Path> modelsRoot = Try.of( () -> inputFile.getParentFile().toPath() );
+      final Try<FileSystemStrategy> strategyTry = modelsRoot.map( FileSystemStrategy::new );
+
+      //noinspection unchecked
+      return strategyTry
+            .flatMapTry( strategy -> Try
+                  .withResources( () -> new FileInputStream( input ) )
+                  .of( stream -> resolver.resolveAspectModel( strategy, stream ) ) )
+            .flatMap( Function.identity() )
+            .mapFailure( Case( $( instanceOf( IOException.class ) ),
+                  e -> new ModelResolutionException( "Could not open file " + input, e ) ) );
    }
 
    /**
