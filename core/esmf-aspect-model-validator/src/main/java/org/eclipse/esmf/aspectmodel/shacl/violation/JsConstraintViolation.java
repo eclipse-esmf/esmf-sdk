@@ -48,8 +48,8 @@ public record JsConstraintViolation( EvaluationContext context, String constrain
    public String violationSpecificMessage() {
       if ( constraintMessage().isEmpty() ) {
          return context.property().isPresent() ?
-               String.format( "Property %s on %s is invalid.", propertyName(), elementName() ) :
-               String.format( "%s is invalid.", elementName() );
+               String.format( "Property %s on %s is invalid.", context.propertyName(), context.elementName() ) :
+               String.format( "%s is invalid.", context.elementName() );
       }
       String interpolatedMessage = bindings.getOrDefault( "message", constraintMessage() ).toString();
       for ( final Map.Entry<String, Object> entry : bindings.entrySet() ) {
@@ -57,7 +57,7 @@ public record JsConstraintViolation( EvaluationContext context, String constrain
          if ( entry.getValue() instanceof final Node_Literal literal ) {
             value = literal.getLiteralLexicalForm();
          } else if ( entry.getValue() instanceof final Node_URI namedNode ) {
-            value = shortUri( namedNode.getURI() );
+            value = context.shortUri( namedNode.getURI() );
          } else if ( entry.getValue() instanceof Node_Blank ) {
             value = "anonymous element";
          } else {

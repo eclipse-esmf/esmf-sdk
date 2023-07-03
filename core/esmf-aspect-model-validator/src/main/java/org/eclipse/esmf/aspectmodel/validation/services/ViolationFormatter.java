@@ -31,7 +31,8 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
    @Override
    public String apply( final List<Violation> violations ) {
       final List<Violation> nonSemanticViolations = violations.stream().filter( violation ->
-            violation.errorCode().equals( InvalidSyntaxViolation.ERROR_CODE ) || violation.errorCode().equals( ProcessingViolation.ERROR_CODE ) ).toList();
+            violation.errorCode().equals( InvalidSyntaxViolation.ERROR_CODE ) || violation.errorCode()
+                  .equals( ProcessingViolation.ERROR_CODE ) ).toList();
       if ( !nonSemanticViolations.isEmpty() ) {
          return processNonSemanticViolation( nonSemanticViolations );
       }
@@ -48,7 +49,8 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
          return String.format( "Input model is valid%n" );
       }
 
-      final Map<String, List<Violation>> violationsByElement = violations.stream().collect( Collectors.groupingBy( Violation::elementName ) );
+      final Map<String, List<Violation>> violationsByElement = violations.stream().collect( Collectors.groupingBy( violation ->
+            violation.context().elementName() ) );
       final StringBuilder builder = new StringBuilder();
       builder.append( String.format( "Semantic violations were found:%n%n" ) );
       for ( final Map.Entry<String, List<Violation>> entry : violationsByElement.entrySet() ) {
@@ -66,6 +68,7 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
 
    /**
     * Default formatting for most violations
+    *
     * @param violation the violation
     * @return formatted representation
     */
@@ -81,6 +84,7 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
 
    /**
     * Processing violation, e.g. a model element that could not be resolved
+    *
     * @param violation the violation
     * @return formatted representation
     */
@@ -91,24 +95,30 @@ public class ViolationFormatter implements Function<List<Violation>, String>, Vi
 
    /**
     * Syntax error in the source file
+    *
     * @param violation the violation
     * @return formatted representation
     */
    @Override
    public String visitInvalidSyntaxViolation( final InvalidSyntaxViolation violation ) {
       final StringBuilder builder = new StringBuilder();
-      builder.append( String.format( "Syntax error in line %d, column %d: %s%n%n", violation.line(), violation.column(), violation.message() ) );
+      builder.append(
+            String.format( "Syntax error in line %d, column %d: %s%n%n", violation.line(), violation.column(), violation.message() ) );
       printSyntaxViolationSource( violation, builder, "" );
       return builder.toString();
    }
 
-   protected void printSyntaxViolationSource( final InvalidSyntaxViolation violation, final StringBuilder builder, final String additionalIndentation ) {
+   protected void printSyntaxViolationSource( final InvalidSyntaxViolation violation, final StringBuilder builder,
+         final String additionalIndentation ) {
       final String[] lines = violation.source().split( "\n" );
       final int linesBeforeAndAfter = 5;
       final int lowerIndex = violation.line() > linesBeforeAndAfter ? (int) (violation.line() - linesBeforeAndAfter - 1) : 0;
-      final int upperIndex = violation.line() + linesBeforeAndAfter + 1 < lines.length ? (int) (violation.line() + linesBeforeAndAfter - 1) : lines.length - 1;
+      final int upperIndex = violation.line() + linesBeforeAndAfter + 1 < lines.length ?
+            (int) (violation.line() + linesBeforeAndAfter - 1) :
+            lines.length - 1;
       for ( int i = lowerIndex; i <= upperIndex; i++ ) {
-         builder.append( String.format( "%s%2s%3d: %s%n", additionalIndentation, (i + 1 == violation.line() ? "->" : ""), i + 1, lines[i] ) );
+         builder.append(
+               String.format( "%s%2s%3d: %s%n", additionalIndentation, (i + 1 == violation.line() ? "->" : ""), i + 1, lines[i] ) );
       }
       builder.append( "\n" );
    }

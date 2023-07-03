@@ -170,18 +170,18 @@ public class ShaclValidator {
    }
 
    public List<Violation> validateShapeForElement( final Resource element, final Shape.Node nodeShape, final Model resolvedModel ) {
-      return validateShapeForElement( element, nodeShape, resolvedModel, Optional.empty(), Optional.empty() );
+      return validateShapeForElement( element, nodeShape, resolvedModel, Optional.empty() );
    }
 
    public List<Violation> validateShapeForElement( final Resource element, final Shape.Node nodeShape, final Model resolvedModel,
-         final Optional<Resource> parentElement, final Optional<Property> parentProperty ) {
+         final Optional<EvaluationContext> parentContext ) {
       final List<Violation> violations = new ArrayList<>();
       for ( final Shape.Property propertyShape : nodeShape.properties() ) {
-         violations.addAll( validateShapeForElement( element, nodeShape, propertyShape, resolvedModel, parentElement, parentProperty ) );
+         violations.addAll( validateShapeForElement( element, nodeShape, propertyShape, resolvedModel, parentContext ) );
       }
 
       final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.empty(), Optional.empty(),
-            parentElement, parentProperty, List.of(), this, resolvedModel );
+            parentContext, List.of(), this, resolvedModel );
       for ( final Constraint constraint : nodeShape.attributes().constraints() ) {
          if ( !constraint.canBeUsedOnNodeShapes() ) {
             continue;
@@ -192,7 +192,7 @@ public class ShaclValidator {
    }
 
    public List<Violation> validateShapeForElement( final Resource element, final Shape.Node nodeShape, final Shape.Property propertyShape,
-         final Model resolvedModel, final Optional<Resource> parentElement, final Optional<Property> parentProperty ) {
+         final Model resolvedModel, final Optional<EvaluationContext> parentContext ) {
       final List<Violation> violations = new ArrayList<>();
 
       for ( final Constraint constraint : propertyShape.attributes().constraints() ) {
@@ -200,8 +200,7 @@ public class ShaclValidator {
          // For all values that are present on the target node, check the applicable shapes and collect violations
          for ( final Statement assertion : reachableNodes ) {
             final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
-                  Optional.of( assertion.getPredicate() ),
-                  parentElement, parentProperty, List.of( assertion ), this, resolvedModel );
+                  Optional.of( assertion.getPredicate() ), parentContext, List.of( assertion ), this, resolvedModel );
             violations.addAll( constraint.apply( assertion.getObject(), context ) );
          }
 
@@ -209,7 +208,7 @@ public class ShaclValidator {
          // ( the check could be the verification whether the property exists )
          if ( reachableNodes.isEmpty() && constraint instanceof SparqlConstraint ) {
             final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ), Optional.empty(),
-                  parentElement, parentProperty, List.of(), this, resolvedModel );
+                  parentContext, List.of(), this, resolvedModel );
             violations.addAll( constraint.apply( null, context ) );
          }
 
@@ -219,7 +218,7 @@ public class ShaclValidator {
                && propertyShape.path() instanceof final PredicatePath predicatePath ) {
             final Property rdfProperty = resolvedModel.createProperty( predicatePath.predicate().getURI() );
             final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
-                  Optional.of( rdfProperty ), parentElement, parentProperty, List.of(), this, resolvedModel );
+                  Optional.of( rdfProperty ), parentContext, List.of(), this, resolvedModel );
             violations.addAll( constraint.apply( null, context ) );
          }
       }

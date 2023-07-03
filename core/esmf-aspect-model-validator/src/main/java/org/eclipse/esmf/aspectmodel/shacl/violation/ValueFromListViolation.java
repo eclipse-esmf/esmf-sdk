@@ -38,8 +38,8 @@ public record ValueFromListViolation( EvaluationContext context, List<RDFNode> a
    @Override
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s which is not in the list of allowed values: %s.",
-            propertyName(), elementName(), value( actual ),
-            allowed.stream().map( this::value ).collect( Collectors.joining( ", ", "[", "]" ) ) );
+            context.propertyName(), context.elementName(), context.value( actual ),
+            allowed.stream().map( context::value ).collect( Collectors.joining( ", ", "[", "]" ) ) );
    }
 
    @Override

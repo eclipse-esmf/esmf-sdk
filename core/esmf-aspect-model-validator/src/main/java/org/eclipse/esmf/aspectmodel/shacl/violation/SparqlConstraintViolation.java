@@ -44,15 +44,15 @@ public record SparqlConstraintViolation( EvaluationContext context, String const
    public String violationSpecificMessage() {
       if ( constraintMessage().isEmpty() ) {
          if ( context.property().isPresent() ) {
-            return String.format( "Property %s on %s is invalid.", propertyName(), elementName() );
+            return String.format( "Property %s on %s is invalid.", context.propertyName(), context.elementName() );
          }
-         return String.format( "%s is invalid.", elementName() );
+         return String.format( "%s is invalid.", context.elementName() );
       }
 
       String interpolatedMessage = constraintMessage();
       for ( final Map.Entry<String, RDFNode> entry : bindings.entrySet() ) {
          final String value = entry.getValue().isURIResource() ?
-               shortUri( entry.getValue().asResource().getURI() ) :
+               context.shortUri( entry.getValue().asResource().getURI() ) :
                entry.getValue().toString();
          interpolatedMessage = interpolatedMessage.replaceAll( "\\{[$?]" + entry.getKey() + "\\}", value );
       }

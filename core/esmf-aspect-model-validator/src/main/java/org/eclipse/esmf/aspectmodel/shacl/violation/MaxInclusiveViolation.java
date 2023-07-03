@@ -35,7 +35,7 @@ public record MaxInclusiveViolation( EvaluationContext context, Literal max, Lit
    @Override
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s, but it must be less than or equal to %s.",
-            propertyName(), elementName(), value( actual ), value( max ) );
+            context.propertyName(), context.elementName(), context.value( actual ), context.value( max ) );
    }
 
    @Override

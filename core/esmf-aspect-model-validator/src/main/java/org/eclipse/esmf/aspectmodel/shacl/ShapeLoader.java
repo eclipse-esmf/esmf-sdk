@@ -131,8 +131,8 @@ public class ShapeLoader implements Function<Model, List<Shape.Node>> {
                      context.statement().getModel().createProperty( context.statement().getResource().getURI() ) ) )
          .put( SHACL.not(), context ->
                new NotConstraint( constraints( context.statement().getObject().asResource(), context.path() ).get( 0 ) ) )
-         .put( SHACL.and(), context -> new AndConstraint( nestedConstraintList( context.statement(), context.path() ) ) )
-         .put( SHACL.or(), context -> new OrConstraint( nestedConstraintList( context.statement(), context.path() ) ) )
+         .put( SHACL.and(), context -> new AndConstraint( nestedShapesList( context.statement() ) ) )
+         .put( SHACL.or(), context -> new OrConstraint( nestedShapesList( context.statement() ) ) )
          .put( SHACL.xone(), context -> new XoneConstraint( nestedShapesList( context.statement() ) ) )
          .put( SHACL.node(), context -> {
             // Since sh:node can recursively refer to the same NodeShape is used in when shapes define recursive structures,

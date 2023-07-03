@@ -35,7 +35,7 @@ public record MinExclusiveViolation( EvaluationContext context, Literal min, Lit
    @Override
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s has value %s, but it must be greater than %s.",
-            propertyName(), elementName(), value( actual ), value( min ) );
+            context.propertyName(), context.elementName(), context.value( actual ), context.value( min ) );
    }
 
    @Override

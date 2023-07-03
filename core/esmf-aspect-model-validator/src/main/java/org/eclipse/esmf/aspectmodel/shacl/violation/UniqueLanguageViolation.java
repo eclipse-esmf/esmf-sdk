@@ -34,7 +34,7 @@ public record UniqueLanguageViolation( EvaluationContext context, Set<String> du
    @Override
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s uses language tag that has been used already: %s.",
-            propertyName(), elementName(), duplicates );
+            context.propertyName(), context.elementName(), duplicates );
    }
 
    @Override
