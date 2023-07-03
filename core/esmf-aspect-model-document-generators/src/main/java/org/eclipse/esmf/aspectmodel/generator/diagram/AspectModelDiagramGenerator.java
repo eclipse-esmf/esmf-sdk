@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.EnumMap;
 import java.util.List;
@@ -173,7 +174,7 @@ public class AspectModelDiagramGenerator {
       // To make the font available during PNG generation, it needs to be registered
       // in Java Runtime's graphics environment
       try{
-         File tmpFontFile = gnererateTmpFontFile();
+         final File tmpFontFile = generateTmpFontFile();
          final Font f = Font.createFont( Font.TRUETYPE_FONT, tmpFontFile );
          final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
          ge.registerFont( f );
@@ -185,14 +186,13 @@ public class AspectModelDiagramGenerator {
       final Graphviz graphviz = Graphviz.fromGraph( g );
       graphviz.render( guru.nidi.graphviz.engine.Format.PNG ).toOutputStream( output );
    }
-   private File gnererateTmpFontFile() throws IOException {
-      File tempFontFile =  new File(TMP_FONT_FILE);
-      if (!tempFontFile.exists()){
-         try (InputStream fontStream =  getInputStream(FONT_FILE)){
-            try (OutputStream output = new FileOutputStream(tempFontFile, false)){
-               fontStream.transferTo(output);
+   private File generateTmpFontFile() throws IOException {
+      File tempFontFile = new File( System.getProperty( "java.io.tmpdir" ) + "/aspect-model-diagram.tmp" );
+      if ( !tempFontFile.exists() ){
+         try ( final InputStream fontStream = getInputStream( FONT_FILE );
+              final OutputStream output = new FileOutputStream( tempFontFile, false ) ){
+               fontStream.transferTo( output );
             }
-         }
       }
       tempFontFile.deleteOnExit();
       return  tempFontFile;
