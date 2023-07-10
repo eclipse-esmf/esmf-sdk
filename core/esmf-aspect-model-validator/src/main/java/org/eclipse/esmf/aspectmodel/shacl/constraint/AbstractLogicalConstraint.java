@@ -33,13 +33,7 @@ public abstract class AbstractLogicalConstraint implements Constraint {
    }
 
    protected List<List<Violation>> violationsPerShape( final RDFNode rdfNode, final EvaluationContext context ) {
-      return shapes.stream().map( shape -> {
-         final EvaluationContext newContext = new EvaluationContext( context.element(), context.shape(),
-               shape instanceof Shape.Node ? context.propertyShape() : Optional.of( (Shape.Property) shape ),
-               context.property(), Optional.of( context ), context.offendingStatements(), context.validator(), context.resolvedModel() );
-         return shape.attributes().constraints().stream().flatMap( constraint -> constraint.apply( rdfNode, newContext ).stream() )
-               .toList();
-      } ).toList();
+      return shapes.stream().map( shape -> shape.accept( new ViolationsForShape( rdfNode, context ) ) ).toList();
    }
 
    protected long numberOfEmptyViolationLists( final List<List<Violation>> violationsPerConstraint ) {
@@ -48,5 +42,31 @@ public abstract class AbstractLogicalConstraint implements Constraint {
 
    public List<Shape> shapes() {
       return shapes;
+   }
+
+   protected static class ViolationsForShape implements Shape.Visitor<List<Violation>> {
+      private final RDFNode rdfNode;
+      private final EvaluationContext context;
+
+      protected ViolationsForShape( final RDFNode rdfNode, final EvaluationContext context ) {
+         this.rdfNode = rdfNode;
+         this.context = context;
+      }
+
+      @Override
+      public List<Violation> visitNodeShape( final Shape.Node shape ) {
+         final EvaluationContext newContext = new EvaluationContext( context.element(), context.shape(),
+               context.propertyShape(), context.property(), Optional.of( context ), context.offendingStatements(), context.validator(),
+               context.resolvedModel() );
+         return shape.attributes().constraints().stream().flatMap( constraint ->
+                     constraint.apply( rdfNode, newContext ).stream() )
+               .toList();
+      }
+
+      @Override
+      public List<Violation> visitPropertyShape( final Shape.Property propertyShape ) {
+         return context.validator().validateShapeForElement( context.element(), (Shape.Node) context.shape(), propertyShape,
+               context.resolvedModel(), Optional.of( context ) );
+      }
    }
 }

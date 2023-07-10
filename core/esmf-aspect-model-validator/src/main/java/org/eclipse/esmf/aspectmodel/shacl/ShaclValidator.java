@@ -214,11 +214,12 @@ public class ShaclValidator {
 
          // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints
          // >= 1 exists, a violation must be emitted even though no value for the property exists
-         if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint
-               && propertyShape.path() instanceof final PredicatePath predicatePath ) {
-            final Property rdfProperty = resolvedModel.createProperty( predicatePath.predicate().getURI() );
+         if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint ) {
+            final Optional<Property> property = propertyShape.path() instanceof PredicatePath ?
+                  Optional.of( resolvedModel.createProperty( ((PredicatePath) propertyShape.path()).predicate().getURI() ) ) :
+                  Optional.empty();
             final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
-                  Optional.of( rdfProperty ), parentContext, List.of(), this, resolvedModel );
+                  property, parentContext, List.of(), this, resolvedModel );
             violations.addAll( constraint.apply( null, context ) );
          }
       }

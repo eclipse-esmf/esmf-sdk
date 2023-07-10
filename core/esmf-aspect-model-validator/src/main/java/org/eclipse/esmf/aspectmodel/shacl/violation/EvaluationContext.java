@@ -83,7 +83,8 @@ public record EvaluationContext( Resource element, Shape shape, Optional<Shape.P
    }
 
    public String propertyName() {
-      return property().map( Resource::getURI ).map( this::shortUri ).orElse( elementName() );
+      return property().map( Resource::getURI ).map( this::shortUri )
+            .orElse( propertyShape().map( propertyShape -> propertyShape.path().toString() ).orElse( elementName() ) );
    }
 
    public String parentPropertyName() {

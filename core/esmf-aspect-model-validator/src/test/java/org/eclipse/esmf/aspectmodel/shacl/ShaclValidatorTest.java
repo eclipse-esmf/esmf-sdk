@@ -15,12 +15,8 @@ package org.eclipse.esmf.aspectmodel.shacl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +27,7 @@ import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.path.PredicatePath;
+import org.eclipse.esmf.aspectmodel.shacl.path.SequencePath;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ClassTypeViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ClosedViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
@@ -1838,7 +1835,7 @@ public class ShaclValidatorTest {
    }
 
    @Test
-   public void testXoneConstraint() {
+   public void testXoneConstraintInPropertyShape() {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -1888,7 +1885,7 @@ public class ShaclValidatorTest {
    }
 
    @Test
-   void testXoneConstraintWithNoSubViolations() {
+   void testXoneConstraintInPropertyShapeWithNoSubViolations() {
       final Model shapesModel = model( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -1937,6 +1934,114 @@ public class ShaclValidatorTest {
       assertThat( violation.violations() ).isEmpty();
       assertThat( violation.message() ).contains(
             "Exactly one of the following conditions should lead to a violation, but all of them passed successfully" );
+   }
+
+   @Test
+   void testXoneConstraintInNodeShapeExpectSuccess() {
+      final Model shapesModel = model( """
+            @prefix sh: <http://www.w3.org/ns/shacl#> .
+            @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+            @prefix : <http://example.com#> .
+
+            :MyShape
+               a sh:NodeShape ;
+               sh:targetClass :TestClass ;
+               sh:name "Test shape" ;
+               sh:description "Test shape description" ;
+               sh:xone (
+                 :Property1Shape
+                 :Property2Shape
+               ) .
+               
+            :Property1Shape
+              a sh:PropertyShape ;
+              sh:path :foo ;
+              sh:minCount 1 .
+              
+            :Property2Shape
+              a sh:PropertyShape ;
+              sh:path :bar ;
+              sh:minCount 1 .
+            """ );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            :Foo a :TestClass ;
+              :foo 1 .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations ).isEmpty();
+   }
+
+   @Test
+   void testXoneConstraintInNodeShapeExpectFailure() {
+      final Model shapesModel = model(
+            """
+                  @prefix sh: <http://www.w3.org/ns/shacl#> .
+                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+                  @prefix : <http://example.com#> .
+
+                  :MyShape
+                     a sh:NodeShape ;
+                     sh:targetClass :TestClass ;
+                     sh:name "Test shape" ;
+                     sh:description "Test shape description" ;
+                     sh:xone (
+                       :Property1Shape
+                       :Property2Shape
+                     ) .
+                     
+                  :Property1Shape
+                    a sh:PropertyShape ;
+                    sh:path :foo ;
+                    sh:minCount 1 .
+                    
+                  :Property2Shape
+                    a sh:PropertyShape ;
+                    sh:path ( :bar :baz ) ;
+                    sh:minCount 1 .
+                  """
+      );
+
+      final Model dataModel = model( """
+            @prefix : <http://example.com#> .
+            :Foo a :TestClass ;
+              :testProperty 42 .
+            """ );
+
+      final ShaclValidator validator = new ShaclValidator( shapesModel );
+      final Resource element = dataModel.createResource( namespace + "Foo" );
+      final List<Violation> violations = validator.validateElement( element );
+
+      assertThat( violations.size() ).isEqualTo( 1 );
+      final Violation finding = violations.get( 0 );
+      assertThat( finding ).isInstanceOf( XoneViolation.class );
+      assertThat( finding.message() ).startsWith( "Exactly one of the following violations must be fixed:" );
+      assertThat( finding.message() ).contains( "Mandatory property :foo is missing on :Foo" );
+      assertThat( finding.message() ).contains( "Mandatory property :bar/:baz is missing on :Foo" );
+      assertThat( finding ).isInstanceOfSatisfying( XoneViolation.class, xoneViolation ->
+            assertThat( xoneViolation.violations() ).satisfiesExactly(
+                  violation ->
+                        assertThat( violation ).isInstanceOfSatisfying( MinCountViolation.class, minCountViolation -> {
+                           assertThat( minCountViolation.allowed() ).isEqualTo( 1 );
+                           assertThat( minCountViolation.actual() ).isEqualTo( 0 );
+                           assertThat( minCountViolation.context().propertyShape() ).hasValueSatisfying( property ->
+                                 assertThat( property.path() ).isInstanceOfSatisfying( PredicatePath.class, predicatePath ->
+                                       assertThat( predicatePath.toString() ).isEqualTo( ":foo" ) ) );
+                        } ),
+                  violation ->
+                        assertThat( violation ).isInstanceOfSatisfying( MinCountViolation.class, minCountViolation -> {
+                           assertThat( minCountViolation.allowed() ).isEqualTo( 1 );
+                           assertThat( minCountViolation.actual() ).isEqualTo( 0 );
+                           assertThat( minCountViolation.context().propertyShape() ).hasValueSatisfying( property ->
+                                 assertThat( property.path() ).isInstanceOfSatisfying( SequencePath.class, sequencePath ->
+                                       assertThat( sequencePath.toString() ).isEqualTo( ":bar/:baz" ) ) );
+                        } )
+            ) );
    }
 
    @Test
