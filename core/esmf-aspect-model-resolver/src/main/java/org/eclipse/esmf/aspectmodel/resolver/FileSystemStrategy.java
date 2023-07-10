@@ -13,6 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import static io.vavr.API.*;
+import static io.vavr.Predicates.instanceOf;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -32,7 +35,7 @@ import io.vavr.control.Try;
  */
 public class FileSystemStrategy extends AbstractResolutionStrategy {
    private static final Logger LOG = LoggerFactory.getLogger( FileSystemStrategy.class );
-   private final Path modelsRoot;
+   protected final Path modelsRoot;
 
    /**
     * Initialize the FileSystemStrategy with the root path of models. The directory
@@ -63,14 +66,18 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
     *
     * @param aspectModelUrn The model URN
     * @return The model on success,
-    *       {@link IllegalArgumentException} if the model file can not be read,
-    *       {@link org.apache.jena.riot.RiotException} on parser error,
-    *       {@link MalformedURLException} if the AspectModelUrn is invalid,
-    *       {@link FileNotFoundException} if no file containing the element was found
+    * {@link IllegalArgumentException} if the model file can not be read,
+    * {@link org.apache.jena.riot.RiotException} on parser error,
+    * {@link MalformedURLException} if the AspectModelUrn is invalid,
+    * {@link FileNotFoundException} if no file containing the element was found
     */
    @Override
    public Try<Model> apply( final AspectModelUrn aspectModelUrn ) {
-      final Path directory = modelsRoot.resolve( aspectModelUrn.getNamespace() ).resolve( aspectModelUrn.getVersion() );
+      final Path directory = resolve( aspectModelUrn );
+      return loadFromDirectory( aspectModelUrn, directory );
+   }
+
+   protected Try<Model> loadFromDirectory( AspectModelUrn aspectModelUrn, Path directory ) {
       final File namedResourceFile = directory.resolve( aspectModelUrn.getName() + ".ttl" ).toFile();
       if ( namedResourceFile.exists() ) {
          return loadFromUri( namedResourceFile.toURI() );
@@ -90,6 +97,60 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
                   .getOrElse( false ) )
             .findFirst()
             .orElse( Try.failure( new FileNotFoundException(
-                  "No model file containing " + aspectModelUrn.toString() + " could be found in directory: " + directory ) ) );
+                  "No model file containing " + aspectModelUrn + " could be found in directory: " + directory ) ) );
+   }
+
+   protected Path resolve( AspectModelUrn aspectModelUrn ) {
+      return modelsRoot.resolve( aspectModelUrn.getNamespace() ).resolve( aspectModelUrn.getVersion() );
+   }
+
+   @Override
+   public String toString() {
+      return "FileSystemStrategy(root=" + modelsRoot + ')';
+   }
+
+   /**
+    * Initialize the File System Strategy where the default namespace is resolved in the root folder.
+    */
+   public static class DefaultNamespace extends FileSystemStrategy {
+      AspectModelUrn defaultUrn;
+
+      public DefaultNamespace( Path modelsRoot ) {
+         super( modelsRoot );
+      }
+
+      @Override
+      protected Path resolve( AspectModelUrn urn ) {
+         return (urn.getNamespace().equals( defaultUrn.getNamespace() ) && urn.getVersion().equals( defaultUrn.getVersion() ))
+               ? modelsRoot
+               : super.resolve( urn );
+      }
+
+      @Override
+      public Try<Model> apply( final AspectModelUrn urn ) {
+         final Path directory = resolve( urn );
+         return loadFromDirectory( urn, directory )
+               .recoverWith( FileNotFoundException.class,
+                     ex -> loadFromDirectory( urn, super.resolve( urn ) )
+                           .mapFailure( Case( $( instanceOf( FileNotFoundException.class ) ),
+                                 e -> new FileNotFoundException( ex.getMessage() + ". AND " + e.getMessage() ) ) )
+               );
+
+      }
+
+      public static <T extends ResolutionStrategy> T withDefaultNamespace( T strategy, Model model ) {
+         if ( strategy instanceof DefaultNamespace ) {
+            Optional.ofNullable( model.getNsPrefixURI( "" ) ).ifPresent( ns ->
+                  ((DefaultNamespace) strategy).defaultUrn = AspectModelUrn.fromUrn( ns + "DefaultPath" )
+            );
+         }
+
+         return strategy;
+      }
+
+      @Override
+      public String toString() {
+         return super.toString() + ".DefaultNamespace(ns=" + defaultUrn + ')';
+      }
    }
 }

@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
@@ -126,7 +127,7 @@ public class AspectModelResolver {
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final InputStream inputStream ) {
-      return TurtleLoader.loadTurtle( inputStream ).flatMap( model -> resolveAspectModel( resolutionStrategy, model ) );
+      return TurtleLoader.loadTurtle( inputStream ).flatMap( model -> resolveAspectModel( FileSystemStrategy.DefaultNamespace.withDefaultNamespace(resolutionStrategy, model), model ) );
    }
 
    /**
@@ -384,7 +385,7 @@ public class AspectModelResolver {
       final AspectModelResolver resolver = new AspectModelResolver();
       final File inputFile = input.getAbsoluteFile();
       final Try<Path> modelsRoot = Try.of( () -> inputFile.getParentFile().toPath() );
-      final Try<FileSystemStrategy> strategyTry = modelsRoot.map( FileSystemStrategy::new );
+      final Try<FileSystemStrategy> strategyTry = modelsRoot.map( FileSystemStrategy.DefaultNamespace::new );
 
       //noinspection unchecked
       return strategyTry
