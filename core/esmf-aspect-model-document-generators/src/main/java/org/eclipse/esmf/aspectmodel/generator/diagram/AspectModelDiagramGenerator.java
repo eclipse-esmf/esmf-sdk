@@ -83,8 +83,6 @@ public class AspectModelDiagramGenerator {
    static final String GET_ELEMENT_NAME_FUNC = "urn:samm:org.eclipse.esmf.samm:function:2.0.0#getElementName";
    static final String GET_NAMESPACE_FUNC = "urn:samm:org.eclipse.esmf.samm:function:2.0.0#getNamespace";
 
-   private static final  String TMP_FONT_FILE = "/tmp/Font-RobotoCondensed-Regular.tmp";
-
    private final Query boxmodelToDotQuery;
    private final BoxModel boxModelNamespace;
 
@@ -187,7 +185,7 @@ public class AspectModelDiagramGenerator {
       graphviz.render( guru.nidi.graphviz.engine.Format.PNG ).toOutputStream( output );
    }
    private File generateTmpFontFile() throws IOException {
-      File tempFontFile = new File( System.getProperty( "java.io.tmpdir" ) + "/aspect-model-diagram.tmp" );
+      File tempFontFile = new File( System.getProperty( "java.io.tmpdir" ) + File.separator + "aspect-model-diagram.tmp" );
       if ( !tempFontFile.exists() ){
          try ( final InputStream fontStream = getInputStream( FONT_FILE );
               final OutputStream output = new FileOutputStream( tempFontFile, false ) ){
