@@ -2,7 +2,9 @@ name: Check New Pull Request
 on:
   pull_request:
     branches:
-    - main
+      - main
+    paths-ignore:
+      - 'documentation/decisions/**'
 jobs:
   build-and-test:
     name: ${{ matrix.os }} build
