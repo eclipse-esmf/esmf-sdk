@@ -18,6 +18,11 @@ Model (SAMM) and supports its use.
 * For general discussions of the ESMF, modeling questions etc. we use the [community forum](https://www.eclipse.org/forums/index.php/f/617/).
 * For discussions specific to development, the preferred way is the [developer mailing list](https://accounts.eclipse.org/mailing-list/esmf-dev).
 
+## Architecture Decision Records
+
+Decisions on code and architecture are documented using [Markdown Any Decision
+Records](https://adr.github.io/madr/) in [documentation/decisions/](https://github.com/eclipse-esmf/esmf-sdk/tree/main/documentation/decisions).
+
 ## Branching
 We follow the [Git branching guidance](https://docs.microsoft.com/en-us/azure/devops/repos/git/git-branching-guidance?view=azure-devops).
 
