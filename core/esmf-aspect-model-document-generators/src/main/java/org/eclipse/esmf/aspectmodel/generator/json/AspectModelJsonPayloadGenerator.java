@@ -220,8 +220,19 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       if ( characteristic.is( Collection.class ) ) {
          final List<Object> collectionValues = getCollectionValues( property, (Collection) characteristic );
          return toMap( property.getName(), collectionValues );
+      } else if ( isConstrainedCollection( characteristic ) ) {
+         return toMap( property.getName(), getCollectionValues( property, characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class ) ) );
       }
       return ImmutableMap.of();
+   }
+
+   private boolean isConstrainedCollection( final Characteristic characteristic ) {
+      if ( !characteristic.is( Trait.class ) ) {
+         return false;
+      }
+      final Trait trait = characteristic.as( Trait.class );
+      return trait.getBaseCharacteristic().is( Collection.class ) && (trait.getConstraints().size() == 1) &&
+            trait.getConstraints().get( 0 ).is( LengthConstraint.class );
    }
 
    private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property ) {
@@ -314,7 +325,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return ImmutableList.of( transformProperties( entity.getAllProperties() ) );
       }
       if ( dataType.is( Scalar.class ) ) {
-         return ImmutableList.of( getExampleValueOrElseRandom( property ) );
+         final Object payload = getExampleValueOrElseRandom( property );
+         return payload instanceof List ? (List) payload : ImmutableList.of( payload );
       }
       throw new IllegalArgumentException( String.format( "DataType %s is unknown", dataType ) );
    }
@@ -488,21 +500,22 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          final BigInteger maxLength = lengthConstraint.getMaxValue().orElse( BigInteger.valueOf( Integer.MAX_VALUE ) );
          final BigInteger minLength = lengthConstraint.getMinValue().orElse( BigInteger.ZERO );
 
-         final EasyRandomParameters easyRandomParameters = new EasyRandomParameters().stringLengthRange( minLength.intValue(), maxLength.intValue() );
-         final EasyRandom easyRandom = new EasyRandom( easyRandomParameters );
          if ( traitBaseCharacteristic.is( Collection.class ) ) {
             final List<Object> returnValues = new ArrayList<>();
             // Fill in minLength elements
             for ( int i = 0; i < minLength.intValue(); i++ ) {
-               returnValues.add( easyRandom.nextObject( (Class<?>) exampleValueType ) );
+               returnValues.add( defaultEasyRandom.nextObject( (Class<?>) exampleValueType ) );
             }
             // Add between minLength and maxLength-minLength elements, but not more than 5
             final int amount = getRandomInteger( minLength.intValue(), Math.min( maxLength.intValue() - minLength.intValue(), 5 ) );
             for ( int i = 0; i < amount; i++ ) {
-               returnValues.add( easyRandom.nextObject( (Class<?>) exampleValueType ) );
+               returnValues.add( defaultEasyRandom.nextObject( (Class<?>) exampleValueType ) );
             }
             return returnValues;
          }
+
+         final EasyRandomParameters easyRandomParameters = new EasyRandomParameters().stringLengthRange( minLength.intValue(), maxLength.intValue() );
+         final EasyRandom easyRandom = new EasyRandom( easyRandomParameters );
          return easyRandom.nextObject( (Class<?>) exampleValueType );
       }
 

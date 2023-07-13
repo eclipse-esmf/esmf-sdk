@@ -51,6 +51,7 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithAbstrac
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithCollectionOfSimpleType;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithCollectionWithAbstractEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithComplexEntityCollectionEnum;
+import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithConstrainedSet;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithConstraintProperties;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithConstraints;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithCurie;
@@ -65,6 +66,7 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithExtende
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithGTypeForRangeConstraints;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithGenericNumericProperty;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithMultiLanguageText;
+import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithMultilanguageExampleValue;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithMultipleCollectionsOfSimpleType;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithMultipleEntities;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithMultipleEntitiesAndEither;
@@ -349,6 +351,17 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
+   public void testGenerateAspectWithMultiLanguageExampleValue( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_MULTILANGUAGE_EXAMPLE_VALUE, metaModelVersion );
+      final AspectWithMultilanguageExampleValue aspectWithMultiLanguageText = parseJson( generatedJson, AspectWithMultilanguageExampleValue.class );
+      final Condition<LangString> isGermanLangString = new Condition<>( l -> l.getLanguageTag().equals( Locale.GERMAN ), "is german" );
+      assertThat( aspectWithMultiLanguageText.getProp() ).has( isGermanLangString );
+      final Condition<LangString> text = new Condition<>( l -> l.getValue().equals( "Multilanguage example value." ), "is equal" );
+      assertThat( aspectWithMultiLanguageText.getProp() ).has( text );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "allVersions" )
    public void testGenerateAspectWithConstraint( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_CONSTRAINT, metaModelVersion );
       final AspectWithConstraintProperties aspectWithConstraint = parseJson( generatedJson, AspectWithConstraintProperties.class );
@@ -583,6 +596,14 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       assertThat( extendingTestEntity.getEntityProperty() ).isNotBlank();
    }
 
+   @ParameterizedTest
+   @MethodSource( "allVersions" )
+   void testGenerateJsonForAspectWithConstrainedSetProperty( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_CONSTRAINED_SET, metaModelVersion );
+      final AspectWithConstrainedSet aspectWithConstrainedSet = parseJson( generatedJson, AspectWithConstrainedSet.class );
+      assertThat( aspectWithConstrainedSet.getTestProperty() ).hasSizeGreaterThan( 0 );
+   }
+
    private String generateJsonForModel( final TestAspect model, final KnownVersion testedVersion ) {
       final VersionedModel versionedModel = TestResources.getModel( model, testedVersion ).get();
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( versionedModel );
@@ -619,16 +640,16 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    private static List<Arguments> rangeTestSource() {
       final List<Arguments> result = new ArrayList<>();
       Lists.cartesianProduct( getMetaModelNumericTypes(), RANGE_CONSTRAINTS_TO_TEST )
-           .forEach( list -> result.add( Arguments.of( list.get( 0 ), list.get( 1 ) ) ) );
+            .forEach( list -> result.add( Arguments.of( list.get( 0 ), list.get( 1 ) ) ) );
       return result;
    }
 
    private static List<RDFDatatype> getMetaModelNumericTypes() {
       return DataType.getAllSupportedTypes()
-                     .stream()
-                     .filter( dataType -> dataType.getJavaClass() != null )
-                     .filter( dataType -> Number.class.isAssignableFrom( dataType.getJavaClass() ) )
-                     .collect( Collectors.toList() );
+            .stream()
+            .filter( dataType -> dataType.getJavaClass() != null )
+            .filter( dataType -> Number.class.isAssignableFrom( dataType.getJavaClass() ) )
+            .collect( Collectors.toList() );
    }
 
    private static final List<Optional<BoundDefinition>> RANGE_CONSTRAINTS_TO_TEST = Arrays.asList(
@@ -681,11 +702,11 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
    Characteristic createBasicCharacteristic( final KnownVersion modelVersion, final Type dataType, final SAMM samm ) {
       return new DefaultCharacteristic( MetaModelBaseAttributes.builderFor( "NumberCharacteristic" )
-                                                               .withMetaModelVersion( modelVersion )
-                                                               .withUrn( AspectModelUrn.fromUrn( samm.baseCharacteristic().getURI() ) )
-                                                               .withPreferredName( Locale.forLanguageTag( "en" ), "NumberCharacteristic" )
-                                                               .withDescription( Locale.forLanguageTag( "en" ), "A simple numeric property." )
-                                                               .build(),
+            .withMetaModelVersion( modelVersion )
+            .withUrn( AspectModelUrn.fromUrn( samm.baseCharacteristic().getURI() ) )
+            .withPreferredName( Locale.forLanguageTag( "en" ), "NumberCharacteristic" )
+            .withDescription( Locale.forLanguageTag( "en" ), "A simple numeric property." )
+            .build(),
             Optional.of( dataType ) );
    }
 
