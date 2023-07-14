@@ -13,21 +13,32 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.constraint;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.jena.rdf.model.RDFNode;
-
+import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#AndConstraintComponent">sh:and</a>
  */
-public record AndConstraint( List<Constraint> constraints ) implements Constraint {
+public class AndConstraint extends AbstractLogicalConstraint {
+   public AndConstraint( final List<Shape> shapes ) {
+      super( shapes );
+   }
+
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
-      return constraints().stream().flatMap( constraint -> constraint.apply( rdfNode, context ).stream() ).collect( Collectors.toList() );
+      final List<List<Violation>> violationsPerConstraint = violationsPerShape( rdfNode, context );
+      final long numberOfEmptyViolationLists = numberOfEmptyViolationLists( violationsPerConstraint );
+      // The 'and' constraint is evaluated successfully if all of the provided constraints evaluate successfully
+      if ( numberOfEmptyViolationLists == 0 ) {
+         return List.of();
+      }
+      return violationsPerConstraint.stream().flatMap( Collection::stream ).toList();
    }
 
    @Override

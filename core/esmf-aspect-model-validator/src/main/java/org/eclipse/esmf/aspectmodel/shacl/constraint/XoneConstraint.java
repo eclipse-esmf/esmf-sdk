@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.XoneViolation;
@@ -25,17 +26,20 @@ import org.apache.jena.rdf.model.RDFNode;
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#XoneConstraintComponent">sh:xone</a>
  */
-public record XoneConstraint( List<Constraint> constraints ) implements Constraint {
+public class XoneConstraint extends AbstractLogicalConstraint {
+   public XoneConstraint( final List<Shape> shapes ) {
+      super( shapes );
+   }
+
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
-      final List<List<Violation>> violationsPerConstraint = constraints.stream().map( constraint ->
-            constraint.apply( rdfNode, context ) ).toList();
-      final long numberOfEmptyViolationLists = violationsPerConstraint.stream().filter( List::isEmpty ).count();
-      // The xone constraint is evaluated successfully if exactly one of the provided constraints evaluates successfully
+      final List<List<Violation>> violationsPerConstraint = violationsPerShape( rdfNode, context );
+      final long numberOfEmptyViolationLists = numberOfEmptyViolationLists( violationsPerConstraint );
+      // The 'xone' constraint is evaluated successfully if exactly one of the provided constraints evaluates successfully
       if ( numberOfEmptyViolationLists == 1 ) {
          return List.of();
       }
-      return List.of( new XoneViolation( context, violationsPerConstraint.stream().flatMap( Collection::stream ).toList() ) );
+      return List.of( new XoneViolation( context, violationsPerConstraint.stream().flatMap( Collection::stream ).toList(), this ) );
    }
 
    @Override

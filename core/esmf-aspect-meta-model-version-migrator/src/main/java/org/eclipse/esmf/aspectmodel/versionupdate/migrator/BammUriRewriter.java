@@ -49,12 +49,18 @@ public class BammUriRewriter extends AbstractUriRewriter {
 
    @Override
    protected Map<String, String> buildReplacementPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes ) {
+      final Map<String, String> oldSamm = Namespace.createPrefixMap( KnownVersion.SAMM_1_0_0 );
       // The mapping of the URNs of the legacy BAMM Aspect Meta model to their corresponding SAMM counterparts
       return Map.of(
             "urn:bamm:io.openmanufacturing:meta-model:2.0.0#", targetPrefixes.get( "samm" ),
             "urn:bamm:io.openmanufacturing:characteristic:2.0.0#", targetPrefixes.get( "samm-c" ),
-            "urn:bamm:io.openmanufacturing:entity:2.0.0#", targetPrefixes.get( "samm-c" ),
-            "urn:bamm:io.openmanufacturing:unit:2.0.0#", targetPrefixes.get( "unit" )
+            "urn:bamm:io.openmanufacturing:entity:2.0.0#", targetPrefixes.get( "samm-e" ),
+            "urn:bamm:io.openmanufacturing:unit:2.0.0#", targetPrefixes.get( "unit" ),
+
+            "urn:bamm:io.openmanufacturing:meta-model:1.0.0#", oldSamm.get( "samm" ),
+            "urn:bamm:io.openmanufacturing:characteristic:1.0.0#", oldSamm.get( "samm-c" ),
+            "urn:bamm:io.openmanufacturing:entity:1.0.0#", oldSamm.get( "samm-e" ),
+            "urn:bamm:io.openmanufacturing:unit:1.0.0#", oldSamm.get( "unit" )
       );
    }
 

@@ -14,14 +14,8 @@
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
-
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
 
 /**
  * Represents a single violation raised by one or more SHACL shapes against an RDF model.
@@ -150,6 +144,10 @@ public interface Violation {
          return visit( violation );
       }
 
+      default T visitOrViolation( final OrViolation violation ) {
+         return visit( violation );
+      }
+
       default T visitXoneViolation( final XoneViolation violation ) {
          return visit( violation );
       }
@@ -161,40 +159,6 @@ public interface Violation {
 
    default AppliesTo appliesTo() {
       return AppliesTo.WHOLE_ELEMENT;
-   }
-
-   default String shortUri( final String uri ) {
-      final String shortened = context().element().getModel().shortForm( uri );
-      return shortened.equals( uri ) ?
-            context().validator().getShapesModel().shortForm( uri ) : shortened;
-   }
-
-   default String elementName() {
-      return Optional.ofNullable( context().element().getURI() )
-            .map( this::shortUri )
-            .orElse( "anonymous element" );
-   }
-
-   default String propertyName() {
-      return context().property().map( Resource::getURI ).map( this::shortUri ).orElse( elementName() );
-   }
-
-   default String value( final Property property ) {
-      return shortUri( property.getURI() );
-   }
-
-   default String value( final RDFNode node ) {
-      if ( node.isLiteral() ) {
-         return value( node.asLiteral() );
-      }
-      if ( node.isURIResource() ) {
-         return shortUri( node.asResource().getURI() );
-      }
-      return "anonymous element";
-   }
-
-   default String value( final Literal literal ) {
-      return literal.getLexicalForm();
    }
 
    default String message() {

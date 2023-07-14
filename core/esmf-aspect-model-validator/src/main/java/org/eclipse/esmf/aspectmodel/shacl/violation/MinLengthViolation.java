@@ -33,7 +33,7 @@ public record MinLengthViolation( EvaluationContext context, int min, int actual
    @Override
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s has length %s, but its length must be greater than or equal to %s.",
-            propertyName(), elementName(), actual, min );
+            context.propertyName(), context.elementName(), actual, min );
    }
 
    @Override

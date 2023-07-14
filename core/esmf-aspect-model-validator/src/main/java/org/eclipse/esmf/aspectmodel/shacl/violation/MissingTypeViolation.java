@@ -28,7 +28,7 @@ public record MissingTypeViolation( EvaluationContext context ) implements Viola
 
    @Override
    public String violationSpecificMessage() {
-      return String.format( "Could not determine type of %s.", elementName() );
+      return String.format( "Could not determine type of %s.", context.elementName() );
    }
 
    @Override

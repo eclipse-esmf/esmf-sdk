@@ -13,29 +13,34 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.constraint;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.apache.jena.rdf.model.RDFNode;
-
+import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
+import org.eclipse.esmf.aspectmodel.shacl.violation.OrViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#OrConstraintComponent">sh:or</a>
  */
-public record OrConstraint( List<Constraint> constraints ) implements Constraint {
+public class OrConstraint extends AbstractLogicalConstraint {
+   public OrConstraint( final List<Shape> shapes ) {
+      super( shapes );
+   }
+
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
-      final List<Violation> result = new ArrayList<>();
-      for ( final Constraint constraint : constraints ) {
-         final List<Violation> violations = constraint.apply( rdfNode, context );
-         if ( violations.isEmpty() ) {
-            return List.of();
-         }
-         result.addAll( violations );
+      final List<List<Violation>> violationsPerConstraint = violationsPerShape( rdfNode, context );
+      final long numberOfEmptyViolationLists = numberOfEmptyViolationLists( violationsPerConstraint );
+      // The 'or' constraint is evaluated successfully if any of the provided constraints evaluates successfully
+      if ( numberOfEmptyViolationLists > 0 ) {
+         return List.of();
       }
-      return result;
+
+      return List.of( new OrViolation( context, violationsPerConstraint.stream().flatMap( Collection::stream ).toList() ) );
    }
 
    @Override

@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.shacl.violation;
 
-import java.util.function.Function;
-
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
 
@@ -36,24 +34,19 @@ public record NodeKindViolation( EvaluationContext context, Shape.NodeKind allow
 
    @Override
    public String violationSpecificMessage() {
-      final Function<Shape.NodeKind, String> nodeKindString = nodeKind -> switch ( nodeKind ) {
-         case BlankNode -> "an anonymous node";
-         case BlankNodeOrIRI -> "an anonymous node or a named element";
-         case IRI -> "a named element";
-         case BlankNodeOrLiteral -> "an anonymous node or a value";
-         case Literal -> "a value";
-         case IRIOrLiteral -> "a named element or a value";
-      };
       if ( context.property().isPresent() ) {
          return String.format( "Property %s on %s is %s, but it must be %s.",
-               propertyName(), context.element().isAnon() ? "the element" : elementName(),
-               nodeKindString.apply( actualNodeKind ), nodeKindString.apply( allowedNodeKind ) );
+               context.propertyName(), context.element().isAnon() ? "the element" : context.elementName(),
+               actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() );
+      } else if ( context.parentContext().flatMap( EvaluationContext::property ).isPresent() ) {
+         return String.format( "Property %s on %s is %s, but it must be %s.",
+               context.parentPropertyName(), context.parentElementName(), actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() );
       }
       return context.element().isAnon() ?
             String.format( "The element is %s, but it must be %s.",
-                  nodeKindString.apply( actualNodeKind ), nodeKindString.apply( allowedNodeKind ) ) :
+                  actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() ) :
             String.format( "Element %s is %s, but it must be %s.",
-                  elementName(), nodeKindString.apply( actualNodeKind ), nodeKindString.apply( allowedNodeKind ) );
+                  context.elementName(), actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() );
    }
 
    @Override

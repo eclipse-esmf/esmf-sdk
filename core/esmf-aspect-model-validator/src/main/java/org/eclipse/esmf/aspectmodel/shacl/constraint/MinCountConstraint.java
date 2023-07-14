@@ -35,7 +35,7 @@ public record MinCountConstraint( int minCount ) implements Constraint {
 
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
-      if ( context.property().isEmpty() ) {
+      if ( context.propertyShape().isEmpty() ) {
          return List.of();
       }
       if ( minCount > 0 && rdfNode == null ) {

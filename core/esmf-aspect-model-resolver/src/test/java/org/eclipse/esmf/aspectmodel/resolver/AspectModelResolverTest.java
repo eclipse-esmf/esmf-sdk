@@ -32,7 +32,6 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -66,9 +65,9 @@ public class AspectModelResolverTest extends MetaModelVersions {
             .isNotEmpty();
    }
 
-   @Test
-   public void testLoadLegacyBammModelExpectSuccess() throws URISyntaxException {
-      final KnownVersion metaModelVersion = KnownVersion.getLatest();
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testLoadLegacyBammModelExpectSuccess( final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( metaModelVersion.toString().toLowerCase() )

@@ -20,30 +20,32 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.XSD;
-
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedLanguagesConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AllowedValuesConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.AndConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.ClassConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.ClosedConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.DisjointConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.EqualsConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.HasValueConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.LessThanConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.LessThanOrEqualsConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxCountConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxExclusiveConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxInclusiveConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxLengthConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.MinExclusiveConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinInclusiveConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinLengthConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NotConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.OrConstraint;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.PatternConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.XoneConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
@@ -75,14 +77,11 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.UniqueLanguageViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ValueFromListViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
-import org.eclipse.esmf.aspectmodel.shacl.constraint.ClassConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.DisjointConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.LessThanConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.MaxExclusiveConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.MinExclusiveConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.OrConstraint;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.PatternConstraint;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.XSD;
 
 /**
  * Formats one or multiple {@link Violation}s in a human-readable way and provides detailed information.
@@ -125,11 +124,11 @@ public class DetailedViolationFormatter extends ViolationFormatter {
             builder.append( String.format( "- violation-type: %s%n", entry.getKey().getSimpleName() ) );
             builder.append( String.format( "  error-code: %s%n", violation.errorCode() ) );
             builder.append( String.format( "  description: %s%n", violation.message() ) );
-            builder.append( String.format( "  context-element: %s%n", violation.elementName() ) );
+            builder.append( String.format( "  context-element: %s%n", violation.context().elementName() ) );
             builder.append( String.format( "  context-element-full: %s%n",
                   Optional.ofNullable( violation.context().element().getURI() ).orElse( "anonymous element" ) ) );
             violation.context().property().ifPresent( property -> {
-               builder.append( String.format( "  context-property: %s%n", violation.shortUri( property.getURI() ) ) );
+               builder.append( String.format( "  context-property: %s%n", violation.context().shortUri( property.getURI() ) ) );
                builder.append( String.format( "  context-property-full: %s%n", property.getURI() ) );
             } );
             if ( !violation.fixes().isEmpty() ) {
@@ -153,7 +152,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
    }
 
    private String formatResource( final Violation violation, final Resource resource ) {
-      return Optional.ofNullable( resource.getURI() ).map( violation::shortUri ).orElse( "anonymous element" );
+      return Optional.ofNullable( resource.getURI() ).map( uri -> violation.context().shortUri( uri ) ).orElse( "anonymous element" );
    }
 
    private String formatShapeDetails( final Violation violation, final Shape shape ) {
@@ -250,14 +249,14 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
    @Override
    public String visitClassTypeViolation( final ClassTypeViolation violation ) {
-      return String.format( "allowed-class: %s%n", violation.shortUri( violation.allowedClass().getURI() ) )
-            + String.format( "actual-class: %s%n", violation.shortUri( violation.actualClass().getURI() ) );
+      return String.format( "allowed-class: %s%n", violation.context().shortUri( violation.allowedClass().getURI() ) )
+            + String.format( "actual-class: %s%n", violation.context().shortUri( violation.actualClass().getURI() ) );
    }
 
    @Override
    public String visitDatatypeViolation( final DatatypeViolation violation ) {
-      return String.format( "allowed-type: %s%n", violation.shortUri( violation.allowedTypeUri() ) )
-            + String.format( "actual-type: %s%n", violation.shortUri( violation.actualTypeUri() ) );
+      return String.format( "allowed-type: %s%n", violation.context().shortUri( violation.allowedTypeUri() ) )
+            + String.format( "actual-type: %s%n", violation.context().shortUri( violation.actualTypeUri() ) );
    }
 
    @Override
@@ -344,7 +343,8 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
    @Override
    public String visitJsViolation( final JsConstraintViolation violation ) {
-      return String.format( "js-library: %s%n", violation.library().uri().map( violation::shortUri ).orElse( "anonymous element" ) )
+      return String.format( "js-library: %s%n",
+            violation.library().uri().map( uri -> violation.context().shortUri( uri ) ).orElse( "anonymous element" ) )
             + String.format( "js-function: %s%n", violation.functionName() );
    }
 
@@ -361,19 +361,19 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
    @Override
    public String visitDisjointViolation( final DisjointViolation violation ) {
-      return String.format( "other-property: %s%n", violation.shortUri( violation.otherProperty().getURI() ) )
+      return String.format( "other-property: %s%n", violation.context().shortUri( violation.otherProperty().getURI() ) )
             + String.format( "other-value: %s%n", formatRdfNode( violation.otherValue(), violation ) );
    }
 
    @Override
    public String visitLessThanViolation( final LessThanViolation violation ) {
-      return String.format( "other-property: %s%n", violation.shortUri( violation.otherProperty().getURI() ) )
+      return String.format( "other-property: %s%n", violation.context().shortUri( violation.otherProperty().getURI() ) )
             + String.format( "other-value: %s%n", formatRdfNode( violation.otherValue(), violation ) );
    }
 
    @Override
    public String visitLessThanOrEqualsViolation( final LessThanOrEqualsViolation violation ) {
-      return String.format( "other-property: %s%n", violation.shortUri( violation.otherProperty().getURI() ) )
+      return String.format( "other-property: %s%n", violation.context().shortUri( violation.otherProperty().getURI() ) )
             + String.format( "other-value: %s%n", formatRdfNode( violation.otherValue(), violation ) );
    }
 
@@ -387,10 +387,10 @@ public class DetailedViolationFormatter extends ViolationFormatter {
    @Override
    public String visitClosedViolation( final ClosedViolation violation ) {
       return String.format( "allowed-properties: %s%n", violation.allowedProperties().stream()
-            .map( Property::getURI ).map( violation::shortUri ).collect( Collectors.joining( ", " ) ) )
+            .map( Property::getURI ).map( uri -> violation.context().shortUri( uri ) ).collect( Collectors.joining( ", " ) ) )
             + String.format( "ignored-properties: %s%n", violation.ignoredProperties().stream()
-            .map( Property::getURI ).map( violation::shortUri ).collect( Collectors.joining( ", " ) ) )
-            + String.format( "actual: %s%n", violation.shortUri( violation.actual().getURI() ) );
+            .map( Property::getURI ).map( uri -> violation.context().shortUri( uri ) ).collect( Collectors.joining( ", " ) ) )
+            + String.format( "actual: %s%n", violation.context().shortUri( violation.actual().getURI() ) );
    }
 
    @Override
@@ -406,7 +406,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
    private String formatRdfNode( final RDFNode node, final Violation violation ) {
       if ( node.isURIResource() ) {
-         return violation.shortUri( node.asResource().getURI() );
+         return violation.context().shortUri( node.asResource().getURI() );
       }
       if ( node.isResource() ) {
          return "anonymous element";
@@ -419,7 +419,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
          if ( literal.getDatatypeURI().equals( XSD.xboolean.getURI() ) || literal.getDatatypeURI().equals( XSD.integer.getURI() ) ) {
             return literal.getLexicalForm();
          }
-         return String.format( "\"%s\"^^%s", literal.getLexicalForm(), violation.shortUri( literal.getDatatypeURI() ) );
+         return String.format( "\"%s\"^^%s", literal.getLexicalForm(), violation.context().shortUri( literal.getDatatypeURI() ) );
       }
       return "?";
    }
@@ -450,7 +450,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
       @Override
       public String visitAndConstraint( final AndConstraint constraint ) {
          final StringBuilder builder = new StringBuilder();
-         printNestedConstraints( builder, constraint.constraints() );
+         printNestedShapes( builder, constraint.shapes() );
          return builder.toString();
       }
 
@@ -474,17 +474,17 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
       @Override
       public String visitDatatypeConstraint( final DatatypeConstraint constraint ) {
-         return String.format( "allowed-type: %s%n", violation.shortUri( constraint.allowedTypeUri() ) );
+         return String.format( "allowed-type: %s%n", violation.context().shortUri( constraint.allowedTypeUri() ) );
       }
 
       @Override
       public String visitDisjointConstraint( final DisjointConstraint constraint ) {
-         return String.format( "disjoint-with: %s%n", violation.shortUri( constraint.otherProperty().getURI() ) );
+         return String.format( "disjoint-with: %s%n", violation.context().shortUri( constraint.otherProperty().getURI() ) );
       }
 
       @Override
       public String visitEqualsConstraint( final EqualsConstraint constraint ) {
-         return String.format( "equal-with: %s%n", violation.shortUri( constraint.otherProperty().getURI() ) );
+         return String.format( "equal-with: %s%n", violation.context().shortUri( constraint.otherProperty().getURI() ) );
       }
 
       @Override
@@ -494,12 +494,12 @@ public class DetailedViolationFormatter extends ViolationFormatter {
 
       @Override
       public String visitLessThanConstraint( final LessThanConstraint constraint ) {
-         return String.format( "less-than: %s%n", violation.shortUri( constraint.otherProperty().getURI() ) );
+         return String.format( "less-than: %s%n", violation.context().shortUri( constraint.otherProperty().getURI() ) );
       }
 
       @Override
       public String visitLessThanOrEqualsConstraint( final LessThanOrEqualsConstraint constraint ) {
-         return String.format( "less-than-or-equal: %s%n", violation.shortUri( constraint.otherProperty().getURI() ) );
+         return String.format( "less-than-or-equal: %s%n", violation.context().shortUri( constraint.otherProperty().getURI() ) );
       }
 
       @Override
@@ -545,7 +545,8 @@ public class DetailedViolationFormatter extends ViolationFormatter {
       @Override
       public String visitNodeConstraint( final NodeConstraint constraint ) {
          return String.format( "shape-node: %s%n",
-               constraint.targetShape().get().attributes().uri().map( violation::shortUri ).orElse( "(anonymous shape)" ) );
+               constraint.targetShape().get().attributes().uri().map( uri -> violation.context().shortUri( uri ) )
+                     .orElse( "(anonymous shape)" ) );
       }
 
       @Override
@@ -565,20 +566,17 @@ public class DetailedViolationFormatter extends ViolationFormatter {
          return builder.toString();
       }
 
-      private void printNestedConstraints( final StringBuilder builder, final List<Constraint> constraints ) {
-         builder.append( String.format( "constraints:%n" ) );
-         for ( final Constraint constraint : constraints ) {
-            builder.append( String.format( "  - %s%n", constraint.getClass().getSimpleName() ) );
-            for ( final String line : constraint.accept( this ).split( "\n" ) ) {
-               builder.append( String.format( "    %s%n", line ) );
-            }
+      private void printNestedShapes( final StringBuilder builder, final List<Shape> shapes ) {
+         builder.append( String.format( "shapes:%n" ) );
+         for ( final String line : formatShapeDetails( violation, violation.context().shape() ).split( "\n" ) ) {
+            builder.append( String.format( "    %s%n", line ) );
          }
       }
 
       @Override
       public String visitOrConstraint( final OrConstraint constraint ) {
          final StringBuilder builder = new StringBuilder();
-         printNestedConstraints( builder, constraint.constraints() );
+         printNestedShapes( builder, constraint.shapes() );
          return builder.toString();
       }
 
@@ -601,7 +599,7 @@ public class DetailedViolationFormatter extends ViolationFormatter {
       @Override
       public String visitXoneConstraint( final XoneConstraint constraint ) {
          final StringBuilder builder = new StringBuilder();
-         printNestedConstraints( builder, constraint.constraints() );
+         printNestedShapes( builder, constraint.shapes() );
          return builder.toString();
       }
    }

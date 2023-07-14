@@ -16,12 +16,12 @@ package org.eclipse.esmf.aspectmodel.shacl;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
+import org.eclipse.esmf.aspectmodel.shacl.path.Path;
+
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-
-import org.eclipse.esmf.aspectmodel.shacl.path.Path;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#node-shapes">sh:NodeShape</a>
@@ -29,11 +29,24 @@ import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
 public interface Shape {
    Attributes attributes();
 
+   <T> T accept( Visitor<T> visitor );
+
    /**
     * Implements the valid values for <a href="https://www.w3.org/TR/shacl/#NodeKindConstraintComponent">sh:nodeKind</a>
     */
    enum NodeKind {
-      BlankNode, IRI, Literal, BlankNodeOrIRI, BlankNodeOrLiteral, IRIOrLiteral;
+      BlankNode( "an anonymous node" ),
+      IRI( "a named element" ),
+      Literal( "a value" ),
+      BlankNodeOrIRI( "an anonymous node or a named element" ),
+      BlankNodeOrLiteral( "an anonymous node or a value" ),
+      IRIOrLiteral( "a named element or a value" );
+
+      private final String humanRepresentation;
+
+      NodeKind( final String humanRepresentation ) {
+         this.humanRepresentation = humanRepresentation;
+      }
 
       public static NodeKind forNode( final RDFNode node ) {
          if ( node.isLiteral() ) {
@@ -46,6 +59,10 @@ public interface Shape {
             return Shape.NodeKind.BlankNode;
          }
          throw new RuntimeException( "Invalid nodekind: " + node );
+      }
+
+      public String humanReadable() {
+         return humanRepresentation;
       }
    }
 
@@ -76,6 +93,10 @@ public interface Shape {
          Attributes attributes,
          List<Property> properties
    ) implements Shape {
+      @Override
+      public <T> T accept( final Visitor<T> visitor ) {
+         return visitor.visitNodeShape( this );
+      }
    }
 
    /**
@@ -85,6 +106,16 @@ public interface Shape {
          Attributes attributes,
          Path path
    ) implements Shape {
+      @Override
+      public <T> T accept( final Visitor<T> visitor ) {
+         return visitor.visitPropertyShape( this );
+      }
+   }
+
+   interface Visitor<T> {
+      T visitNodeShape( Shape.Node shapeNode );
+
+      T visitPropertyShape( Shape.Property propertyShape );
    }
 }
 
