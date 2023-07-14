@@ -45,7 +45,7 @@ public record ClosedViolation( EvaluationContext context, Set<Property> allowedP
    public String violationSpecificMessage() {
       final List<String> allowed = allowedProperties().stream()
             .map( Property::getURI )
-            .map( this::shortUri )
+            .map( context::shortUri )
             .collect( Collectors.toSet() )
             .stream()
             .sorted()
@@ -57,7 +57,7 @@ public record ClosedViolation( EvaluationContext context, Set<Property> allowedP
       };
 
       return String.format( "%s is used on %s. It is not allowed there; %s.",
-            shortUri( actual.getURI() ), elementName(), allowedText );
+            context.shortUri( actual.getURI() ), context.elementName(), allowedText );
    }
 
    @Override

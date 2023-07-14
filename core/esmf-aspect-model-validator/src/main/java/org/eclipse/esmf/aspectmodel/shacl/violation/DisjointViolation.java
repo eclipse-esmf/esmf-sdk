@@ -36,7 +36,7 @@ public record DisjointViolation( EvaluationContext context, Property otherProper
    @Override
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s may not have the same value as property %s (%s).",
-            propertyName(), elementName(), shortUri( otherProperty.getURI() ), otherValue );
+            context.propertyName(), context.elementName(), context.shortUri( otherProperty.getURI() ), otherValue );
    }
 
    @Override

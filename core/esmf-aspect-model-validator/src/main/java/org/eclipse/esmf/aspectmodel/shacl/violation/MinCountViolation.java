@@ -33,9 +33,9 @@ public record MinCountViolation( EvaluationContext context, int allowed, int act
    @Override
    public String violationSpecificMessage() {
       return allowed == 1 ?
-            String.format( "Mandatory property %s is missing on %s.", propertyName(), elementName() ) :
+            String.format( "Mandatory property %s is missing on %s.", context.propertyName(), context.elementName() ) :
             String.format( "Property %s must be present on %s at least %d time%s, but is present only %d time%s.",
-                  propertyName(), elementName(), allowed, allowed > 1 ? "s" : "", actual, actual > 1 ? "s" : "" );
+                  context.propertyName(), context.elementName(), allowed, allowed > 1 ? "s" : "", actual, actual > 1 ? "s" : "" );
    }
 
    @Override

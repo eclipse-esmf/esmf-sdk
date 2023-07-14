@@ -38,7 +38,8 @@ public record LessThanViolation( EvaluationContext context, Property otherProper
    @Override
    public String violationSpecificMessage() {
       return String.format( "Property %s on %s must have a value that is less than that of %s: %s must be less than %s.",
-            propertyName(), elementName(), shortUri( otherProperty.getURI() ), value( actualValue ), value( otherValue ) );
+            context.propertyName(), context.elementName(), context.shortUri( otherProperty.getURI() ), context.value( actualValue ),
+            context.value( otherValue ) );
    }
 
    @Override
