@@ -13,7 +13,7 @@
 package org.eclipse.esmf.aspectmodel.generator.json;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,6 +52,7 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithAbstrac
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithCollectionOfSimpleType;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithCollectionWithAbstractEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithComplexEntityCollectionEnum;
+import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithComplexSet;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithConstrainedSet;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithConstraintProperties;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithConstraints;
@@ -80,6 +82,7 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithSimpleT
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.AspectWithStructuredValue;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.Entity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.ExtendingTestEntity;
+import org.eclipse.esmf.aspectmodel.generator.json.testclasses.Id;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.NestedEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.TestEntityWithSimpleTypes;
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
@@ -602,6 +605,18 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_CONSTRAINED_SET, metaModelVersion );
       final AspectWithConstrainedSet aspectWithConstrainedSet = parseJson( generatedJson, AspectWithConstrainedSet.class );
       assertThat( aspectWithConstrainedSet.getTestProperty() ).hasSizeGreaterThan( 0 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( "allVersions" )
+   void testGenerateJsonForAspectWithComplexSet( final KnownVersion metaModelVersion ) throws IOException {
+      final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_COMPLEX_SET, metaModelVersion );
+      final AspectWithComplexSet aspectWithComplexSet = parseJson( generatedJson, AspectWithComplexSet.class );
+      assertThat( aspectWithComplexSet.getTestProperty() ).hasSize( 2 );
+      final Iterator<Id> values = aspectWithComplexSet.getTestProperty().iterator();
+      final Id id1 = values.next();
+      final Id id2 = values.next();
+      assertNotEquals( id1, id2 );
    }
 
    private String generateJsonForModel( final TestAspect model, final KnownVersion testedVersion ) {

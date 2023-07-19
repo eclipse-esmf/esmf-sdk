@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.xml.datatype.DatatypeFactory;
@@ -162,7 +163,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    }
 
    private Map<String, Object> transformAspectProperties() {
-      return transformProperties( aspect.getProperties() );
+      return transformProperties( aspect.getProperties(), true );
    }
 
    /**
@@ -172,7 +173,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    @SuppressWarnings( "squid:S2250" )
    // Amount of elements in list is in regard to amount of properties in Aspect Model. Even in bigger aspects this
    // should not lead to performance issues
-   private Map<String, Object> transformProperties( final List<Property> properties ) {
+   private Map<String, Object> transformProperties( final List<Property> properties, final boolean useModelExampleValue ) {
       return Stream.concat(
             properties.stream().filter( recursiveProperty::contains ).map( this::recursiveProperty ),
             properties.stream()
@@ -180,7 +181,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
                   .filter( property -> !property.isAbstract() )
                   .map( property -> {
                      recursiveProperty.add( property );
-                     final Map<String, Object> result = transformProperty( new BasicProperty( property ) );
+                     final Map<String, Object> result = transformProperty( new BasicProperty( property ), useModelExampleValue );
                      recursiveProperty.remove( property );
                      return result;
                   } )
@@ -207,21 +208,22 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
     * @param property the property to transform
     * @return a map representing the property names as key and the property values as value
     */
-   private Map<String, Object> transformProperty( final BasicProperty property ) {
+   private Map<String, Object> transformProperty( final BasicProperty property, final boolean useModelExampleValue ) {
       return transformers.stream()
-            .map( transformer -> transformer.apply( property ) )
+            .map( transformer -> transformer.apply( property, useModelExampleValue ) )
             .filter( propertiesMap -> !propertiesMap.isEmpty() )
             .findFirst()
             .orElseThrow( () -> new IllegalArgumentException( "No transformer for " + property.getName() + " available." ) );
    }
 
-   private Map<String, Object> transformCollectionProperty( final BasicProperty property ) {
+   private Map<String, Object> transformCollectionProperty( final BasicProperty property, final boolean useModelExampleValue ) {
       final Characteristic characteristic = property.getCharacteristic();
       if ( characteristic.is( Collection.class ) ) {
          final List<Object> collectionValues = getCollectionValues( property, (Collection) characteristic );
          return toMap( property.getName(), collectionValues );
       } else if ( isConstrainedCollection( characteristic ) ) {
-         return toMap( property.getName(), getCollectionValues( property, characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class ) ) );
+         return toMap( property.getName(), getCollectionValues( property, characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class ),
+               (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) );
       }
       return ImmutableMap.of();
    }
@@ -235,23 +237,23 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
             trait.getConstraints().get( 0 ).is( LengthConstraint.class );
    }
 
-   private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property ) {
+   private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property, final boolean useModelExampleValue ) {
       final Optional<AbstractEntity> dataType = getForCharacteristic( property.getCharacteristic(), AbstractEntity.class );
       if ( dataType.isPresent() ) {
          final AbstractEntity abstractEntity = dataType.get();
          final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
-         final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties() );
+         final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties(), useModelExampleValue );
          generatedProperties.put( "@type", extendingComplexType.getName() );
          return toMap( property.getName(), generatedProperties );
       }
       return ImmutableMap.of();
    }
 
-   private Map<String, Object> transformEntityProperty( final BasicProperty property ) {
+   private Map<String, Object> transformEntityProperty( final BasicProperty property, final boolean useModelExmplevalue ) {
       final Optional<Entity> dataType = getForCharacteristic( property.getCharacteristic(), Entity.class );
       if ( dataType.isPresent() ) {
          final Entity entity = dataType.get();
-         final Map<String, Object> generatedProperties = transformProperties( entity.getAllProperties() );
+         final Map<String, Object> generatedProperties = transformProperties( entity.getAllProperties(), useModelExmplevalue );
          if ( entity.getExtends().isPresent() ) {
             generatedProperties.put( "@type", entity.getName() );
          }
@@ -260,7 +262,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       return ImmutableMap.of();
    }
 
-   private Map<String, Object> transformEnumeration( final BasicProperty property ) {
+   private Map<String, Object> transformEnumeration( final BasicProperty property, final boolean useModelExampleValue ) {
       return getForCharacteristic( property.getCharacteristic(), Enumeration.class )
             .map( enumeration -> extractEnumerationValues( property, enumeration ) )
             .orElseGet( ImmutableMap::of );
@@ -271,24 +273,24 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       return toMap( property.getName(), firstValue.accept( valueToPayloadStructure, null ) );
    }
 
-   private Map<String, Object> transformEitherProperty( final BasicProperty property ) {
+   private Map<String, Object> transformEitherProperty( final BasicProperty property, final boolean useModelExampleValue ) {
       final Characteristic characteristic = property.getCharacteristic();
       return getForCharacteristic( characteristic, Either.class )
             .map( value -> transformProperty(
-                  new BasicProperty( AspectModelJsonPayloadGenerator.EITHER_LEFT, value.getLeft(), Optional.empty() ) ) )
+                  new BasicProperty( AspectModelJsonPayloadGenerator.EITHER_LEFT, value.getLeft(), Optional.empty() ), useModelExampleValue ) )
             .map( value -> toMap( property.getName(), value ) )
             .orElseGet( ImmutableMap::of );
    }
 
-   private Map<String, Object> transformSimpleProperty( final BasicProperty basicProperty ) {
-      return toMap( basicProperty.getName(), getExampleValueOrElseRandom( basicProperty ) );
+   private Map<String, Object> transformSimpleProperty( final BasicProperty basicProperty, final boolean useModelExampleValue ) {
+      return toMap( basicProperty.getName(), getExampleValueOrElseRandom( basicProperty, useModelExampleValue ) );
    }
 
    /**
     * @param property the property to transform
     * @return the {@link Property#getExampleValue()} or if absent a random value.
     */
-   private Object getExampleValueOrElseRandom( final BasicProperty property ) {
+   private Object getExampleValueOrElseRandom( final BasicProperty property, final boolean useModelExampleValue ) {
       final Characteristic characteristic = property.getCharacteristic();
       if ( characteristic.is( State.class ) ) {
          return characteristic.as( State.class ).getDefaultValue();
@@ -303,6 +305,10 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       }
       final Characteristic effectiveCharacteristics = elementCharacteristics.orElse( characteristic );
 
+      if ( !useModelExampleValue ) {
+         return generateExampleValue( effectiveCharacteristics );
+      }
+
       return property.getExampleValue().map( exampleValue ->
             exampleValue.as( ScalarValue.class ).getValue() ).orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
    }
@@ -312,21 +318,37 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    }
 
    private List<Object> getCollectionValues( final BasicProperty property, final Collection collection ) {
+      return getCollectionValues( property, collection, null );
+   }
+
+   private List<Object> getCollectionValues( final BasicProperty property, final Collection collection, final LengthConstraint lengthConstraint ) {
       final Type dataType = collection.getDataType().orElseThrow( () -> new IllegalArgumentException( "DataType for collection is required." ) );
+
+      if ( dataType.is( Scalar.class ) ) {
+         final Object payload = getExampleValueOrElseRandom( property, lengthConstraint == null );
+         return payload instanceof List ? (List) payload : ImmutableList.of( payload );
+      }
+
+      final BigInteger minLength = lengthConstraint == null ? BigInteger.ONE : lengthConstraint.getMinValue().orElse( BigInteger.ONE );
+      final List<Object> returnValues = new ArrayList<>();
+      // Fill in minLength elements
+      for ( int i = 0; i < minLength.intValue(); i++ ) {
+         returnValues.add( generateCollectionValue( dataType, minLength.intValue() ) );
+      }
+      return returnValues;
+   }
+
+   private Object generateCollectionValue( final Type dataType, final int minCount ) {
       if ( dataType.is( AbstractEntity.class ) ) {
          final AbstractEntity abstractEntity = dataType.as( AbstractEntity.class );
          final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
-         final Map<String, Object> propertyValueMap = transformProperties( extendingComplexType.getAllProperties() );
+         final Map<String, Object> propertyValueMap = transformProperties( extendingComplexType.getAllProperties(), minCount < 2 );
          propertyValueMap.put( "@type", extendingComplexType.getName() );
-         return ImmutableList.of( propertyValueMap );
+         return propertyValueMap;
       }
       if ( dataType.is( Entity.class ) ) {
          final Entity entity = dataType.as( Entity.class );
-         return ImmutableList.of( transformProperties( entity.getAllProperties() ) );
-      }
-      if ( dataType.is( Scalar.class ) ) {
-         final Object payload = getExampleValueOrElseRandom( property );
-         return payload instanceof List ? (List) payload : ImmutableList.of( payload );
+         return transformProperties( entity.getAllProperties(), minCount < 2 );
       }
       throw new IllegalArgumentException( String.format( "DataType %s is unknown", dataType ) );
    }
@@ -348,7 +370,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
     * Transforms an {@link BasicProperty} to a map.
     * If no transformation can be applied, an empty map will returned.
     */
-   private interface Transformer extends Function<BasicProperty, Map<String, Object>> {
+   private interface Transformer extends BiFunction<BasicProperty, Boolean, Map<String, Object>> {
    }
 
    private static class BasicProperty {
@@ -495,28 +517,38 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       }
 
       @SuppressWarnings( "unchecked" )
-      private Object getRandomValue( final LengthConstraint lengthConstraint,
-            final java.lang.reflect.Type exampleValueType, final Characteristic traitBaseCharacteristic ) {
-         final BigInteger maxLength = lengthConstraint.getMaxValue().orElse( BigInteger.valueOf( Integer.MAX_VALUE ) );
-         final BigInteger minLength = lengthConstraint.getMinValue().orElse( BigInteger.ZERO );
-
+      private Object getRandomValue( final LengthConstraint lengthConstraint, final java.lang.reflect.Type exampleValueType,
+            final Characteristic traitBaseCharacteristic ) {
          if ( traitBaseCharacteristic.is( Collection.class ) ) {
-            final List<Object> returnValues = new ArrayList<>();
-            // Fill in minLength elements
-            for ( int i = 0; i < minLength.intValue(); i++ ) {
-               returnValues.add( defaultEasyRandom.nextObject( (Class<?>) exampleValueType ) );
-            }
-            // Add between minLength and maxLength-minLength elements, but not more than 5
-            final int amount = getRandomInteger( minLength.intValue(), Math.min( maxLength.intValue() - minLength.intValue(), 5 ) );
-            for ( int i = 0; i < amount; i++ ) {
-               returnValues.add( defaultEasyRandom.nextObject( (Class<?>) exampleValueType ) );
-            }
-            return returnValues;
+            return getRandomValues( lengthConstraint, () -> defaultEasyRandom.nextObject( (Class<?>) exampleValueType ) );
          }
 
+         final BigInteger maxLength = lengthConstraint.getMaxValue().orElse( BigInteger.valueOf( 30 ) );
+         final BigInteger minLength = lengthConstraint.getMinValue().orElse( BigInteger.ZERO );
          final EasyRandomParameters easyRandomParameters = new EasyRandomParameters().stringLengthRange( minLength.intValue(), maxLength.intValue() );
          final EasyRandom easyRandom = new EasyRandom( easyRandomParameters );
          return easyRandom.nextObject( (Class<?>) exampleValueType );
+      }
+
+      public List<Object> getRandomValues( final LengthConstraint lengthConstraint, final Supplier<Object> valueGenerator ) {
+         final BigInteger maxLength =
+               lengthConstraint == null ? BigInteger.ONE : lengthConstraint.getMaxValue().orElse( BigInteger.valueOf( Integer.MAX_VALUE ) );
+         final BigInteger minLength = lengthConstraint == null ? BigInteger.ONE : lengthConstraint.getMinValue().orElse( BigInteger.ZERO );
+
+         final List<Object> returnValues = new ArrayList<>();
+         // Fill in minLength elements
+         for ( int i = 0; i < minLength.intValue(); i++ ) {
+            returnValues.add( valueGenerator.get() );
+         }
+         if ( minLength.intValue() == maxLength.intValue() ) {
+            return returnValues;
+         }
+         // Add between minLength and maxLength-minLength elements, but not more than 5
+         final int amount = getRandomInteger( minLength.intValue(), Math.min( maxLength.intValue() - minLength.intValue(), 5 ) );
+         for ( int i = 0; i < amount; i++ ) {
+            returnValues.add( valueGenerator.get() );
+         }
+         return returnValues;
       }
 
       private Number getRandomValue( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType, final Resource dataTypeResource ) {
