@@ -18,11 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.jena.datatypes.BaseDatatype;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
-
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
@@ -35,6 +34,7 @@ import org.eclipse.esmf.metamodel.loader.DefaultPropertyWrapper;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public class PropertyInstantiator extends Instantiator<Property> {
    private final Characteristic fallbackCharacteristic;
@@ -81,18 +81,22 @@ public class PropertyInstantiator extends Instantiator<Property> {
                         }
                         return type.as( Scalar.class );
                      } )
-                     .map( type -> {
-                        final Object literal = statement.getLiteral().getValue();
-                        final Object value = literal instanceof BaseDatatype.TypedValue
-                              ? statement.getLiteral().getLexicalForm()
-                              : literal;
-                        return new DefaultScalarValue( value, type );
-                     } ) );
+                     .map( type -> buildScalarValue( statement.getLiteral(), type ) ) );
 
          defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, isOptional,
                isNotInPayload, payloadName, isAbstract, extends_ );
       }
       defaultPropertyWrapper.setProperty( defProperty );
       return defaultPropertyWrapper;
+   }
+
+   private ScalarValue buildScalarValue( final Literal literal, final Scalar type ) {
+      final Object literalValue = literal.getValue();
+      if ( literalValue instanceof BaseDatatype.TypedValue ) {
+         return new DefaultScalarValue( literal.getLexicalForm(), type );
+      } else if ( literal.getDatatypeURI().equals( RDF.langString.getURI() ) ) {
+         return buildLanguageString( literal );
+      }
+      return new DefaultScalarValue( literalValue, type );
    }
 }

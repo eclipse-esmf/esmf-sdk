@@ -34,11 +34,9 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
 import org.eclipse.esmf.metamodel.AbstractEntity;
@@ -53,10 +51,11 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.impl.DefaultCollectionValue;
 import org.eclipse.esmf.metamodel.impl.DefaultEntityInstance;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
+import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public abstract class Instantiator<T extends ModelElement> extends AttributeValueRetriever implements Function<Resource, T> {
    protected final ModelElementFactory modelElementFactory;
@@ -223,9 +222,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
       //    but _not_ org.eclipse.esmf.metamodel.datatypes.LangString as we would like to.
       // 3. So we construct an instance of LangString here from the RDFLangString.
       if ( literal.getDatatypeURI().equals( RDF.langString.getURI() ) ) {
-         final LangString langString = new LangString( literal.getString(), Locale.forLanguageTag( literal.getLanguage() ) );
-         final Scalar type = new DefaultScalar( RDF.langString.getURI(), metaModelVersion );
-         return new DefaultScalarValue( langString, type );
+         return buildLanguageString( literal );
       }
 
       return Stream.concat( ExtendedXsdDataType.supportedXsdTypes.stream(), Stream.of( curieDataType ) )
@@ -234,6 +231,12 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
             .map( value -> new DefaultScalarValue( value, new DefaultScalar( literal.getDatatypeURI(), metaModelVersion ) ) )
             .findAny()
             .orElseThrow( () -> new AspectLoadingException( "Literal can not be parsed: " + literal ) );
+   }
+
+   protected ScalarValue buildLanguageString( final Literal literal ) {
+      final LangString langString = new LangString( literal.getString(), Locale.forLanguageTag( literal.getLanguage() ) );
+      final Scalar type = new DefaultScalar( RDF.langString.getURI(), metaModelVersion );
+      return new DefaultScalarValue( langString, type );
    }
 
    private CollectionValue buildCollectionValue( final RDFList list, final CollectionValue.CollectionType collectionType,
