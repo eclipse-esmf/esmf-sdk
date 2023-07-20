@@ -1,0 +1,9 @@
+{
+  "myPropertyOne": {
+    "entityPropertyOne": [
+      {
+        "entityPropertyTwo": "foo"
+      }
+    ]
+  }
+}

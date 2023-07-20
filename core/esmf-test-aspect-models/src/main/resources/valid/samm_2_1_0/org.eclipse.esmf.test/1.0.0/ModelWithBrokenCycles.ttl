@@ -1,0 +1,120 @@
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:ModelWithBrokenCycles a samm:Aspect ;
+   samm:properties ( :a :e :h ) .
+
+#############################################################
+# direct cycle between two properties broken by samm:optional
+#############################################################
+
+:a a samm:Property;
+   samm:characteristic :aCharacteristic.
+
+:aCharacteristic a samm:Characteristic;
+   samm:dataType :AEntity.
+
+:AEntity a samm:Entity;
+    samm:properties ( :b ) .
+
+:b a samm:Property;
+   samm:characteristic :bCharacteristic.
+
+:bCharacteristic a samm:Characteristic;
+   samm:dataType :BEntity.
+
+:BEntity a samm:Entity;
+    samm:properties ( [ samm:property :a ; samm:optional true ; ] ) .
+
+#####################################################################
+# indirect cycle via an intermediate property broken by samm:optional
+#####################################################################
+
+:e a samm:Property;
+   samm:characteristic :eCharacteristic.
+
+:eCharacteristic a samm:Characteristic;
+   samm:dataType :EEntity.
+
+:EEntity a samm:Entity;
+    samm:properties ( :f ) .
+
+:f a samm:Property;
+   samm:characteristic :fCharacteristic.
+
+:fCharacteristic a samm:Characteristic;
+   samm:dataType :FEntity.
+
+:FEntity a samm:Entity;
+    samm:properties ( :g ) .
+
+:g a samm:Property;
+   samm:characteristic :gCharacteristic.
+
+:gCharacteristic a samm:Characteristic;
+   samm:dataType :GEntity.
+
+:GEntity a samm:Entity;
+    samm:properties ( [ samm:property :e ; samm:optional true ; ] ) .
+
+########################################################
+# cycle but only in one of the branches of samm-c:Either
+########################################################
+:h a samm:Property;
+   samm:characteristic :hCharacteristic.
+
+:hCharacteristic a samm-c:Either;
+    samm-c:left :leftCharacteristic ;
+    samm-c:right :rightCharacteristic.
+
+:leftCharacteristic a samm:Characteristic;
+   samm:dataType :LeftEntity.
+
+:rightCharacteristic a samm:Characteristic;
+   samm:dataType :RightEntity.
+
+:LeftEntity a samm:Entity;
+    samm:properties ( :h ) . # direct cycle
+
+:RightEntity a samm:Entity;
+    samm:properties ( :i ) . # no cycle
+
+:i a samm:Property;
+   samm:characteristic :iCharacteristic.
+
+:iCharacteristic a samm:Characteristic;
+   samm:dataType xsd:string.
+
+#############################################################
+# a cycle, but the properties are not referenced by an Aspect
+#############################################################
+:j a samm:Property;
+   samm:characteristic :jCharacteristic.
+
+:jCharacteristic a samm:Characteristic;
+   samm:dataType :JEntity.
+
+:JEntity a samm:Entity;
+    samm:properties ( :k ) .
+
+:k a samm:Property;
+   samm:characteristic :kCharacteristic.
+
+:kCharacteristic a samm:Characteristic;
+   samm:dataType :KEntity.
+
+:KEntity a samm:Entity;
+    samm:properties ( :j ) .

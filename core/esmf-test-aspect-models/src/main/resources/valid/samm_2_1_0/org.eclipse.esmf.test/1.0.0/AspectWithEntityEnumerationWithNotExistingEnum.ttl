@@ -1,0 +1,65 @@
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#> .
+
+:AspectWithEntityEnumerationWithNotExistingEnum a samm:Aspect ;
+    samm:preferredName "Aspect with entity enumeration"@en ;
+    samm:description "This is a test description"@en ;
+    samm:see <http://example.com/> ;
+    samm:properties ( :systemState ) ;
+    samm:operations ( ) .
+
+:systemState a samm:Property ;
+    samm:preferredName "System State"@en ;
+    samm:description "The state the system is currently in, e.g. heat-up."@en ;
+    samm:characteristic [
+       a samm-c:Enumeration ;
+       samm:preferredName "System States"@en ;
+       samm:description "Defines which states the system may have."@en ;
+       samm:dataType :SystemState ;
+       samm-c:values ( :Off :CoolDown :HeatUp :On )
+    ] .
+
+:SystemState a samm:Entity ;
+   samm:preferredName "System State"@en ;
+   samm:description "Represents a specific state the system may have."@en ;
+   samm:properties ( :state :description ) .
+
+:Off a :SystemState ;
+   :state "0"^^xsd:short ;
+   :description "Off" .
+
+:On a :SystemState ;
+   :state "1"^^xsd:short ;
+   :description "On" .
+
+:CoolDown a :SystemState ;
+   :state "3"^^xsd:short ;
+   :description "CoolDown" .
+
+:HeatUp a :SystemState ;
+   :state "4"^^xsd:short ;
+   :description "HeatUp" .
+
+:state a samm:Property ;
+   samm:characteristic :Measurement .
+
+:description a samm:Property ;
+   samm:characteristic samm-c:Text .
+
+:Measurement a samm-c:Measurement ;
+   samm:dataType xsd:short ;
+   samm-c:unit unit:metrePerSecond .
