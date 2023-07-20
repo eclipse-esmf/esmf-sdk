@@ -10,10 +10,10 @@
 # SPDX-License-Identifier: MPL-2.0
 
 @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
-@prefix samm:   <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
 @prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.0.0#> .
 @prefix aux: <urn:samm:org.eclipse.esmf.samm:aux#> .
-@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 [
   aux:contains  :ModelWithBlankAndAdditionalNodes, :testProperty, :NumberList, :Number, _:blankNode ;
