@@ -22,24 +22,22 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+
+import com.google.common.collect.Streams;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.assertj.core.api.Assertions;
-import org.eclipse.esmf.aspectmodel.VersionNumber;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import com.google.common.collect.Streams;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
-import org.eclipse.esmf.test.MetaModelVersions;
-import org.eclipse.esmf.test.TestAspect;
 
 public class MigratorTest extends MetaModelVersions {
 
@@ -66,7 +64,8 @@ public class MigratorTest extends MetaModelVersions {
       final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
 
-      Assertions.assertThat( rewrittenModel.getMetaModelVersion() ).isEqualTo( VersionNumber.parse( KnownVersion.getLatest().toVersionString() ) );
+      Assertions.assertThat( rewrittenModel.getMetaModelVersion() )
+            .isEqualTo( VersionNumber.parse( KnownVersion.getLatest().toVersionString() ) );
       final Model model = rewrittenModel.getRawModel();
       assertThat( model.getNsPrefixURI( "samm" ) ).contains( KnownVersion.getLatest().toVersionString() );
 
@@ -81,7 +80,8 @@ public class MigratorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testUriRewritingDoesNotChangeCustomNamespaces( final KnownVersion metaModelVersion ) {
-      final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_NAMESPACE, metaModelVersion );
+      final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_NAMESPACE,
+            metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
 
       assertThat( rewrittenModel.getRawModel().getNsPrefixMap() ).containsKey( "custom" );
@@ -89,17 +89,19 @@ public class MigratorTest extends MetaModelVersions {
 
    @Test
    public void testMigrateUnitsToSammNamespace() {
-      final VersionedModel oldModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_UNIT, KnownVersion.SAMM_1_0_0 );
+      final VersionedModel oldModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CUSTOM_UNIT,
+            KnownVersion.SAMM_1_0_0 );
       final Model rewrittenModel = migratorService.updateMetaModelVersion( oldModel ).get().getRawModel();
-      final SAMM samm = new SAMM( KnownVersion.SAMM_2_0_0 );
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
 
       assertThat( rewrittenModel.contains( null, RDF.type, samm.Unit() ) ).isTrue();
       assertThat( rewrittenModel.contains( null, samm.symbol(), (RDFNode) null ) ).isTrue();
       assertThat( rewrittenModel.contains( null, samm.quantityKind(), (RDFNode) null ) ).isTrue();
       final Set<String> uris = getAllUris( rewrittenModel );
-      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:2.0.0#Unit" ) );
-      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:2.0.0#symbol" ) );
-      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:2.0.0#quantityKind" ) );
+      final String sammVersion = KnownVersion.getLatest().toVersionString();
+      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:" + sammVersion + "#Unit" ) );
+      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:" + sammVersion + "#symbol" ) );
+      assertThat( uris ).noneMatch( uri -> uri.contains( "urn:samm:org.eclipse.esmf.samm:unit:" + sammVersion + "#quantityKind" ) );
    }
 
    @ParameterizedTest

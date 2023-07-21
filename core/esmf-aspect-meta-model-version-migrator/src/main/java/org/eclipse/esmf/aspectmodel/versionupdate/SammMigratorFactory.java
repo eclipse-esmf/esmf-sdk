@@ -15,16 +15,14 @@ package org.eclipse.esmf.aspectmodel.versionupdate;
 import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.resolver.AspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
-
-import com.google.common.collect.ImmutableList;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.SammMetaModelVersionUriRewriter;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.SammRemoveSammNameMigrator;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.UnitInSammNamespaceMigrator;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Includes all SAMM migrators
@@ -32,6 +30,7 @@ import org.eclipse.esmf.aspectmodel.versionupdate.migrator.UnitInSammNamespaceMi
 public class SammMigratorFactory {
    private final SammAspectMetaModelResourceResolver metaModelResourceResolver = new SammAspectMetaModelResourceResolver();
    private final List<Migrator> migrators = ImmutableList.<Migrator> builder()
+         .add( new SammMetaModelVersionUriRewriter( KnownVersion.SAMM_2_0_0, KnownVersion.SAMM_2_1_0 ) )
          .add( new SammMetaModelVersionUriRewriter( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
          .add( new SammRemoveSammNameMigrator( KnownVersion.SAMM_1_0_0, KnownVersion.SAMM_2_0_0 ) )
          .add( new UnitInSammNamespaceMigrator() )
