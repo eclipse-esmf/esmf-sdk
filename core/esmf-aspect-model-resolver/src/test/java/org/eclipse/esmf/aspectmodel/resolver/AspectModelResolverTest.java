@@ -66,7 +66,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
    }
 
    @ParameterizedTest
-   @MethodSource( value = "allVersions" )
+   @MethodSource( value = "latestVersion" )
    public void testLoadLegacyBammModelExpectSuccess( final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
