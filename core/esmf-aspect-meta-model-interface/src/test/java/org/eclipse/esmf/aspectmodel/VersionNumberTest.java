@@ -118,5 +118,10 @@ public class VersionNumberTest {
          this.versionNumber = versionNumber;
          this.version = version;
       }
+
+      @Override
+      public String toString() {
+         return version;
+      }
    }
 }

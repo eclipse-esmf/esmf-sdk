@@ -1,0 +1,74 @@
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
+
+# Generates boxes for Aspects
+construct {
+  ?aspectBox a :Box .
+  ?aspectBox :prototype "Aspect" .
+  ?aspectBox :title ?aspectName .
+  ?aspectBox :modelElement ?aspect .
+  ?aspectBox :entries (
+     [
+       a :Entry ;
+       :title "preferredName" ;
+       :text ?preferredName
+     ]
+     [
+       a :Entry ;
+       :title "description" ;
+       :text ?description
+     ]
+     [
+       a :Entry ;
+       :title "see" ;
+       :text ?seeValues
+     ]
+  )
+} where {
+  ?aspect a samm:Aspect .
+  bind( strafter( str( ?aspect ), "#" ) as ?aspectName ) .
+
+  bind( concat( ?aspectName, "Aspect" ) as ?boxName )
+  bind( iri( concat( func:getNamespace( ?aspect ), ?boxName ) ) as ?aspectBox )
+
+  optional {
+    ?aspect samm:preferredName ?preferredNameValue .
+    filter( lang( ?preferredNameValue ) = "en" )
+    bind( xsd:string( ?preferredNameValue ) as ?preferredName )
+  }
+
+  optional {
+    ?aspect samm:description ?descriptionValue .
+    filter( lang( ?descriptionValue ) = "en" )
+    bind( xsd:string( ?descriptionValue ) as ?description )
+  }
+
+  #subquery which concatenates all values for the samm:see attributes
+  optional {
+    {
+      select ( group_concat( ?seeValue; separator=", " ) as ?seeValues ) ?aspect
+      where {
+        select *
+        where {
+          ?aspect a samm:Aspect .
+          ?aspect samm:see ?seeValue .
+        }
+        order by str( ?seeValue )
+      }
+      group by ?aspect
+    }
+  }
+}

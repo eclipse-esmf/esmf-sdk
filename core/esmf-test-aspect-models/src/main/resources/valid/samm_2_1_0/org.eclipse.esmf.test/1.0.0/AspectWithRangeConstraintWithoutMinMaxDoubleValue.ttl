@@ -1,0 +1,45 @@
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:AspectWithRangeConstraintWithoutMinMaxDoubleValue a samm:Aspect ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:preferredName "Test Aspekt"@de ;
+   samm:properties ( :doubleProperty ) ;
+   samm:operations ( ) .
+
+:doubleProperty a samm:Property ;
+   samm:preferredName "Test Double Property"@en ;
+   samm:preferredName "Numerischer Wert"@de ;
+   samm:description "A property with a numeric value."@en ;
+   samm:description "Eine Property mit einem numerischen Wert."@de ;
+   samm:characteristic :TestRangeConstraint .
+
+:TestRangeConstraint a samm-c:Trait ;
+   samm:preferredName "Test Range Constraint"@en ;
+   samm:preferredName "Test Range Constraint"@de ;
+   samm:description "Restricts a numeric value to values between 0 and 100."@en ;
+   samm:description "Beschränkt einen numerischen Wert auf Werte zwischen 0 und 100."@de ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+   ] ;
+   samm-c:baseCharacteristic :DoubleCharacteristic .
+
+:DoubleCharacteristic a samm:Characteristic ;
+   samm:preferredName "Double Characteristic"@en ;
+   samm:preferredName "Numerische Charakteristik"@de ;
+   samm:description "Positive Numbers"@en ;
+   samm:description "Positive Zahlen"@de ;
+   samm:dataType xsd:double .

@@ -1,0 +1,127 @@
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test.shared:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:EntityWithConstraint a samm:Entity ;
+   samm:properties ( :stringLcProperty :doubleRcProperty :intRcProperty :bigIntRcProperty :floatRcProperty :stringRegexcProperty ) ;
+   samm:operations ( ) .
+
+:stringLcProperty a samm:Property ;
+   samm:characteristic :StringLengthConstraint .
+
+:stringRegexcProperty a samm:Property ;
+   samm:characteristic :RegularExpressionConstraint .
+
+:doubleRcProperty a samm:Property ;
+   samm:characteristic :DoubleRangeConstraint .
+
+:intRcProperty a samm:Property ;
+   samm:characteristic :IntegerRangeConstraint .
+
+:bigIntRcProperty a samm:Property ;
+   samm:characteristic :BigIntegerRangeConstraint .
+
+:floatRcProperty a samm:Property ;
+   samm:characteristic :FloatRangeConstraint .
+
+:StringLengthConstraint a samm-c:Trait ;
+   samm:preferredName "Used Test Constraint"@en ;
+   samm:description "Used Test Constraint"@en ;
+   samm:see <http://example.com/> ;
+   samm:see <http://example.com/me> ;
+   samm-c:constraint [
+      a samm-c:LengthConstraint ;
+      samm-c:minValue "20"^^xsd:nonNegativeInteger ;
+      samm-c:maxValue "22"^^xsd:nonNegativeInteger ;
+   ] ;
+   samm-c:baseCharacteristic samm-c:Text .
+
+:DoubleRangeConstraint a samm-c:Trait ;
+   samm:preferredName "Test Constraint"@en ;
+   samm:description "Test Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "-0.1"^^xsd:double ;
+      samm-c:maxValue "0.2"^^xsd:double ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
+   ] ;
+   samm-c:baseCharacteristic :DoubleMeasurement .
+
+:IntegerRangeConstraint a samm-c:Trait ;
+   samm:preferredName "Test Constraint"@en ;
+   samm:description "Test Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "-1"^^xsd:int ;
+      samm-c:maxValue "-1"^^xsd:int ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
+   ] ;
+   samm-c:baseCharacteristic :IntegerMeasurement .
+
+:BigIntegerRangeConstraint a samm-c:Trait ;
+   samm:preferredName "Test Constraint"@en ;
+   samm:description "Test Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "10"^^xsd:int ;
+      samm-c:maxValue "15"^^xsd:int ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
+   ] ;
+   samm-c:baseCharacteristic :BigIntegerMeasurement .
+
+:FloatRangeConstraint a samm-c:Trait ;
+   samm:preferredName "Test Constraint"@en ;
+   samm:description "Test Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RangeConstraint ;
+      samm-c:minValue "100"^^xsd:int ;
+      samm-c:maxValue "112"^^xsd:int ;
+      samm-c:upperBoundDefinition samm-c:AT_MOST ;
+      samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
+   ] ;
+   samm-c:baseCharacteristic :FloatMeasurement .
+
+:RegularExpressionConstraint a samm-c:Trait ;
+   samm:preferredName "Test Regular Expression Constraint"@en ;
+   samm:description "Test Regular Expression Constraint"@en ;
+   samm-c:constraint [
+      a samm-c:RegularExpressionConstraint ;
+      samm:value "[a-zA-Z]" ;
+   ] ;
+   samm-c:baseCharacteristic samm-c:Text .
+
+:DoubleMeasurement a samm-c:Measurement ;
+   samm:description "The acceleration"@en ;
+   samm-c:unit unit:metrePerSecondSquared ;
+   samm:dataType xsd:double .
+
+:IntegerMeasurement a samm-c:Measurement ;
+   samm:description "The acceleration"@en ;
+   samm-c:unit unit:metrePerSecondSquared ;
+   samm:dataType xsd:int .
+
+:BigIntegerMeasurement a samm-c:Measurement ;
+   samm:description "The acceleration"@en ;
+   samm-c:unit unit:metrePerSecondSquared ;
+   samm:dataType xsd:integer .
+
+:FloatMeasurement a samm-c:Measurement ;
+   samm:description "The acceleration"@en ;
+   samm-c:unit unit:metrePerSecondSquared ;
+   samm:dataType xsd:float .

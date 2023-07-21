@@ -1,0 +1,88 @@
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#> .
+
+:AspectWithDurationTypeForRangeConstraints
+    a               samm:Aspect ;
+    samm:properties ( :testPropertyWithDayTimeDuration :testPropertyWithDuration
+                      :testPropertyWithYearMonthDuration ) ;
+    samm:operations ( ) .
+
+:testPropertyWithDayTimeDuration
+    a                   samm:Property ;
+    samm:characteristic :testWithDurationMinDurationMaxDayTimeDuration .
+
+:testWithDurationMinDurationMaxDayTimeDuration
+    a                       samm-c:Trait ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue "P1DT5H"^^xsd:dayTimeDuration ;
+       samm-c:maxValue "P1DT8H"^^xsd:dayTimeDuration ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
+    ] ;
+    samm-c:baseCharacteristic :MeasurementDayTimeDuration .
+
+:MeasurementDayTimeDuration
+    a             samm-c:Measurement ;
+    samm:dataType xsd:dayTimeDuration ;
+    samm-c:unit   unit:hour .
+
+:testPropertyWithDuration
+    a                   samm:Property ;
+    samm:characteristic :testWithDurationMinDurationMaxDuration .
+
+:testWithDurationMinDurationMaxDuration
+    a                       samm-c:Trait ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue "PT1H5M0S"^^xsd:duration ;
+       samm-c:maxValue "PT1H5M3S"^^xsd:duration ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
+    ] ;
+    samm-c:baseCharacteristic :MeasurementDuration .
+
+:MeasurementDuration
+    a             samm-c:Measurement ;
+    samm:dataType xsd:duration ;
+    samm-c:unit   unit:hour .
+
+:testPropertyWithYearMonthDuration
+    a                   samm:Property ;
+    samm:characteristic :testWithDurationMinDurationMaxYearMonthDuration .
+
+:testWithDurationMinDurationMaxYearMonthDuration
+    a                       samm-c:Trait ;
+    samm:preferredName      "Test Range"@en ;
+    samm:description        "Test Range"@en ;
+    samm-c:constraint [
+       a samm-c:RangeConstraint ;
+       samm-c:minValue         "P5Y2M"^^xsd:yearMonthDuration ;
+       samm-c:maxValue         "P5Y3M"^^xsd:yearMonthDuration ;
+       samm-c:upperBoundDefinition samm-c:AT_MOST ;
+       samm-c:lowerBoundDefinition samm-c:AT_LEAST ;
+    ] ;
+    samm-c:baseCharacteristic :MeasurementYearMonthDuration .
+
+:MeasurementYearMonthDuration
+    a             samm-c:Measurement ;
+    samm:dataType xsd:yearMonthDuration ;
+    samm-c:unit   unit:hour .

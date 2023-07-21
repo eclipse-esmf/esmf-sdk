@@ -16,10 +16,10 @@ package org.eclipse.esmf.aspectmodel.generator.diagram;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeAll;
-
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
+
+import org.junit.jupiter.api.BeforeAll;
 
 public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions {
 
@@ -27,16 +27,18 @@ public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions 
 
    final String sparqlQueryFileName = "constraint2boxmodel.sparql";
 
-   protected String boxSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier, boolean isConstraintAnonymous ) {
-      String ns = isConstraintAnonymous ? ":" : "test:";
+   protected String boxSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier,
+         final boolean isConstraintAnonymous ) {
+      final String ns = isConstraintAnonymous ? ":" : "test:";
       if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ) {
          return String.format( "%s a :Box", constraintIdentifier.equals( "*" ) ? "*" : ns + constraintIdentifier );
       }
       return ns + "TestConstraintConstraint a :Box";
    }
 
-   protected String entriesSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier, boolean isConstraintAnonymous ) {
-      String ns = isConstraintAnonymous ? ":" : "test:";
+   protected String entriesSelectorStatement( final KnownVersion metaModelVersion, final String constraintIdentifier,
+         final boolean isConstraintAnonymous ) {
+      final String ns = isConstraintAnonymous ? ":" : "test:";
       if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ) {
          return String.format( "%s :entries *", constraintIdentifier.equals( "*" ) ? "*" : ns + constraintIdentifier );
       }
@@ -48,5 +50,6 @@ public abstract class AbstractConstraint2BoxModelTest extends MetaModelVersions 
       totalNumberOfExpectedEntriesPerMetaModelVersion = new HashMap<>();
       totalNumberOfExpectedEntriesPerMetaModelVersion.put( KnownVersion.SAMM_1_0_0, 10 );
       totalNumberOfExpectedEntriesPerMetaModelVersion.put( KnownVersion.SAMM_2_0_0, 10 );
+      totalNumberOfExpectedEntriesPerMetaModelVersion.put( KnownVersion.SAMM_2_1_0, 10 );
    }
 }

@@ -1,0 +1,50 @@
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+@prefix : <urn:samm:org.eclipse.esmf.test.shared:1.0.0#> .
+@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+@prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix unit: <urn:samm:org.eclipse.esmf.samm:unit:2.1.0#> .
+
+:AspectWithConstraintEntity a samm:Aspect ;
+   samm:preferredName "Test Aspect"@en ;
+   samm:description "This is a test description"@en ;
+   samm:see <http://example.com/> ;
+   samm:properties ( :testProperty ) ;
+   samm:operations ( ) .
+
+:testProperty a samm:Property ;
+   samm:preferredName "Test Property"@en ;
+   samm:description "This is a test property."@en ;
+   samm:see <http://example.com/> ;
+   samm:see <http://example.com/me> ;
+   samm:characteristic :EntityCharacteristic .
+
+:EntityCharacteristic a samm-c:SingleEntity ;
+   samm:preferredName "Test Entity Characteristic"@en ;
+   samm:description "This is a test Entity Characteristic"@en ;
+   samm:see <http://example.com/> ;
+   samm:dataType :TestEntity .
+
+:TestEntity a samm:Entity ;
+   samm:extends :ParentTestEntity ;
+   samm:preferredName "Test Entity"@en ;
+   samm:description "This is a test entity"@en ;
+   samm:properties ( :entityProperty ) .
+
+:entityProperty a samm:Property ;
+   samm:preferredName "Entity Property"@en ;
+   samm:description "This is a property for the test entity."@en ;
+   samm:characteristic samm-c:Text .
+
+:ParentTestEntity a samm:AbstractEntity ;
+   samm:properties ( :stringRegexcProperty ) .

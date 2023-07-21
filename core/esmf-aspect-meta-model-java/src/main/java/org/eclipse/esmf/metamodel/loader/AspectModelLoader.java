@@ -60,9 +60,10 @@ import io.vavr.control.Try;
 public class AspectModelLoader {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
 
-   private static final Set<KnownVersion> supportedVersions = ImmutableSet.of(
+   private static final Set<KnownVersion> SUPPORTED_VERSIONS = ImmutableSet.of(
          KnownVersion.SAMM_1_0_0,
-         KnownVersion.SAMM_2_0_0
+         KnownVersion.SAMM_2_0_0,
+         KnownVersion.SAMM_2_1_0
    );
 
    private static final MigratorService migratorService = new MigratorService();
@@ -115,7 +116,7 @@ public class AspectModelLoader {
     */
    public static Try<List<ModelElement>> getElements( final VersionedModel versionedModel ) {
       final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() );
-      if ( metaModelVersion.isEmpty() || !supportedVersions.contains( metaModelVersion.get() ) ) {
+      if ( metaModelVersion.isEmpty() || !SUPPORTED_VERSIONS.contains( metaModelVersion.get() ) ) {
          return Try.failure( new UnsupportedVersionException( versionedModel.getMetaModelVersion() ) );
       }
 

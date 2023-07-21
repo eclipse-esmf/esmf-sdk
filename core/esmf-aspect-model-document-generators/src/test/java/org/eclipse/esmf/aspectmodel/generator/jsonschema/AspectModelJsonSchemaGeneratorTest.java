@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.generator.jsonschema;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.assertj.core.data.Percentage;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -31,10 +31,6 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -51,6 +47,11 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.PathNotFoundException;
+import org.assertj.core.data.Percentage;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    private final ObjectMapper objectMapper = new ObjectMapper();
@@ -173,7 +174,8 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['description']" ) )
             .isEqualTo( "This is a base64Binary characteristic." );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['contentEncoding']" ) ).isEqualTo( "base64" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['contentEncoding']" ) ).isEqualTo(
+            "base64" );
 
       final String booleanUrn = String.format( "urn_samm_org.eclipse.esmf.samm_characteristic_%s_Boolean",
             KnownVersion.getLatest().toVersionString() );
@@ -266,7 +268,8 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/HexBinaryPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['pattern']" ) ).isEqualTo( "([0-9a-fA-F])([0-9a-fA-F])*" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['pattern']" ) ).isEqualTo(
+            "([0-9a-fA-F])([0-9a-fA-F])*" );
 
       characteristicReference = context.<String> read( "$['properties']['intProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/IntPropertyCharacteristic" );
@@ -509,7 +512,8 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraintWithCollection']['description']" ) )
             .isEqualTo( "Test Length Constraint with collection" );
       assertThat( context.<String> read(
-            "$['components']['schemas']['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraintWithCollection']['type']" ) ).isEqualTo( "array" );
+            "$['components']['schemas']['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraintWithCollection']['type']" ) ).isEqualTo(
+            "array" );
       assertThat( context.<Integer> read( "$['components']['schemas']"
             + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraintWithCollection']['maxItems']" ) )
             .isEqualTo( 10 );
@@ -959,7 +963,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity" );
       assertThat( context.<String> read( "$['components']['schemas']"
             + "['urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_2.0.0_Text" );
+            .isEqualTo(
+                  "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_" + KnownVersion.getLatest().toVersionString()
+                        + "_Text" );
       assertThat( context.<String> read( "$['components']['schemas']"
             + "['urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity']['description']" ) )
             .isEqualTo( "This is an abstract test entity" );
@@ -986,7 +992,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity" );
       assertThat( context.<String> read( "$['components']['schemas']"
             + "['urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_2.0.0_Text" );
+            .isEqualTo(
+                  "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_" + KnownVersion.getLatest().toVersionString()
+                        + "_Text" );
       assertThat( context.<String> read( "$['components']['schemas']"
             + "['urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity']['description']" ) )
             .isEqualTo( "This is a abstract test entity" );
@@ -1016,7 +1024,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "This is an abstract test property" );
       assertThat( schema.at( "/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity/"
             + "properties/abstractTestProperty/$ref" ).asText() )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_2.0.0_Text" );
+            .isEqualTo(
+                  "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_" + KnownVersion.getLatest().toVersionString()
+                        + "_Text" );
    }
 
    @ParameterizedTest
@@ -1035,7 +1045,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "This is an abstract test entity" );
       assertThat( context.<String> read( "$['components']['schemas']"
             + "['urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_2.0.0_Text" );
+            .isEqualTo(
+                  "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_" + KnownVersion.getLatest().toVersionString()
+                        + "_Text" );
       assertThat( context.<String> read( "$['components']['schemas']"
             + "['urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['description']" ) )
             .isEqualTo( "This is an abstract test property" );

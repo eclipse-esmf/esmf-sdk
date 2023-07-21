@@ -31,6 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.eclipse.esmf.metamodel.datatypes.Curie;
+
 import lombok.Value;
 
 public class DataTypeTest {
@@ -84,6 +85,11 @@ public class DataTypeTest {
    private static class TestConfiguration<T> {
       TypedRdfDatatype<T> type;
       Map<String, Predicate<T>> predicates;
+
+      @Override
+      public String toString() {
+         return type.toString();
+      }
    }
 
    static Stream<TestConfiguration<?>> getTestConfigurationsWithLexicalErrors() {
@@ -312,13 +318,13 @@ public class DataTypeTest {
 
       final Stream<TestConfiguration<Curie>> curieTypes =
             DataType.getAllSupportedTypes().stream()
-                    .filter( dataType -> dataType.getJavaClass() != null
-                          && dataType.getJavaClass().equals( Curie.class ) )
-                    .map( dataType -> (TypedRdfDatatype<Curie>) dataType )
-                    .map( curieType -> new TestConfiguration<>( curieType, Map.of(
-                          "xsd:string", v -> ((Curie) v).getValue().equals( "xsd:string" ),
-                          "unit:hectopascal", v -> ((Curie) v).getValue().equals( "unit:hectopascal" )
-                    ) ) );
+                  .filter( dataType -> dataType.getJavaClass() != null
+                        && dataType.getJavaClass().equals( Curie.class ) )
+                  .map( dataType -> (TypedRdfDatatype<Curie>) dataType )
+                  .map( curieType -> new TestConfiguration<>( curieType, Map.of(
+                        "xsd:string", v -> ((Curie) v).getValue().equals( "xsd:string" ),
+                        "unit:hectopascal", v -> ((Curie) v).getValue().equals( "unit:hectopascal" )
+                  ) ) );
 
       return Stream.concat( extendedXsdTypes, curieTypes );
    }
