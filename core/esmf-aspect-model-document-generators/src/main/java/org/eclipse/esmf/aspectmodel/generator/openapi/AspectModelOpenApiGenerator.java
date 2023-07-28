@@ -13,6 +13,26 @@
 
 package org.eclipse.esmf.aspectmodel.generator.openapi;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.google.common.base.CaseFormat;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.Operation;
+import org.eclipse.esmf.metamodel.Property;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -24,28 +44,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.google.common.base.CaseFormat;
-
-import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
-import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.NamedElement;
-import org.eclipse.esmf.metamodel.Operation;
-import org.eclipse.esmf.metamodel.Property;
 
 public class AspectModelOpenApiGenerator {
 
@@ -209,9 +207,9 @@ public class AspectModelOpenApiGenerator {
       }
 
       if ( resourcePath.isPresent() ) {
-         final List<String> dynamicParameters = Pattern.compile( "[{]\\S+[}]" ).matcher( resourcePath.get() ).results()
-               .map( match -> match.group( 0 ) ).collect( Collectors.toList() );
-         if ( !dynamicParameters.isEmpty() && !jsonProperties.isPresent() ) {
+         final List<String> dynamicParameters = Pattern.compile( "[{]\\S+?[}]" ).matcher( resourcePath.get() ).results()
+               .map( match -> match.group( 0 ) ).toList();
+         if ( !dynamicParameters.isEmpty() && jsonProperties.isEmpty()) {
             final String errorString = String
                   .format( "Resource path contains properties %s, but has no properties map.", dynamicParameters );
             LOG.error( errorString );
@@ -252,13 +250,13 @@ public class AspectModelOpenApiGenerator {
       final ObjectNode schemas = (ObjectNode) rootNode.get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS );
       if ( includeQueryApi ) {
          final InputStream inputStream = getClass().getResourceAsStream( "/openapi/Filter.json" );
-         final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8.name() );
+         final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8);
          final ObjectNode filterNode = (ObjectNode) objectMapper.readTree( string );
          schemas.set( FIELD_FILTER, filterNode );
       }
       if ( !aspect.getOperations().isEmpty() ) {
          final InputStream inputStream = getClass().getResourceAsStream( "/openapi/JsonRPC.json" );
-         final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8.name() );
+         final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8);
          final ObjectNode filterNode = (ObjectNode) objectMapper.readTree( string );
          schemas.set( FIELD_RPC, filterNode );
       }
