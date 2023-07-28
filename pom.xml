@@ -231,7 +231,7 @@
                      <rules>
                         <requireProperty>
                            <property>java.vendor.version</property>
-                           <message>Could not determine JDK vendor (java.vm.vendor property)</message>
+                           <message>Could not determine JDK vendor version (java.vendor.version property)</message>
                            <regex>.*GraalVM.*</regex>
                            <regexMessage>A GraalVM JDK is required to build this project</regexMessage>
                         </requireProperty>
