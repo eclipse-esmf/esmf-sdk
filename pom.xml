@@ -230,9 +230,9 @@
                   <configuration>
                      <rules>
                         <requireProperty>
-                           <property>java.vm.vendor</property>
+                           <property>java.vendor.version</property>
                            <message>Could not determine JDK vendor (java.vm.vendor property)</message>
-                           <regex>GraalVM.*</regex>
+                           <regex>.*GraalVM.*</regex>
                            <regexMessage>A GraalVM JDK is required to build this project</regexMessage>
                         </requireProperty>
                      </rules>
