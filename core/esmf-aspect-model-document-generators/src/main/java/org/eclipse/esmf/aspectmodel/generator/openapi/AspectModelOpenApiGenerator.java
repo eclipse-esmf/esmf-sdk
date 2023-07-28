@@ -211,7 +211,7 @@ public class AspectModelOpenApiGenerator {
       if ( resourcePath.isPresent() ) {
          final List<String> dynamicParameters = Pattern.compile( "[{]\\S+?[}]" ).matcher( resourcePath.get() ).results()
                .map( match -> match.group( 0 ) ).toList();
-         if ( !dynamicParameters.isEmpty() && jsonProperties.isEmpty()) {
+         if ( !dynamicParameters.isEmpty() && jsonProperties.isEmpty() ) {
             final String errorString = String
                   .format( "Resource path contains properties %s, but has no properties map.", dynamicParameters );
             LOG.error( errorString );
@@ -252,13 +252,13 @@ public class AspectModelOpenApiGenerator {
       final ObjectNode schemas = (ObjectNode) rootNode.get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS );
       if ( includeQueryApi ) {
          final InputStream inputStream = getClass().getResourceAsStream( "/openapi/Filter.json" );
-         final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8);
+         final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8 );
          final ObjectNode filterNode = (ObjectNode) objectMapper.readTree( string );
          schemas.set( FIELD_FILTER, filterNode );
       }
       if ( !aspect.getOperations().isEmpty() ) {
          final InputStream inputStream = getClass().getResourceAsStream( "/openapi/JsonRPC.json" );
-         final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8);
+         final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8 );
          final ObjectNode filterNode = (ObjectNode) objectMapper.readTree( string );
          schemas.set( FIELD_RPC, filterNode );
       }
