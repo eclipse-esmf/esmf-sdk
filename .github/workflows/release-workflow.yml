@@ -296,6 +296,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
+      - name: "Notify issues of release their fix is contained in"
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        uses: apexskier/github-release-commenter@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          comment-template: |
+            Release {release_link} addresses this.
+
       # Milestone release: Write settings to deploy to Github repo
       - name: Write settings.xml
         if: contains( github.event.inputs.release_version, '-M' )
