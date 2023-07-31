@@ -83,7 +83,7 @@ public class CurieRdfType implements TypedRdfDatatype<Curie> {
 
    @Override
    public Class<Curie> getJavaClass() {
-      return (Class<Curie>) Curie.class;
+      return Curie.class;
    }
 
    @Override

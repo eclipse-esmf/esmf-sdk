@@ -74,17 +74,11 @@ public class TestContext {
       final String[] parts = statement.split( " ", 3 );
       final Resource subject = parts[0].equals( "*" ) ?
             null : ResourceFactory.createResource( resolve( parts[0] ) );
-      final Property predicate;
-      switch ( parts[1] ) {
-      case "*":
-         predicate = null;
-         break;
-      case "a":
-         predicate = RDF.type;
-         break;
-      default:
-         predicate = ResourceFactory.createProperty( resolve( parts[1] ) );
-      }
+      final Property predicate = switch ( parts[1] ) {
+         case "*" -> null;
+         case "a" -> RDF.type;
+         default -> ResourceFactory.createProperty( resolve( parts[1] ) );
+      };
 
       if ( parts[2].contains( ":" ) ) {
          final Resource object = ResourceFactory.createResource( resolve( parts[2] ) );

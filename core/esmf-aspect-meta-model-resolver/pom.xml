@@ -30,7 +30,7 @@
 
    <properties>
       <samm-revision>
-         https://raw.githubusercontent.com/eclipse-esmf/esmf-semantic-aspect-meta-model/bf9196547384bf072095cc8300d45ca7117a3211/esmf-semantic-aspect-meta-model
+         https://raw.githubusercontent.com/eclipse-esmf/esmf-semantic-aspect-meta-model/179f97e7f12e3f05d5daa1211ff414d07d3b2f9e/esmf-semantic-aspect-meta-model
       </samm-revision>
    </properties>
 
@@ -186,6 +186,23 @@
                   </configuration>
                </execution>
                <execution>
+                  <id>download-meta-model-shapes-2-1-0</id>
+                  <phase>process-resources</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>
+                        ${samm-revision}/src/main/resources/samm/meta-model/2.1.0/aspect-meta-model-shapes.ttl
+                     </url>
+                     <outputFileName>aspect-meta-model-shapes.ttl</outputFileName>
+                     <outputDirectory>${project.build.directory}/classes/samm/meta-model/2.1.0</outputDirectory>
+                     <overwrite>true</overwrite>
+                     <followRedirects>true</followRedirects>
+                     <skipCache>true</skipCache>
+                  </configuration>
+               </execution>
+               <execution>
                   <id>download-characteristics-shapes-1-0-0</id>
                   <phase>process-resources</phase>
                   <goals>
@@ -214,6 +231,23 @@
                      </url>
                      <outputFileName>characteristic-shapes.ttl</outputFileName>
                      <outputDirectory>${project.build.directory}/classes/samm/characteristic/2.0.0</outputDirectory>
+                     <overwrite>true</overwrite>
+                     <followRedirects>true</followRedirects>
+                     <skipCache>true</skipCache>
+                  </configuration>
+               </execution>
+               <execution>
+                  <id>download-characteristics-shapes-2-1-0</id>
+                  <phase>process-resources</phase>
+                  <goals>
+                     <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                     <url>
+                        ${samm-revision}/src/main/resources/samm/characteristic/2.1.0/characteristic-shapes.ttl
+                     </url>
+                     <outputFileName>characteristic-shapes.ttl</outputFileName>
+                     <outputDirectory>${project.build.directory}/classes/samm/characteristic/2.1.0</outputDirectory>
                      <overwrite>true</overwrite>
                      <followRedirects>true</followRedirects>
                      <skipCache>true</skipCache>

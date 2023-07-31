@@ -42,34 +42,38 @@ import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintContainerProp
 import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintProperty;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestSharedAspect;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
    /**
     * Tests that code generation succeeds for all test models for the latest meta model version
+    *
     * @param testAspect the injected Aspect model
     */
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
    public void testCodeGeneration( final TestAspect testAspect ) {
-      assertThatCode( () -> TestContext.generateStaticAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) ) ).doesNotThrowAnyException();
+      assertThatCode( () -> TestContext.generateStaticAspectCode()
+            .apply( getGenerators( testAspect, KnownVersion.getLatest() ) ) ).doesNotThrowAnyException();
    }
 
    /**
     * Tests that code generation succeeds for all test models, that have properties shared over two files, for the latest meta model version
+    *
     * @param testAspect the injected shared Aspect models
     */
    @ParameterizedTest
    @EnumSource( value = TestSharedAspect.class )
    public void testCodeGenerationSharedAspect( final TestSharedAspect testAspect ) {
-      assertThatCode( () -> TestContext.generateStaticAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) ) ).doesNotThrowAnyException();
+      assertThatCode( () -> TestContext.generateStaticAspectCode()
+            .apply( getGenerators( testAspect, KnownVersion.getLatest() ) ) ).doesNotThrowAnyException();
    }
 
    @ParameterizedTest
@@ -83,14 +87,16 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithOptionalPropertiesWithEntity" )
                   .put( "TEST_STRING", new TypeToken<StaticProperty<String>>() {
                   } ).put( "TEST_OPTIONAL_STRING", new TypeToken<StaticContainerProperty<String, Optional<String>>>() {
-                  } ).put( "TEST_OPTIONAL_ENTITY", "StaticContainerProperty<TestEntity, java.util.Optional<TestEntity>>" ).build(), new HashMap<>() );
+                  } ).put( "TEST_OPTIONAL_ENTITY", "StaticContainerProperty<TestEntity, java.util.Optional<TestEntity>>" ).build(),
+            new HashMap<>() );
 
-      result.assertFields( "MetaTestEntity", ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-            .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaTestEntity" )
-            .put( "CODE_PROPERTY", new TypeToken<StaticProperty<Integer>>() {
-            } ).put( "TEST_SECOND_STRING", new TypeToken<StaticProperty<String>>() {
-            } ).put( "TEST_INT_LIST", new TypeToken<StaticContainerProperty<Integer, List<Integer>>>() {
-            } ).build(), new HashMap<>() );
+      result.assertFields( "MetaTestEntity",
+            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaTestEntity" )
+                  .put( "CODE_PROPERTY", new TypeToken<StaticProperty<Integer>>() {
+                  } ).put( "TEST_SECOND_STRING", new TypeToken<StaticProperty<String>>() {
+                  } ).put( "TEST_INT_LIST", new TypeToken<StaticContainerProperty<Integer, List<Integer>>>() {
+                  } ).build(), new HashMap<>() );
    }
 
    @ParameterizedTest
@@ -102,7 +108,8 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertFields( "MetaAspectWithExtendedEnums",
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithExtendedEnums" )
-                  .put( "RESULT", "StaticProperty<EvaluationResults>" ).put( "SIMPLE_RESULT", "StaticProperty<YesNo>" ).build(), new HashMap<>() );
+                  .put( "RESULT", "StaticProperty<EvaluationResults>" ).put( "SIMPLE_RESULT", "StaticProperty<YesNo>" ).build(),
+            new HashMap<>() );
       result.assertFields( "MetaEvaluationResult",
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaEvaluationResult" )
@@ -110,10 +117,12 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
                   } ).put( "NUMERIC_CODE", new TypeToken<StaticProperty<Short>>() {
                   } ).put( "DESCRIPTION", new TypeToken<StaticProperty<String>>() {
                   } ).put( "NESTED_RESULT", "StaticProperty<NestedResult>" ).build(), new HashMap<>() );
-      result.assertFields( "MetaNestedResult", ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-            .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaNestedResult" ).put( "AVERAGE", new TypeToken<StaticProperty<BigInteger>>() {
-            } ).put( "DESCRIPTION", new TypeToken<StaticProperty<String>>() {
-            } ).build(), new HashMap<>() );
+      result.assertFields( "MetaNestedResult",
+            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaNestedResult" )
+                  .put( "AVERAGE", new TypeToken<StaticProperty<BigInteger>>() {
+                  } ).put( "DESCRIPTION", new TypeToken<StaticProperty<String>>() {
+                  } ).build(), new HashMap<>() );
    }
 
    @ParameterizedTest
@@ -127,13 +136,17 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithEitherWithComplexTypes" )
                   .put( "TEST_PROPERTY", "StaticProperty<Either<LeftEntity, RightEntity>>" ).build(), new HashMap<>() );
 
-      result.assertFields( "MetaLeftEntity", ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-            .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaLeftEntity" ).put( "RESULT", new TypeToken<StaticProperty<String>>() {
-            } ).build(), new HashMap<>() );
+      result.assertFields( "MetaLeftEntity",
+            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaLeftEntity" )
+                  .put( "RESULT", new TypeToken<StaticProperty<String>>() {
+                  } ).build(), new HashMap<>() );
 
-      result.assertFields( "MetaRightEntity", ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-            .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaRightEntity" ).put( "ERROR", new TypeToken<StaticProperty<String>>() {
-            } ).build(), new HashMap<>() );
+      result.assertFields( "MetaRightEntity",
+            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaRightEntity" )
+                  .put( "ERROR", new TypeToken<StaticProperty<String>>() {
+                  } ).build(), new HashMap<>() );
    }
 
    @ParameterizedTest
@@ -158,7 +171,8 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertFields( "MetaAspectWithExtendedEntity",
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithExtendedEntity" )
-                  .put( "TEST_PROPERTY", "StaticContainerProperty<TestEntity, java.util.LinkedHashSet<TestEntity>>" ).build(), new HashMap<>() );
+                  .put( "TEST_PROPERTY", "StaticContainerProperty<TestEntity, java.util.LinkedHashSet<TestEntity>>" ).build(),
+            new HashMap<>() );
    }
 
    @ParameterizedTest
@@ -171,9 +185,10 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithRecursivePropertyWithOptional" )
                   .put( "TEST_PROPERTY", "StaticProperty<TestEntity>" ).build(), new HashMap<>() );
-      result.assertFields( "MetaTestEntity", ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-            .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaTestEntity" )
-            .put( "TEST_PROPERTY", "StaticContainerProperty<TestEntity, java.util.Optional<TestEntity>>" ).build(), new HashMap<>() );
+      result.assertFields( "MetaTestEntity",
+            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaTestEntity" )
+                  .put( "TEST_PROPERTY", "StaticContainerProperty<TestEntity, java.util.Optional<TestEntity>>" ).build(), new HashMap<>() );
    }
 
    @ParameterizedTest
@@ -225,7 +240,8 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
       result.assertFields( "MetaAspectWithState",
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithState" ).put( "STATUS", "StaticProperty<TestState>" )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithState" )
+                  .put( "STATUS", "StaticProperty<TestState>" )
                   .build(), new HashMap<>() );
    }
 
@@ -240,16 +256,19 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       final int expectedNumberOfParameters = 0;
       final List<String> getAllPropertiesWithoutExtended = List.of( "returngetProperties();" );
       final List<String> getPropertiesMetaTestEntity = List.of(
-            "returnStream.of(getProperties(),MetaParentTestEntity.INSTANCE.getAllProperties()).flatMap(Collection::stream).collect(Collectors.toList());" );
+            "returnStream.of(getProperties(),MetaParentTestEntity.INSTANCE.getAllProperties()).flatMap(Collection::stream).collect"
+                  + "(Collectors.toList());" );
       final List<String> getPropertiesMetaParentTestEntity = List.of(
-            "returnStream.of(getProperties(),MetaParentOfParentEntity.INSTANCE.getAllProperties()).flatMap(Collection::stream).collect(Collectors.toList());" );
+            "returnStream.of(getProperties(),MetaParentOfParentEntity.INSTANCE.getAllProperties()).flatMap(Collection::stream).collect"
+                  + "(Collectors.toList());" );
       result.assertMethodBody( "MetaAspectWithExtendedEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters,
             getAllPropertiesWithoutExtended );
       result.assertMethodBody( "MetaParentTestEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters,
             getPropertiesMetaParentTestEntity );
       result.assertMethodBody( "MetaParentOfParentEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters,
             getAllPropertiesWithoutExtended );
-      result.assertMethodBody( "MetaTestEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters, getPropertiesMetaTestEntity );
+      result.assertMethodBody( "MetaTestEntity", methodName, expectOverride, Optional.empty(), expectedNumberOfParameters,
+            getPropertiesMetaTestEntity );
    }
 
    @ParameterizedTest
@@ -261,7 +280,8 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
       result.assertFields( "MetaAspectWithConstraints",
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithConstraints" ).put( "TEST_PROPERTY_WITH_REGULAR_EXPRESSION",
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithConstraints" )
+                  .put( "TEST_PROPERTY_WITH_REGULAR_EXPRESSION",
                         new TypeToken<StaticConstraintProperty<String, DefaultCharacteristic>>() {
                         } ).put( "TEST_PROPERTY_WITH_DECIMAL_MIN_DECIMAL_MAX_RANGE_CONSTRAINT",
                         new TypeToken<StaticConstraintProperty<BigDecimal, DefaultMeasurement>>() {
@@ -308,29 +328,34 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 4 );
 
-      result.assertFields( "MetaError", ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-            .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaError" ).put( "ERROR_NO", new TypeToken<StaticProperty<Integer>>() {
-            } ).put( "ERROR_TEXT", new TypeToken<StaticProperty<String>>() {
-            } ).put( "START_TIMESTAMP", new TypeToken<StaticProperty<XMLGregorianCalendar>>() {
-            } ).put( "_datatypeFactory", DatatypeFactory.class ).build(), new HashMap<>() );
+      result.assertFields( "MetaError",
+            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaError" )
+                  .put( "ERROR_NO", new TypeToken<StaticProperty<Integer>>() {
+                  } ).put( "ERROR_TEXT", new TypeToken<StaticProperty<String>>() {
+                  } ).put( "START_TIMESTAMP", new TypeToken<StaticProperty<XMLGregorianCalendar>>() {
+                  } ).put( "_datatypeFactory", DatatypeFactory.class ).build(), new HashMap<>() );
 
       result.assertFields( "MetaAspectWithErrorCollection",
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithErrorCollection" )
-                  .put( "ITEMS", "StaticContainerProperty<Error, java.util.Collection<Error>>" ).put( "_datatypeFactory", DatatypeFactory.class ).build(),
+                  .put( "ITEMS", "StaticContainerProperty<Error, java.util.Collection<Error>>" )
+                  .put( "_datatypeFactory", DatatypeFactory.class ).build(),
             new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithCollectionAndSimpleElementCharacteristic( final KnownVersion metaModelVersion ) throws IOException {
+   public void testGenerateStaticMetaModelWithCollectionAndSimpleElementCharacteristic( final KnownVersion metaModelVersion )
+         throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_AND_SIMPLE_ELEMENT_CHARACTERISTIC;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
 
       result.assertFields( "MetaAspectWithCollectionAndSimpleElementCharacteristic",
             ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithCollectionAndSimpleElementCharacteristic" )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class )
+                  .put( "INSTANCE", "MetaAspectWithCollectionAndSimpleElementCharacteristic" )
                   .put( "ITEMS", "StaticContainerProperty<String, java.util.Collection<String>>" ).build(), new HashMap<>() );
    }
 
@@ -373,13 +398,17 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
                   .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithComplexEntityCollectionEnum" )
                   .put( "MY_PROPERTY_ONE", "StaticProperty<MyEnumerationOne>" ).build(), new HashMap<>() );
 
-      result.assertFields( "MetaMyEntityOne", ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-            .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaMyEntityOne" )
-            .put( "ENTITY_PROPERTY_ONE", "StaticContainerProperty<MyEntityTwo, java.util.List<MyEntityTwo>>" ).build(), new HashMap<>() );
+      result.assertFields( "MetaMyEntityOne",
+            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaMyEntityOne" )
+                  .put( "ENTITY_PROPERTY_ONE", "StaticContainerProperty<MyEntityTwo, java.util.List<MyEntityTwo>>" ).build(),
+            new HashMap<>() );
 
-      result.assertFields( "MetaMyEntityTwo", ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-            .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaMyEntityTwo" ).put( "ENTITY_PROPERTY_TWO", "StaticProperty<String>" )
-            .build(), new HashMap<>() );
+      result.assertFields( "MetaMyEntityTwo",
+            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaMyEntityTwo" )
+                  .put( "ENTITY_PROPERTY_TWO", "StaticProperty<String>" )
+                  .build(), new HashMap<>() );
    }
 
    @ParameterizedTest
@@ -389,17 +418,22 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 3 );
 
+      final String latestMetaModelVersion = KnownVersion.getLatest().toString();
       final String expectedTestPropertyCharacteristicConstructorCall =
-            "new DefaultEnumeration(MetaModelBaseAttributes.from(KnownVersion.SAMM_2_0_0, AspectModelUrn.fromUrn(NAMESPACE + \"TestEnumeration\"), "
-                  + "\"TestEnumeration\"), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\", KnownVersion.SAMM_2_0_0), new ArrayList<Value>() {\n"
+            "new DefaultEnumeration(MetaModelBaseAttributes.from(KnownVersion." + latestMetaModelVersion
+                  + ", AspectModelUrn.fromUrn(NAMESPACE + "
+                  + "\"TestEnumeration\"), "
+                  + "\"TestEnumeration\"), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\", KnownVersion."
+                  + latestMetaModelVersion + "), new "
+                  + "ArrayList<Value>() {\n"
                   + "\n"
                   + "    {\n"
-                  + "        add(new DefaultScalarValue(new BigInteger(\"1\"), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\", KnownVersion"
-                  + ".SAMM_2_0_0)));\n"
-                  + "        add(new DefaultScalarValue(new BigInteger(\"2\"), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\", KnownVersion"
-                  + ".SAMM_2_0_0)));\n"
-                  + "        add(new DefaultScalarValue(new BigInteger(\"3\"), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\", KnownVersion"
-                  + ".SAMM_2_0_0)));\n"
+                  + "        add(new DefaultScalarValue(new BigInteger(\"1\"), new DefaultScalar(\"http://www.w3"
+                  + ".org/2001/XMLSchema#integer\", KnownVersion." + latestMetaModelVersion + ")));\n"
+                  + "        add(new DefaultScalarValue(new BigInteger(\"2\"), new DefaultScalar(\"http://www.w3"
+                  + ".org/2001/XMLSchema#integer\", KnownVersion." + latestMetaModelVersion + ")));\n"
+                  + "        add(new DefaultScalarValue(new BigInteger(\"3\"), new DefaultScalar(\"http://www.w3"
+                  + ".org/2001/XMLSchema#integer\", KnownVersion." + latestMetaModelVersion + ")));\n"
                   + "    }\n"
                   + "})";
 
@@ -446,8 +480,10 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
             "new DefaultQuantifiable(MetaModelBaseAttributes" + ".builderFor(\"TestQuantifiable\")" + ".withMetaModelVersion(KnownVersion."
                   + KnownVersion.getLatest() + ")" + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"TestQuantifiable\"))"
                   + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Quantifiable\")"
-                  + ".withDescription(Locale.forLanguageTag(\"en\"), \"This is a test Quantifiable\")" + ".withSee(\"http://example.com/\").build(),"
-                  + " new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#float\", KnownVersion." + KnownVersion.getLatest() + ")," + " Optional.empty())";
+                  + ".withDescription(Locale.forLanguageTag(\"en\"), \"This is a test Quantifiable\")"
+                  + ".withSee(\"http://example.com/\").build(),"
+                  + " new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#float\", KnownVersion." + KnownVersion.getLatest() + "),"
+                  + " Optional.empty())";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithQuantifiableWithoutUnit",
             ImmutableMap.<String, String> builder().put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall ).build(), 1 );
@@ -477,17 +513,31 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 6 );
 
-      final String expectedTestPropertyCharacteristicConstructorCall = "new DefaultSingleEntity(MetaModelBaseAttributes.builderFor(\"EntityCharacteristic\")"
-            + ".withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCharacteristic\")).withPreferredName(Locale"
-            + ".forLanguageTag(\"en\"), \"Test Entity Characteristic\").withDescription(Locale.forLanguageTag(\"en\"), \"This is a test Entity "
-            + "Characteristic\").withSee(\"http://example.com/\").build(), DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.builderFor"
-            + "(\"ExtendingTestEntity\").withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"ExtendingTestEntity\"))"
-            + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Entity\").withDescription(Locale.forLanguageTag(\"en\"), \"This is a test entity\")"
-            + ".build(), MetaExtendingTestEntity.INSTANCE.getProperties(), Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity"
-            + "(MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn(AspectModelUrn.fromUrn"
-            + "(NAMESPACE + \"AbstractTestEntity\")).withPreferredName(Locale.forLanguageTag(\"en\"), \"Abstract Test Entity\").withDescription(Locale"
-            + ".forLanguageTag(\"en\"), \"This is a abstract test entity\").build(), MetaAbstractTestEntity.INSTANCE.getProperties(), Optional.empty(), List"
-            + ".of(AspectModelUrn.fromUrn(\"urn:samm:org.eclipse.esmf.test:1.0.0#ExtendingTestEntity\"))))))";
+      final String latestMetaModelVersion = KnownVersion.getLatest().toString();
+      final String expectedTestPropertyCharacteristicConstructorCall =
+            "new DefaultSingleEntity(MetaModelBaseAttributes.builderFor(\"EntityCharacteristic\")"
+                  + ".withMetaModelVersion(KnownVersion." + latestMetaModelVersion
+                  + ").withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCharacteristic\"))"
+                  + ".withPreferredName(Locale"
+                  + ".forLanguageTag(\"en\"), \"Test Entity Characteristic\").withDescription(Locale.forLanguageTag(\"en\"), \"This is a "
+                  + "test Entity "
+                  + "Characteristic\").withSee(\"http://example.com/\").build(), DefaultEntity.createDefaultEntity"
+                  + "(MetaModelBaseAttributes.builderFor"
+                  + "(\"ExtendingTestEntity\").withMetaModelVersion(KnownVersion." + latestMetaModelVersion
+                  + ").withUrn(AspectModelUrn.fromUrn(NAMESPACE + "
+                  + "\"ExtendingTestEntity\"))"
+                  + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Entity\").withDescription(Locale.forLanguageTag(\"en\"), "
+                  + "\"This is a test entity\")"
+                  + ".build(), MetaExtendingTestEntity.INSTANCE.getProperties(), Optional.of(DefaultAbstractEntity"
+                  + ".createDefaultAbstractEntity"
+                  + "(MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion."
+                  + latestMetaModelVersion + ").withUrn"
+                  + "(AspectModelUrn.fromUrn"
+                  + "(NAMESPACE + \"AbstractTestEntity\")).withPreferredName(Locale.forLanguageTag(\"en\"), \"Abstract Test Entity\")"
+                  + ".withDescription(Locale"
+                  + ".forLanguageTag(\"en\"), \"This is a abstract test entity\").build(), MetaAbstractTestEntity.INSTANCE.getProperties"
+                  + "(), Optional.empty(), List"
+                  + ".of(AspectModelUrn.fromUrn(\"urn:samm:org.eclipse.esmf.test:1.0.0#ExtendingTestEntity\"))))))";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithAbstractEntity",
             ImmutableMap.<String, String> builder().put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall ).build(), 1 );
@@ -495,16 +545,22 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testGenerateStaticMetaModelForAspectModelWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion ) throws IOException {
+   public void testGenerateStaticMetaModelForAspectModelWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion )
+         throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 6 );
 
+      final String latestMetaModelVersion = KnownVersion.getLatest().toString();
       final String expectedTestPropertyCharacteristicConstructorCall =
-            "new DefaultCollection(MetaModelBaseAttributes.builderFor(\"EntityCollectionCharacteristic\").withMetaModelVersion(KnownVersion.SAMM_2_0_0)"
-                  + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCollectionCharacteristic\")).withDescription(Locale.forLanguageTag(\"en\"), "
-                  + "\"This is an entity collection characteristic\").build(), Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity("
-                  + "MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion.SAMM_2_0_0).withUrn("
+            "new DefaultCollection(MetaModelBaseAttributes.builderFor(\"EntityCollectionCharacteristic\").withMetaModelVersion"
+                  + "(KnownVersion." + latestMetaModelVersion + ")"
+                  + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCollectionCharacteristic\")).withDescription(Locale"
+                  + ".forLanguageTag(\"en\"), "
+                  + "\"This is an entity collection characteristic\").build(), Optional.of(DefaultAbstractEntity"
+                  + ".createDefaultAbstractEntity("
+                  + "MetaModelBaseAttributes.builderFor(\"AbstractTestEntity\").withMetaModelVersion(KnownVersion." + latestMetaModelVersion
+                  + ").withUrn("
                   + "AspectModelUrn.fromUrn(NAMESPACE + \"AbstractTestEntity\")).withDescription(Locale.forLanguageTag(\"en\"), "
                   + "\"This is an abstract test entity\").build(), MetaAbstractTestEntity.INSTANCE.getProperties(), Optional.empty(), "
                   + "List.of(AspectModelUrn.fromUrn(\"urn:samm:org.eclipse.esmf.test:1.0.0#ExtendingTestEntity\")))), Optional.empty())";
@@ -556,7 +612,8 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
 
       result.assertMethodBody( "MetaAspectWithUmlautDescription", "getDescriptions", true, Optional.empty(), 0,
-            List.of( "returnnewHashSet<>(){{add(newLangString(\"ImWortEntitätisteinUmlaut\",Locale.forLanguageTag(\"de\")));add(newLangString"
-                  + "(\"Thisisatestdescription\",Locale.forLanguageTag(\"en\")));}};" ) );
+            List.of(
+                  "returnnewHashSet<>(){{add(newLangString(\"ImWortEntitätisteinUmlaut\",Locale.forLanguageTag(\"de\")));add(newLangString"
+                        + "(\"Thisisatestdescription\",Locale.forLanguageTag(\"en\")));}};" ) );
    }
 }

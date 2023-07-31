@@ -24,7 +24,7 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testBoundDefinitionAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "RangeConstraint4d81370";
+      final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_BOUND_DEFINITION_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest(
             sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
@@ -43,7 +43,7 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
    @MethodSource( value = "allVersions" )
    public void testRangeConstraintWithOnlyLowerBoundDefinitionAndBothValuesExpectSuccess(
          final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "RangeConstraintf81d66a";
+      final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_DEFINITION_AND_BOTH_VALUES, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
@@ -58,7 +58,7 @@ public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTes
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testRangeConstraintWithOnlyMinValue( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "RangeConstraint65abcea";
+      final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
             entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),

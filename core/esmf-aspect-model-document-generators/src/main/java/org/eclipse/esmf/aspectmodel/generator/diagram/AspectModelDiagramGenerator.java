@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Base64;
 import java.util.EnumMap;
 import java.util.List;
@@ -33,9 +32,21 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
+import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
+import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.google.common.collect.ImmutableList;
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.parse.Parser;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.text.WordUtils;
 import org.apache.jena.query.ARQ;
@@ -49,20 +60,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
-import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
-import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
-import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
-import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
-
-import com.google.common.collect.ImmutableList;
-
-import guru.nidi.graphviz.engine.Graphviz;
-import guru.nidi.graphviz.model.MutableGraph;
-import guru.nidi.graphviz.parse.Parser;
 
 public class AspectModelDiagramGenerator {
    public enum Format {
@@ -140,6 +137,11 @@ public class AspectModelDiagramGenerator {
                   .addAll( queryFilesForMetaModelVersionsAsOf2_0_0 )
                   .build() );
 
+      aspectToBoxmodelQueryFiles.put( KnownVersion.SAMM_2_1_0,
+            ImmutableList.<String> builder().addAll( queryFilesForAllMetaModelVersions )
+                  .addAll( queryFilesForMetaModelVersionsAsOf2_0_0 )
+                  .build() );
+
       ARQ.init();
       model = versionedModel.getModel();
       metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() )
@@ -171,7 +173,7 @@ public class AspectModelDiagramGenerator {
    private void generatePng( final String dotInput, final OutputStream output ) throws IOException {
       // To make the font available during PNG generation, it needs to be registered
       // in Java Runtime's graphics environment
-      try{
+      try {
          final File tmpFontFile = generateTmpFontFile();
          final Font f = Font.createFont( Font.TRUETYPE_FONT, tmpFontFile );
          final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -184,17 +186,19 @@ public class AspectModelDiagramGenerator {
       final Graphviz graphviz = Graphviz.fromGraph( g );
       graphviz.render( guru.nidi.graphviz.engine.Format.PNG ).toOutputStream( output );
    }
+
    private File generateTmpFontFile() throws IOException {
-      File tempFontFile = new File( System.getProperty( "java.io.tmpdir" ) + File.separator + "aspect-model-diagram.tmp" );
-      if ( !tempFontFile.exists() ){
+      final File tempFontFile = new File( System.getProperty( "java.io.tmpdir" ) + File.separator + "aspect-model-diagram.tmp" );
+      if ( !tempFontFile.exists() ) {
          try ( final InputStream fontStream = getInputStream( FONT_FILE );
-              final OutputStream output = new FileOutputStream( tempFontFile, false ) ){
-               fontStream.transferTo( output );
-            }
+               final OutputStream output = new FileOutputStream( tempFontFile, false ) ) {
+            fontStream.transferTo( output );
+         }
       }
       tempFontFile.deleteOnExit();
-      return  tempFontFile;
+      return tempFontFile;
    }
+
    private String base64EncodeInputStream( final InputStream in ) throws IOException {
       try ( final ByteArrayOutputStream os = new ByteArrayOutputStream() ) {
          final byte[] buffer = new byte[1024];
@@ -223,16 +227,16 @@ public class AspectModelDiagramGenerator {
                + "\");\n"
                + "}\n"
                + "</style>";
-         final String result = svgOutput.toString( StandardCharsets.UTF_8.name() )
+         final String result = svgOutput.toString( StandardCharsets.UTF_8 )
                .replaceFirst( ">", ">" + css );
-         output.write( result.getBytes( StandardCharsets.UTF_8.name() ) );
+         output.write( result.getBytes( StandardCharsets.UTF_8 ) );
       }
    }
 
    private void breakLongLinesAndEscapeTexts( final Model model ) {
       final Property text = boxModelNamespace.text();
       final Iterable<Statement> statementIterable = () -> model.listStatements( null, text, (RDFNode) null );
-      StreamSupport.stream( statementIterable.spliterator(), false ).collect( Collectors.toList() )
+      StreamSupport.stream( statementIterable.spliterator(), false ).toList()
             .forEach( oldStatement -> {
                final String newValue = WordUtils.wrap( oldStatement.getLiteral().getString(), 60, "\\l   ", false );
                final String escapedValue = StringEscapeUtils.escapeHtml4( newValue );
@@ -297,15 +301,9 @@ public class AspectModelDiagramGenerator {
       final String dotResult = generateDot( language );
 
       switch ( outputFormat ) {
-      case DOT:
-         out.write( dotResult.getBytes( StandardCharsets.UTF_8 ) );
-         break;
-      case PNG:
-         generatePng( dotResult, out );
-         break;
-      case SVG:
-         generateSvg( dotResult, out );
-         break;
+         case DOT -> out.write( dotResult.getBytes( StandardCharsets.UTF_8 ) );
+         case PNG -> generatePng( dotResult, out );
+         case SVG -> generateSvg( dotResult, out );
       }
    }
 
@@ -349,15 +347,9 @@ public class AspectModelDiagramGenerator {
          try ( final OutputStream outputStream = nameMapper
                .apply( format.getArtifactFilename( aspectName, language ) ) ) {
             switch ( format ) {
-            case DOT:
-               outputStream.write( dotResult.getBytes( StandardCharsets.UTF_8.name() ) );
-               break;
-            case PNG:
-               generatePng( dotResult, outputStream );
-               break;
-            case SVG:
-               generateSvg( dotResult, outputStream );
-               break;
+               case DOT -> outputStream.write( dotResult.getBytes( StandardCharsets.UTF_8 ) );
+               case PNG -> generatePng( dotResult, outputStream );
+               case SVG -> generateSvg( dotResult, outputStream );
             }
          }
       }

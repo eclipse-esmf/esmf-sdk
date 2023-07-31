@@ -1,0 +1,70 @@
+# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+#
+# See the AUTHORS file(s) distributed with this work for additional
+# information regarding authorship.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# SPDX-License-Identifier: MPL-2.0
+
+prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#>
+prefix samm-e: <urn:samm:org.eclipse.esmf.samm:entity:2.1.0#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0/boxmodel#>
+prefix func: <urn:samm:org.eclipse.esmf.samm:function:2.0.0#>
+
+# Generates edges between Entities and Abstract Properties,
+# as well as an intermediary node between the Entity and the Abstract Property
+# for the implementation of the Property itself, which is then linked to the used Characteristic
+construct {
+  ?edge1 a :Edge .
+  ?edge1 :title "property" .
+  ?edge1 :from ?entityBox .
+  ?edge1 :to ?box .
+
+  ?box a :Box .
+  ?box :title ?boxTitle .
+
+  ?edge2 a :Edge .
+  ?edge2 :title "characteristic" .
+  ?edge2 :from ?box .
+  ?edge2 :to ?characteristicBox .
+
+  ?edge3 a :Edge .
+  ?edge3 :title "extends" .
+  ?edge3 :from ?box .
+  ?edge3 :to ?propertyBox .
+} where {
+  ?entity rdf:type samm:Entity .
+
+  bind( strafter( str( ?entity ), "#" ) as ?entityName ) .
+
+  ?property rdf:type samm:AbstractProperty .
+
+  bind( strafter( str( ?property ), "#" ) as ?propertyName ) .
+  filter( exists { ?entity samm:properties/rdf:rest*/rdf:first/samm:extends ?property } )
+
+  bind( concat( ?entityName, "Entity" ) as ?entityBoxName )
+  bind( iri( concat( func:getNamespace( ?entity ), ?entityBoxName ) ) as ?entityBox )
+
+  bind( concat( ?entityName, ?propertyName, "Usage" ) as ?boxName )
+  bind( iri( concat( func:getNamespace( ?property ), ?boxName ) ) as ?box )
+  bind( concat( "Usage of ", ?propertyName, " in ", ?entityName ) as ?boxTitle )
+
+  bind( concat( ?propertyName, "AbstractProperty" ) as ?propertyBoxName )
+  bind( iri( concat( func:getNamespace( ?property ), ?propertyBoxName ) ) as ?propertyBox )
+
+  bind( iri( concat( func:getNamespace( ?entity ), ?entityBoxName, "_To_", ?boxName ) ) as ?edge1 )
+  bind( iri( concat( func:getNamespace( ?property ), ?boxName, "_To_", ?propertyBoxName ) ) as ?edge3 )
+
+  ?entity samm:properties/rdf:rest*/rdf:first ?propertyNode .
+  ?propertyNode samm:extends ?property .
+  ?propertyNode samm:characteristic ?characteristic .
+  bind( func:getElementName( ?characteristic ) as ?characteristicName )
+  bind( concat( ?characteristicName, "Characteristic" ) as ?characteristicBoxName )
+  bind( iri( concat( func:getNamespace( ?characteristic ), ?characteristicBoxName ) ) as ?characteristicBox )
+  bind( iri( concat( func:getNamespace( ?property ), ?boxName, "_To_", ?characteristicBoxName ) ) as ?edge2 )
+}

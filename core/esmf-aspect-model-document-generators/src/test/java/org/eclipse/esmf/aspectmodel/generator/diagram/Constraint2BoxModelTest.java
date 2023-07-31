@@ -39,16 +39,6 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
-      final String constraintIdentifier = "*";
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE, metaModelVersion );
-      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ), 5, expectedSeeEntryTitle, "http://example.com/" );
-   }
-
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
    public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
