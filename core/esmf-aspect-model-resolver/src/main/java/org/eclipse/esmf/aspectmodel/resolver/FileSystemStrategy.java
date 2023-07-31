@@ -77,7 +77,7 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
       return loadFromDirectory( aspectModelUrn, directory );
    }
 
-   protected Try<Model> loadFromDirectory( AspectModelUrn aspectModelUrn, Path directory ) {
+   protected Try<Model> loadFromDirectory( final AspectModelUrn aspectModelUrn, final Path directory ) {
       final File namedResourceFile = directory.resolve( aspectModelUrn.getName() + ".ttl" ).toFile();
       if ( namedResourceFile.exists() ) {
          return loadFromUri( namedResourceFile.toURI() );
@@ -100,7 +100,7 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
                   "No model file containing " + aspectModelUrn + " could be found in directory: " + directory ) ) );
    }
 
-   protected Path resolve( AspectModelUrn aspectModelUrn ) {
+   protected Path resolve( final AspectModelUrn aspectModelUrn ) {
       return modelsRoot.resolve( aspectModelUrn.getNamespace() ).resolve( aspectModelUrn.getVersion() );
    }
 
@@ -115,12 +115,12 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
    public static class DefaultNamespace extends FileSystemStrategy {
       AspectModelUrn defaultUrn;
 
-      public DefaultNamespace( Path modelsRoot ) {
+      public DefaultNamespace( final Path modelsRoot ) {
          super( modelsRoot );
       }
 
       @Override
-      protected Path resolve( AspectModelUrn urn ) {
+      protected Path resolve( final AspectModelUrn urn ) {
          return (urn.getNamespace().equals( defaultUrn.getNamespace() ) && urn.getVersion().equals( defaultUrn.getVersion() ))
                ? modelsRoot
                : super.resolve( urn );
@@ -138,7 +138,7 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
 
       }
 
-      public static <T extends ResolutionStrategy> T withDefaultNamespace( T strategy, Model model ) {
+      public static <T extends ResolutionStrategy> T withDefaultNamespace( final T strategy, final Model model ) {
          if ( strategy instanceof DefaultNamespace ) {
             Optional.ofNullable( model.getNsPrefixURI( "" ) ).ifPresent( ns ->
                   ((DefaultNamespace) strategy).defaultUrn = AspectModelUrn.fromUrn( ns + "DefaultPath" )
