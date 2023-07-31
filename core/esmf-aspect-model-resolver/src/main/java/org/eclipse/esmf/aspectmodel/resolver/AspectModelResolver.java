@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
-import static io.vavr.API.*;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
 import static io.vavr.Predicates.instanceOf;
 
 import java.io.ByteArrayInputStream;
