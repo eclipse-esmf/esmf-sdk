@@ -89,7 +89,7 @@ public abstract class AbstractCommand implements Runnable {
    protected void generateDiagram( final String inputFileName, final AspectModelDiagramGenerator.Format targetFormat, final String outputFileName,
          final String languageTag, final ExternalResolverMixin resolverConfig ) throws IOException {
       final AspectContext context = loadModelOrFail( inputFileName, resolverConfig );
-      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( context.rdfModel() );
+      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( context );
       final Set<AspectModelDiagramGenerator.Format> targetFormats = new HashSet<>();
       targetFormats.add( targetFormat );
       final Set<Locale> languagesUsedInModel = LanguageCollector.collectUsedLanguages( context.rdfModel().getModel() );

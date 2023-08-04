@@ -21,7 +21,6 @@ import org.eclipse.esmf.aspect.to.AspectToPngCommand;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 
-import org.eclipse.esmf.aspect.to.AspectToDotCommand;
 import org.eclipse.esmf.aspect.to.AspectToHtmlCommand;
 import org.eclipse.esmf.aspect.to.AspectToJavaCommand;
 import org.eclipse.esmf.aspect.to.AspectToOpenapiCommand;
@@ -32,7 +31,6 @@ import picocli.CommandLine;
 @CommandLine.Command( name = AspectToCommand.COMMAND_NAME, description = "Transforms an Aspect Model into another format",
       subcommands = {
             CommandLine.HelpCommand.class,
-            AspectToDotCommand.class,
             AspectToHtmlCommand.class,
             AspectToJavaCommand.class,
             AspectToJsonCommand.class,

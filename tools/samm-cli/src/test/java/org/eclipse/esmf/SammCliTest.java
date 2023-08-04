@@ -255,55 +255,6 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToDotWithDefaultLanguage() {
-      final File targetFile = outputFile( "output.dot" );
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "dot", "-o",
-            targetFile.getAbsolutePath() );
-      assertThat( result.stdout() ).isEmpty();
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().contains( "digraph AspectModel" );
-   }
-
-   @Test
-   public void testAspectToDotWithGivenLanguage() {
-      final File targetFile = outputFile( "output.dot" );
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "dot", "-o",
-            targetFile.getAbsolutePath(), "--language",
-            "en" );
-      assertThat( result.stdout() ).isEmpty();
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().startsWith( "digraph AspectModel" );
-   }
-
-   @Test
-   public void testAspectToDotWithNonExistentLanguage() {
-      final File targetFile = outputFile( "output.dot" );
-      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "dot", "-o", targetFile.getAbsolutePath(),
-            "--language", "de" );
-      assertThat( result.exitStatus() ).isEqualTo( 1 );
-      assertThat( result.stdout() ).isEmpty();
-      assertThat( result.stderr() ).contains( "The model does not contain the desired language" );
-      assertThat( targetFile ).doesNotExist();
-   }
-
-   @Test
-   public void testAspectToDotToStdout() {
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "dot" );
-      assertThat( result.stdout() ).startsWith( "digraph AspectModel" );
-      assertThat( result.stderr() ).isEmpty();
-   }
-
-   @Test
-   public void testAspectToDotWithCustomResolver() {
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "dot", "--custom-resolver",
-            resolverCommand() );
-      assertThat( result.stdout() ).startsWith( "digraph AspectModel" );
-      assertThat( result.stderr() ).isEmpty();
-   }
-
-   @Test
    public void testAspectToHtmlWithDefaultLanguageToFile() {
       final File targetFile = outputFile( "output.html" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "-o",

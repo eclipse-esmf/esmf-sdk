@@ -18,9 +18,7 @@ import java.util.Properties;
 
 import org.fusesource.jansi.AnsiConsole;
 
-import guru.nidi.graphviz.engine.Graphviz;
 import org.eclipse.esmf.aspect.AspectCommand;
-import org.eclipse.esmf.substitution.GraalVmJsGraphvizEngine;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = SammCli.COMMAND_NAME,
@@ -88,8 +86,6 @@ public class SammCli extends AbstractCommand {
    public static void main( final String[] argv ) {
       NativeImageHelpers.ensureRequiredEnvironment();
 
-      setupGraphvizJava();
-
       // The disabling color switch needs to be checked before PicoCLI initialization
       boolean disableColor = false;
       for ( final String arg : argv ) {
@@ -108,10 +104,6 @@ public class SammCli extends AbstractCommand {
          AnsiConsole.systemUninstall();
       }
       System.exit( exitCode );
-   }
-
-   private static void setupGraphvizJava() {
-      Graphviz.useEngine( new GraalVmJsGraphvizEngine() );
    }
 
    protected String format( final String string ) {

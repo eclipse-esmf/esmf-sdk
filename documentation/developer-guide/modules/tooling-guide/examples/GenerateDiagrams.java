@@ -36,8 +36,7 @@ public class GenerateDiagrams extends AbstractGenerator {
       final AspectContext model = // ...
             // end::generate[]
             AspectModelLoader.getAspectContext(
-//                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) ).get();
-      new File( "/home/tax6fe/git/esmf-sdk/documentation/developer-guide/modules/ROOT/examples/aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) ).get();
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) ).get();
       // tag::generate[]
 
       final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( model ); // <1>

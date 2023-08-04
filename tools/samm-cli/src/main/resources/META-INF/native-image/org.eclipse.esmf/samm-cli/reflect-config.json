@@ -1,20 +1,5 @@
 [
   {
-    "name": "guru.nidi.graphviz.attribute.Style",
-    "allDeclaredFields": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name": "guru.nidi.graphviz.attribute.Shape",
-    "allDeclaredFields": true,
-    "allDeclaredMethods": true
-  },
-  {
-    "name": "guru.nidi.graphviz.engine.ResultHandler",
-    "allDeclaredFields": true,
-    "allDeclaredMethods": true
-  },
-  {
     "name": "java.awt.Color",
     "allDeclaredFields": true,
     "allDeclaredMethods": true

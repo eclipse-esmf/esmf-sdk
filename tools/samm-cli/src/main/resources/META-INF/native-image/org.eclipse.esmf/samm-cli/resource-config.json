@@ -17,10 +17,7 @@
     {"pattern":"\\Qrdf/dash.ttl\\E"},
     {"pattern":"\\Qrdf/shacl.ttl\\E"},
     {"pattern":"\\Qrdf/system-triples.ttl\\E"},
-    {"pattern":"\\Qrdf/tosh.ttl\\E"},
-    {"pattern":"\\Qguru/nidi/graphviz/engine/render.js\\E"},
-    {"pattern":"\\QMETA-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js\\E"},
-    {"pattern":"\\QMETA-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js\\E"}
+    {"pattern":"\\Qrdf/tosh.ttl\\E"}
   ],
   "bundles":[{"name":"org.apache.jena.ext.xerces.impl.xpath.regex.message"}]
 }
