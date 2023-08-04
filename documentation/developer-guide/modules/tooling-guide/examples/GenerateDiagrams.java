@@ -20,21 +20,24 @@ import java.util.Set;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator.Format;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-// end::imports[]
+import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+
 import java.io.File;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
+// end::imports[]
 
 public class GenerateDiagrams extends AbstractGenerator {
    @Test
    public void generateDiagram() throws IOException {
       // tag::generate[]
-      // VersionedModel as returned by the AspectModelResolver
-      final VersionedModel model = // ...
+      // AspectContext as returned by the AspectModelLoader
+      final AspectContext model = // ...
             // end::generate[]
-            AspectModelResolver.loadAndResolveModel(
-                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) ).get();
+            AspectModelLoader.getAspectContext(
+//                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) ).get();
+      new File( "/home/tax6fe/git/esmf-sdk/documentation/developer-guide/modules/ROOT/examples/aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) ).get();
       // tag::generate[]
 
       final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( model ); // <1>

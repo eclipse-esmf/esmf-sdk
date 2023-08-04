@@ -29,10 +29,10 @@ public class GenerateDiagramTest extends AspectModelMojoTest {
       final Mojo generateDiagram = lookupMojo( "generateDiagram", testPom );
       assertThatCode( generateDiagram::execute ).doesNotThrowAnyException();
 
-      assertGeneratedFileExists( "Aspect_en.dot" );
+      assertGeneratedFileExists( "Aspect_en.svg" );
       assertGeneratedFileExists( "Aspect_en.png" );
 
-      deleteGeneratedFile( "Aspect_en.dot" );
+      deleteGeneratedFile( "Aspect_en.svg" );
       deleteGeneratedFile( "Aspect_en.png" );
    }
 
@@ -42,6 +42,6 @@ public class GenerateDiagramTest extends AspectModelMojoTest {
       final Mojo generateDiagram = lookupMojo( "generateDiagram", testPom );
       assertThatCode( generateDiagram::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessage( "Invalid target format provided. Possible formats are dot, svg & png." );
+            .hasMessage( "Invalid target format provided. Possible formats are svg & png." );
    }
 }
