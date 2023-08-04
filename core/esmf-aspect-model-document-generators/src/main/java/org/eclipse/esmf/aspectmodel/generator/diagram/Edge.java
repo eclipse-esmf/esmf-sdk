@@ -11,16 +11,16 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.generator;
+package org.eclipse.esmf.aspectmodel.generator.diagram;
 
-public class DocumentGenerationException extends RuntimeException {
-   private static final long serialVersionUID = -3592685602580476530L;
-
-   public DocumentGenerationException( final String message ) {
-      super( message );
-   }
-
-   public DocumentGenerationException( final Throwable cause ) {
-      super( cause );
+record Edge(
+      Box from,
+      Box to,
+      String label
+) {
+   Edge( final Box from, final Box to, final String label ) {
+      this.from = from;
+      this.to = to;
+      this.label = label;
    }
 }

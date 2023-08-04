@@ -78,6 +78,7 @@
       <hibernate-validator-version>6.2.3.Final</hibernate-validator-version>
       <jakarta-el-version>3.0.4</jakarta-el-version>
       <poi-version>4.1.2</poi-version>
+      <graph-support-version>1.1.5</graph-support-version>
 
       <!-- General settings -->
       <skip.gpg.skip>true</skip.gpg.skip>
@@ -212,6 +213,11 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.graphper</groupId>
+            <artifactId>graph-support</artifactId>
+            <version>${graph-support-version}</version>
          </dependency>
       </dependencies>
    </dependencyManagement>
