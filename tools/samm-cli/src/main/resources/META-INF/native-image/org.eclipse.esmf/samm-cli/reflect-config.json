@@ -5,6 +5,11 @@
     "allDeclaredMethods": true
   },
   {
+    "name": "java.awt.Insets",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
     "name": "ch.qos.logback.classic.pattern.DateConverter",
     "allDeclaredConstructors": true
   },
