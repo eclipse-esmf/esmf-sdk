@@ -19,7 +19,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -76,6 +80,19 @@ public class BammUriRewriter extends AbstractUriRewriter {
       // This catches the regular (i.e., non meta-model) URNs
       result = result.replace( "urn:bamm:", "urn:samm:" );
       return Optional.of( result );
+   }
+
+   @Override
+   protected RDFNode updateRdfNode( final RDFNode rdfNode, final Map<String, String> oldToNewNamespaces ) {
+      RDFNode result = super.updateRdfNode( rdfNode, oldToNewNamespaces );
+      if ( result instanceof Literal literal ) {
+         result = Optional.ofNullable( literal.getDatatypeURI() )
+               .flatMap( type -> rewriteUri( type, oldToNewNamespaces ) )
+               .map( NodeFactory::getType )
+               .<RDFNode> map( type -> ResourceFactory.createTypedLiteral( literal.getString(), type ) )
+               .orElse( result );
+      }
+      return result;
    }
 
    @Override
