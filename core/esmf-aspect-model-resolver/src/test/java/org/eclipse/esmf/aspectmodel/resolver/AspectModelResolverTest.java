@@ -14,30 +14,32 @@
 package org.eclipse.esmf.aspectmodel.resolver;
 
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
-import static org.assertj.vavr.api.VavrAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.List;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
-import org.assertj.core.api.Assertions;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.common.collect.Streams;
-
 import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class AspectModelResolverTest extends MetaModelVersions {
    private final AspectModelResolver resolver = new AspectModelResolver();
@@ -56,17 +58,15 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isSuccess();
+      assertThat( result.isSuccess() ).isTrue();
 
       final Resource aspect = createResource( TEST_NAMESPACE + "Test" );
-      final Resource sammAspect = new SAMM( metaModelVersion ).Aspect();
-      org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, sammAspect ).nextOptional() )
-            .isNotEmpty();
+      final Resource sammAspect = new SAMM( KnownVersion.getLatest() ).Aspect();
+      assertThat( result.get().getModel().listStatements( aspect, RDF.type, sammAspect ).nextOptional() ).isNotEmpty();
    }
 
    @ParameterizedTest
-   @MethodSource( value = "latestVersion" )
+   @MethodSource( value = "versionsUpToIncluding2_0_0" )
    public void testLoadLegacyBammModelExpectSuccess( final KnownVersion metaModelVersion ) throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
@@ -78,12 +78,10 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isSuccess();
+      assertThat( result.isSuccess() ).isTrue();
 
-      final SAMM samm = new SAMM( metaModelVersion );
-      org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( null, RDF.type, samm.Aspect() ).nextOptional() )
-            .isNotEmpty();
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      assertThat( result.get().getModel().listStatements( null, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
    }
 
    @ParameterizedTest
@@ -100,13 +98,11 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isSuccess();
+      assertThat( result.isSuccess() ).isTrue();
 
       final Resource aspect = createResource( "urn:samm:org.eclipse.esmf.test:1.1.0#Test" );
-      final SAMM samm = new SAMM( metaModelVersion );
-      org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() )
-            .isNotEmpty();
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
    }
 
    @ParameterizedTest
@@ -127,18 +123,15 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final EitherStrategy inMemoryResolutionStrategy = new EitherStrategy( urnStrategy, inMemoryStrategy );
 
       final Try<VersionedModel> result = resolver.resolveAspectModel( inMemoryResolutionStrategy, inputUrn );
-      assertThat( result ).isSuccess();
+      assertThat( result.isSuccess() ).isTrue();
 
-      final SAMM samm = new SAMM( metaModelVersion );
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
       final Resource aspect = createResource( TEST_NAMESPACE + "AnotherTest" );
-      org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() )
-            .isNotEmpty();
+      assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
 
       final Resource propertyFromReferencedAspect = createResource( TEST_NAMESPACE + "foo" );
-      org.assertj.core.api.Assertions.assertThat(
-            result.get().getModel().listStatements( propertyFromReferencedAspect, RDF.type, samm.Property() )
-                  .nextOptional() ).isNotEmpty();
+      assertThat(
+            result.get().getModel().listStatements( propertyFromReferencedAspect, RDF.type, samm.Property() ).nextOptional() ).isNotEmpty();
    }
 
    @ParameterizedTest
@@ -154,19 +147,15 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
 
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isSuccess();
+      assertThat( result.isSuccess() ).isTrue();
 
-      final SAMM samm = new SAMM( metaModelVersion );
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
       final Resource aspect = createResource( TEST_NAMESPACE + "AnotherTest" );
-      org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() )
-            .isNotEmpty();
+      assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
 
       final Resource propertyFromReferencedAspect = createResource( TEST_NAMESPACE + "foo" );
-      org.assertj.core.api.Assertions
-            .assertThat(
-                  result.get().getModel().listStatements( propertyFromReferencedAspect, RDF.type, samm.Property() )
-                        .nextOptional() ).isNotEmpty();
+      assertThat(
+            result.get().getModel().listStatements( propertyFromReferencedAspect, RDF.type, samm.Property() ).nextOptional() ).isNotEmpty();
    }
 
    @ParameterizedTest
@@ -183,8 +172,8 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isFailure();
-      assertThat( result ).failBecauseOf( ModelResolutionException.class );
+      assertThat( result.isFailure() ).isTrue();
+      assertThat( result.getCause() ).isInstanceOf( ModelResolutionException.class );
    }
 
    @ParameterizedTest
@@ -199,8 +188,8 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isFailure();
-      assertThat( result ).failBecauseOf( ModelResolutionException.class );
+      assertThat( result.isFailure() ).isTrue();
+      assertThat( result.getCause() ).isInstanceOf( ModelResolutionException.class );
    }
 
    @ParameterizedTest
@@ -217,19 +206,16 @@ public class AspectModelResolverTest extends MetaModelVersions {
             aspectModelsRootDirectory.toPath() );
 
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isSuccess();
+      assertThat( result.isSuccess() ).isTrue();
 
       final Resource aspect = createResource(
             TEST_NAMESPACE + "ReferenceCharacteristicTest" );
-      final SAMM samm = new SAMM( metaModelVersion );
-      org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() )
-            .isNotEmpty();
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
 
       final Resource referencedCharacteristic = createResource( TEST_NAMESPACE + "TestCharacteristic" );
-      org.assertj.core.api.Assertions.assertThat(
-            result.get().getModel().listStatements( referencedCharacteristic, RDF.type, samm.Characteristic() )
-                  .nextOptional() ).isNotEmpty();
+      assertThat( result.get().getModel().listStatements( referencedCharacteristic, RDF.type, samm.Characteristic() )
+            .nextOptional() ).isNotEmpty();
    }
 
    /**
@@ -253,13 +239,11 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isSuccess();
+      assertThat( result.isSuccess() ).isTrue();
 
       final Model model = result.get().getModel();
       final Resource testCharacteristic = createResource( TEST_NAMESPACE + "TestCharacteristic" );
-      org.assertj.core.api.Assertions.assertThat(
-                  Streams.stream( model.listStatements( testCharacteristic, RDF.type, (RDFNode) null ) ).count() )
-            .isEqualTo( 1 );
+      assertThat( Streams.stream( model.listStatements( testCharacteristic, RDF.type, (RDFNode) null ) ).count() ).isEqualTo( 1 );
    }
 
    @ParameterizedTest
@@ -276,17 +260,14 @@ public class AspectModelResolverTest extends MetaModelVersions {
             aspectModelsRootDirectory.toPath() );
 
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isSuccess();
+      assertThat( result.isSuccess() ).isTrue();
 
       final Resource aspect = createResource( TEST_NAMESPACE + "ReferenceEntityTest" );
-      final SAMM samm = new SAMM( metaModelVersion );
-      org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() )
-            .isNotEmpty();
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
 
       final Resource referencedEntity = createResource( TEST_NAMESPACE + "TestEntity" );
-      org.assertj.core.api.Assertions
-            .assertThat( result.get().getModel().listStatements( referencedEntity, RDF.type, samm.Entity() ).nextOptional() ).isNotEmpty();
+      assertThat( result.get().getModel().listStatements( referencedEntity, RDF.type, samm.Entity() ).nextOptional() ).isNotEmpty();
    }
 
    @ParameterizedTest
@@ -301,12 +282,11 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isSuccess();
+      assertThat( result.isSuccess() ).isTrue();
 
       final Model model = result.get().getModel();
-      final SAMM samm = new SAMM( metaModelVersion );
-      org.assertj.core.api.Assertions.assertThat(
-            Streams.stream( model.listStatements( null, RDF.type, samm.Aspect() ) ).count() ).isEqualTo( 2 );
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      assertThat( Streams.stream( model.listStatements( null, RDF.type, samm.Aspect() ) ).count() ).isEqualTo( 2 );
    }
 
    @ParameterizedTest
@@ -317,7 +297,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final ClasspathStrategy strategy = new ClasspathStrategy( metaModelVersion.toString().toLowerCase() );
       final Try<VersionedModel> result = resolver
             .resolveAspectModel( strategy, AspectModelUrn.fromUrn( aspectUrn ) );
-      Assertions.assertThat( result.isSuccess() ).isTrue();
+      assertThat( result.isSuccess() ).isTrue();
    }
 
    @ParameterizedTest
@@ -328,7 +308,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final ClasspathStrategy strategy = new ClasspathStrategy( metaModelVersion.toString().toLowerCase() );
       final Try<VersionedModel> result = resolver
             .resolveAspectModel( strategy, AspectModelUrn.fromUrn( aspectUrn ) );
-      Assertions.assertThat( result.isSuccess() ).describedAs( "Resolution of refined Property failed." ).isTrue();
+      assertThat( result.isSuccess() ).describedAs( "Resolution of refined Property failed." ).isTrue();
    }
 
    @ParameterizedTest
@@ -339,13 +319,13 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final ClasspathStrategy strategy = new ClasspathStrategy( metaModelVersion.toString().toLowerCase() );
       final Try<VersionedModel> result = resolver
             .resolveAspectModel( strategy, AspectModelUrn.fromUrn( aspectUrn ) );
-      Assertions.assertThat( result.isSuccess() ).isTrue();
+      assertThat( result.isSuccess() ).isTrue();
 
       final Model model = result.get().getModel();
       final Resource primaryAspect = model.createResource( TEST_NAMESPACE + "PrimaryAspect" );
-      final SAMM samm = new SAMM( metaModelVersion );
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
       final List<Statement> propertiesAssertions = model.listStatements( primaryAspect, samm.properties(), (RDFNode) null ).toList();
-      Assertions.assertThat( propertiesAssertions.size() ).isEqualTo( 1 );
+      assertThat( propertiesAssertions.size() ).isEqualTo( 1 );
    }
 
    @ParameterizedTest
@@ -361,13 +341,13 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
-      assertThat( result ).isSuccess();
+      assertThat( result.isSuccess() ).isTrue();
 
       // make sure the source file for the definitions of ModelYear and ModelCode (ModelDef.ttl) is only loaded once
       final Model model = result.get().getModel();
       final Resource entity = model.createResource( TEST_NAMESPACE + "SomeOtherNonRelatedEntity" );
-      final SAMM samm = new SAMM( metaModelVersion );
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
       final List<Statement> properties = model.listStatements( entity, samm.properties(), (RDFNode) null ).toList();
-      Assertions.assertThat( properties.size() ).isEqualTo( 1 );
+      assertThat( properties.size() ).isEqualTo( 1 );
    }
 }
