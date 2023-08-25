@@ -36,10 +36,13 @@ import org.apache.jena.rdf.model.Statement;
 public class BammUriRewriter extends AbstractUriRewriter {
    private final BAMM_VERSION bammVersion;
 
+   private static final String SAMM_C_PREFIX = "samm-c";
+   private static final String SAMM_E_PREFIX = "samm-e";
+
    public BammUriRewriter( final BAMM_VERSION bammVersion ) {
       // Translating versions will only fail if there are no SAMM versions (i.e., KnownVersion) for the versions in BAMM_VERSION
-      super( KnownVersion.getLatest(), KnownVersion.fromVersionString( bammVersion.versionString() ).orElseThrow( () ->
-            new InvalidVersionException( "BAMM version " + bammVersion.versionString() + " can not be translated to SAMM" ) ) );
+      super( KnownVersion.fromVersionString( bammVersion.versionString() ).orElseThrow( () ->
+            new InvalidVersionException( "BAMM version " + bammVersion.versionString() + " can not be translated to SAMM" ) ), KnownVersion.getLatest() );
       this.bammVersion = bammVersion;
    }
 
@@ -49,8 +52,8 @@ public class BammUriRewriter extends AbstractUriRewriter {
       return sourceModel.getNsPrefixMap().keySet().stream()
             .map( prefix -> switch ( prefix ) {
                case "bamm" -> Map.entry( "samm", targetPrefixes.get( "samm" ) );
-               case "bamm-c" -> Map.entry( "samm-c", targetPrefixes.get( "samm-c" ) );
-               case "bamm-e" -> Map.entry( "samm-e", targetPrefixes.get( "samm-e" ) );
+               case "bamm-c" -> Map.entry( SAMM_C_PREFIX, targetPrefixes.get( SAMM_C_PREFIX ) );
+               case "bamm-e" -> Map.entry( SAMM_E_PREFIX, targetPrefixes.get( SAMM_E_PREFIX ) );
                case "unit" -> Map.entry( "unit", targetPrefixes.get( "unit" ) );
                default -> Map.entry( prefix, rewriteUri( sourceModel.getNsPrefixURI( prefix ), oldToNewNamespaces )
                      .orElse( sourceModel.getNsPrefixURI( prefix ) ) );
@@ -63,8 +66,8 @@ public class BammUriRewriter extends AbstractUriRewriter {
       // The mapping of the URNs of the legacy BAMM Aspect Meta model to their corresponding SAMM counterparts
       return Map.of(
             "urn:bamm:io.openmanufacturing:meta-model:" + bammVersion.versionString() + "#", targetPrefixes.get( "samm" ),
-            "urn:bamm:io.openmanufacturing:characteristic: " + bammVersion.versionString() + "#", targetPrefixes.get( "samm-c" ),
-            "urn:bamm:io.openmanufacturing:entity:" + bammVersion.versionString() + "#", targetPrefixes.get( "samm-e" ),
+            "urn:bamm:io.openmanufacturing:characteristic: " + bammVersion.versionString() + "#", targetPrefixes.get( SAMM_C_PREFIX ),
+            "urn:bamm:io.openmanufacturing:entity:" + bammVersion.versionString() + "#", targetPrefixes.get( SAMM_E_PREFIX ),
             "urn:bamm:io.openmanufacturing:unit:" + bammVersion.versionString() + "#", targetPrefixes.get( "unit" )
       );
    }

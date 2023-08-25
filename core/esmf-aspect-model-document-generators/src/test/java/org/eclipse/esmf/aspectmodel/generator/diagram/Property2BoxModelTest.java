@@ -24,7 +24,7 @@ import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestProperty;
 
-public class Property2BoxModelTest extends MetaModelVersions {
+class Property2BoxModelTest extends MetaModelVersions {
    private final String sparqlQueryFileName = "property2boxmodel.sparql";
    private final int totalNumberOfExpectedEntries = 4;
    private final int indexOfSeeValueEntry = 2;
@@ -32,7 +32,7 @@ public class Property2BoxModelTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testSeeAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITH_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, "test:propertyWithSeeAttributeProperty a :Box",
             "test:propertyWithSeeAttributeProperty :entries *",
@@ -41,7 +41,7 @@ public class Property2BoxModelTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, "test:propertyWithMultipleSeeAttributesProperty a :Box",
             "test:propertyWithMultipleSeeAttributesProperty :entries *",
@@ -51,7 +51,7 @@ public class Property2BoxModelTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       context.executeAttributeIsNotPresentTest( sparqlQueryFileName, "test:propertyWithoutSeeAttributeProperty a :Box",
             "test:propertyWithoutSeeAttributeProperty :entries *",
@@ -60,7 +60,7 @@ public class Property2BoxModelTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSeeAttributeIsPresentOnSharedPropertyExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testSeeAttributeIsPresentOnSharedPropertyExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.SHARED_PROPERTY_WITH_SEE_ATTRIBUTE, metaModelVersion );
 
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
@@ -70,12 +70,12 @@ public class Property2BoxModelTest extends MetaModelVersions {
                   .toList() )
             .hasSize( 1 );
       assertThat( queryResult.listStatements( context.selector( "samm-e:sharedPropertyProperty a :Box" ) ).toList() )
-            .hasSize( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 ) ? 1 : 0 );
+            .hasSize( 1 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testExampleValueIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testExampleValueIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITH_EXAMPLE_VALUE, metaModelVersion );
       context.executeAttributeIsPresentTest( sparqlQueryFileName, "test:propertyWithExampleValueProperty a :Box",
             "test:propertyWithExampleValueProperty :entries *",
@@ -84,7 +84,7 @@ public class Property2BoxModelTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testExampleValueIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testExampleValueIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestProperty.PROPERTY_WITHOUT_EXAMPLE_VALUE, metaModelVersion );
       context.executeAttributeIsNotPresentTest( sparqlQueryFileName, "test:propertyWithoutExampleValueProperty a :Box",
             "test:propertyWithoutExampleValueProperty :entries *",
@@ -93,21 +93,21 @@ public class Property2BoxModelTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testAspectWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
       testAbstractAndExtendingEntityPropertyBoxes( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
       testAbstractAndExtendingEntityPropertyEdges( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
    }
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) {
       testAbstractAndExtendingEntityPropertyBoxes( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
       testAbstractAndExtendingEntityPropertyEdges( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
    }
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) {
       testAbstractAndExtendingEntityPropertyBoxes( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
       testAbstractAndExtendingEntityPropertyEdges( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
    }
@@ -137,10 +137,10 @@ public class Property2BoxModelTest extends MetaModelVersions {
       ).toList() ).hasSize( 1 );
       assertThat( queryResult.listStatements(
             context.selector( "test:ExtendingTestEntityEntity_To_abstractTestPropertyProperty a :Edge" )
-      ).toList() ).hasSize( 0 );
+      ).toList() ).isEmpty();
       assertThat( queryResult.listStatements(
             context.selector( "test:AbstractTestEntityAbstractEntity_To_entityPropertyProperty a :Edge" )
-      ).toList() ).hasSize( 0 );
+      ).toList() ).isEmpty();
 
       assertThat( queryResult.listStatements(
             context.selector( "test:AbstractTestEntityAbstractEntity_To_abstractTestPropertyProperty a :Edge" )
