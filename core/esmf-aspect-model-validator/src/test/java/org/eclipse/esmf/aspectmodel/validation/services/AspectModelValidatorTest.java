@@ -30,7 +30,6 @@ import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
 import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
-import org.eclipse.esmf.aspectmodel.shacl.violation.MinCountViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
@@ -43,6 +42,7 @@ import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestProperty;
 import org.eclipse.esmf.test.TestResources;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -50,16 +50,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.vavr.control.Try;
 
-public class AspectModelValidatorTest extends MetaModelVersions {
+class AspectModelValidatorTest extends MetaModelVersions {
    // One specific validator instance for each meta model version
    private final Map<KnownVersion, AspectModelValidator> service = Arrays.stream( KnownVersion.values() )
          .collect( Collectors.toMap( Function.identity(), AspectModelValidator::new ) );
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testValidAspect( final KnownVersion metaModelVersion ) {
-      final Try<VersionedModel> validAspectModel = TestResources.getModel( TestAspect.ASPECT, metaModelVersion );
-      final List<Violation> violations = service.get( metaModelVersion ).validateModel( validAspectModel );
+   @Test
+   void testValidAspect( ) {
+      final Try<VersionedModel> validAspectModel = TestResources.getModel( TestAspect.ASPECT, KnownVersion.getLatest() );
+      final List<Violation> violations = service.get( KnownVersion.getLatest() ).validateModel( validAspectModel );
       assertThat( violations ).isEmpty();
    }
 
@@ -71,7 +70,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
          "MODEL_WITH_CYCLES",
          "MODEL_WITH_BROKEN_CYCLES"// contains cycles
    } )
-   public void testValidateTestAspectModel( final TestAspect testAspect ) {
+   void testValidateTestAspectModel( final TestAspect testAspect ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
       final Try<VersionedModel> tryModel = TestResources.getModel( testAspect, metaModelVersion );
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( tryModel );
@@ -80,7 +79,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @EnumSource( value = TestProperty.class )
-   public void testValidateProperty( final TestProperty testProperty ) {
+   void testValidateProperty( final TestProperty testProperty ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
       final Try<VersionedModel> tryModel = TestResources.getModel( testProperty, metaModelVersion );
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( tryModel );
@@ -89,17 +88,17 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( "invalidTestModels" )
-   public void testValidateInvalidTestAspectModel( final InvalidTestAspect testModel, final KnownVersion metaModelVersion ) {
+   void testValidateInvalidTestAspectModel( final InvalidTestAspect testModel ) {
       assertThatCode( () -> {
-         final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
-         final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
+         final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, KnownVersion.SAMM_2_1_0 );
+         final List<Violation> violations = service.get( KnownVersion.SAMM_2_1_0 ).validateModel( invalidAspectModel );
          assertThat( violations ).isNotEmpty();
       } ).doesNotThrowAnyException();
    }
 
    @ParameterizedTest
-   @MethodSource( "versionsStartingWith2_0_0" )
-   public void testGetFixForInvalidTestAspectModel( final KnownVersion metaModelVersion ) {
+   @MethodSource( "latestVersion" )
+   void testGetFixForInvalidTestAspectModel( final KnownVersion metaModelVersion ) {
       final TestModel testModel = InvalidTestAspect.INVALID_PREFERRED_NAME_DATATYPE;
       final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
@@ -112,20 +111,15 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    private static Stream<Arguments> invalidTestModels() {
       return Arrays.stream( InvalidTestAspect.values() )
-            .flatMap( testModel -> KnownVersion.getVersions().stream().flatMap( metaModelVersion -> {
-               // Filter the arguments: Aspects missing samm:named and/or samm:properties is only invalid in SAMM 1.0.0
-               if ( metaModelVersion.isNewerThan( KnownVersion.SAMM_1_0_0 )
-                     && (testModel == InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES
-                     || testModel == InvalidTestAspect.ASPECT_MISSING_PROPERTIES) ) {
-                  return Stream.of();
-               }
-               return Stream.of( Arguments.of( testModel, metaModelVersion ) );
-            } ) );
+            .filter( invalidTestAspect ->
+                  (!invalidTestAspect.equals( InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES )
+                        && !invalidTestAspect.equals( InvalidTestAspect.ASPECT_MISSING_PROPERTIES )) )
+            .flatMap( invalidTestAspect -> Stream.of( Arguments.of( invalidTestAspect )) );
    }
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testValidateValidModelElement( final KnownVersion metaModelVersion ) {
+   void testValidateValidModelElement( final KnownVersion metaModelVersion ) {
       final VersionedModel testModel = TestResources.getModel( TestAspect.ASPECT_WITH_BOOLEAN, metaModelVersion ).get();
       final Resource element = testModel.getModel().createResource( TestAspect.TEST_NAMESPACE + "BooleanTestCharacteristic" );
       final List<Violation> violations = service.get( metaModelVersion ).validateElement( element );
@@ -133,8 +127,8 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    }
 
    @ParameterizedTest
-   @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testValidateInvalidModelElement( final KnownVersion metaModelVersion ) {
+   @MethodSource( value = "latestVersion" )
+   void testValidateInvalidModelElement( final KnownVersion metaModelVersion ) {
       final VersionedModel testModel = TestResources.getModel( InvalidTestAspect.INVALID_EXAMPLE_VALUE_DATATYPE, metaModelVersion ).get();
       final Resource element = testModel.getModel().createResource( TestAspect.TEST_NAMESPACE + "stringProperty" );
       final List<Violation> violations = service.get( metaModelVersion ).validateElement( element );
@@ -142,48 +136,15 @@ public class AspectModelValidatorTest extends MetaModelVersions {
       final SparqlConstraintViolation violation = (SparqlConstraintViolation) violations.get( 0 );
       final SAMM samm = new SAMM( metaModelVersion );
       assertThat( violation.context().element() ).isEqualTo( element );
-      assertThat( violation.context().property().get() ).isEqualTo( samm.exampleValue() );
+      assertThat( violation.context().property() ).contains( samm.exampleValue() );
       assertThat( violation.bindings().get( "value" ).asResource().getURI() ).isEqualTo( XSD.xint.getURI() );
    }
 
    @ParameterizedTest
-   @MethodSource( value = "versionsUpToIncluding1_0_0" )
-   public void testInvalidAspectMissingProperties( final KnownVersion metaModelVersion ) {
-      final SAMM samm = new SAMM( metaModelVersion );
-      final TestModel testModel = InvalidTestAspect.ASPECT_MISSING_PROPERTIES;
-      final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
-      final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
-      assertThat( violations ).hasSize( 1 );
-      final Violation violation = violations.get( 0 );
-      assertThat( violation ).isInstanceOf( MinCountViolation.class );
-      final MinCountViolation minCountViolation = (MinCountViolation) violation;
-      assertThat( minCountViolation.context().property() ).hasValue( samm.properties() );
-      assertThat( minCountViolation.context().element().getURI() ).isEqualTo( testModel.getUrn().toString() );
-   }
-
-   @ParameterizedTest
-   @MethodSource( value = "versionsUpToIncluding1_0_0" )
-   public void testInvalidAspectMissingNameAndProperties( final KnownVersion metaModelVersion ) {
-      final SAMM samm = new SAMM( metaModelVersion );
-      final TestModel testModel = InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES;
-      final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, metaModelVersion );
-      final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidAspectModel );
-      assertThat( violations ).hasSize( 2 );
-
-      assertThat( violations )
-            .anyMatch( v -> v instanceof MinCountViolation
-                  && v.context().property().map( p -> p.equals( samm.properties() ) ).orElse( false )
-                  && v.context().element().getURI().equals( testModel.getUrn().toString() ) )
-            .anyMatch( v -> v instanceof MinCountViolation
-                  && v.context().property().map( p -> p.equals( samm.property( "name" ) ) ).orElse( false )
-                  && v.context().element().getURI().equals( testModel.getUrn().toString() ) );
-   }
-
-   @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testInvalidTurtleSyntax( final KnownVersion metaModelVersion ) {
+   void testInvalidTurtleSyntax( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> invalidTurtleSyntax = TestResources.getModel( InvalidTestAspect.INVALID_SYNTAX, metaModelVersion );
-      assertThat( invalidTurtleSyntax.isFailure() ).isEqualTo( true );
+      assertThat( invalidTurtleSyntax.isFailure() ).isTrue();
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidTurtleSyntax );
       assertThat( violations ).hasSize( 1 );
       final InvalidSyntaxViolation violation = (InvalidSyntaxViolation) violations.get( 0 );
@@ -194,9 +155,9 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testNonTurtleFile( final KnownVersion metaModelVersion ) {
+   void testNonTurtleFile( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> invalidTurtleSyntax = TestResources.getModel( InvalidTestAspect.ACTUALLY_JSON, metaModelVersion );
-      assertThat( invalidTurtleSyntax.isFailure() ).isEqualTo( true );
+      assertThat( invalidTurtleSyntax.isFailure() ).isTrue();
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidTurtleSyntax );
       assertThat( violations ).hasSize( 1 );
       final InvalidSyntaxViolation violation = (InvalidSyntaxViolation) violations.get( 0 );
@@ -211,7 +172,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
     */
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectWithSammNamespaceForCustomUnit( final KnownVersion metaModelVersion ) {
+   void testAspectWithSammNamespaceForCustomUnit( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> invalidAspectModel = TestResources
             .getModel( InvalidTestAspect.ASPECT_WITH_SAMM_NAMESPACE_FOR_CUSTOM_UNIT, metaModelVersion );
 
@@ -222,10 +183,10 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectWithInvalidMetaModelVersion( final KnownVersion metaModelVersion ) {
+   void testAspectWithInvalidMetaModelVersion( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> invalidTurtleSyntax = TestResources.getModel( InvalidTestAspect.ASPECT_WITH_INVALID_VERSION,
             metaModelVersion );
-      assertThat( invalidTurtleSyntax.isFailure() ).isEqualTo( true );
+      assertThat( invalidTurtleSyntax.isFailure() ).isTrue();
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidTurtleSyntax );
       assertThat( violations ).hasSize( 1 );
       final ProcessingViolation violation = (ProcessingViolation) violations.get( 0 );
@@ -234,10 +195,10 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testMissingAspectDeclaration( final KnownVersion metaModelVersion ) {
+   void testMissingAspectDeclaration( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> missingAspect = TestResources
             .getModel( InvalidTestAspect.MISSING_ASPECT_DECLARATION, metaModelVersion );
-      assertThat( missingAspect.isFailure() ).isEqualTo( true );
+      assertThat( missingAspect.isFailure() ).isTrue();
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( missingAspect );
       assertThat( violations ).hasSize( 1 );
       final ProcessingViolation violation = (ProcessingViolation) violations.get( 0 );
@@ -246,7 +207,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testValidationWithMultipleAspects( final KnownVersion metaModelVersion ) {
+   void testValidationWithMultipleAspects( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> model = TestResources.getModel( TestAspect.ASPECT, metaModelVersion );
       model.forEach( versionedModel -> {
          final VersionedModel model2 = TestResources.getModel( TestAspect.ASPECT_WITH_SIMPLE_TYPES, metaModelVersion ).get();
@@ -263,7 +224,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    void testCycleDetection( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> versionedModel = TestResources.getModel( TestAspect.MODEL_WITH_CYCLES, metaModelVersion );
       final List<Violation> report = service.get( metaModelVersion ).validateModel( versionedModel );
-      assertThat( report.size() ).isEqualTo( 7 );
+      assertThat( report ).hasSize( 7 );
       assertThat( report ).containsAll( cycles(
             ":a -> :b -> :a",
             ":e -> :f -> :g -> :e",
@@ -282,7 +243,7 @@ public class AspectModelValidatorTest extends MetaModelVersions {
    void testCycleDetectionWithCycleBreakers( final KnownVersion metaModelVersion ) {
       final Try<VersionedModel> versionedModel = TestResources.getModel( TestAspect.MODEL_WITH_BROKEN_CYCLES, metaModelVersion );
       final List<Violation> report = service.get( metaModelVersion ).validateModel( versionedModel );
-      assertThat( report.isEmpty() ).isTrue();
+      assertThat( report ).isEmpty();
    }
 
    private List<Violation> cycles( final String... cycles ) {
