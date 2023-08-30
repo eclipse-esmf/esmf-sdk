@@ -114,7 +114,7 @@ class AspectModelValidatorTest extends MetaModelVersions {
             .filter( invalidTestAspect ->
                   (!invalidTestAspect.equals( InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES )
                         && !invalidTestAspect.equals( InvalidTestAspect.ASPECT_MISSING_PROPERTIES )) )
-            .flatMap( invalidTestAspect -> Stream.of( Arguments.of( invalidTestAspect )) );
+            .map( Arguments::of );
    }
 
    @ParameterizedTest
