@@ -12,17 +12,9 @@
 @prefix bamm:   <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
 @prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
 @prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#> .
-@prefix :       <urn:bamm:org.eclipse.esmf.test:2.0.0#> .
 @prefix unit:   <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
-@prefix prev:   <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+@prefix :       <urn:samm:org.eclipse.esmf.test:1.0.0#> .
 
-:BammTest a bamm:Aspect ;
-   bamm:name "BammTest" ;
-   bamm:preferredName "BAMM Test"@en ;
-   bamm:properties ( prev:legacyProperty :property ) ;
-   bamm:operations ( ) .
-
-:property a bamm:Property ;
-   bamm:name "property" ;
+:legacyProperty a bamm:Property ;
    bamm:characteristic bamm-c:Text .
