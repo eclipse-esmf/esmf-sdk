@@ -22,13 +22,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 
-public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
-   private final String expectedValueEntryTitle = "value";
-   private final String expectedSeeEntryTitle = "see";
+class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
+   private final static String EXPECTED_VALUE_ENTRY_TITLE = "value";
+   private final static String EXPECTED_SEE_ENTRY_TITLE = "see";
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testOnlyUsedConstraintsAreProcessedExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testOnlyUsedConstraintsAreProcessedExpectSuccess( final KnownVersion metaModelVersion ) {
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_USED_AND_UNUSED_CONSTRAINT, metaModelVersion );
 
       final Model queryResult = context.executeQuery( sparqlQueryFileName );
@@ -39,54 +39,54 @@ public class Constraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testSeeAttributesArePresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_MULTIPLE_SEE_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             5,
-            expectedSeeEntryTitle,
+            EXPECTED_SEE_ENTRY_TITLE,
             "http://example.com/, http://example.com/me" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testSeeAttributeIsNotPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_CONSTRAINT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
-      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+      context.executeAttributeIsNotPresentTest( sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ), 5 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testRegularExpressionConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testRegularExpressionConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_NUMERIC_REGULAR_EXPRESSION_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             4,
-            expectedValueEntryTitle, "\\\\d*\\|x" );
+            EXPECTED_VALUE_ENTRY_TITLE, "\\\\d*\\|x" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testFixedPointConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testFixedPointConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_FIXED_POINT_CONSTRAINT, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             8, "scale", "5" );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             9, "integer", "3" );
    }

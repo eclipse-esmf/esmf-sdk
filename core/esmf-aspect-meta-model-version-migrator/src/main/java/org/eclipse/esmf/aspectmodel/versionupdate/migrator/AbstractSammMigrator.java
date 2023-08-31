@@ -25,7 +25,8 @@ public abstract class AbstractSammMigrator extends AbstractMigrator {
    private final KnownVersion targetKnownVersion;
 
    protected AbstractSammMigrator( final KnownVersion sourceKnownVersion, final KnownVersion targetKnownVersion, final int order ) {
-      super( VersionNumber.parse( sourceKnownVersion.toVersionString() ), VersionNumber.parse( targetKnownVersion.toVersionString() ), order );
+      super( VersionNumber.parse( sourceKnownVersion.toVersionString() ), VersionNumber.parse( targetKnownVersion.toVersionString() ),
+            order );
       this.sourceKnownVersion = sourceKnownVersion;
       this.targetKnownVersion = targetKnownVersion;
    }
