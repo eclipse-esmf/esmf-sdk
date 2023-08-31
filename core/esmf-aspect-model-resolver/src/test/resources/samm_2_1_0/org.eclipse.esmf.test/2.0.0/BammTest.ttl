@@ -15,10 +15,11 @@
 @prefix :       <urn:bamm:org.eclipse.esmf.test:2.0.0#> .
 @prefix unit:   <urn:bamm:io.openmanufacturing:unit:2.0.0#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix prev:   <urn:samm:org.eclipse.esmf.test:1.0.0#> .
 
 :BammTest a bamm:Aspect ;
    bamm:preferredName "BAMM Test"@en ;
-   bamm:properties ( :property ) ;
+   bamm:properties ( prev:legacyProperty :property ) ;
    bamm:operations ( ) .
 
 :property a bamm:Property ;
