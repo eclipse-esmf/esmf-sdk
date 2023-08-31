@@ -22,22 +22,22 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+import org.assertj.core.api.Assertions;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
-
-import com.google.common.collect.Streams;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import com.google.common.collect.Streams;
 
 public class MigratorTest extends MetaModelVersions {
 
@@ -116,6 +116,16 @@ public class MigratorTest extends MetaModelVersions {
             .filter( statement -> statement.getPredicate().getURI().equals( sammNameUrn ) )
             .collect( Collectors.toList() );
       assertThat( sammNameStatements ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @MethodSource( "allVersions" )
+   public void testCurieMigration( final KnownVersion metaModelVersion ) {
+      final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT_WITH_CURIE, metaModelVersion );
+      final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
+      final SAMM latestSamm = new SAMM( KnownVersion.getLatest() );
+      assertThat( rewrittenModel.getRawModel().listStatements( null, latestSamm.exampleValue(), (RDFNode) null ).nextStatement().getObject().asLiteral()
+            .getDatatypeURI() ).isEqualTo( latestSamm.curie().getURI() );
    }
 
    private Set<String> getAllUris( final Model model ) {

@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.jena.datatypes.BaseDatatype;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -57,9 +59,17 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
       return rewriteUri( property.getURI(), oldToNewNamespaces ).map( ResourceFactory::createProperty ).orElse( property );
    }
 
+   protected Literal updateLiteral( final Literal literal, final Map<String, String> oldToNewNamespaces ) {
+      return rewriteUri( literal.getDatatypeURI(), oldToNewNamespaces )
+            .map( uri -> ResourceFactory.createTypedLiteral( literal.getLexicalForm(), new BaseDatatype( uri ) ) )
+            .orElse( literal );
+   }
+
    protected RDFNode updateRdfNode( final RDFNode rdfNode, final Map<String, String> oldToNewNamespaces ) {
       if ( rdfNode.isResource() ) {
          return updateResource( rdfNode.asResource(), oldToNewNamespaces );
+      } else if ( rdfNode.isLiteral() ) { // needed especially for "curie" literals, which are versioned: "unit:day"^^samm:curie
+         return updateLiteral( rdfNode.asLiteral(), oldToNewNamespaces );
       }
       return rdfNode;
    }
@@ -88,7 +98,8 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
     * @param oldToNewNamespaces the map of old RDF namespaces to their new counterparts
     * @return the prefix map
     */
-   protected Map<String, String> buildPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes, final Map<String, String> oldToNewNamespaces ) {
+   protected Map<String, String> buildPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes,
+         final Map<String, String> oldToNewNamespaces ) {
       return sourceModel.getNsPrefixMap().keySet().stream()
             .map( prefix -> Map.<String, String> entry( prefix, targetPrefixes.getOrDefault( prefix, sourceModel.getNsPrefixURI( prefix ) ) ) )
             .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
