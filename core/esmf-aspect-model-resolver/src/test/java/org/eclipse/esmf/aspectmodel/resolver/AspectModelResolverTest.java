@@ -15,31 +15,29 @@ package org.eclipse.esmf.aspectmodel.resolver;
 
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
-
-import com.google.common.collect.Streams;
-import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import com.google.common.collect.Streams;
+
+import io.vavr.control.Try;
 
 public class AspectModelResolverTest extends MetaModelVersions {
    private final AspectModelResolver resolver = new AspectModelResolver();
@@ -75,6 +73,26 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:bamm:org.eclipse.esmf.test:2.0.0#BammTest" );
+
+      final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
+      final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
+      assertThat( result.isSuccess() ).isTrue();
+
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      assertThat( result.get().getModel().listStatements( null, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "versionsUpToIncluding2_0_0" )
+   public void testLoadLegacyBammModelFromFileExpectSuccess( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      final File aspectModelsRootDirectory = new File(
+            AspectModelResolverTest.class.getClassLoader()
+                  .getResource( metaModelVersion.toString().toLowerCase() )
+                  .toURI()
+                  .getPath() );
+
+      final AspectModelUrn testUrn = AspectModelResolver.fileToUrn(
+            Paths.get( aspectModelsRootDirectory.toString(), "org.eclipse.esmf.test", "2.0.0", "BammTest.ttl" ).toFile() );
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );

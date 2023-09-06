@@ -13,8 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
+import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 import java.io.ByteArrayInputStream;
@@ -37,6 +36,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
@@ -51,17 +57,11 @@ import org.eclipse.esmf.aspectmodel.versionupdate.migrator.BammUriRewriter;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Streams;
+
 import io.vavr.CheckedFunction1;
 import io.vavr.Value;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 
 /**
  * Provides facilities for loading an Aspect model and resolving referenced meta model elements and
@@ -330,10 +330,9 @@ public class AspectModelResolver {
             return Try.success( EMPTY_MODEL );
          }
          return resolutionStrategy.apply( aspectModelUrn ).flatMap( model -> {
-            if ( !model.contains( model.createResource( urn ), RDF.type, (RDFNode) null ) ) {
-               return Try.failure(
-                     new ModelResolutionException(
-                           "Resolution strategy returned a model which does not contain element definition for " + urn ) );
+            if ( !containsType( model, urn ) ) {
+               return Try.failure( new ModelResolutionException(
+                     "Resolution strategy returned a model which does not contain element definition for " + urn ) );
             }
             return Try.success( model );
          } );
@@ -342,6 +341,24 @@ public class AspectModelResolver {
          // to resolve, so we return just an empty model
          return Try.success( EMPTY_MODEL );
       }
+   }
+
+   private boolean containsType( final Model model, final String urn ) {
+      if ( model.contains( model.createResource( urn ), RDF.type, (RDFNode) null ) ) {
+         return true;
+      } else if ( urn.startsWith( "urn:samm:" ) ) {
+         // when deriving a URN from file (via "fileToUrn" method - mainly in samm-cli scenarios),
+         // we assume new "samm" format, but could actually have been the old "bamm"
+         return model.contains( model.createResource( toLegacyBammUrn( urn ) ), RDF.type, (RDFNode) null );
+      }
+      return false;
+   }
+
+   private String toLegacyBammUrn( final String urn ) {
+      if ( urn.startsWith( "urn:samm:" ) ) {
+         return urn.replace( "urn:samm:", "urn:bamm:" );
+      }
+      return urn;
    }
 
    /**
