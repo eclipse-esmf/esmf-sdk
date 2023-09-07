@@ -19,16 +19,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
-import org.eclipse.esmf.samm.KnownVersion;
-
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * A {@link AbstractUriRewriter} that replaces all references to the legacy BAMM Aspect Meta Model to their corresponding SAMM counterparts
@@ -66,7 +65,7 @@ public class BammUriRewriter extends AbstractUriRewriter {
       // The mapping of the URNs of the legacy BAMM Aspect Meta model to their corresponding SAMM counterparts
       return Map.of(
             "urn:bamm:io.openmanufacturing:meta-model:" + bammVersion.versionString() + "#", targetPrefixes.get( "samm" ),
-            "urn:bamm:io.openmanufacturing:characteristic: " + bammVersion.versionString() + "#", targetPrefixes.get( SAMM_C_PREFIX ),
+            "urn:bamm:io.openmanufacturing:characteristic:" + bammVersion.versionString() + "#", targetPrefixes.get( SAMM_C_PREFIX ),
             "urn:bamm:io.openmanufacturing:entity:" + bammVersion.versionString() + "#", targetPrefixes.get( SAMM_E_PREFIX ),
             "urn:bamm:io.openmanufacturing:unit:" + bammVersion.versionString() + "#", targetPrefixes.get( "unit" )
       );
