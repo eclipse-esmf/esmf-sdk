@@ -61,7 +61,7 @@ public class BammUriRewriter extends AbstractUriRewriter {
       // The mapping of the URNs of the legacy BAMM Aspect Meta model to their corresponding SAMM counterparts
       return Map.of(
             "urn:bamm:io.openmanufacturing:meta-model:" + bammVersion.versionString() + "#", targetPrefixes.get( "samm" ),
-            "urn:bamm:io.openmanufacturing:characteristic: " + bammVersion.versionString() + "#", targetPrefixes.get( SAMM_C_PREFIX ),
+            "urn:bamm:io.openmanufacturing:characteristic:" + bammVersion.versionString() + "#", targetPrefixes.get( SAMM_C_PREFIX ),
             "urn:bamm:io.openmanufacturing:entity:" + bammVersion.versionString() + "#", targetPrefixes.get( SAMM_E_PREFIX ),
             "urn:bamm:io.openmanufacturing:unit:" + bammVersion.versionString() + "#", targetPrefixes.get( "unit" )
       );

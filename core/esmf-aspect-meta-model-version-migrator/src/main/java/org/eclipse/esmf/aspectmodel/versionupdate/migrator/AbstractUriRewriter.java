@@ -69,8 +69,7 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
    protected RDFNode updateRdfNode( final RDFNode rdfNode, final Map<String, String> oldToNewNamespaces ) {
       if ( rdfNode.isResource() ) {
          return updateResource( rdfNode.asResource(), oldToNewNamespaces );
-      } else if ( rdfNode.isLiteral() ) {
-         // needed especially for "curie" literals, which are versioned: "unit:day"^^samm:curie
+      } else if ( rdfNode.isLiteral() ) { // needed especially for "curie" literals, which are versioned: "unit:day"^^samm:curie
          return updateLiteral( rdfNode.asLiteral(), oldToNewNamespaces );
       }
       return rdfNode;
@@ -100,7 +99,8 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
     * @param oldToNewNamespaces the map of old RDF namespaces to their new counterparts
     * @return the prefix map
     */
-   protected Map<String, String> buildPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes, final Map<String, String> oldToNewNamespaces ) {
+   protected Map<String, String> buildPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes,
+         final Map<String, String> oldToNewNamespaces ) {
       return sourceModel.getNsPrefixMap().keySet().stream()
             .map( prefix -> Map.<String, String> entry( prefix, targetPrefixes.getOrDefault( prefix, sourceModel.getNsPrefixURI( prefix ) ) ) )
             .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
