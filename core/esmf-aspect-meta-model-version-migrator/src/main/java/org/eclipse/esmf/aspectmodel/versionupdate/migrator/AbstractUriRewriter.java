@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.jena.datatypes.BaseDatatype;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -60,8 +60,9 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
    }
 
    protected Literal updateLiteral( final Literal literal, final Map<String, String> oldToNewNamespaces ) {
-      return rewriteUri( literal.getDatatypeURI(), oldToNewNamespaces )
-            .map( uri -> ResourceFactory.createTypedLiteral( literal.getLexicalForm(), new BaseDatatype( uri ) ) )
+      return Optional.ofNullable( literal.getDatatypeURI() )
+            .flatMap( uri -> rewriteUri( uri, oldToNewNamespaces ) )
+            .map( uri -> ResourceFactory.createTypedLiteral( literal.getLexicalForm(), NodeFactory.getType( uri ) ) )
             .orElse( literal );
    }
 
