@@ -15,18 +15,15 @@ package org.eclipse.esmf.aspectmodel.versionupdate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
 
 import io.vavr.control.Try;
 
@@ -72,7 +69,7 @@ public class MigratorService {
     * @return the resulting {@link VersionedModel} that corresponds to the input Aspect model, but with the new meta model version
     */
    public Try<VersionedModel> updateMetaModelVersion( final VersionedModel versionedModel ) {
-      final VersionNumber targetVersion = VersionNumber.parse( KnownVersion.getLatest().toVersionString() );
+      final VersionNumber latestKnownVersion = VersionNumber.parse( KnownVersion.getLatest().toVersionString() );
       VersionNumber sourceVersion = versionedModel.getMetaModelVersion();
       Model migrationModel = versionedModel.getRawModel();
 
@@ -81,25 +78,21 @@ public class MigratorService {
          sourceVersion = VersionNumber.parse( KnownVersion.SAMM_1_0_0.toVersionString() );
       }
 
-      if ( sourceVersion.equals( targetVersion ) ) {
-         return getSdsMigratorFactory().createAspectMetaModelResourceResolver().mergeMetaModelIntoRawModel( migrationModel, targetVersion );
-      }
-
-      if ( sourceVersion.greaterThan( targetVersion ) ) {
+      if ( sourceVersion.greaterThan( latestKnownVersion ) ) {
+         // looks like unreachable
          return Try.failure( new InvalidVersionException(
-               String.format( "Model version %s can not be updated to version %s", sourceVersion, targetVersion ) ) );
+               String.format( "Model version %s can not be updated to version %s", sourceVersion, latestKnownVersion ) ) );
       }
 
-      return migration( sourceVersion, targetVersion, migrationModel );
+      if ( !sourceVersion.equals( latestKnownVersion ) ) {
+         migrationModel = migrate( sammMigratorFactory.createMigrators(), sourceVersion, latestKnownVersion, migrationModel );
+      }
+
+      return getSdsMigratorFactory().createAspectMetaModelResourceResolver().mergeMetaModelIntoRawModel( migrationModel, latestKnownVersion );
    }
 
    private Model customMigration( final MigratorFactory migratorFactory, final VersionNumber sourceVersion, final VersionedModel versionedModel ) {
       return migrate( migratorFactory.createMigrators(), sourceVersion, migratorFactory.getLatestVersion(), versionedModel.getRawModel() );
-   }
-
-   private Try<VersionedModel> migration( final VersionNumber sourceVersion, final VersionNumber targetVersion, final Model targetModel ) {
-      final Model model = migrate( sammMigratorFactory.createMigrators(), sourceVersion, targetVersion, targetModel );
-      return getSdsMigratorFactory().createAspectMetaModelResourceResolver().mergeMetaModelIntoRawModel( model, targetVersion );
    }
 
    private Model migrate( final List<Migrator> migrators, final VersionNumber sourceVersion, final VersionNumber targetVersion, final Model targetModel ) {
@@ -112,7 +105,7 @@ public class MigratorService {
             .sorted( comparator.thenComparing( Migrator::order ) )
             .dropWhile( migrator -> !migrator.sourceVersion().equals( sourceVersion ) )
             .takeWhile( migrator -> !migrator.targetVersion().greaterThan( targetVersion ) )
-            .collect( Collectors.toList() );
+            .toList();
 
       Model migratorTargetModel = targetModel;
       for ( final Migrator migrator : migratorSet ) {

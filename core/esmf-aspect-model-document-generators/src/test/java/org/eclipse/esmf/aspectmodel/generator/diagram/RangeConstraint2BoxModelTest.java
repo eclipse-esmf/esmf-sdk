@@ -19,58 +19,58 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 
-public class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
+class RangeConstraint2BoxModelTest extends AbstractConstraint2BoxModelTest {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testBoundDefinitionAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
+   void testBoundDefinitionAttributeIsPresentExpectSuccess( final KnownVersion metaModelVersion ) {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_BOUND_DEFINITION_ATTRIBUTES, metaModelVersion );
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             6, "lowerBoundDefinition", "GREATER_THAN" );
 
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ),
+            sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ),
             totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             7, "upperBoundDefinition", "LESS_THAN" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testRangeConstraintWithOnlyLowerBoundDefinitionAndBothValuesExpectSuccess(
+   void testRangeConstraintWithOnlyLowerBoundDefinitionAndBothValuesExpectSuccess(
          final KnownVersion metaModelVersion ) {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_LOWER_BOUND_DEFINITION_AND_BOTH_VALUES, metaModelVersion );
-      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             6, "lowerBoundDefinition", "GREATER_THAN" );
 
       context.executeAttributeIsPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
+            sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             7, "upperBoundDefinition", "AT_MOST" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testRangeConstraintWithOnlyMinValue( final KnownVersion metaModelVersion ) {
+   void testRangeConstraintWithOnlyMinValue( final KnownVersion metaModelVersion ) {
       final String constraintIdentifier = "*";
       final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_WITH_ONLY_MIN_VALUE, metaModelVersion );
-      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             6, "lowerBoundDefinition", "GREATER_THAN" );
 
-      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
+      context.executeAttributeIsPresentTest( sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             7, "upperBoundDefinition", "OPEN" );
 
       context.executeAttributeIsNotPresentTest(
-            sparqlQueryFileName, boxSelectorStatement( metaModelVersion, constraintIdentifier, true ),
-            entriesSelectorStatement( metaModelVersion, constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
+            sparqlQueryFileName, boxSelectorStatement( constraintIdentifier, true ),
+            entriesSelectorStatement( constraintIdentifier, true ), totalNumberOfExpectedEntriesPerMetaModelVersion.get( metaModelVersion ),
             8 );
    }
 }

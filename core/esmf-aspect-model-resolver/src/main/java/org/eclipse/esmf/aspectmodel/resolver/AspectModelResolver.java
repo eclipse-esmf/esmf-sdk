@@ -13,8 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
+import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 import java.io.ByteArrayInputStream;
@@ -55,6 +54,7 @@ import org.eclipse.esmf.aspectmodel.versionupdate.MigratorFactory;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorServiceLoader;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.BammUriRewriter;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Streams;
 
@@ -70,7 +70,8 @@ import io.vavr.control.Try;
 public class AspectModelResolver {
 
    private final MigratorService migratorService = MigratorServiceLoader.getInstance().getMigratorService();
-   private final BammUriRewriter bammUriRewriter = new BammUriRewriter();
+   private final BammUriRewriter bamm100UriRewriter = new BammUriRewriter( BammUriRewriter.BAMM_VERSION.BAMM_1_0_0 );
+   private final BammUriRewriter bamm200UriRewriter = new BammUriRewriter( BammUriRewriter.BAMM_VERSION.BAMM_2_0_0 );
 
    /**
     * Returns all valid model URNs for Aspects and model elements in a model
@@ -113,7 +114,7 @@ public class AspectModelResolver {
     * This creates the closure (merged model) of all referenced models and the corresponding meta model.
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param input              the input to be resolved by the strategy
+    * @param input the input to be resolved by the strategy
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final AspectModelUrn input ) {
@@ -124,19 +125,20 @@ public class AspectModelResolver {
     * Method to load an Aspect Model from an input stream, and resolve it using a suitable {@link ResolutionStrategy}.
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param inputStream        the inputs stream to read the RDF/Turtle representation from
+    * @param inputStream the inputs stream to read the RDF/Turtle representation from
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final InputStream inputStream ) {
       return TurtleLoader.loadTurtle( inputStream )
-            .flatMap( model -> resolveAspectModel( FileSystemStrategy.DefaultNamespace.withDefaultNamespace( resolutionStrategy, model ), model ) );
+            .flatMap( model -> resolveAspectModel( FileSystemStrategy.DefaultNamespace.withDefaultNamespace( resolutionStrategy, model ),
+                  model ) );
    }
 
    /**
     * Method to load an Aspect Model from a string, and resolve it using a suitable {@link ResolutionStrategy}.
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param modelContent       a string containing the RDF/Turtle representation
+    * @param modelContent a string containing the RDF/Turtle representation
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final String modelContent ) {
@@ -147,7 +149,7 @@ public class AspectModelResolver {
     * Method to resolve a given aspect model
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param model              the initial aspect model
+    * @param model the initial aspect model
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final Model model ) {
@@ -159,7 +161,7 @@ public class AspectModelResolver {
     * This creates the closure (merged model) of all referenced models and the corresponding meta model.
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param input              the input to be resolved by the strategy
+    * @param input the input to be resolved by the strategy
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final List<AspectModelUrn> input ) {
@@ -170,14 +172,16 @@ public class AspectModelResolver {
     * Method to resolve multiple {@link AspectModelUrn}s using a suitable {@link ResolutionStrategy} against an inital model.
     * This creates the closure (merged model) of all referenced models and the corresponding meta model.
     *
-    * @param initialModel       the initial model
+    * @param initialModel the initial model
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param input              the input to resolved by the strategy
+    * @param input the input to resolved by the strategy
     * @return the resolved model on success
     */
-   public Try<VersionedModel> resolveAspectModel( final Model initialModel, final ResolutionStrategy resolutionStrategy, final List<AspectModelUrn> input ) {
+   public Try<VersionedModel> resolveAspectModel( final Model initialModel, final ResolutionStrategy resolutionStrategy,
+         final List<AspectModelUrn> input ) {
       final Try<Model> mergedModel = resolve( initialModel, input, resolutionStrategy )
-            .map( bammUriRewriter::migrate );
+            .map( bamm100UriRewriter::migrate )
+            .map( bamm200UriRewriter::migrate );
 
       if ( mergedModel.isFailure() ) {
          if ( mergedModel.getCause() instanceof FileNotFoundException ) {
@@ -197,7 +201,10 @@ public class AspectModelResolver {
          return Try.failure( new ModelResolutionException( "Could not determine used meta model version" ) );
       }
 
-      if ( usedMetaModelVersions.size() == 1 && migratorService.getMigratorFactory().isEmpty() ) {
+      if ( usedMetaModelVersions.size() == 1
+            && usedMetaModelVersions.iterator().next().toString().equals( KnownVersion.getLatest().toVersionString() )
+            && migratorService.getMigratorFactory().isEmpty()
+      ) {
          return mergedModel.flatMap( model ->
                migratorService.getSdsMigratorFactory().createAspectMetaModelResourceResolver()
                      .mergeMetaModelIntoRawModel( model, usedMetaModelVersions.iterator().next() ) );
@@ -223,10 +230,13 @@ public class AspectModelResolver {
     * Checks if a given model contains the definition of a model element.
     *
     * @param model the model
-    * @param urn   the URN of the model element
+    * @param urn the URN of the model element
     * @return true if the model contains the definition of the model element
     */
    public static boolean containsDefinition( final Model model, final AspectModelUrn urn ) {
+      if ( model.getNsPrefixMap().values().stream().anyMatch( prefixUri -> prefixUri.startsWith( "urn:bamm:" ) ) ) {
+         return model.contains( model.createResource( urn.toString().replace( "urn:samm:", "urn:bamm:" ) ), RDF.type, (RDFNode) null );
+      }
       return model.contains( model.createResource( urn.toString() ), RDF.type, (RDFNode) null );
    }
 
@@ -235,8 +245,8 @@ public class AspectModelResolver {
     * The strategy is applied to the URNs to load a model, and then repeated for all URNs in the loaded model that
     * have not yet been loaded.
     *
-    * @param result             the (possibly pre-filled) model for which elements need to be resolved
-    * @param urns               the Aspect Model element URNs
+    * @param result the (possibly pre-filled) model for which elements need to be resolved
+    * @param urns the Aspect Model element URNs
     * @param resolutionStrategy the resolution strategy that knowns how to turn a URN into a Model
     * @return the fully resolved model, or a failure if one of the transitively referenced elements can't be found
     */
@@ -305,7 +315,7 @@ public class AspectModelResolver {
     * For meta model elements or other URIs, an empty model is returned. This method returns only a failure, when the used resolution
     * strategy fails.
     *
-    * @param urn                the URN to resolve
+    * @param urn the URN to resolve
     * @param resolutionStrategy the resolution strategy to apply
     * @return the model containing the defintion of the given model element
     */
@@ -320,9 +330,9 @@ public class AspectModelResolver {
             return Try.success( EMPTY_MODEL );
          }
          return resolutionStrategy.apply( aspectModelUrn ).flatMap( model -> {
-            if ( !model.contains( model.createResource( urn ), RDF.type, (RDFNode) null ) ) {
-               return Try.failure(
-                     new ModelResolutionException( "Resolution strategy returned a model which does not contain element definition for " + urn ) );
+            if ( !containsType( model, urn ) ) {
+               return Try.failure( new ModelResolutionException(
+                     "Resolution strategy returned a model which does not contain element definition for " + urn ) );
             }
             return Try.success( model );
          } );
@@ -331,6 +341,24 @@ public class AspectModelResolver {
          // to resolve, so we return just an empty model
          return Try.success( EMPTY_MODEL );
       }
+   }
+
+   private boolean containsType( final Model model, final String urn ) {
+      if ( model.contains( model.createResource( urn ), RDF.type, (RDFNode) null ) ) {
+         return true;
+      } else if ( urn.startsWith( "urn:samm:" ) ) {
+         // when deriving a URN from file (via "fileToUrn" method - mainly in samm-cli scenarios),
+         // we assume new "samm" format, but could actually have been the old "bamm"
+         return model.contains( model.createResource( toLegacyBammUrn( urn ) ), RDF.type, (RDFNode) null );
+      }
+      return false;
+   }
+
+   private String toLegacyBammUrn( final String urn ) {
+      if ( urn.startsWith( "urn:samm:" ) ) {
+         return urn.replace( "urn:samm:", "urn:bamm:" );
+      }
+      return urn;
    }
 
    /**
@@ -351,7 +379,7 @@ public class AspectModelResolver {
     * a model won't overwrite the empty prefix of the target model.
     *
     * @param target the model to merge into
-    * @param other  the model to be merged
+    * @param other the model to be merged
     */
    private void mergeModels( final Model target, final Model other ) {
       for ( final Map.Entry<String, String> prefixEntry : other.getNsPrefixMap().entrySet() ) {
@@ -372,7 +400,6 @@ public class AspectModelResolver {
    public static Try<VersionedModel> loadAndResolveModel( final File input ) {
       return loadAndResolveModelFromUrnLikeDir( input )
             .orElse( () -> loadAndResolveModelFromDir( input ) );
-
    }
 
    private static Try<VersionedModel> loadAndResolveModelFromUrnLikeDir( final File input ) {

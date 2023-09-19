@@ -50,7 +50,7 @@ public class TestContext {
       this.version = version;
       final VersionedModel versionedModel = TestResources.getModel( model, version ).get();
       service = new AspectModelDiagramGenerator( versionedModel );
-      boxModel = new BoxModel( version );
+      boxModel = new BoxModel( KnownVersion.getLatest() );
       service.model.setNsPrefix( "", boxModel.getNamespace() );
       service.model.setNsPrefix( "test", "urn:samm:org.eclipse.esmf.test:1.0.0#" );
 
