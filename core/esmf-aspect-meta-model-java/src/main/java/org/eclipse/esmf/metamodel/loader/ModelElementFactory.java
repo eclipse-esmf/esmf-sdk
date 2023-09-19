@@ -61,6 +61,7 @@ import org.eclipse.esmf.metamodel.loader.instantiator.LengthConstraintInstantiat
 import org.eclipse.esmf.metamodel.loader.instantiator.ListInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.LocaleConstraintInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.MeasurementInstantiator;
+import org.eclipse.esmf.metamodel.loader.instantiator.NamespaceInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.OperationInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.PropertyInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.QuantifiableInstantiator;
@@ -102,6 +103,7 @@ public class ModelElementFactory extends AttributeValueRetriever {
       registerInstantiator( samm.Event(), new EventInstantiator( this ) );
       registerInstantiator( samm.Operation(), new OperationInstantiator( this ) );
       registerInstantiator( samm.Property(), new PropertyInstantiator( this ) );
+      registerInstantiator( samm.Namespace(), new NamespaceInstantiator( this) );
 
       registerInstantiator( sammc.Code(), new CodeInstantiator( this ) );
       registerInstantiator( sammc.Collection(), new CollectionInstantiator( this ) );

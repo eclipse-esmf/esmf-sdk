@@ -135,6 +135,10 @@ public class SAMM implements Namespace {
       return resource( "Aspect" );
    }
 
+   public Resource Namespace() {
+      return resource( "Namespace" );
+   }
+
    public Property properties() {
       return property( "properties" );
    }
