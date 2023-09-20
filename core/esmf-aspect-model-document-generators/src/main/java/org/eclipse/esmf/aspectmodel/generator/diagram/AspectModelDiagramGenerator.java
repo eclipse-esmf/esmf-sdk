@@ -142,6 +142,8 @@ public class AspectModelDiagramGenerator {
                   .addAll( queryFilesForMetaModelVersionsAsOf2_0_0 )
                   .build() );
 
+      //TODO: Add new version of SAMM 2.2.0
+
       ARQ.init();
       model = versionedModel.getModel();
       metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() )
