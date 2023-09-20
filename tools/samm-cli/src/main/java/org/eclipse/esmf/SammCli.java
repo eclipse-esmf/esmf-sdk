@@ -17,8 +17,10 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.eclipse.esmf.aspect.AspectCommand;
+import org.eclipse.esmf.aas.AasCommand;
 
 import org.fusesource.jansi.AnsiConsole;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = SammCli.COMMAND_NAME,
@@ -40,6 +42,7 @@ public class SammCli extends AbstractCommand {
    public SammCli() {
       final CommandLine initialCommandLine = new CommandLine( this )
             .addSubcommand( new AspectCommand() )
+            .addSubcommand( new AasCommand() )
             .setCaseInsensitiveEnumValuesAllowed( true )
             .setExecutionStrategy( LoggingMixin::executionStrategy );
       final CommandLine.IExecutionExceptionHandler defaultExecutionExceptionHandler = initialCommandLine.getExecutionExceptionHandler();
