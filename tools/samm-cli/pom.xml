@@ -67,6 +67,33 @@
          <groupId>org.graalvm.nativeimage</groupId>
          <artifactId>svm</artifactId>
          <scope>provided</scope>
+         <exclusions>
+            <!-- Exclude transitive dependency for truffle-api because it has runtime scope. We need to add it with provided scope. -->
+            <exclusion>
+               <groupId>org.graalvm-truffle</groupId>
+               <artifactId>truffle-api</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.graalvm.truffle</groupId>
+         <artifactId>truffle-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.graalvm.js</groupId>
+         <artifactId>js</artifactId>
+         <scope>runtime</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.graalvm.truffle</groupId>
+               <artifactId>truffle-api</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.graalvm.sdk</groupId>
+               <artifactId>graal-sdk</artifactId>
+            </exclusion>
+         </exclusions>
       </dependency>
 
       <!-- Test dependencies -->
@@ -207,16 +234,15 @@
                <!-- Execute adjustments of native configs that were generated during the previous maven build -->
                <execution>
                   <id>customize-resource-config</id>
-                  <phase>pre-package</phase>
+                  <phase>prepare-package</phase>
                   <goals>
                      <goal>java</goal>
                   </goals>
                   <configuration>
                      <!-- The main class of your build-time scanning code -->
-                     <mainClass>org.eclipse.esmf.buildtime.CustomizeResourceConfig</mainClass>
+                     <mainClass>org.eclipse.esmf.buildtime.CustomizeGraalVmConfigs</mainClass>
                      <!-- Pass the build target file as a commandline param -->
-                     <commandlineArgs>${project.build.outputDirectory}/META-INF/native-image/${project.groupId}/${project.artifactId}/resource-config.json
-                     </commandlineArgs>
+                     <commandlineArgs>${project.build.outputDirectory}/META-INF/native-image/${project.groupId}/${project.artifactId}</commandlineArgs>
                      <cleanupDaemonThreads>false</cleanupDaemonThreads>
                   </configuration>
                </execution>
@@ -252,6 +278,10 @@
                            <exclude>org.eclipse.esmf:esmf-semantic-aspect-meta-model</exclude>
                            <!-- Duplicate annotations that are already contained in javax.annotation-api -->
                            <exclude>javax.annotation:jsr250-api</exclude>
+                           <!-- GraalVM SDK classes & friends must not be used at runtime -->
+                           <exclude>org.graalvm.sdk:graal-sdk</exclude>
+                           <exclude>org.graalvm.nativeimage:svm</exclude>
+                           <exclude>org.graalvm.truffle:truffle-api</exclude>
                         </excludes>
                      </artifactSet>
                      <filters>
@@ -379,6 +409,10 @@
                </annotationProcessorPaths>
                <compilerArgs>
                   <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
+                  <arg>--add-exports</arg>
+                  <arg>java.desktop/sun.awt=ALL-UNNAMED</arg>
+                  <arg>--add-exports</arg>
+                  <arg>java.desktop/sun.font=ALL-UNNAMED</arg>
                </compilerArgs>
                <forceJavacCompilerUse>true</forceJavacCompilerUse>
             </configuration>
@@ -437,11 +471,18 @@
                </execution>
             </executions>
          </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+               <excludePackageNames>org.eclipse.esmf.substitution</excludePackageNames>
+            </configuration>
+         </plugin>
       </plugins>
    </build>
 
    <profiles>
-
       <profile>
          <id>copy-font-configuration</id>
          <activation>

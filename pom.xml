@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>5</version>
+      <version>6</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -219,6 +219,17 @@
             <artifactId>graph-support</artifactId>
             <version>${graph-support-version}</version>
          </dependency>
+         <dependency>
+            <groupId>org.graalvm.truffle</groupId>
+            <artifactId>truffle-api</artifactId>
+            <version>${graalvm-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+            <version>${graalvm-version}</version>
+         </dependency>
+
       </dependencies>
    </dependencyManagement>
 
