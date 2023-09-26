@@ -586,6 +586,10 @@
                   <configuration>
                      <mainClass>${main-class}</mainClass>
                      <imageName>${binary-name}</imageName>
+                     <buildArgs>
+                        <buildArg>-J-XX:MaxRAMPercentage=90.0</buildArg>
+                        <buildArg>-J-XX:GCTimeRatio=19</buildArg>
+                     </buildArgs>
                   </configuration>
                </plugin>
             </plugins>
