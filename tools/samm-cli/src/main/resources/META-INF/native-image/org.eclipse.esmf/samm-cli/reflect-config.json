@@ -1,5 +1,17 @@
 [
   {
+    "name":"sun.util.resources.LocaleData$LocaleDataStrategy",
+    "allDeclaredFields":true,
+    "allDeclaredMethods":true,
+    "allDeclaredConstructors":true
+  },
+  {
+    "name":"sun.util.resources.LocaleData",
+    "allDeclaredFields":true,
+    "allDeclaredMethods":true,
+    "allDeclaredConstructors":true
+  },
+  {
     "name":"sun.font.FontConfigManager",
     "allDeclaredFields":true,
     "allDeclaredMethods":true
