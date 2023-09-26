@@ -578,7 +578,7 @@
                      <execution>
                         <id>build-native</id>
                         <goals>
-                           <goal>build</goal>
+                           <goal>compile</goal>
                         </goals>
                         <phase>package</phase>
                      </execution>
