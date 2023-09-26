@@ -28,9 +28,9 @@ import org.apache.velocity.runtime.parser.node.ASTMethod;
  * which will be null in the GraalVM binary. This substitution will hardcode the code path that does not check for those configs.
  * Unfortunately, since the GraalVM compiler itself is tripped up by sun.awt classes in the resolution graph, we need to
  * trick it by accessing the relevant code via reflection. This in turn means that we need to put X11FontManager & friends into
- * reflection-config.json
+ * reflection-config.json.
  */
-@TargetClass( className = "sun.awt.X11FontManager" )
+@TargetClass( className = "sun.awt.X11FontManager", onlyWith = IsLinux.class )
 @SuppressWarnings( {
       "unused",
       "squid:S00101" // Class name uses GraalVM substitution class naming schema, see
@@ -38,8 +38,11 @@ import org.apache.velocity.runtime.parser.node.ASTMethod;
       , "NewClassNamingConvention" } )
 public final class Target_sun_awt_X11FontManager {
    /**
-    * This method actually returns a sun.awt.FontConfiguration.
-    * @return
+    * This method actually returns a sun.awt.FontConfiguration. Due to the fact that we can not refer to sun.awt classes,
+    * we return java.lang.Object instead. Luckily for use, the Graal substitution mechanism still picks this up and replaces
+    * the original method.
+    *
+    * @return the font configuration object
     */
    @SuppressWarnings( "ProtectedMemberInFinalClass" )
    @Substitute
