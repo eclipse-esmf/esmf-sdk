@@ -15,15 +15,12 @@ package org.eclipse.esmf.substitution;
 
 import java.util.function.BooleanSupplier;
 
-import com.oracle.svm.core.OS;
-import com.oracle.svm.core.annotate.Substitute;
-
 /**
- * Conditional to execute substitution only on Linux. Use with {@link Substitute}'s onlyWith attribute.
+ * Conditional to execute substitution only on Linux. Use with com.oracle.svm.core.annotate.Substitute's onlyWith attribute.
  */
 public class IsLinux implements BooleanSupplier {
    @Override
    public boolean getAsBoolean() {
-      return OS.LINUX.isCurrent();
+      return "Linux".equals( System.getProperty( "os.name" ) );
    }
 }
