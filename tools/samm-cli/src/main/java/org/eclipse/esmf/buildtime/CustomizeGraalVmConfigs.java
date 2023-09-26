@@ -93,10 +93,8 @@ public class CustomizeGraalVmConfigs {
       for ( final Iterator<JsonNode> i = root.elements(); i.hasNext(); ) {
          final JsonNode include = i.next();
          for ( final Predicate<JsonNode> decideIfNodeShouldBeDeleted : reflectEntriesToDelete ) {
-            System.err.println( "Checking reflect setting " + include.get( "name" ).asText() );
             final JsonNode name = include.get( "name" );
             if ( name != null && decideIfNodeShouldBeDeleted.test( include.get( "name" ) ) ) {
-               System.err.println( "Removing " + include.get( "name" ).asText() );
                i.remove();
             }
          }
