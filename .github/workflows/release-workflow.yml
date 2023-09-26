@@ -156,8 +156,8 @@ jobs:
         # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
         uses: al-cheb/configure-pagefile-action@v1.3
         with:
-          minimum-size: 16GB
-          maximum-size: 16GB
+          minimum-size: 32GB
+          maximum-size: 32GB
           disk-root: "C:"
 
       - name: Build and run tests
