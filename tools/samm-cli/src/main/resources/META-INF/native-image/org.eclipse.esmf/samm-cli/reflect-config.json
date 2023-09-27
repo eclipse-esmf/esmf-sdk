@@ -73,6 +73,12 @@
     "allDeclaredConstructors":true
   },
   {
+    "name": "java.awt.AWTEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors":true
+  },
+  {
     "name": "ch.qos.logback.classic.pattern.DateConverter",
     "allDeclaredConstructors": true
   },

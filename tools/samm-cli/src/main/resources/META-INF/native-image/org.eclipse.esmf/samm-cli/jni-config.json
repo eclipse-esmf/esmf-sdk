@@ -65,6 +65,12 @@
   "allDeclaredConstructors":true
 },
 {
+  "name": "java.awt.AWTEvent",
+  "allDeclaredFields": true,
+  "allDeclaredMethods": true,
+  "allDeclaredConstructors":true
+},
+{
   "name":"[Lsun.java2d.loops.GraphicsPrimitive;"
 },
 {
