@@ -67,6 +67,12 @@
     "allDeclaredMethods": true
   },
   {
+    "name": "java.awt.event.InputEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors":true
+  },
+  {
     "name": "ch.qos.logback.classic.pattern.DateConverter",
     "allDeclaredConstructors": true
   },
