@@ -71,6 +71,12 @@
   "allDeclaredConstructors":true
 },
 {
+  "name": "sun.awt.windows.WComponentPeer",
+  "allDeclaredFields": true,
+  "allDeclaredMethods": true,
+  "allDeclaredConstructors":true
+},
+{
   "name":"[Lsun.java2d.loops.GraphicsPrimitive;"
 },
 {

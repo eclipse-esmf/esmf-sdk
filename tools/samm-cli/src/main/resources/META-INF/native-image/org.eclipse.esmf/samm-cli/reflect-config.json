@@ -79,6 +79,12 @@
     "allDeclaredConstructors":true
   },
   {
+    "name": "sun.awt.windows.WComponentPeer",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors":true
+  },
+  {
     "name": "ch.qos.logback.classic.pattern.DateConverter",
     "allDeclaredConstructors": true
   },
