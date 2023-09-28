@@ -96,6 +96,12 @@
   "allDeclaredConstructors":true
 },
 {
+  "name":"sun.font.FontDesignMetrics",
+  "allDeclaredFields": true,
+  "allDeclaredMethods": true,
+  "allDeclaredConstructors":true
+},
+{
   "name":"java.awt.GraphicsEnvironment",
   "methods":[{"name":"getLocalGraphicsEnvironment","parameterTypes":[] }, {"name":"isHeadless","parameterTypes":[] }]
 },

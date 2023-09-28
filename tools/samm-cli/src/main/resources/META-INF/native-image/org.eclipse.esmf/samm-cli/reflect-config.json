@@ -97,6 +97,12 @@
     "allDeclaredConstructors":true
   },
   {
+    "name":"sun.font.FontDesignMetrics",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors":true
+  },
+  {
     "name": "ch.qos.logback.classic.pattern.DateConverter",
     "allDeclaredConstructors": true
   },
