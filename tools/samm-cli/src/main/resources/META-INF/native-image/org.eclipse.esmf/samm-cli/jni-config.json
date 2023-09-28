@@ -91,8 +91,9 @@
 },
 {
   "name":"java.awt.Component",
-  "fields":[{"name":"appContext"}, {"name":"background"}, {"name":"foreground"}, {"name":"graphicsConfig"}, {"name":"height"}, {"name":"isPacked"}, {"name":"name"}, {"name":"peer"}, {"name":"width"}, {"name":"x"}, {"name":"y"}],
-  "methods":[{"name":"getLocationOnScreen_NoTreeLock","parameterTypes":[] }, {"name":"getParent_NoClientCode","parameterTypes":[] }]
+  "allDeclaredFields": true,
+  "allDeclaredMethods": true,
+  "allDeclaredConstructors":true
 },
 {
   "name":"java.awt.GraphicsEnvironment",
