@@ -589,10 +589,8 @@
                      <buildArgs>
                         <arg>-J-XX:MaxRAMPercentage=90.0</arg>
                         <arg>-J-XX:GCTimeRatio=19</arg>
-                        <arg>--add-exports</arg>
-                        <arg>java.desktop/sun.awt=ALL-UNNAMED</arg>
-                        <arg>--add-exports</arg>
-                        <arg>java.desktop/sun.font=ALL-UNNAMED</arg>
+                        <arg>-J--add-exports=java.desktop/sun.awt=ALL-UNNAMED</arg>
+                        <arg>-J--add-exports=java.desktop/sun.font=ALL-UNNAMED</arg>
                      </buildArgs>
                   </configuration>
                </plugin>
