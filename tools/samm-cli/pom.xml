@@ -587,8 +587,12 @@
                      <mainClass>${main-class}</mainClass>
                      <imageName>${binary-name}</imageName>
                      <buildArgs>
-                        <buildArg>-J-XX:MaxRAMPercentage=90.0</buildArg>
-                        <buildArg>-J-XX:GCTimeRatio=19</buildArg>
+                        <arg>-J-XX:MaxRAMPercentage=90.0</arg>
+                        <arg>-J-XX:GCTimeRatio=19</arg>
+                        <arg>--add-exports</arg>
+                        <arg>java.desktop/sun.awt=ALL-UNNAMED</arg>
+                        <arg>--add-exports</arg>
+                        <arg>java.desktop/sun.font=ALL-UNNAMED</arg>
                      </buildArgs>
                   </configuration>
                </plugin>
