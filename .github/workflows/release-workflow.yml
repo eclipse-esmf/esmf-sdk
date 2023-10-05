@@ -230,7 +230,7 @@ jobs:
       - name: Prepare release
         run: |
           # Create Windows CLI zip
-          zip -9 -r samm-cli-windows.zip samm.exe *.dll lib/
+          zip -9 -r samm-cli-windows.zip samm.exe *.dll
 
       # Full release: Maven Central
       # The (apparently) only way to retrieve the staging profile id

@@ -19,11 +19,10 @@ import java.lang.reflect.Method;
 
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
-import org.apache.velocity.runtime.parser.node.ASTMethod;
 
 /**
  * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
- * for {@link ASTMethod}.
+ * for sun.awt.X11FontManager.
  * Reason: In Linux/X11, AWT internal will try to resolve font configuration files from the JDK directory (java.home)
  * which will be null in the GraalVM binary. This substitution will hardcode the code path that does not check for those configs.
  * Unfortunately, since the GraalVM compiler itself is tripped up by sun.awt classes in the resolution graph, we need to
@@ -39,8 +38,8 @@ import org.apache.velocity.runtime.parser.node.ASTMethod;
 public final class Target_sun_awt_X11FontManager {
    /**
     * This method actually returns a sun.awt.FontConfiguration. Due to the fact that we can not refer to sun.awt classes,
-    * we return java.lang.Object instead. Luckily for use, the Graal substitution mechanism still picks this up and replaces
-    * the original method.
+    * (X11FontManager & friends are not part of non-Linux JDKs) we return java.lang.Object instead. Luckily for us, the
+    * Graal substitution mechanism still picks this up and replaces the original method.
     *
     * @return the font configuration object
     */

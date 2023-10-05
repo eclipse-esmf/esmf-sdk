@@ -505,53 +505,9 @@
                            <goal>download-single</goal>
                         </goals>
                         <configuration>
-                           <url>
-                              file://${env.JAVA_HOME}/lib
-                           </url>
+                           <url>file://${env.JAVA_HOME}/lib</url>
                            <fromFile>fontconfig.bfc</fromFile>
-                           <toFile>${project.build.directory}/lib/fontconfig.bfc</toFile>
-                        </configuration>
-                     </execution>
-                     <execution>
-                        <id>copy-fontconfig-properties-src</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                           <goal>download-single</goal>
-                        </goals>
-                        <configuration>
-                           <url>
-                              file://${env.JAVA_HOME}/lib
-                           </url>
-                           <fromFile>fontconfig.properties.src</fromFile>
-                           <toFile>${project.build.directory}/lib/fontconfig.properties.src</toFile>
-                        </configuration>
-                     </execution>
-                     <execution>
-                        <id>copy-psfont-properties-ja</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                           <goal>download-single</goal>
-                        </goals>
-                        <configuration>
-                           <url>
-                              file://${env.JAVA_HOME}/lib
-                           </url>
-                           <fromFile>psfont.properties.ja</fromFile>
-                           <toFile>${project.build.directory}/lib/psfont.properties.ja</toFile>
-                        </configuration>
-                     </execution>
-                     <execution>
-                        <id>copy-psfontj2d-properties</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                           <goal>download-single</goal>
-                        </goals>
-                        <configuration>
-                           <url>
-                              file://${env.JAVA_HOME}/lib
-                           </url>
-                           <fromFile>psfontj2d.properties</fromFile>
-                           <toFile>${project.build.directory}/lib/psfontj2d.properties</toFile>
+                           <toFile>${project.build.outputDirectory}/fontconfig.bfc</toFile>
                         </configuration>
                      </execution>
                   </executions>

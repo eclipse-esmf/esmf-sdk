@@ -21,30 +21,6 @@
   "allDeclaredConstructors":true
 },
 {
-  "name":"sun.awt.X11.XToolkit",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"sun.awt.image.ImageRepresentation",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"sun.awt.image.GifImageDecoder",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
-  "name":"sun.awt.image.ByteComponentRaster",
-  "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
-{
   "name":"java.lang.Thread",
   "methods":[{"name":"yield","parameterTypes":[] }]
 },
@@ -66,18 +42,6 @@
 },
 {
   "name": "java.awt.AWTEvent",
-  "allDeclaredFields": true,
-  "allDeclaredMethods": true,
-  "allDeclaredConstructors":true
-},
-{
-  "name": "sun.awt.windows.WComponentPeer",
-  "allDeclaredFields": true,
-  "allDeclaredMethods": true,
-  "allDeclaredConstructors":true
-},
-{
-  "name": "sun.awt.windows.WObjectPeer",
   "allDeclaredFields": true,
   "allDeclaredMethods": true,
   "allDeclaredConstructors":true

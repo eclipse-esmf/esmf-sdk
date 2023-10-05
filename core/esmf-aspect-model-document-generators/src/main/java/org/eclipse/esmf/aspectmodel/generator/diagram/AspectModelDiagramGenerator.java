@@ -136,7 +136,8 @@ public class AspectModelDiagramGenerator {
       final Graphviz graphviz = render( diagram );
 
       try ( final InputStream fontStream = getInputStream( FONT_FILE ) ) {
-         final String svgDocument = graphviz.toSvgStr();
+         final String svgDocument = graphviz.toSvgStr().replaceAll( "Â«", "«" )
+               .replaceAll( "Â»", "»" );
 
          // To make the font available in the generated SVG, it needs to be Base64-encoded
          // and embedded in the file.

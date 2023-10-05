@@ -1,5 +1,11 @@
 [
   {
+    "name":"org.eclipse.esmf.SammCli",
+    "allDeclaredFields":true,
+    "allDeclaredMethods":true,
+    "allDeclaredConstructors":true
+  },
+  {
     "name":"sun.util.resources.LocaleData$LocaleDataStrategy",
     "allDeclaredFields":true,
     "allDeclaredMethods":true,
@@ -10,11 +16,6 @@
     "allDeclaredFields":true,
     "allDeclaredMethods":true,
     "allDeclaredConstructors":true
-  },
-  {
-    "name":"sun.font.FontConfigManager",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true
   },
   {
     "name":"sun.font.FontConfigManager$FontConfigInfo",
@@ -28,30 +29,6 @@
   },
   {
     "name":"sun.font.FontConfigManager$FontConfigFont",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"sun.awt.X11.XToolkit",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"sun.awt.image.ImageRepresentation",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"sun.awt.image.GifImageDecoder",
-    "allDeclaredFields":true,
-    "allDeclaredMethods":true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name":"sun.awt.image.ByteComponentRaster",
     "allDeclaredFields":true,
     "allDeclaredMethods":true,
     "allDeclaredConstructors":true
@@ -74,18 +51,6 @@
   },
   {
     "name": "java.awt.AWTEvent",
-    "allDeclaredFields": true,
-    "allDeclaredMethods": true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name": "sun.awt.windows.WComponentPeer",
-    "allDeclaredFields": true,
-    "allDeclaredMethods": true,
-    "allDeclaredConstructors":true
-  },
-  {
-    "name": "sun.awt.windows.WObjectPeer",
     "allDeclaredFields": true,
     "allDeclaredMethods": true,
     "allDeclaredConstructors":true

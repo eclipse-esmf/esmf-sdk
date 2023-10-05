@@ -17,7 +17,8 @@
     {"pattern":"\\Qrdf/dash.ttl\\E"},
     {"pattern":"\\Qrdf/shacl.ttl\\E"},
     {"pattern":"\\Qrdf/system-triples.ttl\\E"},
-    {"pattern":"\\Qrdf/tosh.ttl\\E"}
+    {"pattern":"\\Qrdf/tosh.ttl\\E"},
+    {"pattern":"\\Qfontconfig.bfc\\E"}
   ],
   "bundles":[{"name":"org.apache.jena.ext.xerces.impl.xpath.regex.message"}]
 }
