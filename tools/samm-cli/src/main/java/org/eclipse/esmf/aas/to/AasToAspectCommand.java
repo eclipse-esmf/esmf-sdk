@@ -8,18 +8,10 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
-import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
-import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
-import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aas.AasToCommand;
-import org.eclipse.esmf.aspectmodel.aas.Context;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
-
-import com.fasterxml.jackson.databind.JsonNode;
+import org.eclipse.esmf.aspectmodel.aspect.AASModelAspectGenerator;
 
 import picocli.CommandLine;
 
@@ -32,9 +24,20 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true )
 public class AasToAspectCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "aspect";
+   public static final String TTL = "ttl";
 
    @CommandLine.ParentCommand
    private AasToCommand parentCommand;
+
+   @CommandLine.Option(
+           names = { "--output", "-o" },
+           description = "Output file path" )
+   private String outputFilePath = "-";
+
+   @CommandLine.Option(
+           names = { "--format", "-f" },
+           description = "The file format the AAS is to be generated. Valid options are \"" + TTL + "\". Default is \"" + TTL + "\"." )
+   private String format = TTL;
 
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
@@ -43,35 +46,23 @@ public class AasToAspectCommand extends AbstractCommand {
    public void run() {
       String path = parentCommand.parentCommand.getInput();
 
+         Environment environment = null;
+
          try {
             if (path.contains( ".xml" )) {
-               Environment environment = new XmlDeserializer().read(new FileInputStream(path));
-//               Submodel submodel = environment.getSubmodels().get( 0 );
-//               VersionedModel versionedModel;
-//               String aspectName = submodel.getIdShort();
-//               String aspectModernUrlString = submodel.getId().split( "/submodel" )[0];
-//               Reference aspectSemanticId = submodel.getSemanticID();
-//               ModellingKind modelingKind = submodel.getKind();
-//
-//               Context context = new Context( environment, submodel );
-//
-//               Aspect aspect;
-//
-////               environment.getAssetAdministrationShells().get( 0 ).getEmbeddedDataSpecifications();
-//
-//               System.out.println(environment);
+               environment = new XmlDeserializer().read(new FileInputStream(path));
             }
 
             if (path.contains( ".aasx" )) {
                AASXDeserializer deserializer = new AASXDeserializer(new FileInputStream(path));
-               Environment environment = new XmlDeserializer().read(deserializer.getXMLResourceString());
+               environment = new XmlDeserializer().read(deserializer.getXMLResourceString());
             }
 
-
+            AASModelAspectGenerator aasModelAspectGenerator = new AASModelAspectGenerator();
+            aasModelAspectGenerator.generateTtlFile(environment, name -> getStreamForFile(outputFilePath));
 
          } catch ( InvalidFormatException | DeserializationException | IOException e ) {
             throw new RuntimeException( e );
          }
-      System.out.println("WAS here after run this command:: " + path);
    }
 }

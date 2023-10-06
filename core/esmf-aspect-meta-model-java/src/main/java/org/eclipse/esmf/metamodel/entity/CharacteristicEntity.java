@@ -14,7 +14,6 @@ package org.eclipse.esmf.metamodel.entity;
 
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.impl.ModelElementImpl;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
@@ -23,9 +22,9 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 public class CharacteristicEntity extends ModelEntityImpl implements Characteristic {
-   private final Optional<Type> dataType;
+   private Type dataType;
 
-   public CharacteristicEntity(final MetaModelBaseAttributes metaModelBaseAttributes, final Optional<Type> dataType ) {
+   public CharacteristicEntity(MetaModelBaseAttributes metaModelBaseAttributes, Type dataType ) {
       super( metaModelBaseAttributes );
       this.dataType = dataType;
    }
@@ -37,7 +36,7 @@ public class CharacteristicEntity extends ModelEntityImpl implements Characteris
     */
    @Override
    public Optional<Type> getDataType() {
-      return dataType;
+      return Optional.ofNullable(dataType);
    }
 
    /**

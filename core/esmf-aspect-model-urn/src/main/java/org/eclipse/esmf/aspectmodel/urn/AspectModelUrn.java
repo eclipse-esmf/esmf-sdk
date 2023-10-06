@@ -352,6 +352,12 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       return isSammUrn;
    }
 
+   public AspectModelUrn withName(String name) {
+      String ns = this.urn.toString();
+      ns = ns.substring(0, ns.length() - this.name.length());
+      return fromUrn(ns + name);
+   }
+
    /**
     * Checks whether the given expression is true.
     *

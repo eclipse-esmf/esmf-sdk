@@ -14,24 +14,20 @@ package org.eclipse.esmf.metamodel.entity;
 
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.impl.ModelElementImpl;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class OperationEntity extends ModelEntityImpl implements Operation {
-   private final List<Property> input;
-   private final Optional<Property> output;
+   private List<Property> input;
+   private Optional<Property> output;
 
-   public OperationEntity(final MetaModelBaseAttributes metaModelBaseAttributes,
-                          final List<Property> input,
-                          final Optional<Property> output ) {
+   public OperationEntity( MetaModelBaseAttributes metaModelBaseAttributes,
+                           List<PropertyEntity> input,
+                           Optional<Property> output ) {
       super( metaModelBaseAttributes );
-      this.input = input;
+      this.input = new ArrayList<>( input );
       this.output = output;
    }
 
@@ -95,5 +91,13 @@ public class OperationEntity extends ModelEntityImpl implements Operation {
    @Override
    public int hashCode() {
       return Objects.hash( super.hashCode(), input, output );
+   }
+
+   public void setInput(List<Property> input) {
+      this.input = input;
+   }
+
+   public void setOutput(Optional<Property> output) {
+      this.output = output;
    }
 }
