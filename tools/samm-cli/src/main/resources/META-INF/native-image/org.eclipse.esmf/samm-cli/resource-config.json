@@ -1,5 +1,6 @@
 {
   "resources":[
+    {"pattern":"java.base:\\Qjdk/internal/icu/impl/data/icudt67b/ubidi.icu\\E"},
     {"pattern":"\\Qapplication.properties\\E"},
     {"pattern":"\\Qgit.properties\\E"},
     {"pattern":"\\Qadminshell.properties\\E"},
@@ -8,17 +9,21 @@
     {"pattern":"\\QMETA-INF/services/com.oracle.truffle.api.instrumentation.TruffleInstrument$Provider\\E"},
     {"pattern":"\\QMETA-INF/services/javax.script.ScriptEngineFactory\\E"},
     {"pattern":"\\QMETA-INF/services/org.apache.jena.sys.JenaSubsystemLifecycle\\E"},
+    {"pattern":"\\QMETA-INF/services/org.graphper.draw.CustomizeShapeRender\\E"},
+    {"pattern":"\\QMETA-INF/services/org.graphper.layout.MeasureText\\E"},
     {"pattern":"samm/[^/]*/([^/]*/)?[a-zA-Z0-9-]+\\.(ttl|js)"},
-    {"pattern":"\\Qcom/oracle/truffle/nfi/impl/NFILanguageImpl.class\\E"},
     {"pattern":"\\Qlogback.xml\\E"},
+    {"pattern":"\\Qcom/oracle/truffle/nfi/impl/NFILanguageImpl.class\\E"},
     {"pattern":"\\Qorg/apache/jena/arq/arq-properties.xml\\E"},
     {"pattern":"\\Qorg/apache/jena/jena-properties.xml\\E"},
+    {"pattern":"\\Qorg/apache/batik/anim/dom/resources/UserAgentStyleSheet.css\\E"},
+    {"pattern":"\\Qorg/apache/batik/bridge/resources/help.gif\\E"},
+    {"pattern":"\\Qorg/apache/batik/util/resources/XMLResourceDescriptor.properties\\E"},
     {"pattern":"\\Qorg/slf4j/impl/StaticLoggerBinder.class\\E"},
-    {"pattern":"\\Qrdf/dash.ttl\\E"},
-    {"pattern":"\\Qrdf/shacl.ttl\\E"},
-    {"pattern":"\\Qrdf/system-triples.ttl\\E"},
-    {"pattern":"\\Qrdf/tosh.ttl\\E"},
     {"pattern":"\\Qfontconfig.bfc\\E"}
   ],
-  "bundles":[{"name":"org.apache.jena.ext.xerces.impl.xpath.regex.message"}]
+    "bundles":[
+      {"name":"org.apache.jena.ext.xerces.impl.xpath.regex.message"},
+      {"name":"sun.awt.resources.awt","classNames":["sun.awt.resources.awt"]}
+    ]
 }

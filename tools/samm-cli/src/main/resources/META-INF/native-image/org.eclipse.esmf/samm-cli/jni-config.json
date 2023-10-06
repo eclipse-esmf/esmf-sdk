@@ -21,6 +21,37 @@
   "allDeclaredConstructors":true
 },
 {
+  "name":"java.awt.Cursor",
+  "fields":[{"name":"pData"}, {"name":"type"}],
+  "methods":[{"name":"setPData","parameterTypes":["long"] }]
+},
+{
+  "name":"java.awt.Dimension",
+  "fields":[{"name":"height"}, {"name":"width"}]
+},
+{
+  "name":"java.awt.Font",
+  "fields":[{"name":"name"}, {"name":"pData"}, {"name":"size"}, {"name":"style"}],
+  "methods":[{"name":"getFont","parameterTypes":["java.lang.String"] }, {"name":"getFontPeer","parameterTypes":[] }]
+},
+{
+  "name":"java.awt.FontMetrics",
+  "fields":[{"name":"font"}],
+  "methods":[{"name":"getHeight","parameterTypes":[] }]
+},
+{
+  "name":"java.awt.Point",
+  "fields":[{"name":"x"}, {"name":"y"}]
+},
+{
+  "name":"java.awt.Toolkit",
+  "methods":[{"name":"getDefaultToolkit","parameterTypes":[] }, {"name":"getFontMetrics","parameterTypes":["java.awt.Font"] }]
+},
+{
+  "name":"java.awt.desktop.UserSessionEvent$Reason",
+  "fields":[{"name":"CONSOLE"}, {"name":"LOCK"}, {"name":"REMOTE"}, {"name":"UNSPECIFIED"}]
+},
+{
   "name":"java.lang.Thread",
   "methods":[{"name":"yield","parameterTypes":[] }]
 },
@@ -39,6 +70,24 @@
   "allDeclaredFields": true,
   "allDeclaredMethods": true,
   "allDeclaredConstructors":true
+},
+{
+  "name":"java.awt.image.BufferedImage",
+  "fields":[{"name":"colorModel"}, {"name":"imageType"}, {"name":"raster"}],
+  "methods":[{"name":"getRGB","parameterTypes":["int","int","int","int","int[]","int","int"] }, {"name":"setRGB","parameterTypes":["int","int","int","int","int[]","int","int"] }]
+},
+{
+  "name":"java.awt.image.Raster",
+  "fields":[{"name":"dataBuffer"}, {"name":"height"}, {"name":"minX"}, {"name":"minY"}, {"name":"numBands"}, {"name":"numDataElements"}, {"name":"sampleModel"}, {"name":"sampleModelTranslateX"}, {"name":"sampleModelTranslateY"}, {"name":"width"}]
+},
+{
+  "name":"java.awt.image.SampleModel",
+  "fields":[{"name":"height"}, {"name":"width"}],
+  "methods":[{"name":"getPixels","parameterTypes":["int","int","int","int","int[]","java.awt.image.DataBuffer"] }, {"name":"setPixels","parameterTypes":["int","int","int","int","int[]","java.awt.image.DataBuffer"] }]
+},
+{
+  "name":"java.awt.image.SinglePixelPackedSampleModel",
+  "fields":[{"name":"bitMasks"}, {"name":"bitOffsets"}, {"name":"bitSizes"}, {"name":"maxBitSize"}]
 },
 {
   "name": "java.awt.AWTEvent",
@@ -117,12 +166,88 @@
   "methods":[{"name":"load","parameterTypes":["java.lang.String"] }, {"name":"setProperty","parameterTypes":["java.lang.String","java.lang.String"] }]
 },
 {
+  "name":"java.lang.String",
+  "methods":[{"name":"toLowerCase","parameterTypes":["java.util.Locale"] }]
+},
+{
+  "name":"java.util.ArrayList",
+  "methods":[{"name":"<init>","parameterTypes":["int"] }, {"name":"add","parameterTypes":["java.lang.Object"] }]
+},
+{
+  "name":"java.util.HashMap",
+  "methods":[{"name":"containsKey","parameterTypes":["java.lang.Object"] }, {"name":"put","parameterTypes":["java.lang.Object","java.lang.Object"] }]
+},
+{
+  "name":"sun.awt.AWTAutoShutdown",
+  "methods":[{"name":"notifyToolkitThreadBusy","parameterTypes":[] }, {"name":"notifyToolkitThreadFree","parameterTypes":[] }]
+},
+{
   "name":"sun.awt.SunHints",
   "fields":[{"name":"INTVAL_STROKE_PURE"}]
 },
 {
   "name":"sun.awt.SunToolkit",
-  "methods":[{"name":"awtLock","parameterTypes":[] }, {"name":"awtLockNotify","parameterTypes":[] }, {"name":"awtLockNotifyAll","parameterTypes":[] }, {"name":"awtLockWait","parameterTypes":["long"] }, {"name":"awtUnlock","parameterTypes":[] }]
+    "methods":[{"name":"awtLock","parameterTypes":[] }, {"name":"awtLockNotify","parameterTypes":[] }, {"name":"awtLockNotifyAll","parameterTypes":[] }, {"name":"awtLockWait","parameterTypes":["long"] }, {"name":"awtUnlock","parameterTypes":[] },{"name":"isTouchKeyboardAutoShowEnabled","parameterTypes":[] }]
+},
+{
+  "name":"sun.awt.Win32GraphicsConfig",
+  "fields":[{"name":"visual"}]
+},
+{
+  "name":"sun.awt.Win32GraphicsDevice",
+  "fields":[{"name":"dynamicColorModel"}]
+},
+{
+  "name":"sun.awt.Win32GraphicsEnvironment",
+  "methods":[{"name":"dwmCompositionChanged","parameterTypes":["boolean"] }]
+},
+{
+  "name":"sun.awt.image.ByteComponentRaster",
+  "fields":[{"name":"data"}, {"name":"dataOffsets"}, {"name":"pixelStride"}, {"name":"scanlineStride"}, {"name":"type"}]
+},
+{
+  "name":"sun.awt.image.GifImageDecoder",
+  "fields":[{"name":"outCode"}, {"name":"prefix"}, {"name":"suffix"}],
+  "methods":[{"name":"readBytes","parameterTypes":["byte[]","int","int"] }, {"name":"sendPixels","parameterTypes":["int","int","int","int","byte[]","java.awt.image.ColorModel"] }]
+},
+{
+  "name":"sun.awt.image.BufImgSurfaceData$ICMColorData",
+  "fields":[{"name":"pData"}],
+  "methods":[{"name":"<init>","parameterTypes":["long"] }]
+},
+{
+  "name":"sun.awt.image.ImageRepresentation",
+  "fields":[{"name":"numSrcLUT"}, {"name":"srcLUTtransIndex"}]
+},
+{
+  "name":"sun.awt.image.IntegerComponentRaster",
+  "fields":[{"name":"data"}, {"name":"dataOffsets"}, {"name":"pixelStride"}, {"name":"scanlineStride"}, {"name":"type"}]
+},
+{
+  "name":"sun.awt.image.SunVolatileImage",
+  "fields":[{"name":"volSurfaceManager"}]
+},
+{
+  "name":"sun.awt.image.VolatileSurfaceManager",
+  "fields":[{"name":"sdCurrent"}]
+},
+{
+  "name":"sun.awt.windows.WComponentPeer",
+  "fields":[{"name":"hwnd"}, {"name":"winGraphicsConfig"}],
+  "methods":[{"name":"disposeLater","parameterTypes":[] }, {"name":"replaceSurfaceData","parameterTypes":[] }, {"name":"replaceSurfaceDataLater","parameterTypes":[] }]
+},
+{
+  "name":"sun.awt.windows.WDesktopPeer",
+  "methods":[{"name":"systemSleepCallback","parameterTypes":["boolean"] }, {"name":"userSessionCallback","parameterTypes":["boolean","java.awt.desktop.UserSessionEvent$Reason"] }]
+},
+{
+  "name":"sun.awt.windows.WObjectPeer",
+  "fields":[{"name":"createError"}, {"name":"destroyed"}, {"name":"pData"}, {"name":"target"}],
+  "methods":[{"name":"getPeerForTarget","parameterTypes":["java.lang.Object"] }]
+},
+{
+  "name":"sun.awt.windows.WToolkit",
+  "methods":[{"name":"displayChanged","parameterTypes":[] }, {"name":"paletteChanged","parameterTypes":[] }, {"name":"windowsSettingChange","parameterTypes":[] }]
 },
 {
   "name":"sun.awt.X11.XErrorHandlerUtil",
@@ -155,6 +280,11 @@
 {
   "name":"sun.font.GlyphList",
   "fields":[{"name":"gposx"}, {"name":"gposy"}, {"name":"images"}, {"name":"lcdRGBOrder"}, {"name":"lcdSubPixPos"}, {"name":"len"}, {"name":"positions"}, {"name":"usePositions"}]
+},
+{
+  "name":"sun.font.GlyphLayout$GVData",
+  "fields":[{"name":"_count"}, {"name":"_flags"}, {"name":"_glyphs"}, {"name":"_indices"}, {"name":"_positions"}],
+  "methods":[{"name":"grow","parameterTypes":[] }]
 },
 {
   "name":"sun.font.PhysicalStrike",
@@ -194,6 +324,14 @@
 {
   "name":"sun.java2d.SurfaceData",
   "fields":[{"name":"pData"}, {"name":"valid"}]
+},
+{
+  "name":"sun.java2d.d3d.D3DGraphicsDevice$1",
+  "methods":[{"name":"run","parameterTypes":[] }]
+},
+{
+  "name":"sun.java2d.d3d.D3DRenderQueue$1",
+  "methods":[{"name":"run","parameterTypes":[] }]
 },
 {
   "name":"sun.java2d.loops.Blit",
@@ -296,8 +434,16 @@
   "fields":[{"name":"curIndex"}, {"name":"numXbands"}, {"name":"region"}]
 },
 {
+  "name":"sun.java2d.pipe.ShapeSpanIterator",
+  "fields":[{"name":"pData"}]
+},
+{
   "name":"sun.java2d.xr.XRSurfaceData",
   "fields":[{"name":"picture"}, {"name":"xid"}]
+},
+{
+  "name":"sun.java2d.windows.WindowsFlags",
+  "fields":[{"name":"d3dEnabled"}, {"name":"d3dSet"}, {"name":"offscreenSharingEnabled"}, {"name":"setHighDPIAware"}]
 }
 
 ]
