@@ -24,7 +24,7 @@ public class DefaultPropertyMapper implements PropertyMapper<Property> {
    public Property mapToAasProperty( final Type type, final org.eclipse.esmf.metamodel.Property property, final Context context ) {
       return new DefaultProperty.Builder()
             .idShort( context.getPropertyShortId() )
-            .valueType( mapAASXSDataType( mapType( type ) ) )
+            .valueType( AasDataTypeMapper.mapAspectTypeToAASXSDataType( mapType( type ) ) )
             .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
             .value( context.getPropertyValue( UNKNOWN_EXAMPLE ) )
             .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )

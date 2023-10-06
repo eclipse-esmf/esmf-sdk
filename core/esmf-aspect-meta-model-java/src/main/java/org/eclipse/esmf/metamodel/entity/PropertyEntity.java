@@ -15,7 +15,6 @@ package org.eclipse.esmf.metamodel.entity;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
@@ -23,27 +22,30 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import static java.util.Optional.ofNullable;
+
 public class PropertyEntity extends ModelEntityImpl implements Property {
-   private Optional<Characteristic> characteristic;
-   private Optional<ScalarValue> exampleValue;
+   private Characteristic characteristic;
+   private ScalarValue exampleValue;
    private boolean optional;
    private boolean notInPayload;
-   private Optional<String> payloadName;
+   private String payloadName;
    private boolean isAbstract;
-   private Optional<Property> extends_;
+   private Property extends_;
 
    public PropertyEntity(MetaModelBaseAttributes metaModelBaseAttributes,
-                         Optional<CharacteristicEntity> characteristic,
-                         Optional<Type> dataType,
-                         Optional<ScalarValue> exampleValue,
+                         CharacteristicEntity characteristic,
+//                         Optional<Type> dataType,
+                         ScalarValue exampleValue,
                          boolean optional,
                          boolean notInPayload,
-                         Optional<String> payloadName,
+                         String payloadName,
                          boolean isAbstract,
-                         Optional<Property> extends_
+                         Property extends_
    ) {
       super(metaModelBaseAttributes);
-      this.characteristic = Optional.of(new CharacteristicEntity(metaModelBaseAttributes, dataType));
+//      this.characteristic = Optional.of(new CharacteristicEntity(metaModelBaseAttributes, dataType));
+      this.characteristic = characteristic;
       this.exampleValue = exampleValue;
       this.optional = optional;
       this.notInPayload = notInPayload;
@@ -59,7 +61,7 @@ public class PropertyEntity extends ModelEntityImpl implements Property {
     */
    @Override
    public Optional<Characteristic> getCharacteristic() {
-      return characteristic;
+      return ofNullable(characteristic);
    }
 
    /**
@@ -69,7 +71,7 @@ public class PropertyEntity extends ModelEntityImpl implements Property {
     */
    @Override
    public Optional<ScalarValue> getExampleValue() {
-      return exampleValue;
+      return ofNullable(exampleValue);
    }
 
    /**
@@ -93,7 +95,7 @@ public class PropertyEntity extends ModelEntityImpl implements Property {
 
    @Override
    public String getPayloadName() {
-      return payloadName.orElseGet( this::getName );
+      return ofNullable(payloadName).orElseGet( this::getName );
    }
 
    @Override
@@ -103,7 +105,7 @@ public class PropertyEntity extends ModelEntityImpl implements Property {
 
    @Override
    public Optional<Property> getExtends() {
-      return extends_;
+      return ofNullable(extends_);
    }
 
    /**

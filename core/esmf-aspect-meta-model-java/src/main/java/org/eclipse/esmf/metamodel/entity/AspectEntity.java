@@ -30,7 +30,7 @@ public class AspectEntity extends ModelEntityImpl implements Aspect {
    private List<Event> events;
    private boolean isCollectionAspect;
 
-   public AspectEntity(final MetaModelBaseAttributes metaModelBaseAttributes,
+   public AspectEntity(MetaModelBaseAttributes metaModelBaseAttributes,
                        List<PropertyEntity> properties,
                        List<OperationEntity> operations,
                        List<EventEntity> events,
@@ -124,5 +124,21 @@ public class AspectEntity extends ModelEntityImpl implements Aspect {
    @Override
    public int hashCode() {
       return Objects.hash( super.hashCode(), properties, operations, events, isCollectionAspect );
+   }
+
+   public void setProperties(List<Property> properties) {
+      this.properties = properties;
+   }
+
+   public void setOperations(List<Operation> operations) {
+      this.operations = operations;
+   }
+
+   public void setEvents(List<Event> events) {
+      this.events = events;
+   }
+
+   public void setCollectionAspect(boolean collectionAspect) {
+      isCollectionAspect = collectionAspect;
    }
 }

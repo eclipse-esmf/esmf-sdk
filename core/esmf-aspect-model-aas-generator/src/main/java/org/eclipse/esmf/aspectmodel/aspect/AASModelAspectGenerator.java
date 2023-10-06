@@ -1,10 +1,7 @@
 package org.eclipse.esmf.aspectmodel.aspect;
 
 import org.apache.jena.rdf.model.Model;
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.SerializationException;
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXSerializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
-import org.eclipse.esmf.aspectmodel.aas.AspectModelAASVisitor;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
@@ -24,17 +21,16 @@ public class AASModelAspectGenerator {
      * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
      * @throws IOException in case the generation can not properly be executed
      */
-    public void generateAASXFile(final Environment environment, final Function<String, OutputStream> nameMapper )
+    public void generateTtlFile(final Environment environment, final Function<String, OutputStream> nameMapper )
             throws IOException {
-//        try ( final OutputStream output = nameMapper.apply( environment.getName() ) ) {
-//            output.write( generateAspectOutput( environment ).toByteArray() );
-//        }
-        generateAspectOutput(environment);
+        try ( final OutputStream output = nameMapper.apply( "env_name" ) ) {
+            output.write( generateAspectOutput( environment ).toByteArray() );
+        }
     }
 
     protected ByteArrayOutputStream generateAspectOutput(final Environment environment ) throws IOException {
         final AASModelAspectVisitor visitor = new AASModelAspectVisitor();
-        final Aspect aspect = visitor.visitAAS( environment );
+        final Aspect aspect = visitor.visitAas( environment ).get(0);
 
         final Namespace aspectNamespace = () -> aspect.getAspectModelUrn().get().getUrnPrefix();
         final RdfModelCreatorVisitor rdfCreator = new RdfModelCreatorVisitor(
@@ -54,17 +50,8 @@ public class AASModelAspectGenerator {
         printWriter.close();
 
         try ( final ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
-//            final AASXSerializer serializer = new AASXSerializer();
-//            serializer.write( environment, null, out );
+            out.write(model.toString().getBytes());
             return out;
         }
-
-//        try ( final ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
-//            final AASXSerializer serializer = new AASXSerializer();
-//            serializer.write( environment, null, out );
-//            return out;
-//        } catch ( final SerializationException e ) {
-//            throw new IOException( e );
-//        }
     }
 }
