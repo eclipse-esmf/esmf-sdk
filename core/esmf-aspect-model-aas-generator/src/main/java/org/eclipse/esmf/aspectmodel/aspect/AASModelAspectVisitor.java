@@ -26,7 +26,6 @@ public class AASModelAspectVisitor {
         AspectEntity newAspect;
 
         //Build MetaModelBaseAttributes for AspectEntity
-        //TODO: check
         AspectModelUrn urn = AspectModelUrn.fromUrn(submodel.getSemanticID().getKeys().get(0).getValue());
 
         MetaModelBaseAttributes aspectMetaModelBaseAttributes = new MetaModelBaseAttributes(
@@ -52,7 +51,6 @@ public class AASModelAspectVisitor {
     private PropertyEntity createProperty(SubmodelElement element, AspectModelUrn urn) {
         Optional<AspectModelUrn> propertyUrn = Optional.of(urn.withName(element.getIdShort().split("id_")[1]));
 
-        //TODO: add cache
         MetaModelBaseAttributes proprtyMetaModelBaseAttributes = new MetaModelBaseAttributes(
                 KnownVersion.getLatest(),
                 propertyUrn.orElse(null),
@@ -143,7 +141,6 @@ public class AASModelAspectVisitor {
     private EntityEntity createEntityEntity(SubmodelElement element, AspectModelUrn urn) {
         EntityEntity entityEntity = null;
 
-        //TODO: check
         MetaModelBaseAttributes entityEntityMetaModelBaseAttributes = new MetaModelBaseAttributes(
                 KnownVersion.getLatest(),
                 urn,
