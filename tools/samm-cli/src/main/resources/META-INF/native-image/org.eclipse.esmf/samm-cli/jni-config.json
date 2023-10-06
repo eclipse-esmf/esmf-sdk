@@ -1,5 +1,11 @@
 [
 {
+  "name":"sun.java2d.d3d.D3DGraphicsDevice",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
   "name":"sun.font.FontConfigManager",
   "allDeclaredFields":true,
   "allDeclaredMethods":true
