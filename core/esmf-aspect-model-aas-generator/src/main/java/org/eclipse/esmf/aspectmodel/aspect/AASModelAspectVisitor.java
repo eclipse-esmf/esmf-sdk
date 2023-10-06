@@ -66,7 +66,6 @@ public class AASModelAspectVisitor {
 //        new DefaultScalar(element.getSemanticID().getKeys().get(0).getValue(), KnownVersion.getLatest())
 //        );
 
-
         return new PropertyEntity(
                 proprtyMetaModelBaseAttributes,
                 createCharacteristic(element, urn),
