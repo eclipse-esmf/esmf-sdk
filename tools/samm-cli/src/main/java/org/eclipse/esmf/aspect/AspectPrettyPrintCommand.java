@@ -50,7 +50,7 @@ public class AspectPrettyPrintCommand extends AbstractCommand {
       final PrintWriter printWriter = new PrintWriter( getStreamForFile( outputFilePath ) );
       final File file = new File( parentCommand.getInput() );
       final File inputFile = file.getAbsoluteFile();
-      final AspectModelUrn aspectModelUrn = fileToUrn( inputFile );
+      final AspectModelUrn aspectModelUrn = fileToUrn( inputFile ).get();
       loadButNotResolveModel( inputFile ).forEach( versionedModel -> {
          new PrettyPrinter( versionedModel, aspectModelUrn, printWriter ).print();
          printWriter.flush();
