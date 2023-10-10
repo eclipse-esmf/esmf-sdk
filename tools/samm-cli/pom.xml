@@ -328,6 +328,13 @@
                               <exclude>org/apache/batik/apps/rasterizer/resources/rasterizer.policy</exclude>
                            </excludes>
                         </filter>
+                        <!-- These configs add lots of spurious GraalVM configuration -->
+                        <filter>
+                           <artifact>org.jboss.forge.roaster:roaster-jdt</artifact>
+                           <excludes>
+                              <exclude>META-INF/native-image/**</exclude>
+                           </excludes>
+                        </filter>
                         <!-- Required to have Model Instantiators available -->
                         <filter>
                            <artifact>org.eclipse.esmf:esmf-aspect-meta-model-java</artifact>
