@@ -16,6 +16,8 @@ package org.eclipse.esmf;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.eclipse.esmf.substitution.IsWindows;
+
 /**
  * Utility class providing helpers and workarounds needed to get the native image working properly on different platforms.
  */
@@ -28,6 +30,11 @@ public class NativeImageHelpers {
          // transitively by other AWT code
          final Path nativeImagePath = Paths.get( "." ).toAbsolutePath().normalize();  // current working directory
          System.setProperty( "java.home", nativeImagePath.toString() );
+
+         if ( new IsWindows().getAsBoolean() ) {
+            // Set to headless mode, because instantiation of AWT graphics context in Windows is flaky
+            System.setProperty( "java.awt.headless", "true" );
+         }
       }
    }
 }
