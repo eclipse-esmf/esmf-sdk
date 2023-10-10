@@ -41,6 +41,7 @@
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-test-resources</artifactId>
+         <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.junit.jupiter</groupId>
