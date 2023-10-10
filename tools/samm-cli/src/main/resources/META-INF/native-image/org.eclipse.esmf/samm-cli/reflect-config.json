@@ -1,5 +1,11 @@
 [
 {
+  "name":"sun.awt.Win32GraphicsDevice",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
   "name":"sun.java2d.d3d.D3DGraphicsDevice",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
