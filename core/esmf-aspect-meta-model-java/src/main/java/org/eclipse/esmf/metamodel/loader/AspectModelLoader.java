@@ -22,11 +22,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
@@ -43,18 +38,23 @@ import org.eclipse.esmf.metamodel.ModelNamespace;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.impl.DefaultModelNamespace;
 import org.eclipse.esmf.samm.KnownVersion;
+
+import com.google.common.collect.ImmutableSet;
+import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableSet;
-
-import io.vavr.control.Try;
-
 /**
  * Provides functionality to load an Aspect Model from a {@link VersionedModel} and use the correct SAMM resources to
- * instantiate it. To load a regular Aspect Model, use {@link #getElements(VersionedModel)} or {@link #getElementsUnchecked(VersionedModel)}.
+ * instantiate it. To load a regular Aspect Model, use {@link #getElements(VersionedModel)} or
+ * {@link #getElementsUnchecked(VersionedModel)}.
  * To load elements from an RDF model that might contain elements from multiple namespaces, use {@link #getNamespaces(VersionedModel)}.
- *
+ * <p>
  * Instances of {@code VersionedModel} are gained through an {@link AspectModelResolver}.
  */
 public class AspectModelLoader {
@@ -91,6 +91,7 @@ public class AspectModelLoader {
     * collection of {@link ModelNamespace}. Use this method only when you expect the RDF model to contain more than
     * one namespace (which is not the case when aspect models contain the usual element definitions with one namespace per file),
     * otherwise use {@link #getElements(VersionedModel)}.
+    *
     * @param versionedModel The RDF model representation of the Aspect model
     * @return the list of namespaces
     */
@@ -111,6 +112,7 @@ public class AspectModelLoader {
 
    /**
     * Creates Java instances for model element classes from the RDF input model
+    *
     * @param versionedModel The RDF model representation of the Aspect model
     * @return the list of loaded model elements on success
     */
@@ -152,9 +154,10 @@ public class AspectModelLoader {
 
    /**
     * Does the same as {@link #getElements(VersionedModel)} but throws an exception in case of failures.
+    *
     * @param versionedModel The RDF model representation of the Aspect model
-    * @throws AspectLoadingException when elements can not be loaded
     * @return the list of model elements
+    * @throws AspectLoadingException when elements can not be loaded
     */
    public static List<ModelElement> getElementsUnchecked( final VersionedModel versionedModel ) {
       return getElements( versionedModel ).getOrElseThrow( cause -> {
@@ -164,7 +167,9 @@ public class AspectModelLoader {
    }
 
    /**
-    * Convenience method that does the same as {@link #getElements(VersionedModel)} except it will return only the aspects contained in the model.
+    * Convenience method that does the same as {@link #getElements(VersionedModel)} except it will return only the aspects contained in the
+    * model.
+    *
     * @param versionedModel The RDF model representation of the Aspect model
     * @return the list of model aspects
     */
@@ -177,9 +182,10 @@ public class AspectModelLoader {
 
    /**
     * Does the same as {@link #getAspects(VersionedModel)} but throws an exception in case of failures.
+    *
     * @param versionedModel The RDF model representation of the Aspect model
-    * @throws AspectLoadingException when elements can not be loaded
     * @return the list of model aspects
+    * @throws AspectLoadingException when elements can not be loaded
     */
    public static List<Aspect> getAspectsUnchecked( final VersionedModel versionedModel ) {
       return getAspects( versionedModel ).getOrElseThrow( cause -> {
@@ -217,10 +223,11 @@ public class AspectModelLoader {
          throw new AspectLoadingException( cause );
       } );
    }
-   
+
    /**
     * Similar to {@link #getSingleAspect(VersionedModel)}, except that a predicate can be provided to select which of potentially
     * multiple aspects should be selected
+    *
     * @param versionedModel the RDF model reprensentation of the Aspect model
     * @param selector the predicate to select an Aspect
     * @return the selected Aspect, or a failure if 0 or more than 1 matching Aspects were found
@@ -243,14 +250,16 @@ public class AspectModelLoader {
     *    <li>The closure of the loaded model contains exactly one Aspect</li>
     *    <li>The Aspect has the same name as the file's basename</li>
     * </ul>
-    * The method is intended for use in tests and comparable use cases, not as a general replacement for loading Aspect Models, since it does not
+    * The method is intended for use in tests and comparable use cases, not as a general replacement for loading Aspect Models, since it
+    * does not
     * handle model files with less or more than one Aspect.
+    *
     * @param input the model file
     * @return the loaded Aspect Context
     */
    public static Try<AspectContext> getAspectContext( final File input ) {
       return AspectModelResolver.loadAndResolveModel( input ).flatMap( versionedModel ->
-            getSingleAspect( versionedModel, aspect -> aspect.getName().equals( input.getName() ) )
+            getSingleAspect( versionedModel, aspect -> input.getName().equals( aspect.getName() + ".ttl" ) )
                   .map( aspect -> new AspectContext( versionedModel, aspect ) ) );
    }
 }

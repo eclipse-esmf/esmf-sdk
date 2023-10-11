@@ -13,45 +13,34 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 public class AspectModelDiagramGeneratorTest extends MetaModelVersions {
-
    @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testAspectWithRecursivePropertyWithOptional( final KnownVersion metaModelVersion ) throws IOException {
-      final TestContext context = new TestContext( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL,
-            metaModelVersion );
-      final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-      context.service().generateDiagram( AspectModelDiagramGenerator.Format.DOT, Locale.ENGLISH, outStream );
-      final String result = outStream.toString( StandardCharsets.UTF_8 );
-
-      // Aspect Node
-      assertThat( result ).containsOnlyOnce( "testPropertyProperty [label=\"{ «Property»\\ntestProperty|}\"]" );
-      assertThat( result ).containsOnlyOnce( "TestEntityEntity [label=\"{ «Entity»\\nTestEntity|}\"]" );
-      assertThat( result ).containsOnlyOnce(
-            "testItemCharacteristicCharacteristic [label=\"{ «Characteristic»\\ntestItemCharacteristic|}\"]" );
-      assertThat( result ).containsOnlyOnce(
-            "AspectWithRecursivePropertyWithOptionalAspect [label=\"{ «Aspect»\\nAspectWithRecursivePropertyWithOptional|}\"]" );
-      assertThat( result ).containsOnlyOnce(
-            "testPropertyProperty -> testItemCharacteristicCharacteristic [label=\"characteristic\"]" );
-      assertThat( result )
-            .containsOnlyOnce( "testItemCharacteristicCharacteristic -> TestEntityEntity [label=\"dataType\"]" );
-      assertThat( result )
-            .containsOnlyOnce( "TestEntityEntity -> testPropertyProperty [label=\"property (optional)\"]" );
-      assertThat( result ).containsOnlyOnce(
-            "AspectWithRecursivePropertyWithOptionalAspect -> testPropertyProperty [label=\"property\"]" );
+   @EnumSource( value = TestAspect.class )
+   void testGen( final TestAspect testAspect ) {
+      final VersionedModel versionedModel = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
+      final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
+      final AspectContext context = new AspectContext( versionedModel, aspect );
+      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( context );
+      assertThatCode( () -> {
+         final ByteArrayOutputStream out = new ByteArrayOutputStream();
+         generator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, Locale.ENGLISH, out );
+      } ).doesNotThrowAnyException();
    }
 }

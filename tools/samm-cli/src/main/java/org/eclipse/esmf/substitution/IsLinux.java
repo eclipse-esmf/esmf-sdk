@@ -11,16 +11,16 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.generator;
+package org.eclipse.esmf.substitution;
 
-public class DocumentGenerationException extends RuntimeException {
-   private static final long serialVersionUID = -3592685602580476530L;
+import java.util.function.BooleanSupplier;
 
-   public DocumentGenerationException( final String message ) {
-      super( message );
-   }
-
-   public DocumentGenerationException( final Throwable cause ) {
-      super( cause );
+/**
+ * Conditional to execute substitution only on Linux. Use with com.oracle.svm.core.annotate.Substitute's onlyWith attribute.
+ */
+public class IsLinux implements BooleanSupplier {
+   @Override
+   public boolean getAsBoolean() {
+      return "Linux".equals( System.getProperty( "os.name" ) );
    }
 }

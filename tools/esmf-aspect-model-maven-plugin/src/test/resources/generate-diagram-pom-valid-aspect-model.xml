@@ -33,7 +33,7 @@
                </includes>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
                <targetFormats>
-                  <targetFormat>dot</targetFormat>
+                  <targetFormat>svg</targetFormat>
                   <targetFormat>png</targetFormat>
                </targetFormats>
             </configuration>
