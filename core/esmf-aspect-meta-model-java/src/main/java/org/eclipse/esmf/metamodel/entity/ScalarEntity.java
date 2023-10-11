@@ -21,8 +21,8 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 public class ScalarEntity implements Scalar {
-   private final KnownVersion metaModelVersion;
-   private final String urn;
+   private KnownVersion metaModelVersion;
+   private String urn;
 
    public ScalarEntity(final String urn, final KnownVersion metaModelVersion ) {
       this.urn = urn;

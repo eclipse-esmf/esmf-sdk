@@ -35,7 +35,6 @@ public class PropertyEntity extends ModelEntityImpl implements Property {
 
    public PropertyEntity(MetaModelBaseAttributes metaModelBaseAttributes,
                          CharacteristicEntity characteristic,
-//                         Optional<Type> dataType,
                          ScalarValue exampleValue,
                          boolean optional,
                          boolean notInPayload,
@@ -44,7 +43,6 @@ public class PropertyEntity extends ModelEntityImpl implements Property {
                          Property extends_
    ) {
       super(metaModelBaseAttributes);
-//      this.characteristic = Optional.of(new CharacteristicEntity(metaModelBaseAttributes, dataType));
       this.characteristic = characteristic;
       this.exampleValue = exampleValue;
       this.optional = optional;

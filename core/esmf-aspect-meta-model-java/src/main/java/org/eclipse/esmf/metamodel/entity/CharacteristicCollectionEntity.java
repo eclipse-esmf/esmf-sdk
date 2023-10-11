@@ -13,6 +13,7 @@
 package org.eclipse.esmf.metamodel.entity;
 
 import org.eclipse.esmf.characteristic.Collection;
+import org.eclipse.esmf.characteristic.impl.DefaultCollection;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Type;
@@ -29,23 +30,23 @@ public class CharacteristicCollectionEntity extends CharacteristicEntity impleme
 
    private boolean allowDuplicates;
    private boolean ordered;
-   private List<Characteristic> elementsCharacteristic;
+   private Characteristic elementCharacteristic;
 
    public CharacteristicCollectionEntity( MetaModelBaseAttributes metaModelBaseAttributes,
-                                          Type dataType, List<Characteristic> elementsCharacteristic ) {
+                                          Type dataType, Characteristic elementCharacteristic ) {
       super( metaModelBaseAttributes, dataType );
       allowDuplicates = true;
       ordered = false;
-      this.elementsCharacteristic = elementsCharacteristic;
+      this.elementCharacteristic = elementCharacteristic;
    }
 
-   CharacteristicCollectionEntity( MetaModelBaseAttributes metaModelBaseAttributes,
-                                   Type dataType, boolean allowDuplicates, boolean ordered,
-                                   List<Characteristic> elementsCharacteristic ) {
+   CharacteristicCollectionEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
+                      final Type dataType, final boolean allowDuplicates, final boolean ordered,
+                      final Characteristic elementCharacteristic ) {
       super( metaModelBaseAttributes, dataType );
       this.allowDuplicates = allowDuplicates;
       this.ordered = ordered;
-      this.elementsCharacteristic = elementsCharacteristic;
+      this.elementCharacteristic = elementCharacteristic;
    }
 
    /**
@@ -94,16 +95,24 @@ public class CharacteristicCollectionEntity extends CharacteristicEntity impleme
    }
 
    @Override
-   public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
-      CharacteristicCollectionEntity that = (CharacteristicCollectionEntity) o;
-      return allowDuplicates == that.allowDuplicates && ordered == that.ordered && Objects.equals(elementsCharacteristic, that.elementsCharacteristic);
+   public boolean equals( final Object o ) {
+      if ( this == o ) {
+         return true;
+      }
+      if ( o == null || getClass() != o.getClass() ) {
+         return false;
+      }
+      if ( !super.equals( o ) ) {
+         return false;
+      }
+      final CharacteristicCollectionEntity that = (CharacteristicCollectionEntity) o;
+      return allowDuplicates == that.allowDuplicates &&
+              ordered == that.ordered &&
+              Objects.equals( elementCharacteristic, that.elementCharacteristic );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash(super.hashCode(), allowDuplicates, ordered, elementsCharacteristic);
+      return Objects.hash( super.hashCode(), allowDuplicates, ordered, elementCharacteristic );
    }
 }

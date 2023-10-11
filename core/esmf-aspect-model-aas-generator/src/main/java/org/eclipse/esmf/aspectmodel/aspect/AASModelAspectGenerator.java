@@ -29,7 +29,7 @@ public class AASModelAspectGenerator {
     }
 
     protected ByteArrayOutputStream generateAspectOutput(final Environment environment ) throws IOException {
-        final AASModelAspectVisitor visitor = new AASModelAspectVisitor();
+        final AASModelAspectTranslator visitor = new AASModelAspectTranslator();
         final Aspect aspect = visitor.visitAas( environment ).get(0);
 
         final Namespace aspectNamespace = () -> aspect.getAspectModelUrn().get().getUrnPrefix();
