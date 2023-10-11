@@ -16,9 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.fusesource.jansi.AnsiConsole;
-
 import org.eclipse.esmf.aspect.AspectCommand;
+
+import org.fusesource.jansi.AnsiConsole;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = SammCli.COMMAND_NAME,
@@ -45,7 +45,8 @@ public class SammCli extends AbstractCommand {
       final CommandLine.IExecutionExceptionHandler defaultExecutionExceptionHandler = initialCommandLine.getExecutionExceptionHandler();
       commandLine = initialCommandLine.setExecutionExceptionHandler( new CommandLine.IExecutionExceptionHandler() {
          @Override
-         public int handleExecutionException( final Exception exception, final CommandLine commandLine, final CommandLine.ParseResult parseResult )
+         public int handleExecutionException( final Exception exception, final CommandLine commandLine,
+               final CommandLine.ParseResult parseResult )
                throws Exception {
             if ( exception.getClass().getName()
                   .equals( String.format( "%s.MainClassProcessLauncher$SystemExitCaptured", SammCli.class.getPackageName() ) ) ) {
@@ -92,6 +93,14 @@ public class SammCli extends AbstractCommand {
          if ( arg.equals( "--disable-color" ) || arg.equals( "-D" ) ) {
             disableColor = true;
          }
+      }
+
+      // Imply disabling color when PNGs are generated, otherwise ANSI escapes scramble binary output
+      if ( argv.length >= 4
+            && argv[argv.length - 4].equals( "aspect" )
+            && argv[argv.length - 2].equals( "to" )
+            && argv[argv.length - 1].equals( "png" ) ) {
+         disableColor = true;
       }
 
       if ( !disableColor ) {
