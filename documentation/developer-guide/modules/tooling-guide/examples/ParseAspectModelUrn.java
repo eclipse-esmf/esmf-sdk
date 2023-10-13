@@ -13,9 +13,9 @@
 
 package examples;
 
+// tag::imports[]
 import org.junit.jupiter.api.Test;
 
-// tag::imports[]
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 // end::imports[]
 

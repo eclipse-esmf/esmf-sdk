@@ -18,10 +18,10 @@ import org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-// end::imports[]
 import java.io.File;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
+// end::imports[]
 
 public class GenerateAas extends AbstractGenerator {
    @Test
