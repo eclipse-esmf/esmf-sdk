@@ -76,7 +76,7 @@
 #* @vtlvariable name="modelUrnPrefix" type="java.lang.String" *#
 #* @vtlvariable name="modelVisitor" type="org.eclipse.esmf.aspectmodel.java.metamodel.StaticMetaModelVisitor" *#
 #* @vtlvariable name="nonNegativeInteger" type="org.eclipse.esmf.metamodel.Scalar" *#
-#* @vtlvariable name="NotNull" type="java.lang.Class<javax.validation.constraints.NotNull>" *#
+#* @vtlvariable name="NotNull" type="java.lang.Class<jakarta.validation.constraints.NotNull>" *#
 #* @vtlvariable name="Object" type="java.lang.Class<java.lang.Object>" *#
 #* @vtlvariable name="Optional" type="java.lang.Class<java.util.Optional>" *#
 #* @vtlvariable name="Pattern" type="java.lang.Class<java.util.regex.Pattern>" *#

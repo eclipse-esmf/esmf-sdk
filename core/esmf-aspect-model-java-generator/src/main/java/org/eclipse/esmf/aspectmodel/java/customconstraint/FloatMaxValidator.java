@@ -13,10 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.java.customconstraint;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * Validates assigned values of type {@link Float}, which must be below or equal to this limit depending on the
