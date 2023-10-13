@@ -76,9 +76,9 @@
    <properties>
       <!-- Versions of third party dependencies -->
       <hibernate-validator-version>8.0.0.Final</hibernate-validator-version>
-      <jakarta-el-version>4.0.2</jakarta-el-version>
+      <jakarta-el-version>4.1.2</jakarta-el-version>
       <poi-version>5.2.3</poi-version>
-
+      <graph-support-version>1.1.5</graph-support-version>
       <!-- General settings -->
       <skip.gpg.skip>true</skip.gpg.skip>
    </properties>
@@ -213,6 +213,22 @@
             <artifactId>poi</artifactId>
             <version>${poi-version}</version>
          </dependency>
+         <dependency>
+            <groupId>org.graphper</groupId>
+            <artifactId>graph-support</artifactId>
+            <version>${graph-support-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.graalvm.truffle</groupId>
+            <artifactId>truffle-api</artifactId>
+            <version>${graalvm-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.graalvm.js</groupId>
+            <artifactId>js</artifactId>
+            <version>${graalvm-version}</version>
+         </dependency>
+
       </dependencies>
    </dependencyManagement>
 

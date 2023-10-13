@@ -39,6 +39,8 @@ import io.vavr.control.Try;
 public final class TurtleLoader {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLoader.class );
 
+   private static volatile boolean isTurtleRegistered = false;
+
    private TurtleLoader() {
 
    }
@@ -62,7 +64,7 @@ public final class TurtleLoader {
             .collect( Collectors.joining( "\n" ) );
 
       final Model streamModel = ModelFactory.createDefaultModel();
-      RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRIOTTurtle.factory );
+      registerTurtle();
       try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes( StandardCharsets.UTF_8 ) ) ) {
          streamModel.read( turtleInputStream, "", RDFLanguages.TURTLE.getName() );
          return Try.success( streamModel );
@@ -76,6 +78,17 @@ public final class TurtleLoader {
          return Try.failure( exception );
       } catch ( final RiotException exception ) {
          return Try.failure( new ParserException( exception, modelContent ) );
+      }
+   }
+
+   private static void registerTurtle() {
+      if( isTurtleRegistered )
+         return;
+      synchronized ( TurtleLoader.class ){
+         if( !isTurtleRegistered ){
+            RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRIOTTurtle.factory );
+            isTurtleRegistered = true;
+         }
       }
    }
 

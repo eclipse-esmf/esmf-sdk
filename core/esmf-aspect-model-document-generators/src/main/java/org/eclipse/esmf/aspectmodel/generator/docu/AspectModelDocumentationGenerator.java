@@ -241,7 +241,7 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
    }
 
    private String insertAspectModelDiagram( final String html, final Locale language ) throws IOException {
-      final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( context.rdfModel() );
+      final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( context );
       final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       diagramGenerator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, language, buffer );
       final String encodedImage = "data:image/svg+xml;base64," +

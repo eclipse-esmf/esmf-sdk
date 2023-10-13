@@ -66,8 +66,8 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.1'
-          java-version: '17'
+          java-version: '17.0.8'
+          distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
@@ -135,8 +135,8 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.1'
-          java-version: '17'
+          java-version: '17.0.8'
+          distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
@@ -156,8 +156,8 @@ jobs:
         # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
         uses: al-cheb/configure-pagefile-action@v1.3
         with:
-          minimum-size: 16GB
-          maximum-size: 16GB
+          minimum-size: 32GB
+          maximum-size: 32GB
           disk-root: "C:"
 
       - name: Build and run tests
@@ -211,8 +211,8 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.1'
-          java-version: '17'
+          java-version: '17.0.8'
+          distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'false'
@@ -230,7 +230,7 @@ jobs:
       - name: Prepare release
         run: |
           # Create Windows CLI zip
-          zip -9 -r samm-cli-windows.zip samm.exe *.dll lib/
+          zip -9 -r samm-cli-windows.zip samm.exe *.dll
 
       # Full release: Maven Central
       # The (apparently) only way to retrieve the staging profile id

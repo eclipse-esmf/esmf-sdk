@@ -625,7 +625,6 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( new AspectContext( versionedModel, aspect ) );
       try {
          final var payload = jsonGenerator.generateJson();
-         Files.write( Path.of( model.getName() + ".json" ), payload.getBytes( StandardCharsets.UTF_8 ) );
          return payload;
       } catch ( final IOException e ) {
          throw new RuntimeException( e );
