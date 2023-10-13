@@ -26,10 +26,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
-import org.apache.velocity.app.FieldMethodizer;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
 import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
@@ -40,7 +36,6 @@ import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-
 import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
@@ -48,17 +43,19 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
-
 import org.eclipse.esmf.samm.KnownVersion;
-import org.jboss.forge.roaster.Roaster;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableMap;
-
 import jakarta.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
+import org.apache.velocity.app.FieldMethodizer;
+import org.jboss.forge.roaster.Roaster;
 
 /**
  * A {@link ArtifactGenerator} that generates Java Pojo code

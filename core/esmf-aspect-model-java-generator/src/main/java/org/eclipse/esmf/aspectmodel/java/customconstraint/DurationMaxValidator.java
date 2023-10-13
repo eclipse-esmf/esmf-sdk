@@ -12,6 +12,7 @@
  */
 
 package org.eclipse.esmf.aspectmodel.java.customconstraint;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;

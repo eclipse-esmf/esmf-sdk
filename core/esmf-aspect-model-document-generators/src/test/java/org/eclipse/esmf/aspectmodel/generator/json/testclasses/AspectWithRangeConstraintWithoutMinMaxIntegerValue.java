@@ -23,11 +23,12 @@ import jakarta.validation.constraints.NotNull;
 /** Generated class for Test Aspect. */
 public class AspectWithRangeConstraintWithoutMinMaxIntegerValue {
 
-   @NotNull private BigInteger testInt;
+   @NotNull
+   private BigInteger testInt;
 
    @JsonCreator
    public AspectWithRangeConstraintWithoutMinMaxIntegerValue(
-         @JsonProperty(value = "testInt") BigInteger testInt) {
+         @JsonProperty( value = "testInt" ) BigInteger testInt ) {
       this.testInt = testInt;
    }
 
@@ -41,16 +42,16 @@ public class AspectWithRangeConstraintWithoutMinMaxIntegerValue {
    }
 
    @Override
-   public boolean equals(final Object o) {
-      if (this == o) {
+   public boolean equals( final Object o ) {
+      if ( this == o ) {
          return true;
       }
-      if (o == null || getClass() != o.getClass()) {
+      if ( o == null || getClass() != o.getClass() ) {
          return false;
       }
       final AspectWithRangeConstraintWithoutMinMaxIntegerValue that =
             (AspectWithRangeConstraintWithoutMinMaxIntegerValue) o;
-      return Objects.equals(testInt, that.testInt);
+      return Objects.equals( testInt, that.testInt );
    }
 }
 
