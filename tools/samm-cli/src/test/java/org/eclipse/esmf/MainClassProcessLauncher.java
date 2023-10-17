@@ -31,13 +31,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A {@link ProcessLauncher} that executes the static main(String[] args) function of a given class. It installs a {@link SecurityManager}
- * that
- * captures System.exit() calls from the tested code.
+ * that captures System.exit() calls from the tested code.
  * NOTE: The SecurityManager class is <a href="https://openjdk.org/jeps/411">deprecated for removal</a> as of Java 17, however, no
- * replacement
- * mechanism for capturing System.exit() <a href="https://bugs.openjdk.org/browse/JDK-8199704">has been defined yet</a>. Therefore, there is
- * currently
- * no other way than using the deprecated class.
+ * replacement mechanism for capturing System.exit() <a href="https://bugs.openjdk.org/browse/JDK-8199704">has been defined yet</a>.
+ * Therefore, there is currently no other way than using the deprecated class.
  */
 public class MainClassProcessLauncher extends ProcessLauncher {
    private static final Logger LOG = LoggerFactory.getLogger( MainClassProcessLauncher.class );
