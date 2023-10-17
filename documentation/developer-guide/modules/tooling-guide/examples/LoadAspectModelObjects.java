@@ -20,8 +20,8 @@ import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import io.vavr.collection.Stream;
-// end::imports[]
 import org.junit.jupiter.api.Test;
+// end::imports[]
 
 public class LoadAspectModelObjects {
    @Test

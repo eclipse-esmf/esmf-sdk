@@ -312,8 +312,12 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
       result.assertNumberOfFiles( 2 );
 
       result.assertFields( "MetaAspectWithNumericStructuredValue",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithNumericStructuredValue" )
+            ImmutableMap.<String, Object> builder()
+                  .put( "_datatypeFactory", DatatypeFactory.class )
+                  .put( "NAMESPACE", String.class )
+                  .put( "MODEL_ELEMENT_URN", String.class )
+                  .put( "CHARACTERISTIC_NAMESPACE", String.class )
+                  .put( "INSTANCE", "MetaAspectWithNumericStructuredValue" )
                   .put( "YEAR", new TypeToken<StaticProperty<Long>>() {
                   } ).put( "MONTH", new TypeToken<StaticProperty<Long>>() {
                   } ).put( "DAY", new TypeToken<StaticProperty<Long>>() {

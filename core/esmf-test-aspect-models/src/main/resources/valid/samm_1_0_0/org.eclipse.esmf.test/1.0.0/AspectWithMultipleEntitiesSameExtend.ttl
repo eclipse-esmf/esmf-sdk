@@ -16,7 +16,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :AspectWithMultipleEntitiesSameExtend a samm:Aspect ;
-   samm:name "TestAspect" ;
+   samm:name "AspectWithMultipleEntitiesSameExtend" ;
    samm:properties ( :testPropertyOne :testPropertyTwo ) ;
    samm:operations ( ) .
 
@@ -37,24 +37,15 @@
    samm:dataType :testEntityTwo .
 
 :testEntityOne a samm:Entity ;
-   samm:name "TestEntityOne" ;
+   samm:name "testEntityOne" ;
    samm:extends :AbstractTestEntity ;
    samm:properties ( ) .
 
 :testEntityTwo a samm:Entity ;
-   samm:name "TestEntityTwo" ;
+   samm:name "testEntityTwo" ;
    samm:extends :AbstractTestEntity ;
-   samm:properties ( ) .
-
-:testEntityThree a samm:Entity ;
-   samm:name "TestEntityThree" ;
-   samm:extends :AbstractSecondTestEntity ;
    samm:properties ( ) .
 
 :AbstractTestEntity a samm:AbstractEntity ;
    samm:name "AbstractTestEntity" ;
-   samm:properties ( ).
-
-:AbstractSecondTestEntity a samm:AbstractEntity ;
-   samm:name "AbstractSecondTestEntity" ;
    samm:properties ( ).
