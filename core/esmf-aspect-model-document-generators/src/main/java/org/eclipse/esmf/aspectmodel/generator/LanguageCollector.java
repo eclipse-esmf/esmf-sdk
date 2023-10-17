@@ -19,20 +19,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.visitor.LanguageCollectorModelVisitor;
+import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains the logic to determine the language tags used in an Aspect Model.
@@ -47,10 +49,19 @@ public class LanguageCollector {
     * Returns the set of language tags used in the Aspect model
     *
     * @param aspect The Aspect Model
-    * @return The ste of language tabs used in the Aspect Model
+    * @return The set of language tags used in the Aspect Model
     */
    public static Set<Locale> collectUsedLanguages( final Aspect aspect ) {
-      return aspect.accept( new LanguageCollectorModelVisitor(), null );
+      final Stream<Locale> fromModel = new AspectStreamTraversalVisitor().visitAspect( aspect, null )
+            .flatMap( element -> {
+               if ( element instanceof final NamedElement described ) {
+                  return Stream.concat(
+                        described.getPreferredNames().stream().map( LangString::getLanguageTag ),
+                        described.getDescriptions().stream().map( LangString::getLanguageTag ) );
+               }
+               return Stream.of();
+            } );
+      return Stream.concat( fromModel, Stream.of( Locale.ENGLISH ) ).collect( Collectors.toSet() );
    }
 
    /**
