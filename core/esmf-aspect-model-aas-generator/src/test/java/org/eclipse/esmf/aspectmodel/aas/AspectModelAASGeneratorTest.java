@@ -171,7 +171,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
-      assertEquals( "id_testProperty", submodelElement.getIdShort() );
+      assertEquals( "testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -183,7 +183,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
-      assertEquals( "id_testProperty", submodelElement.getIdShort() );
+      assertEquals( "testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -195,7 +195,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
-      assertEquals( "id_testProperty", submodelElement.getIdShort() );
+      assertEquals( "testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -207,7 +207,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), "Not exactly one SubmodelElement in AAS." );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertTrue( submodelElement instanceof SubmodelElementList, "SubmodelElement is not a SubmodelElementList" );
-      assertEquals( "id_testProperty", submodelElement.getIdShort() );
+      assertEquals( "testProperty", submodelElement.getIdShort() );
 
       getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -218,7 +218,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 1, "Not exactly one Element in SubmodelElements." );
       final SubmodelElementList elementCollection = ((SubmodelElementList) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ));
-      final Set<String> testValues = Set.of( "id_RightEntity", "id_LeftEntity" );
+      final Set<String> testValues = Set.of( "RightEntity", "LeftEntity" );
       assertTrue( elementCollection.getValue().stream().anyMatch( x -> testValues.contains( x.getIdShort() ) ), "Neither left nor right entity contained." );
 
       final Set<String> semanticIds =
@@ -291,7 +291,7 @@ class AspectModelAASGeneratorTest {
       final DataSpecificationIec61360 dataSpecificationContent =
             (DataSpecificationIec61360)
                   env.getConceptDescriptions().stream()
-                        .filter( x -> x.getIdShort().equals( "id_TestEnumeration" ) )
+                        .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
                         .findFirst()
                         .get()
                         .getEmbeddedDataSpecifications()

@@ -105,7 +105,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
    public static final String DEFAULT_LOCALE = "EN";
    public static final String CONCEPT_DESCRIPTION_CATEGORY = "APPLICATION_CLASS";
-   public static final String ID_PREFIX = "id_";
+   public static final String ID_PREFIX = "";
 
    /**
     * Maps Aspect types to DataTypeIEC61360 Schema types, with no explicit mapping defaulting to
