@@ -178,9 +178,11 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          usedContext.setEnvironment( environment );
       }
 
+      String submodelId = aspect.getAspectModelUrn().toString() + "/submodel";
+
       final Submodel submodel = usedContext.getSubmodel();
       submodel.setIdShort( aspect.getName() );
-      submodel.setId( aspect.getAspectModelUrn().toString() + "/submodel" );
+      submodel.setId( submodelId );
       submodel.setSemanticID( buildReferenceToConceptDescription( aspect ) );
       submodel.setDescription( LangStringMapper.TEXT.map( aspect.getDescriptions() ) );
       submodel.setKind( usedContext.getModelingKind() );
@@ -197,6 +199,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                   .assetInformation( new DefaultAssetInformation.Builder()
                         .assetKind( usedContext.getAssetKind() )
                         .build() )
+                  .submodels( buildReferenceForSubmodel( submodelId ) )
                   .build();
       usedContext.getEnvironment()
             .setAssetAdministrationShells( Collections.singletonList( administrationShell ) );
@@ -333,6 +336,18 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                   .build();
       return new DefaultReference.Builder()
             .type( ReferenceTypes.EXTERNAL_REFERENCE )
+            .keys( key )
+            .build();
+   }
+
+   private Reference buildReferenceForSubmodel( final String submodelId ) {
+      final Key key =
+            new DefaultKey.Builder()
+                  .type( KeyTypes.SUBMODEL )
+                  .value( submodelId )
+                  .build();
+      return new DefaultReference.Builder()
+            .type( ReferenceTypes.MODEL_REFERENCE )
             .keys( key )
             .build();
    }
