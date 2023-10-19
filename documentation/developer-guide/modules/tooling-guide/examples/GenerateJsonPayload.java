@@ -14,7 +14,6 @@
 package examples;
 
 // tag::imports[]
-
 import java.io.File;
 import java.io.IOException;
 

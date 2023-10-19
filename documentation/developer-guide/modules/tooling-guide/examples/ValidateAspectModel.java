@@ -22,9 +22,9 @@ import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import io.vavr.control.Try;
-// end::imports[]
 import java.io.File;
 import org.junit.jupiter.api.Test;
+// end::imports[]
 
 public class ValidateAspectModel {
    @Test

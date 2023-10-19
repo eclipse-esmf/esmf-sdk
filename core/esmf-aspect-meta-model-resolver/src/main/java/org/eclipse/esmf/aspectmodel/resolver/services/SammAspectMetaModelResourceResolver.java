@@ -23,6 +23,19 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
+import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.resolver.AspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.urn.ElementType;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Streams;
+import io.vavr.Tuple2;
+import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -31,20 +44,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
-import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
-import org.eclipse.esmf.aspectmodel.VersionNumber;
-import org.eclipse.esmf.aspectmodel.resolver.AspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.urn.ElementType;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Streams;
-
-import org.eclipse.esmf.samm.KnownVersion;
-import io.vavr.Tuple2;
-import io.vavr.control.Try;
 
 /**
  * Provides functionality to resolve Aspect Meta Model resources which reside in the classpath.
@@ -220,7 +219,8 @@ public class SammAspectMetaModelResourceResolver implements AspectMetaModelResou
             .map( Resource::getURI )
             .filter( uri -> uri.startsWith( sammUrnStart ) )
             .flatMap( uri -> AspectModelUrn.from( uri ).toJavaStream() )
-            .filter( urn -> (urn.getElementType().equals( ElementType.META_MODEL ) || urn.getElementType().equals( ElementType.CHARACTERISTIC )) )
+            .filter( urn -> (urn.getElementType().equals( ElementType.META_MODEL ) || urn.getElementType()
+                  .equals( ElementType.CHARACTERISTIC )) )
             .map( AspectModelUrn::getVersion )
             .map( VersionNumber::parse )
             .collect( Collectors.toSet() );

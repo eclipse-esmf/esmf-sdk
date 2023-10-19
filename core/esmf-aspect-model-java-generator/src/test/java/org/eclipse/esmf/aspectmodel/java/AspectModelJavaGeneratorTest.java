@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.java;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,8 @@ import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
@@ -42,10 +45,6 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -57,11 +56,21 @@ import com.github.javaparser.resolution.types.ResolvedArrayType;
 import com.github.javaparser.resolution.types.ResolvedPrimitiveType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Streams;
 import com.google.common.reflect.TypeToken;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
-   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion metaModelVersion, final String customJavaPackageName ) {
+   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion metaModelVersion,
+         final String customJavaPackageName ) {
       final VersionedModel model = TestResources.getModel( testAspect, metaModelVersion ).get();
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
@@ -72,7 +81,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       return List.of( new AspectModelJavaGenerator( aspect, config ) );
    }
 
-   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion metaModelVersion, final boolean enableJacksonAnnotations,
+   private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion metaModelVersion,
+         final boolean enableJacksonAnnotations,
          final boolean executeLibraryMacros, final File templateLibPath ) {
       final VersionedModel model = TestResources.getModel( testAspect, metaModelVersion ).get();
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
@@ -86,7 +96,10 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    }
 
    private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
-      final VersionedModel model = TestResources.getModel( testAspect, metaModelVersion ).get();
+      return getGenerators( TestResources.getModel( testAspect, metaModelVersion ).get() );
+   }
+
+   private Collection<JavaGenerator> getGenerators( final VersionedModel model ) {
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( true )
@@ -98,13 +111,35 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
    /**
     * Tests that code generation succeeds for all test models for the latest meta model version
+    *
     * @param testAspect the injected Aspect model
     */
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class )
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
+         "ASPECT_WITH_USED_AND_UNUSED_ENUMERATION", // No code will be generated for an unused enumeration
+         "MODEL_WITH_BROKEN_CYCLES" // Contains elements that are not references from the Aspect
+   } )
    public void testCodeGeneration( final TestAspect testAspect ) {
-      assertThatCode( () ->
-            TestContext.generateAspectCode().apply( getGenerators( testAspect, KnownVersion.getLatest() ) )
+      final KnownVersion metaModelVersion = KnownVersion.getLatest();
+      final SAMM samm = new SAMM( metaModelVersion );
+      final SAMMC sammc = new SAMMC( metaModelVersion );
+      assertThatCode( () -> {
+               final VersionedModel versionedModel = TestResources.getModel( testAspect, metaModelVersion ).get();
+               final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( versionedModel ) );
+               final int numberOfFiles = result.compilationUnits.size();
+               final List<Resource> structureElements = Streams.stream(
+                           versionedModel.getRawModel().listStatements( null, RDF.type, (RDFNode) null ) )
+                     .filter( statement -> {
+                        final Resource type = statement.getObject().asResource();
+                        return type.equals( samm.Aspect() ) || type.equals( samm.Entity() ) || type.equals( samm.Event() )
+                              || type.equals( samm.AbstractEntity() ) || type.equals( sammc.Enumeration() );
+                     } )
+                     .map( Statement::getSubject )
+                     .toList();
+
+               final long numberOfStructureElements = structureElements.size();
+               assertThat( numberOfFiles ).isGreaterThanOrEqualTo( (int) numberOfStructureElements );
+            }
       ).doesNotThrowAnyException();
    }
 
@@ -161,8 +196,10 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 5 );
       result.assertFields( "AspectWithMultipleEnumerationsOnMultipleLevels", expectedFieldsForAspectClass, new HashMap<>() );
       assertConstructor( result, "AspectWithMultipleEnumerationsOnMultipleLevels", expectedFieldsForAspectClass );
-      result.assertFields( "TestEnumOneCharacteristic", ImmutableMap.<String, Object> builder().put( "value", BigInteger.class ).build(), new HashMap<>() );
-      result.assertEnumConstants( "TestEnumOneCharacteristic", ImmutableSet.of( "NUMBER_1", "NUMBER_2", "NUMBER_3" ), Collections.emptyMap() );
+      result.assertFields( "TestEnumOneCharacteristic", ImmutableMap.<String, Object> builder().put( "value", BigInteger.class ).build(),
+            new HashMap<>() );
+      result.assertEnumConstants( "TestEnumOneCharacteristic", ImmutableSet.of( "NUMBER_1", "NUMBER_2", "NUMBER_3" ),
+            Collections.emptyMap() );
    }
 
    @ParameterizedTest
@@ -238,8 +275,10 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       assertConstructor( result, "AspectWithExtendedEnums", expectedFieldsForAspectClass );
       result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResults, new HashMap<>() );
       assertConstructor( result, "EvaluationResult", expectedFieldsForEvaluationResults );
-      result.assertFields( "EvaluationResults", ImmutableMap.<String, Object> builder().put( "value", "EvaluationResult" ).build(), new HashMap<>() );
-      result.assertEnumConstants( "EvaluationResults", ImmutableSet.of( "RESULT_GOOD", "RESULT_BAD", "RESULT_NO_STATUS" ), Collections.emptyMap() );
+      result.assertFields( "EvaluationResults", ImmutableMap.<String, Object> builder().put( "value", "EvaluationResult" ).build(),
+            new HashMap<>() );
+      result.assertEnumConstants( "EvaluationResults", ImmutableSet.of( "RESULT_GOOD", "RESULT_BAD", "RESULT_NO_STATUS" ),
+            Collections.emptyMap() );
       result.assertFields( "YesNo", ImmutableMap.<String, Object> builder().put( "value", String.class ).build(), new HashMap<>() );
       result.assertEnumConstants( "YesNo", ImmutableSet.of( "YES", "NO" ), Collections.emptyMap() );
       result.assertFields( "NestedResult", expectedFieldsForNestedResult, new HashMap<>() );
@@ -457,17 +496,20 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectWithCustomJavaPackageNameExpectCustomPackageDeclaration( final KnownVersion metaModelVersion ) throws IOException {
+   public void testGenerateAspectWithCustomJavaPackageNameExpectCustomPackageDeclaration( final KnownVersion metaModelVersion )
+         throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
       final String customJavaPackageName = "test.test.test";
-      final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion, customJavaPackageName ) );
+      final GenerationResult result = TestContext.generateAspectCode()
+            .apply( getGenerators( aspect, metaModelVersion, customJavaPackageName ) );
       result.assertNumberOfFiles( 1 );
       result.assertNamespace( "AspectWithBinary", customJavaPackageName );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectWithEmptyJavaPackageNameExpectDefaultPackageDeclaration( final KnownVersion metaModelVersion ) throws IOException {
+   public void testGenerateAspectWithEmptyJavaPackageNameExpectDefaultPackageDeclaration( final KnownVersion metaModelVersion )
+         throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
       final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 1 );
@@ -494,7 +536,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       assertConstructor( result, "AspectWithComplexEnum", expectedFieldsForAspectClass );
       result.assertFields( "EvaluationResult", expectedFieldsForEvaluationResult, new HashMap<>() );
       assertConstructor( result, "EvaluationResult", expectedFieldsForEvaluationResult );
-      result.assertFields( "EvaluationResults", ImmutableMap.<String, Object> builder().put( "value", "EvaluationResult" ).build(), new HashMap<>() );
+      result.assertFields( "EvaluationResults", ImmutableMap.<String, Object> builder().put( "value", "EvaluationResult" ).build(),
+            new HashMap<>() );
       result.assertEnumConstants( "EvaluationResults",
             ImmutableSet.of( "RESULT_NO_STATUS", "RESULT_GOOD", "RESULT_BAD" ),
             ImmutableMap.<String, String> builder()
@@ -606,7 +649,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
       result.assertEnumConstants( "MyEnumerationFour", ImmutableSet.of( "ENTITY_INSTANCE_FOUR" ),
             ImmutableMap.<String, String> builder()
-                  .put( "ENTITY_INSTANCE_FOUR", "new MyEntityFour(new ArrayList<>(){{ add(\"fooFour\");add(\"barFour\");add(\"bazFour\"); }})" )
+                  .put( "ENTITY_INSTANCE_FOUR",
+                        "new MyEntityFour(new ArrayList<>(){{ add(\"fooFour\");add(\"barFour\");add(\"bazFour\"); }})" )
                   .build() );
    }
 
@@ -729,7 +773,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       assertConstructor( result, "AspectWithMultiLanguageText", expectedFieldsForAspectClass );
    }
 
-   private void assertConstructor( final GenerationResult result, final String className, final ImmutableMap<String, Object> expectedFields ) {
+   private void assertConstructor( final GenerationResult result, final String className,
+         final ImmutableMap<String, Object> expectedFields ) {
       final ImmutableMap<String, String> expectedAnnotationBuilder = buildExpectedAnnotations( expectedFields );
       result.assertConstructor( className, expectedFields, expectedAnnotationBuilder );
    }
@@ -881,7 +926,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             "}",
             "finalAspectWithEntitythat=(AspectWithEntity)o;",
             "returnObjects.equals(testProperty,that.testProperty);" );
-      result.assertMethodBody( "AspectWithEntity", "equals", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+      result.assertMethodBody( "AspectWithEntity", "equals", expectOverride, expectedReturnType, expectedNumberOfParameters,
+            expectedMethodBody );
 
       expectedMethodBody = List.of(
             "if(this==o){",
@@ -905,10 +951,12 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       final boolean expectOverride = true;
       final int expectedNumberOfParameters = 0;
       List<String> expectedMethodBody = List.of( "returnObjects.hash(testProperty);" );
-      result.assertMethodBody( "AspectWithEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+      result.assertMethodBody( "AspectWithEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters,
+            expectedMethodBody );
 
       expectedMethodBody = List.of( "returnObjects.hash(entityProperty);" );
-      result.assertMethodBody( "TestEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+      result.assertMethodBody( "TestEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters,
+            expectedMethodBody );
    }
 
    @ParameterizedTest
@@ -1027,7 +1075,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             "}",
             "finalAspectWithAbstractEntitythat=(AspectWithAbstractEntity)o;",
             "returnObjects.equals(testProperty,that.testProperty);" );
-      result.assertMethodBody( "AspectWithAbstractEntity", "equals", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+      result.assertMethodBody( "AspectWithAbstractEntity", "equals", expectOverride, expectedReturnType, expectedNumberOfParameters,
+            expectedMethodBody );
 
       expectedMethodBody = List.of(
             "if(this==o){",
@@ -1038,7 +1087,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             "}",
             "finalAbstractTestEntitythat=(AbstractTestEntity)o;",
             "returnObjects.equals(abstractTestProperty,that.abstractTestProperty);" );
-      result.assertMethodBody( "AbstractTestEntity", "equals", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+      result.assertMethodBody( "AbstractTestEntity", "equals", expectOverride, expectedReturnType, expectedNumberOfParameters,
+            expectedMethodBody );
 
       expectedMethodBody = List.of(
             "if(this==o){",
@@ -1052,7 +1102,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             "}",
             "finalExtendingTestEntitythat=(ExtendingTestEntity)o;",
             "returnObjects.equals(entityProperty,that.entityProperty);" );
-      result.assertMethodBody( "ExtendingTestEntity", "equals", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+      result.assertMethodBody( "ExtendingTestEntity", "equals", expectOverride, expectedReturnType, expectedNumberOfParameters,
+            expectedMethodBody );
    }
 
    @ParameterizedTest
@@ -1065,13 +1116,16 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       final boolean expectOverride = true;
       final int expectedNumberOfParameters = 0;
       List<String> expectedMethodBody = List.of( "returnObjects.hash(testProperty);" );
-      result.assertMethodBody( "AspectWithAbstractEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+      result.assertMethodBody( "AspectWithAbstractEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters,
+            expectedMethodBody );
 
       expectedMethodBody = List.of( "returnObjects.hash(abstractTestProperty);" );
-      result.assertMethodBody( "AbstractTestEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+      result.assertMethodBody( "AbstractTestEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters,
+            expectedMethodBody );
 
       expectedMethodBody = List.of( "returnObjects.hash(super.hashCode(),entityProperty);" );
-      result.assertMethodBody( "ExtendingTestEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters, expectedMethodBody );
+      result.assertMethodBody( "ExtendingTestEntity", "hashCode", expectOverride, expectedReturnType, expectedNumberOfParameters,
+            expectedMethodBody );
    }
 
    @ParameterizedTest
@@ -1112,10 +1166,12 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       result.assertNumberOfFiles( 4 );
       result.assertClassDeclaration( "ParentOfParentEntity", Collections.singletonList( Modifier.abstractModifier() ),
             Collections.emptyList(), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
-                  "@JsonSubTypes({ @JsonSubTypes.Type(value = ParentTestEntity.class, name = \"ParentTestEntity\"), @JsonSubTypes.Type(value = TestEntity"
+                  "@JsonSubTypes({ @JsonSubTypes.Type(value = ParentTestEntity.class, name = \"ParentTestEntity\"), @JsonSubTypes.Type"
+                        + "(value = TestEntity"
                         + ".class, name = \"TestEntity\") })" ) );
       result.assertClassDeclaration( "ParentTestEntity", Collections.singletonList( Modifier.abstractModifier() ),
-            Collections.singletonList( "ParentOfParentEntity" ), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
+            Collections.singletonList( "ParentOfParentEntity" ), Collections.emptyList(),
+            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
                   "@JsonSubTypes({ @JsonSubTypes.Type(value = TestEntity.class, name = \"TestEntity\") })" ) );
    }
 }

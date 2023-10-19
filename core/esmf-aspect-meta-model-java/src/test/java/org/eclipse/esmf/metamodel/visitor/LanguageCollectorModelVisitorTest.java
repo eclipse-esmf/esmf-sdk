@@ -9,16 +9,18 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.riot.RDFLanguages;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
+
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.RDFLanguages;
 import org.junit.jupiter.api.Test;
 
+@Deprecated( forRemoval = true )
 class LanguageCollectorModelVisitorTest {
 
    @Test
@@ -58,7 +60,8 @@ class LanguageCollectorModelVisitorTest {
             """ );
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( versionedModel );
       final Set<Locale> reachableLocales = new LanguageCollectorModelVisitor().visitAspect( aspect, new HashSet<>() );
-      assertThat( reachableLocales ).containsExactlyInAnyOrder( Locale.ENGLISH, Locale.GERMAN, Locale.ITALIAN, Locale.FRENCH, Locale.forLanguageTag( "es" ),
+      assertThat( reachableLocales ).containsExactlyInAnyOrder( Locale.ENGLISH, Locale.GERMAN, Locale.ITALIAN, Locale.FRENCH,
+            Locale.forLanguageTag( "es" ),
             Locale.forLanguageTag( "pt" ) );
    }
 

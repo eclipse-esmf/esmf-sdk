@@ -26,9 +26,9 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-// end::imports[]
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
+// end::imports[]
 
 public class GenerateHtml extends AbstractGenerator {
    @Test

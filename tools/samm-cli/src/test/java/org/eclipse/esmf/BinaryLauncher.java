@@ -39,10 +39,4 @@ public class BinaryLauncher extends OsProcessLauncher {
       }
       return binary;
    }
-
-   @Override
-   protected File workingDirectoryForSubprocess( final ExecutionContext context ) {
-      // for the native image we want the CWD to be the directory where the exe is located
-      return Path.of( getBinaryName() ).getParent().toFile();
-   }
 }
