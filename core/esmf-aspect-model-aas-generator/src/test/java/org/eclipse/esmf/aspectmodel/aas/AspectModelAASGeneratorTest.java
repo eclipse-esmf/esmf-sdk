@@ -159,7 +159,7 @@ class AspectModelAASGeneratorTest {
             "SubmodelElement is not a SubmodelElementCollection." );
       final SubmodelElementCollection collection = (SubmodelElementCollection) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertEquals( 1, collection.getValue().size(), "Not exactly one Element in SubmodelElementCollection" );
-      assertEquals( "id_entityProperty", collection.getValue().stream().findFirst().get().getIdShort() );
+      assertEquals( "entityProperty", collection.getValue().stream().findFirst().get().getIdShort() );
 
       getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -234,7 +234,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 1, "Not exactly one Element in SubmodelElements." );
       final SubmodelElement element = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertEquals( "id_testProperty", element.getIdShort() );
+      assertEquals( "testProperty", element.getIdShort() );
 
       final DataSpecificationContent dataSpecificationContent = getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
 
@@ -248,10 +248,10 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 6, "Not exactly six Elements in SubmodelElements." );
       final SubmodelElement submodelElement =
             env.getSubmodels().get( 0 ).getSubmodelElements().stream()
-                  .filter( x -> x.getIdShort().equals( "id_stringLcProperty" ) )
+                  .filter( x -> x.getIdShort().equals( "stringLcProperty" ) )
                   .findFirst()
                   .orElseThrow();
-      assertEquals( "id_stringLcProperty", submodelElement.getIdShort() );
+      assertEquals( "stringLcProperty", submodelElement.getIdShort() );
 
       final Set<String> semanticIds =
             Set.of( "urn:samm:org.eclipse.esmf.test:1.0.0#stringLcProperty",
