@@ -195,7 +195,6 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                   .assetInformation( new DefaultAssetInformation.Builder()
                         .assetKind( usedContext.getAssetKind() )
                         .build() )
-                  .embeddedDataSpecifications( extractEmbeddedDataSpecification( aspect ) )
                   .build();
       usedContext.getEnvironment()
             .setAssetAdministrationShells( Collections.singletonList( administrationShell ) );
