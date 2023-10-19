@@ -178,7 +178,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          usedContext.setEnvironment( environment );
       }
 
-      String submodelId = aspect.getAspectModelUrn().toString() + "/submodel";
+      String submodelId = aspect.getAspectModelUrn().get().getUrn().toString() + "/submodel";
 
       final Submodel submodel = usedContext.getSubmodel();
       submodel.setIdShort( aspect.getName() );
