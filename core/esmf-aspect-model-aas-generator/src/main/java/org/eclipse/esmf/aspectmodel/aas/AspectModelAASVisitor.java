@@ -105,6 +105,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
    public static final String DEFAULT_LOCALE = "EN";
    public static final String CONCEPT_DESCRIPTION_CATEGORY = "APPLICATION_CLASS";
+   public static final String CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL =
+         "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIec61360/3/0";
 
    /**
     * Maps Aspect types to DataTypeIEC61360 Schema types, with no explicit mapping defaulting to
@@ -375,14 +377,14 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private EmbeddedDataSpecification extractEmbeddedDataSpecification( final Property property ) {
       return new DefaultEmbeddedDataSpecification.Builder()
-            .dataSpecification( buildReferenceForSeeElement( property.getAspectModelUrn().toString() ) )
+            .dataSpecification( buildReferenceForSeeElement( CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL ) )
             .dataSpecificationContent( extractDataSpecificationContent( property ) )
             .build();
    }
 
    private EmbeddedDataSpecification extractEmbeddedDataSpecification( final Aspect aspect ) {
       return new DefaultEmbeddedDataSpecification.Builder()
-            .dataSpecification( buildReferenceForSeeElement( aspect.getAspectModelUrn().toString() ) )
+            .dataSpecification( buildReferenceForSeeElement( CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL ) )
             .dataSpecificationContent( extractDataSpecificationContent( aspect ) )
             .build();
    }
