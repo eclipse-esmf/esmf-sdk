@@ -839,8 +839,8 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             + "['properties']['description']['enum'][0]" ) ).isEqualTo( "Result succeeded" );
       assertThat( context.<String> read( "$['components']['schemas']['ResultGood']['properties']['details']"
             + "['properties']['message']['enum'][0]" ) ).isEqualTo( "Evaluation succeeded." );
-      assertThat( context.<Double> read( "$['components']['schemas']['ResultGood']['properties']['details']"
-            + "['properties']['numericCode']['enum'][0]" ) ).isCloseTo( 10.0d, Percentage.withPercentage( 1.0d ) );
+      assertThat( context.<Integer> read( "$['components']['schemas']['ResultGood']['properties']['details']"
+              + "['properties']['numericCode']['enum'][0]" ) ).isEqualTo( 10 );
    }
 
    @ParameterizedTest

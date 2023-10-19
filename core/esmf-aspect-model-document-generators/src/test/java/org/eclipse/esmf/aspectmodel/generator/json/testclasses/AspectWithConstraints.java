@@ -17,14 +17,6 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.eclipse.esmf.aspectmodel.java.customconstraint.DoubleMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.DoubleMin;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.FloatMax;
@@ -32,6 +24,14 @@ import org.eclipse.esmf.aspectmodel.java.customconstraint.FloatMin;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.IntegerMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.IntegerMin;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 /** Generated class for AspectWithConstraints. */
 public class AspectWithConstraints {

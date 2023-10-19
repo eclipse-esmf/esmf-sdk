@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>6</version>
+      <version>8</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -75,11 +75,7 @@
 
    <properties>
       <!-- Versions of third party dependencies -->
-      <hibernate-validator-version>6.2.3.Final</hibernate-validator-version>
-      <jakarta-el-version>3.0.4</jakarta-el-version>
       <poi-version>4.1.2</poi-version>
-      <graph-support-version>1.1.5</graph-support-version>
-
       <!-- General settings -->
       <skip.gpg.skip>true</skip.gpg.skip>
    </properties>
@@ -203,11 +199,6 @@
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate-validator-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.el</artifactId>
-            <version>${jakarta-el-version}</version>
          </dependency>
          <dependency>
             <groupId>org.apache.poi</groupId>

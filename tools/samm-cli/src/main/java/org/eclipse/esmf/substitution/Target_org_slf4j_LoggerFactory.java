@@ -13,23 +13,22 @@
 
 package org.eclipse.esmf.substitution;
 
-import java.net.URL;
-import java.util.Set;
-
-import org.slf4j.LoggerFactory;
+import java.util.List;
 
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
+import org.slf4j.LoggerFactory;
+import org.slf4j.spi.SLF4JServiceProvider;
 
 @TargetClass( LoggerFactory.class )
 public final class Target_org_slf4j_LoggerFactory {
    @Substitute
-   private static void reportMultipleBindingAmbiguity( final Set<URL> binderPathSet ) {
+   private static void reportMultipleBindingAmbiguity( final List<SLF4JServiceProvider> providerList ) {
       // Do nothing
    }
 
    @Substitute
-   private static void reportActualBinding( final Set<URL> binderPathSet ) {
+   private static void reportActualBinding( final List<SLF4JServiceProvider> providerList ) {
       // Do nothing
    }
 }
