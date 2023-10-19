@@ -188,10 +188,10 @@ public class SammCliTest extends MetaModelVersions {
    @DisabledOnOs( OS.WINDOWS )
    public void testAspectValidateInvalidModel() {
       final File invalidModel = inputFile( InvalidTestAspect.INVALID_SYNTAX );
-      final ExecutionResult result = sammCli.apply( "aspect", invalidModel.getAbsolutePath(), "validate" );
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", invalidModel.getAbsolutePath(), "validate" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
-      assertThat( result.stderr() ).contains( "Triples not terminated by DOT" );
-      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( "Triples not terminated by DOT" );
    }
 
    @Test
