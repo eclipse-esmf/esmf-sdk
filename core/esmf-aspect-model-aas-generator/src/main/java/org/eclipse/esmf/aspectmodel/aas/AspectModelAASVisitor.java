@@ -105,7 +105,6 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
    public static final String DEFAULT_LOCALE = "EN";
    public static final String CONCEPT_DESCRIPTION_CATEGORY = "APPLICATION_CLASS";
-   public static final String ID_PREFIX = "";
 
    /**
     * Maps Aspect types to DataTypeIEC61360 Schema types, with no explicit mapping defaulting to
@@ -190,7 +189,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final AssetAdministrationShell administrationShell =
             new DefaultAssetAdministrationShell.Builder()
                   .id( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
-                  .idShort( ID_PREFIX + ADMIN_SHELL_NAME )
+                  .idShort( ADMIN_SHELL_NAME )
                   .description( LangStringMapper.TEXT.createLangString( ADMIN_SHELL_NAME, "en" ) )
                   .administration( new DefaultAdministrativeInformation.Builder().build() )
                   .assetInformation( new DefaultAssetInformation.Builder()
@@ -280,7 +279,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final List<SubmodelElement> submodelElements =
             visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()
-            .idShort( ID_PREFIX + entity.getName() )
+            .idShort( entity.getName() )
             .displayName( LangStringMapper.NAME.map( entity.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( entity.getDescriptions() ) )
             .value( submodelElements )
@@ -291,7 +290,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return new DefaultOperation.Builder()
             .displayName( LangStringMapper.NAME.map( operation.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( operation.getDescriptions() ) )
-            .idShort( ID_PREFIX + operation.getName() )
+            .idShort( operation.getName() )
             .inputVariables(
                   operation.getInput().stream()
                         .map( i -> mapOperationVariable( i, context ) )
@@ -350,7 +349,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( property.getAspectModelUrn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( ID_PREFIX + characteristic.getName() )
+                     .idShort( characteristic.getName() )
                      .displayName( LangStringMapper.NAME.map( characteristic.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( property ) )
                      .id( DEFAULT_MAPPER.determineIdentifierFor( property ) )
@@ -364,7 +363,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( aspect.getAspectModelUrn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( ID_PREFIX + aspect.getName() )
+                     .idShort( aspect.getName() )
                      .displayName( LangStringMapper.NAME.map( aspect.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( aspect ) )
                      .id( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
@@ -478,7 +477,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementBuilder builder =
             ( property ) ->
                   new DefaultSubmodelElementList.Builder()
-                        .idShort( ID_PREFIX + property.getName() )
+                        .idShort( property.getName() )
                         .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
                         .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                         .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
@@ -548,7 +547,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementList eitherSubModelElements =
             new DefaultSubmodelElementList.Builder()
-                  .idShort( ID_PREFIX + either.getName() )
+                  .idShort( either.getName() )
                   .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( either.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( either.getDescriptions() ) )
