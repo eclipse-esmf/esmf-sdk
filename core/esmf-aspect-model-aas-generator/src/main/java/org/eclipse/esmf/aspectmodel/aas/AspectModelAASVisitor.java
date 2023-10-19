@@ -103,7 +103,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelAASVisitor.class );
 
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
-   public static final String DEFAULT_LOCALE = "EN";
+   public static final String DEFAULT_LOCALE = "en";
    public static final String CONCEPT_DESCRIPTION_CATEGORY = "APPLICATION_CLASS";
    public static final String CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL =
          "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIec61360/3/0";
