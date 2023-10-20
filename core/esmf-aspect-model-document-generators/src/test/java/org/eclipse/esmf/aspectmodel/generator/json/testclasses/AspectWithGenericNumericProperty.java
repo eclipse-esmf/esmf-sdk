@@ -14,10 +14,10 @@ package org.eclipse.esmf.aspectmodel.generator.json.testclasses;
 
 import java.util.Objects;
 
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Class for testing aspects with variously typed and constrained numeric properties.
@@ -29,7 +29,7 @@ public class AspectWithGenericNumericProperty {
 
    @JsonCreator
    public AspectWithGenericNumericProperty(
-         @JsonProperty(value = "testNumber") Number testNumber) {
+         @JsonProperty( value = "testNumber" ) Number testNumber ) {
       this.testNumber = testNumber;
    }
 
@@ -43,15 +43,15 @@ public class AspectWithGenericNumericProperty {
    }
 
    @Override
-   public boolean equals(final Object o) {
-      if (this == o) {
+   public boolean equals( final Object o ) {
+      if ( this == o ) {
          return true;
       }
-      if (o == null || getClass() != o.getClass()) {
+      if ( o == null || getClass() != o.getClass() ) {
          return false;
       }
       final AspectWithGenericNumericProperty that = (AspectWithGenericNumericProperty) o;
-      return Objects.equals(testNumber, that.testNumber);
+      return Objects.equals( testNumber, that.testNumber );
    }
 }
 

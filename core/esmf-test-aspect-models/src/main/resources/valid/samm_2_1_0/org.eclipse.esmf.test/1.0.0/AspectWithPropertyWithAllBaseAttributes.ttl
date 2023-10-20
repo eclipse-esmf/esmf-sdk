@@ -19,10 +19,10 @@
    samm:operations ( ) .
 
 :testBoolean a samm:Property ;
-   samm:preferredName "Test Boolean"@en ;
    samm:preferredName "Test Boolean"@de ;
-   samm:description "Test Description"@en ;
+   samm:preferredName "Test Boolean"@en ;
    samm:description "Test Beschreibung"@de ;
+   samm:description "Test Description"@en ;
    samm:characteristic :BooleanTestCharacteristic ;
    samm:see <http://example.com/> ;
    samm:see <http://example.com/me> .

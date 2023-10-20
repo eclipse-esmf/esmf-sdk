@@ -2,12 +2,12 @@ package org.eclipse.esmf.aspectmodel.generator.json.testclasses;
 
 import java.util.Objects;
 
-import javax.validation.constraints.NotNull;
-
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Generated class for AspectWithMultilanguageExampleValue.

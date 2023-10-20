@@ -16,10 +16,6 @@ package org.eclipse.esmf.aspectmodel.java;
 import java.math.BigInteger;
 import java.util.Optional;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
 import org.apache.commons.text.StringEscapeUtils;
 
 import org.eclipse.esmf.aspectmodel.java.rangeconstraint.AnnotationExpression;
@@ -33,8 +29,12 @@ import org.eclipse.esmf.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 /**
- * Provides functionality to create javax.validation.constraints that are displayed in the generated java class
+ * Provides functionality to create jakarta.validation.constraints that are displayed in the generated java class
  */
 public class ConstraintAnnotationBuilder {
 

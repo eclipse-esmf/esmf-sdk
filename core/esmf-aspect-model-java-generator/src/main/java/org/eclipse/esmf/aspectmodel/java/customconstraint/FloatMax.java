@@ -20,10 +20,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
-
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 @Target( { FIELD, TYPE_USE } )
 @Retention( RUNTIME )

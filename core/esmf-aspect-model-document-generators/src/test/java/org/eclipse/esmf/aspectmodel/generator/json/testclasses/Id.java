@@ -3,10 +3,10 @@ package org.eclipse.esmf.aspectmodel.generator.json.testclasses;
 import java.net.URI;
 import java.util.Objects;
 
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Generated class for Unique Identifier.

@@ -39,6 +39,10 @@
          <artifactId>dataformat-json</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.apache.poi</groupId>
+         <artifactId>poi</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-test-resources</artifactId>
          <scope>test</scope>
