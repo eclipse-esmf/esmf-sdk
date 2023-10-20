@@ -40,7 +40,7 @@ import com.google.common.collect.ImmutableMap;
 public interface PropertyMapper<T extends SubmodelElement> {
    static String UNKNOWN_TYPE = "Unknown";
 
-   static String UNKNOWN_EXAMPLE = UNKNOWN_TYPE;
+   static String UNKNOWN_EXAMPLE = "";
 
    /**
     * Maps Aspect types to DataTypeDefXSD Schema types, with no explicit mapping defaulting to
