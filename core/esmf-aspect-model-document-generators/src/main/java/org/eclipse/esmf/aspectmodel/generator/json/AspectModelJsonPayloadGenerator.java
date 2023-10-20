@@ -513,6 +513,9 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          if ( XSD.duration.getURI().equals( urn ) ) {
             return Optional.of( new SimpleDateFormat( "PddD" ) );
          }
+         if ( XSD.date.getURI().equals( urn ) ) {
+            return Optional.of( new SimpleDateFormat( "yyyy-MM-dd" ) );
+         }
          return Optional.empty();
       }
 

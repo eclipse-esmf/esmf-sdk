@@ -73,25 +73,25 @@ public class AspectWithConstraints {
    @JsonCreator
    public AspectWithConstraints(
          @JsonProperty( value = "testPropertyWithRegularExpression" )
-               String testPropertyWithRegularExpression,
+         String testPropertyWithRegularExpression,
          @JsonProperty( value = "testPropertyWithDecimalMinDecimalMaxRangeConstraint" )
-               BigDecimal testPropertyWithDecimalMinDecimalMaxRangeConstraint,
+         BigDecimal testPropertyWithDecimalMinDecimalMaxRangeConstraint,
          @JsonProperty( value = "testPropertyWithDecimalMaxRangeConstraint" )
-               BigDecimal testPropertyWithDecimalMaxRangeConstraint,
+         BigDecimal testPropertyWithDecimalMaxRangeConstraint,
          @JsonProperty( value = "testPropertyWithMinMaxRangeConstraint" )
-               Integer testPropertyWithMinMaxRangeConstraint,
+         Integer testPropertyWithMinMaxRangeConstraint,
          @JsonProperty( value = "testPropertyWithMinRangeConstraint" )
-               Integer testPropertyWithMinRangeConstraint,
+         Integer testPropertyWithMinRangeConstraint,
          @JsonProperty( value = "testPropertyRangeConstraintWithFloatType" )
-               Float testPropertyRangeConstraintWithFloatType,
+         Float testPropertyRangeConstraintWithFloatType,
          @JsonProperty( value = "testPropertyRangeConstraintWithDoubleType" )
-               Double testPropertyRangeConstraintWithDoubleType,
+         Double testPropertyRangeConstraintWithDoubleType,
          @JsonProperty( value = "testPropertyWithMinMaxLengthConstraint" )
-               String testPropertyWithMinMaxLengthConstraint,
+         String testPropertyWithMinMaxLengthConstraint,
          @JsonProperty( value = "testPropertyWithMinLengthConstraint" )
-               BigInteger testPropertyWithMinLengthConstraint,
+         BigInteger testPropertyWithMinLengthConstraint,
          @JsonProperty( value = "testPropertyCollectionLengthConstraint" )
-               List<BigInteger> testPropertyCollectionLengthConstraint ) {
+         List<BigInteger> testPropertyCollectionLengthConstraint ) {
       this.testPropertyWithRegularExpression = testPropertyWithRegularExpression;
       this.testPropertyWithDecimalMinDecimalMaxRangeConstraint =
             testPropertyWithDecimalMinDecimalMaxRangeConstraint;
