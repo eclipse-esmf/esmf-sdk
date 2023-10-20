@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel.aas;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
@@ -106,7 +107,7 @@ public class AspectModelAASGenerator {
       try ( final ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
          final XmlSerializer serializer = new XmlSerializer();
          serializer.write( out, mergedEnvironment );
-         return out;
+         return fixSchemaLocation( out );
       } catch ( final SerializationException e ) {
          throw new IOException( e );
       }
@@ -148,9 +149,25 @@ public class AspectModelAASGenerator {
 
       try ( final ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
          serializer.write( out, environment );
+         // TODO must be removed as soon as https://github.com/eclipse-esmf/esmf-sdk/issues/461 is fixed
+         if(serializer instanceof XmlSerializer) {
+           return fixSchemaLocation( out );
+         }
          return out;
       } catch ( final SerializationException e ) {
          throw new IOException( e );
       }
+   }
+
+   // TODO must be removed as soon as https://github.com/eclipse-esmf/esmf-sdk/issues/461 is fixed
+   private ByteArrayOutputStream fixSchemaLocation(ByteArrayOutputStream out) throws IOException {
+      String document = out.toString( StandardCharsets.UTF_8 );
+      String result = document.replace(
+            "https://admin-shell.io/aas/3/0 AAS.xsd",
+            "https://admin-shell.io/aas/3/0/AAS.xsd" );
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      baos.write( result.getBytes( StandardCharsets.UTF_8 ) );
+      return baos;
+
    }
 }
