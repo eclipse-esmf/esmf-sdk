@@ -12,6 +12,7 @@
  */
 
 package org.eclipse.esmf.aspectmodel.java.customconstraint;
+
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 
 import jakarta.validation.ConstraintValidator;
