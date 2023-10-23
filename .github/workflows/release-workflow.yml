@@ -123,7 +123,6 @@ jobs:
       - name: Test executable jar on Temurin
         run: |
           cd tools/samm-cli
-          mvn -B verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
       - name: Upload staging directory and Linux binary

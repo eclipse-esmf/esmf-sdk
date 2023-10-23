@@ -73,7 +73,6 @@ jobs:
         if: matrix.os == 'ubuntu-20.04'
         run: |
           cd tools/samm-cli
-          mvn -B verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
 
       - name: Upload executable jar
