@@ -207,6 +207,35 @@
       </dependencies>
    </dependencyManagement>
 
+   <dependencies>
+      <!-- Overrides due to CVEs -->
+      <dependency>
+         <groupId>org.apache.maven.shared</groupId>
+         <artifactId>maven-shared-utils</artifactId>
+         <version>[3.3.3,)</version>
+      </dependency>
+      <dependency>
+         <groupId>org.yaml</groupId>
+         <artifactId>snakeyaml</artifactId>
+         <version>[2.0,)</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-compress</artifactId>
+         <version>[1.21,)</version>
+      </dependency>
+      <dependency>
+         <groupId>commons-io</groupId>
+         <artifactId>commons-io</artifactId>
+         <version>[2.7,)</version>
+      </dependency>
+      <dependency>
+         <groupId>org.codehaus.plexus</groupId>
+         <artifactId>plexus-archiver</artifactId>
+         <version>[4.8.0,)</version>
+      </dependency>
+   </dependencies>
+
    <build>
       <plugins>
          <plugin>
