@@ -182,7 +182,6 @@
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-model-aas-generator</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
          </dependency>
 
          <!-- Third party dependencies -->
@@ -196,31 +195,15 @@
          </dependency>
 
          <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate-validator-version}</version>
-         </dependency>
-         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.graphper</groupId>
-            <artifactId>graph-support</artifactId>
-            <version>${graph-support-version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.graalvm.truffle</groupId>
-            <artifactId>truffle-api</artifactId>
-            <version>${graalvm-version}</version>
          </dependency>
          <dependency>
             <groupId>org.graalvm.js</groupId>
             <artifactId>js</artifactId>
             <version>${graalvm-version}</version>
          </dependency>
-
       </dependencies>
    </dependencyManagement>
 
