@@ -62,6 +62,20 @@ jobs:
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
+      - name: Switch to Temurin JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          overwrite-settings: false
+
+      - name: Test executable jar on Temurin
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          cd tools/samm-cli
+          mvn -B verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+
       - name: Upload executable jar
         # We only need one OS job to upload the jar
         if: matrix.os == 'ubuntu-20.04'

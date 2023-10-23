@@ -113,6 +113,19 @@ jobs:
         env:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
+      - name: Switch to Temurin JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          overwrite-settings: false
+
+      - name: Test executable jar on Temurin
+        run: |
+          cd tools/samm-cli
+          mvn -B verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+
       - name: Upload staging directory and Linux binary
         uses: actions/upload-artifact@v3
         with:
