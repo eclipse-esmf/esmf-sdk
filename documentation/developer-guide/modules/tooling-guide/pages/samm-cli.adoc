@@ -59,9 +59,6 @@ The available options and their meaning can also be seen in the help text of the
                                         |    _--output, -o_ : the output will be saved to the given file |
                                         |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
 | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
-.4+| aspect <model> to dot              | Generate https://graphviz.org/doc/info/lang.html[DOT] diagram for Aspect Model                          | `samm aspect AspectModel.ttl to dot`
-                                        |    _--output, -o_ : output file path (default: stdout)         |
-                                        |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
 | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .8+| aspect <model> to java             | Generate Java classes from an Aspect Model                     | `samm aspect AspectModel.ttl to java`
                                         |  _--output-directory, -d_ : output directory to write files to (default: current directory)|

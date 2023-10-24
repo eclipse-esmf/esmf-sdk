@@ -18,7 +18,7 @@ To include the plugin, use the following dependency:
 </dependency>
 ----
 
-NOTE: the current implementation of the `esmf-aspect-model-maven-plugin` uses the
+NOTE: The current implementation of the `esmf-aspect-model-maven-plugin` uses the
 `FileSystemStrategy` to resolve Aspect Models. See
 xref:java-aspect-tooling.adoc#understanding-model-resolution[Understanding Model Resolution] for
 more information.
@@ -313,7 +313,7 @@ Configuration Properties:
 === Generating SVG or PNG Diagrams
 
 The `generateDiagram` goal generates an automatically layouted diagram for a given Aspect Model in
-SVG, PNG or https://www.graphviz.org/[Graphviz/DOT]. The default life cycle phase for the goal is
+SVG or PNG. The default life cycle phase for the goal is
 `generate-resources`.
 
 Usage:
