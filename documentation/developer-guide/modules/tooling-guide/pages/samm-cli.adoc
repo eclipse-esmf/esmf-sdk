@@ -37,63 +37,84 @@ The available options and their meaning can also be seen in the help text of the
 [width="100%",options="header",cols="20,50,30"]
 |===
 | Command | Description/Options | Examples
-| help                                  | Get overview of all commands                                   | `samm help`
-| help <subcommand>                     | Get help for a specific subcommand                             | `samm help aspect`
-| aspect help <aspect subcommand>       | Get help for `aspect` subcommands                              | `samm aspect help validate`
-.2+| aspect <model> validate            | Validate Aspect Model                                          | `samm aspect AspectModel.ttl validate`
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
-.2+| aspect <model> prettyprint         | Pretty-print Aspect Model                                      | `samm aspect AspectModel.ttl prettyprint`
-|   _--output, -o_ : the output will be saved to the given file  | `samm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
-.2+| aspect <model> migrate             | Migrate Aspect Model to the latest SAMM version                | `samm aspect AspectModel.ttl migrate AspectModel.ttl`
-|    _--output, -o_ : the output will be saved to the given file | `samm aspect AspectModel.ttl migrate AspectModel.ttl -o c:\Results\MigratedModel.ttl`
-.5+| aspect <model> to html             | Generate HTML documentation for an Aspect Model                | `samm aspect AspectModel.ttl to html`
-|    _--output, -o_ : the output will be saved to the given file | `samm aspect AspectModel.ttl to html -o c:\Model.html`
-|    _--css, -c_ : CSS file with custom styles to be included in the generated HTML documentation | `samm aspect AspectModel.ttl to html -c c:\styles.css`
-|    _--language, -l_ : The language from the model for which the HTML should be generated (default: en) | `samm aspect AspectModel.ttl to html -l de`
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to html --custom-resolver myresolver.bat`
-.4+| aspect <model> to png              | Generate PNG diagram for Aspect Model                          | `samm aspect AspectModel.ttl to png`
-|    _--output, -o_ : output file path (default: stdout); as PNG is a binary format, it is strongly recommended to output the result to a file by using the -o option or the console redirection operator '>')|
-                                        |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to png --custom-resolver resolver.jar`
-.4+| aspect <model> to svg              | Generate SVG diagram for Aspect Model                          | `samm aspect AspectModel.ttl to svg`
-                                        |    _--output, -o_ : the output will be saved to the given file |
-                                        |    _--language, -l_ : the language from the model for which the diagram should be generated (default: en)|
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.8+| aspect <model> to java             | Generate Java classes from an Aspect Model                     | `samm aspect AspectModel.ttl to java`
-                                        |  _--output-directory, -d_ : output directory to write files to (default: current directory)|
-                                        |  _--package-name, -pn_ : package to use for generated Java classes| `samm aspect AspectModel.ttl to java -pn org.company.product`
-                                        |  _--no-jackson, -nj_ : disable https://github.com/FasterXML/jackson[Jackson] annotation generation in generated Java classes|
-                                        |  _--template-library-file, -tlf_ : the path and name of the https://velocity.apache.org/[Velocity] template file containing the macro library|
-                                        |  _--execute-library-macros, -elm_ : Execute the macros provided in the https://velocity.apache.org/[Velocity] macro library|
-                                        |  _--static, -s_ : generate Java domain classes for a Static Meta Model|
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.13+| aspect <model> to openapi         | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model             | `samm aspect AspectModel.ttl to openapi -j`
-                                        |  _--output, -o_ : output file path (default: stdout)           |
-                                        |  _--api-base-url, -b_ : the base url for the Aspect API used in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification| `samm aspect AspectModel.ttl to openapi -j -b \http://mysite.de`
-                                        |  _--json, -j_ : generate a JSON specification for an Aspect Model (default format is YAML)|
-                                        |  _--comment, -c_ : only in combination with --json; generates `$comment` OpenAPI 3.1 keyword for all `samm:see` attributes|
-                                        |  _--parameter-file, -p_ : the path to a file including the parameter for the Aspect API endpoints| For detailed description, see the section bellow
-                                        |  _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the version for the Aspect API|
-                                        |  _--resource-path, -r_ : the resource path for the Aspect API endpoints| For detailed description, see the section bellow
-                                        |  _--include-query-api, -q_ : include the path for the Query Aspect API Endpoint in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification|
-                                        |  _--paging-none, -pn_ : exclude paging information for the Aspect API Endpoint in the https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification|
-                                        |  _--paging-cursor-based, -pc_ : in case there is more than one paging possibility, it has to be cursor based paging|
-                                        |  _--paging-offset-based, -po_ : in case there is more than one paging possibility, it has to be offset based paging|
-                                        |  _--paging-time-based, -pt_ : in case there is more than one paging possibility, it has to be time based paging|
-                                        |  _--language, -l_ : The language from the model for which an OpenAPI specification should be generated (default: en) |  `samm aspect AspectModel.ttl to openapi -l de`|
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.3+| aspect <model> to json             | Generate example JSON payload data for an Aspect Model        | `samm aspect AspectModel.ttl to json`
-                                        |  _--output, -o_ : output file path (default: stdout)           |
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.3+| aspect <model> to schema           | Generate JSON schema for an Aspect Model                       | `samm aspect AspectModel.ttl to schema`
-                                        |  _--output, -o_ : output file path (default: stdout)           |
-                                        |  _--language, -l_ : The language from the model for which a JSON schema should be generated (default: en) |  `samm aspect AspectModel.ttl to schema -l de`|
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.4+| aspect <model> to aas              | Generate Asset Administration Shell (AAS) submodel template for an Aspect Model  | `samm aspect AspectModel.ttl to aas`
-                                        |  _--output, -o_ : output file path (default: stdout)           |
-                                        |  _--format, -f_ : output file format (xml, json, or aasx, default: xml)|
-| _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+| help                             | Get overview of all commands                                                            | `samm help`
+| help <subcommand>                | Get help for a specific subcommand                                                      | `samm help aspect`
+| aspect help <aspect subcommand>  | Get help for `aspect` subcommands                                                       | `samm aspect help validate`
+.2+| aspect <model> validate       | Validate Aspect Model                                                                   | `samm aspect AspectModel.ttl validate`
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
+.2+| aspect <model> prettyprint    | Pretty-print Aspect Model                                                               | `samm aspect AspectModel.ttl prettyprint`
+                                   | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
+.2+| aspect <model> migrate        | Migrate Aspect Model to the latest SAMM version                                         | `samm aspect AspectModel.ttl migrate AspectModel.ttl`
+                                   | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl migrate AspectModel.ttl -o c:\Results\MigratedModel.ttl`
+.5+| aspect <model> to html        | Generate HTML documentation for an Aspect Model                                         | `samm aspect AspectModel.ttl to html`
+                                   | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl to html -o c:\Model.html`
+                                   | _--css, -c_ : CSS file with custom styles to be included in the generated HTML
+                                       documentation                                                                         | `samm aspect AspectModel.ttl to html -c c:\styles.css`
+                                   | _--language, -l_ : The language from the model for which the HTML should be generated
+                                       (default: en)                                                                         | `samm aspect AspectModel.ttl to html -l de`
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to html --custom-resolver myresolver.bat`
+.4+| aspect <model> to png         | Generate PNG diagram for Aspect Model                                                   | `samm aspect AspectModel.ttl to png`
+                                   | _--output, -o_ : output file path (default: stdout); as PNG is a binary format, it is
+                                       strongly recommended to output the result to a file by using the -o option or the
+                                       console redirection operator '>')|
+                                   | _--language, -l_ : the language from the model for which the diagram should be
+                                       generated (default: en)                                                               |
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to png --custom-resolver resolver.jar`
+.4+| aspect <model> to svg         | Generate SVG diagram for Aspect Model                                                   | `samm aspect AspectModel.ttl to svg`
+                                   | _--output, -o_ : the output will be saved to the given file                             |
+                                   | _--language, -l_ : the language from the model for which the diagram should be
+                                       generated (default: en)                                                               |
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
+.8+| aspect <model> to java        | Generate Java classes from an Aspect Model                                              | `samm aspect AspectModel.ttl to java`
+                                   | _--output-directory, -d_ : output directory to write files to (default:
+                                       current directory)                                                                    |
+                                   | _--package-name, -pn_ : package to use for generated Java classes                       | `samm aspect AspectModel.ttl to java -pn org.company.product`
+                                   | _--no-jackson, -nj_ : disable https://github.com/FasterXML/jackson[Jackson] annotation
+                                       generation in generated Java classes                                                  |
+                                   | _--template-library-file, -tlf_ : the path and name of the
+                                       https://velocity.apache.org/[Velocity] template file containing the macro library     |
+                                   | _--execute-library-macros, -elm_ : Execute the macros provided in the
+                                       https://velocity.apache.org/[Velocity] macro library                                  |
+                                   | _--static, -s_ : generate Java domain classes for a Static Meta Model                   |
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.15+| aspect <model> to openapi    | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to openapi -j`
+                                   | _--output, -o_ : output file path (default: stdout)                                     |
+                                   | _--api-base-url, -b_ : the base url for the Aspect API used in the
+                                       https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to openapi -j -b \http://mysite.de`
+                                   | _--json, -j_ : generate a JSON specification for an Aspect Model (default format
+                                       is YAML)                                                                              |
+                                   | _--comment, -c_ : only in combination with --json; generates `$comment`
+                                       OpenAPI 3.1 keyword for all `samm:see` attributes                                     |
+                                   | _--parameter-file, -p_ : the path to a file including the parameter for the Aspect
+                                       API endpoints                                                                         | For detailed description, see the section bellow
+                                   | _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the
+                                       version for the Aspect API                                                            |
+                                   | _--resource-path, -r_ : the resource path for the Aspect API endpoints                  | For detailed description, see the section bellow
+                                   | _--include-query-api, -q_ : include the path for the Query Aspect API Endpoint in the
+                                       https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           |
+                                   | _--paging-none, -pn_ : exclude paging information for the Aspect API Endpoint in the
+                                       https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           |
+                                   | _--paging-cursor-based, -pc_ : in case there is more than one paging possibility,
+                                       it must be cursor based paging                                                        |
+                                   | _--paging-offset-based, -po_ : in case there is more than one paging possibility,
+                                       it must be offset based paging                                                        |
+                                   | _--paging-time-based, -pt_ : in case there is more than one paging possibility,
+                                       it must be time based paging                                                          |
+                                   | _--language, -l_ : The language from the model for which an OpenAPI specification should
+                                       be generated (default: en)                                                            | `samm aspect AspectModel.ttl to openapi -l de`
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.3+| aspect <model> to json        | Generate example JSON payload data for an Aspect Model                                  | `samm aspect AspectModel.ttl to json`
+                                   | _--output, -o_ : output file path (default: stdout)                                     |
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.4+| aspect <model> to schema      | Generate JSON schema for an Aspect Model                                                | `samm aspect AspectModel.ttl to schema`
+                                   | _--output, -o_ : output file path (default: stdout)                                     |
+                                   | _--language, -l_ : The language from the model for which a JSON schema should be
+                                       generated (default: en)                                                               | `samm aspect AspectModel.ttl to schema -l de`
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.4+| aspect <model> to aas         | Generate Asset Administration Shell (AAS) submodel template for an Aspect Model         | `samm aspect AspectModel.ttl to aas`
+                                   | _--output, -o_ : output file path (default: stdout)                                     |
+                                   | _--format, -f_ : output file format (xml, json, or aasx, default: xml)                  |
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 |===
 
 === Custom model resolver
