@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.generator.docu;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.ByteArrayOutputStream;
@@ -37,13 +38,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE,
-         names = { "MODEL_WITH_CYCLES" // contains cycles, the calculation of used languages would run into an infinite loop
-         } )
+   @EnumSource( value = TestAspect.class )
    public void testGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
          final String html = generateHtmlDocumentation( testAspect, KnownVersion.getLatest() );
          assertThat( html ).doesNotContain( "UnnamedCharacteristic" );
+         // No unresolved template variables
+         assertThat( html ).doesNotContainPattern( "$[a-zA-Z]" );
       } ).doesNotThrowAnyException();
    }
 

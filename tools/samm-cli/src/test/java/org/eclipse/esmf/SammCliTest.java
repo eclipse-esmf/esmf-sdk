@@ -303,6 +303,7 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToHtmlToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html" );
       assertThat( result.stdout() ).contains( "<html" );
+      assertThat( result.stdout() ).doesNotContainPattern( "$[a-zA-Z]" );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -314,6 +315,7 @@ public class SammCliTest extends MetaModelVersions {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "--css",
             customCssFile.getAbsolutePath() );
       assertThat( result.stdout() ).contains( "<html" );
+      assertThat( result.stdout() ).doesNotContainPattern( "$[a-zA-Z]" );
       assertThat( result.stdout() ).contains( customCss );
       assertThat( result.stderr() ).isEmpty();
    }

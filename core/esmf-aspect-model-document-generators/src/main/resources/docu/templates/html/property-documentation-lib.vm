@@ -43,7 +43,7 @@
         </div>
     #end
 
-    #if( !$property.isAbstract() && $property.getCharacteristic().get() )
+    #if( !$property.isAbstract() && $property.getCharacteristic().isPresent() )
         <div class="flex border-b pb-1 py-4">
             <div class="w-80">$i18n.getText( "docu.label.characteristic" )</div>
             <div class="w-full">
@@ -52,7 +52,7 @@
         </div>
     #end
 
-    #if( $property.getExampleValue() )
+    #if( $property.getExampleValue().isPresent() )
         <div class="flex border-b pb-1 py-4">
             <div class="w-80">$i18n.getText( "docu.label.example" )</div>
             <div class="w-full">$property.getExampleValue().get().getValue()</div>
