@@ -151,9 +151,10 @@ Please bear in mind that these blocks are snippets or fragments of a larger whol
 
 Please consider the following model fragment, with the attention focused on the numbered elements:
 
+[source,turtle,subs="attributes+,+quotes"]
 ----
-@prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.0.0#> .
-@prefix : <urn:samm:com.mycompany.myproduct:2.0.0#> . <1>
+@prefix : <urn:samm:{example-ns}.myapplication:1.0.0#> .
+@prefix samm: <{samm}> .
 
 :Test a samm:Aspect; <3>
     samm:preferredName "TestAspect"@en ; <2>
@@ -220,6 +221,7 @@ and the definitions for request bodies and responses in the corresponding blocks
 For each Aspect in the model, an entry in the `components/schemas` part of the OpenAPI specification is generated.
 For an example Aspect from the following fragment:
 
+[source,turtle]
 ----
 :Test a samm:Aspect; <1>
     samm:properties (
@@ -265,6 +267,7 @@ an entry like the one given in the following JSON will be generated:
 
 If the Aspect also has a non-empty list of operations defined, like the one in the following example:
 
+[source,turtle]
 ----
 :AspectWithOperation a samm:Aspect ;
    samm:properties ( ) ;

@@ -9,7 +9,7 @@ Models in the build of their maven projects to, for example, generate code from 
 
 To include the plugin, use the following dependency:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <dependency>
     <groupId>org.eclipse.esmf</groupId>
@@ -29,7 +29,7 @@ The `validate` goal validates whether a given Aspect Model adheres to the SAMM. 
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -73,7 +73,7 @@ default life cycle phase for the goal is `generate-sources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -121,7 +121,7 @@ default life cycle phase for the goal is `generate-sources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -168,7 +168,7 @@ cycle phase for the goal is `generate-resources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -213,7 +213,7 @@ default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -272,7 +272,7 @@ The default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -318,7 +318,7 @@ SVG, PNG or https://www.graphviz.org/[Graphviz/DOT]. The default life cycle phas
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -367,7 +367,7 @@ the goal is `generate-resources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -411,7 +411,7 @@ default life cycle phase for the goal is `initialize`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -456,7 +456,7 @@ specified in the `outputDirectory` property. The default life cycle phase for th
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
