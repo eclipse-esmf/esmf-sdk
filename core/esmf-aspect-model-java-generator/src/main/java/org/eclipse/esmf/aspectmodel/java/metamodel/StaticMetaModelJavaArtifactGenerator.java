@@ -26,9 +26,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
 import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
@@ -104,10 +101,14 @@ import org.eclipse.esmf.staticmetamodel.StaticUnitProperty;
 import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintContainerProperty;
 import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintProperty;
 import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintUnitProperty;
-import org.jboss.forge.roaster.Roaster;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.jboss.forge.roaster.Roaster;
 
 /**
  * A {@link ArtifactGenerator} that generates static meta classes
@@ -223,8 +224,8 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
 
       final Properties engineConfiguration = new Properties();
       if ( config.executeLibraryMacros() ) {
-         engineConfiguration.put( "velocimacro.library", config.templateLibFile().getName() );
-         engineConfiguration.put( "file.resource.loader.path", config.templateLibFile().getParent() );
+         engineConfiguration.put( RuntimeConstants.VM_LIBRARY, config.templateLibFile().getName() );
+         engineConfiguration.put( RuntimeConstants.FILE_RESOURCE_LOADER_PATH, config.templateLibFile().getParent() );
       }
 
       final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-static-class" );
