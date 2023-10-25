@@ -5,31 +5,17 @@ Aspect Model.
 
 ## Diagram Generator
 
-The diagram generator can generate an image in SVG, PNG or DOT format.
-
-The `boxmodel.ttl` file contains the definition of an intermediate format which describes the boxes
-in the diagram as well as the edges between these boxes. For each SAMM element a SPARQL construct
-query resides in its own file, see the `*2boxmodel.sparql` files, which creates a box or edge for
-the SAMM element. Finally the `boxmodel2dot.sparql` construct query creates DOT statements from the
-boxes created for an Aspect Model. These statements are then added to the `aspect2dot.mustache`
-template to create the final digraph required by Graphviz. Graphviz is then used to render an image
-in the specified format.
+The diagram generator can generate an image in SVG or PNG format.
 
 ### How it works
 
-1. For each specified language the `Aspect to Box Model` files (.sparql) are loaded
-2. The resulting query is executed against the loaded Aspect Model to create box for each Aspect
-   Model element as well as the connections between them
-3. The `Box Model to DOT` query is executed against the resulting Model containing these boxes
-4. The final digraph is rendered using the `Aspect to DOT` mustache template applied to the
-   resulting DOT string
-5. If the requested format was DOT, the result is directly written to the specified location
-6. For the SVG and PNG formats the result is passed to the Graphviz engine to be rendered in the
-   corresponding format and written to the specified location
-For more information on SPARQL construct queries, Graphviz and Mustache see:
-- [SPARQL Construct](https://www.w3.org/TR/rdf-sparql-query/#construct)
-- [Graphviz](https://www.graphviz.org/)
-- [Mustache](https://mustache.github.io/)
+1. The Aspect Model file (.ttl) is loaded
+2. The Aspect Java model is instantiated with the contents of the loaded Aspect Model
+3. A graph representation of the model is built
+4. The graph representation is rendered into SVG
+5. The used font is embedded as a Base64 encoded string
+6. If necessary, the adjusted SVG is rendered into a PNG
+7. The result is written to the specified location
 
 ## Document Generator
 
@@ -39,15 +25,14 @@ page to run standalone without dependencies to the internet.
 
 ### How it works
 
-For the generation the aspect java meta model is used.
+For the generation the Aspect Java model is used.
 
-1. The Aspect Model definition file (.ttl) is loaded
-2. The aspect meta model is instantiated with the contents of the loaded aspect meta model
-   definition
-3. The instantiated aspect meta model is used to generate the HTML page using Velocity templates
+1. The Aspect Model file (.ttl) is loaded
+2. The Aspect Java model is instantiated with the contents of the loaded Aspect Model
+3. The instantiated Aspect Model is used to generate the HTML page using Velocity templates
 4. The diagram for the Aspect Model is generated in SVG format and embedded into the HTML as a
-   Base64 encoded String
-5. The required JavaScript, styles and font will be embedded into the HTML as a String
+   Base64 encoded string
+5. The required JavaScript, styles and font are embedded in the HTML
 6. The HTML is written to the specified location
 
 The HTML page is generated for each language which is present in the Aspect Model.
@@ -80,11 +65,9 @@ The JSON generator creates a sample JSON payload for an Aspect Model.
 
 For the generation the Aspect Java model is used.
 
- 1. The Aspect Model definition file (.ttl) is loaded
- 2. The aspect meta model is instantiated with the contents of the loaded aspect meta model
-    definition
- 3. The instantiated aspect meta model is used to generate the JSON payload by iterating the
-    elements of the aspect meta model and extracting the given example values for the properties. If
-    no example value is given a random value is generated
- 4. The generated JSON is written to the specified location
-
+1. The Aspect Model file (.ttl) is loaded
+2. The Aspect Java model is instantiated with the contents of the loaded Aspect Model
+3. The instantiated Aspect Model is used to generate the JSON payload by iterating the
+   elements of the Aspect Model and extracting the given example values for the properties. If
+   no example value is given a random value with the correct type is generated
+4. The generated JSON is written to the specified location

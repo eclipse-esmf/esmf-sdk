@@ -9,7 +9,7 @@ Models in the build of their maven projects to, for example, generate code from 
 
 To include the plugin, use the following dependency:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <dependency>
     <groupId>org.eclipse.esmf</groupId>
@@ -18,7 +18,7 @@ To include the plugin, use the following dependency:
 </dependency>
 ----
 
-NOTE: the current implementation of the `esmf-aspect-model-maven-plugin` uses the
+NOTE: The current implementation of the `esmf-aspect-model-maven-plugin` uses the
 `FileSystemStrategy` to resolve Aspect Models. See
 xref:java-aspect-tooling.adoc#understanding-model-resolution[Understanding Model Resolution] for
 more information.
@@ -29,7 +29,7 @@ The `validate` goal validates whether a given Aspect Model adheres to the SAMM. 
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -44,9 +44,9 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
            <includes>
-              <include>{urn-of-aspect-model-to-be-included}</include>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
         </configuration>
      </plugin>
@@ -60,7 +60,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | detailedValidationMessages | Print detailed validation messages | boolean | false | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 |===
 
@@ -73,7 +73,7 @@ default life cycle phase for the goal is `generate-sources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -88,11 +88,11 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
            <includes>
-              <include>{urn-of-aspect-model-to-be-included}</include>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
-           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
   </plugins>
@@ -105,7 +105,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
 | `packageName` | The package name for the generated Java files. | `String` | The namespace of the given Aspect Model. | {nok}
@@ -121,7 +121,7 @@ default life cycle phase for the goal is `generate-sources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -136,11 +136,11 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
            <includes>
-              <include>{urn-of-aspect-model-to-be-included}</include>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
-           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
   </plugins>
@@ -153,7 +153,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
 | `packageName` | The package name for the generated Java files. | `String` | The namespace of the given Aspect Model. | {nok}
@@ -168,7 +168,7 @@ cycle phase for the goal is `generate-resources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -183,11 +183,11 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
            <includes>
-              <include>{urn-of-aspect-model-to-be-included}</include>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
-           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
   </plugins>
@@ -200,7 +200,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON Schema will be written to. | `String` | none | {ok}
 | `language` | The language from the model for which a JSON Schema should be generated. | `String` | en | {nok}
@@ -213,7 +213,7 @@ default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -228,12 +228,12 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
            <includes>
-              <include>{urn-of-aspect-model-to-be-included}</include>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
            <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
-           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
            <outputFormat>yaml</outputFormat>
         </configuration>
      </plugin>
@@ -247,7 +247,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated OpenAPI Specification will be written to. | `String` | none | {ok}
 | `aspectApiBaseUrl` | The base URL for the Aspect API OpenAPI specification. | `String` | none | {ok}
@@ -272,7 +272,7 @@ The default life cycle phase for the goal is `generate-resources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -287,11 +287,11 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
            <includes>
-              <include>{urn-of-aspect-model-to-be-included}</include>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
-           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
   </plugins>
@@ -304,7 +304,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated HTML document will be written to. | `String` | none | {ok}
 | `htmlCustomCSSFilePath` | Path to a CSS file with custom styles to be included in the generated HTML documentation. | `String` | none | {nok}
@@ -313,12 +313,12 @@ Configuration Properties:
 === Generating SVG or PNG Diagrams
 
 The `generateDiagram` goal generates an automatically layouted diagram for a given Aspect Model in
-SVG, PNG or https://www.graphviz.org/[Graphviz/DOT]. The default life cycle phase for the goal is
+SVG or PNG. The default life cycle phase for the goal is
 `generate-resources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -333,11 +333,11 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
            <includes>
-              <include>{urn-of-aspect-model-to-be-included}</include>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
-           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
            <targetFormats>
               <targetFormat>png</targetFormat>
            </targetFormats>
@@ -353,7 +353,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated diagrams will be written to. | `String` | none | {ok}
 | `targetFormats` | A list formats in which the diagram(s) will be created. A diagram will be generated for each specified format. | `String` | none | {ok}
@@ -367,7 +367,7 @@ the goal is `generate-resources`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -382,11 +382,11 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
            <includes>
-              <include>{urn-of-aspect-model-to-be-included}</include>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
-           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
   </plugins>
@@ -399,7 +399,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
 |===
@@ -411,7 +411,7 @@ default life cycle phase for the goal is `initialize`.
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -426,11 +426,11 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
            <includes>
-              <include>{urn-of-aspect-model-to-be-included}</include>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
-           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
   </plugins>
@@ -443,7 +443,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the updated Aspect Model will be written to. | `String` | none | {ok}
 |===
@@ -456,7 +456,7 @@ specified in the `outputDirectory` property. The default life cycle phase for th
 
 Usage:
 
-[source,maven,subs=attributes+]
+[source,xml,subs=attributes+]
 ----
 <build>
   <plugins>
@@ -471,11 +471,11 @@ Usage:
            </execution>
         </executions>
         <configuration>
-           <modelsRootDirectory>{path-to-models-root}</modelsRootDirectory>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
            <includes>
-              <include>{urn-of-aspect-model-to-be-included}</include>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
            </includes>
-           <outputDirectory>{directory-for-generated-source-files}</outputDirectory>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
         </configuration>
      </plugin>
   </plugins>
@@ -488,7 +488,7 @@ Configuration Properties:
 |===
 | Property | Description | Type | Default Value | Required
 | detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `${basedir}/src/main/resources/aspects` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory containing the pretty printed Aspect Model. | `String` | none | {ok}
 |===
