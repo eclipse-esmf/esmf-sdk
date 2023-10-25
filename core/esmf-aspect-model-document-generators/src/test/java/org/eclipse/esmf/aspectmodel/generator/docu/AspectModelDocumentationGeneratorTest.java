@@ -13,13 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel.generator.docu;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -40,26 +38,21 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE,
-         names = { "MODEL_WITH_CYCLES" // contains cycles, the calculation of used languages would run into an infinite loop
-         } )
+   @EnumSource( value = TestAspect.class )
    public void testGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> {
          final String html = generateHtmlDocumentation( testAspect, KnownVersion.getLatest() );
          assertThat( html ).doesNotContain( "UnnamedCharacteristic" );
+         // No unresolved template variables
+         assertThat( html ).doesNotContainPattern( "$[a-zA-Z]" );
       } ).doesNotThrowAnyException();
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testAspectWithEntityCollection( final KnownVersion metaModelVersion ) throws Throwable {
-      final File target = new File( "target", "AspectWithEntityCollection.html" );
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ENTITY_COLLECTION, metaModelVersion );
 
-      try ( final BufferedWriter writer = new BufferedWriter( new FileWriter( target ) ) ) {
-         writer.write( htmlResult );
-         writer.flush();
-      }
       assertThat( htmlResult ).isNotEmpty();
       assertThat( htmlResult ).contains( "<h1 id=\"AspectWithEntityCollection\">Aspect Model Test Aspect</h1>" );
       assertThat( htmlResult ).contains(
@@ -71,13 +64,8 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testAspectWithCollectionOfSimpleType( final KnownVersion metaModelVersion ) throws Throwable {
-      final File target = new File( "target", "AspectWithCollectionOfSimpleType.html" );
       final String htmlResult = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE, metaModelVersion );
 
-      try ( final BufferedWriter writer = new BufferedWriter( new FileWriter( target ) ) ) {
-         writer.write( htmlResult );
-         writer.flush();
-      }
       assertThat( htmlResult ).isNotEmpty();
       assertThat( htmlResult ).contains( "<h1 id=\"AspectWithCollectionOfSimpleType\">Aspect Model AspectWithCollectionOfSimpleType</h1>" );
       assertThat( htmlResult ).contains(
@@ -154,9 +142,11 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    public void testAspectWithAbstractSingleEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
       assertThat( documentation ).contains(
-            "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractSingleEntity-org-eclipse-esmf-test-testProperty-property\">testProperty</h3>" );
+            "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractSingleEntity-org-eclipse-esmf-test-testProperty-property\">testProperty</h3"
+                  + ">" );
       assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
+            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty"
+                  + "</h5>" );
       assertThat( documentation ).contains(
             "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">entityProperty</h5>" );
    }
@@ -168,7 +158,8 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
       assertThat( documentation ).contains(
             "<h3 id=\"org-eclipse-esmf-test-AspectWithAbstractEntity-org-eclipse-esmf-test-testProperty-property\">Test Property</h3>" );
       assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
+            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty"
+                  + "</h5>" );
       assertThat( documentation ).contains(
             "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">Entity Property</h5>" );
    }
@@ -178,9 +169,11 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    public void testAspectWithCollectionWithAbstractEntityExpectSuccess( final KnownVersion metaModelVersion ) throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
       assertThat( documentation ).contains(
-            "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionWithAbstractEntity-org-eclipse-esmf-test-testProperty-property\">testProperty</h3>" );
+            "<h3 id=\"org-eclipse-esmf-test-AspectWithCollectionWithAbstractEntity-org-eclipse-esmf-test-testProperty-property"
+                  + "\">testProperty</h3>" );
       assertThat( documentation ).contains(
-            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty</h5>" );
+            "<h5 id=\"org-eclipse-esmf-test-AbstractTestEntity-org-eclipse-esmf-test-abstractTestProperty-property\">abstractTestProperty"
+                  + "</h5>" );
       assertThat( documentation ).contains(
             "<h5 id=\"org-eclipse-esmf-test-ExtendingTestEntity-org-eclipse-esmf-test-entityProperty-property\">entityProperty</h5>" );
    }
@@ -199,11 +192,12 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    public void testAspectWithConstraintWithSeeAttribute( final KnownVersion metaModelVersion ) throws IOException {
       final String documentation = generateHtmlDocumentation( TestAspect.ASPECT_WITH_CONSTRAINT_WITH_SEE_ATTRIBUTE, metaModelVersion );
       assertThat( documentation ).contains(
-              "<h3 id=\"org-eclipse-esmf-test-AspectWithConstraintWithSeeAttribute-org-eclipse-esmf-test-testPropertyTwo-property\">testPropertyTwo</h3>" );
+            "<h3 id=\"org-eclipse-esmf-test-AspectWithConstraintWithSeeAttribute-org-eclipse-esmf-test-testPropertyTwo-property"
+                  + "\">testPropertyTwo</h3>" );
       assertThat( documentation ).contains(
-              "<div class=\"table-cell pb-3 col-span-2\">Trait</div>" );
+            "<div class=\"table-cell pb-3 col-span-2\">Trait</div>" );
       assertThat( documentation ).contains(
-              "<li>http://example.com/me2</li>" );
+            "<li>http://example.com/me2</li>" );
    }
 
    private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion ) throws IOException {
