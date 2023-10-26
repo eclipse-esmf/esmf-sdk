@@ -17,21 +17,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 import org.eclipse.digitaltwin.aas4j.v3.model.AASSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetAdministrationShell;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
-import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.EmbeddedDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
@@ -96,7 +90,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.collect.ImmutableMap;
 
 public class AspectModelAASVisitor implements AspectVisitor<Environment, Context> {
 
@@ -106,32 +99,6 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    public static final String DEFAULT_LOCALE = "EN";
    public static final String CONCEPT_DESCRIPTION_CATEGORY = "APPLICATION_CLASS";
    public static final String ID_PREFIX = "id_";
-
-   /**
-    * Maps Aspect types to DataTypeIEC61360 Schema types, with no explicit mapping defaulting to
-    * string
-    */
-   private static final Map<Resource, DataTypeIec61360> TYPE_MAP =
-         ImmutableMap.<Resource, DataTypeIec61360> builder()
-               .put( XSD.xboolean, DataTypeIec61360.BOOLEAN )
-               .put( XSD.decimal, DataTypeIec61360.INTEGER_MEASURE )
-               .put( XSD.integer, DataTypeIec61360.INTEGER_MEASURE )
-               .put( XSD.xfloat, DataTypeIec61360.REAL_MEASURE )
-               .put( XSD.xdouble, DataTypeIec61360.REAL_MEASURE )
-               .put( XSD.xbyte, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.xshort, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.xint, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.xlong, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.unsignedByte, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.unsignedShort, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.unsignedInt, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.unsignedLong, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.positiveInteger, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.nonPositiveInteger, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.negativeInteger, DataTypeIec61360.INTEGER_COUNT )
-               .put( XSD.nonNegativeInteger, DataTypeIec61360.INTEGER_COUNT )
-               .put( RDF.langString, DataTypeIec61360.STRING )
-               .build();
 
    private interface SubmodelElementBuilder {
       SubmodelElement build( Property property );
@@ -404,7 +371,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .preferredName( preferredNames )
             .shortName( LangStringMapper.SHORT_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) )
 
-            .dataType( mapIEC61360DataType( property.getCharacteristic() ) )
+            .dataType( AasDataTypeMapper.mapIEC61360DataType( property.getCharacteristic() ) )
             .build();
    }
 
@@ -419,19 +386,6 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .shortName( LangStringMapper.SHORT_NAME.createLangString( aspect.getName(), DEFAULT_LOCALE ) )
             .build();
 
-   }
-
-   private DataTypeIec61360 mapIEC61360DataType( final Optional<Characteristic> characteristic ) {
-      return mapIEC61360DataType( characteristic.flatMap( Characteristic::getDataType ).map( Type::getUrn ).orElse( RDF.langString.getURI() ) );
-   }
-
-   private DataTypeIec61360 mapIEC61360DataType( final Characteristic characteristic ) {
-      return mapIEC61360DataType( Optional.of( characteristic ) );
-   }
-
-   private DataTypeIec61360 mapIEC61360DataType( final String urn ) {
-      final Resource resource = ResourceFactory.createResource( urn );
-      return TYPE_MAP.getOrDefault( resource, DataTypeIec61360.STRING );
    }
 
    private void createSubmodelElement( final SubmodelElementBuilder op, final Context context ) {
@@ -638,7 +592,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       if ( embeddedDataSpecification.stream().findFirst().isPresent() ) {
          final DataSpecificationIec61360 dataSpecificationContent =
                (DataSpecificationIec61360) embeddedDataSpecification.stream().findFirst().get().getDataSpecificationContent();
-         dataSpecificationContent.setDataType( mapIEC61360DataType( enumeration ) );
+         dataSpecificationContent.setDataType( AasDataTypeMapper.mapIEC61360DataType( enumeration ) );
          final List<ValueReferencePair> valueReferencePairs =
                enumeration.getValues().stream()
                      .map(

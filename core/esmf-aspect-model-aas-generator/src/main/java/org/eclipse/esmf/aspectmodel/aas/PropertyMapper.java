@@ -12,9 +12,6 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXSD;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
@@ -26,8 +23,6 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Type;
-
-import static org.eclipse.esmf.aspectmodel.aas.AasDataTypeMapper.ASPECT_TYPE_TO_AAS_XSD_TYPE_MAP;
 
 /**
  * Base interface for any class that can map a property to a {@link SubmodelElement}.

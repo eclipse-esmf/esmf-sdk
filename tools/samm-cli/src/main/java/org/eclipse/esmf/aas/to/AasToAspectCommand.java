@@ -30,13 +30,17 @@ public class AasToAspectCommand extends AbstractCommand {
    private AasToCommand parentCommand;
 
    @CommandLine.Option(
-           names = { "--output", "-o" },
-           description = "Output file path" )
+         names = { "--output", "-o" },
+         description = "Output file path" )
    private String outputFilePath = "-";
 
    @CommandLine.Option(
-           names = { "--format", "-f" },
-           description = "The file format the AAS is to be generated. Valid options are \"" + TTL + "\". Default is \"" + TTL + "\"." )
+         names = { "--subModelName", "-smn" },
+         description = "Provide submodel name for generating just provided model." )
+   private String submodelName = "-";
+   @CommandLine.Option(
+         names = { "--format", "-f" },
+         description = "The file format the AAS is to be generated. Valid options are \"" + TTL + "\". Default is \"" + TTL + "\"." )
    private String format = TTL;
 
    @CommandLine.Mixin
@@ -46,23 +50,23 @@ public class AasToAspectCommand extends AbstractCommand {
    public void run() {
       String path = parentCommand.parentCommand.getInput();
 
-         Environment environment = null;
+      Environment environment = null;
 
-         try {
-            if (path.contains( ".xml" )) {
-               environment = new XmlDeserializer().read(new FileInputStream(path));
-            }
-
-            if (path.contains( ".aasx" )) {
-               AASXDeserializer deserializer = new AASXDeserializer(new FileInputStream(path));
-               environment = new XmlDeserializer().read(deserializer.getXMLResourceString());
-            }
-
-            AASModelAspectGenerator aasModelAspectGenerator = new AASModelAspectGenerator();
-            aasModelAspectGenerator.generateTtlFile(environment, name -> getStreamForFile(outputFilePath));
-
-         } catch ( InvalidFormatException | DeserializationException | IOException e ) {
-            throw new RuntimeException( e );
+      try {
+         if ( path.contains( ".xml" ) ) {
+            environment = new XmlDeserializer().read( new FileInputStream( path ) );
          }
+
+         if ( path.contains( ".aasx" ) ) {
+            AASXDeserializer deserializer = new AASXDeserializer( new FileInputStream( path ) );
+            environment = new XmlDeserializer().read( deserializer.getXMLResourceString() );
+         }
+
+         AASModelAspectGenerator aasModelAspectGenerator = new AASModelAspectGenerator();
+         aasModelAspectGenerator.generateTtlFile( environment, submodelName, name -> getStreamForFile( outputFilePath ) );
+
+      } catch ( InvalidFormatException | DeserializationException | IOException e ) {
+         throw new RuntimeException( e );
+      }
    }
 }
