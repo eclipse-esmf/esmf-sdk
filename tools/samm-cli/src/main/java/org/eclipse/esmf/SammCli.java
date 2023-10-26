@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.eclipse.esmf.aas.AasCommand;
 import org.eclipse.esmf.aspect.AspectCommand;
 
 import org.fusesource.jansi.AnsiConsole;
