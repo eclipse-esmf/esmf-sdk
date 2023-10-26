@@ -16,19 +16,25 @@ package org.eclipse.esmf;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.commons.lang3.SystemUtils;
+import org.eclipse.esmf.substitution.IsWindows;
 
 /**
  * Utility class providing helpers and workarounds needed to get the native image working properly on different platforms.
  */
 public class NativeImageHelpers {
-
    public static void ensureRequiredEnvironment() {
-      if ( System.getProperty( "java.home" ) == null && SystemUtils.OS_NAME.startsWith( "Windows" ) ) { // GraalVM native image on Windows
-         // font handling which we use in diagram/document generators relies on this variable being set
-         // and the font config files must be present in the "lib" subdirectory of the path from where the native image is started
+      if ( System.getProperty( "java.home" ) == null ) {
+         // Font handling which we use in diagram/document generators relies on this variable being set
+         // and the font config files must be present in the "lib" subdirectory of the path from where the native image is started.
+         // The check for the java.home property is done by sun.awt.FontConfiguration#findFontConfigFile which is called
+         // transitively by other AWT code
          final Path nativeImagePath = Paths.get( "." ).toAbsolutePath().normalize();  // current working directory
          System.setProperty( "java.home", nativeImagePath.toString() );
+
+         if ( new IsWindows().getAsBoolean() ) {
+            // Set to headless mode, because instantiation of AWT graphics context in Windows is flaky
+            System.setProperty( "java.awt.headless", "true" );
+         }
       }
    }
 }

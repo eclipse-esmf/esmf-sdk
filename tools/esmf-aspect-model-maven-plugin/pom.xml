@@ -60,12 +60,18 @@
       <dependency>
          <groupId>org.apache.maven.plugin-testing</groupId>
          <artifactId>maven-plugin-testing-harness</artifactId>
-         <scope>test</scope>
          <version>${maven-plugin-testing-harness-version}</version>
+         <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.assertj</groupId>
          <artifactId>assertj-core</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <!-- Maven plugin testing has a transitive dependency on Junit 4, but does not declare it explictly -->
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
          <scope>test</scope>
       </dependency>
    </dependencies>

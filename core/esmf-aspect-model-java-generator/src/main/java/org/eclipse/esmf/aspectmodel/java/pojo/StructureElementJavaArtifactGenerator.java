@@ -22,15 +22,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.XSD;
-import org.apache.velocity.app.FieldMethodizer;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
 import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
@@ -39,19 +34,8 @@ import org.eclipse.esmf.aspectmodel.java.JavaArtifact;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
-import org.jboss.forge.roaster.Roaster;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.ImmutableMap;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-
 import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
@@ -59,6 +43,20 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.ImmutableMap;
+import jakarta.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.XSD;
+import org.apache.velocity.app.FieldMethodizer;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.jboss.forge.roaster.Roaster;
 
 /**
  * A {@link ArtifactGenerator} that generates Java Pojo code
@@ -129,8 +127,8 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
 
       final Properties engineConfiguration = new Properties();
       if ( config.executeLibraryMacros() ) {
-         engineConfiguration.put( "velocimacro.library", config.templateLibFile().getName() );
-         engineConfiguration.put( "file.resource.loader.path", config.templateLibFile().getParent() );
+         engineConfiguration.put( RuntimeConstants.VM_LIBRARY, config.templateLibFile().getName() );
+         engineConfiguration.put( RuntimeConstants.FILE_RESOURCE_LOADER_PATH, config.templateLibFile().getParent() );
       }
 
       final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-pojo" );

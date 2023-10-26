@@ -39,12 +39,5 @@
    samm:extends :AbstractTestEntity ;
    samm:properties ( ) .
 
-:testEntityThree a samm:Entity ;
-   samm:extends :AbstractSecondTestEntity ;
-   samm:properties ( ) .
-
 :AbstractTestEntity a samm:AbstractEntity ;
-   samm:properties ( ).
-
-:AbstractSecondTestEntity a samm:AbstractEntity ;
    samm:properties ( ).

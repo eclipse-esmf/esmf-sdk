@@ -30,13 +30,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
-import org.eclipse.esmf.aspectmodel.generator.I18nLanguageBundle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.io.CharStreams;
-
 import org.eclipse.esmf.aspectmodel.generator.AspectModelHelper;
+import org.eclipse.esmf.aspectmodel.generator.I18nLanguageBundle;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
@@ -45,6 +40,11 @@ import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
+
+import com.google.common.io.CharStreams;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Asciidoc generator for a aspect model.
@@ -93,27 +93,30 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
     * (e.g., "FooAspect_en") via the callback function. The caller needs to provide an {@link OutputStream}
     * for the respective artifact, e.g. a suitable FileOutputStream.
     *
-    * @param nameMapper        The callback function that maps documentation artifact names to OutputStreams
+    * @param nameMapper The callback function that maps documentation artifact names to OutputStreams
     * @param generationOptions Additional optional options that control the document generation. See {@link
-    *                          HtmlGenerationOption} for the usable keys.
+    * HtmlGenerationOption} for the usable keys.
     * @throws IOException when serialization or deserialization fails
     */
-   public void generate( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions ) throws IOException {
+   public void generate( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions )
+         throws IOException {
       final BufferingNameMapper bufferingMapper = new BufferingNameMapper();
       generateHtmlDocu( bufferingMapper, Format.NONE );
       generateInternal( nameMapper, generationOptions, bufferingMapper );
    }
 
    /**
-    * Generates HTML documentation for Aspect Models. This version generates the document only for the language explicitly requested by the user.
+    * Generates HTML documentation for Aspect Models. This version generates the document only for the language explicitly requested by the
+    * user.
     *
-    * @param nameMapper        The callback function that maps documentation artifact names to OutputStreams
+    * @param nameMapper The callback function that maps documentation artifact names to OutputStreams
     * @param generationOptions Additional optional options that control the document generation. See {@link
-    *                          HtmlGenerationOption} for the usable keys.
-    * @param language          The language for which a document should be generated
+    * HtmlGenerationOption} for the usable keys.
+    * @param language The language for which a document should be generated
     * @throws IOException when serialization or deserialization fails
     */
-   public void generate( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions, final Locale language )
+   public void generate( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions,
+         final Locale language )
          throws IOException {
       final BufferingNameMapper bufferingMapper = new BufferingNameMapper();
       generateHtmlDocu( bufferingMapper, Format.NONE, language );
@@ -126,12 +129,13 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
     * (e.g., "FooAspect_en") via the callback function. The caller needs to provide an {@link OutputStream}
     * for the respective artifact, e.g. a suitable FileOutputStream.
     *
-    * @param nameMapper        The callback function that maps documentation artifact names to OutputStreams
+    * @param nameMapper The callback function that maps documentation artifact names to OutputStreams
     * @param generationOptions Additional optional options that control the document generation. See {@link
-    *                          HtmlGenerationOption} for the usable keys.
+    * HtmlGenerationOption} for the usable keys.
     * @throws IOException when serialization or deserialization fails
     */
-   private void generateInternal( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions,
+   private void generateInternal( final Function<String, OutputStream> nameMapper,
+         final Map<HtmlGenerationOption, String> generationOptions,
          final BufferingNameMapper bufferingMapper ) throws IOException {
       for ( final Map.Entry<String, ByteArrayOutputStream> entry : bufferingMapper.artifacts.entrySet() ) {
          final String artifactName = entry.getKey();
@@ -177,9 +181,9 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
       configuration.put( "aspectModelHelper", new AspectModelHelper( context.aspect().getMetaModelVersion() ) );
 
       final Properties engineConfiguration = new Properties();
-      engineConfiguration.put( "file.resource.loader.path", ".," + DOCU_TEMPLATE_ROOT_DIR + "/html" );
+      engineConfiguration.put( RuntimeConstants.FILE_RESOURCE_LOADER_PATH, ".," + DOCU_TEMPLATE_ROOT_DIR + "/html" );
       engineConfiguration.put( "event_handler.reference_insertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference" );
-      engineConfiguration.put( "velocimacro.library",
+      engineConfiguration.put( RuntimeConstants.VM_LIBRARY,
             DOCU_TEMPLATE_ROOT_DIR + "/html/characteristic-documentation-lib.vm," +
                   DOCU_TEMPLATE_ROOT_DIR + "/html/constraint-documentation-lib.vm," +
                   DOCU_TEMPLATE_ROOT_DIR + "/html/diagram-documentation-lib.vm," +
@@ -188,7 +192,8 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
                   DOCU_TEMPLATE_ROOT_DIR + "/html/property-documentation-lib.vm," +
                   DOCU_TEMPLATE_ROOT_DIR + "/html/common-documentation-lib.vm" );
 
-      final Predicate<Locale> byLanguage = locale -> selectedLanguage == null || locale.getLanguage().equals( selectedLanguage.getLanguage() );
+      final Predicate<Locale> byLanguage = locale -> selectedLanguage == null || locale.getLanguage()
+            .equals( selectedLanguage.getLanguage() );
       languages.stream().filter( byLanguage ).forEach( language -> {
 
          logMissingTranslations( context.aspect(), language );
@@ -241,7 +246,7 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
    }
 
    private String insertAspectModelDiagram( final String html, final Locale language ) throws IOException {
-      final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( context.rdfModel() );
+      final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( context );
       final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       diagramGenerator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, language, buffer );
       final String encodedImage = "data:image/svg+xml;base64," +

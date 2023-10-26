@@ -16,12 +16,11 @@ package examples;
 // tag::imports[]
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import io.vavr.collection.Stream;
 import io.vavr.control.Try;
-// end::imports[]
 import org.junit.jupiter.api.Test;
+// end::imports[]
 
 public class HandlingTry {
    private Try<List<String>> someMethodReturningTryOfListOfString() {

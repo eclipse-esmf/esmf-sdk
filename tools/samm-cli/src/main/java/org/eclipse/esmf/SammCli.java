@@ -16,12 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.eclipse.esmf.aas.AasCommand;
-import org.fusesource.jansi.AnsiConsole;
-
-import guru.nidi.graphviz.engine.Graphviz;
 import org.eclipse.esmf.aspect.AspectCommand;
-import org.eclipse.esmf.substitution.GraalVmJsGraphvizEngine;
+
+import org.fusesource.jansi.AnsiConsole;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = SammCli.COMMAND_NAME,
@@ -49,7 +46,8 @@ public class SammCli extends AbstractCommand {
       final CommandLine.IExecutionExceptionHandler defaultExecutionExceptionHandler = initialCommandLine.getExecutionExceptionHandler();
       commandLine = initialCommandLine.setExecutionExceptionHandler( new CommandLine.IExecutionExceptionHandler() {
          @Override
-         public int handleExecutionException( final Exception exception, final CommandLine commandLine, final CommandLine.ParseResult parseResult )
+         public int handleExecutionException( final Exception exception, final CommandLine commandLine,
+               final CommandLine.ParseResult parseResult )
                throws Exception {
             if ( exception.getClass().getName()
                   .equals( String.format( "%s.MainClassProcessLauncher$SystemExitCaptured", SammCli.class.getPackageName() ) ) ) {
@@ -90,14 +88,20 @@ public class SammCli extends AbstractCommand {
    public static void main( final String[] argv ) {
       NativeImageHelpers.ensureRequiredEnvironment();
 
-      setupGraphvizJava();
-
       // The disabling color switch needs to be checked before PicoCLI initialization
       boolean disableColor = false;
       for ( final String arg : argv ) {
          if ( arg.equals( "--disable-color" ) || arg.equals( "-D" ) ) {
             disableColor = true;
          }
+      }
+
+      // Imply disabling color when PNGs are generated, otherwise ANSI escapes scramble binary output
+      if ( argv.length >= 4
+            && argv[argv.length - 4].equals( "aspect" )
+            && argv[argv.length - 2].equals( "to" )
+            && argv[argv.length - 1].equals( "png" ) ) {
+         disableColor = true;
       }
 
       if ( !disableColor ) {
@@ -110,10 +114,6 @@ public class SammCli extends AbstractCommand {
          AnsiConsole.systemUninstall();
       }
       System.exit( exitCode );
-   }
-
-   private static void setupGraphvizJava() {
-      Graphviz.useEngine( new GraalVmJsGraphvizEngine() );
    }
 
    protected String format( final String string ) {

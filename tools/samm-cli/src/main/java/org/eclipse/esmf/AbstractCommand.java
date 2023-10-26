@@ -39,10 +39,10 @@ import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.vavr.control.Try;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractCommand implements Runnable {
    protected static final Logger LOG = LoggerFactory.getLogger( AbstractCommand.class );
@@ -50,7 +50,12 @@ public abstract class AbstractCommand implements Runnable {
    protected Try<VersionedModel> loadAndResolveModel( final File input, final ExternalResolverMixin resolverConfig ) {
       final Try<VersionedModel> versionedModel;
       if ( resolverConfig.commandLine.isBlank() ) {
-         versionedModel = AspectModelResolver.loadAndResolveModel( input );
+         if ( input.isAbsolute() ) {
+            versionedModel = AspectModelResolver.loadAndResolveModel( input );
+         } else {
+            final File newInput = new File( System.getProperty( "user.dir" ) + File.separator + input );
+            versionedModel = AspectModelResolver.loadAndResolveModel( newInput );
+         }
       } else {
          final AspectModelUrn urn = fileToUrn( input.getAbsoluteFile() );
          versionedModel = new AspectModelResolver().resolveAspectModel( new ExternalResolverStrategy( resolverConfig.commandLine ), urn );
@@ -86,10 +91,11 @@ public abstract class AbstractCommand implements Runnable {
       } ).get();
    }
 
-   protected void generateDiagram( final String inputFileName, final AspectModelDiagramGenerator.Format targetFormat, final String outputFileName,
+   protected void generateDiagram( final String inputFileName, final AspectModelDiagramGenerator.Format targetFormat,
+         final String outputFileName,
          final String languageTag, final ExternalResolverMixin resolverConfig ) throws IOException {
       final AspectContext context = loadModelOrFail( inputFileName, resolverConfig );
-      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( context.rdfModel() );
+      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( context );
       final Set<AspectModelDiagramGenerator.Format> targetFormats = new HashSet<>();
       targetFormats.add( targetFormat );
       final Set<Locale> languagesUsedInModel = LanguageCollector.collectUsedLanguages( context.rdfModel().getModel() );

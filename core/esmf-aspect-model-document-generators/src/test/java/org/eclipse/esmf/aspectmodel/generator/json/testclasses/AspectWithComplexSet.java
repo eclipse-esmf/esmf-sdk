@@ -3,11 +3,11 @@ package org.eclipse.esmf.aspectmodel.generator.json.testclasses;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * Generated class for Test Aspect. This is a test description

@@ -24,10 +24,10 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-// end::imports[]
 import java.io.File;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
+// end::imports[]
 
 public class GenerateOpenApi {
    @Test

@@ -66,8 +66,8 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.1'
-          java-version: '17'
+          java-version: '17.0.8'
+          distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
@@ -113,6 +113,18 @@ jobs:
         env:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
+      - name: Switch to Temurin JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          overwrite-settings: false
+
+      - name: Test executable jar on Temurin
+        run: |
+          cd tools/samm-cli
+          mvn -B -Denforcer.skip -Dskip.maven.surefire failsafe:integration-test -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+
       - name: Upload staging directory and Linux binary
         uses: actions/upload-artifact@v3
         with:
@@ -135,8 +147,8 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.1'
-          java-version: '17'
+          java-version: '17.0.8'
+          distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
@@ -156,8 +168,8 @@ jobs:
         # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
         uses: al-cheb/configure-pagefile-action@v1.3
         with:
-          minimum-size: 16GB
-          maximum-size: 16GB
+          minimum-size: 32GB
+          maximum-size: 32GB
           disk-root: "C:"
 
       - name: Build and run tests
@@ -211,8 +223,8 @@ jobs:
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.1'
-          java-version: '17'
+          java-version: '17.0.8'
+          distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'false'
@@ -230,7 +242,7 @@ jobs:
       - name: Prepare release
         run: |
           # Create Windows CLI zip
-          zip -9 -r samm-cli-windows.zip samm.exe *.dll lib/
+          zip -9 -r samm-cli-windows.zip samm.exe *.dll
 
       # Full release: Maven Central
       # The (apparently) only way to retrieve the staging profile id

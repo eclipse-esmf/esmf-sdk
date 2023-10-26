@@ -15,10 +15,10 @@ package org.eclipse.esmf.aspectmodel.generator.json.testclasses;
 
 import java.util.Objects;
 
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.NotNull;
 
 public class AspectWithAbstractSingleEntity {
 

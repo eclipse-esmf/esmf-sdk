@@ -55,12 +55,13 @@ public class OsProcessLauncher extends ProcessLauncher {
          final List<String> commandWithAllArguments = new ArrayList<>();
          commandWithAllArguments.addAll( commandWithArguments );
          commandWithAllArguments.addAll( context.arguments() );
-         LOG.info( "Launch process with args: {} {}",
-               commandWithAllArguments.get( 0 ), commandWithAllArguments.stream()
+         LOG.info( "Launch process in working dir {} with args: {} {}",
+               context.workingDirectory(), commandWithAllArguments.get( 0 ), commandWithAllArguments.stream()
                      .skip( 1 )
                      .map( argument -> String.format( "\"%s\"", argument ) )
                      .collect( Collectors.joining( " " ) ) );
-         final Process process = Runtime.getRuntime().exec( commandWithAllArguments.toArray( new String[0] ), null, workingDirectoryForSubprocess( context ) );
+         final Process process = Runtime.getRuntime()
+               .exec( commandWithAllArguments.toArray( new String[0] ), null, workingDirectoryForSubprocess( context ) );
          if ( context.stdin().isPresent() ) {
             IOUtils.copy( new ByteArrayInputStream( context.stdin().get() ), process.getOutputStream() );
          }
@@ -84,7 +85,8 @@ public class OsProcessLauncher extends ProcessLauncher {
             throw new RuntimeException( exception );
          }
 
-         return new ExecutionResult( process.exitValue(), new String( stdoutRaw, StandardCharsets.UTF_8 ), new String( stderrRaw, StandardCharsets.UTF_8 ),
+         return new ExecutionResult( process.exitValue(), new String( stdoutRaw, StandardCharsets.UTF_8 ),
+               new String( stderrRaw, StandardCharsets.UTF_8 ),
                stdoutRaw, stderrRaw );
       } catch ( final IOException | InterruptedException exception ) {
          fail( exception );

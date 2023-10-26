@@ -32,6 +32,9 @@
       <main-class>org.eclipse.esmf.SammCli</main-class>
       <binary-name>samm</binary-name>
       <graalvm-config-path>${project.build.directory}/classes/META-INF/native-image/${project.groupId}/${project.artifactId}</graalvm-config-path>
+      <!-- The separate jar that is built without GraalVM-internal dependencies which trip up the GraalVM compiler,
+           which is exclusive used to pass on to native-image -->
+      <native-image-jar>${project.artifactId}-${project.version}-for-native</native-image-jar>
       <skip.maven.surefire>false</skip.maven.surefire>
       <skip.maven.surefire.report.plugin>false</skip.maven.surefire.report.plugin>
       <skip.maven.shade>false</skip.maven.shade>
@@ -67,6 +70,20 @@
          <groupId>org.graalvm.nativeimage</groupId>
          <artifactId>svm</artifactId>
          <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.graalvm.sdk</groupId>
+         <artifactId>graal-sdk</artifactId>
+         <version>${graalvm-version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.graalvm.js</groupId>
+         <artifactId>js</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.graalvm.js</groupId>
+         <artifactId>js-scriptengine</artifactId>
+         <version>${graalvm-version}</version>
       </dependency>
 
       <!-- Test dependencies -->
@@ -199,7 +216,7 @@
                   <configuration>
                      <!-- The main class of your build-time scanning code -->
                      <mainClass>org.eclipse.esmf.buildtime.Aas4jClassSetup</mainClass>
-                     <!-- Pass the build target file as a commandline param -->
+                     <!-- Pass the properties file as a commandline param -->
                      <commandlineArgs>${project.build.outputDirectory}/adminshell.properties</commandlineArgs>
                      <cleanupDaemonThreads>false</cleanupDaemonThreads>
                   </configuration>
@@ -207,16 +224,15 @@
                <!-- Execute adjustments of native configs that were generated during the previous maven build -->
                <execution>
                   <id>customize-resource-config</id>
-                  <phase>pre-package</phase>
+                  <phase>prepare-package</phase>
                   <goals>
                      <goal>java</goal>
                   </goals>
                   <configuration>
                      <!-- The main class of your build-time scanning code -->
-                     <mainClass>org.eclipse.esmf.buildtime.CustomizeResourceConfig</mainClass>
+                     <mainClass>org.eclipse.esmf.buildtime.CustomizeGraalVmConfigs</mainClass>
                      <!-- Pass the build target file as a commandline param -->
-                     <commandlineArgs>${project.build.outputDirectory}/META-INF/native-image/${project.groupId}/${project.artifactId}/resource-config.json
-                     </commandlineArgs>
+                     <commandlineArgs>${project.build.outputDirectory}/META-INF/native-image/${project.groupId}/${project.artifactId}</commandlineArgs>
                      <cleanupDaemonThreads>false</cleanupDaemonThreads>
                   </configuration>
                </execution>
@@ -228,6 +244,105 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
             <executions>
+               <execution>
+                  <id>shade-for-native-image</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>shade</goal>
+                  </goals>
+                  <configuration>
+                     <finalName>${native-image-jar}</finalName>
+                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                     <skip>${skip.maven.shade}</skip>
+                     <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                           <manifestEntries>
+                              <Main-Class>${main-class}</Main-Class>
+                           </manifestEntries>
+                        </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                     </transformers>
+                     <artifactSet>
+                        <excludes>
+                           <!-- Exclude meta model dependency, because meta model resources are already contained in the
+                                meta model resolver package -->
+                           <exclude>org.eclipse.esmf:esmf-semantic-aspect-meta-model</exclude>
+                           <!-- Duplicate annotations that are already contained in javax.annotation-api -->
+                           <exclude>javax.annotation:jsr250-api</exclude>
+                           <!-- GraalVM SDK classes & friends must not be used at runtime -->
+                           <exclude>org.graalvm.sdk:graal-sdk</exclude>
+                           <exclude>org.graalvm.nativeimage:svm</exclude>
+                           <exclude>org.graalvm.truffle:truffle-api</exclude>
+                        </excludes>
+                     </artifactSet>
+                     <filters>
+                        <!-- Required to prevent overlapping resources -->
+                        <filter>
+                           <artifact>*:*</artifact>
+                           <excludes>
+                              <exclude>module-info.class</exclude>
+                              <exclude>META-INF/*</exclude>
+                              <exclude>META-INF/sisu/javax.inject.Named</exclude>
+                              <exclude>META-INF/plexus/components.xml</exclude>
+                              <exclude>META-INF.versions*/**</exclude>
+                              <exclude>META-INF/versions*/**</exclude>
+                              <exclude>META-INF/maven/**</exclude>
+                              <exclude>plugin.xml</exclude>
+                              <exclude>about.html</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- Required to override the excludes above -->
+                        <filter>
+                           <artifact>${project.groupId}:${project.artifactId}</artifact>
+                           <excludeDefaults>false</excludeDefaults>
+                           <includes>
+                              <include>**</include>
+                              <include>META-INF/**</include>
+                              <include>git.properties</include>
+                           </includes>
+                           <excludes>
+                              <!-- Explicitly exclude build-time-only code from jar -->
+                              <exclude>org/eclipse/esmf/buildtime/**</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- Clashes with the files from xml-apis-ext -->
+                        <filter>
+                           <artifact>xml-apis:xml-apis</artifact>
+                           <excludes>
+                              <exclude>license/**</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- Clashes with the same file from batik-rasterizer -->
+                        <filter>
+                           <artifact>org.apache.xmlgraphics:batik-svgrasterizer</artifact>
+                           <excludes>
+                              <exclude>org/apache/batik/apps/rasterizer/resources/rasterizer.policy</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- These configs add lots of spurious GraalVM configuration -->
+                        <filter>
+                           <artifact>org.jboss.forge.roaster:roaster-jdt</artifact>
+                           <excludes>
+                              <exclude>META-INF/native-image/**</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- Required to have Model Instantiators available -->
+                        <filter>
+                           <artifact>org.eclipse.esmf:esmf-aspect-meta-model-java</artifact>
+                           <includes>
+                              <include>**</include>
+                           </includes>
+                        </filter>
+                        <!-- Prevent overlapping classes from javax modules -->
+                        <filter>
+                           <artifact>jakarta.activation:jakarta.activation-api</artifact>
+                           <excludes>
+                              <exclude>**</exclude>
+                           </excludes>
+                        </filter>
+                     </filters>
+                  </configuration>
+               </execution>
                <execution>
                   <id>default-shade</id>
                   <phase>package</phase>
@@ -296,6 +411,13 @@
                            <artifact>org.apache.xmlgraphics:batik-svgrasterizer</artifact>
                            <excludes>
                               <exclude>org/apache/batik/apps/rasterizer/resources/rasterizer.policy</exclude>
+                           </excludes>
+                        </filter>
+                        <!-- These configs add lots of spurious GraalVM configuration -->
+                        <filter>
+                           <artifact>org.jboss.forge.roaster:roaster-jdt</artifact>
+                           <excludes>
+                              <exclude>META-INF/native-image/**</exclude>
                            </excludes>
                         </filter>
                         <!-- Required to have Model Instantiators available -->
@@ -379,6 +501,10 @@
                </annotationProcessorPaths>
                <compilerArgs>
                   <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
+                  <arg>--add-exports</arg>
+                  <arg>java.desktop/sun.awt=ALL-UNNAMED</arg>
+                  <arg>--add-exports</arg>
+                  <arg>java.desktop/sun.font=ALL-UNNAMED</arg>
                </compilerArgs>
                <forceJavacCompilerUse>true</forceJavacCompilerUse>
             </configuration>
@@ -414,18 +540,18 @@
             </configuration>
          </plugin>
 
-         <!-- for testing of the command executor, we need a test JAR file -->
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
             <executions>
+               <!-- For testing of the command executor, we need a test JAR file -->
                <execution>
                   <id>build-test-jar</id>
                   <goals>
                      <goal>test-jar</goal>
                   </goals>
                   <!-- Make sure the plugin is built before maven surefire runs -->
-                  <phase>pre-test</phase>
+                  <phase>process-test-classes</phase>
                   <configuration>
                      <archive>
                         <manifest>
@@ -437,11 +563,18 @@
                </execution>
             </executions>
          </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+               <excludePackageNames>org.eclipse.esmf.substitution</excludePackageNames>
+            </configuration>
+         </plugin>
       </plugins>
    </build>
 
    <profiles>
-
       <profile>
          <id>copy-font-configuration</id>
          <activation>
@@ -464,53 +597,9 @@
                            <goal>download-single</goal>
                         </goals>
                         <configuration>
-                           <url>
-                              file://${env.JAVA_HOME}/lib
-                           </url>
+                           <url>file://${env.JAVA_HOME}/lib</url>
                            <fromFile>fontconfig.bfc</fromFile>
-                           <toFile>${project.build.directory}/lib/fontconfig.bfc</toFile>
-                        </configuration>
-                     </execution>
-                     <execution>
-                        <id>copy-fontconfig-properties-src</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                           <goal>download-single</goal>
-                        </goals>
-                        <configuration>
-                           <url>
-                              file://${env.JAVA_HOME}/lib
-                           </url>
-                           <fromFile>fontconfig.properties.src</fromFile>
-                           <toFile>${project.build.directory}/lib/fontconfig.properties.src</toFile>
-                        </configuration>
-                     </execution>
-                     <execution>
-                        <id>copy-psfont-properties-ja</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                           <goal>download-single</goal>
-                        </goals>
-                        <configuration>
-                           <url>
-                              file://${env.JAVA_HOME}/lib
-                           </url>
-                           <fromFile>psfont.properties.ja</fromFile>
-                           <toFile>${project.build.directory}/lib/psfont.properties.ja</toFile>
-                        </configuration>
-                     </execution>
-                     <execution>
-                        <id>copy-psfontj2d-properties</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                           <goal>download-single</goal>
-                        </goals>
-                        <configuration>
-                           <url>
-                              file://${env.JAVA_HOME}/lib
-                           </url>
-                           <fromFile>psfontj2d.properties</fromFile>
-                           <toFile>${project.build.directory}/lib/psfontj2d.properties</toFile>
+                           <toFile>${project.build.outputDirectory}/fontconfig.bfc</toFile>
                         </configuration>
                      </execution>
                   </executions>
@@ -537,7 +626,7 @@
                      <execution>
                         <id>build-native</id>
                         <goals>
-                           <goal>build</goal>
+                           <goal>compile</goal>
                         </goals>
                         <phase>package</phase>
                      </execution>
@@ -545,6 +634,16 @@
                   <configuration>
                      <mainClass>${main-class}</mainClass>
                      <imageName>${binary-name}</imageName>
+                     <buildArgs>
+                        <arg>-J-XX:MaxRAMPercentage=90.0</arg>
+                        <arg>-J-XX:GCTimeRatio=19</arg>
+                        <arg>-J--add-exports=java.desktop/sun.awt=ALL-UNNAMED</arg>
+                        <arg>-J--add-exports=java.desktop/sun.font=ALL-UNNAMED</arg>
+                     </buildArgs>
+                     <quickBuild>true</quickBuild>
+                     <classpath>
+                        <param>${project.build.directory}/${native-image-jar}.jar</param>
+                     </classpath>
                   </configuration>
                </plugin>
             </plugins>

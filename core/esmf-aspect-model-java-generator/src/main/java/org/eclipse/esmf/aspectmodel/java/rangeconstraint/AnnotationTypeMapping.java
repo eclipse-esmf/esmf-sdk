@@ -17,18 +17,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
 
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.java.customconstraint.DoubleMax;
-import org.eclipse.esmf.aspectmodel.java.customconstraint.DurationMax;
-import org.eclipse.esmf.aspectmodel.java.customconstraint.LongMax;
-
-import com.google.common.collect.ImmutableMap;
 
 import org.eclipse.esmf.aspectmodel.java.customconstraint.DoubleMin;
+import org.eclipse.esmf.aspectmodel.java.customconstraint.DurationMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.DurationMin;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.FloatMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.FloatMin;
@@ -36,9 +31,15 @@ import org.eclipse.esmf.aspectmodel.java.customconstraint.GregorianCalendarMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.GregorianCalendarMin;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.IntegerMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.IntegerMin;
+import org.eclipse.esmf.aspectmodel.java.customconstraint.LongMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.LongMin;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.ShortMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.ShortMin;
+
+import com.google.common.collect.ImmutableMap;
+
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 
 /**
  * Serves to map used data types to the respective annotation class.

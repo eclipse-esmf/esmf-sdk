@@ -17,17 +17,17 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
+import org.eclipse.esmf.metamodel.AspectContext;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.esmf.metamodel.AspectContext;
-
-@Mojo( name = "generateDiagram", defaultPhase =  LifecyclePhase.GENERATE_RESOURCES )
+@Mojo( name = "generateDiagram", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDiagram extends AspectModelMojo {
 
    private final Logger logger = LoggerFactory.getLogger( GenerateDiagram.class );
@@ -46,13 +46,13 @@ public class GenerateDiagram extends AspectModelMojo {
                .collect( Collectors.toSet() );
 
          for ( final AspectContext aspectModel : aspectModels ) {
-            final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspectModel.rdfModel() );
+            final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspectModel );
             generator.generateDiagrams( formats, name -> getStreamForFile( name, outputDirectory ) );
          }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not generate diagram.", exception );
       } catch ( final IllegalArgumentException exception ) {
-         throw new MojoExecutionException( "Invalid target format provided. Possible formats are dot, svg & png.", exception );
+         throw new MojoExecutionException( "Invalid target format provided. Possible formats are svg & png.", exception );
       }
       logger.info( "Successfully generated Aspect Model diagram(s)." );
    }

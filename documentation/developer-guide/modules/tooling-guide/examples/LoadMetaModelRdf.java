@@ -23,8 +23,8 @@ import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-// end::imports[]
 import org.junit.jupiter.api.Test;
+// end::imports[]
 
 public class LoadMetaModelRdf {
    @Test

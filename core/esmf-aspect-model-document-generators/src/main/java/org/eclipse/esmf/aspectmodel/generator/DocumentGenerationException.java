@@ -19,4 +19,8 @@ public class DocumentGenerationException extends RuntimeException {
    public DocumentGenerationException( final String message ) {
       super( message );
    }
+
+   public DocumentGenerationException( final Throwable cause ) {
+      super( cause );
+   }
 }

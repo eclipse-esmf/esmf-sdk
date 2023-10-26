@@ -1,0 +1,19 @@
+name: Dependency Update
+
+on:
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+  
+permissions:
+  contents: write
+
+jobs:
+  dependency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Submit Dependency Snapshot
+        uses: advanced-security/maven-dependency-submission-action@v3

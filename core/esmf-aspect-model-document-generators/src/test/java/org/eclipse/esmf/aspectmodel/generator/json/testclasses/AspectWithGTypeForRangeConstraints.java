@@ -14,15 +14,16 @@ package org.eclipse.esmf.aspectmodel.generator.json.testclasses;
 
 import java.util.Objects;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.eclipse.esmf.aspectmodel.java.customconstraint.GregorianCalendarMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.GregorianCalendarMin;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.NotNull;
 
 /** Generated class for AspectWithGTypeForRangeConstraints. */
 public class AspectWithGTypeForRangeConstraints {

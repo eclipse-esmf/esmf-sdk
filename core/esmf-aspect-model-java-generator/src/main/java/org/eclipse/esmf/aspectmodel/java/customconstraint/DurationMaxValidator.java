@@ -13,16 +13,16 @@
 
 package org.eclipse.esmf.aspectmodel.java.customconstraint;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 
+import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * Validates assigned values of type {@link Duration}, which must be below or equal to this limit depending on the
