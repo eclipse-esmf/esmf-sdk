@@ -44,7 +44,7 @@ public class TemplateEngine implements UnaryOperator<String> {
    public TemplateEngine( final Map<String, Object> context, final Properties engineConfiguration ) {
       this( new VelocityEngine(), context );
       engine.setProperty( RuntimeConstants.RESOURCE_LOADERS, "classpath, file" );
-      engine.setProperty( "classpath.resource.loader.class", ClasspathResourceLoader.class.getName() );
+      engine.setProperty( "resource.loader.classpath.class", ClasspathResourceLoader.class.getName() );
       engine.setProperties( engineConfiguration );
       engine.init();
    }
