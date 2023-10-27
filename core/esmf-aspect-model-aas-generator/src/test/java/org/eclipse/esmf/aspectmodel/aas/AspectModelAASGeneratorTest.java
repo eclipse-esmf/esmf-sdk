@@ -69,7 +69,7 @@ class AspectModelAASGeneratorTest {
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
    @Test
-   void generateAasxWithAspectDataForMultilanguageText() throws IOException, DeserializationException, SAXException {
+   void generateAasxWithAspectDataForMultilanguageText() throws IOException, DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT );
       assertThat( env.getSubmodels() )
             .singleElement()
@@ -218,8 +218,8 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, env.getSubmodels().size(), "Not exactly one Submodel in AAS." );
       assertEquals( 1, env.getSubmodels().get( 0 ).getSubmodelElements().size(), 1, "Not exactly one Element in SubmodelElements." );
       final SubmodelElementList elementCollection = ((SubmodelElementList) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ));
-      final Set<String> testValues = Set.of( "id_RightEntity", "id_LeftEntity" );
-      assertTrue( elementCollection.getValue().stream().anyMatch( x -> testValues.contains( x.getIdShort() ) ), "Neither left nor right entity contained." );
+      final List<String> testValues = List.of( "id_testProperty", "id_testProperty" );
+      assertTrue( elementCollection.getValue().stream().anyMatch( x -> testValues.contains( x.getIdShort() ) ), "Neither LeftEntity (with id_testProperty) nor RightEntity (with id_testProperty) contained." );
 
       final Set<String> semanticIds =
             Set.of( "urn:samm:org.eclipse.esmf.test:1.0.0#result",
@@ -360,7 +360,7 @@ class AspectModelAASGeneratorTest {
    }
 
    private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect )
-         throws DeserializationException, IOException, SAXException {
+         throws DeserializationException, IOException {
       final Aspect aspect = loadAspect( testAspect );
       final JsonNode aspectData = loadPayload( testAspect );
       final ByteArrayOutputStream out = generator.generateXmlOutput( Map.of( aspect, aspectData ) );
