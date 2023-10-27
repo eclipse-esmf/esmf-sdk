@@ -196,7 +196,7 @@ details that are specific to the static case through the component `esmf-aspect-
 The diagram generator takes any Aspect Model and provides a rendering of a diagram representing the
 Aspect Model with all its elements.
 
-Possible output formats are `png`, `svg`  and `dot`.
+Possible output formats are `png` and `svg`.
 
 ### Aspect Model Documentation Generator
 
