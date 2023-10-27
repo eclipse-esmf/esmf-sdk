@@ -345,13 +345,12 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       if ( property.getCharacteristic().isEmpty() ) {
          return;
       }
-      final Characteristic characteristic = property.getCharacteristic().get();
       // check if the concept description is already created. If not create a new one.
       if ( !context.hasEnvironmentConceptDescription( property.getAspectModelUrn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( ID_PREFIX + characteristic.getName() )
-                     .displayName( LangStringMapper.NAME.map( characteristic.getPreferredNames() ) )
+                     .idShort( ID_PREFIX + property.getName() )
+                     .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( property ) )
                      .id( DEFAULT_MAPPER.determineIdentifierFor( property ) )
                      .build();
