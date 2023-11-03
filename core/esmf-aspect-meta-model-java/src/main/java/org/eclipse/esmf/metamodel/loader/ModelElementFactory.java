@@ -23,12 +23,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
@@ -41,6 +35,7 @@ import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.metamodel.QuantityKinds;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.Units;
+import org.eclipse.esmf.metamodel.impl.DefaultQuantityKind;
 import org.eclipse.esmf.metamodel.impl.DefaultUnit;
 import org.eclipse.esmf.metamodel.loader.instantiator.AbstractEntityInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.AspectInstantiator;
@@ -76,6 +71,12 @@ import org.eclipse.esmf.metamodel.loader.instantiator.TraitInstantiator;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Streams;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 
 public class ModelElementFactory extends AttributeValueRetriever {
    private final KnownVersion metaModelVersion;
@@ -86,7 +87,8 @@ public class ModelElementFactory extends AttributeValueRetriever {
    private final Map<Resource, ModelElement> loadedElements = new HashMap<>();
    private Set<ModelNamespace> namespaces;
 
-   public ModelElementFactory( final KnownVersion metaModelVersion, final Model model, final Map<Resource, Instantiator<?>> additionalInstantiators ) {
+   public ModelElementFactory( final KnownVersion metaModelVersion, final Model model,
+         final Map<Resource, Instantiator<?>> additionalInstantiators ) {
       super( new SAMM( metaModelVersion ) );
       this.metaModelVersion = metaModelVersion;
       this.model = model;
@@ -144,7 +146,7 @@ public class ModelElementFactory extends AttributeValueRetriever {
          return (T) findOrCreateUnit( modelElement );
       }
       if ( samm.QuantityKind().equals( targetType ) ) {
-         return (T) findQuantityKind( modelElement );
+         return (T) findOrCreateQuantityKind( modelElement );
       }
       final Instantiator<T> instantiator = (Instantiator<T>) instantiators.get( targetType );
       if ( instantiator != null ) {
@@ -160,14 +162,15 @@ public class ModelElementFactory extends AttributeValueRetriever {
       final Entity entity = create( Entity.class, targetType );
       if ( entity == null ) {
          throw new AspectLoadingException( "Could not load " + modelElement + ": Expected " + targetType + " to be an Entity" );
-
       }
       return (T) new EntityInstanceInstantiator( this, entity ).apply( modelElement );
    }
 
-   public QuantityKind findQuantityKind( final Resource quantityKindResource ) {
-      return QuantityKinds.fromName( quantityKindResource.getLocalName() ).orElseThrow( () ->
-            new AspectLoadingException( "QuantityKind " + quantityKindResource + " is invalid" ) );
+   public QuantityKind findOrCreateQuantityKind( final Resource quantityKindResource ) {
+      final Optional<QuantityKind> predefinedQuantityKind = QuantityKinds.fromName( quantityKindResource.getLocalName() );
+      return predefinedQuantityKind.orElseGet( () -> new DefaultQuantityKind(
+            MetaModelBaseAttributes.fromModelElement( metaModelVersion, quantityKindResource, model, samm ),
+            attributeValue( quantityKindResource, samm.preferredName() ).getLiteral().getLexicalForm() ) );
    }
 
    public Unit findOrCreateUnit( final Resource unitResource ) {
@@ -177,15 +180,16 @@ public class ModelElementFactory extends AttributeValueRetriever {
                new AspectLoadingException( "Unit definition for " + unitUrn + " is invalid" ) );
       }
 
+      final Set<QuantityKind> quantityKinds = Streams.stream( model.listStatements( unitResource, samm.quantityKind(), (RDFNode) null ) )
+            .map( quantityKindStatement -> findOrCreateQuantityKind( quantityKindStatement.getObject().asResource() ) )
+            .collect( Collectors.toSet() );
       return new DefaultUnit(
             MetaModelBaseAttributes.fromModelElement( metaModelVersion, unitResource, model, samm ),
             optionalAttributeValue( unitResource, samm.symbol() ).map( Statement::getString ),
             optionalAttributeValue( unitResource, samm.commonCode() ).map( Statement::getString ),
             optionalAttributeValue( unitResource, samm.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
             optionalAttributeValue( unitResource, samm.conversionFactor() ).map( Statement::getString ),
-            Streams.stream( model.listStatements( unitResource, samm.quantityKind(), (RDFNode) null ) )
-                  .flatMap( quantityKindStatement -> QuantityKinds.fromName( quantityKindStatement.getObject().asResource().getLocalName() ).stream() )
-                  .collect( Collectors.toSet() ) );
+            quantityKinds );
    }
 
    private Resource resourceType( final Resource resource ) {
