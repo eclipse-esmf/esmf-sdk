@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf;
 
-import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.fileToUrn;
+import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,7 +57,7 @@ public abstract class AbstractCommand implements Runnable {
             versionedModel = AspectModelResolver.loadAndResolveModel( newInput );
          }
       } else {
-         final AspectModelUrn urn = fileToUrn( input.getAbsoluteFile() );
+         final AspectModelUrn urn = fileToUrn( input.getAbsoluteFile() ).get();
          versionedModel = new AspectModelResolver().resolveAspectModel( new ExternalResolverStrategy( resolverConfig.commandLine ), urn );
       }
       return versionedModel;
@@ -67,7 +67,7 @@ public abstract class AbstractCommand implements Runnable {
       final File inputFile = new File( modelFileName );
       final Try<VersionedModel> versionedModel = loadAndResolveModel( inputFile, resolverConfig );
       final Try<AspectContext> context = versionedModel.flatMap( model -> {
-         final AspectModelUrn urn = fileToUrn( inputFile.getAbsoluteFile() );
+         final AspectModelUrn urn = fileToUrn( inputFile.getAbsoluteFile() ).getOrElse( () -> urnFromModel(model, inputFile) );
          return AspectModelLoader.getSingleAspect( model, aspect -> aspect.getName().equals( urn.getName() ) )
                .map( aspect -> new AspectContext( model, aspect ) );
       } );

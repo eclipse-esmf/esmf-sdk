@@ -92,7 +92,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
                   .getPath() );
 
       final AspectModelUrn testUrn = AspectModelResolver.fileToUrn(
-            Paths.get( aspectModelsRootDirectory.toString(), "org.eclipse.esmf.test", "2.0.0", "BammTest.ttl" ).toFile() );
+            Paths.get( aspectModelsRootDirectory.toString(), "org.eclipse.esmf.test", "2.0.0", "BammTest.ttl" ).toFile() ).get();
 
       final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
