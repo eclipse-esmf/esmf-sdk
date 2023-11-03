@@ -80,11 +80,6 @@
          <groupId>org.graalvm.js</groupId>
          <artifactId>js</artifactId>
       </dependency>
-      <dependency>
-         <groupId>org.graalvm.js</groupId>
-         <artifactId>js-scriptengine</artifactId>
-         <version>${graalvm-version}</version>
-      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
