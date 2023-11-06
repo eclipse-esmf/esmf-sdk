@@ -276,7 +276,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       }
    }
 
-   private SubmodelElementCollection mapToAasSubModelElementCollection( final Entity entity, String name, final Context context ) {
+   private SubmodelElementCollection mapToAasSubModelElementCollection( final Entity entity, final String name, final Context context ) {
       final List<SubmodelElement> submodelElements =
             visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()
