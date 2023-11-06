@@ -622,4 +622,13 @@ public class AspectModelJavaUtil {
    public static Quantifiable castToQuantifiable( final Characteristic characteristic ) {
       return (Quantifiable) characteristic;
    }
+
+   public static String getterName( final Property property ) {
+      final boolean isBooleanType = !property.isOptional()
+            && property.getDataType()
+            .filter( Type::isScalar )
+            .map( type -> XSD.xboolean.getURI().equals( type.getUrn() ) )
+            .orElse( false );
+      return (isBooleanType ? "is" : "get") + StringUtils.capitalize( property.getPayloadName() );
+   }
 }
