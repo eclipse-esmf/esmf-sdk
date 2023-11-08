@@ -273,13 +273,13 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private SubmodelElement decideOnMapping( final Type type, final Property property, final Context context ) {
       if ( type instanceof Entity ) {
-         return mapToAasSubModelElementCollection( (Entity) type, context );
+         return mapToAasSubModelElementCollection( (Entity) type, property.getName(), context );
       } else {
          return findPropertyMapper( property ).mapToAasProperty( type, property, context );
       }
    }
 
-   private SubmodelElementCollection mapToAasSubModelElementCollection( final Entity entity, final Context context ) {
+   private SubmodelElementCollection mapToAasSubModelElementCollection( final Entity entity, final String name, final Context context ) {
       final List<SubmodelElement> submodelElements =
             visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()

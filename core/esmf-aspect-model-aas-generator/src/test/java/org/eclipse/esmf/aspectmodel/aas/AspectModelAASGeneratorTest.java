@@ -69,7 +69,7 @@ class AspectModelAASGeneratorTest {
    AspectModelAASGenerator generator = new AspectModelAASGenerator();
 
    @Test
-   void generateAasxWithAspectDataForMultilanguageText() throws IOException, DeserializationException, SAXException {
+   void generateAasxWithAspectDataForMultilanguageText() throws IOException, DeserializationException {
       final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT );
       assertThat( env.getSubmodels() )
             .singleElement()
@@ -360,7 +360,7 @@ class AspectModelAASGeneratorTest {
    }
 
    private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect )
-         throws DeserializationException, IOException, SAXException {
+         throws DeserializationException, IOException {
       final Aspect aspect = loadAspect( testAspect );
       final JsonNode aspectData = loadPayload( testAspect );
       final ByteArrayOutputStream out = generator.generateXmlOutput( Map.of( aspect, aspectData ) );

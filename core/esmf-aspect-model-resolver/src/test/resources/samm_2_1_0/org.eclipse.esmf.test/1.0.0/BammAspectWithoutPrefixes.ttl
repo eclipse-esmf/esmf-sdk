@@ -1,0 +1,122 @@
+@prefix aux: <urn:bamm:io.openmanufacturing:aspect-model:aux#> .
+@prefix ns:  <urn:bamm:org.eclipse.esmf.test:1.0.0#BammAspectWithoutPrefixes> .
+ns:     a       <urn:bamm:io.openmanufacturing:meta-model:1.0.0#Aspect> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                "Aspect for movement information"@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                "BammAspectWithoutPrefixes" ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#operations>
+                () ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                "BammAspectWithoutPrefixes"@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#properties>
+                ( <urn:bamm:org.eclipse.esmf.test:1.0.0#moving> <urn:bamm:org.eclipse.esmf.test:1.0.0#speedLimitWarning> <urn:bamm:org.eclipse.esmf.test:1.0.0#position> ) .
+<urn:bamm:org.eclipse.esmf.test:1.0.0#moving>
+        a       <urn:bamm:io.openmanufacturing:meta-model:1.0.0#Property> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#characteristic>
+                <urn:bamm:io.openmanufacturing:characteristic:1.0.0#Boolean> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                "Flag indicating if the position is changing"@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                "moving" ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                "Moving"@en .
+<urn:bamm:org.eclipse.esmf.test:1.0.0#z>
+        a       <urn:bamm:io.openmanufacturing:meta-model:1.0.0#Property> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#characteristic>
+                <urn:bamm:org.eclipse.esmf.test:1.0.0#Coordinate> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                "z coordinate in space"@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                "z" ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                "z"@en .
+<urn:bamm:org.eclipse.esmf.test:1.0.0#y>
+        a       <urn:bamm:io.openmanufacturing:meta-model:1.0.0#Property> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#characteristic>
+                <urn:bamm:org.eclipse.esmf.test:1.0.0#Coordinate> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                "y coordinate in space"@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                "y" ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                "y"@en .
+<urn:bamm:org.eclipse.esmf.test:1.0.0#Coordinate>
+        a       <urn:bamm:io.openmanufacturing:characteristic:1.0.0#Measurement> ;
+        <urn:bamm:io.openmanufacturing:characteristic:1.0.0#unit>
+                <urn:bamm:io.openmanufacturing:unit:1.0.0#metre> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#dataType>
+                <http://www.w3.org/2001/XMLSchema#float> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                "Represents a coordinate along an axis in space."@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                "Coordinate" ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                "Coordinate"@en .
+<urn:bamm:org.eclipse.esmf.test:1.0.0#speedLimitWarning>
+        a       <urn:bamm:io.openmanufacturing:meta-model:1.0.0#Property> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#characteristic>
+                <urn:bamm:org.eclipse.esmf.test:1.0.0#WarningLevel> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                "Indicats if speed limit is adhered to."@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                "speedLimitWarning" ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                "Speed Limit Warning"@en .
+<urn:bamm:org.eclipse.esmf.test:1.0.0#SpatialPosition>
+        a       <urn:bamm:io.openmanufacturing:meta-model:1.0.0#Entity> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                "Position in space, described along three axis, with the third axis optional, if all positions are in a plane."@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                "SpatialPosition" ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                "Spatial Position"@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#properties>
+                ( <urn:bamm:org.eclipse.esmf.test:1.0.0#x> <urn:bamm:org.eclipse.esmf.test:1.0.0#y>
+                  [ <urn:bamm:io.openmanufacturing:meta-model:1.0.0#optional>
+                            true ;
+                    <urn:bamm:io.openmanufacturing:meta-model:1.0.0#property>
+                            <urn:bamm:org.eclipse.esmf.test:1.0.0#z>
+                  ]
+                ) .
+<urn:bamm:org.eclipse.esmf.test:1.0.0#x>
+        a       <urn:bamm:io.openmanufacturing:meta-model:1.0.0#Property> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#characteristic>
+                <urn:bamm:org.eclipse.esmf.test:1.0.0#Coordinate> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                "x coordinate in space"@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                "x" ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                "x"@en .
+<urn:bamm:org.eclipse.esmf.test:1.0.0#position>
+        a       <urn:bamm:io.openmanufacturing:meta-model:1.0.0#Property> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#characteristic>
+                [ a       <urn:bamm:io.openmanufacturing:characteristic:1.0.0#SingleEntity> ;
+                  <urn:bamm:io.openmanufacturing:meta-model:1.0.0#dataType>
+                          <urn:bamm:org.eclipse.esmf.test:1.0.0#SpatialPosition> ;
+                  <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                          "Represents a single location in space."@en ;
+                  <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                          "SpatialPositionCharacteristic" ;
+                  <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                          "Spatial Position Characteristic"@en
+                ] ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                "Indicates a position"@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                "position" ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                "Position"@en .
+<urn:bamm:org.eclipse.esmf.test:1.0.0#WarningLevel>
+        a       <urn:bamm:io.openmanufacturing:characteristic:1.0.0#Enumeration> ;
+        <urn:bamm:io.openmanufacturing:characteristic:1.0.0#values>
+                ( "green" "yellow" "red" ) ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#dataType>
+                <http://www.w3.org/2001/XMLSchema#string> ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#description>
+                "Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red)."@en ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#name>
+                "WarningLevel" ;
+        <urn:bamm:io.openmanufacturing:meta-model:1.0.0#preferredName>
+                "Warning Level"@en .

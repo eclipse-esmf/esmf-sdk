@@ -25,20 +25,19 @@ import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
 import org.eclipse.esmf.aspectmodel.java.ImportTracker;
 import org.eclipse.esmf.aspectmodel.java.JavaArtifact;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
+import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.java.exception.EnumAttributeNotFoundException;
-import org.jboss.forge.roaster.Roaster;
+import org.eclipse.esmf.characteristic.Enumeration;
+import org.eclipse.esmf.characteristic.State;
+import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.Scalar;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.collect.ImmutableMap;
-
-import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
-
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.characteristic.State;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.jboss.forge.roaster.Roaster;
 
 /**
  * A {@link ArtifactGenerator} that generates Java Pojo code
@@ -73,8 +72,8 @@ public class EnumerationJavaArtifactGenerator<E extends Enumeration> implements 
       try {
          final Properties engineConfiguration = new Properties();
          if ( config.executeLibraryMacros() ) {
-            engineConfiguration.put( "velocimacro.library", config.templateLibFile().getName() );
-            engineConfiguration.put( "file.resource.loader.path", config.templateLibFile().getParent() );
+            engineConfiguration.put( RuntimeConstants.VM_LIBRARY, config.templateLibFile().getName() );
+            engineConfiguration.put( RuntimeConstants.FILE_RESOURCE_LOADER_PATH, config.templateLibFile().getParent() );
          }
 
          final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-enumeration" );

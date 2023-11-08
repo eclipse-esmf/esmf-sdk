@@ -55,6 +55,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
 import org.apache.velocity.app.FieldMethodizer;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.jboss.forge.roaster.Roaster;
 
 /**
@@ -126,8 +127,8 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
 
       final Properties engineConfiguration = new Properties();
       if ( config.executeLibraryMacros() ) {
-         engineConfiguration.put( "velocimacro.library", config.templateLibFile().getName() );
-         engineConfiguration.put( "file.resource.loader.path", config.templateLibFile().getParent() );
+         engineConfiguration.put( RuntimeConstants.VM_LIBRARY, config.templateLibFile().getName() );
+         engineConfiguration.put( RuntimeConstants.FILE_RESOURCE_LOADER_PATH, config.templateLibFile().getParent() );
       }
 
       final String generatedSource = new TemplateEngine( context, engineConfiguration ).apply( "java-pojo" );

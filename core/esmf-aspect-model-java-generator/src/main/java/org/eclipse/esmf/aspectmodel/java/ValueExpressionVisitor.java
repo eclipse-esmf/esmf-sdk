@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
+
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.metamodel.CollectionValue;
@@ -37,7 +38,8 @@ import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
  *    <li>If the value is (int) 3, it will return "3"</li>
  *    <li>If the value is (String) "hi", it will return "\"hi\""</li>
  *    <li>If the value is (LangString) "hi"@en, it will return "new LangString(\"hi\", Locale.forLanguageTag(\"en\"))"</li>
- *    <li>If the value is a collection, it will return the corresponding collection, e.g. "new ArrayList<>(){{ add(1); add(2); add(3); }}"</></li>
+ *    <li>If the value is a collection, it will return the corresponding collection, e.g. "new ArrayList<>(){{ add(1); add(2); add(3); }}
+ *    "</></li>
  *    <li>If the value is an Entity, it will return the corresponding constructor call, e.g. "new MyEntity(\"foo\", 2, 3)"</li>
  * </ul>
  */
@@ -70,7 +72,8 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
          context.getCodeGenerationConfig().importTracker().importExplicit( LangString.class );
          context.getCodeGenerationConfig().importTracker().importExplicit( Locale.class );
          final LangString langStringValue = (LangString) value.as( ScalarValue.class ).getValue();
-         return String.format( "new LangString(\"%s\", Locale.forLanguageTag(\"%s\"))", AspectModelJavaUtil.escapeForLiteral( langStringValue.getValue() ),
+         return String.format( "new LangString(\"%s\", Locale.forLanguageTag(\"%s\"))",
+               AspectModelJavaUtil.escapeForLiteral( langStringValue.getValue() ),
                langStringValue.getLanguageTag().toLanguageTag() );
       }
 
@@ -107,7 +110,8 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
             if ( property.isOptional() ) {
                return "null";
             }
-            throw new CodeGenerationException( "EntityInstance " + instance.getName() + " is missing value for Property " + property.getName() );
+            throw new CodeGenerationException(
+                  "EntityInstance " + instance.getName() + " is missing value for Property " + property.getName() );
          }
          final Context newContext = new Context( context.codeGenerationConfig, property.isOptional() );
          return value.accept( this, newContext );

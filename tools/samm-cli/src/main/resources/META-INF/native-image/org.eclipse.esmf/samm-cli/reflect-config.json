@@ -1,5 +1,23 @@
 [
 {
+  "name": "org.eclipse.esmf.metamodel.impl.DefaultScalarValue",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name": "org.eclipse.esmf.metamodel.impl.DefaultProperty",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
+  "name":"org.eclipse.esmf.metamodel.loader.DefaultPropertyWrapper",
+  "allDeclaredFields":true,
+  "allDeclaredMethods":true,
+  "allDeclaredConstructors":true
+},
+{
   "name":"sun.awt.X11.XToolkit",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
