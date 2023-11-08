@@ -38,11 +38,11 @@ import org.apache.jena.riot.tokens.TokenType;
 import org.apache.jena.sparql.core.Quad;
 
 /**
- * Customized parser profile that overwrites Jena's built-in Node generation to instead return {@link TokenNode}s that retain a link to their
+ * Customized parser profile that overwrites Jena's built-in Node generation to instead return {@link TokenNode}s that retain a link to
+ * their
  * originating token.
  */
 public class TurtleParserProfile implements ParserProfile {
-
    private final ParserProfile parserProfile;
 
    public TurtleParserProfile( final ParserProfile parserProfile ) {
@@ -57,56 +57,56 @@ public class TurtleParserProfile implements ParserProfile {
       final String str = token.getImage();
       final SmartToken smartToken = new SmartToken( token );
       switch ( token.getType() ) {
-      case BNODE:
-         return new BlankNode( (Node_Blank) createBlankNode( currentGraph, str, line, col ), smartToken );
-      case IRI:
-         return new UriNode( (Node_URI) createURI( str, line, col ), smartToken );
-      case PREFIXED_NAME: {
-         final String suffix = token.getImage2();
-         final String expansion = expandPrefixedName( str, suffix, token );
-         return new UriNode( (Node_URI) createURI( expansion, line, col ), smartToken );
-      }
-      case DECIMAL:
-         return new LiteralNode( (Node_Literal) createTypedLiteral( str, XSDDatatype.XSDdecimal, line, col ), smartToken );
-      case DOUBLE:
-         return new LiteralNode( (Node_Literal) createTypedLiteral( str, XSDDatatype.XSDdouble, line, col ), smartToken );
-      case INTEGER:
-         return new LiteralNode( (Node_Literal) createTypedLiteral( str, XSDDatatype.XSDinteger, line, col ), smartToken );
-      case LITERAL_DT: {
-         final Token tokenDT = token.getSubToken2();
-         String uriStr;
-         switch ( tokenDT.getType() ) {
-         case IRI -> uriStr = tokenDT.getImage();
-         case PREFIXED_NAME -> {
-            final String prefix = tokenDT.getImage();
-            final String suffix = tokenDT.getImage2();
-            uriStr = expandPrefixedName( prefix, suffix, tokenDT );
-            break;
+         case BNODE:
+            return new BlankNode( (Node_Blank) createBlankNode( currentGraph, str, line, col ), smartToken );
+         case IRI:
+            return new UriNode( (Node_URI) createURI( str, line, col ), smartToken );
+         case PREFIXED_NAME: {
+            final String suffix = token.getImage2();
+            final String expansion = expandPrefixedName( str, suffix, token );
+            return new UriNode( (Node_URI) createURI( expansion, line, col ), smartToken );
          }
-         default -> throw new RiotException( "Expected IRI for datatype: " + token );
+         case DECIMAL:
+            return new LiteralNode( (Node_Literal) createTypedLiteral( str, XSDDatatype.XSDdecimal, line, col ), smartToken );
+         case DOUBLE:
+            return new LiteralNode( (Node_Literal) createTypedLiteral( str, XSDDatatype.XSDdouble, line, col ), smartToken );
+         case INTEGER:
+            return new LiteralNode( (Node_Literal) createTypedLiteral( str, XSDDatatype.XSDinteger, line, col ), smartToken );
+         case LITERAL_DT: {
+            final Token tokenDT = token.getSubToken2();
+            String uriStr;
+            switch ( tokenDT.getType() ) {
+               case IRI -> uriStr = tokenDT.getImage();
+               case PREFIXED_NAME -> {
+                  final String prefix = tokenDT.getImage();
+                  final String suffix = tokenDT.getImage2();
+                  uriStr = expandPrefixedName( prefix, suffix, tokenDT );
+                  break;
+               }
+               default -> throw new RiotException( "Expected IRI for datatype: " + token );
+            }
+            uriStr = resolveIRI( uriStr, tokenDT.getLine(), tokenDT.getColumn() );
+            final RDFDatatype dt = NodeFactory.getType( uriStr );
+            return new LiteralNode( (Node_Literal) createTypedLiteral( str, dt, line, col ), smartToken );
          }
-         uriStr = resolveIRI( uriStr, tokenDT.getLine(), tokenDT.getColumn() );
-         final RDFDatatype dt = NodeFactory.getType( uriStr );
-         return new LiteralNode( (Node_Literal) createTypedLiteral( str, dt, line, col ), smartToken );
-      }
 
-      case LITERAL_LANG:
-         return new LiteralNode( (Node_Literal) createLangLiteral( str, token.getImage2(), line, col ), smartToken );
+         case LITERAL_LANG:
+            return new LiteralNode( (Node_Literal) createLangLiteral( str, token.getImage2(), line, col ), smartToken );
 
-      case STRING:
-         return new LiteralNode( (Node_Literal) createStringLiteral( str, line, col ), smartToken );
+         case STRING:
+            return new LiteralNode( (Node_Literal) createStringLiteral( str, line, col ), smartToken );
 
-      case BOOLEAN:
-         return new LiteralNode( (Node_Literal) createTypedLiteral( str, XSDDatatype.XSDboolean, line, col ), smartToken );
+         case BOOLEAN:
+            return new LiteralNode( (Node_Literal) createTypedLiteral( str, XSDDatatype.XSDboolean, line, col ), smartToken );
 
-      default: {
-         final Node x = createNodeFromToken( currentGraph, token, line, col );
-         if ( x != null ) {
-            return new TokenNode( x, token );
+         default: {
+            final Node x = createNodeFromToken( currentGraph, token, line, col );
+            if ( x != null ) {
+               return new TokenNode( x, token );
+            }
+            getErrorHandler().fatal( "Not a valid token for an RDF term: " + token, line, col );
+            return null;
          }
-         getErrorHandler().fatal( "Not a valid token for an RDF term: " + token, line, col );
-         return null;
-      }
       }
    }
 
@@ -146,7 +146,8 @@ public class TurtleParserProfile implements ParserProfile {
    }
 
    @Override
-   public Quad createQuad( final Node graph, final Node subject, final Node predicate, final Node object, final long line, final long col ) {
+   public Quad createQuad( final Node graph, final Node subject, final Node predicate, final Node object, final long line,
+         final long col ) {
       return parserProfile.createQuad( graph, subject, predicate, object, line, col );
    }
 
@@ -212,6 +213,7 @@ public class TurtleParserProfile implements ParserProfile {
          if ( ARQ.isTrue( ARQ.fixupUndefinedPrefixes ) ) {
             return RiotLib.fixupPrefixIRI( prefix, localPart );
          }
+         parserProfile.getErrorHandler().fatal( "Undefined prefix: " + prefix, token.getLine(), token.getColumn() );
       }
       return expansion;
    }

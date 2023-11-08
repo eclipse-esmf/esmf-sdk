@@ -37,17 +37,18 @@ public class ValueInitializer {
 
    static {
       final BiFunction<Class<?>, String, String> literalExpression = ( type, valueExpression ) -> valueExpression;
-      final BiFunction<Class<?>, String, String> stringConstructor = ( type, valueExpression ) -> String.format( "new %s( %s )", type.getSimpleName(),
-            valueExpression );
-      final BiFunction<Class<?>, String, String> create = ( type, valueExpression ) -> String.format( "%s.create( %s )", type.getSimpleName(),
-            valueExpression );
-      final BiFunction<Class<?>, String, String> parseTypeName = ( type, valueExpression ) -> String.format( "%s.parse%s( %s )", type.getSimpleName(),
+      final BiFunction<Class<?>, String, String> stringConstructor = ( type, valueExpression ) -> String.format( "new %s( %s )",
             type.getSimpleName(), valueExpression );
-      final BiFunction<Class<?>, String, String> valueOf = ( type, valueExpression ) -> String.format( "%s.valueOf( %s )", type.getSimpleName(),
-            valueExpression );
-      final BiFunction<Class<?>, String, String> gregorianCalendar = ( type, valueExpression ) -> "_datatypeFactory.newXMLGregorianCalendar( " + valueExpression
+      final BiFunction<Class<?>, String, String> create = ( type, valueExpression ) -> String.format( "%s.create( %s )",
+            type.getSimpleName(), valueExpression );
+      final BiFunction<Class<?>, String, String> parseTypeName = ( type, valueExpression ) -> String.format( "%s.parse%s( %s )",
+            type.getSimpleName(), type.getSimpleName(), valueExpression );
+      final BiFunction<Class<?>, String, String> valueOf = ( type, valueExpression ) -> String.format( "%s.valueOf( %s )",
+            type.getSimpleName(), valueExpression );
+      final BiFunction<Class<?>, String, String> gregorianCalendar = ( type, valueExpression ) ->
+            "_datatypeFactory.newXMLGregorianCalendar( " + valueExpression + " )";
+      final BiFunction<Class<?>, String, String> duration = ( type, valueExpression ) -> "_datatypeFactory.newDuration( " + valueExpression
             + " )";
-      final BiFunction<Class<?>, String, String> duration = ( type, valueExpression ) -> "_datatypeFactory.newDuration( " + valueExpression + " )";
 
       INITIALIZERS = new HashMap<>();
       INITIALIZERS.put( XSD.xstring, literalExpression );
@@ -59,11 +60,13 @@ public class ValueInitializer {
       INITIALIZERS.put( XSD.date, gregorianCalendar );
       INITIALIZERS.put( XSD.dateTime, gregorianCalendar );
       INITIALIZERS.put( XSD.dateTimeStamp, gregorianCalendar );
-      INITIALIZERS.put( XSD.gYear, ( type, valueExpression ) -> "_datatypeFactory.newXMLGregorianCalendarDate( Integer.valueOf( " + valueExpression + " )"
-            + ", DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
+      INITIALIZERS.put( XSD.gYear,
+            ( type, valueExpression ) -> "_datatypeFactory.newXMLGregorianCalendarDate( Integer.valueOf( " + valueExpression + " )"
+                  + ", DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
       INITIALIZERS.put( XSD.gMonth,
-            ( type, valueExpression ) -> "_datatypeFactory.newXMLGregorianCalendarDate( DatatypeConstants.FIELD_UNDEFINED, Integer.valueOf( " + valueExpression
-                  + " )" + ", DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
+            ( type, valueExpression ) ->
+                  "_datatypeFactory.newXMLGregorianCalendarDate( DatatypeConstants.FIELD_UNDEFINED, Integer.valueOf( " + valueExpression
+                        + " )" + ", DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
       INITIALIZERS.put( XSD.gYearMonth, gregorianCalendar );
       INITIALIZERS.put( XSD.gMonthDay, gregorianCalendar );
       INITIALIZERS.put( XSD.gDay, gregorianCalendar );
@@ -88,8 +91,10 @@ public class ValueInitializer {
    }
 
    public boolean needInitializationToConstructor( final List<DeconstructionSet> deconstructionSets ) {
-      return deconstructionSets.stream().flatMap( deconstructionSet -> deconstructionSet.getElementProperties().stream().map( property -> property.getDataType()
-                  .map( type -> DataType.getJavaTypeForMetaModelType( ResourceFactory.createResource( type.getUrn() ), property.getMetaModelVersion() ) ) ) )
+      return deconstructionSets.stream()
+            .flatMap( deconstructionSet -> deconstructionSet.getElementProperties().stream().map( property -> property.getDataType()
+                  .map( type -> DataType.getJavaTypeForMetaModelType( ResourceFactory.createResource( type.getUrn() ),
+                        property.getMetaModelVersion() ) ) ) )
             .anyMatch( dataType -> dataType.map( type -> type == XMLGregorianCalendar.class ).orElse( false ) );
    }
 
@@ -114,7 +119,8 @@ public class ValueInitializer {
     * @param valueExpression an expression that, when evaluated, will return the input value <b>as a string</b>.
     * @param metaModelVersion the used meta model version
     */
-   public String apply( final Resource rdfType, final Class<?> javaType, final String valueExpression, final KnownVersion metaModelVersion ) {
+   public String apply( final Resource rdfType, final Class<?> javaType, final String valueExpression,
+         final KnownVersion metaModelVersion ) {
       final SAMM samm = new SAMM( metaModelVersion );
       if ( rdfType.equals( samm.curie() ) ) {
          return String.format( "new Curie( %s )", valueExpression );
