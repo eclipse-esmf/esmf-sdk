@@ -321,6 +321,12 @@ class AspectModelAASGeneratorTest {
    public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException, SAXException {
       final ByteArrayOutputStream baos = getByteArrayOutputStreamFromAspect( testAspect );
       final byte[] xmlFile = baos.toByteArray();
+
+      final String aasXml = new String( xmlFile );
+      assertThat( aasXml ).doesNotContain( "DefaultScalarValue[" );
+      assertThat( aasXml ).doesNotContain( "DefaultEntity[" );
+      assertThat( aasXml ).doesNotContain( "Optional[" );
+
       final Environment env = loadAASX( new ByteArrayInputStream( xmlFile ) );
       assertFalse( env.getSubmodels().isEmpty(), "No Submodel in AAS present." );
       try {

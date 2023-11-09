@@ -23,6 +23,37 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.characteristic.Code;
+import org.eclipse.esmf.characteristic.Collection;
+import org.eclipse.esmf.characteristic.Duration;
+import org.eclipse.esmf.characteristic.Either;
+import org.eclipse.esmf.characteristic.Enumeration;
+import org.eclipse.esmf.characteristic.Measurement;
+import org.eclipse.esmf.characteristic.Quantifiable;
+import org.eclipse.esmf.characteristic.SingleEntity;
+import org.eclipse.esmf.characteristic.SortedSet;
+import org.eclipse.esmf.characteristic.State;
+import org.eclipse.esmf.characteristic.StructuredValue;
+import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.CollectionValue;
+import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Scalar;
+import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.common.collect.ImmutableMap;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
@@ -67,40 +98,12 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollect
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueReferencePair;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.characteristic.Code;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.Duration;
-import org.eclipse.esmf.characteristic.Either;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.characteristic.Measurement;
-import org.eclipse.esmf.characteristic.Quantifiable;
-import org.eclipse.esmf.characteristic.SingleEntity;
-import org.eclipse.esmf.characteristic.SortedSet;
-import org.eclipse.esmf.characteristic.State;
-import org.eclipse.esmf.characteristic.StructuredValue;
-import org.eclipse.esmf.characteristic.Trait;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.collect.ImmutableMap;
-
 public class AspectModelAASVisitor implements AspectVisitor<Environment, Context> {
-
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelAASVisitor.class );
+   private static final ValueSerializer VALUE_SERIALIZER = new ValueSerializer();
 
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
    public static final String DEFAULT_LOCALE = "en";
@@ -642,17 +645,16 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          dataSpecificationContent.setDataType( mapIEC61360DataType( enumeration ) );
          final List<ValueReferencePair> valueReferencePairs =
                enumeration.getValues().stream()
-                     .map(
-                           x ->
-                                 new DefaultValueReferencePair.Builder()
-                                       .value( x.toString() )
-                                       .valueID( buildReferenceToEnumValue( enumeration, x ) )
-                                       .build() )
+                     .map( enumerationValue -> {
+                        final String value = enumerationValue.accept( VALUE_SERIALIZER, enumeration );
+                        return new DefaultValueReferencePair.Builder()
+                              .value( value )
+                              .valueID( buildReferenceToEnumValue( enumeration, value ) )
+                              .build();
+                     } )
                      .collect( Collectors.toList() );
 
-         final ValueList valueList =
-               new DefaultValueList.Builder().valueReferencePairs( valueReferencePairs ).build();
-
+         final ValueList valueList = new DefaultValueList.Builder().valueReferencePairs( valueReferencePairs ).build();
          dataSpecificationContent.setValueList( valueList );
       }
 
@@ -690,5 +692,33 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       // Hence, they will be
       // ignored and have to be deduced by resolving a SAMM model referenced by its semanticID
       return visitCharacteristic( trait.getBaseCharacteristic(), context );
+   }
+
+   public static class ValueSerializer implements AspectVisitor<String, ModelElement> {
+      @Override
+      public String visitBase( final ModelElement modelElement, final ModelElement context ) {
+         throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public String visitScalarValue( final ScalarValue value, final ModelElement context ) {
+         return context.is( Characteristic.class )
+               ? value.getValue().toString()
+               : "\"" + value.getValue().toString() + "\"";
+      }
+
+      @Override
+      public String visitEntityInstance( final EntityInstance instance, final ModelElement context ) {
+         return instance.getAssertions().entrySet().stream().map( entry ->
+                     String.format( "\"%s\":%s", entry.getKey().getName(), entry.getValue().accept( this, instance ) ) )
+               .collect( Collectors.joining( ",", "{", "}" ) );
+      }
+
+      @Override
+      public String visitCollectionValue( final CollectionValue value, final ModelElement context ) {
+         return value.getValues().stream().map( collectionValue ->
+                     collectionValue.accept( this, value ) )
+               .collect( Collectors.joining( ",", "[", "]" ) );
+      }
    }
 }
