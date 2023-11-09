@@ -17,11 +17,11 @@ import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +58,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 class AspectModelAASGeneratorTest {
 
@@ -290,17 +289,15 @@ class AspectModelAASGeneratorTest {
 
       assertEquals( 2, env.getConceptDescriptions().size() );
 
-      final DataSpecificationIec61360 dataSpecificationContent =
-            (DataSpecificationIec61360)
-                  env.getConceptDescriptions().stream()
-                        .filter( x -> x.getIdShort().equals( "TestEnumeration" ) )
-                        .findFirst()
-                        .get()
-                        .getEmbeddedDataSpecifications()
-                        .stream()
-                        .findFirst()
-                        .get()
-                        .getDataSpecificationContent();
+      final DataSpecificationIec61360 dataSpecificationContent = (DataSpecificationIec61360) env.getConceptDescriptions().stream()
+            .filter( conceptDescription -> conceptDescription.getIdShort().equals( "TestEnumeration" ) )
+            .findFirst()
+            .get()
+            .getEmbeddedDataSpecifications()
+            .stream()
+            .findFirst()
+            .get()
+            .getDataSpecificationContent();
       assertEquals( 3, dataSpecificationContent.getValueList().getValueReferencePairs().size() );
 
       assertEquals( 1, env.getSubmodels().size() );
@@ -310,15 +307,10 @@ class AspectModelAASGeneratorTest {
    }
 
    @ParameterizedTest
-   @EnumSource(
-         value = TestAspect.class,
-         mode = EnumSource.Mode.EXCLUDE,
-         names = {
-               "ASPECT_WITH_STRING_ENUMERATION"
-         } )
+   @EnumSource( value = TestAspect.class )
    // anonymous enumeration in test has no urn for enum values but is required for Concept
    // Description referencing
-   public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException, SAXException {
+   public void testGeneration( final TestAspect testAspect ) throws IOException, DeserializationException {
       final ByteArrayOutputStream baos = getByteArrayOutputStreamFromAspect( testAspect );
       final byte[] xmlFile = baos.toByteArray();
 
@@ -329,15 +321,7 @@ class AspectModelAASGeneratorTest {
 
       final Environment env = loadAASX( new ByteArrayInputStream( xmlFile ) );
       assertFalse( env.getSubmodels().isEmpty(), "No Submodel in AAS present." );
-      try {
-         validate( new ByteArrayInputStream( xmlFile ) );
-      } catch ( final SAXException e ) {
-         final String xmlContent = new String( xmlFile, StandardCharsets.UTF_8 );
-         final int line = ((SAXParseException) e).getLineNumber();
-         final String faultyLine = xmlContent.lines().skip( line - 1 ).findFirst().orElse( "" );
-         final String model = "AAS XML file causing the Exception. \nProblem within line " + line + ": " + faultyLine + "\n" + xmlContent;
-         throw new SAXException( model, e );
-      }
+      validate( new ByteArrayInputStream( xmlFile ) );
    }
 
    private void checkDataSpecificationIEC61360( final Set<String> semanticIds, final Environment env ) {
@@ -376,20 +360,20 @@ class AspectModelAASGeneratorTest {
       return loadAASX( data );
    }
 
-   private ByteArrayOutputStream getByteArrayOutputStreamFromAspect( final TestAspect testAspect )
-         throws IOException {
+   private ByteArrayOutputStream getByteArrayOutputStreamFromAspect( final TestAspect testAspect ) throws IOException {
       final Aspect aspect = loadAspect( testAspect );
       return generator.generateXmlOutput( aspect );
    }
 
-   private void validate( final ByteArrayInputStream xmlStream ) throws IOException, SAXException {
-      final SchemaFactory factory =
-            SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-
-      final Schema schema = factory.newSchema(
-            new StreamSource( getClass().getResourceAsStream( XML_XSD_AAS_SCHEMA_LOCATION ) ) );
-      final Validator validator = schema.newValidator();
-      validator.validate( new StreamSource( xmlStream ), null );
+   private void validate( final ByteArrayInputStream xmlStream ) {
+      try {
+         final SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+         final Schema schema = factory.newSchema( new StreamSource( getClass().getResourceAsStream( XML_XSD_AAS_SCHEMA_LOCATION ) ) );
+         final Validator validator = schema.newValidator();
+         validator.validate( new StreamSource( xmlStream ), null );
+      } catch ( final SAXException | IOException e ) {
+         fail( e );
+      }
    }
 
    private Aspect loadAspect( final TestAspect testAspect ) {
