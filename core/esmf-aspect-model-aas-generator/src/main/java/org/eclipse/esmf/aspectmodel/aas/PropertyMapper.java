@@ -37,7 +37,7 @@ import static org.eclipse.esmf.aspectmodel.aas.AasDataTypeMapper.ASPECT_TYPE_TO_
 public interface PropertyMapper<T extends SubmodelElement> {
    static String UNKNOWN_TYPE = "Unknown";
 
-   static String UNKNOWN_EXAMPLE = UNKNOWN_TYPE;
+   static String UNKNOWN_EXAMPLE = "";
 
    /**
     * Performs the mapping of the given property to a AAS {@link SubmodelElement}.

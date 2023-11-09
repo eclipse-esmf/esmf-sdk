@@ -50,7 +50,7 @@ public class AspectMigrateCommand extends AbstractCommand {
    public void run() {
       final PrintWriter printWriter = new PrintWriter( getStreamForFile( outputFilePath ) );
       final File inputFile = new File( parentCommand.getInput() ).getAbsoluteFile();
-      final AspectModelUrn aspectModelUrn = fileToUrn( inputFile );
+      final AspectModelUrn aspectModelUrn = fileToUrn( inputFile ).get();
 
       final MigratorService migratorService = new MigratorService();
       loadButNotResolveModel( inputFile ).flatMap( migratorService::updateMetaModelVersion )

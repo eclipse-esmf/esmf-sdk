@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.metamodel.Aspect;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.SerializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.Serializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXSerializer;
@@ -29,9 +32,6 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultEnvironment;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
-import org.eclipse.esmf.metamodel.Aspect;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Generator that generates an AASX file containing an AAS submodel for a given Aspect model
@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class AspectModelAASGenerator {
 
    /**
-    * Generates an AASX archive file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
+    * Generates an AASX archive file for a given Aspect and writes it to a given OutputStream provided by {@code nameMapper}
     *
     * @param aspect the Aspect for which an AASX archive shall be generated
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
@@ -53,7 +53,7 @@ public class AspectModelAASGenerator {
    }
 
    /**
-    * Generates an AAS XML archive file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
+    * Generates an AAS XML archive file for a given Aspect and writes it to a given OutputStream provided by {@code nameMapper}
     *
     * @param aspect the Aspect for which an xml file shall be generated
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
@@ -74,7 +74,7 @@ public class AspectModelAASGenerator {
    }
 
    /**
-    * Generates an AAS JSON file for a given Aspect and writes it to a given OutputStream provided by <code>nameMapper<code/>
+    * Generates an AAS JSON file for a given Aspect and writes it to a given OutputStream provided by {@code nameMapper}
     *
     * @param aspect the Aspect for which an JSON shall be generated
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
@@ -94,7 +94,8 @@ public class AspectModelAASGenerator {
             aspectsWithData.entrySet().stream()
                   .map( aspectWithData -> {
                      final Submodel submodel = new DefaultSubmodel.Builder().build();
-                     final Environment environment = new DefaultEnvironment.Builder().submodels( Collections.singletonList( submodel ) ).build();
+                     final Environment environment = new DefaultEnvironment.Builder().submodels( Collections.singletonList( submodel ) )
+                           .build();
                      final Context context = new Context( environment, submodel );
                      context.setEnvironment( environment );
                      context.setAspectData( aspectWithData.getValue() );
@@ -113,9 +114,9 @@ public class AspectModelAASGenerator {
    }
 
    private Environment mergeEnvironments( final Map<Aspect, Environment> aspectEnvironments ) {
-      final Submodel submodel = new DefaultSubmodel.Builder().build();
       return new DefaultEnvironment.Builder()
-            .assetAdministrationShells( aspectEnvironments.values().stream().flatMap( e -> e.getAssetAdministrationShells().stream() ).toList() )
+            .assetAdministrationShells(
+                  aspectEnvironments.values().stream().flatMap( e -> e.getAssetAdministrationShells().stream() ).toList() )
             .submodels( aspectEnvironments.values().stream().flatMap( e -> e.getSubmodels().stream() ).toList() )
             .conceptDescriptions( aspectEnvironments.values().stream().flatMap( e -> e.getConceptDescriptions().stream() ).toList() )
             .build();
@@ -138,11 +139,11 @@ public class AspectModelAASGenerator {
       return generate( new XmlSerializer(), aspect );
    }
 
-   protected ByteArrayOutputStream generateJsonOutput( Aspect aspect ) throws IOException {
+   protected ByteArrayOutputStream generateJsonOutput( final Aspect aspect ) throws IOException {
       return generate( new JsonSerializer(), aspect );
    }
 
-   protected ByteArrayOutputStream generate( Serializer serializer, Aspect aspect ) throws IOException {
+   protected ByteArrayOutputStream generate( final Serializer serializer, final Aspect aspect ) throws IOException {
       final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
       final Environment environment = visitor.visitAspect( aspect, null );
 
