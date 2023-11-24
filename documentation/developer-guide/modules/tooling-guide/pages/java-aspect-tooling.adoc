@@ -109,8 +109,8 @@ include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-urn-artifact.adoc[]
 == Loading and Saving Aspect Models
 
 Aspect models are, like their Meta Model, described using the Resource Description Format (RDF,
-xref:samm-specification:appendix:bibliography.adoc#rdf11[[rdf11\]]) and the Terse RDF Triple Language syntax (TTL,
-xref:samm-specification:appendix:bibliography.adoc#turtle[[turtle\]]). There are two ways of working with Aspect models:
+xref:samm-specification:appendix:appendix.adoc#rdf11[[rdf11\]]) and the Terse RDF Triple Language syntax (TTL,
+xref:samm-specification:appendix:appendix.adoc#turtle[[turtle\]]). There are two ways of working with Aspect models:
 Either the model is loaded as an RDF model where the abstraction level directly corresponds to the RDF/Turtle
 serialization, or the RDF is parsed into a native Java Aspect model representation where the abstraction level
 corresponds to the SAMM concepts. Both approaches have different use cases and advantages and both are supported by the
@@ -123,7 +123,7 @@ a|
 * Low level, focus on power and flexibility
 * Flexibly navigate and filter the model on the RDF statements level
 * Work with models that are valid RDF, but incomplete Aspect models, e.g. in Aspect model editors
-* Use SPARQL xref:samm-specification:appendix:bibliography.adoc#sparql[[sparql\]] to execute complex queries on Aspect models
+* Use SPARQL xref:samm-specification:appendix:appendix.adoc#sparql[[sparql\]] to execute complex queries on Aspect models
 a|
 * High level, focus on convenience and type-safety
 * Use Aspect-model specific interfaces for type-safe code
