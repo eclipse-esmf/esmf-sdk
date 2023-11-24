@@ -23,6 +23,37 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.characteristic.Code;
+import org.eclipse.esmf.characteristic.Collection;
+import org.eclipse.esmf.characteristic.Duration;
+import org.eclipse.esmf.characteristic.Either;
+import org.eclipse.esmf.characteristic.Enumeration;
+import org.eclipse.esmf.characteristic.Measurement;
+import org.eclipse.esmf.characteristic.Quantifiable;
+import org.eclipse.esmf.characteristic.SingleEntity;
+import org.eclipse.esmf.characteristic.SortedSet;
+import org.eclipse.esmf.characteristic.State;
+import org.eclipse.esmf.characteristic.StructuredValue;
+import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.CollectionValue;
+import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Scalar;
+import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.common.collect.ImmutableMap;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
@@ -67,45 +98,18 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementCollect
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodelElementList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueList;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueReferencePair;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.characteristic.Code;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.Duration;
-import org.eclipse.esmf.characteristic.Either;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.characteristic.Measurement;
-import org.eclipse.esmf.characteristic.Quantifiable;
-import org.eclipse.esmf.characteristic.SingleEntity;
-import org.eclipse.esmf.characteristic.SortedSet;
-import org.eclipse.esmf.characteristic.State;
-import org.eclipse.esmf.characteristic.StructuredValue;
-import org.eclipse.esmf.characteristic.Trait;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.collect.ImmutableMap;
-
 public class AspectModelAASVisitor implements AspectVisitor<Environment, Context> {
-
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelAASVisitor.class );
+   private static final ValueSerializer VALUE_SERIALIZER = new ValueSerializer();
 
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
-   public static final String DEFAULT_LOCALE = "EN";
+   public static final String DEFAULT_LOCALE = "en";
    public static final String CONCEPT_DESCRIPTION_CATEGORY = "APPLICATION_CLASS";
-   public static final String ID_PREFIX = "id_";
+   public static final String CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL =
+         "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIec61360/3/0";
 
    /**
     * Maps Aspect types to DataTypeIEC61360 Schema types, with no explicit mapping defaulting to
@@ -177,9 +181,11 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          usedContext.setEnvironment( environment );
       }
 
+      final String submodelId = aspect.getAspectModelUrn().get().getUrn().toString() + "/submodel";
+
       final Submodel submodel = usedContext.getSubmodel();
       submodel.setIdShort( aspect.getName() );
-      submodel.setId( aspect.getAspectModelUrn().toString() + "/submodel" );
+      submodel.setId( submodelId );
       submodel.setSemanticID( buildReferenceToConceptDescription( aspect ) );
       submodel.setDescription( LangStringMapper.TEXT.map( aspect.getDescriptions() ) );
       submodel.setKind( usedContext.getModelingKind() );
@@ -190,13 +196,13 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final AssetAdministrationShell administrationShell =
             new DefaultAssetAdministrationShell.Builder()
                   .id( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
-                  .idShort( ID_PREFIX + ADMIN_SHELL_NAME )
+                  .idShort( ADMIN_SHELL_NAME )
                   .description( LangStringMapper.TEXT.createLangString( ADMIN_SHELL_NAME, "en" ) )
                   .administration( new DefaultAdministrativeInformation.Builder().build() )
                   .assetInformation( new DefaultAssetInformation.Builder()
                         .assetKind( usedContext.getAssetKind() )
                         .build() )
-                  .embeddedDataSpecifications( extractEmbeddedDataSpecification( aspect ) )
+                  .submodels( buildReferenceForSubmodel( submodelId ) )
                   .build();
       usedContext.getEnvironment()
             .setAssetAdministrationShells( Collections.singletonList( administrationShell ) );
@@ -235,7 +241,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             return defaultResultForProperty;
          } else {
             LOG.error( String.format(
-                  "Having a recursive property: %s which is not optional is not valid. Check the model. Property will be excluded from AAS mapping.",
+                  "Having a recursive property: %s which is not optional is not valid. Check the model. Property will be excluded from "
+                        + "AAS mapping.",
                   property.getAspectModelUrn().map( AspectModelUrn::toString ).orElse( "(unknown)" ) ) );
          }
          return defaultResultForProperty;
@@ -280,7 +287,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final List<SubmodelElement> submodelElements =
             visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()
-            .idShort( ID_PREFIX + entity.getName() )
+            .idShort( entity.getName() )
             .displayName( LangStringMapper.NAME.map( entity.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( entity.getDescriptions() ) )
             .value( submodelElements )
@@ -291,15 +298,13 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return new DefaultOperation.Builder()
             .displayName( LangStringMapper.NAME.map( operation.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( operation.getDescriptions() ) )
-            .idShort( ID_PREFIX + operation.getName() )
-            .inputVariables(
-                  operation.getInput().stream()
-                        .map( i -> mapOperationVariable( i, context ) )
-                        .collect( Collectors.toList() ) )
-            .outputVariables(
-                  operation.getOutput().stream()
-                        .map( i -> mapOperationVariable( i, context ) )
-                        .collect( Collectors.toList() ) )
+            .idShort( operation.getName() )
+            .inputVariables( operation.getInput().stream()
+                  .map( i -> mapOperationVariable( i, context ) )
+                  .collect( Collectors.toList() ) )
+            .outputVariables( operation.getOutput().stream()
+                  .map( i -> mapOperationVariable( i, context ) )
+                  .collect( Collectors.toList() ) )
             .build();
    }
 
@@ -307,32 +312,40 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return new DefaultOperationVariable.Builder().value( mapText( property, context ).orElseThrow() ).build();
    }
 
-   private Reference buildReferenceToEnumValue( final Enumeration enumeration, final Object value ) {
-      final Key key =
-            new DefaultKey.Builder()
-                  .type( KeyTypes.DATA_ELEMENT )
-                  .value( DEFAULT_MAPPER.determineIdentifierFor( enumeration ) + ":" + value.toString() )
-                  .build();
+   private Reference buildReferenceToEnumValue( final Enumeration enumeration, final String value ) {
+      final Key key = new DefaultKey.Builder()
+            .type( KeyTypes.DATA_ELEMENT )
+            .value( DEFAULT_MAPPER.determineIdentifierFor( enumeration ) + ":" + value )
+            .build();
       return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
    }
 
    private Reference buildReferenceToConceptDescription( final Aspect aspect ) {
-      final Key key =
-            new DefaultKey.Builder()
-                  .type( KeyTypes.CONCEPT_DESCRIPTION )
-                  .value( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
-                  .build();
+      final Key key = new DefaultKey.Builder()
+            .type( KeyTypes.CONCEPT_DESCRIPTION )
+            .value( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
+            .build();
       return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
    }
 
    private Reference buildReferenceForSeeElement( final String seeReference ) {
-      final Key key =
-            new DefaultKey.Builder()
-                  .type( KeyTypes.GLOBAL_REFERENCE )
-                  .value( seeReference )
-                  .build();
+      final Key key = new DefaultKey.Builder()
+            .type( KeyTypes.GLOBAL_REFERENCE )
+            .value( seeReference )
+            .build();
       return new DefaultReference.Builder()
             .type( ReferenceTypes.EXTERNAL_REFERENCE )
+            .keys( key )
+            .build();
+   }
+
+   private Reference buildReferenceForSubmodel( final String submodelId ) {
+      final Key key = new DefaultKey.Builder()
+            .type( KeyTypes.SUBMODEL )
+            .value( submodelId )
+            .build();
+      return new DefaultReference.Builder()
+            .type( ReferenceTypes.MODEL_REFERENCE )
             .keys( key )
             .build();
    }
@@ -363,7 +376,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       if ( !context.hasEnvironmentConceptDescription( aspect.getAspectModelUrn().toString() ) ) {
          final ConceptDescription conceptDescription =
                new DefaultConceptDescription.Builder()
-                     .idShort( ID_PREFIX + aspect.getName() )
+                     .idShort( aspect.getName() )
                      .displayName( LangStringMapper.NAME.map( aspect.getPreferredNames() ) )
                      .embeddedDataSpecifications( extractEmbeddedDataSpecification( aspect ) )
                      .id( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
@@ -376,14 +389,14 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private EmbeddedDataSpecification extractEmbeddedDataSpecification( final Property property ) {
       return new DefaultEmbeddedDataSpecification.Builder()
-            .dataSpecification( buildReferenceForSeeElement( property.getAspectModelUrn().toString() ) )
+            .dataSpecification( buildReferenceForSeeElement( CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL ) )
             .dataSpecificationContent( extractDataSpecificationContent( property ) )
             .build();
    }
 
    private EmbeddedDataSpecification extractEmbeddedDataSpecification( final Aspect aspect ) {
       return new DefaultEmbeddedDataSpecification.Builder()
-            .dataSpecification( buildReferenceForSeeElement( aspect.getAspectModelUrn().toString() ) )
+            .dataSpecification( buildReferenceForSeeElement( CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL ) )
             .dataSpecificationContent( extractDataSpecificationContent( aspect ) )
             .build();
    }
@@ -417,11 +430,11 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .preferredName( preferredNames )
             .shortName( LangStringMapper.SHORT_NAME.createLangString( aspect.getName(), DEFAULT_LOCALE ) )
             .build();
-
    }
 
    private DataTypeIec61360 mapIEC61360DataType( final Optional<Characteristic> characteristic ) {
-      return mapIEC61360DataType( characteristic.flatMap( Characteristic::getDataType ).map( Type::getUrn ).orElse( RDF.langString.getURI() ) );
+      return mapIEC61360DataType(
+            characteristic.flatMap( Characteristic::getDataType ).map( Type::getUrn ).orElse( RDF.langString.getURI() ) );
    }
 
    private DataTypeIec61360 mapIEC61360DataType( final Characteristic characteristic ) {
@@ -441,27 +454,23 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    @Override
-   public Environment visitCharacteristic(
-         final Characteristic characteristic, final Context context ) {
+   public Environment visitCharacteristic( final Characteristic characteristic, final Context context ) {
       createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
       return context.getEnvironment();
    }
 
    @Override
-   public Environment visitCollection(
-         final Collection collection, final Context context ) {
+   public Environment visitCollection( final Collection collection, final Context context ) {
       return visitCollectionProperty( collection, context );
    }
 
    @Override
-   public Environment visitList(
-         final org.eclipse.esmf.characteristic.List list, final Context context ) {
+   public Environment visitList( final org.eclipse.esmf.characteristic.List list, final Context context ) {
       return visitCollectionProperty( list, context );
    }
 
    @Override
-   public Environment visitSet(
-         final org.eclipse.esmf.characteristic.Set set, final Context context ) {
+   public Environment visitSet( final org.eclipse.esmf.characteristic.Set set, final Context context ) {
       return visitCollectionProperty( set, context );
       // this type is not available in AAS4J
    }
@@ -474,28 +483,26 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private <T extends Collection> Environment visitCollectionProperty(
          final T collection, final Context context ) {
-      final SubmodelElementBuilder builder =
-            ( property ) ->
-                  new DefaultSubmodelElementList.Builder()
-                        .idShort( ID_PREFIX + property.getName() )
-                        .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
-                        .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
-                        .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
-                        .value( List.of( decideOnMapping( property, context ) ) )
-                        .build();
+      final SubmodelElementBuilder builder = property ->
+            new DefaultSubmodelElementList.Builder()
+                  .idShort( property.getName() )
+                  .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
+                  .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
+                  .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
+                  .value( List.of( decideOnMapping( property, context ) ) )
+                  .build();
       final Optional<JsonNode> rawValue = context.getRawPropertyValue();
       return rawValue.map( node -> {
          if ( node instanceof final ArrayNode arrayNode ) {
-            final SubmodelElementBuilder listBuilder =
-                  ( property ) -> {
-                     final var values = getValues( collection, property, context, arrayNode );
-                     return new DefaultSubmodelElementList.Builder()
-                           .idShort( property.getName() )
-                           .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
-                           .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
-                           .value( values )
-                           .build();
-                  };
+            final SubmodelElementBuilder listBuilder = property -> {
+               final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
+               return new DefaultSubmodelElementList.Builder()
+                     .idShort( property.getName() )
+                     .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
+                     .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
+                     .value( values )
+                     .build();
+            };
             createSubmodelElement( listBuilder, context );
             return context.getEnvironment();
          }
@@ -517,7 +524,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                         .collect( Collectors.joining( "," ) )
                         .getBytes( StandardCharsets.UTF_8 ) ).build() );
                } else {
-                  final var values = StreamSupport.stream( arrayNode.spliterator(), false )
+                  final List<SubmodelElement> values = StreamSupport.stream( arrayNode.spliterator(), false )
                         .map( n -> {
                            context.iterate( property );
                            return decideOnMapping( property, context );
@@ -534,10 +541,9 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    // in the result and have to be manually selected.
    // When generating Submodels where data is given however only the present side is added.
    @Override
-   public Environment visitEither(
-         final Either either, final Context context ) {
+   public Environment visitEither( final Either either, final Context context ) {
       final List<SubmodelElement> submodelElements = new ArrayList<>();
-      final var property = context.getProperty();
+      final Property property = context.getProperty();
       either.getLeft().getDataType()
             .flatMap( dataType -> handleEitherField( "left", either.getLeft(), property, context ) )
             .ifPresent( submodelElements::add );
@@ -547,7 +553,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
       final SubmodelElementList eitherSubModelElements =
             new DefaultSubmodelElementList.Builder()
-                  .idShort( ID_PREFIX + either.getName() )
+                  .idShort( either.getName() )
                   .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( either.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( either.getDescriptions() ) )
@@ -559,7 +565,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    /**
     * Handles one {@code Either} field depending on whether a submodel template or a submodel is generated.
-    *
+    * <p>
     * In the latter case, a synthetic property is used to access the serialized data and retrieve the value to be added.
     *
     * @param field the name of the {@code Either} field ({@code left} or {@code right})
@@ -572,7 +578,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          final Property eitherProperty, final Context context ) {
       Optional<SubmodelElement> result = Optional.empty();
       if ( context.getModelingKind().equals( ModellingKind.INSTANCE ) ) {
-         final var fieldProperty = createProperty( eitherProperty.getMetaModelVersion(), field, fieldCharacteristic );
+         final Property fieldProperty = createProperty( eitherProperty.getMetaModelVersion(), field, fieldCharacteristic );
          context.setProperty( fieldProperty );
          if ( context.getRawPropertyValue().isPresent() ) {
             result = fieldCharacteristic.getDataType().map( dataType -> decideOnMapping( dataType, context.getProperty(), context ) );
@@ -587,14 +593,15 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private Property createProperty( final KnownVersion modelVersion, final String propertyName, final Characteristic characteristic ) {
       final MetaModelBaseAttributes propertyAttributes =
-            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( new SAMM( modelVersion ).Property().getURI() ), propertyName );
-      return new org.eclipse.esmf.metamodel.impl.DefaultProperty( propertyAttributes, Optional.of( characteristic ), Optional.empty(), true, false,
+            MetaModelBaseAttributes.from( modelVersion, AspectModelUrn.fromUrn( new SAMM( modelVersion ).Property().getURI() ),
+                  propertyName );
+      return new org.eclipse.esmf.metamodel.impl.DefaultProperty( propertyAttributes, Optional.of( characteristic ), Optional.empty(), true,
+            false,
             Optional.empty(), false, Optional.empty() );
    }
 
    @Override
-   public Environment visitQuantifiable(
-         final Quantifiable quantifiable, final Context context ) {
+   public Environment visitQuantifiable( final Quantifiable quantifiable, final Context context ) {
       createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
 
       if ( quantifiable.getUnit().isPresent() ) {
@@ -612,22 +619,19 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    @Override
-   public Environment visitMeasurement(
-         final Measurement measurement, final Context context ) {
+   public Environment visitMeasurement( final Measurement measurement, final Context context ) {
       // No special handling required can use Quantifiable mapping implementation
       return visitQuantifiable( measurement, context );
    }
 
    @Override
-   public Environment visitDuration(
-         final Duration duration, final Context context ) {
+   public Environment visitDuration( final Duration duration, final Context context ) {
       // No special handling required can use Quantifiable mapping implementation
       return visitQuantifiable( duration, context );
    }
 
    @Override
-   public Environment visitEnumeration(
-         final Enumeration enumeration, final Context context ) {
+   public Environment visitEnumeration( final Enumeration enumeration, final Context context ) {
       createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
 
       final ConceptDescription conceptDescription =
@@ -640,17 +644,16 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
          dataSpecificationContent.setDataType( mapIEC61360DataType( enumeration ) );
          final List<ValueReferencePair> valueReferencePairs =
                enumeration.getValues().stream()
-                     .map(
-                           x ->
-                                 new DefaultValueReferencePair.Builder()
-                                       .value( x.toString() )
-                                       .valueID( buildReferenceToEnumValue( enumeration, x ) )
-                                       .build() )
+                     .map( enumerationValue -> {
+                        final String value = enumerationValue.accept( VALUE_SERIALIZER, enumeration );
+                        return new DefaultValueReferencePair.Builder()
+                              .value( value )
+                              .valueID( buildReferenceToEnumValue( enumeration, value ) )
+                              .build();
+                     } )
                      .collect( Collectors.toList() );
 
-         final ValueList valueList =
-               new DefaultValueList.Builder().valueReferencePairs( valueReferencePairs ).build();
-
+         final ValueList valueList = new DefaultValueList.Builder().valueReferencePairs( valueReferencePairs ).build();
          dataSpecificationContent.setValueList( valueList );
       }
 
@@ -664,16 +667,14 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    @Override
-   public Environment visitSingleEntity(
-         final SingleEntity singleEntity, final Context context ) {
+   public Environment visitSingleEntity( final SingleEntity singleEntity, final Context context ) {
       // Same handling as characteristics
       return visitCharacteristic( singleEntity, context );
    }
 
    @Override
-   public Environment visitStructuredValue(
-         final StructuredValue structuredValue, final Context context ) {
-      // https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/modeling-guidelines.html#declaring-structured-value
+   public Environment visitStructuredValue( final StructuredValue structuredValue, final Context context ) {
+      // https://eclipse-esmf.github.io/samm-specification/snapshot/characteristics.html#structured-value-characteristic
       // AAS cannot handle structuredValues, so we can handle them as ordinary Characteristics
       return visitCharacteristic( structuredValue, context );
    }
@@ -690,5 +691,33 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       // Hence, they will be
       // ignored and have to be deduced by resolving a SAMM model referenced by its semanticID
       return visitCharacteristic( trait.getBaseCharacteristic(), context );
+   }
+
+   public static class ValueSerializer implements AspectVisitor<String, ModelElement> {
+      @Override
+      public String visitBase( final ModelElement modelElement, final ModelElement context ) {
+         throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public String visitScalarValue( final ScalarValue value, final ModelElement context ) {
+         return context.is( Characteristic.class )
+               ? value.getValue().toString()
+               : "\"" + value.getValue().toString() + "\"";
+      }
+
+      @Override
+      public String visitEntityInstance( final EntityInstance instance, final ModelElement context ) {
+         return instance.getAssertions().entrySet().stream().map( entry ->
+                     String.format( "\"%s\":%s", entry.getKey().getName(), entry.getValue().accept( this, instance ) ) )
+               .collect( Collectors.joining( ",", "{", "}" ) );
+      }
+
+      @Override
+      public String visitCollectionValue( final CollectionValue value, final ModelElement context ) {
+         return value.getValues().stream().map( collectionValue ->
+                     collectionValue.accept( this, value ) )
+               .collect( Collectors.joining( ",", "[", "]" ) );
+      }
    }
 }

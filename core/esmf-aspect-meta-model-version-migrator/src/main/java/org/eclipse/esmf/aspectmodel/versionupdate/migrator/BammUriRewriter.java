@@ -17,13 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Statement;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 import org.eclipse.esmf.samm.KnownVersion;
+
+import com.google.common.collect.Streams;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
 
 /**
  * A {@link AbstractUriRewriter} that replaces all references to the legacy BAMM Aspect Meta Model to their corresponding SAMM counterparts
@@ -37,7 +42,8 @@ public class BammUriRewriter extends AbstractUriRewriter {
    public BammUriRewriter( final BAMM_VERSION bammVersion ) {
       // Translating versions will only fail if there are no SAMM versions (i.e., KnownVersion) for the versions in BAMM_VERSION
       super( KnownVersion.fromVersionString( bammVersion.versionString() ).orElseThrow( () ->
-            new InvalidVersionException( "BAMM version " + bammVersion.versionString() + " can not be translated to SAMM" ) ), KnownVersion.getLatest() );
+                  new InvalidVersionException( "BAMM version " + bammVersion.versionString() + " can not be translated to SAMM" ) ),
+            KnownVersion.getLatest() );
       this.bammVersion = bammVersion;
    }
 
@@ -82,8 +88,15 @@ public class BammUriRewriter extends AbstractUriRewriter {
    }
 
    private boolean modelContainsBammPrefixes( final Model model ) {
-      return model.getNsPrefixMap().values().stream().anyMatch( uri ->
-            uri.startsWith( "urn:bamm:io.openmanufacturing:meta-model:" ) && uri.contains( bammVersion.versionString() ) );
+      final String bammPrefix = "urn:bamm:io.openmanufacturing:meta-model:";
+      final Predicate<String> isBammRelated = uri ->
+            uri.startsWith( bammPrefix ) && uri.contains( bammVersion.versionString() );
+      return // BAMM prefix is present
+            model.getNsPrefixMap().values().stream().anyMatch( isBammRelated ) ||
+                  // Or any referred resource uses a BAMM URN
+                  Streams.stream( model.listObjectsOfProperty( RDF.type ) )
+                        .flatMap( object -> object.isURIResource() ? Stream.of( object.asResource().getURI() ) : Stream.empty() )
+                        .anyMatch( isBammRelated );
    }
 
    @Override

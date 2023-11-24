@@ -24,20 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFList;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -90,9 +77,20 @@ import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 import org.eclipse.esmf.samm.KnownVersion;
 
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFList;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+
 /**
  * AspectVisitor that translates an {@link Aspect} into the corresponding {@link Model}.
- *
  * The usual usage is calling {@link #visitAspect(Aspect, ModelElement)}.
  * The context (i.e., the second argument of the visit methods) refers to the parent element in the model graph
  * traversal.
@@ -174,7 +172,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @SuppressWarnings( "squid:S2250" )
-   // Amount of elements in list is regarding amount of properties in Aspect Model. Even in bigger aspects this should not lead to performance issues
+   // Amount of elements in list is regarding amount of properties in Aspect Model. Even in bigger aspects this should not lead to
+   // performance issues
    private Model serializePropertiesOrParameters( final Resource elementResource, final HasProperties element,
          final org.apache.jena.rdf.model.Property theProperty ) {
       final Model model = ModelFactory.createDefaultModel();
@@ -367,10 +366,12 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Model model = visitConstraint( lengthConstraint, null ).getModel();
       final Resource resource = getElementResource( lengthConstraint );
       lengthConstraint.getMinValue().stream().map( minValue ->
-                  createStatement( resource, sammc.minValue(), serializeTypedValue( minValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
+                  createStatement( resource, sammc.minValue(),
+                        serializeTypedValue( minValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
             .forEach( model::add );
       lengthConstraint.getMaxValue().stream().map( maxValue ->
-                  createStatement( resource, sammc.maxValue(), serializeTypedValue( maxValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
+                  createStatement( resource, sammc.maxValue(),
+                        serializeTypedValue( maxValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
             .forEach( model::add );
       model.add( resource, RDF.type, sammc.LengthConstraint() );
       return new ElementModel( model, Optional.of( resource ) );
@@ -401,7 +402,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint, final ModelElement context ) {
+   public ElementModel visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint,
+         final ModelElement context ) {
       final Model model = visitConstraint( regularExpressionConstraint, null ).getModel();
       final Resource resource = getElementResource( regularExpressionConstraint );
       model.add( resource, RDF.type, sammc.RegularExpressionConstraint() );
@@ -466,7 +468,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
          final ElementModel valueElementModel = value.accept( this, enumeration );
          model.add( valueElementModel.getModel() );
          return valueElementModel.getFocusElement().stream();
-      } ).collect( Collectors.toList() );
+      } ).toList();
       model.add( resource, sammc.values(), model.createList( elements.iterator() ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
@@ -477,7 +479,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Resource resource = getElementResource( instance );
       model.add( resource, RDF.type, getElementResource( instance.getEntityType() ) );
       instance.getAssertions().forEach( ( key, value ) -> {
-         final org.apache.jena.rdf.model.Property property = ResourceFactory.createProperty( key.getAspectModelUrn().orElseThrow().toString() );
+         final org.apache.jena.rdf.model.Property property = ResourceFactory.createProperty(
+               key.getAspectModelUrn().orElseThrow().toString() );
          final ElementModel valueElementModel = value.accept( this, instance );
          model.add( valueElementModel.getModel() );
          valueElementModel.getFocusElement().ifPresent( elementValue -> model.add( resource, property, elementValue ) );
@@ -500,7 +503,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       if ( targetType.isEmpty() || type.getUrn().equals( XSD.xstring.getURI() ) ) {
          return new ElementModel( model, Optional.of( ResourceFactory.createStringLiteral( value.getValue().toString() ) ) );
       }
-      return new ElementModel( model, Optional.of( ResourceFactory.createTypedLiteral( targetType.get().unparse( value.getValue() ), targetType.get() ) ) );
+      return new ElementModel( model,
+            Optional.of( ResourceFactory.createTypedLiteral( targetType.get().unparse( value.getValue() ), targetType.get() ) ) );
    }
 
    @Override
@@ -510,7 +514,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
          final ElementModel valueElementModel = value.accept( this, collection );
          model.add( valueElementModel.getModel() );
          return valueElementModel.getFocusElement().stream();
-      } ).collect( Collectors.toList() );
+      } ).toList();
       final RDFNode rdfList = model.createList( elements.iterator() );
       return new ElementModel( model, Optional.of( rdfList ) );
    }
@@ -540,8 +544,11 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Resource resource = getElementResource( measurement );
       model.add( resource, RDF.type, sammc.Measurement() );
 
-      getUnitStatement( measurement, resource ).ifPresent( model::add );
-      measurement.getUnit().map( unit -> unit.accept( this, measurement ) ).ifPresent( elementModel -> model.add( elementModel.getModel() ) );
+      measurement.getUnit().ifPresent( unit -> {
+         final ElementModel unitModel = unit.accept( this, measurement );
+         model.add( unitModel.getModel() );
+         unitModel.getFocusElement().ifPresent( unitResource -> model.add( resource, sammc.unit(), unitResource ) );
+      } );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
@@ -551,8 +558,11 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Resource resource = getElementResource( quantifiable );
       model.add( resource, RDF.type, sammc.Quantifiable() );
 
-      getUnitStatement( quantifiable, resource ).ifPresent( model::add );
-      quantifiable.getUnit().map( unit -> unit.accept( this, quantifiable ) ).ifPresent( elementModel -> model.add( elementModel.getModel() ) );
+      quantifiable.getUnit().ifPresent( unit -> {
+         final ElementModel unitModel = unit.accept( this, quantifiable );
+         model.add( unitModel.getModel() );
+         unitModel.getFocusElement().ifPresent( unitResource -> model.add( resource, sammc.unit(), unitResource ) );
+      } );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
@@ -612,11 +622,13 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       model.add( serializeProperties( resource, aspect ) );
       model.add( resource, samm.operations(), model.createList(
             aspect.getOperations().stream().map( this::getElementResource ).iterator() ) );
-      aspect.getOperations().stream().map( operation -> operation.accept( this, aspect ) ).forEach( elementModel -> model.add( elementModel.getModel() ) );
+      aspect.getOperations().stream().map( operation -> operation.accept( this, aspect ) )
+            .forEach( elementModel -> model.add( elementModel.getModel() ) );
       if ( !aspect.getEvents().isEmpty() ) {
          model.add( resource, samm.events(), model.createList(
                aspect.getEvents().stream().map( this::getElementResource ).iterator() ) );
-         aspect.getEvents().stream().map( event -> event.accept( this, aspect ) ).forEach( elementModel -> model.add( elementModel.getModel() ) );
+         aspect.getEvents().stream().map( event -> event.accept( this, aspect ) )
+               .forEach( elementModel -> model.add( elementModel.getModel() ) );
       }
       return new ElementModel( model, Optional.of( resource ) );
    }
@@ -674,11 +686,13 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Resource resource = getElementResource( operation );
       model.add( resource, RDF.type, samm.Operation() );
       model.add( serializeDescriptions( resource, operation ) );
-      final List<Resource> inputProperties = operation.getInput().stream().map( this::getElementResource ).collect( Collectors.toList() );
+      final List<Resource> inputProperties = operation.getInput().stream().map( this::getElementResource ).toList();
       model.add( resource, samm.input(), model.createList( inputProperties.iterator() ) );
-      operation.getInput().stream().map( property -> property.accept( this, operation ) ).forEach( elementModel -> model.add( elementModel.getModel() ) );
+      operation.getInput().stream().map( property -> property.accept( this, operation ) )
+            .forEach( elementModel -> model.add( elementModel.getModel() ) );
       operation.getOutput().ifPresent( outputProperty -> model.add( resource, samm.output(), getElementResource( outputProperty ) ) );
-      operation.getOutput().map( outputProperty -> outputProperty.accept( this, operation ) ).ifPresent( elementModel -> model.add( elementModel.getModel() ) );
+      operation.getOutput().map( outputProperty -> outputProperty.accept( this, operation ) )
+            .ifPresent( elementModel -> model.add( elementModel.getModel() ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
@@ -695,7 +709,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    @Override
    public ElementModel visitCharacteristic( final Characteristic characteristic, final ModelElement context ) {
       if ( !isLocalElement( characteristic ) ) {
-         return new ElementModel( ModelFactory.createDefaultModel(), characteristic.getAspectModelUrn().map( urn -> createResource( urn.toString() ) ) );
+         return new ElementModel( ModelFactory.createDefaultModel(),
+               characteristic.getAspectModelUrn().map( urn -> createResource( urn.toString() ) ) );
       }
       final Model model = createCharacteristicsModel( characteristic );
       final Resource resource = getElementResource( characteristic );
@@ -734,7 +749,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    public ElementModel visitAbstractEntity( final AbstractEntity abstractEntity, final ModelElement context ) {
       if ( abstractEntity.getUrn().startsWith( samme.getNamespace() ) ) {
          return new ElementModel( ModelFactory.createDefaultModel(),
-               abstractEntity.getAspectModelUrn().map( urn -> ResourceFactory.createResource( urn.toString() ) ) );
+               abstractEntity.getAspectModelUrn().map( urn -> createResource( urn.toString() ) ) );
       }
       final Model model = visitComplexType( abstractEntity, context ).getModel();
       abstractEntity.getExtendingElements().forEach( complexType -> model.add( complexType.accept( this, complexType ).getModel() ) );
@@ -744,24 +759,36 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    @Override
    public ElementModel visitUnit( final Unit unit, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
-      final String unitUrn = unit.getAspectModelUrn().map( AspectModelUrn::toString )
-            .orElseThrow( () -> new InvalidModelException( "Invalid unit without URN." ) );
-      if ( !createResource( unitUrn ).getNameSpace().equals( unitNamespace.getNamespace() ) ) {
+      final Resource unitResource = getElementResource( unit );
+      if ( !unitResource.getNameSpace().equals( unitNamespace.getNamespace() ) ) {
          // This is a unit defined in the scope of the Aspect model
-         final Resource unitResource = getElementResource( unit );
          model.add( unitResource, RDF.type, samm.Unit() );
-         unit.getQuantityKinds().forEach( quantityKind ->
-               model.add( unitResource, samm.quantityKind(), unitNamespace.resource( quantityKind.getName() ) ) );
+         unit.getQuantityKinds().forEach( quantityKind -> {
+            final ElementModel quantityKindModel = quantityKind.accept( this, context );
+            model.add( quantityKindModel.getModel() );
+            quantityKindModel.getFocusElement().ifPresent( quantityKindResource ->
+                  model.add( unitResource, samm.quantityKind(), quantityKindResource ) );
+         } );
          model.add( serializeDescriptions( unitResource, unit ) );
          unit.getSymbol().ifPresent( symbol -> model.add( unitResource, samm.symbol(), serializePlainString( symbol ) ) );
          return new ElementModel( model, Optional.of( unitResource ) );
       }
-      return new ElementModel( model, Optional.empty() );
+      return new ElementModel( model, Optional.of( unitResource ) );
    }
 
    @Override
    public ElementModel visitQuantityKind( final QuantityKind quantityKind, final ModelElement context ) {
-      return new ElementModel( ModelFactory.createDefaultModel(), Optional.empty() );
+      final Model model = ModelFactory.createDefaultModel();
+      final Resource quantityKindResource = getElementResource( quantityKind );
+      if ( !quantityKindResource.getNameSpace().equals( unitNamespace.getNamespace() ) ) {
+         if ( quantityKind.getAspectModelUrn().map( quantityKindUrn ->
+               quantityKindUrn.getUrnPrefix().equals( unitNamespace.getNamespace() ) ).orElse( true ) ) {
+            return new ElementModel( model, Optional.empty() );
+         }
+         model.add( quantityKindResource, RDF.type, samm.QuantityKind() );
+         model.add( quantityKindResource, samm.preferredName(), ResourceFactory.createLangLiteral( quantityKind.getLabel(), "en" ) );
+      }
+      return new ElementModel( model, Optional.of( quantityKindResource ) );
    }
 
    @Override

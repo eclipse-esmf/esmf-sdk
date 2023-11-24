@@ -57,6 +57,10 @@
          <artifactId>record-builder-processor</artifactId>
          <scope>provided</scope>
       </dependency>
+      <dependency>
+         <groupId>org.apache.jena</groupId>
+         <artifactId>jena-core</artifactId>
+      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
