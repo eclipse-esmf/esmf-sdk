@@ -111,7 +111,7 @@ The available options and their meaning can also be seen in the help text of the
                                    | _--language, -l_ : The language from the model for which a JSON schema should be
                                        generated (default: en)                                                               | `samm aspect AspectModel.ttl to schema -l de`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.4+| aspect <model> to aas         | Generate Asset Administration Shell (AAS) submodel template for an Aspect Model         | `samm aspect AspectModel.ttl to aas`
+.4+| aspect <model> to aas         | Generate an Asset Administration Shell (AAS) submodel template from an Aspect Model     | `samm aspect AspectModel.ttl to aas`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--format, -f_ : output file format (xml, json, or aasx, default: xml)                  |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
