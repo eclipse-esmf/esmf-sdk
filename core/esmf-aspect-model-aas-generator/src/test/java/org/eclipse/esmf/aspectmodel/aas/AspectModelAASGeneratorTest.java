@@ -290,7 +290,7 @@ class AspectModelAASGeneratorTest {
       assertEquals( 2, env.getConceptDescriptions().size() );
 
       final DataSpecificationIec61360 dataSpecificationContent = (DataSpecificationIec61360) env.getConceptDescriptions().stream()
-            .filter( conceptDescription -> conceptDescription.getIdShort().equals( "TestEnumeration" ) )
+            .filter( conceptDescription -> conceptDescription.getIdShort().equals( "testProperty" ) )
             .findFirst()
             .get()
             .getEmbeddedDataSpecifications()
