@@ -222,8 +222,10 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          final List<Object> collectionValues = getCollectionValues( property, (Collection) characteristic );
          return toMap( property.getName(), collectionValues );
       } else if ( isConstrainedCollection( characteristic ) ) {
-         return toMap( property.getName(), getCollectionValues( property, characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class ),
-               (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) );
+         return characteristic.as( Trait.class ).getConstraints().get( 0 ).is( LengthConstraint.class ) ?
+               toMap( property.getName(), getCollectionValues( property, characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class ),
+                     (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) ) :
+               toMap( property.getName(), getCollectionValues( property, characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class ) ) );
       }
       return ImmutableMap.of();
    }
@@ -233,8 +235,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return false;
       }
       final Trait trait = characteristic.as( Trait.class );
-      return trait.getBaseCharacteristic().is( Collection.class ) && (trait.getConstraints().size() == 1) &&
-            trait.getConstraints().get( 0 ).is( LengthConstraint.class );
+      return trait.getBaseCharacteristic().is( Collection.class ) && (trait.getConstraints().size() == 1);
    }
 
    private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property, final boolean useModelExampleValue ) {
