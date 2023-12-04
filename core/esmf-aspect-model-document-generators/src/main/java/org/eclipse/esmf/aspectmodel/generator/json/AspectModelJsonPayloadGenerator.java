@@ -222,10 +222,13 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          final List<Object> collectionValues = getCollectionValues( property, (Collection) characteristic );
          return toMap( property.getName(), collectionValues );
       } else if ( isConstrainedCollection( characteristic ) ) {
+
+         Collection collection = characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class );
+
          return characteristic.as( Trait.class ).getConstraints().get( 0 ).is( LengthConstraint.class ) ?
-               toMap( property.getName(), getCollectionValues( property, characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class ),
+               toMap( property.getName(), getCollectionValues( property, collection,
                      (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) ) :
-               toMap( property.getName(), getCollectionValues( property, characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class ) ) );
+               toMap( property.getName(), getCollectionValues( property, collection ) );
       }
       return ImmutableMap.of();
    }
