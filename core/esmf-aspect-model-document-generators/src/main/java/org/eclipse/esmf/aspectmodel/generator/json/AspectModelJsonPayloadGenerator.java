@@ -224,9 +224,9 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return toMap( property.getName(), collectionValues );
       } else if ( isConstrainedCollection( characteristic ) ) {
 
-         Collection collection = characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class );
+         final Collection collection = characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class );
 
-         List<Constraint> constraints = characteristic.as( Trait.class ).getConstraints().stream().filter( trait -> trait.is( LengthConstraint.class ) )
+         final List<Constraint> constraints = characteristic.as( Trait.class ).getConstraints().stream().filter( trait -> trait.is( LengthConstraint.class ) )
                .toList();
 
          return !constraints.isEmpty() ?
