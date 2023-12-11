@@ -18,9 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -150,6 +147,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       assertThat( aspectWithEntityCollection.getTestList() ).hasSize( 1 );
 
       final TestEntityWithSimpleTypes testEntityWithSimpleTypes = aspectWithEntityCollection.getTestList().get( 0 );
+
+      assertThat( generatedJson ).contains( "[" ).contains( "]" );
       assertTestEntityWithSimpleTypes( testEntityWithSimpleTypes );
    }
 
@@ -235,6 +234,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final AspectWithMultipleCollectionsOfSimpleType aspectWithCollectionOfSimpleType = parseJson( generatedJson,
             AspectWithMultipleCollectionsOfSimpleType.class );
 
+      assertThat( generatedJson ).contains( "[" ).contains( "]" );
       assertThat( aspectWithCollectionOfSimpleType.getTestListInt() ).containsExactly( 35 );
       assertThat( aspectWithCollectionOfSimpleType.getTestListString() ).containsExactly( "test string" );
    }
@@ -246,6 +246,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
 
       final AspectWithCollectionOfSimpleType aspectWithCollectionOfSimpleType = parseJson( generatedJson, AspectWithCollectionOfSimpleType.class );
 
+      assertThat( generatedJson ).contains( "[" ).contains( "]" );
       assertThat( aspectWithCollectionOfSimpleType.getTestList() ).containsExactly( 35 );
    }
 
@@ -303,6 +304,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final List<AspectWithComplexEntityCollectionEnum.MyEntityTwo> myEntityTwoList = aspectWithComplexEntityCollectionEnum
             .getMyPropertyOne().getValue()
             .getEntityPropertyOne();
+      assertThat( generatedJson ).contains( "[" ).contains( "]" );
       assertThat( myEntityTwoList ).hasSize( 1 );
       assertThat( myEntityTwoList.get( 0 ).getEntityPropertyTwo() ).isEqualTo( "foo" );
    }
@@ -584,6 +586,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final Collection<AbstractTestEntity> testProperty = aspectWithCollectionWithAbstractEntity.getTestProperty();
       assertThat( testProperty ).isNotEmpty();
       final ExtendingTestEntity extendingTestEntity = (ExtendingTestEntity) testProperty.iterator().next();
+
+      assertThat( generatedJson ).contains( "[" ).contains( "]" );
       assertThat( extendingTestEntity.getAbstractTestProperty() ).isNotNull();
       assertThat( extendingTestEntity.getEntityProperty() ).isNotBlank();
    }
@@ -604,6 +608,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    void testGenerateJsonForAspectWithConstrainedSetProperty( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_CONSTRAINED_SET, metaModelVersion );
       final AspectWithConstrainedSet aspectWithConstrainedSet = parseJson( generatedJson, AspectWithConstrainedSet.class );
+      assertThat( generatedJson ).contains( "[" ).contains( "]" );
       assertThat( aspectWithConstrainedSet.getTestProperty() ).hasSizeGreaterThan( 0 );
    }
 
