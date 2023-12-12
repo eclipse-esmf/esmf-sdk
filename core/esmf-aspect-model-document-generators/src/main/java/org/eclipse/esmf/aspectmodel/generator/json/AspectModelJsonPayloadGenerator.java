@@ -35,6 +35,7 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.xml.datatype.DatatypeFactory;
@@ -222,8 +223,16 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          final List<Object> collectionValues = getCollectionValues( property, (Collection) characteristic );
          return toMap( property.getName(), collectionValues );
       } else if ( isConstrainedCollection( characteristic ) ) {
-         return toMap( property.getName(), getCollectionValues( property, characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class ),
-               (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) );
+
+         final Collection collection = characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class );
+
+         final List<Constraint> constraints = characteristic.as( Trait.class ).getConstraints().stream().filter( trait -> trait.is( LengthConstraint.class ) )
+               .toList();
+
+         return !constraints.isEmpty() ?
+               toMap( property.getName(), getCollectionValues( property, collection,
+                     (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) ) :
+               toMap( property.getName(), getCollectionValues( property, collection ) );
       }
       return ImmutableMap.of();
    }
@@ -233,8 +242,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return false;
       }
       final Trait trait = characteristic.as( Trait.class );
-      return trait.getBaseCharacteristic().is( Collection.class ) && (trait.getConstraints().size() == 1) &&
-            trait.getConstraints().get( 0 ).is( LengthConstraint.class );
+      return trait.getBaseCharacteristic().is( Collection.class ) && (!trait.getConstraints().isEmpty());
    }
 
    private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property, final boolean useModelExampleValue ) {
