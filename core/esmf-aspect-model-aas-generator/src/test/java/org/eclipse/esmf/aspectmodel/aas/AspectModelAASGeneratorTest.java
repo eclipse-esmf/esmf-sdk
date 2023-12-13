@@ -32,11 +32,9 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.apache.jena.sparql.algebra.Op;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultOperation;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
@@ -75,19 +73,17 @@ class AspectModelAASGeneratorTest {
       final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT );
       assertThat( env.getSubmodels() )
             .singleElement()
-            .satisfies( subModel -> {
-               assertThat( subModel.getSubmodelElements() )
-                     .singleElement()
-                     .satisfies( property -> {
-                        assertThat( property ).asInstanceOf( type( MultiLanguageProperty.class ) )
-                              .extracting( MultiLanguageProperty::getValue )
-                              .asList()
-                              .hasSize( 2 )
-                              .allSatisfy( langString -> {
-                                 assertThat( List.of( "en", "de" ) ).contains( ((AbstractLangString) langString).getLanguage() );
-                              } );
-                     } );
-            } );
+            .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
+                  .singleElement()
+                  .satisfies( property -> {
+                     assertThat( property ).asInstanceOf( type( MultiLanguageProperty.class ) )
+                           .extracting( MultiLanguageProperty::getValue )
+                           .asList()
+                           .hasSize( 2 )
+                           .allSatisfy( langString -> {
+                              assertThat( List.of( "en", "de" ) ).contains( ((AbstractLangString) langString).getLanguage() );
+                           } );
+                  } ) );
    }
 
    @Test
@@ -95,22 +91,20 @@ class AspectModelAASGeneratorTest {
       final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       assertThat( env.getSubmodels() )
             .singleElement()
-            .satisfies( subModel -> {
-               assertThat( subModel.getSubmodelElements() )
-                     .anySatisfy( sme -> {
-                        assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
-                              .extracting( SubmodelElementList::getValue )
-                              .asList()
-                              .anySatisfy( entity -> {
-                                 assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
-                                       .extracting( SubmodelElementCollection::getValue )
-                                       .asList()
-                                       .singleElement( type( Property.class ) )
-                                       .extracting( Property::getValue )
-                                       .isEqualTo( "The result" );
-                              } );
-                     } );
-            } );
+            .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
+                  .anySatisfy( sme -> {
+                     assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                           .extracting( SubmodelElementList::getValue )
+                           .asList()
+                           .anySatisfy( entity -> {
+                              assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
+                                    .extracting( SubmodelElementCollection::getValue )
+                                    .asList()
+                                    .singleElement( type( Property.class ) )
+                                    .extracting( Property::getValue )
+                                    .isEqualTo( "The result" );
+                           } );
+                  } ) );
    }
 
    @Test
@@ -118,24 +112,22 @@ class AspectModelAASGeneratorTest {
       final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST );
       assertThat( env.getSubmodels() )
             .singleElement()
-            .satisfies( subModel -> {
-               assertThat( subModel.getSubmodelElements() )
-                     .anySatisfy( sme -> {
-                        assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
-                              .extracting( SubmodelElementList::getValue )
-                              .asList()
-                              .anySatisfy( entity -> {
-                                 assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
-                                       .extracting( SubmodelElementCollection::getValue )
-                                       .asList()
-                                       .anySatisfy( property -> {
-                                          assertThat( property ).asInstanceOf( type( Property.class ) )
-                                                .extracting( Property::getValue )
-                                                .isEqualTo( "2.25" );
-                                       } );
-                              } );
-                     } );
-            } );
+            .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
+                  .anySatisfy( sme -> {
+                     assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                           .extracting( SubmodelElementList::getValue )
+                           .asList()
+                           .anySatisfy( entity -> {
+                              assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
+                                    .extracting( SubmodelElementCollection::getValue )
+                                    .asList()
+                                    .anySatisfy( property -> {
+                                       assertThat( property ).asInstanceOf( type( Property.class ) )
+                                             .extracting( Property::getValue )
+                                             .isEqualTo( "2.25" );
+                                    } );
+                           } );
+                  } ) );
    }
 
    @Test
