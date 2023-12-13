@@ -32,8 +32,11 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.apache.jena.sparql.algebra.Op;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultOperation;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
@@ -322,6 +325,22 @@ class AspectModelAASGeneratorTest {
       final Environment env = loadAASX( new ByteArrayInputStream( xmlFile ) );
       assertFalse( env.getSubmodels().isEmpty(), "No Submodel in AAS present." );
       validate( new ByteArrayInputStream( xmlFile ) );
+   }
+
+   @Test
+   void testGenerateAasxFRomAspectModelWithOperations () throws IOException, DeserializationException {
+      final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_OPERATION );
+
+      List<SubmodelElement> operations = environment.getSubmodels().get( 0 ).getSubmodelElements();
+      DefaultOperation operation1 = (DefaultOperation) operations.get( 0 );
+      assertThat( operation1.getSemanticID() ).isNotNull();
+      assertThat( environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation1.getIdShort() ) ) ).isNotNull();
+
+      DefaultOperation operation2 = (DefaultOperation) operations.get( 0 );
+      assertThat( operation2.getSemanticID() ).isNotNull();
+      assertThat( environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation2.getIdShort() ) ) ).isNotNull();
+
+      assertEquals( 7, environment.getConceptDescriptions().size() );
    }
 
    private void checkDataSpecificationIEC61360( final Set<String> semanticIds, final Environment env ) {
