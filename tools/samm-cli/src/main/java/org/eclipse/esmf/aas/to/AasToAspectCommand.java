@@ -1,72 +1,73 @@
 package org.eclipse.esmf.aas.to;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.DeserializationException;
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
-import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aas.AasToCommand;
-import org.eclipse.esmf.aspectmodel.aspect.AASModelAspectGenerator;
+import org.eclipse.esmf.aspectmodel.aas.AASToAspectModelGenerator;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
+import org.eclipse.esmf.exception.CommandException;
+import org.eclipse.esmf.metamodel.Aspect;
 
+import fs.ModelsRoot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 @CommandLine.Command(
       name = AasToAspectCommand.COMMAND_NAME,
-      description = "Generate Asset Administration Shell (AAS) submodel template for an Aspect Model",
+      description = "Generate an Aspect Model from an Asset Administration Shell (AAS)",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n",
       mixinStandardHelpOptions = true )
 public class AasToAspectCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "aspect";
-   public static final String TTL = "ttl";
+   private static final Logger LOG = LoggerFactory.getLogger( AasToAspectCommand.class );
 
    @CommandLine.ParentCommand
    private AasToCommand parentCommand;
 
-   @CommandLine.Option(
-         names = { "--output", "-o" },
-         description = "Output file path" )
-   private String outputFilePath = "-";
-
-   @CommandLine.Option(
-         names = { "--subModelName", "-smn" },
-         description = "Provide submodel name for generating just provided model." )
-   private String submodelName = "-";
-   @CommandLine.Option(
-         names = { "--format", "-f" },
-         description = "The file format the AAS is to be generated. Valid options are \"" + TTL + "\". Default is \"" + TTL + "\"." )
-   private String format = TTL;
+   @CommandLine.Option( names = { "--output-directory", "-d" }, description = "Output directory to write files to" )
+   private String outputPath = ".";
 
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
 
    @Override
    public void run() {
-      String path = parentCommand.parentCommand.getInput();
+      final String path = parentCommand.parentCommand.getInput();
+      final String invalidFileTypeMessage = "Input file name must be an .xml, .aasx or .json file";
+      if ( !path.contains( "." ) ) {
+         throw new CommandException( invalidFileTypeMessage );
+      }
 
-      Environment environment = null;
+      try ( final FileInputStream input = new FileInputStream( path ) ) {
+         final AASToAspectModelGenerator generator = switch ( path.substring( path.indexOf( "." ) ) ) {
+            case ".xml" -> AASToAspectModelGenerator.fromAasXml( input );
+            case ".aasx" -> AASToAspectModelGenerator.fromAasx( input );
+            default -> throw new CommandException( invalidFileTypeMessage );
+         };
+         generateAspects( generator );
+      } catch ( final IOException exception ) {
+         throw new CommandException( exception );
+      }
+   }
 
-      try {
-         if ( path.contains( ".xml" ) ) {
-            environment = new XmlDeserializer().read( new FileInputStream( path ) );
-         }
-
-         if ( path.contains( ".aasx" ) ) {
-            AASXDeserializer deserializer = new AASXDeserializer( new FileInputStream( path ) );
-            environment = new XmlDeserializer().read( deserializer.getXMLResourceString() );
-         }
-
-         AASModelAspectGenerator aasModelAspectGenerator = new AASModelAspectGenerator();
-         aasModelAspectGenerator.generateTtlFile( environment, submodelName, name -> getStreamForFile( outputFilePath ) );
-
-      } catch ( InvalidFormatException | DeserializationException | IOException e ) {
-         throw new RuntimeException( e );
+   private void generateAspects( final AASToAspectModelGenerator generator ) throws IOException {
+      final ModelsRoot modelsRoot = new ModelsRoot( Path.of( outputPath ) );
+      for ( final Aspect aspect : generator.generateAspects() ) {
+         final String aspectString = AspectSerializer.INSTANCE.apply( aspect );
+         final File targetFile = modelsRoot.determineOutputFile( aspect.getAspectModelUrn().get() );
+         LOG.info( "Writing {}", targetFile.getAbsolutePath() );
+         System.out.println( aspectString );
+//         final BufferedWriter writer = new BufferedWriter( new FileWriter( targetFile ) );
+//         writer.write( aspectString );
+//         writer.close();
       }
    }
 }

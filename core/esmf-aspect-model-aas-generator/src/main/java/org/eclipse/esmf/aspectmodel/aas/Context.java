@@ -166,7 +166,7 @@ public class Context {
                .collect( Collectors.joining( "_" ) );
       }
 
-      return "id_" + shortId;
+      return shortId;
    }
 
    /**

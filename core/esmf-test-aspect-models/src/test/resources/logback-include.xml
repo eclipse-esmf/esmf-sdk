@@ -12,19 +12,18 @@
   -->
 
 <included>
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <target>System.out</target>
-        <encoder>
-            <pattern>%m%n</pattern>
-        </encoder>
-    </appender>
+   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+      <target>System.out</target>
+      <encoder>
+         <pattern>%m%n</pattern>
+      </encoder>
+   </appender>
 
-    <logger name="org.apache.jena" level="OFF"/>
-    <logger name="org.apache.jena.util" level="OFF"/>
-    <logger name="org.apache.jena.shared" level="OFF"/>
-    <logger name="guru.nidi.graphviz.service" level="OFF"/>
+   <logger name="org.apache.jena" level="OFF"/>
+   <logger name="org.apache.jena.util" level="OFF"/>
+   <logger name="org.apache.jena.shared" level="OFF"/>
 
-    <root level="warn">
-        <appender-ref ref="console"/>
-    </root>
+   <root level="warn">
+      <appender-ref ref="console"/>
+   </root>
 </included>

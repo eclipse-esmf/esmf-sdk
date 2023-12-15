@@ -28,7 +28,7 @@ public class DefaultPropertyMapper implements PropertyMapper<Property> {
             .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
             .value( context.getPropertyValue( UNKNOWN_EXAMPLE ) )
             .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
-            .semanticID( buildReferenceToConceptDescription( property ) )
+            .semanticId( buildReferenceToConceptDescription( property ) )
             .build();
    }
 

@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.java;
+package org.eclipse.esmf.functions;
 
 /**
  * A Function similar to {@link java.util.function.Function} except a {@link Throwable} can be thrown

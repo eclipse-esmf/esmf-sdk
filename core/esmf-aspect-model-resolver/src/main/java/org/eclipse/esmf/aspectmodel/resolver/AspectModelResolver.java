@@ -41,6 +41,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
@@ -405,7 +406,7 @@ public class AspectModelResolver {
    private static Try<VersionedModel> loadAndResolveModelFromUrnLikeDir( final File input ) {
       final AspectModelResolver resolver = new AspectModelResolver();
       final File inputFile = input.getAbsoluteFile();
-      final Try<AspectModelUrn> urnTry = Try.of( () -> fileToUrn( inputFile ) );
+      final Try<AspectModelUrn> urnTry = fileToUrn( inputFile );
       final Try<FileSystemStrategy> strategyTry = getModelRoot( inputFile ).map( FileSystemStrategy::new );
       //noinspection unchecked
       return urnTry
@@ -458,7 +459,7 @@ public class AspectModelResolver {
     * @param inputFile the input model file
     * @return the URN of the model element that corresponds to the file name and its location inside the models root
     */
-   public static AspectModelUrn fileToUrn( final File inputFile ) {
+   public static Try<AspectModelUrn> fileToUrn( final File inputFile ) {
       final File versionDirectory = inputFile.getParentFile();
       if ( versionDirectory == null ) {
          throw new ModelResolutionException( "Could not determine parent directory of " + inputFile );
@@ -473,9 +474,27 @@ public class AspectModelResolver {
       final String namespace = namespaceDirectory.getName();
       final String aspectName = FilenameUtils.removeExtension( inputFile.getName() );
       final String urn = String.format( "urn:samm:%s:%s#%s", namespace, version, aspectName );
-      return AspectModelUrn.from( urn ).getOrElse( () -> {
-         throw new ModelResolutionException( "The URN constructed from the input file path is invalid: " + urn );
-      } );
+      return AspectModelUrn.from( urn )
+            .mapFailure( Case(
+                  $( instanceOf( UrnSyntaxException.class ) ),
+                  e -> new ModelResolutionException( "The URN constructed from the input file path is invalid: " + urn, e ) )
+            );
+   }
+
+   /**
+    * Finds URN matched to file in the loaded model.
+    *
+    * @param model the loaded version model
+    * @param file the input model file
+    * @return the URN of the model element that corresponds to the file name and its location inside the models root
+    */
+   public static AspectModelUrn urnFromModel(final VersionedModel model, final File file) {
+      final String aspectName = FilenameUtils.removeExtension( file.getName() );
+      return Streams.stream( model.getRawModel().listSubjects()).filter( s-> aspectName.equals( s.getLocalName() ) )
+            .findFirst()
+            .map( Resource::getURI )
+            .map( AspectModelUrn::fromUrn )
+            .orElseThrow();
    }
 
    /**

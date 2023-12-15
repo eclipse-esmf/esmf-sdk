@@ -12,6 +12,11 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Type;
+
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
 import org.eclipse.digitaltwin.aas4j.v3.model.KeyTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
@@ -19,10 +24,6 @@ import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceTypes;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultKey;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReference;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.NamedElement;
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Type;
 
 /**
  * Base interface for any class that can map a property to a {@link SubmodelElement}.
@@ -32,7 +33,7 @@ import org.eclipse.esmf.metamodel.Type;
 public interface PropertyMapper<T extends SubmodelElement> {
    static String UNKNOWN_TYPE = "Unknown";
 
-   static String UNKNOWN_EXAMPLE = UNKNOWN_TYPE;
+   static String UNKNOWN_EXAMPLE = "";
 
    /**
     * Performs the mapping of the given property to a AAS {@link SubmodelElement}.

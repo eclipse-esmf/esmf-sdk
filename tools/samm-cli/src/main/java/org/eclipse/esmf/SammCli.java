@@ -18,8 +18,10 @@ import java.util.Properties;
 
 import org.eclipse.esmf.aas.AasCommand;
 import org.eclipse.esmf.aspect.AspectCommand;
+import org.eclipse.esmf.aas.AasCommand;
 
 import org.fusesource.jansi.AnsiConsole;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = SammCli.COMMAND_NAME,

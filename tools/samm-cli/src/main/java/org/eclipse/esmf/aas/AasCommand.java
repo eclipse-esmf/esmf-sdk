@@ -24,12 +24,14 @@ public class AasCommand extends AbstractCommand {
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
 
-   @CommandLine.Parameters( paramLabel = "INPUT", description = "Input file name of the AAS Model .aasx, .json .xml file", arity = "1", index = "0" )
+   @CommandLine.Parameters( paramLabel = "INPUT", description = "Input file name of the AAS Model .aasx, .json .xml file", arity = "1",
+         index = "0" )
    private String input;
 
    public String getInput() {
       return input;
    }
+
    @Override
    public void run() {
       throw new SubCommandException( COMMAND_NAME );

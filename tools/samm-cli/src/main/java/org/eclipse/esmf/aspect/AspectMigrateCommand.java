@@ -24,6 +24,7 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectMigrateCommand.COMMAND_NAME,
@@ -48,16 +49,17 @@ public class AspectMigrateCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final PrintWriter printWriter = new PrintWriter( getStreamForFile( outputFilePath ) );
-      final File inputFile = new File( parentCommand.getInput() ).getAbsoluteFile();
-      final AspectModelUrn aspectModelUrn = fileToUrn( inputFile );
+      try ( final PrintWriter printWriter = new PrintWriter( getStreamForFile( outputFilePath ) ) ) {
+         final File inputFile = new File( parentCommand.getInput() ).getAbsoluteFile();
+         final AspectModelUrn aspectModelUrn = fileToUrn( inputFile ).get();
 
-      final MigratorService migratorService = new MigratorService();
-      loadButNotResolveModel( inputFile ).flatMap( migratorService::updateMetaModelVersion )
-            .forEach( migratedModel -> {
-               new PrettyPrinter( migratedModel, aspectModelUrn, printWriter ).print();
-               printWriter.flush();
-               printWriter.close();
-            } );
+         final MigratorService migratorService = new MigratorService();
+         loadButNotResolveModel( inputFile ).flatMap( migratorService::updateMetaModelVersion )
+               .forEach( migratedModel -> {
+                  new PrettyPrinter( migratedModel, aspectModelUrn, printWriter ).print();
+                  printWriter.flush();
+                  printWriter.close();
+               } );
+      }
    }
 }
