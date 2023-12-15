@@ -22,6 +22,7 @@ import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
+
 import picocli.CommandLine;
 
 @CommandLine.Command(
@@ -37,7 +38,6 @@ public class AspectToAasCommand extends AbstractCommand {
    public static final String XML = "xml";
    public static final String JSON = "json";
 
-
    @CommandLine.Option(
          names = { "--output", "-o" },
          description = "Output file path" )
@@ -45,7 +45,8 @@ public class AspectToAasCommand extends AbstractCommand {
 
    @CommandLine.Option(
          names = { "--format", "-f" },
-         description = "The file format the AAS is to be generated. Valid options are \"" + AASX + "\", \"" + JSON + "\", and \"" + XML + "\". Default is \"" + XML + "\"." )
+         description = "The file format the AAS is to be generated. Valid options are \"" + AASX + "\", \"" + JSON + "\", and \"" + XML
+               + "\". Default is \"" + XML + "\"." )
    private String format = XML;
 
    @CommandLine.ParentCommand
@@ -66,14 +67,14 @@ public class AspectToAasCommand extends AbstractCommand {
          // desired by the user (outputFilePath), as opposed to what the model thinks it should be
          // called (name)
          switch ( format ) {
-         case AASX:
-            generator.generateAASXFile( aspect, name -> getStreamForFile( outputFilePath ) );
-            break;
-         case JSON:
-            generator.generateAasJsonFile( aspect, name -> getStreamForFile( outputFilePath ) );
-            break;
-         default:
-            generator.generateAasXmlFile( aspect, name -> getStreamForFile( outputFilePath ) );
+            case AASX:
+               generator.generateAASXFile( aspect, name -> getStreamForFile( outputFilePath ) );
+               break;
+            case JSON:
+               generator.generateAasJsonFile( aspect, name -> getStreamForFile( outputFilePath ) );
+               break;
+            default:
+               generator.generateAasXmlFile( aspect, name -> getStreamForFile( outputFilePath ) );
          }
       } catch ( final IOException e ) {
          throw new CommandException( e );

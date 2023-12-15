@@ -24,27 +24,27 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+
+import fs.ModelsRoot;
+import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.vavr.control.Try;
 
 /**
  * Resolution strategy for Aspect model URNs that finds Aspect model files in the local file system.
  */
 public class FileSystemStrategy extends AbstractResolutionStrategy {
    private static final Logger LOG = LoggerFactory.getLogger( FileSystemStrategy.class );
-   protected final Path modelsRoot;
+   protected final ModelsRoot modelsRoot;
 
    /**
     * Initialize the FileSystemStrategy with the root path of models. The directory
-    * is assumed to contain a file system hierarchy as follows: <code>N/V/X.ttl</code> where N is the namespace,
+    * is assumed to contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace,
     * V is the version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
     * Example:
     * <pre>
-    * {@code
     * models   <-- must be configured as modelsRoot
     * └── com.example
     *     ├── 1.0.0
@@ -53,13 +53,12 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
     *     │   └── ExampleCharacteristic.ttl
     *     └── 1.1.0
     *         └── ...
-    * }
     * </pre>
     *
     * @param modelsRoot The root directory for model files
     */
    public FileSystemStrategy( final Path modelsRoot ) {
-      this.modelsRoot = modelsRoot;
+      this.modelsRoot = new ModelsRoot( modelsRoot );
    }
 
    /**
@@ -102,7 +101,7 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
    }
 
    protected Path resolve( final AspectModelUrn aspectModelUrn ) {
-      return modelsRoot.resolve( aspectModelUrn.getNamespace() ).resolve( aspectModelUrn.getVersion() );
+      return modelsRoot.directoryForNamespace( aspectModelUrn );
    }
 
    @Override
@@ -123,7 +122,7 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
       @Override
       protected Path resolve( final AspectModelUrn urn ) {
          return (urn.getNamespace().equals( defaultUrn.getNamespace() ) && urn.getVersion().equals( defaultUrn.getVersion() ))
-               ? modelsRoot
+               ? modelsRoot.rootPath()
                : super.resolve( urn );
       }
 
@@ -136,7 +135,6 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
                            .mapFailure( Case( $( instanceOf( FileNotFoundException.class ) ),
                                  e -> new FileNotFoundException( ex.getMessage() + ". AND " + e.getMessage() ) ) )
                );
-
       }
 
       public static <T extends ResolutionStrategy> T withDefaultNamespace( final T strategy, final Model model ) {

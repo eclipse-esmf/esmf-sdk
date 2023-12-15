@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -22,15 +23,26 @@ import java.util.stream.Collectors;
 
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.ComplexType;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
+import io.vavr.control.Try;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class AspectModelLoaderTest extends MetaModelVersions {
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   void testModelCanBeInstantiated( final TestAspect testAspect ) {
+      final Try<List<ModelElement>> elements = TestResources.getModel( testAspect, KnownVersion.getLatest() )
+            .flatMap( AspectModelLoader::getElements );
+      assertThat( elements.isSuccess() ).isTrue();
+   }
+
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testOfAbstractEntityCyclomaticCreation( final KnownVersion version ) {

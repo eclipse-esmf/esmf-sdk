@@ -15,10 +15,10 @@ package org.eclipse.esmf.aspectmodel.vocabulary;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.samm.KnownVersion;
+
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-
-import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * The RDF jena vocabulary of the Characteristic meta model.
@@ -37,6 +37,10 @@ public class SAMMC implements Namespace {
    public String getUri() {
       return samm.getBaseUri() + "characteristic:" + metaModelVersion.toVersionString();
    }
+
+   /*
+    * Constraints
+    */
 
    public Resource RangeConstraint() {
       return resource( "RangeConstraint" );
@@ -61,6 +65,10 @@ public class SAMMC implements Namespace {
    public Resource LocaleConstraint() {
       return resource( "LocaleConstraint" );
    }
+
+   /*
+    * Characteristic classes and their properties
+    */
 
    public Resource StructuredValue() {
       return resource( "StructuredValue" );
@@ -197,6 +205,50 @@ public class SAMMC implements Namespace {
    public Property localeCode() {
       return property( "localeCode" );
    }
+
+   /*
+    * Characteristic instances
+    */
+
+   public Resource Timestamp() {
+      return resource( "Timestamp" );
+   }
+
+   public Resource Text() {
+      return resource( "Text" );
+   }
+
+   public Resource MultiLanguageText() {
+      return resource( "MultiLanguageText" );
+   }
+
+   public Resource Language() {
+      return resource( "Language" );
+   }
+
+   public Resource Locale() {
+      return resource( "Locale" );
+   }
+
+   public Resource Boolean() {
+      return resource( "Boolean" );
+   }
+
+   public Resource ResourcePath() {
+      return resource( "ResourcePath" );
+   }
+
+   public Resource MimeType() {
+      return resource( "MimeType" );
+   }
+
+   public Resource UnitReference() {
+      return resource( "UnitReference" );
+   }
+
+   /*
+    * Convenience methods
+    */
 
    public Stream<Resource> allCollections() {
       return Stream.of( Collection(), Set(), SortedSet(), List(), TimeSeries() );

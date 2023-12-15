@@ -17,11 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.jena.datatypes.BaseDatatype;
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
@@ -35,6 +30,12 @@ import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
 import org.eclipse.esmf.samm.KnownVersion;
+
+import org.apache.jena.datatypes.BaseDatatype;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
 
 public class PropertyInstantiator extends Instantiator<Property> {
    private final Characteristic fallbackCharacteristic;
@@ -62,8 +63,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
       final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper( metaModelBaseAttributes );
 
       if ( resourcePropertyMap.containsKey( property ) ) {
-         final Property propertyInstance = resourcePropertyMap.get( property );
-         return propertyInstance;
+         return resourcePropertyMap.get( property );
       }
       resourcePropertyMap.put( property, defaultPropertyWrapper );
       final DefaultProperty defProperty;
@@ -95,7 +95,7 @@ public class PropertyInstantiator extends Instantiator<Property> {
       if ( literalValue instanceof BaseDatatype.TypedValue ) {
          return new DefaultScalarValue( literal.getLexicalForm(), type );
       } else if ( literal.getDatatypeURI().equals( RDF.langString.getURI() ) ) {
-         return buildLanguageString( literal );
+         return valueInstantiator.buildLanguageString( literal.getLexicalForm(), literal.getLanguage() );
       }
       return new DefaultScalarValue( literalValue, type );
    }

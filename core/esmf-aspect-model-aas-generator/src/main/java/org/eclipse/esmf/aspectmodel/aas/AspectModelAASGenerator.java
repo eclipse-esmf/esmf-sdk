@@ -20,11 +20,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.functions.ThrowingFunction;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.SerializationException;
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.Serializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXSerializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonSerializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlSerializer;
@@ -62,14 +62,14 @@ public class AspectModelAASGenerator {
    public void generateAasXmlFile(
          final Aspect aspect, final Function<String, OutputStream> nameMapper ) throws IOException {
       try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
-         output.write( generateXmlOutput( aspect ).toByteArray() );
+         output.write( generateXmlOutput( aspect ).getBytes() );
       }
    }
 
    public void generateAasXmlFile(
          final Aspect aspect, final JsonNode aspectData, final Function<String, OutputStream> nameMapper ) throws IOException {
       try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
-         output.write( generateXmlOutput( Map.of( aspect, aspectData ) ).toByteArray() );
+         output.write( generateXmlOutput( Map.of( aspect, aspectData ) ).getBytes() );
       }
    }
 
@@ -83,11 +83,11 @@ public class AspectModelAASGenerator {
    public void generateAasJsonFile(
          final Aspect aspect, final Function<String, OutputStream> nameMapper ) throws IOException {
       try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
-         output.write( generateJsonOutput( aspect ).toByteArray() );
+         output.write( generateJsonOutput( aspect ).getBytes() );
       }
    }
 
-   protected ByteArrayOutputStream generateXmlOutput( final Map<Aspect, JsonNode> aspectsWithData ) throws IOException {
+   protected String generateXmlOutput( final Map<Aspect, JsonNode> aspectsWithData ) throws IOException {
       final AspectModelAASVisitor visitor = new AspectModelAASVisitor().withPropertyMapper( new LangStringPropertyMapper() );
 
       final Map<Aspect, Environment> aspectEnvironments =
@@ -104,10 +104,9 @@ public class AspectModelAASGenerator {
                   } )
                   .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
       final Environment mergedEnvironment = mergeEnvironments( aspectEnvironments );
-      try ( final ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
+      try {
          final XmlSerializer serializer = new XmlSerializer();
-         serializer.write( out, mergedEnvironment );
-         return out;
+         return serializer.write( mergedEnvironment );
       } catch ( final SerializationException e ) {
          throw new IOException( e );
       }
@@ -135,23 +134,22 @@ public class AspectModelAASGenerator {
       }
    }
 
-   protected ByteArrayOutputStream generateXmlOutput( final Aspect aspect ) throws IOException {
-      return generate( new XmlSerializer(), aspect );
+   protected String generateXmlOutput( final Aspect aspect ) {
+      return generate( environment -> new XmlSerializer().write( environment ), aspect );
    }
 
-   protected ByteArrayOutputStream generateJsonOutput( final Aspect aspect ) throws IOException {
-      return generate( new JsonSerializer(), aspect );
+   protected String generateJsonOutput( final Aspect aspect ) {
+      return generate( environment -> new JsonSerializer().write( environment ), aspect );
    }
 
-   protected ByteArrayOutputStream generate( final Serializer serializer, final Aspect aspect ) throws IOException {
+   protected String generate( final ThrowingFunction<Environment, String, SerializationException> serializer, final Aspect aspect ) {
       final AspectModelAASVisitor visitor = new AspectModelAASVisitor();
       final Environment environment = visitor.visitAspect( aspect, null );
 
-      try ( final ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
-         serializer.write( out, environment );
-         return out;
+      try {
+         return serializer.apply( environment );
       } catch ( final SerializationException e ) {
-         throw new IOException( e );
+         throw new AasGenerationException( e );
       }
    }
 }

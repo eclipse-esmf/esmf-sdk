@@ -211,7 +211,7 @@ public class SammAspectMetaModelResourceResolver implements AspectMetaModelResou
    @Override
    public Set<VersionNumber> getUsedMetaModelVersions( final Model model ) {
       final String sammUrnStart = String.format( "%s:%s", AspectModelUrn.VALID_PROTOCOL, AspectModelUrn.VALID_NAMESPACE_IDENTIFIER );
-      return model.listObjects()
+      Set<VersionNumber> result = model.listObjects()
             .toList()
             .stream()
             .filter( RDFNode::isURIResource )
@@ -224,5 +224,6 @@ public class SammAspectMetaModelResourceResolver implements AspectMetaModelResou
             .map( AspectModelUrn::getVersion )
             .map( VersionNumber::parse )
             .collect( Collectors.toSet() );
+      return result;
    }
 }

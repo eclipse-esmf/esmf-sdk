@@ -58,7 +58,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
-import org.eclipse.digitaltwin.aas4j.v3.model.AASSubmodelElements;
+import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetAdministrationShell;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
@@ -186,7 +186,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final Submodel submodel = usedContext.getSubmodel();
       submodel.setIdShort( aspect.getName() );
       submodel.setId( submodelId );
-      submodel.setSemanticID( buildReferenceToConceptDescription( aspect ) );
+      submodel.setSemanticId( buildReferenceToConceptDescription( aspect ) );
       submodel.setDescription( LangStringMapper.TEXT.map( aspect.getDescriptions() ) );
       submodel.setKind( usedContext.getModelingKind() );
       submodel.setAdministration( new DefaultAdministrativeInformation.Builder().build() );
@@ -487,7 +487,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementBuilder builder = property ->
             new DefaultSubmodelElementList.Builder()
                   .idShort( property.getName() )
-                  .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
+                  .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                   .value( List.of( decideOnMapping( property, context ) ) )
@@ -555,7 +555,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementList eitherSubModelElements =
             new DefaultSubmodelElementList.Builder()
                   .idShort( either.getName() )
-                  .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
+                  .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( either.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( either.getDescriptions() ) )
                   .value( submodelElements )
@@ -649,7 +649,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                         final String value = enumerationValue.accept( VALUE_SERIALIZER, enumeration );
                         return new DefaultValueReferencePair.Builder()
                               .value( value )
-                              .valueID( buildReferenceToEnumValue( enumeration, value ) )
+                              .valueId( buildReferenceToEnumValue( enumeration, value ) )
                               .build();
                      } )
                      .collect( Collectors.toList() );
