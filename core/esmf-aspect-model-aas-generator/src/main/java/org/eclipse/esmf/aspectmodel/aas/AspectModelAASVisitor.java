@@ -295,9 +295,11 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    private Operation mapText( final org.eclipse.esmf.metamodel.Operation operation, final Context context ) {
+      createConceptDescription( operation, context );
       return new DefaultOperation.Builder()
             .displayName( LangStringMapper.NAME.map( operation.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( operation.getDescriptions() ) )
+            .semanticID( buildReferenceToOperation(operation) )
             .idShort( operation.getName() )
             .inputVariables( operation.getInput().stream()
                   .map( i -> mapOperationVariable( i, context ) )
@@ -306,6 +308,14 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                   .map( i -> mapOperationVariable( i, context ) )
                   .collect( Collectors.toList() ) )
             .build();
+   }
+
+   private Reference buildReferenceToOperation ( final org.eclipse.esmf.metamodel.Operation operation ) {
+      final Key key = new DefaultKey.Builder()
+            .type( KeyTypes.OPERATION )
+            .value( DEFAULT_MAPPER.determineIdentifierFor( operation ))
+            .build();
+      return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
    }
 
    private OperationVariable mapOperationVariable( final Property property, final Context context ) {
@@ -371,6 +381,20 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       }
    }
 
+   private void createConceptDescription( final org.eclipse.esmf.metamodel.Operation operation, final Context context ) {
+      // check if the concept description is already created. If not create a new one.
+      if ( !context.hasEnvironmentConceptDescription( operation.getAspectModelUrn().toString() ) ) {
+         final ConceptDescription conceptDescription =
+               new DefaultConceptDescription.Builder()
+                     .idShort( operation.getName() )
+                     .displayName( LangStringMapper.NAME.map( operation.getPreferredNames() ) )
+                     .embeddedDataSpecifications( extractEmbeddedDataSpecification( operation ) )
+                     .id( DEFAULT_MAPPER.determineIdentifierFor( operation ) )
+                     .build();
+         context.getEnvironment().getConceptDescriptions().add( conceptDescription );
+      }
+   }
+
    private void createConceptDescription( final Aspect aspect, final Context context ) {
       // check if the concept description is already created. If not create a new one.
       if ( !context.hasEnvironmentConceptDescription( aspect.getAspectModelUrn().toString() ) ) {
@@ -394,6 +418,13 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .build();
    }
 
+   private EmbeddedDataSpecification extractEmbeddedDataSpecification( final org.eclipse.esmf.metamodel.Operation operation ) {
+      return new DefaultEmbeddedDataSpecification.Builder()
+            .dataSpecification( buildReferenceForSeeElement( CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL ) )
+            .dataSpecificationContent( extractDataSpecificationContent( operation ) )
+            .build();
+   }
+
    private EmbeddedDataSpecification extractEmbeddedDataSpecification( final Aspect aspect ) {
       return new DefaultEmbeddedDataSpecification.Builder()
             .dataSpecification( buildReferenceForSeeElement( CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL ) )
@@ -413,6 +444,19 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .preferredName( preferredNames )
             .shortName( LangStringMapper.SHORT_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) )
             .dataType( mapIEC61360DataType( property.getCharacteristic() ) )
+            .build();
+   }
+
+   private DataSpecificationIec61360 extractDataSpecificationContent( final org.eclipse.esmf.metamodel.Operation operation ) {
+
+      final List<LangStringPreferredNameTypeIec61360> preferredNames = operation.getPreferredNames().isEmpty() ?
+            Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( operation.getName(), DEFAULT_LOCALE ) ) :
+            operation.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
+
+      return new DefaultDataSpecificationIec61360.Builder()
+            .definition( operation.getDescriptions().stream().map( LangStringMapper.DEFINITION::map ).collect( Collectors.toList() ) )
+            .preferredName( preferredNames )
+            .shortName( LangStringMapper.SHORT_NAME.createLangString( operation.getName(), DEFAULT_LOCALE ) )
             .build();
    }
 
