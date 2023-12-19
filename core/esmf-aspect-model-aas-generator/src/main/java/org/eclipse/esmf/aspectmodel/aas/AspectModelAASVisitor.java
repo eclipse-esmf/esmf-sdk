@@ -402,20 +402,16 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    private DataSpecificationIec61360 extractDataSpecificationContent( final Property property ) {
-      final List<LangStringDefinitionTypeIec61360> definitions = property.getCharacteristic().stream().flatMap( characteristic ->
-                  characteristic.getDescriptions().stream() )
-            .map( LangStringMapper.DEFINITION::map )
-            .collect( Collectors.toList() );
+      final List<LangStringDefinitionTypeIec61360> definitionsProperty = property.getDescriptions().stream().map( LangStringMapper.DEFINITION::map ).toList();
 
       final List<LangStringPreferredNameTypeIec61360> preferredNames = property.getPreferredNames().isEmpty() ?
             Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) ) :
             property.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIec61360.Builder()
-            .definition( definitions )
+            .definition( definitionsProperty )
             .preferredName( preferredNames )
             .shortName( LangStringMapper.SHORT_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) )
-
             .dataType( mapIEC61360DataType( property.getCharacteristic() ) )
             .build();
    }
