@@ -350,17 +350,13 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       return isSammUrn;
    }
 
-   public AspectModelUrn withName( final String name ) {
-      return fromUrn( getUrnPrefix() + name );
-   }
-
    /**
     * Returns AspectModelUrn with the same prefix but with different local name.
     *
     * @param name new local name
     * @return the AspectModelUrn
     */
-   public AspectModelUrn withName( String name ) {
+   public AspectModelUrn withName( final String name ) {
       return fromUrn( getUrnPrefix() + name );
    }
 

@@ -324,11 +324,11 @@ class AspectModelAASGeneratorTest {
 
       List<SubmodelElement> operations = environment.getSubmodels().get( 0 ).getSubmodelElements();
       DefaultOperation operation1 = (DefaultOperation) operations.get( 0 );
-      assertThat( operation1.getSemanticID() ).isNotNull();
+      assertThat( operation1.getSemanticId() ).isNotNull();
       assertThat( environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation1.getIdShort() ) ) ).isNotNull();
 
       DefaultOperation operation2 = (DefaultOperation) operations.get( 0 );
-      assertThat( operation2.getSemanticID() ).isNotNull();
+      assertThat( operation2.getSemanticId() ).isNotNull();
       assertThat( environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation2.getIdShort() ) ) ).isNotNull();
 
       assertEquals( 7, environment.getConceptDescriptions().size() );

@@ -63,7 +63,7 @@ public class AASModelAspectTranslator {
       Aspect newAspect;
 
       //Build MetaModelBaseAttributes for AspectEntity
-      AspectModelUrn urn = AspectModelUrn.fromUrn( submodel.getSemanticID().getKeys().get( 0 ).getValue() );
+      AspectModelUrn urn = AspectModelUrn.fromUrn( submodel.getSemanticId().getKeys().get( 0 ).getValue() );
 
       MetaModelBaseAttributes aspectMetaModelBaseAttributes = new MetaModelBaseAttributes(
             KnownVersion.getLatest(),

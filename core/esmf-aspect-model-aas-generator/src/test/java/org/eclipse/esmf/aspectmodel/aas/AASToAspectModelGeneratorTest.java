@@ -50,7 +50,7 @@ public class AASToAspectModelGeneratorTest {
 
    @ParameterizedTest
    @EnumSource( TestAspect.class )
-   void testRoundtripConversion( final TestAspect testAspect ) throws IOException, DeserializationException {
+   void testRoundtripConversion( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked(
             TestResources.getModel( testAspect, KnownVersion.getLatest() ).get() );
       final Environment aasEnvironment = new XmlDeserializer().read(

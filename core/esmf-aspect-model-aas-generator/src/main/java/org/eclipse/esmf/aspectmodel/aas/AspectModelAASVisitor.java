@@ -299,7 +299,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return new DefaultOperation.Builder()
             .displayName( LangStringMapper.NAME.map( operation.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( operation.getDescriptions() ) )
-            .semanticID( buildReferenceToOperation(operation) )
+            .semanticId( buildReferenceToOperation(operation) )
             .idShort( operation.getName() )
             .inputVariables( operation.getInput().stream()
                   .map( i -> mapOperationVariable( i, context ) )
