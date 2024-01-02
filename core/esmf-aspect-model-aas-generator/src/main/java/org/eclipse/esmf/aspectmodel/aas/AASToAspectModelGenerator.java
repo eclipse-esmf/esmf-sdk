@@ -75,11 +75,9 @@ import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AbstractLangString;
 import org.eclipse.digitaltwin.aas4j.v3.model.Blob;
 import org.eclipse.digitaltwin.aas4j.v3.model.Capability;
-import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.EventElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.File;
-import org.eclipse.digitaltwin.aas4j.v3.model.HasDataSpecification;
 import org.eclipse.digitaltwin.aas4j.v3.model.HasSemantics;
 import org.eclipse.digitaltwin.aas4j.v3.model.Identifiable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Key;
@@ -88,7 +86,6 @@ import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Range;
-import org.eclipse.digitaltwin.aas4j.v3.model.Referable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.RelationshipElement;
@@ -102,10 +99,10 @@ import org.slf4j.LoggerFactory;
 public class AASToAspectModelGenerator {
    private static final Logger LOG = LoggerFactory.getLogger( AASToAspectModelGenerator.class );
    private final Environment aasEnvironment;
-   private AspectModelUrn aspectUrn;
    private final Map<org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement, Property> properties = new HashMap<>();
    private final SAMMC SAMMC = new SAMMC( KnownVersion.getLatest() );
    private final ValueInstantiator valueInstantiator = new ValueInstantiator( KnownVersion.getLatest() );
+   private AspectModelUrn aspectUrn;
 
    private record ElementName( String name, boolean isSynthetic ) {}
 
@@ -322,11 +319,17 @@ public class AASToAspectModelGenerator {
             } );
    }
 
-   private List<String> seeReferences( final HasDataSpecification element ) {
-      if (element instanceof final Referable referable ) {
-//         referable.get
-      }
-      return List.of(); // TODO
+   private List<String> seeReferences( final SubmodelElement element ) {
+      return Optional.ofNullable( element.getSemanticId() ).stream()
+            .flatMap( semanticId -> semanticId.getKeys().stream() )
+            .filter( key -> key.getType() == KeyTypes.CONCEPT_DESCRIPTION || key.getType() == KeyTypes.GLOBAL_REFERENCE )
+            .map( Key::getValue )
+            .flatMap( value -> validIrdiOrUri( value ).stream() )
+            .toList();
+   }
+
+   private List<String> seeReferences( final Submodel submodel ) {
+      return validIrdiOrUri( submodel.getId() ).stream().toList();
    }
 
    private sealed interface ElementNamingStrategy permits DetermineAutomatically, UseGivenUrn {}
