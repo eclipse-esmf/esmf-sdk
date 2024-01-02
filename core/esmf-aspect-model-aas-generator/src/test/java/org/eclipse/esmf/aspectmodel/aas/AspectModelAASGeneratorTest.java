@@ -319,7 +319,7 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFRomAspectModelWithOperations () throws IOException, DeserializationException {
+   void testGenerateAasxFromAspectModelWithOperations () throws IOException, DeserializationException {
       final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_OPERATION );
 
       List<SubmodelElement> operations = environment.getSubmodels().get( 0 ).getSubmodelElements();
@@ -332,6 +332,25 @@ class AspectModelAASGeneratorTest {
       assertThat( environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation2.getIdShort() ) ) ).isNotNull();
 
       assertEquals( 7, environment.getConceptDescriptions().size() );
+   }
+
+   @Test
+   void testGeneratedAasxFromAspectModelWithPropertiesWithDescriptions () throws IOException, DeserializationException {
+      final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_DESCRIPTIONS );
+
+      final Property property = (Property) environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+
+      assertEquals( 1, environment.getSubmodels().get( 0 ).getSubmodelElements().size() );
+      assertEquals( 2, environment.getConceptDescriptions().size() );
+      assertEquals( 1, environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications().size() );
+
+      final DataSpecificationIec61360 dataSpecificationIec61360 =
+            (DataSpecificationIec61360) environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications().get( 0 ).getDataSpecificationContent();
+
+      assertThat( dataSpecificationIec61360.getDefinition().get( 1 ).getText() ).isEqualTo( "Test Description" );
+
+      assertThat( property.getDescription() ).isEmpty();
+
    }
 
    private void checkDataSpecificationIEC61360( final Set<String> semanticIds, final Environment env ) {

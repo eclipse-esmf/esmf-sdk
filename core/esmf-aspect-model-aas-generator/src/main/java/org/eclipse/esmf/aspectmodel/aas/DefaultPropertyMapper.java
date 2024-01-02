@@ -27,8 +27,7 @@ public class DefaultPropertyMapper implements PropertyMapper<Property> {
             .valueType( AasDataTypeMapper.mapAspectTypeToAASXSDataType( mapType( type ) ) )
             .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
             .value( context.getPropertyValue( UNKNOWN_EXAMPLE ) )
-            .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
-            .semanticId( buildReferenceToConceptDescription( property ) )
+            .semanticID( buildReferenceToConceptDescription( property ) )
             .build();
    }
 
