@@ -59,7 +59,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| detailedValidationMessages | Print detailed validation messages | boolean | false | {nok}
+| `detailedValidationMessages` | Print detailed validation messages | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 |===
@@ -104,7 +104,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
@@ -152,7 +152,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated Java files will be written to. | `String` | none | {ok}
@@ -199,7 +199,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON Schema will be written to. | `String` | none | {ok}
@@ -246,7 +246,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated OpenAPI Specification will be written to. | `String` | none | {ok}
@@ -303,7 +303,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated HTML document will be written to. | `String` | none | {ok}
@@ -352,7 +352,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated diagrams will be written to. | `String` | none | {ok}
@@ -398,7 +398,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
@@ -442,7 +442,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory where the updated Aspect Model will be written to. | `String` | none | {ok}
@@ -487,7 +487,7 @@ Configuration Properties:
 [width="100%", options="header", cols="20,50,10,10,10"]
 |===
 | Property | Description | Type | Default Value | Required
-| detailedValidationMessages | Detailed validation messages if the model can not be loaded | boolean | false | {nok}
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
 | `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory containing the pretty printed Aspect Model. | `String` | none | {ok}
