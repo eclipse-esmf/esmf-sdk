@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>8</version>
+      <version>9</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -74,8 +74,6 @@
    </modules>
 
    <properties>
-      <!-- Versions of third party dependencies -->
-      <poi-version>4.1.2</poi-version>
       <!-- General settings -->
       <skip.gpg.skip>true</skip.gpg.skip>
    </properties>
@@ -192,12 +190,6 @@
             <version>${spring-boot-version}</version>
             <type>pom</type>
             <scope>import</scope>
-         </dependency>
-
-         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>${poi-version}</version>
          </dependency>
          <dependency>
             <groupId>org.graalvm.js</groupId>
