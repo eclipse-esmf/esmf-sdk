@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
@@ -31,7 +31,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultOperation;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
@@ -54,6 +53,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Property;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementCollection;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
+import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultOperation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -319,23 +319,25 @@ class AspectModelAASGeneratorTest {
    }
 
    @Test
-   void testGenerateAasxFromAspectModelWithOperations () throws IOException, DeserializationException {
+   void testGenerateAasxFromAspectModelWithOperations() throws IOException, DeserializationException {
       final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_OPERATION );
 
-      List<SubmodelElement> operations = environment.getSubmodels().get( 0 ).getSubmodelElements();
-      DefaultOperation operation1 = (DefaultOperation) operations.get( 0 );
+      final List<SubmodelElement> operations = environment.getSubmodels().get( 0 ).getSubmodelElements();
+      final DefaultOperation operation1 = (DefaultOperation) operations.get( 0 );
       assertThat( operation1.getSemanticId() ).isNotNull();
-      assertThat( environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation1.getIdShort() ) ) ).isNotNull();
+      assertThat(
+            environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation1.getIdShort() ) ) ).isNotNull();
 
-      DefaultOperation operation2 = (DefaultOperation) operations.get( 0 );
+      final DefaultOperation operation2 = (DefaultOperation) operations.get( 0 );
       assertThat( operation2.getSemanticId() ).isNotNull();
-      assertThat( environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation2.getIdShort() ) ) ).isNotNull();
+      assertThat(
+            environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation2.getIdShort() ) ) ).isNotNull();
 
       assertEquals( 7, environment.getConceptDescriptions().size() );
    }
 
    @Test
-   void testGeneratedAasxFromAspectModelWithPropertiesWithDescriptions () throws IOException, DeserializationException {
+   void testGeneratedAasxFromAspectModelWithPropertiesWithDescriptions() throws IOException, DeserializationException {
       final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_DESCRIPTIONS );
 
       final Property property = (Property) environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
@@ -345,12 +347,12 @@ class AspectModelAASGeneratorTest {
       assertEquals( 1, environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications().size() );
 
       final DataSpecificationIec61360 dataSpecificationIec61360 =
-            (DataSpecificationIec61360) environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications().get( 0 ).getDataSpecificationContent();
+            (DataSpecificationIec61360) environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications().get( 0 )
+                  .getDataSpecificationContent();
 
       assertThat( dataSpecificationIec61360.getDefinition().get( 1 ).getText() ).isEqualTo( "Test Description" );
 
       assertThat( property.getDescription() ).isEmpty();
-
    }
 
    private void checkDataSpecificationIEC61360( final Set<String> semanticIds, final Environment env ) {
@@ -375,22 +377,18 @@ class AspectModelAASGeneratorTest {
 
    private Environment getAssetAdministrationShellFromAspect( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = loadAspect( testAspect );
-      final String out = generator.generateXmlOutput( aspect );
-      return loadAASX( out.getBytes() );
+      return loadAASX( generator.generateAsByteArray( AspectModelAASGenerator.Format.XML, aspect ) );
    }
 
-   private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect )
-         throws DeserializationException, IOException {
+   private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = loadAspect( testAspect );
       final JsonNode aspectData = loadPayload( testAspect );
-      final String out = generator.generateXmlOutput( Map.of( aspect, aspectData ) );
-      final var data = out.getBytes();
-      return loadAASX( data );
+      return loadAASX( generator.generateAsByteArray( AspectModelAASGenerator.Format.XML, aspect, aspectData ) );
    }
 
    private String aspectToString( final TestAspect testAspect ) {
       final Aspect aspect = loadAspect( testAspect );
-      return generator.generateXmlOutput( aspect );
+      return new String( generator.generateAsByteArray( AspectModelAASGenerator.Format.XML, aspect ), StandardCharsets.UTF_8 );
    }
 
    private void validate( final ByteArrayInputStream xmlStream ) {
