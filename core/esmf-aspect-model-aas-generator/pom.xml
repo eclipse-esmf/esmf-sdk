@@ -16,7 +16,11 @@
    <dependencies>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-aspect-model-starter</artifactId>
+         <artifactId>esmf-aspect-meta-model-java</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-serializer</artifactId>
       </dependency>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
