@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -21,12 +21,12 @@ import java.io.File;
 import org.apache.maven.plugin.Mojo;
 import org.junit.Test;
 
-public class GenerateJsonPayloadTest extends AspectModelMojoTest {
+public class GenerateAspectFromAasTest extends AspectModelMojoTest {
    @Test
-   public void testGenerateJsonPayload() throws Exception {
-      final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
-      final Mojo generateJsonPayload = lookupMojo( "generateJsonPayload", testPom );
-      assertThatCode( generateJsonPayload::execute ).doesNotThrowAnyException();
-      assertThat( generatedFilePath( "Aspect.json" ) ).exists();
+   public void testGenerateAspectFromAas() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-aspect-from-aas-valid.xml" );
+      final Mojo generateAspectFromAas = lookupMojo( "generateAspectFromAas", testPom );
+      assertThatCode( generateAspectFromAas::execute ).doesNotThrowAnyException();
+      assertThat( generatedFilePath( "com.example", "1.0.0", "Submodel1.ttl" ) ).exists();
    }
 }

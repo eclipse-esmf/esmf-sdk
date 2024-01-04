@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.aas;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -62,6 +63,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.base.CaseFormat;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.iri.IRI;
 import org.apache.jena.iri.IRIFactory;
@@ -70,6 +72,7 @@ import org.apache.jena.vocabulary.XSD;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AbstractLangString;
@@ -96,8 +99,8 @@ import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElementList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AASToAspectModelGenerator {
-   private static final Logger LOG = LoggerFactory.getLogger( AASToAspectModelGenerator.class );
+public class AasToAspectModelGenerator {
+   private static final Logger LOG = LoggerFactory.getLogger( AasToAspectModelGenerator.class );
    private final Environment aasEnvironment;
    private final Map<org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement, Property> properties = new HashMap<>();
    private final SAMMC SAMMC = new SAMMC( KnownVersion.getLatest() );
@@ -106,29 +109,51 @@ public class AASToAspectModelGenerator {
 
    private record ElementName( String name, boolean isSynthetic ) {}
 
-   private AASToAspectModelGenerator( final Environment aasEnvironment ) {
+   private AasToAspectModelGenerator( final Environment aasEnvironment ) {
       this.aasEnvironment = aasEnvironment;
    }
 
-   public static AASToAspectModelGenerator fromAasXml( final InputStream inputStream ) {
+   public static AasToAspectModelGenerator fromAasXml( final InputStream inputStream ) {
       try {
-         return from( new XmlDeserializer().read( inputStream ) );
+         return fromEnvironment( new XmlDeserializer().read( inputStream ) );
       } catch ( final DeserializationException exception ) {
          throw new AspectModelGenerationException( exception );
       }
    }
 
-   public static AASToAspectModelGenerator fromAasx( final InputStream inputStream ) {
+   public static AasToAspectModelGenerator fromAasx( final InputStream inputStream ) {
       try {
          final AASXDeserializer deserializer = new AASXDeserializer( inputStream );
-         return from( new XmlDeserializer().read( deserializer.getXMLResourceString() ) );
+         return fromEnvironment( new XmlDeserializer().read( deserializer.getXMLResourceString() ) );
       } catch ( final InvalidFormatException | IOException | DeserializationException exception ) {
          throw new AspectModelGenerationException( exception );
       }
    }
 
-   public static AASToAspectModelGenerator from( final Environment environment ) {
-      return new AASToAspectModelGenerator( environment );
+   public static AasToAspectModelGenerator fromAasJson( final InputStream inputStream ) {
+      final JsonDeserializer deserializer = new JsonDeserializer();
+      try {
+         return fromEnvironment( deserializer.read( inputStream ) );
+      } catch ( final DeserializationException exception ) {
+         throw new AspectModelGenerationException( exception );
+      }
+   }
+
+   public static AasToAspectModelGenerator fromEnvironment( final Environment environment ) {
+      return new AasToAspectModelGenerator( environment );
+   }
+
+   public static AasToAspectModelGenerator fromFile( final java.io.File file ) {
+      try ( final InputStream inputStream = new FileInputStream( file ) ) {
+         return switch ( FilenameUtils.getExtension( file.getAbsolutePath() ) ) {
+            case "xml" -> AasToAspectModelGenerator.fromAasXml( inputStream );
+            case "aasx" -> AasToAspectModelGenerator.fromAasx( inputStream );
+            case "json" -> AasToAspectModelGenerator.fromAasJson( inputStream );
+            default -> throw new AspectModelGenerationException( "Invalid file extension on file " + file );
+         };
+      } catch ( final IOException exception ) {
+         throw new AspectModelGenerationException( exception );
+      }
    }
 
    public List<Aspect> generateAspects() {

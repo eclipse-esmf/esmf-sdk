@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 
@@ -22,18 +23,13 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
 public class GenerateDiagramTest extends AspectModelMojoTest {
-
    @Test
    public void testGenerateDiagramsValidAspectModel() throws Exception {
       final File testPom = getTestFile( "src/test/resources/generate-diagram-pom-valid-aspect-model.xml" );
       final Mojo generateDiagram = lookupMojo( "generateDiagram", testPom );
       assertThatCode( generateDiagram::execute ).doesNotThrowAnyException();
-
-      assertGeneratedFileExists( "Aspect_en.svg" );
-      assertGeneratedFileExists( "Aspect_en.png" );
-
-      deleteGeneratedFile( "Aspect_en.svg" );
-      deleteGeneratedFile( "Aspect_en.png" );
+      assertThat( generatedFilePath( "Aspect_en.svg" ) ).exists();
+      assertThat( generatedFilePath( "Aspect_en.png" ) ).exists();
    }
 
    @Test

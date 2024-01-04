@@ -24,13 +24,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateAas", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateAas extends AspectModelMojo {
-   private final Logger logger = LoggerFactory.getLogger( GenerateAas.class );
-
    @Parameter( required = true, property = "targetFormat" )
    private String targetFormat;
 
@@ -41,7 +37,7 @@ public class GenerateAas extends AspectModelMojo {
       final AspectModelAASGenerator generator = new AspectModelAASGenerator();
       for ( final AspectContext aspectModel : aspectModels ) {
          generator.generate( AspectModelAASGenerator.Format.valueOf( targetFormat.toUpperCase() ), aspectModel.aspect(),
-               name -> getStreamForFile( name + "." + targetFormat, outputDirectory ) );
+               name -> getOutputStreamForFile( name + "." + targetFormat, outputDirectory ) );
       }
    }
 

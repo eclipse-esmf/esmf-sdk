@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -30,6 +31,7 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.DeserializationException;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.junit.jupiter.api.Disabled;
@@ -37,14 +39,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class AASToAspectModelGeneratorTest {
+public class AasToAspectModelGeneratorTest {
    @Test
    @Disabled
       // IDTA-provided sample files can currently not be read with AAS4J
    void testTranslateDigitalNameplate() {
-      final InputStream aasx = AASToAspectModelGeneratorTest.class.getClassLoader()
+      final InputStream aasx = AasToAspectModelGeneratorTest.class.getClassLoader()
             .getResourceAsStream( "Sample_ZVEI_Digital_Nameplate_V10.aasx" );
-      final AASToAspectModelGenerator aspectModelGenerator = AASToAspectModelGenerator.fromAasx( aasx );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromAasx( aasx );
       assertThatCode( aspectModelGenerator::generateAspects ).doesNotThrowAnyException();
    }
 
@@ -53,22 +55,28 @@ public class AASToAspectModelGeneratorTest {
    void testRoundtripConversion( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked(
             TestResources.getModel( testAspect, KnownVersion.getLatest() ).get() );
-      final Environment aasEnvironment = new XmlDeserializer().read(
+      final Consumer<AasToAspectModelGenerator> assertForValidator = aspectModelGenerator ->
+            assertThatCode( () -> {
+               final List<Aspect> aspects = aspectModelGenerator.generateAspects();
+               assertThat( aspects ).singleElement().satisfies( generatedAspect -> {
+                  assertThat( generatedAspect.getAspectModelUrn().get() ).isEqualTo( aspect.getAspectModelUrn().get() );
+               } );
+            } ).doesNotThrowAnyException();
+
+      final Environment aasEnvironmentFromXml = new XmlDeserializer().read(
             new ByteArrayInputStream( new AspectModelAASGenerator().generateAsByteArray( AspectModelAASGenerator.Format.XML, aspect ) ) );
-      final AASToAspectModelGenerator aspectModelGenerator = AASToAspectModelGenerator.from( aasEnvironment );
-      assertThatCode( () -> {
-         final List<Aspect> aspects = aspectModelGenerator.generateAspects();
-         assertThat( aspects ).singleElement().satisfies( generatedAspect -> {
-            assertThat( generatedAspect.getAspectModelUrn().get() ).isEqualTo( aspect.getAspectModelUrn().get() );
-         } );
-      } ).doesNotThrowAnyException();
+      assertForValidator.accept( AasToAspectModelGenerator.fromEnvironment( aasEnvironmentFromXml ) );
+
+      final Environment aasEnvironmentFromJson = new JsonDeserializer().read(
+            new ByteArrayInputStream( new AspectModelAASGenerator().generateAsByteArray( AspectModelAASGenerator.Format.JSON, aspect ) ) );
+      assertForValidator.accept( AasToAspectModelGenerator.fromEnvironment( aasEnvironmentFromJson ) );
    }
 
    @Test
    void testGetAspectModelUrnFromSubmodelIdentifier() {
       // Submodel has an Aspect Model URN as identifier
       final Environment aasEnvironment = loadEnvironment( "SMTWithAspectModelUrnId.aas.xml" );
-      final AASToAspectModelGenerator aspectModelGenerator = AASToAspectModelGenerator.from( aasEnvironment );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect -> {
          assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString ).contains( "urn:samm:com.example:1.0.0#Submodel1" );
       } );
@@ -78,7 +86,7 @@ public class AASToAspectModelGeneratorTest {
    void testGetAspectModelUrnFromConceptDescription() {
       // Submodel has a Concept Description that points to an Aspect Model URN
       final Environment aasEnvironment = loadEnvironment( "SMTWithAspectModelUrnInConceptDescription.aas.xml" );
-      final AASToAspectModelGenerator aspectModelGenerator = AASToAspectModelGenerator.from( aasEnvironment );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect -> {
          assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString ).contains( "urn:samm:com.example:1.0.0#Submodel1" );
       } );
@@ -89,7 +97,7 @@ public class AASToAspectModelGeneratorTest {
       // Submodel has no Aspect Model URN identifier and no Concept Description.
       // It has a version and an IRI identifier and an idShort
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction1.aas.xml" );
-      final AASToAspectModelGenerator aspectModelGenerator = AASToAspectModelGenerator.from( aasEnvironment );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect -> {
          assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString ).contains( "urn:samm:com.example.www:1.2.3#Submodel1" );
       } );
@@ -100,7 +108,7 @@ public class AASToAspectModelGeneratorTest {
       // Submodel has no Aspect Model URN identifier and no Concept Description.
       // It has a version and an IRDI identifier and an idShort
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction2.aas.xml" );
-      final AASToAspectModelGenerator aspectModelGenerator = AASToAspectModelGenerator.from( aasEnvironment );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect -> {
          assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString ).contains( "urn:samm:com.example:1.2.3#Submodel1" );
       } );
@@ -111,7 +119,7 @@ public class AASToAspectModelGeneratorTest {
       // Submodel has no Aspect Model URN identifier and no Concept Description.
       // It has an IRDI identifier and an idShort, but no version
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction3.aas.xml" );
-      final AASToAspectModelGenerator aspectModelGenerator = AASToAspectModelGenerator.from( aasEnvironment );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect -> {
          assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString ).contains( "urn:samm:com.example:1.0.0#Submodel1" );
       } );
@@ -122,7 +130,7 @@ public class AASToAspectModelGeneratorTest {
       // Submodel has no Aspect Model URN identifier and no Concept Description.
       // It has an IRDI identifier, but no idShort and no version
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction4.aas.xml" );
-      final AASToAspectModelGenerator aspectModelGenerator = AASToAspectModelGenerator.from( aasEnvironment );
+      final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect -> {
          assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString )
                .contains( "urn:samm:com.example:1.0.0#AAAAAA000abf2fd07" );
@@ -130,7 +138,7 @@ public class AASToAspectModelGeneratorTest {
    }
 
    private Environment loadEnvironment( final String name ) {
-      try ( final InputStream inputStream = AASToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream( name ) ) {
+      try ( final InputStream inputStream = AasToAspectModelGeneratorTest.class.getClassLoader().getResourceAsStream( name ) ) {
          return new XmlDeserializer().read( inputStream );
       } catch ( final DeserializationException | IOException exception ) {
          fail( exception );

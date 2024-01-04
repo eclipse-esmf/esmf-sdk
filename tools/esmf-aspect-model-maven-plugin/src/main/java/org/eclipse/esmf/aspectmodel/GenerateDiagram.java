@@ -48,7 +48,7 @@ public class GenerateDiagram extends AspectModelMojo {
 
          for ( final AspectContext aspectModel : aspectModels ) {
             final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspectModel );
-            generator.generateDiagrams( formats, name -> getStreamForFile( name, outputDirectory ) );
+            generator.generateDiagrams( formats, name -> getOutputStreamForFile( name, outputDirectory ) );
          }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not generate diagram.", exception );

@@ -128,7 +128,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
          final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
                Optional.of( result ), includeQueryApi, getPagingFromArgs(), locale );
 
-         final OutputStream out = getStreamForFile( aspect.getName() + ".oai.json", outputDirectory );
+         final OutputStream out = getOutputStreamForFile( aspect.getName() + ".oai.json", outputDirectory );
          try {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, jsonSpec );
             out.flush();
@@ -144,7 +144,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
          try {
             final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
                   getFileAsString( aspectParameterFile ), includeQueryApi, getPagingFromArgs(), locale );
-            final OutputStream out = getStreamForFile( aspect.getName() + ".oai.yaml", outputDirectory );
+            final OutputStream out = getOutputStreamForFile( aspect.getName() + ".oai.yaml", outputDirectory );
             out.write( yamlSpec.getBytes() );
             out.flush();
             out.close();
