@@ -42,6 +42,6 @@ public class GenerateDiagramTest extends AspectModelMojoTest {
       final Mojo generateDiagram = lookupMojo( "generateDiagram", testPom );
       assertThatCode( generateDiagram::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessage( "Invalid target format provided. Possible formats are svg & png." );
+            .hasMessage( "Invalid target format: jpg. Valid formats are png, svg." );
    }
 }

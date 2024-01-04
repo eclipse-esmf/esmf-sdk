@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,8 +52,6 @@ public class GenerateDiagram extends AspectModelMojo {
          }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not generate diagram.", exception );
-      } catch ( final IllegalArgumentException exception ) {
-         throw new MojoExecutionException( "Invalid target format provided. Possible formats are svg & png.", exception );
       }
       logger.info( "Successfully generated Aspect Model diagram(s)." );
    }
@@ -61,6 +60,14 @@ public class GenerateDiagram extends AspectModelMojo {
    protected void validateParameters() throws MojoExecutionException {
       if ( targetFormats == null || targetFormats.isEmpty() ) {
          throw new MojoExecutionException( "Please provide target formats." );
+      }
+
+      for ( final String targetFormat : targetFormats ) {
+         if ( Arrays.stream( AspectModelDiagramGenerator.Format.values() )
+               .noneMatch( x -> x.toString().equals( targetFormat.toLowerCase() ) ) ) {
+            throw new MojoExecutionException( "Invalid target format: " + targetFormat + ". Valid formats are "
+                  + AspectModelDiagramGenerator.Format.allValues() + "." );
+         }
       }
       super.validateParameters();
    }
