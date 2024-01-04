@@ -59,5 +59,4 @@ public abstract class AspectModelMojoTest extends AbstractMojoTestCase {
             .orElseGet( () -> baseOutputDir );
       return Path.of( outputDirectory + "/" + fileName );
    }
-
 }

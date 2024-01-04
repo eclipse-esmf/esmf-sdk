@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -58,10 +59,15 @@ public class AspectModelAASGenerator {
       public ThrowingBiConsumer<Environment, OutputStream, Throwable> getSerializer() {
          return serializer;
       }
+
+      public static String allValues() {
+         return String.join( ", ", Stream.of( values() ).map( Format::toString ).toList() );
+      }
    }
 
    /**
     * Generates an AAS file for a given Aspect
+    *
     * @param format the output format
     * @param aspect the Aspect for which an AASX archive shall be generated
     * @return the generated AAS file as byte array
@@ -72,6 +78,7 @@ public class AspectModelAASGenerator {
 
    /**
     * Generates an AAS file for a given Aspect and its corresponding payload
+    *
     * @param format the output format
     * @param aspect the Aspect for which an AASX archive shall be generated
     * @return the generated AAS file as byte array

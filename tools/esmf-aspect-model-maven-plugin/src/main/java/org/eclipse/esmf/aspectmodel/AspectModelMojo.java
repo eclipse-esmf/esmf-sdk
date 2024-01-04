@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
@@ -46,6 +43,9 @@ import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 
 import io.vavr.control.Try;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class AspectModelMojo extends AbstractMojo {
 
@@ -70,9 +70,10 @@ public abstract class AspectModelMojo extends AbstractMojo {
    protected Set<Try<AspectContext>> loadAndResolveModels() {
       final Path modelsRoot = Path.of( modelsRootDirectory );
       return includes.stream().map( AspectModelUrn::fromUrn )
-            .map( urn -> new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ).flatMap( versionedModel ->
-                  AspectModelLoader.getSingleAspect( versionedModel, aspect -> aspect.getName().equals( urn.getName() ) )
-                        .map( aspect -> new AspectContext( versionedModel, aspect ) ) ) )
+            .map( urn -> new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn )
+                  .flatMap( versionedModel ->
+                        AspectModelLoader.getSingleAspect( versionedModel, aspect -> aspect.getName().equals( urn.getName() ) )
+                              .map( aspect -> new AspectContext( versionedModel, aspect ) ) ) )
             .collect( Collectors.toSet() );
    }
 
@@ -112,8 +113,8 @@ public abstract class AspectModelMojo extends AbstractMojo {
       final Map<AspectModelUrn, VersionedModel> versionedModels = new HashMap<>();
       for ( final String urn : includes ) {
          final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( urn );
-         final String aspectModelFilePath = String.format( "%s/%s/%s/%s.ttl", modelsRootDirectory, aspectModelUrn.getNamespace(), aspectModelUrn.getVersion(),
-               aspectModelUrn.getName() );
+         final String aspectModelFilePath = String.format( "%s/%s/%s/%s.ttl", modelsRootDirectory, aspectModelUrn.getNamespace(),
+               aspectModelUrn.getVersion(), aspectModelUrn.getName() );
 
          final File inputFile = new File( aspectModelFilePath ).getAbsoluteFile();
          try ( final InputStream inputStream = new FileInputStream( inputFile ) ) {
