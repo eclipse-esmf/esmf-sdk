@@ -46,7 +46,7 @@ public class GenerateJavaPojo {
       generator.generate( qualifiedName -> {
          // Create an output stream for the given qualified Java class name
          // end::generate[]
-         return new NullOutputStream();
+         return NullOutputStream.INSTANCE;
          // tag::generate[]
       } );
       // end::generate[]

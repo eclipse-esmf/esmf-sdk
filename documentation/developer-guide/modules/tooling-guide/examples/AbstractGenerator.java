@@ -22,7 +22,7 @@ public abstract class AbstractGenerator {
    OutputStream outputStreamForName( final String aspectFileName ) {
       // Create an OutputStream for the file name, e.g. a FileOutputStream
       // end::outputStream[]
-      return new NullOutputStream();
+      return NullOutputStream.INSTANCE;
       // tag::outputStream[]
    }
    // end::outputStream[]
