@@ -33,6 +33,26 @@ public class GenerateAasTest extends AspectModelMojoTest {
    }
 
    @Test
+   public void testGenerateAasJsonValidAspectModel() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-aas-json-pom-valid-aspect-model.xml" );
+      final Mojo generateAas = lookupMojo( "generateAas", testPom );
+      assertThatCode( generateAas::execute ).doesNotThrowAnyException();
+
+      assertGeneratedFileExists( "Aspect.json" );
+      deleteGeneratedFile( "Aspect.json" );
+   }
+
+   @Test
+   public void testGenerateAasAasxValidAspectModel() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-aas-aasx-pom-valid-aspect-model.xml" );
+      final Mojo generateAas = lookupMojo( "generateAas", testPom );
+      assertThatCode( generateAas::execute ).doesNotThrowAnyException();
+
+      assertGeneratedFileExists( "Aspect.aasx" );
+      deleteGeneratedFile( "Aspect.aasx" );
+   }
+
+   @Test
    public void testGenerateAasInvalidTargetFormat() throws Exception {
       final File testPom = getTestFile( "src/test/resources/generate-aas-pom-invalid-target-format.xml" );
       final Mojo generateAas = lookupMojo( "generateAas", testPom );
