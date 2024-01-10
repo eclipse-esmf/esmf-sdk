@@ -289,13 +289,15 @@ public class SammCliTest extends MetaModelVersions {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = Paths.get( testModel.getUrn().getNamespace(), testModel.getUrn().getVersion() ).toFile();
+      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespace() )
+            .resolve( testModel.getUrn().getVersion() )
+            .toFile();
       assertThat( directory ).exists();
       final String expectedAspectModelFileName = testModel.getName() + ".ttl";
       assertThat( directory ).isDirectoryContaining( file -> file.getName().equals( expectedAspectModelFileName ) );
 
       final File sourceFile = directory.toPath().resolve( expectedAspectModelFileName ).toFile();
-      assertThat( sourceFile ).content().contains( ":" + testModel.getName() + "a samm:Aspect" );
+      assertThat( sourceFile ).content().contains( ":" + testModel.getName() + " a samm:Aspect" );
    }
 
    @Test

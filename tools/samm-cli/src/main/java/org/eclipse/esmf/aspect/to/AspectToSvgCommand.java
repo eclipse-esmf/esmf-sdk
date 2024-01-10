@@ -21,6 +21,7 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.exception.CommandException;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToSvgCommand.COMMAND_NAME,
@@ -36,7 +37,8 @@ public class AspectToSvgCommand extends AbstractCommand {
    @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path" )
    private String outputFilePath = "-";
 
-   @CommandLine.Option( names = { "--language", "-l" }, description = "The language from the model for which the diagram should be generated (default: en)" )
+   @CommandLine.Option( names = { "--language", "-l" },
+         description = "The language from the model for which the diagram should be generated (default: en)" )
    private String language = "en";
 
    @CommandLine.ParentCommand
@@ -51,7 +53,8 @@ public class AspectToSvgCommand extends AbstractCommand {
    @Override
    public void run() {
       try {
-         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.SVG, outputFilePath, language, customResolver );
+         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.SVG, outputFilePath, language,
+               customResolver );
       } catch ( final IOException e ) {
          throw new CommandException( e );
       }
