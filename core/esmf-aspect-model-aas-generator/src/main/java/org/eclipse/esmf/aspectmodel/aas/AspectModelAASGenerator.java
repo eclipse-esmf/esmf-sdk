@@ -16,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -36,35 +35,6 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
  * Generator that generates an AAS file containing an AAS submodel for a given Aspect model
  */
 public class AspectModelAASGenerator {
-   public enum Format {
-      AASX( ( environment, output ) -> new AASXSerializer().write( environment, null, output ) ),
-      XML( ( environment, output ) -> output.write( new XmlSerializer().write( environment ).getBytes() ) ),
-      JSON( ( environment, output ) -> output.write( new JsonSerializer().write( environment ).getBytes() ) );
-
-      private final ThrowingBiConsumer<Environment, OutputStream, Throwable> serializer;
-
-      @Override
-      public String toString() {
-         return switch ( this ) {
-            case AASX -> "aasx";
-            case XML -> "xml";
-            case JSON -> "json";
-         };
-      }
-
-      Format( final ThrowingBiConsumer<Environment, OutputStream, Throwable> serializer ) {
-         this.serializer = serializer;
-      }
-
-      public ThrowingBiConsumer<Environment, OutputStream, Throwable> getSerializer() {
-         return serializer;
-      }
-
-      public static String allValues() {
-         return String.join( ", ", Stream.of( values() ).map( Format::toString ).toList() );
-      }
-   }
-
    /**
     * Generates an AAS file for a given Aspect
     *
@@ -72,7 +42,7 @@ public class AspectModelAASGenerator {
     * @param aspect the Aspect for which an AASX archive shall be generated
     * @return the generated AAS file as byte array
     */
-   public byte[] generateAsByteArray( final Format format, final Aspect aspect ) {
+   public byte[] generateAsByteArray( final AasFileFormat format, final Aspect aspect ) {
       return generateAsByteArray( format, aspect, null );
    }
 
@@ -84,7 +54,7 @@ public class AspectModelAASGenerator {
     * @return the generated AAS file as byte array
     * @throws AasGenerationException in case the generation can not properly be executed
     */
-   public byte[] generateAsByteArray( final Format format, final Aspect aspect, final JsonNode aspectData ) {
+   public byte[] generateAsByteArray( final AasFileFormat format, final Aspect aspect, final JsonNode aspectData ) {
       final ByteArrayOutputStream baos = new ByteArrayOutputStream();
       generate( format, aspect, aspectData, name -> baos );
       return baos.toByteArray();
@@ -98,8 +68,16 @@ public class AspectModelAASGenerator {
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
     * @throws AasGenerationException in case the generation can not properly be executed
     */
-   public void generate( final Format format, final Aspect aspect, final Function<String, OutputStream> nameMapper ) {
+   public void generate( final AasFileFormat format, final Aspect aspect, final Function<String, OutputStream> nameMapper ) {
       generate( format, aspect, null, nameMapper );
+   }
+
+   private ThrowingBiConsumer<Environment, OutputStream, Throwable> serializer( final AasFileFormat format ) {
+      return switch ( format ) {
+         case AASX -> ( environment, output ) -> new AASXSerializer().write( environment, null, output );
+         case XML -> ( environment, output ) -> output.write( new XmlSerializer().write( environment ).getBytes() );
+         case JSON -> ( environment, output ) -> output.write( new JsonSerializer().write( environment ).getBytes() );
+      };
    }
 
    /**
@@ -112,7 +90,7 @@ public class AspectModelAASGenerator {
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
     * @throws AasGenerationException in case the generation can not properly be executed
     */
-   public void generate( final Format format, final Aspect aspect, @Nullable final JsonNode aspectData,
+   public void generate( final AasFileFormat format, final Aspect aspect, @Nullable final JsonNode aspectData,
          final Function<String, OutputStream> nameMapper ) {
       try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
          final AspectModelAASVisitor visitor = new AspectModelAASVisitor().withPropertyMapper( new LangStringPropertyMapper() );
@@ -128,7 +106,7 @@ public class AspectModelAASGenerator {
          }
 
          final Environment environment = visitor.visitAspect( aspect, context );
-         format.getSerializer().accept( environment, output );
+         serializer( format ).accept( environment, output );
       } catch ( final Throwable exception ) {
          throw new AasGenerationException( exception );
       }
@@ -140,11 +118,11 @@ public class AspectModelAASGenerator {
     * @param aspect the Aspect for which an AASX archive shall be generated
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
     * @throws AasGenerationException in case the generation can not properly be executed
-    * @deprecated use {@link #generate(Format, Aspect, Function)} instead
+    * @deprecated use {@link #generate(AasFileFormat, Aspect, Function)} instead
     */
    @Deprecated( forRemoval = true )
    public void generateAASXFile( final Aspect aspect, final Function<String, OutputStream> nameMapper ) {
-      generate( Format.AASX, aspect, nameMapper );
+      generate( AasFileFormat.AASX, aspect, nameMapper );
    }
 
    /**
@@ -154,11 +132,11 @@ public class AspectModelAASGenerator {
     * @param aspectData the JSON data corresponding to the Aspect
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
     * @throws AasGenerationException in case the generation can not properly be executed
-    * @deprecated use {@link #generate(Format, Aspect, JsonNode, Function)} instead
+    * @deprecated use {@link #generate(AasFileFormat, Aspect, JsonNode, Function)} instead
     */
    @Deprecated( forRemoval = true )
    public void generateAASXFile( final Aspect aspect, final JsonNode aspectData, final Function<String, OutputStream> nameMapper ) {
-      generate( Format.AASX, aspect, aspectData, nameMapper );
+      generate( AasFileFormat.AASX, aspect, aspectData, nameMapper );
    }
 
    /**
@@ -167,11 +145,11 @@ public class AspectModelAASGenerator {
     * @param aspect the Aspect for which an xml file shall be generated
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
     * @throws AasGenerationException in case the generation can not properly be executed
-    * @deprecated use {@link #generate(Format, Aspect, Function)} instead
+    * @deprecated use {@link #generate(AasFileFormat, Aspect, Function)} instead
     */
    @Deprecated( forRemoval = true )
    public void generateAasXmlFile( final Aspect aspect, final Function<String, OutputStream> nameMapper ) {
-      generate( Format.XML, aspect, nameMapper );
+      generate( AasFileFormat.XML, aspect, nameMapper );
    }
 
    /**
@@ -182,11 +160,11 @@ public class AspectModelAASGenerator {
     * @param aspectData the JSON data corresponding to the Aspect
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
     * @throws AasGenerationException in case the generation can not properly be executed
-    * @deprecated use {@link #generate(Format, Aspect, JsonNode, Function)} instead
+    * @deprecated use {@link #generate(AasFileFormat, Aspect, JsonNode, Function)} instead
     */
    @Deprecated( forRemoval = true )
    public void generateAasXmlFile( final Aspect aspect, final JsonNode aspectData, final Function<String, OutputStream> nameMapper ) {
-      generate( Format.XML, aspect, aspectData, nameMapper );
+      generate( AasFileFormat.XML, aspect, aspectData, nameMapper );
    }
 
    /**
@@ -195,11 +173,11 @@ public class AspectModelAASGenerator {
     * @param aspect the Aspect for which an JSON shall be generated
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
     * @throws AasGenerationException in case the generation can not properly be executed
-    * @deprecated use {@link #generate(Format, Aspect, Function)} instead
+    * @deprecated use {@link #generate(AasFileFormat, Aspect, Function)} instead
     */
    @Deprecated( forRemoval = true )
    public void generateAasJsonFile( final Aspect aspect, final Function<String, OutputStream> nameMapper ) {
-      generate( Format.JSON, aspect, nameMapper );
+      generate( AasFileFormat.JSON, aspect, nameMapper );
    }
 
    /**
@@ -209,10 +187,10 @@ public class AspectModelAASGenerator {
     * @param aspect the Aspect for which an JSON shall be generated
     * @param nameMapper a Name Mapper implementation, which provides an OutputStream for a given filename
     * @throws AasGenerationException in case the generation can not properly be executed
-    * @deprecated use {@link #generate(Format, Aspect, JsonNode, Function)} instead
+    * @deprecated use {@link #generate(AasFileFormat, Aspect, JsonNode, Function)} instead
     */
    @Deprecated( forRemoval = true )
    public void generateAasJsonFile( final Aspect aspect, final JsonNode aspectData, final Function<String, OutputStream> nameMapper ) {
-      generate( Format.JSON, aspect, aspectData, nameMapper );
+      generate( AasFileFormat.JSON, aspect, aspectData, nameMapper );
    }
 }

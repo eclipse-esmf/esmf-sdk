@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator;
+import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.metamodel.AspectContext;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -36,7 +37,7 @@ public class GenerateAas extends AspectModelMojo {
       final Set<AspectContext> aspectModels = loadModelsOrFail();
       final AspectModelAASGenerator generator = new AspectModelAASGenerator();
       for ( final AspectContext aspectModel : aspectModels ) {
-         generator.generate( AspectModelAASGenerator.Format.valueOf( targetFormat.toUpperCase() ), aspectModel.aspect(),
+         generator.generate( AasFileFormat.valueOf( targetFormat.toUpperCase() ), aspectModel.aspect(),
                name -> getOutputStreamForFile( name + "." + targetFormat, outputDirectory ) );
       }
    }
@@ -46,10 +47,10 @@ public class GenerateAas extends AspectModelMojo {
       if ( targetFormat == null ) {
          throw new MojoExecutionException( "Please provide target format." );
       }
-      if ( Arrays.stream( AspectModelAASGenerator.Format.values() )
+      if ( Arrays.stream( AasFileFormat.values() )
             .noneMatch( x -> x.toString().equals( targetFormat.toLowerCase() ) ) ) {
          throw new MojoExecutionException( "Invalid target format: " + targetFormat + ". Valid formats are "
-               + AspectModelAASGenerator.Format.allValues() + "." );
+               + AasFileFormat.allValues() + "." );
       }
       super.validateParameters();
    }

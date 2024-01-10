@@ -21,6 +21,7 @@ import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator;
+import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -48,7 +49,7 @@ public class AspectToAasCommand extends AbstractCommand {
    @CommandLine.Option( names = { "--format", "-f" },
          description = "The file format the AAS is to be generated in. Valid options are \"${COMPLETION-CANDIDATES}\". Default is "
                + "\"${DEFAULT-VALUE}\"." )
-   private AspectModelAASGenerator.Format format = AspectModelAASGenerator.Format.XML;
+   private AasFileFormat format = AasFileFormat.XML;
 
    @CommandLine.Option( names = { "--aspect-data", "-a" },
          description = "A file containing Aspect JSON data." )

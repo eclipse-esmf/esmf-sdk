@@ -64,11 +64,11 @@ public class AasToAspectModelGeneratorTest {
             } ).doesNotThrowAnyException();
 
       final Environment aasEnvironmentFromXml = new XmlDeserializer().read(
-            new ByteArrayInputStream( new AspectModelAASGenerator().generateAsByteArray( AspectModelAASGenerator.Format.XML, aspect ) ) );
+            new ByteArrayInputStream( new AspectModelAASGenerator().generateAsByteArray( AasFileFormat.XML, aspect ) ) );
       assertForValidator.accept( AasToAspectModelGenerator.fromEnvironment( aasEnvironmentFromXml ) );
 
       final Environment aasEnvironmentFromJson = new JsonDeserializer().read(
-            new ByteArrayInputStream( new AspectModelAASGenerator().generateAsByteArray( AspectModelAASGenerator.Format.JSON, aspect ) ) );
+            new ByteArrayInputStream( new AspectModelAASGenerator().generateAsByteArray( AasFileFormat.JSON, aspect ) ) );
       assertForValidator.accept( AasToAspectModelGenerator.fromEnvironment( aasEnvironmentFromJson ) );
    }
 

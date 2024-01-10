@@ -374,18 +374,18 @@ class AspectModelAASGeneratorTest {
 
    private Environment getAssetAdministrationShellFromAspect( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = loadAspect( testAspect );
-      return loadAASX( generator.generateAsByteArray( AspectModelAASGenerator.Format.XML, aspect ) );
+      return loadAASX( generator.generateAsByteArray( AasFileFormat.XML, aspect ) );
    }
 
    private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = loadAspect( testAspect );
       final JsonNode aspectData = loadPayload( testAspect );
-      return loadAASX( generator.generateAsByteArray( AspectModelAASGenerator.Format.XML, aspect, aspectData ) );
+      return loadAASX( generator.generateAsByteArray( AasFileFormat.XML, aspect, aspectData ) );
    }
 
    private String aspectToString( final TestAspect testAspect ) {
       final Aspect aspect = loadAspect( testAspect );
-      return new String( generator.generateAsByteArray( AspectModelAASGenerator.Format.XML, aspect ), StandardCharsets.UTF_8 );
+      return new String( generator.generateAsByteArray( AasFileFormat.XML, aspect ), StandardCharsets.UTF_8 );
    }
 
    private void validate( final ByteArrayInputStream xmlStream ) {

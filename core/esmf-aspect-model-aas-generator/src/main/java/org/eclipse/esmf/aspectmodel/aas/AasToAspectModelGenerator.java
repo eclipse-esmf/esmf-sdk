@@ -149,7 +149,8 @@ public class AasToAspectModelGenerator {
             case "xml" -> AasToAspectModelGenerator.fromAasXml( inputStream );
             case "aasx" -> AasToAspectModelGenerator.fromAasx( inputStream );
             case "json" -> AasToAspectModelGenerator.fromAasJson( inputStream );
-            default -> throw new AspectModelGenerationException( "Invalid file extension on file " + file );
+            default -> throw new AspectModelGenerationException(
+                  "Invalid file extension on file " + file + ", allowed extensions are " + AasFileFormat.allValues() );
          };
       } catch ( final IOException exception ) {
          throw new AspectModelGenerationException( exception );
