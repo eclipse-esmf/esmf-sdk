@@ -492,3 +492,98 @@ Configuration Properties:
 | `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
 | `outputDirectory` | The path to the directory containing the pretty printed Aspect Model. | `String` | none | {ok}
 |===
+
+== Conversion to and from AAS
+
+=== Generate an AAS file from an Aspect Model
+
+The `generateAas` goal generates a file containing an Asset Administration Shell (AAS) environment
+with a submodel template that corresponds to a given input Aspect Model. The output file can be
+written in either AASX, XML or JSON formats. The default life cycle phase for the goal is
+`generate-resources`.
+
+Usage:
+
+[source,xml,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-aas</id>
+              <goals>
+                 <goal>generateAas</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+           <targetFormat>aasx</targetFormat>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated AAS file will be written to. | `String` | none | {ok}
+| `targetFormat` | The format to write, one of `aasx`, `xml` or `json`. | `String` | none | {ok}
+|===
+
+=== Generate an Aspect Model from an AAS file
+
+The `generateAspectFromAas` goal generates one Aspect Model for each of the AAS submodel templates
+defined in a given input AAS file. The input file can be given in either AASX, XML or JSON formats.
+The output files are written to a directory in the
+xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory] structure. The default
+life cycle phase for the goal is `generate-resources`.
+
+Usage:
+
+[source,xml,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-aspect-model-from-aas</id>
+              <goals>
+                 <goal>generateAspectFromAas</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <includes>
+              <include>$\{aas-file-path}</include>
+           </includes>
+           <outputDirectory>$\{directory-for-generated-aspect-models}</outputDirectory>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
+| `includes` | A list of AAS files to convert. | `String` | none | {ok}
+| `outputDirectory` | The path to the directory where the generated Aspect Models will be written to. | `String` | none | {ok}
+|===
