@@ -13,11 +13,13 @@
 
 package org.eclipse.esmf.aspectmodel.shacl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+
+import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -26,7 +28,6 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.RDFParserRegistry;
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
 import org.junit.jupiter.api.Test;
 
 public class RustLikeFormatterTest {
@@ -239,7 +240,7 @@ public class RustLikeFormatterTest {
    private void assertCorrectFormatting( final String messageText, final String expectedLine ) {
       final String lineWithSourceText = messageText.lines().toList().get( 2 );
       final String reconstructedLine = lineWithSourceText.substring( lineWithSourceText.indexOf( '|' ) + 1 );
-      assertEquals( expectedLine, reconstructedLine.trim() );
+      assertThat( expectedLine ).isEqualTo( reconstructedLine.trim() );
    }
 
    private Model model( final String ttlRepresentation ) {

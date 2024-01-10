@@ -1,6 +1,10 @@
 package org.eclipse.esmf.aas.to;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Path;
 
 import org.eclipse.esmf.AbstractCommand;
@@ -53,11 +57,15 @@ public class AasToAspectCommand extends AbstractCommand {
          final String aspectString = AspectSerializer.INSTANCE.apply( aspect );
          final File targetFile = modelsRoot.determineOutputFile( aspect.getAspectModelUrn().get() );
          LOG.info( "Writing {}", targetFile.getAbsolutePath() );
-         System.out.println( aspectString );
-         //         final BufferedWriter writer = new BufferedWriter( new FileWriter( targetFile ) );
-         //         writer.write( aspectString );
-         //         writer.close();
-         // TODO actually write file
+         final File directory = targetFile.getParentFile();
+         if ( !directory.exists() && !directory.mkdirs() ) {
+            throw new CommandException( "Could not create directory: " + directory.getAbsolutePath() );
+         }
+         try ( final Writer writer = new BufferedWriter( new FileWriter( targetFile ) ) ) {
+            writer.write( aspectString );
+         } catch ( final IOException exception ) {
+            throw new CommandException( "Could not write file: " + targetFile.getAbsolutePath(), exception );
+         }
       }
    }
 }

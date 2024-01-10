@@ -15,7 +15,6 @@ package org.eclipse.esmf.aspectmodel.generator.docu;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,6 +30,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -183,7 +183,8 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    public void testAspectWithQuantifiableWithoutUnit( final KnownVersion metaModelVersion ) throws IOException {
       try ( final ByteArrayOutputStream stdOut = new ByteArrayOutputStream() ) {
          System.setOut( new PrintStream( stdOut ) );
-         assertDoesNotThrow( () -> generateHtmlDocumentation( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITHOUT_UNIT, metaModelVersion ) );
+         assertThatCode( () -> generateHtmlDocumentation( TestAspect.ASPECT_WITH_QUANTIFIABLE_WITHOUT_UNIT, metaModelVersion ) )
+               .doesNotThrowAnyException();
       }
    }
 
