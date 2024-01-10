@@ -17,15 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 // tag::imports[]
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import org.apache.jena.rdf.model.Model;
+
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
-import org.eclipse.esmf.aspectmodel.serializer.RdfModelCreatorVisitor;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 // end::imports[]
@@ -45,28 +39,10 @@ public class SerializeAspectModel {
             AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
       // tag::serialize[]
 
-      // First step: Turn Java Aspect model into a Jena RDF model
-      // We will use the Aspect's namespace as the model's default namespace.
-      final Namespace aspectNamespace = () -> aspect.getAspectModelUrn().get().getUrnPrefix();
-      final RdfModelCreatorVisitor rdfCreator = new RdfModelCreatorVisitor(
-            aspect.getMetaModelVersion(), aspectNamespace );
-      final Model model = rdfCreator.visitAspect( aspect, null ).getModel();
-
-      // At this point, you can manipulate the RDF model, if required
-
-      // Second step: Serialize RDF model into nicely formatted Turtle
-      final StringWriter stringWriter = new StringWriter();
-      final PrintWriter printWriter = new PrintWriter( stringWriter );
-      final VersionedModel versionedModel = new SammAspectMetaModelResourceResolver()
-            .mergeMetaModelIntoRawModel( model, aspect.getMetaModelVersion() ).get();
-      final PrettyPrinter prettyPrinter = new PrettyPrinter(
-            versionedModel, aspect.getAspectModelUrn().get(), printWriter );
-      prettyPrinter.print();
-      printWriter.close();
-
-      final String result = stringWriter.toString();
+      // A String that contains the pretty printed Aspect Model
+      String aspectString = AspectSerializer.INSTANCE.apply( aspect );
       // end::serialize[]
-      assertThat( result ).contains( ":Movement a samm:Aspect" );
-      assertThat( result ).contains( ":isMoving a samm:Property" );
+      assertThat( aspectString ).contains( ":Movement a samm:Aspect" );
+      assertThat( aspectString ).contains( ":isMoving a samm:Property" );
    }
 }
