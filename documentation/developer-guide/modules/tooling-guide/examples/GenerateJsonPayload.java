@@ -21,8 +21,8 @@ import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerat
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.junit.jupiter.api.Test;
 // end::imports[]
+import org.junit.jupiter.api.Test;
 
 public class GenerateJsonPayload extends AbstractGenerator {
    @Test

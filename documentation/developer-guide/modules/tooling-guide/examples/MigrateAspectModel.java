@@ -22,8 +22,8 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import io.vavr.control.Try;
 import java.nio.file.Paths;
-import org.junit.jupiter.api.Test;
 // end::imports[]
+import org.junit.jupiter.api.Test;
 
 public class MigrateAspectModel {
    @Test

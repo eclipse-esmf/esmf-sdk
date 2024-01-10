@@ -19,8 +19,8 @@ import java.util.List;
 
 import io.vavr.collection.Stream;
 import io.vavr.control.Try;
-import org.junit.jupiter.api.Test;
 // end::imports[]
+import org.junit.jupiter.api.Test;
 
 public class HandlingTry {
    private Try<List<String>> someMethodReturningTryOfListOfString() {

@@ -28,8 +28,9 @@ import org.eclipse.esmf.aspectmodel.serializer.RdfModelCreatorVisitor;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.junit.jupiter.api.Test;
 // end::imports[]
+
+import org.junit.jupiter.api.Test;
 
 public class SerializeAspectModel {
    @Test

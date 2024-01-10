@@ -15,6 +15,7 @@ package examples;
 
 // tag::imports[]
 import java.util.List;
+
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
@@ -23,8 +24,8 @@ import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatt
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import io.vavr.control.Try;
 import java.io.File;
-import org.junit.jupiter.api.Test;
 // end::imports[]
+import org.junit.jupiter.api.Test;
 
 public class ValidateAspectModel {
    @Test

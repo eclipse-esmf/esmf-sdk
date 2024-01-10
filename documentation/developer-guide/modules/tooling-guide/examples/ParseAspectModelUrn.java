@@ -12,12 +12,10 @@
  */
 
 package examples;
-
 // tag::imports[]
-import org.junit.jupiter.api.Test;
-
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 // end::imports[]
+import org.junit.jupiter.api.Test;
 
 public class ParseAspectModelUrn {
    @Test

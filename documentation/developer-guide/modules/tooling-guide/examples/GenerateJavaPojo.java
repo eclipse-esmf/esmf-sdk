@@ -22,8 +22,8 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import java.io.File;
 import org.apache.commons.io.output.NullOutputStream;
-import org.junit.jupiter.api.Test;
 // end::imports[]
+import org.junit.jupiter.api.Test;
 
 public class GenerateJavaPojo {
    @Test

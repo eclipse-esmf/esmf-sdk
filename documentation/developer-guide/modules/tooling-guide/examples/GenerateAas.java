@@ -22,9 +22,9 @@ import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+// end::imports[]
 
 import org.junit.jupiter.api.Test;
-// end::imports[]
 
 public class GenerateAas extends AbstractGenerator {
    @Test
