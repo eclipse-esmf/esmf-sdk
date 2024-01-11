@@ -7,13 +7,13 @@ The SAMM CLI is a command line tool for the validation of Aspect Models and the 
 
 The SAMM CLI offers multiple deployment options (you can download it bellow):
 
-TIP: Download latest version executable jar: icon:download[] https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}.jar[samm-cli-{esmf-sdk-version}.jar]
+TIP: Download latest version executable jar: icon:download[] https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}.jar[samm-cli-{esmf-sdk-version}-x86_64.jar]
 
 NOTE: For technical reasons, Java 17 or newer is required to successfully run the tool.
 
-WINDOWS: Download latest version of native binaries for Windows: https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-windows.zip[samm-cli-{esmf-sdk-version}-windows.zip]
+WINDOWS: Download latest version of native binaries for Windows: https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-windows.zip[samm-cli-{esmf-sdk-version}-windows-x86_64.zip]
 
-LINUX: Download latest version of native binaries for Linux: https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-linux.tar.gz[samm-cli-{esmf-sdk-version}-linux.tar.gz]
+LINUX: Download latest version of native binaries for Linux: https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-linux.tar.gz[samm-cli-{esmf-sdk-version}-linux-x86_64.tar.gz]
 
 [[samm-cli-getting-started]]
 == Running the SAMM CLI
