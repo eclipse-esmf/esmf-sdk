@@ -5,9 +5,15 @@
 
 The SAMM CLI is a command line tool for the validation of Aspect Models and the generation of artifacts, such as documentation or code, from Aspect Models.
 
-TIP: Download latest version: icon:download[] https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}.jar[samm-cli-{esmf-sdk-version}.jar]
+The SAMM CLI offers multiple deployment options (you can download it bellow):
+
+TIP: Download latest version executable jar: icon:download[] https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}.jar[samm-cli-{esmf-sdk-version}.jar]
 
 NOTE: For technical reasons, Java 17 or newer is required to successfully run the tool.
+
+WINDOWS: Download latest version of native binaries for Windows: https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-windows.zip[samm-cli-{esmf-sdk-version}-windows.zip]
+
+LINUX: Download latest version of native binaries for Linux: https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-linux.tar.gz[samm-cli-{esmf-sdk-version}-linux.tar.gz]
 
 [[samm-cli-getting-started]]
 == Running the SAMM CLI
@@ -25,6 +31,18 @@ For example, for Bash, you could add the following line to `.bashrc`:
 alias samm='java -jar /location/to/samm-cli-{esmf-sdk-version}.jar'
 ----
 ====
+
+For the Windows native binary:
+. Download: download above or visit our github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Windows.
+. Extract: extract it to a location of your choice.
+. Open Command Prompt: Launch the Command Prompt and navigate to the directory (samm-cli-windows) containing our application.
+. Run: In the command prompt, execute the command ``./samm.exe` to start the application.
+
+For the Linux native binary:
+. Download: download above or visit our github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Linux.
+. Extract: Unpack the archive to your preferred directory.
+. Open Terminal: Open the Terminal and navigate to the directory with the application.
+. Execute: Run the application using the command `./samm`.
 
 Successful execution of a command is signaled by returning 0. In case of logical or some other internal problem error code 1 is returned.
 Missing or wrong command parameters result in error code 2 being returned.
