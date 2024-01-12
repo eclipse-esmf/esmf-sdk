@@ -23,7 +23,7 @@
    </parent>
    <modelVersion>4.0.0</modelVersion>
 
-   <artifactId>samm-cli-${project.version}-x86_64</artifactId>
+   <artifactId>samm-cli</artifactId>
    <name>Semantic Aspect Meta Model Command Line Tool</name>
    <packaging>jar</packaging>
 
@@ -34,7 +34,7 @@
       <graalvm-config-path>${project.build.directory}/classes/META-INF/native-image/${project.groupId}/${project.artifactId}</graalvm-config-path>
       <!-- The separate jar that is built without GraalVM-internal dependencies which trip up the GraalVM compiler,
            which is exclusive used to pass on to native-image -->
-      <native-image-jar>${project.artifactId}-for-native</native-image-jar>
+      <native-image-jar>${project.artifactId}-${project.version}-for-native</native-image-jar>
       <skip.maven.surefire>false</skip.maven.surefire>
       <skip.maven.surefire.report.plugin>false</skip.maven.surefire.report.plugin>
       <skip.maven.shade>false</skip.maven.shade>
@@ -110,6 +110,7 @@
    </dependencies>
 
    <build>
+      <finalName>samm-cli-${project.version}-x86_64</finalName>
       <resources>
          <resource>
             <targetPath>${project.build.outputDirectory}</targetPath>
@@ -137,7 +138,7 @@
                   <mainClass>${main-class}</mainClass>
                   <buildArgs>
                      <buildArg>--no-fallback</buildArg>
-                     <buildArg>-cp ${project.build.directory}/${project.artifactId}.jar
+                     <buildArg>-cp ${project.build.directory}/${project.artifactId}-${project.version}-x86_64.jar
                      </buildArg>
                      <buildArg>-Djava.awt.headless=true</buildArg>
                   </buildArgs>
@@ -155,7 +156,7 @@
             <configuration>
                <systemPropertyVariables>
                   <packaging-type>${packaging-type}</packaging-type>
-                  <executableJar>${project.build.directory}/${project.artifactId}.jar
+                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}-x86_64.jar
                   </executableJar>
                   <binary>${project.build.directory}/${binary-name}</binary>
                   <graalVmConfigPath>${graalvm-config-path}</graalVmConfigPath>
@@ -521,7 +522,7 @@
             <configuration>
                <systemPropertyVariables>
                   <packaging-type>${packaging-type}</packaging-type>
-                  <executableJar>${project.build.directory}/${project.artifactId}.jar
+                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}-x86_64.jar
                   </executableJar>
                   <binary>${project.build.directory}/${binary-name}</binary>
                   <graalVmConfigPath>${graalvm-config-path}</graalVmConfigPath>
