@@ -110,7 +110,6 @@
    </dependencies>
 
    <build>
-      <finalName>samm-cli-${project.version}-x86_64</finalName>
       <resources>
          <resource>
             <targetPath>${project.build.outputDirectory}</targetPath>
@@ -138,7 +137,7 @@
                   <mainClass>${main-class}</mainClass>
                   <buildArgs>
                      <buildArg>--no-fallback</buildArg>
-                     <buildArg>-cp ${project.build.directory}/${project.artifactId}-${project.version}-x86_64.jar
+                     <buildArg>-cp ${project.build.directory}/${project.artifactId}-${project.version}.jar
                      </buildArg>
                      <buildArg>-Djava.awt.headless=true</buildArg>
                   </buildArgs>
@@ -156,7 +155,7 @@
             <configuration>
                <systemPropertyVariables>
                   <packaging-type>${packaging-type}</packaging-type>
-                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}-x86_64.jar
+                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar
                   </executableJar>
                   <binary>${project.build.directory}/${binary-name}</binary>
                   <graalVmConfigPath>${graalvm-config-path}</graalVmConfigPath>
@@ -522,7 +521,7 @@
             <configuration>
                <systemPropertyVariables>
                   <packaging-type>${packaging-type}</packaging-type>
-                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}-x86_64.jar
+                  <executableJar>${project.build.directory}/${project.artifactId}-${project.version}.jar
                   </executableJar>
                   <binary>${project.build.directory}/${binary-name}</binary>
                   <graalVmConfigPath>${graalvm-config-path}</graalVmConfigPath>
