@@ -1970,11 +1970,11 @@ public class ShaclValidatorTest {
                    :ValueAssertion
                  ) ;
                ] .
-               
+
             :NodeKindAssertion
               a sh:NodeShape ;
               sh:nodeKind sh:Literal .
-              
+
             :ValueAssertion
               a sh:NodeShape ;
               sh:hasValue 42 .
@@ -2019,12 +2019,12 @@ public class ShaclValidatorTest {
                  :Property1Shape
                  :Property2Shape
                ) .
-               
+
             :Property1Shape
               a sh:PropertyShape ;
               sh:path :foo ;
               sh:minCount 1 .
-              
+
             :Property2Shape
               a sh:PropertyShape ;
               sh:path :bar ;
@@ -2061,12 +2061,12 @@ public class ShaclValidatorTest {
                        :Property1Shape
                        :Property2Shape
                      ) .
-                     
+
                   :Property1Shape
                     a sh:PropertyShape ;
                     sh:path :foo ;
                     sh:minCount 1 .
-                    
+
                   :Property2Shape
                     a sh:PropertyShape ;
                     sh:path ( :bar :baz ) ;
@@ -2415,7 +2415,7 @@ public class ShaclValidatorTest {
                ] ;
             """ );
 
-      final Model dataModel = model( """            
+      final Model dataModel = model( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
