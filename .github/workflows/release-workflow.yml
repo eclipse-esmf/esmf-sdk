@@ -108,9 +108,9 @@ jobs:
           # Create .tar.gz of samm-cli
           pushd tools/samm-cli/target
           chmod a+x samm
-          tar cfvz samm-cli-$release_version-linux-x86_64.tar.gz samm
+          tar cfvz samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz samm
           popd
-          mv tools/samm-cli/target/samm-cli-$release_version-linux-x86_64.tar.gz .
+          mv tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz .
           mv tools/samm-cli/target/samm-cli-*.jar .
         env:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
@@ -133,12 +133,10 @@ jobs:
           name: linux-artifacts
           path: |
             nexus-staging/
-            samm-cli-${{ env.release_version }}-linux-x86_64.tar.gz
-            samm-cli-${{ env.release_version }}-javadoc.jar
-            samm-cli-${{ env.release_version }}-sources.jar
-            samm-cli-${{ env.release_version }}-tests.jar
-          env:
-            release_version: ${{ github.event.inputs.release_version }}
+            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
+            samm-cli-${{ github.event.inputs.release_version }}-javadoc.jar
+            samm-cli-${{ github.event.inputs.release_version }}-sources.jar
+            samm-cli-${{ github.event.inputs.release_version }}-tests.jar
 
   # The Windows build will build the Windows-specific samm-cli
   # and upload the binary to the build artifacts
@@ -247,9 +245,8 @@ jobs:
 
       - name: Prepare release
         run: |
-          release_version=${{ github.event.inputs.release_version }}
           # Create Windows CLI zip
-          zip -9 -r samm-cli-$release_version-windows-x86_64.zip samm.exe *.dll
+          zip -9 -r samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip samm.exe *.dll
 
       # Full release: Maven Central
       # The (apparently) only way to retrieve the staging profile id
@@ -309,12 +306,11 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            samm-cli-${{ env.release_version }}-windows-x86_64.zip
-            samm-cli-${{ env.release_version }}-linux-x86_64.tar.gz
+            samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip
+            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
             samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-          release_version: ${{ github.event.inputs.release_version }}
 
       - name: "Notify issues of release their fix is contained in"
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
@@ -375,9 +371,8 @@ jobs:
           draft: false
           prerelease: true
           files: |
-            samm-cli-${{ env.release_version }}-windows-x86_64.zip
-            samm-cli-${{ env.release_version }}-linux-x86_64.tar.gz
+            samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip
+            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
             samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-          release_version: ${{ github.event.inputs.release_version }}

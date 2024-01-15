@@ -12,7 +12,7 @@ The SAMM CLI is available as a native executable for multiple platforms and as a
 ====
 * Download executable for Windows (latest): https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-windows-x86_64.zip[samm-cli-{esmf-sdk-version}-windows-x86_64.zip]
 * Download exectuable for Linux (latest): https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-linux-x86_64.tar.gz[samm-cli-{esmf-sdk-version}-linux-x86_64.tar.gz]
-* Download executable jar for other platforms and architectures (latest): https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-x86_64.jar[samm-cli-{esmf-sdk-version}-x86_64.jar]. Running this version requires Java 17.
+* Download executable jar for other platforms and architectures (latest): https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}.jar[samm-cli-{esmf-sdk-version}.jar]. Running this version requires Java 17.
 ====
 
 [[samm-cli-getting-started]]
