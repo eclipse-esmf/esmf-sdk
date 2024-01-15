@@ -5,15 +5,15 @@
 
 The SAMM CLI is a command line tool for the validation of Aspect Models and the generation of artifacts, such as documentation or code, from Aspect Models.
 
-The SAMM CLI offers multiple deployment options (you can download it bellow):
+The SAMM CLI is available as a native executable for multiple platforms and as an an executable jar:
 
-TIP: Download latest version executable jar: icon:download[] https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-x86_64.jar[samm-cli-{esmf-sdk-version}-x86_64.jar]
+TIP: Download executable jar (latest):: icon:download[] https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-x86_64.jar[samm-cli-{esmf-sdk-version}-x86_64.jar]
 
 NOTE: For technical reasons, Java 17 or newer is required to successfully run the tool.
 
-WINDOWS: Download latest version of native binaries for Windows: https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-windows-x86_64.zip[samm-cli-{esmf-sdk-version}-windows-x86_64.zip]
+WINDOWS: Download native executable for Windows (latest): https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-windows-x86_64.zip[samm-cli-{esmf-sdk-version}-windows-x86_64.zip]
 
-LINUX: Download latest version of native binaries for Linux: https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-linux-x86_64.tar.gz[samm-cli-{esmf-sdk-version}-linux-x86_64.tar.gz]
+LINUX: Download native executable for Linux (latest): https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-linux-x86_64.tar.gz[samm-cli-{esmf-sdk-version}-linux-x86_64.tar.gz]
 
 [[samm-cli-getting-started]]
 == Running the SAMM CLI
@@ -32,19 +32,21 @@ alias samm='java -jar /location/to/samm-cli-{esmf-sdk-version}.jar'
 ----
 ====
 
-*For the Windows native binary:*
-. *Download*: download above or visit our github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Windows.
+*For the Windows native executable:*
+. *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Windows.
 . *Extract*: extract it to a location of your choice.
 . *Open Command Prompt*: Launch the Command Prompt and navigate to the directory (samm-cli-windows) containing our application.
+. *Input*: Make sure to read the below documentation and provide model files in the correct models directory structure[directory structure].
 . *Run*: In the command prompt, execute the command ``./samm.exe` to start the application.
 
-*For the Linux native binary:*
+*For the Linux native executable:*
 . *Download*: download above or visit our github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Linux.
 . *Extract*: Unpack the archive to your preferred directory.
 . *Open Terminal*: Open the Terminal and navigate to the directory with the application.
+. *Input*: Make sure to read the below documentation and provide model files in the correct models directory structure[directory structure].
 . *Execute*: Run the application using the command `./samm`.
 
-Successful execution of a command is signaled by returning 0. In case of logical or some other internal problem error code 1 is returned.
+Successful execution of a command is signaled by returning 0. In case of a logical or other internal error the error code 1 is being returned.
 Missing or wrong command parameters result in error code 2 being returned.
 
 To get help for a certain subcommand, add 'help' before the subcommand name or add `--help` to the end, e.g., `samm help aspect`
