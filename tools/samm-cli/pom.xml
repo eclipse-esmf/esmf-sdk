@@ -267,16 +267,6 @@
                      <finalName>${native-image-jar}</finalName>
                      <createDependencyReducedPom>false</createDependencyReducedPom>
                      <skip>${skip.maven.shade}</skip>
-                     <!--                     <relocations>-->
-                     <!--                        <relocation>-->
-                     <!--                           <pattern>org.eclipse.esmf.substitution.org.apache.logging.log4j</pattern>-->
-                     <!--                           <shadedPattern>org.apache.logging.log4j</shadedPattern>-->
-                     <!--                           <includes>-->
-                     <!--                              <include>org.apache.logging.log4j.Logger</include>-->
-                     <!--                              <include>org.apache.logging.log4j.LogManager</include>-->
-                     <!--                           </includes>-->
-                     <!--                        </relocation>-->
-                     <!--                     </relocations>-->
                      <transformers>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                            <manifestEntries>
@@ -375,16 +365,6 @@
                   <configuration>
                      <createDependencyReducedPom>false</createDependencyReducedPom>
                      <skip>${skip.maven.shade}</skip>
-                     <!--                     <relocations>-->
-                     <!--                        <relocation>-->
-                     <!--                           <pattern>org.eclipse.esmf.substitution.org.apache.logging.log4j</pattern>-->
-                     <!--                           <shadedPattern>org.apache.logging.log4j</shadedPattern>-->
-                     <!--                           <includes>-->
-                     <!--                              <include>org.apache.logging.log4j.Logger</include>-->
-                     <!--                              <include>org.apache.logging.log4j.LogManager</include>-->
-                     <!--                           </includes>-->
-                     <!--                        </relocation>-->
-                     <!--                     </relocations>-->
                      <transformers>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                            <manifestEntries>
