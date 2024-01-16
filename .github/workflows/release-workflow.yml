@@ -94,6 +94,8 @@ jobs:
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
           mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
           mvn versions:commit
+          
+          release_version=${{ github.event.inputs.release_version }}
 
           # Actual build of core SDK
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
@@ -106,9 +108,9 @@ jobs:
           # Create .tar.gz of samm-cli
           pushd tools/samm-cli/target
           chmod a+x samm
-          tar cfvz samm-cli-linux.tar.gz samm
+          tar cfvz samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz samm
           popd
-          mv tools/samm-cli/target/samm-cli-linux.tar.gz .
+          mv tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz .
           mv tools/samm-cli/target/samm-cli-*.jar .
         env:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
@@ -131,8 +133,10 @@ jobs:
           name: linux-artifacts
           path: |
             nexus-staging/
-            samm-cli-linux.tar.gz
-            samm-cli-*.jar
+            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
+            samm-cli-${{ github.event.inputs.release_version }}-javadoc.jar
+            samm-cli-${{ github.event.inputs.release_version }}-sources.jar
+            samm-cli-${{ github.event.inputs.release_version }}-tests.jar
 
   # The Windows build will build the Windows-specific samm-cli
   # and upload the binary to the build artifacts
@@ -242,7 +246,7 @@ jobs:
       - name: Prepare release
         run: |
           # Create Windows CLI zip
-          zip -9 -r samm-cli-windows.zip samm.exe *.dll
+          zip -9 -r samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip samm.exe *.dll
 
       # Full release: Maven Central
       # The (apparently) only way to retrieve the staging profile id
@@ -302,8 +306,8 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            samm-cli-windows.zip
-            samm-cli-linux.tar.gz
+            samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip
+            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
             samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
@@ -367,8 +371,8 @@ jobs:
           draft: false
           prerelease: true
           files: |
-            samm-cli-windows.zip
-            samm-cli-linux.tar.gz
+            samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip
+            samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
             samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
