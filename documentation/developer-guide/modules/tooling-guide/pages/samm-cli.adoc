@@ -32,19 +32,19 @@ alias samm='java -jar /location/to/samm-cli-{esmf-sdk-version}.jar'
 ----
 ====
 
-*For the Windows native executable:*
-. *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Windows.
-. *Extract*: extract it to a location of your choice.
-. *Open Command Prompt*: Launch the Command Prompt and navigate to the directory (samm-cli-windows) containing our application.
-. *Input*: Make sure to read the below documentation and provide model files in the correct xref:models-directory-structure[directory structure].
-. *Run*: In the command prompt, execute the command `samm` to start the application. See the below table for details.
+. *For the Windows native executable:*
+* *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Windows.
+* *Extract*: extract it to a location of your choice.
+* *Open Command Prompt*: Launch the Command Prompt and navigate to the directory (samm-cli-windows) containing our application.
+* *Input*: Make sure to read the below documentation and provide model files in the correct xref:models-directory-structure[directory structure].
+* *Run*: In the command prompt, execute the command `samm` to start the application. See the below table for details.
 
-*For the Linux native executable:*
-. *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Linux.
-. *Extract*: Unpack the archive to your preferred directory.
-. *Open Terminal*: Open the Terminal and navigate to the directory with the application.
-. *Input*: Make sure to read the below documentation and provide model files in the correct xref:models-directory-structure[directory structure].
-. *Execute*: Run the application using the command `./samm`.
+. *For the Linux native executable:*
+* *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Linux.
+* *Extract*: Unpack the archive to your preferred directory.
+* *Open Terminal*: Open the Terminal and navigate to the directory with the application.
+* *Input*: Make sure to read the below documentation and provide model files in the correct xref:models-directory-structure[directory structure].
+* *Execute*: Run the application using the command `./samm`.
 
 Successful execution of a command is signaled by returning 0. In case of a logical or other internal error the error code 1 is being returned.
 Missing or wrong command parameters result in error code 2 being returned.
@@ -154,18 +154,19 @@ In this way the extension can be flexibly done in any programming language/scrip
 == Using the CLI to create a JSON OpenAPI Specification
 
 Every specification is based on one Aspect, which needs a separately defined server URL where the given aspect will be.
-The URL will be defined as string with the `-b` option, i.e.: https://www.example.org.
-The default URL, using the above defined --api-base-url, would result in https://www.example.org/api/v1/\{tenantId}/<aspectName>.
-By default the Aspect's local name is used as path.
-The default path can be manipulated with the `--resource-path` switch.
-If the path is defined further, for example `--resource-path "/resources/\{resourceId}"`, the resulting URL would be: https://www.example.org/api/v1/\{tenantId}/resources/\{resourceId}.
+The URL will be defined as string with the `-b` option, i.e.: https://www.example.org. The default URL, using the above
+defined `--api-base-url`, would result in https://www.example.org/api/v1/\{tenantId}/<aspectName>. By default,
+`\{tenantId}` followed by the Aspect's name is used as path, with the aspect name converted from CamelCase to
+kebab-case. The default path can be changed with the `--resource-path` switch. If the path is defined further, for
+example using `--resource-path "/resources/\{resourceId}"`, the resulting URL would be:
+https://www.example.org/resources/\{resourceId}.
 
-It will be required to specify the parameter, in case there is an additional parameter defined.
-This has to be in JSON or in YAML, depending on the kind of specification chosen.
-For example:
-With the option `--resource-path "/resources/\{resourceId}"` the generator constructs the URL https://www.example.org/api/v1/\{tenantId}/resources/\{resourceId}
-and then the `--parameter-file` defines the parameter resourceId in yaml:
+It will be required to specify the parameter, in case there is an additional parameter defined. This has to be done in
+JSON or in YAML, depending on the kind of specification chosen. For example: With the option `--resource-path
+"/resources/\{resourceId}"` the generator constructs the URL https://www.example.org/resources/\{resourceId} and then
+the `--parameter-file` defines the parameter resourceId in YAML:
 
+[source,yaml]
 ----
 resourceId:
   name: resourceId
@@ -176,7 +177,13 @@ resourceId:
     type: string
 ----
 
-The full command would result in:
+The full command for the native executable samm-cli would be:
+[source,shell,subs="attributes+,+quotes"]
+----
+samm aspect _AspectModel.ttl_ to openapi -b "https://www.example.org" -r "/resources/\{resourceId}" -p _fileLocation_
+----
+
+For the Java version of samm-cli, the full command would result in:
 
 [source,shell,subs="attributes+,+quotes"]
 ----
@@ -195,11 +202,11 @@ Please consider the following model fragment, with the attention focused on the 
 
 [source,turtle,subs="attributes+,+quotes"]
 ----
-@prefix : <urn:samm:{example-ns}.myapplication:1.0.0#> .
+@prefix : <urn:samm:{example-ns}.myapplication:1.0.0#> . # <1>
 @prefix samm: <{samm}> .
 
-:Test a samm:Aspect; <3>
-    samm:preferredName "TestAspect"@en ; <2>
+:Test a samm:Aspect; # <3>
+    samm:preferredName "TestAspect"@en ; # <2>
     samm:preferredName "TestAspekt"@de .
 ----
 
@@ -207,7 +214,7 @@ Please consider the following model fragment, with the attention focused on the 
 <2> the preferred name of the Aspect in language of user's choice
 <3> the name of the Aspect
 
-For the generated OpenAPI Specification, the following mapping would apply:
+For the generated OpenAPI specification, the following mapping would apply:
 
 [source,JSON]
 ----
