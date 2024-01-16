@@ -21,14 +21,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.collect.ImmutableList;
-
 import io.vavr.control.Try;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents the identifier URN of an Aspect Model.
@@ -92,7 +90,6 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     *
     * @param urn the urn which will be parsed to create the {@link AspectModelUrn} instance
     * @return {@link AspectModelUrn} containing the individual parts from the urn
-    *
     * @throws UrnSyntaxException if {@code urn} is not valid
     */
    @SuppressWarnings( { "squid:S1166" } )
@@ -110,7 +107,6 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     *
     * @param urn the urn which will be parsed to create the {@link AspectModelUrn} instance
     * @return {@link AspectModelUrn} containing the individual parts from the urn
-    *
     * @throws UrnSyntaxException if {@code urn} is not valid
     */
    public static AspectModelUrn fromUrn( final URI urn ) {
@@ -146,6 +142,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
 
    /**
     * Checked version of {@link #fromUrn(String)}
+    *
     * @param urn the lexical representation of the Aspect Model URN
     * @return the Aspect Model URN, a {@link URISyntaxException} or a {@link UrnSyntaxException}
     */
@@ -153,12 +150,13 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       try {
          return from( new URI( urn ) );
       } catch ( final URISyntaxException e ) {
-         throw new UrnSyntaxException( UrnSyntaxException.URN_IS_NO_URI );
+         return Try.failure( new UrnSyntaxException( UrnSyntaxException.URN_IS_NO_URI ) );
       }
    }
 
    /**
     * Checked version of {@link #fromUrn(URI)}
+    *
     * @param uri the lexical representation of the Aspect Model URN
     * @return the Aspect Model URN or a {@link UrnSyntaxException}
     */
@@ -350,6 +348,16 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
 
    public boolean isSammUrn() {
       return isSammUrn;
+   }
+
+   /**
+    * Returns AspectModelUrn with the same prefix but with different local name.
+    *
+    * @param name new local name
+    * @return the AspectModelUrn
+    */
+   public AspectModelUrn withName( final String name ) {
+      return fromUrn( getUrnPrefix() + name );
    }
 
    /**

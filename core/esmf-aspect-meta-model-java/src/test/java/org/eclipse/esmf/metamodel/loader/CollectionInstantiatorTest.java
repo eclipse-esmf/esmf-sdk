@@ -15,26 +15,25 @@ package org.eclipse.esmf.metamodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.jena.vocabulary.XSD;
-import org.assertj.core.api.Assertions;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.characteristic.List;
 import org.eclipse.esmf.characteristic.Set;
 import org.eclipse.esmf.characteristic.SortedSet;
 import org.eclipse.esmf.characteristic.TimeSeries;
-import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.characteristic.impl.DefaultTrait;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.Scalar;
+import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
+
+import org.apache.jena.vocabulary.XSD;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
@@ -44,7 +43,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
 
-      Assertions.assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
@@ -56,7 +55,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( collection.isAllowDuplicates() ).isTrue();
       assertThat( collection.isOrdered() ).isFalse();
-      Assertions.assertThat( collection.getElementCharacteristic() ).isEmpty();
+      assertThat( collection.getElementCharacteristic() ).isEmpty();
    }
 
    @ParameterizedTest
@@ -65,14 +64,14 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_COLLECTION, metaModelVersion );
 
-      Assertions.assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
             "Test Collection", "This is a test collection.", "http://example.com/" );
 
-      Assertions.assertThat( collection.getDataType().get() ).isInstanceOf( Entity.class );
+      assertThat( collection.getDataType().get() ).isInstanceOf( Entity.class );
 
       assertThat( collection.isAllowDuplicates() ).isTrue();
       assertThat( collection.isOrdered() ).isFalse();
@@ -84,7 +83,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestList" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_LIST, metaModelVersion );
 
-      Assertions.assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final List list = (List) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
@@ -104,7 +103,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestSet" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SET, metaModelVersion );
 
-      Assertions.assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final Set set = (Set) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
@@ -124,7 +123,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestSortedSet" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SORTED_SET, metaModelVersion );
 
-      Assertions.assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final SortedSet sortedSet = (SortedSet) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
@@ -144,14 +143,14 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestTimeSeries" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_TIME_SERIES, metaModelVersion );
 
-      Assertions.assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final TimeSeries timeSeries = (TimeSeries) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       assertBaseAttributes( timeSeries, expectedAspectModelUrn, "TestTimeSeries",
             "Test Time Series", "This is a test time series.", "http://example.com/" );
 
-      Assertions.assertThat( timeSeries.getDataType().get() ).isInstanceOf( Entity.class );
+      assertThat( timeSeries.getDataType().get() ).isInstanceOf( Entity.class );
 
       assertThat( timeSeries.isAllowDuplicates() ).isFalse();
       assertThat( timeSeries.isOrdered() ).isTrue();
@@ -162,7 +161,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
    public void testCollectionInstantiationWithElementCharacteristicExpectSuccess( final KnownVersion metaModelVersion ) {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ELEMENT_CHARACTERISTIC, metaModelVersion );
-      Assertions.assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
@@ -174,7 +173,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       assertThat( collection.isAllowDuplicates() ).isTrue();
       assertThat( collection.isOrdered() ).isFalse();
 
-      Assertions.assertThat( collection.getElementCharacteristic() ).isPresent();
+      assertThat( collection.getElementCharacteristic() ).isPresent();
       final Characteristic elementCharacteristic = collection.getElementCharacteristic().get();
       assertThat( elementCharacteristic ).isExactlyInstanceOf( DefaultCharacteristic.class );
    }
@@ -184,7 +183,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
    public void testCollectionInstantiationWithElementConstraintExpectSuccess( final KnownVersion metaModelVersion ) {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestCollection" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ELEMENT_CONSTRAINT, metaModelVersion );
-      Assertions.assertThat( aspect.getProperties() ).hasSize( 1 );
+      assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final Collection collection = (Collection) aspect.getProperties().get( 0 ).getCharacteristic().get();
       assertBaseAttributes( collection, expectedAspectModelUrn, "TestCollection",
@@ -196,7 +195,7 @@ public class CollectionInstantiatorTest extends MetaModelInstantiatorTest {
       assertThat( collection.isAllowDuplicates() ).isTrue();
       assertThat( collection.isOrdered() ).isFalse();
 
-      Assertions.assertThat( collection.getElementCharacteristic() ).isPresent();
-      Assertions.assertThat( collection.getElementCharacteristic().get() ).isExactlyInstanceOf( DefaultTrait.class );
+      assertThat( collection.getElementCharacteristic() ).isPresent();
+      assertThat( collection.getElementCharacteristic().get() ).isExactlyInstanceOf( DefaultTrait.class );
    }
 }

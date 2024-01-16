@@ -13,9 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.base.Preconditions;
+import io.vavr.control.Try;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represents, parses, and compares version numbers. Supports scheme: MAJOR.MINOR.MICRO.
@@ -97,8 +97,19 @@ public class VersionNumber implements Comparable<VersionNumber> {
    }
 
    public static VersionNumber parse( final String versionString ) {
+      final Try<VersionNumber> versionNumber = tryParse( versionString );
+      if ( versionNumber.isSuccess() ) {
+         return versionNumber.get();
+      }
+      if ( versionNumber.getCause() instanceof final RuntimeException exception ) {
+         throw exception;
+      }
+      throw new RuntimeException( versionNumber.getCause() );
+   }
+
+   public static Try<VersionNumber> tryParse( final String versionString ) {
       if ( StringUtils.isEmpty( versionString ) ) {
-         throw new UnsupportedVersionException();
+         return Try.failure( new UnsupportedVersionException() );
       }
       final VersionNumberParser parser = new VersionNumberParser( versionString );
 
@@ -111,10 +122,10 @@ public class VersionNumber implements Comparable<VersionNumber> {
       micro = parser.parseNextDigit();
 
       if ( parser.isEnd() ) {
-         return new VersionNumber( major, minor, micro );
+         return Try.success( new VersionNumber( major, minor, micro ) );
       }
 
-      throw new UnsupportedVersionException( versionString );
+      return Try.failure( new UnsupportedVersionException( versionString ) );
    }
 
    private static class VersionNumberParser {

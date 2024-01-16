@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
@@ -30,8 +31,7 @@ public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
 
       final String packagePath = "org/eclipse/esmf/test";
-      assertGeneratedFileExists( "MetaAspect.java", packagePath );
-      deleteGeneratedFile( "MetaAspect.java", packagePath );
+      assertThat( generatedFilePath( packagePath, "MetaAspect.java" ) ).exists();
    }
 
    @Test
@@ -41,8 +41,7 @@ public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
       assertThatCode( generateStaticJavaClasses::execute ).doesNotThrowAnyException();
 
       final String packagePath = "example/com";
-      assertGeneratedFileExists( "MetaAspect.java", packagePath );
-      deleteGeneratedFile( "MetaAspect.java", packagePath );
+      assertThat( generatedFilePath( packagePath, "MetaAspect.java" ) ).exists();
    }
 
    @Test
@@ -53,5 +52,4 @@ public class GenerateStaticJavaClassesTest extends AspectModelMojoTest {
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Missing configuration. Valid path to velocity template library file must be provided." );
    }
-
 }

@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>8</version>
+      <version>10</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
@@ -74,10 +74,11 @@
    </modules>
 
    <properties>
-      <!-- Versions of third party dependencies -->
-      <poi-version>4.1.2</poi-version>
       <!-- General settings -->
       <skip.gpg.skip>true</skip.gpg.skip>
+
+      <!-- Dependency version overrides -->
+      <log4j-version>2.22.1</log4j-version>
    </properties>
 
    <dependencyManagement>
@@ -193,16 +194,25 @@
             <type>pom</type>
             <scope>import</scope>
          </dependency>
-
-         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>${poi-version}</version>
-         </dependency>
          <dependency>
             <groupId>org.graalvm.js</groupId>
             <artifactId>js</artifactId>
             <version>${graalvm-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-to-slf4j</artifactId>
+            <version>${log4j-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j-version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j-version}</version>
          </dependency>
       </dependencies>
    </dependencyManagement>

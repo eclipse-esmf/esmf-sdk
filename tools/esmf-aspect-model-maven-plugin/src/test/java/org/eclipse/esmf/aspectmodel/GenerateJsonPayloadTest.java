@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
@@ -21,14 +22,11 @@ import org.apache.maven.plugin.Mojo;
 import org.junit.Test;
 
 public class GenerateJsonPayloadTest extends AspectModelMojoTest {
-
    @Test
    public void testGenerateJsonPayload() throws Exception {
       final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
       final Mojo generateJsonPayload = lookupMojo( "generateJsonPayload", testPom );
       assertThatCode( generateJsonPayload::execute ).doesNotThrowAnyException();
-
-      assertGeneratedFileExists( "Aspect.json" );
-      deleteGeneratedFile( "Aspect.json" );
+      assertThat( generatedFilePath( "Aspect.json" ) ).exists();
    }
 }

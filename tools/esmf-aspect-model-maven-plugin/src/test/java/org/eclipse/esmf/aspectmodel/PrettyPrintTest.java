@@ -13,26 +13,24 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
+
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
 
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
-
 public class PrettyPrintTest extends AspectModelMojoTest {
-
    @Test
    public void testPrettyPrintValidAspectModel() throws Exception {
       final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
       final Mojo prettyPrint = lookupMojo( "prettyPrint", testPom );
       assertThatCode( prettyPrint::execute ).doesNotThrowAnyException();
-
-      assertGeneratedFileExists( "Aspect.ttl" );
-      deleteGeneratedFile( "Aspect.ttl" );
+      assertThat( generatedFilePath( "Aspect.ttl" ) ).exists();
    }
 
    @Test
@@ -43,9 +41,8 @@ public class PrettyPrintTest extends AspectModelMojoTest {
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Failed to load Aspect Model InvalidSyntax." )
             .hasCauseInstanceOf( ParserException.class )
-            .getCause()
+            .cause()
             .hasMessageContaining( "Triples not terminated by DOT" );
-      assertGeneratedFileDoesNotExist( "Aspect.ttl" );
+      assertThat( generatedFilePath( "Aspect.ttl" ) ).doesNotExist();
    }
-
 }

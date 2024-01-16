@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
@@ -22,16 +23,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
 public class GenerateJavaClassesTest extends AspectModelMojoTest {
-
    @Test
    public void testGenerateJavaClassesValidAspectModel() throws Exception {
       final File testPom = getTestFile( "src/test/resources/test-pom-valid-aspect-model-output-directory.xml" );
       final Mojo generateJavaClasses = lookupMojo( "generateJavaClasses", testPom );
       assertThatCode( generateJavaClasses::execute ).doesNotThrowAnyException();
-
-      final String packagePath = "org/eclipse/esmf/test";
-      assertGeneratedFileExists( "Aspect.java", packagePath );
-      deleteGeneratedFile( "Aspect.java", packagePath );
+      assertThat( generatedFilePath( "org", "eclipse", "esmf", "test", "Aspect.java" ) ).exists();
    }
 
    @Test
@@ -39,10 +36,7 @@ public class GenerateJavaClassesTest extends AspectModelMojoTest {
       final File testPom = getTestFile( "src/test/resources/generate-java-classes-pom-custom-package-name.xml" );
       final Mojo generateJavaClasses = lookupMojo( "generateJavaClasses", testPom );
       assertThatCode( generateJavaClasses::execute ).doesNotThrowAnyException();
-
-      final String packagePath = "example/com";
-      assertGeneratedFileExists( "Aspect.java", packagePath );
-      deleteGeneratedFile( "Aspect.java", packagePath );
+      assertThat( generatedFilePath( "example", "com", "Aspect.java" ) ).exists();
    }
 
    @Test
@@ -53,5 +47,4 @@ public class GenerateJavaClassesTest extends AspectModelMojoTest {
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Missing configuration. Valid path to velocity template library file must be provided." );
    }
-
 }

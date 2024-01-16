@@ -15,12 +15,12 @@ package org.eclipse.esmf.substitution;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 import org.eclipse.esmf.buildtime.Aas4jClassSetup;
 
 import com.oracle.svm.core.annotate.Alias;
@@ -28,11 +28,14 @@ import com.oracle.svm.core.annotate.KeepOriginal;
 import com.oracle.svm.core.annotate.RecomputeFieldValue;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 
 /**
  * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
- * for {@link ReflectionHelper}, the central point of reflection information of the io.admin-shell.aas library. The original ReflectionHelper
- * has a static constructor that initializes several maps and collections (using ClassGraph scans) that hold information about implementations
+ * for {@link ReflectionHelper}, the central point of reflection information of the io.admin-shell.aas library. The original
+ * ReflectionHelper
+ * has a static constructor that initializes several maps and collections (using ClassGraph scans) that hold information about
+ * implementations
  * of interfaces etc.. For the build of the native image, this logic is replaced by the following logic:
  * <ol>
  *    <li>At build time, the {@link Aas4jClassSetup} is ran (as a standalone program).
@@ -132,7 +135,8 @@ public final class Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_
    public static List<Class<Enum>> ENUMS;
 
    static {
-      try ( final InputStream input = Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper.class.getResourceAsStream(
+      try ( final InputStream input =
+            Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper.class.getResourceAsStream(
             "/adminshell.properties" ) ) {
          final Properties properties = new Properties();
          properties.load( input );
@@ -151,91 +155,101 @@ public final class Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_
    }
 
    /**
-    * @see ReflectionHelper#isModelInterface(Class)
     * @param type see {@link ReflectionHelper#isModelInterface(Class)}
     * @return see {@link ReflectionHelper#isModelInterface(Class)}
+    * @see ReflectionHelper#isModelInterface(Class)
     */
    @KeepOriginal
    public static native boolean isModelInterface( final Class<?> type );
 
    /**
-    * @see ReflectionHelper#isDefaultImplementation(Class)
     * @param type see {@link ReflectionHelper#isDefaultImplementation(Class)}
     * @return see {@link ReflectionHelper#isDefaultImplementation(Class)}
+    * @see ReflectionHelper#isDefaultImplementation(Class)
     */
    @KeepOriginal
    public static native boolean isDefaultImplementation( final Class<?> type );
 
    /**
-    * @see ReflectionHelper#hasDefaultImplementation(Class)
     * @param interfaceType see {@link ReflectionHelper#hasDefaultImplementation(Class)}
     * @return see {@link ReflectionHelper#hasDefaultImplementation(Class)}
+    * @see ReflectionHelper#hasDefaultImplementation(Class)
     */
    @KeepOriginal
    public static native boolean hasDefaultImplementation( final Class<?> interfaceType );
 
    /**
-    * @see ReflectionHelper#getDefaultImplementation(Class)
     * @param <T> see {@link ReflectionHelper#getDefaultImplementation(Class)}
     * @param interfaceType see {@link ReflectionHelper#getDefaultImplementation(Class)}
     * @return see {@link ReflectionHelper#getDefaultImplementation(Class)}
+    * @see ReflectionHelper#getDefaultImplementation(Class)
     */
    @KeepOriginal
    public static native <T> Class<? extends T> getDefaultImplementation( final Class<T> interfaceType );
 
    /**
-    * @see ReflectionHelper#hasDefaultImplementation(Class)
     * @param type see {@link ReflectionHelper#hasDefaultImplementation(Class)}
     * @return see {@link ReflectionHelper#hasDefaultImplementation(Class)}
+    * @see ReflectionHelper#hasDefaultImplementation(Class)
     */
    @KeepOriginal
    public static native boolean isModelInterfaceOrDefaultImplementation( final Class<?> type );
 
    /**
-    * @see ReflectionHelper#getAasInterface(Class)
     * @param type see {@link ReflectionHelper#getAasInterface(Class)}
     * @return see {@link ReflectionHelper#getAasInterface(Class)}
+    * @see ReflectionHelper#getAasInterface(Class)
     */
    @KeepOriginal
    public static native Class<?> getAasInterface( final Class<?> type );
 
    /**
-    * @see ReflectionHelper#getAasInterfaces(Class)
     * @param type see {@link ReflectionHelper#getAasInterfaces(Class)}
     * @return see {@link ReflectionHelper#getAasInterfaces(Class)}
+    * @see ReflectionHelper#getAasInterfaces(Class)
     */
    @KeepOriginal
    public static native Set<Class<?>> getAasInterfaces( final Class<?> type );
 
    /**
-    * @see ReflectionHelper#getModelType(Class)
     * @param clazz see {@link ReflectionHelper#getModelType(Class)}
     * @return see {@link ReflectionHelper#getModelType(Class)}
+    * @see ReflectionHelper#getModelType(Class)
     */
    @KeepOriginal
    public static native String getModelType( final Class<?> clazz );
 
    /**
-    * @see ReflectionHelper#getMostSpecificTypeWithModelType(Class)
     * @param clazz see {@link ReflectionHelper#getMostSpecificTypeWithModelType(Class)}
     * @return see {@link ReflectionHelper#getMostSpecificTypeWithModelType(Class)}
+    * @see ReflectionHelper#getMostSpecificTypeWithModelType(Class)
     */
    @KeepOriginal
    public static native Class<?> getMostSpecificTypeWithModelType( final Class<?> clazz );
 
    /**
-    * @see ReflectionHelper#getSuperTypes(Class, boolean)
     * @param clazz see {@link ReflectionHelper#getSuperTypes(Class, boolean)}
     * @param recursive {@link ReflectionHelper#getSuperTypes(Class, boolean)}
     * @return see {@link ReflectionHelper#getSuperTypes(Class, boolean)}
+    * @see ReflectionHelper#getSuperTypes(Class, boolean)
     */
    @KeepOriginal
    public static native Set<Class<?>> getSuperTypes( final Class<?> clazz, final boolean recursive );
 
    /**
-    * @see ReflectionHelper#setEmptyListsToNull(Object)
     * @param element see {@link ReflectionHelper#setEmptyListsToNull(Object)}
+    * @see ReflectionHelper#setEmptyListsToNull(Object)
     */
    @KeepOriginal
    public static native void setEmptyListsToNull( Object element );
+
+   /**
+    * @param element @see ReflectionHelper#createResetRunnable(Object, Field)
+    * @param field @see ReflectionHelper#createResetRunnable(Object, Field)
+    * @return @see ReflectionHelper#createResetRunnable(Object, Field)
+    * @throws IllegalAccessException @see ReflectionHelper#createResetRunnable(Object, Field)
+    * @see ReflectionHelper#createResetRunnable(Object, Field)
+    */
+   @KeepOriginal
+   private static native Runnable createResetRunnable( Object element, Field field ) throws IllegalAccessException;
 }

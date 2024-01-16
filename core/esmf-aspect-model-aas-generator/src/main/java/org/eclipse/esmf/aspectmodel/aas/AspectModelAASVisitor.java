@@ -43,6 +43,7 @@ import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
@@ -54,11 +55,12 @@ import org.eclipse.esmf.samm.KnownVersion;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
-import org.eclipse.digitaltwin.aas4j.v3.model.AASSubmodelElements;
+import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetAdministrationShell;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationIec61360;
@@ -166,9 +168,32 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    @Override
-
    public Environment visitBase( final ModelElement base, final Context context ) {
       return context.getEnvironment();
+   }
+
+   protected List<Reference> buildGlobalReferenceForSeeReferences( final NamedElement modelElement ) {
+      return modelElement.getSee().stream().map( seeReference -> {
+               final DefaultKey key = new DefaultKey.Builder()
+                     .type( KeyTypes.GLOBAL_REFERENCE )
+                     .value( seeReference.startsWith( "urn:irdi:" ) ? seeReference.substring( 9 ) : seeReference )
+                     .build();
+               return (Reference) new DefaultReference.Builder()
+                     .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                     .keys( key )
+                     .build();
+            } )
+            .toList();
+   }
+
+   private List<Reference> updateGlobalReferenceWithSeeReferences( final SubmodelElement submodelElement,
+         final NamedElement modelElement ) {
+      final List<Reference> newReferences = buildGlobalReferenceForSeeReferences( modelElement );
+      final List<Reference> supplementalSemanticIds = submodelElement.getSupplementalSemanticIds();
+      if ( supplementalSemanticIds == null ) {
+         return newReferences;
+      }
+      return CollectionUtils.union( supplementalSemanticIds, newReferences ).stream().distinct().toList();
    }
 
    @Override
@@ -186,7 +211,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final Submodel submodel = usedContext.getSubmodel();
       submodel.setIdShort( aspect.getName() );
       submodel.setId( submodelId );
-      submodel.setSemanticID( buildReferenceToConceptDescription( aspect ) );
+      submodel.setSemanticId( buildReferenceToConceptDescription( aspect ) );
+      submodel.setSupplementalSemanticIds( buildGlobalReferenceForSeeReferences( aspect ) );
       submodel.setDescription( LangStringMapper.TEXT.map( aspect.getDescriptions() ) );
       submodel.setKind( usedContext.getModelingKind() );
       submodel.setAdministration( new DefaultAdministrativeInformation.Builder().build() );
@@ -218,8 +244,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return elements.stream().map( i -> mapText( i, context ) ).collect( Collectors.toList() );
    }
 
-   private List<SubmodelElement> visitProperties(
-         final List<Property> elements, final Context context ) {
+   private List<SubmodelElement> visitProperties( final List<Property> elements, final Context context ) {
       return elements.stream().map( i -> mapText( i, context ) )
             .filter( Optional::isPresent )
             .map( Optional::get )
@@ -260,6 +285,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       context.setProperty( property );
       characteristic.accept( this, context );
       final SubmodelElement element = context.getPropertyResult();
+      element.setSupplementalSemanticIds( updateGlobalReferenceWithSeeReferences( element, property ) );
 
       recursiveProperty.remove( property );
 
@@ -291,6 +317,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .displayName( LangStringMapper.NAME.map( entity.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( entity.getDescriptions() ) )
             .value( submodelElements )
+            .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( entity ) )
             .build();
    }
 
@@ -299,7 +326,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       return new DefaultOperation.Builder()
             .displayName( LangStringMapper.NAME.map( operation.getPreferredNames() ) )
             .description( LangStringMapper.TEXT.map( operation.getDescriptions() ) )
-            .semanticID( buildReferenceToOperation(operation) )
+            .semanticId( buildReferenceToOperation( operation ) )
             .idShort( operation.getName() )
             .inputVariables( operation.getInput().stream()
                   .map( i -> mapOperationVariable( i, context ) )
@@ -307,13 +334,14 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .outputVariables( operation.getOutput().stream()
                   .map( i -> mapOperationVariable( i, context ) )
                   .collect( Collectors.toList() ) )
+            .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( operation ) )
             .build();
    }
 
-   private Reference buildReferenceToOperation ( final org.eclipse.esmf.metamodel.Operation operation ) {
+   private Reference buildReferenceToOperation( final org.eclipse.esmf.metamodel.Operation operation ) {
       final Key key = new DefaultKey.Builder()
             .type( KeyTypes.OPERATION )
-            .value( DEFAULT_MAPPER.determineIdentifierFor( operation ))
+            .value( DEFAULT_MAPPER.determineIdentifierFor( operation ) )
             .build();
       return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
    }
@@ -358,10 +386,6 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .type( ReferenceTypes.MODEL_REFERENCE )
             .keys( key )
             .build();
-   }
-
-   private List<Reference> buildReferencesForSeeElements( final List<String> seeReferences ) {
-      return seeReferences.stream().map( this::buildReferenceForSeeElement ).collect( Collectors.toList() );
    }
 
    private void createConceptDescription( final Property property, final Context context ) {
@@ -433,7 +457,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    private DataSpecificationIec61360 extractDataSpecificationContent( final Property property ) {
-      final List<LangStringDefinitionTypeIec61360> definitionsProperty = property.getDescriptions().stream().map( LangStringMapper.DEFINITION::map ).toList();
+      final List<LangStringDefinitionTypeIec61360> definitionsProperty = property.getDescriptions().stream()
+            .map( LangStringMapper.DEFINITION::map ).toList();
 
       final List<LangStringPreferredNameTypeIec61360> preferredNames = property.getPreferredNames().isEmpty() ?
             Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) ) :
@@ -448,7 +473,6 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    private DataSpecificationIec61360 extractDataSpecificationContent( final org.eclipse.esmf.metamodel.Operation operation ) {
-
       final List<LangStringPreferredNameTypeIec61360> preferredNames = operation.getPreferredNames().isEmpty() ?
             Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( operation.getName(), DEFAULT_LOCALE ) ) :
             operation.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
@@ -516,20 +540,19 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    @Override
-   public Environment visitSortedSet(
-         final SortedSet sortedSet, final Context context ) {
+   public Environment visitSortedSet( final SortedSet sortedSet, final Context context ) {
       return visitCollectionProperty( sortedSet, context );
    }
 
-   private <T extends Collection> Environment visitCollectionProperty(
-         final T collection, final Context context ) {
+   private <T extends Collection> Environment visitCollectionProperty( final T collection, final Context context ) {
       final SubmodelElementBuilder builder = property ->
             new DefaultSubmodelElementList.Builder()
                   .idShort( property.getName() )
-                  .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
+                  .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                   .value( List.of( decideOnMapping( property, context ) ) )
+                  .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) )
                   .build();
       final Optional<JsonNode> rawValue = context.getRawPropertyValue();
       return rawValue.map( node -> {
@@ -594,10 +617,11 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementList eitherSubModelElements =
             new DefaultSubmodelElementList.Builder()
                   .idShort( either.getName() )
-                  .typeValueListElement( AASSubmodelElements.DATA_ELEMENT )
+                  .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( either.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( either.getDescriptions() ) )
                   .value( submodelElements )
+                  .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( either ) )
                   .build();
       context.setPropertyResult( eitherSubModelElements );
       return context.environment;
@@ -688,7 +712,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
                         final String value = enumerationValue.accept( VALUE_SERIALIZER, enumeration );
                         return new DefaultValueReferencePair.Builder()
                               .value( value )
-                              .valueID( buildReferenceToEnumValue( enumeration, value ) )
+                              .valueId( buildReferenceToEnumValue( enumeration, value ) )
                               .build();
                      } )
                      .collect( Collectors.toList() );

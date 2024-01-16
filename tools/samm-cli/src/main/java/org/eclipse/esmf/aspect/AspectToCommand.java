@@ -26,6 +26,7 @@ import org.eclipse.esmf.aspect.to.AspectToJavaCommand;
 import org.eclipse.esmf.aspect.to.AspectToOpenapiCommand;
 import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
 import org.eclipse.esmf.exception.SubCommandException;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToCommand.COMMAND_NAME, description = "Transforms an Aspect Model into another format",

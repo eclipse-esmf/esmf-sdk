@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
@@ -66,6 +67,18 @@ public class AspectModelDiagramGenerator {
 
       public String getArtifactFilename( final String aspectName, final Locale language ) {
          return String.format( "%s_%s.%s", aspectName, language.toLanguageTag(), toString().toLowerCase() );
+      }
+
+      @Override
+      public String toString() {
+         return switch ( this ) {
+            case PNG -> "png";
+            case SVG -> "svg";
+         };
+      }
+
+      public static String allValues() {
+         return String.join( ", ", Stream.of( values() ).map( Format::toString ).toList() );
       }
    }
 
