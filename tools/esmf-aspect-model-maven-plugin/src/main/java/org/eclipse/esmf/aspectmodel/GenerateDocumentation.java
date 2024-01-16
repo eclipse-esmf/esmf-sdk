@@ -52,7 +52,7 @@ public class GenerateDocumentation extends AspectModelMojo {
                final String css = FileUtils.readFileToString( new File( htmlCustomCSSFilePath ), "UTF-8" );
                generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, css );
             }
-            generator.generate( artifact -> getStreamForFile( artifact, outputDirectory ), generationArgs );
+            generator.generate( artifact -> getOutputStreamForFile( artifact, outputDirectory ), generationArgs );
          }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not load custom CSS file.", exception );

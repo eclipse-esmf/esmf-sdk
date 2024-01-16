@@ -15,8 +15,7 @@ package org.eclipse.esmf.aspectmodel.resolver.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -53,10 +52,9 @@ public class TurtleLoaderTest {
    void jenaReaderSucceedsWhenPrefixIsNotDefined() throws IOException {
       final Model streamModel = ModelFactory.createDefaultModel();
       try ( final InputStream turtleInputStream = new ByteArrayInputStream( MODEL.getBytes( StandardCharsets.UTF_8 ) ) ) {
-         final Exception exception = assertThrows( RiotException.class, () ->
-               streamModel.read( turtleInputStream, "", RDFLanguages.TURTLE.getName() )
-         );
-         assertEquals( "[line: 2, col: 13] Undefined prefix: aPrefix", exception.getMessage() );
+         assertThatThrownBy( () -> streamModel.read( turtleInputStream, "", RDFLanguages.TURTLE.getName() ) )
+               .isInstanceOf( RiotException.class )
+               .hasMessageContaining( "[line: 2, col: 13] Undefined prefix: aPrefix" );
       }
    }
 }

@@ -30,8 +30,8 @@ import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import io.vavr.control.Try;
-import org.junit.jupiter.api.Test;
 // end::imports[]
+import org.junit.jupiter.api.Test;
 
 public class LoadAspectModelRdf {
    @Test

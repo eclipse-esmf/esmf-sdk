@@ -24,7 +24,7 @@ You generally have multiple options for handling `Try<T>` results, similar to de
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -44,7 +44,7 @@ include::example$HandlingTry.java[tags=handlingTry]
 
 The tooling can be made available in two different versions: `release` and `milestone`. The release version represents a stable version of the product
 and can be referenced in your projects in the usual way from the Maven Central repository. There is also the possibility to have the intermediate builds
-made available, these are called `milestone` builds. Instead of Maven Central, these are released via 
+made available, these are called `milestone` builds. Instead of Maven Central, these are released via
 https://github.com/orgs/eclipse-esmf/packages?repo_name=esmf-sdk[GitHub Packages] mechanism. +
 To be able to use the artifacts released in this way in your projects, first the right repository has to be added to your `pom.xml` file:
 [source, xml]
@@ -59,7 +59,7 @@ To be able to use the artifacts released in this way in your projects, first the
   </repository>
 </repositories>
 ----
-Then the desired dependencies can be referenced in the usual way. For an example, please refer to 
+Then the desired dependencies can be referenced in the usual way. For an example, please refer to
 https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package[Github - Installing a package].
 
 [[jdk-requirements]]
@@ -86,7 +86,7 @@ xref:samm-specification:ROOT:namespaces.adoc[specification].
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -168,7 +168,7 @@ The following example shows how to use the `AspectModelResolver` to load an Aspe
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -198,7 +198,7 @@ of model elements to resolve - have a look at the methods provided by `AspectMod
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -227,7 +227,7 @@ to contain exactly one Aspect (for example in unit tests), you can use the `getS
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -255,7 +255,7 @@ formatted according to the guidelines described in the SAMM specification.
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -290,7 +290,7 @@ Consider the following example:
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -345,7 +345,7 @@ PNG, SVG and https://www.graphviz.org/[Graphviz/DOT].
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -376,7 +376,7 @@ each model element.
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -407,7 +407,7 @@ respective data types are generated.
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -429,7 +429,7 @@ as it could be returned by an Aspect that implements that Aspect model.
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -453,7 +453,7 @@ and https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md[3.
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -563,7 +563,7 @@ to handle the package structure of the class.
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -585,7 +585,7 @@ For the generation of static meta classes, consider the following example:
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -642,7 +642,7 @@ The following sample shows usage of the migration:
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -703,7 +703,7 @@ dependency) you can directly refer to the RDF files using a resource URL:
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -803,13 +803,14 @@ However, there are still limitations:
 * samm-c:Either is mapped to aas:SubmodelElementCollection with two entries for left and right side
 * Recursive optional properties of SAMM model are not included in output but dropped straight away
 
-=== Calling AAS generation from Java
+=== Translate Aspect Model to AAS
 
-The following code demonstrates how the API is used:
+The following code demonstrates how the API to translate an Aspect Model into one of the valid AAS
+formats (JSON, XML, AASX) is used:
 
 ++++
 <details>
-<summary>Show used imports</summary>    
+<summary>Show used imports</summary>
 ++++
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
@@ -824,6 +825,32 @@ include::example$GenerateAas.java[tags=imports]
 include::example$GenerateAas.java[tags=generate]
 ----
 
-To include the serializer artifact, use the following dependencies:
+To include the translator artifact, use the following dependencies:
 
 include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-aas-generator-artifact.adoc[]
+
+[[translate-aas-to-aspect-model]]
+=== Translate AAS to Aspect Model
+
+It is also possible to translate AAS Submodel Templates to Aspect Models using a best-effort. The
+following example shows how the API to translate an AAS environment containing one or more Submodel
+Templates to Aspect Models:
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateAspectFromAas.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateAspectFromAas.java[tags=generate]
+----
+
+To include the translator artifact, use the same same dependencies as shown above in section <<translate-aas-to-aspect-model>>.

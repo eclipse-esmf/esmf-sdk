@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspect.AspectValidateCommand;
@@ -59,7 +60,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
 public class SammCliTest extends MetaModelVersions {
    protected ProcessLauncher sammCli;
-   private final String defaultInputFile = inputFile( TestAspect.ASPECT_WITH_ENTITY ).getAbsolutePath();
+   private final TestModel testModel = TestAspect.ASPECT_WITH_ENTITY;
+   private final String defaultInputFile = inputFile( testModel ).getAbsolutePath();
 
    Path outputDirectory = null;
 
@@ -75,9 +77,8 @@ public class SammCliTest extends MetaModelVersions {
          final File outputDir = outputDirectory.toFile();
          if ( outputDir.exists() && outputDir.isDirectory() ) {
             // Recursively delete temporary directory
-            try {
-               Files.walk( outputDirectory )
-                     .sorted( Comparator.reverseOrder() )
+            try ( final Stream<Path> paths = Files.walk( outputDirectory ) ) {
+               paths.sorted( Comparator.reverseOrder() )
                      .map( Path::toFile )
                      .forEach( file -> {
                         if ( !file.delete() ) {
@@ -89,7 +90,6 @@ public class SammCliTest extends MetaModelVersions {
             }
          }
       }
-      System.gc();
    }
 
    @Test
@@ -210,8 +210,7 @@ public class SammCliTest extends MetaModelVersions {
    @Test
    public void testAspectValidateWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate",
-            "--custom-resolver",
-            resolverCommand() );
+            "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
    }
@@ -220,8 +219,7 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToAasXmlToFile() {
       final File targetFile = outputFile( "output.xml" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
-            "xml", "-o",
-            targetFile.getAbsolutePath() );
+            "xml", "-o", targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
@@ -240,8 +238,7 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToAasAasxToFile() {
       final File targetFile = outputFile( "output.aasx" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
-            "aasx", "-o",
-            targetFile.getAbsolutePath() );
+            "aasx", "-o", targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
       assertThat( targetFile ).exists();
@@ -274,6 +271,33 @@ public class SammCliTest extends MetaModelVersions {
             "json" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
+   }
+
+   @Test
+   public void testAasToAspectModel() {
+      // First create the AAS XML file we want to read
+      final File aasXmlFile = outputFile( "output.xml" );
+      final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
+            "--format", "xml", "-o", aasXmlFile.getAbsolutePath() );
+      assertThat( generateAasXmlResult.stdout() ).isEmpty();
+      assertThat( generateAasXmlResult.stderr() ).isEmpty();
+
+      // Now the actual test, convert it to an Aspect Model
+      final File outputDir = outputDirectory.toFile();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aas", aasXmlFile.getAbsolutePath(), "to", "aspect",
+            "--output-directory", outputDir.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+
+      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespace() )
+            .resolve( testModel.getUrn().getVersion() )
+            .toFile();
+      assertThat( directory ).exists();
+      final String expectedAspectModelFileName = testModel.getName() + ".ttl";
+      assertThat( directory ).isDirectoryContaining( file -> file.getName().equals( expectedAspectModelFileName ) );
+
+      final File sourceFile = directory.toPath().resolve( expectedAspectModelFileName ).toFile();
+      assertThat( sourceFile ).content().contains( ":" + testModel.getName() + " a samm:Aspect" );
    }
 
    @Test
@@ -428,8 +452,7 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToJavaStaticWithDefaultPackageName() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--static" );
+            "--output-directory", outputDir.getAbsolutePath(), "--static" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -447,8 +470,7 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToJavaStaticWithCustomPackageName() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--static", "--package-name", "com.example.foo" );
+            "--output-directory", outputDir.getAbsolutePath(), "--static", "--package-name", "com.example.foo" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -466,8 +488,7 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToJavaStaticWithDefaultPackageNameWithCustomResolver() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--static", "--custom-resolver", resolverCommand() );
+            "--output-directory", outputDir.getAbsolutePath(), "--static", "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
@@ -487,8 +508,7 @@ public class SammCliTest extends MetaModelVersions {
       final File templateLibraryFile = new File(
             System.getProperty( "user.dir" ) + "/../../core/esmf-aspect-model-java-generator/templates/test-macro-lib.vm" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--static", "--execute-library-macros", "--template-library-file",
+            "--output-directory", outputDir.getAbsolutePath(), "--static", "--execute-library-macros", "--template-library-file",
             templateLibraryFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -524,8 +544,7 @@ public class SammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToJsonToStdoutWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json",
-            "--custom-resolver",
-            resolverCommand() );
+            "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
       assertThat( result.stderr() ).isEmpty();
    }

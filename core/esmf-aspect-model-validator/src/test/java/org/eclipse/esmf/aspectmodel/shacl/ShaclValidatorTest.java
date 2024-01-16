@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.shacl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -173,7 +172,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( ClassTypeViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 12, ":testProperty [ a :SomethingElse ] .", ":SomethingElse".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 12" );
+      assertThat( formattedMessage ).contains( ":testProperty [ a :SomethingElse ] ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":SomethingElse".length() ) );
    }
 
    @Test
@@ -220,7 +221,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( DatatypeViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":testProperty 42 .", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":testProperty 42 ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -266,7 +269,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":testProperty 42 .", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":testProperty 42 ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -307,7 +312,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( MinCountViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 2, ":Foo a :TestClass .", ":Foo".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 2" );
+      assertThat( formattedMessage ).contains( ":Foo a :TestClass ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":Foo".length() ) );
    }
 
    @Test
@@ -350,7 +357,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( MaxCountViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":testProperty \"bar\" .", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":testProperty \"bar\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -394,7 +403,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( MinExclusiveViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty 42 .", "42".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty 42 ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "42".length() ) );
    }
 
    @Test
@@ -439,7 +450,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( MinInclusiveViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty 41 .", "41".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty 41 ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "41".length() ) );
    }
 
    @Test
@@ -483,7 +496,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( MaxExclusiveViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty 42 .", "42".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty 42 ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "42".length() ) );
    }
 
    @Test
@@ -528,7 +543,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( MaxInclusiveViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty 43 .", "43".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty 43 ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "43".length() ) );
    }
 
    @Test
@@ -573,7 +590,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( MinLengthViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty \"abc\" .", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty \"abc\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -618,7 +637,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( MaxLengthViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty \"abcabc\" .", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty \"abcabc\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -667,7 +688,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( PatternViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty \"y\" .", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty \"y\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -715,7 +738,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( LanguageFromListViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty \"non valide\"@fr .", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty \"non valide\"@fr ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -766,7 +791,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( EqualsViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty \"some value\" ;", "\"some value\"".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty \"some value\" ;" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "\"some value\"".length() ) );
    }
 
    @Test
@@ -815,7 +842,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( DisjointViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty \"some value\" ;", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty \"some value\" ;" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -865,7 +894,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( LessThanViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty 10 ;", "10".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty 10 ;" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "10".length() ) );
    }
 
    @Test
@@ -916,7 +947,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( LessThanOrEqualsViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty 10 ;", "10".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty 10 ;" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "10".length() ) );
    }
 
    @Test
@@ -964,7 +997,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( UniqueLanguageViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":testProperty \"hello again\"@en .", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":testProperty \"hello again\"@en ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -1011,7 +1046,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( InvalidValueViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty \"hello\" .", "\"hello\"".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty \"hello\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "\"hello\"".length() ) );
    }
 
    @Test
@@ -1057,7 +1094,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( ValueFromListViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty \"baz\" .", "\"baz\"".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty \"baz\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "\"baz\"".length() ) );
    }
 
    @Test
@@ -1111,7 +1150,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( InvalidValueViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 5, ":nestedProperty \"bar\" .", "\"bar\"".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 5" );
+      assertThat( formattedMessage ).contains( ":nestedProperty \"bar\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "\"bar\"".length() ) );
    }
 
    @Test
@@ -1216,7 +1257,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( ClosedViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":aDifferentProperty \"foo\" .", ":aDifferentProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":aDifferentProperty \"foo\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":aDifferentProperty".length() ) );
    }
 
    @Test
@@ -1283,7 +1326,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( "ERR_CUSTOM" );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":testProperty \"foo\" .", "\"foo\"".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":testProperty \"foo\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "\"foo\"".length() ) );
    }
 
    @Test
@@ -1337,7 +1382,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( "ERR_JAVASCRIPT" );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":testProperty \"(((\" .", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":testProperty \"(((\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -1395,7 +1442,9 @@ public class ShaclValidatorTest {
       assertThat( (Node_URI) violation.bindings().get( "property" ) ).isEqualTo( testProperty.asNode() );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":testProperty \"some value\" .", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":testProperty \"some value\" ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -1441,7 +1490,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( InvalidValueViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":prop2 23", "23".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":prop2 23" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "23".length() ) );
    }
 
    @Test
@@ -1486,7 +1537,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( InvalidValueViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":prop2 23 .", "23".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":prop2 23 ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "23".length() ) );
    }
 
    @Test
@@ -1531,7 +1584,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( InvalidValueViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":testProperty2 23 .", "23".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":testProperty2 23 ." );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( "23".length() ) );
    }
 
    @Test
@@ -1579,7 +1634,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 5, ":testProperty2 23", ":testProperty2".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 5" );
+      assertThat( formattedMessage ).contains( ":testProperty2 23" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty2".length() ) );
    }
 
    @Test
@@ -1627,7 +1684,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 5, ":testProperty2 23", ":testProperty2".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 5" );
+      assertThat( formattedMessage ).contains( ":testProperty2 23" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty2".length() ) );
    }
 
    @Test
@@ -1673,7 +1732,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 4, ":testProperty2 23", ":testProperty2".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 4" );
+      assertThat( formattedMessage ).contains( ":testProperty2 23" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty2".length() ) );
    }
 
    @Test
@@ -1722,7 +1783,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( NotViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty [", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty [" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -1773,7 +1836,9 @@ public class ShaclValidatorTest {
       assertThat( violation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty [", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty [" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -1881,7 +1946,9 @@ public class ShaclValidatorTest {
       assertThat( nestedViolation.errorCode() ).isEqualTo( NodeKindViolation.ERROR_CODE );
 
       final String formattedMessage = rustLikeFormatter.visit( finding );
-      assertTrue( formattedMessageIsCorrect( formattedMessage, 3, ":testProperty 42", ":testProperty".length() ) );
+      assertThat( formattedMessage ).contains( "Error at line 3" );
+      assertThat( formattedMessage ).contains( ":testProperty 42" );
+      assertThat( formattedMessage ).contains( " " + "^".repeat( ":testProperty".length() ) );
    }
 
    @Test
@@ -1903,11 +1970,11 @@ public class ShaclValidatorTest {
                    :ValueAssertion
                  ) ;
                ] .
-               
+
             :NodeKindAssertion
               a sh:NodeShape ;
               sh:nodeKind sh:Literal .
-              
+
             :ValueAssertion
               a sh:NodeShape ;
               sh:hasValue 42 .
@@ -1952,12 +2019,12 @@ public class ShaclValidatorTest {
                  :Property1Shape
                  :Property2Shape
                ) .
-               
+
             :Property1Shape
               a sh:PropertyShape ;
               sh:path :foo ;
               sh:minCount 1 .
-              
+
             :Property2Shape
               a sh:PropertyShape ;
               sh:path :bar ;
@@ -1994,12 +2061,12 @@ public class ShaclValidatorTest {
                        :Property1Shape
                        :Property2Shape
                      ) .
-                     
+
                   :Property1Shape
                     a sh:PropertyShape ;
                     sh:path :foo ;
                     sh:minCount 1 .
-                    
+
                   :Property2Shape
                     a sh:PropertyShape ;
                     sh:path ( :bar :baz ) ;
@@ -2348,7 +2415,7 @@ public class ShaclValidatorTest {
                ] ;
             """ );
 
-      final Model dataModel = model( """            
+      final Model dataModel = model( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
@@ -2373,12 +2440,5 @@ public class ShaclValidatorTest {
       RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRIOTTurtle.factory );
       model.read( in, "", RDFLanguages.strLangTurtle );
       return model;
-   }
-
-   private boolean formattedMessageIsCorrect( final String message, final int lineNumber, final String context,
-         final int highlightLength ) {
-      return message.contains( String.format( "Error at line %d", lineNumber ) ) &&
-            message.contains( context ) &&
-            message.contains( " " + "^".repeat( highlightLength ) + " " );
    }
 }

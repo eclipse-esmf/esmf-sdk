@@ -14,14 +14,17 @@
 package examples;
 
 // tag::imports[]
+import java.io.File;
+import java.io.IOException;
+
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator;
+import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import java.io.File;
-import java.io.IOException;
-import org.junit.jupiter.api.Test;
 // end::imports[]
+
+import org.junit.jupiter.api.Test;
 
 public class GenerateAas extends AbstractGenerator {
    @Test
@@ -37,11 +40,13 @@ public class GenerateAas extends AbstractGenerator {
       // tag::generate[]
 
       final AspectModelAASGenerator generator = new AspectModelAASGenerator();
-      
+
       // Generate AAS .aasx for input Aspect
-      generator.generateAASXFile( aspect, this::outputStreamForName );
+      generator.generate( AasFileFormat.AASX, aspect, this::outputStreamForName );
       // Generate AAS .xml for input Aspect
-      generator.generateAasXmlFile( aspect, this::outputStreamForName );
+      generator.generate( AasFileFormat.XML, aspect, this::outputStreamForName );
+      // Generate AAS .json for input Aspect
+      generator.generate( AasFileFormat.JSON, aspect, this::outputStreamForName );
       // end::generate[]
    }
 }

@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspect;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.exception.SubCommandException;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectCommand.COMMAND_NAME,

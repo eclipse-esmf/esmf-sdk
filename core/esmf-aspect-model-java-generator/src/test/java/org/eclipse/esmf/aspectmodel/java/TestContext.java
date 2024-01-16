@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 
+import org.eclipse.esmf.functions.ThrowingFunction;
 import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
 
 public class TestContext {

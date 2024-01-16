@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspect.to;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.esmf.AbstractCommand;
@@ -20,8 +21,13 @@ import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator;
-import org.eclipse.esmf.exception.CommandException;
+import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.metamodel.Aspect;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 @CommandLine.Command(
@@ -33,20 +39,21 @@ import picocli.CommandLine;
       mixinStandardHelpOptions = true )
 public class AspectToAasCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "aas";
-   public static final String AASX = "aasx";
-   public static final String XML = "xml";
-   public static final String JSON = "json";
-
+   private static final Logger LOG = LoggerFactory.getLogger( AspectToAasCommand.class );
 
    @CommandLine.Option(
          names = { "--output", "-o" },
          description = "Output file path" )
    private String outputFilePath = "-";
 
-   @CommandLine.Option(
-         names = { "--format", "-f" },
-         description = "The file format the AAS is to be generated. Valid options are \"" + AASX + "\", \"" + JSON + "\", and \"" + XML + "\". Default is \"" + XML + "\"." )
-   private String format = XML;
+   @CommandLine.Option( names = { "--format", "-f" },
+         description = "The file format the AAS is to be generated in. Valid options are \"${COMPLETION-CANDIDATES}\". Default is "
+               + "\"${DEFAULT-VALUE}\"." )
+   private AasFileFormat format = AasFileFormat.XML;
+
+   @CommandLine.Option( names = { "--aspect-data", "-a" },
+         description = "A file containing Aspect JSON data." )
+   private File aspectData = null;
 
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
@@ -57,26 +64,27 @@ public class AspectToAasCommand extends AbstractCommand {
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;
 
+   private JsonNode loadAspectData() {
+      if ( aspectData == null ) {
+         return null;
+      }
+
+      final ObjectMapper objectMapper = new ObjectMapper();
+      try {
+         return objectMapper.readTree( aspectData );
+      } catch ( final IOException exception ) {
+         LOG.error( "Could not read Aspect JSON data from file: {}", aspectData );
+         return null;
+      }
+   }
+
    @Override
    public void run() {
-      final AspectModelAASGenerator generator = new AspectModelAASGenerator();
       final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
-      try {
-         // we intentionally override the name of the generated artifact here to the name explicitly
-         // desired by the user (outputFilePath), as opposed to what the model thinks it should be
-         // called (name)
-         switch ( format ) {
-         case AASX:
-            generator.generateAASXFile( aspect, name -> getStreamForFile( outputFilePath ) );
-            break;
-         case JSON:
-            generator.generateAasJsonFile( aspect, name -> getStreamForFile( outputFilePath ) );
-            break;
-         default:
-            generator.generateAasXmlFile( aspect, name -> getStreamForFile( outputFilePath ) );
-         }
-      } catch ( final IOException e ) {
-         throw new CommandException( e );
-      }
+      final JsonNode loadedAspectData = loadAspectData();
+      // we intentionally override the name of the generated artifact here to the name explicitly
+      // desired by the user (outputFilePath), as opposed to what the model thinks it should be
+      // called (name)
+      new AspectModelAASGenerator().generate( format, aspect, loadedAspectData, name -> getStreamForFile( outputFilePath ) );
    }
 }

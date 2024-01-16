@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.CommandExecutor;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -35,7 +36,7 @@ public class TestCommandExecutor {
    void testCmdScript() {
       final URL url = Thread.currentThread().getContextClassLoader().getResource( "executor_test.bat" );
       final String result = CommandExecutor.executeCommand( url.getPath() );
-      assertEquals( "Result", result );
+      assertThat( "Result" ).isEqualTo( result );
    }
 
    @Test
@@ -43,7 +44,7 @@ public class TestCommandExecutor {
       final Path targetDirectory = Paths.get( getClass().getResource( "/" ).toURI() ).getParent();
       final Path testsJar = findTestsJar( targetDirectory );
       final String result = CommandExecutor.executeCommand( testsJar.toString() );
-      assertEquals( "Result", result );
+      assertThat( "Result" ).isEqualTo( result );
    }
 
    @Test
@@ -52,7 +53,7 @@ public class TestCommandExecutor {
       final Path testsJar = findTestsJar( targetDirectory );
       final String java = ProcessHandle.current().info().command().orElse( "java" );
       final String result = CommandExecutor.executeCommand( java + " -jar " + testsJar );
-      assertEquals( "Result", result );
+      assertThat( "Result" ).isEqualTo( result );
    }
 
    @Test
@@ -65,7 +66,7 @@ public class TestCommandExecutor {
    void testShellScript() {
       final URL url = Thread.currentThread().getContextClassLoader().getResource( "executor_test.sh" );
       final String result = CommandExecutor.executeCommand( url.getPath() );
-      assertEquals( result, "Result" );
+      assertThat( "Result" ).isEqualTo( result );
    }
 
    private Path findTestsJar( final Path searchDirectory ) throws IOException {

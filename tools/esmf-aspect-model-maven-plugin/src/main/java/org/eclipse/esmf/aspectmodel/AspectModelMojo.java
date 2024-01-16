@@ -15,11 +15,11 @@ package org.eclipse.esmf.aspectmodel;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
@@ -46,6 +43,9 @@ import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 
 import io.vavr.control.Try;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class AspectModelMojo extends AbstractMojo {
 
@@ -53,7 +53,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
    private final String modelsRootDirectory = System.getProperty( "user.dir" ) + "/src/main/resources/aspects";
 
    @Parameter( required = true, property = "include" )
-   private Set<String> includes;
+   protected Set<String> includes;
 
    @Parameter
    protected String outputDirectory = "";
@@ -70,9 +70,10 @@ public abstract class AspectModelMojo extends AbstractMojo {
    protected Set<Try<AspectContext>> loadAndResolveModels() {
       final Path modelsRoot = Path.of( modelsRootDirectory );
       return includes.stream().map( AspectModelUrn::fromUrn )
-            .map( urn -> new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn ).flatMap( versionedModel ->
-                  AspectModelLoader.getSingleAspect( versionedModel, aspect -> aspect.getName().equals( urn.getName() ) )
-                        .map( aspect -> new AspectContext( versionedModel, aspect ) ) ) )
+            .map( urn -> new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn )
+                  .flatMap( versionedModel ->
+                        AspectModelLoader.getSingleAspect( versionedModel, aspect -> aspect.getName().equals( urn.getName() ) )
+                              .map( aspect -> new AspectContext( versionedModel, aspect ) ) ) )
             .collect( Collectors.toSet() );
    }
 
@@ -112,8 +113,8 @@ public abstract class AspectModelMojo extends AbstractMojo {
       final Map<AspectModelUrn, VersionedModel> versionedModels = new HashMap<>();
       for ( final String urn : includes ) {
          final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( urn );
-         final String aspectModelFilePath = String.format( "%s/%s/%s/%s.ttl", modelsRootDirectory, aspectModelUrn.getNamespace(), aspectModelUrn.getVersion(),
-               aspectModelUrn.getName() );
+         final String aspectModelFilePath = String.format( "%s/%s/%s/%s.ttl", modelsRootDirectory, aspectModelUrn.getNamespace(),
+               aspectModelUrn.getVersion(), aspectModelUrn.getName() );
 
          final File inputFile = new File( aspectModelFilePath ).getAbsoluteFile();
          try ( final InputStream inputStream = new FileInputStream( inputFile ) ) {
@@ -134,20 +135,20 @@ public abstract class AspectModelMojo extends AbstractMojo {
       return versionedModels;
    }
 
-   protected FileOutputStream getStreamForFile( final String artifactName, final String outputDirectory ) {
+   protected FileOutputStream getOutputStreamForFile( final String artifactName, final String outputDirectory ) {
       try {
-         final File directory = new File( outputDirectory );
-         directory.mkdirs();
-         final File file = new File( directory.getPath() + File.separator + artifactName );
-         return new FileOutputStream( file );
-      } catch ( final FileNotFoundException exception ) {
-         throw new RuntimeException( "Output file for Aspect Model documentation generation not found.", exception );
+         final Path outputPath = Path.of( outputDirectory );
+         Files.createDirectories( outputPath );
+         return new FileOutputStream( outputPath.resolve( artifactName ).toFile() );
+      } catch ( final IOException e ) {
+         throw new RuntimeException( "Could not write to output " + outputDirectory );
       }
    }
 
-   protected PrintWriter initializePrintWriter( final AspectModelUrn aspectModelUrn ) {
+   protected PrintWriter initializePrintWriter( final AspectModelUrn aspectModelUrn ) throws IOException {
       final String aspectModelFileName = String.format( "%s.ttl", aspectModelUrn.getName() );
-      final FileOutputStream streamForFile = getStreamForFile( aspectModelFileName, outputDirectory );
-      return new PrintWriter( streamForFile );
+      try ( final FileOutputStream streamForFile = getOutputStreamForFile( aspectModelFileName, outputDirectory ) ) {
+         return new PrintWriter( streamForFile );
+      }
    }
 }

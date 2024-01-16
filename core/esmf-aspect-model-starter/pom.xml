@@ -68,5 +68,9 @@
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-serializer</artifactId>
       </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-aas-generator</artifactId>
+      </dependency>
    </dependencies>
 </project>

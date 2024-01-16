@@ -1,0 +1,42 @@
+<!--
+  ~ Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+  ~
+  ~ See the AUTHORS file(s) distributed with this work for additional
+  ~ information regarding authorship.
+  ~
+  ~ This Source Code Form is subject to the terms of the Mozilla Public
+  ~ License, v. 2.0. If a copy of the MPL was not distributed with this
+  ~ file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  ~
+  ~ SPDX-License-Identifier: MPL-2.0
+  -->
+
+<environment xmlns="https://admin-shell.io/aas/3/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://admin-shell.io/aas/3/0 AAS.xsd">
+   <assetAdministrationShells>
+      <assetAdministrationShell>
+         <idShort></idShort>
+         <id>urn:samm:com.example:1.0.0#Shell</id>
+         <assetInformation>
+            <assetKind>NotApplicable</assetKind>
+         </assetInformation>
+         <submodels>
+            <reference>
+               <type>ModelReference</type>
+               <keys>
+                  <key>
+                     <type>Submodel</type>
+                     <value>0000-0#00-AAAAAA#000</value>
+                  </key>
+               </keys>
+            </reference>
+         </submodels>
+      </assetAdministrationShell>
+   </assetAdministrationShells>
+   <submodels>
+      <submodel>
+         <id>0000-0#00-AAAAAA#000</id>
+         <kind>Template</kind>
+      </submodel>
+   </submodels>
+</environment>

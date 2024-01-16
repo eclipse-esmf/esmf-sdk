@@ -21,16 +21,15 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.metamodel.Property;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.Environment;
 import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
-import org.eclipse.esmf.metamodel.Property;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
 
 /**
  * Contains and tracks the context while the {@link AspectModelAASVisitor} traverses the metamodel.
@@ -51,7 +50,8 @@ public class Context {
    }
 
    /**
-    * When iterating over the aspect data of a collection-valued property, this method has to be used to track the iteration for each property in the property
+    * When iterating over the aspect data of a collection-valued property, this method has to be used to track the iteration for each
+    * property in the property
     * graph.
     * Iteration is always forward, i.e. the index will always increase by 1.
     *
@@ -191,11 +191,8 @@ public class Context {
       }
       final AtomicReference<String> pathExpression = new AtomicReference<>(
             "/" + String.join( "/", propertyPath.stream().map( Property::getPayloadName ).toList() ) );
-      indices.entrySet()
-            .forEach( index -> {
-               pathExpression.getAndUpdate(
-                     path -> path.replace( index.getKey().getPayloadName(), index.getKey().getPayloadName() + "/" + index.getValue() ) );
-            } );
+      indices.forEach( ( key, value ) -> pathExpression.getAndUpdate(
+            path -> path.replace( key.getPayloadName(), key.getPayloadName() + "/" + value ) ) );
       final JsonNode valueNode = aspectData.at( pathExpression.get() );
       return valueNode.isMissingNode() ? Optional.empty() : Optional.of( valueNode );
    }

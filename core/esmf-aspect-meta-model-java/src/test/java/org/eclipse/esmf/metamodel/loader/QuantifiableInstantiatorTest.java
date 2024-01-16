@@ -15,24 +15,22 @@ package org.eclipse.esmf.metamodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.jena.vocabulary.XSD;
-import org.assertj.core.api.Assertions;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.Unit;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.characteristic.Duration;
 import org.eclipse.esmf.characteristic.Measurement;
-import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.QuantityKinds;
+import org.eclipse.esmf.metamodel.Scalar;
+import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 
-import org.eclipse.esmf.samm.KnownVersion;
+import org.apache.jena.vocabulary.XSD;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
 
@@ -76,7 +74,7 @@ public class QuantifiableInstantiatorTest extends MetaModelInstantiatorTest {
             "Test Quantifiable", "This is a test Quantifiable", "http://example.com/" );
       final Scalar scalar = (Scalar) quantifiable.getDataType().get();
       assertThat( scalar.getUrn() ).isEqualTo( XSD.xfloat.getURI() );
-      Assertions.assertThat( quantifiable.getUnit() ).isNotPresent();
+      assertThat( quantifiable.getUnit() ).isNotPresent();
    }
 
    @ParameterizedTest
