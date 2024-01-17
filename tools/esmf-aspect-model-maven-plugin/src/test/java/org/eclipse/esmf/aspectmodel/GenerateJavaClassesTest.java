@@ -40,6 +40,15 @@ public class GenerateJavaClassesTest extends AspectModelMojoTest {
    }
 
    @Test
+   public void testGenerateJavaClassesPackageInterpolation() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-java-classes-pom-package-interpolation.xml" );
+      final Mojo generateJavaClasses = lookupMojo( "generateJavaClasses", testPom );
+      assertThatCode( generateJavaClasses::execute ).doesNotThrowAnyException();
+      assertThat( generatedFilePath( "com", "example", "shared", "v1", "v0", "v0", "AspectWithExtendedEntity.java" ) ).exists();
+      assertThat( generatedFilePath( "com", "example", "v1", "v0", "v0", "Aspect.java" ) ).exists();
+   }
+
+   @Test
    public void testGenerateJavaClassesInvalidTemplateLibFile() throws Exception {
       final File testPom = getTestFile( "src/test/resources/generate-java-classes-pom-invalid-template-lib-file.xml" );
       final Mojo generateJavaClasses = lookupMojo( "generateJavaClasses", testPom );

@@ -17,10 +17,12 @@ import java.io.File;
 import java.io.OutputStream;
 import java.util.function.Function;
 
+import org.eclipse.esmf.aspectmodel.java.QualifiedName;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.metamodel.Aspect;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
-
-import org.eclipse.esmf.aspectmodel.java.QualifiedName;
 
 public abstract class CodeGenerationMojo extends AspectModelMojo {
 
@@ -32,6 +34,9 @@ public abstract class CodeGenerationMojo extends AspectModelMojo {
 
    @Parameter( defaultValue = "false" )
    protected boolean executeLibraryMacros;
+
+   @Parameter
+   protected String stripNamespace = "";
 
    protected void validateParameters( final File templateLibFile ) throws MojoExecutionException {
       if ( executeLibraryMacros && !templateLibFile.exists() ) {
@@ -48,4 +53,19 @@ public abstract class CodeGenerationMojo extends AspectModelMojo {
       return getOutputStreamForFile( artefactName, outputDirectoryForArtefact );
    };
 
+   protected String determinePackageName( final Aspect aspect ) {
+      if ( packageName == null || packageName.isEmpty() ) {
+         return aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ).orElseThrow();
+      }
+
+      final AspectModelUrn urn = aspect.getAspectModelUrn().orElseThrow();
+      final VersionNumber versionNumber = VersionNumber.parse( urn.getVersion() );
+      final String interpolated = packageName.replace( "{{namespace}}", urn.getNamespace() )
+            .replace( "{{majorVersion}}", "" + versionNumber.getMajor() )
+            .replace( "{{minorVersion}}", "" + versionNumber.getMinor() )
+            .replace( "{{microVersion}}", "" + versionNumber.getMicro() );
+      return stripNamespace != null && !stripNamespace.isEmpty()
+            ? interpolated.replaceAll( stripNamespace, "" )
+            : interpolated;
+   }
 }
