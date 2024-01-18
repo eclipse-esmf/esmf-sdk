@@ -13,9 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
@@ -29,6 +31,7 @@ import org.eclipse.esmf.test.TestResources;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class AspectModelDiagramGeneratorTest extends MetaModelVersions {
    @ParameterizedTest
@@ -42,5 +45,27 @@ public class AspectModelDiagramGeneratorTest extends MetaModelVersions {
          final ByteArrayOutputStream out = new ByteArrayOutputStream();
          generator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, Locale.ENGLISH, out );
       } ).doesNotThrowAnyException();
+   }
+
+   @ParameterizedTest
+   @ValueSource( strings = { "UTF-8", "US-ASCII" } )
+   void generateDiagramsShouldReturnUTF8StringRegardlessOfPlatformEncoding( final String encoding ) throws Exception {
+      final String platformEncoding = System.getProperty( "file.encoding" );
+      try {
+         System.setProperty( "file.encoding", encoding );
+         final VersionedModel versionedModel = TestResources.getModel( TestAspect.ASPECT, KnownVersion.getLatest() ).get();
+         final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
+         final AspectContext context = new AspectContext( versionedModel, aspect );
+         final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( context );
+
+         assertThatCode( () -> {
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            generator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, Locale.ENGLISH, out );
+            final String svg = out.toString( StandardCharsets.UTF_8 );
+            assertThat( svg ).contains( "«Aspect»" );
+         } ).doesNotThrowAnyException();
+      } finally {
+         System.setProperty( "file.encoding", platformEncoding );
+      }
    }
 }

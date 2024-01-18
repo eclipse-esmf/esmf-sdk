@@ -142,15 +142,20 @@ public class AspectModelDiagramGenerator {
       }
    }
 
-   public void generateSvg( final Locale language, final OutputStream out )
-         throws IOException {
+   /**
+    * Generates an SVG diagram for the Aspect in the given target language and write it to the given output stream.
+    * Note that the document will always be encoded in UTF-8, regardless of the platform's encoding.
+    * @param language the language
+    * @param out the output stream
+    * @throws IOException if writing to the output stream fails
+    */
+   public void generateSvg( final Locale language, final OutputStream out ) throws IOException {
       final DiagramVisitor diagramVisitor = new DiagramVisitor( language );
-      final AbstractDiagram diagram = aspectContext.aspect().accept( diagramVisitor, Optional.empty() );
+      final Diagram diagram = aspectContext.aspect().accept( diagramVisitor, Optional.empty() );
       final Graphviz graphviz = render( diagram );
 
       try ( final InputStream fontStream = getInputStream( FONT_FILE ) ) {
-         final String svgDocument = new String( graphviz.toSvgStr().getBytes( System.getProperty( "file.encoding" ) ),
-               StandardCharsets.UTF_8 )
+         final String svgDocument = graphviz.toSvgStr()
                .replace( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "" )
                .replace( "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">", "" );
 
@@ -174,6 +179,7 @@ public class AspectModelDiagramGenerator {
 
    /**
     * Generates a diagram for the Aspect in the given output format and target language.
+    * Note that SVG documents will always be encoded in UTF-8, regardless of the platform's encoding.
     *
     * @param outputFormat One of SVG or PNG
     * @param language The language for which the diagram should be generated
@@ -200,6 +206,7 @@ public class AspectModelDiagramGenerator {
     * The callback function will be called with the name of the diagram, which follows the format
     * ASPECTNAME_XX.EXT where ASPECTNAME is the samm:name of the Aspect, XX is the language tag
     * and EXT is the file extension for the respective output format.
+    * Note that SVG documents will always be encoded in UTF-8, regardless of the platform's encoding.
     *
     * @param outputFormat One of SVG or PNG
     * @param nameMapper The callback function that maps diagram artifact names to OutputStreams
@@ -220,6 +227,7 @@ public class AspectModelDiagramGenerator {
     * The callback function will be called with the name of the diagram, which follows the format
     * ASPECTNAME_XX.EXT where ASPECTNAME is the samm:name of the Aspect, XX is the language tag
     * and EXT is the file extension for the respective output format.
+    * Note that SVG documents will always be encoded in UTF-8, regardless of the platform's encoding.
     *
     * @param targetFormats The set of formats in which diagrams should be generated
     * @param language The language for which the diagram should be generated
@@ -248,6 +256,7 @@ public class AspectModelDiagramGenerator {
     * The callback function will be called with the name of the diagram, which follows the format
     * ASPECTNAME_XX.EXT where ASPECTNAME is the samm:name of the Aspect, XX is the language tag
     * and EXT is the file extension for the respective output format.
+    * Note that SVG documents will always be encoded in UTF-8, regardless of the platform's encoding.
     *
     * @param targetFormats The set of formats in which diagrams should be generated
     * @param nameMapper The callback function that maps diagram artifact names to OutputStreams
@@ -259,16 +268,16 @@ public class AspectModelDiagramGenerator {
       }
    }
 
-   private Graphviz render( final AbstractDiagram diagram ) {
+   private Graphviz render( final Diagram diagram ) {
       final Color bgColor = Color.ofRGB( "#cfdbed" );
       final String fontName = "Roboto Condensed";
-      final Map<Box, Node> nodes = new HashMap<>();
+      final Map<Diagram.Box, Node> nodes = new HashMap<>();
 
       final Graphviz.GraphvizBuilder graphvizBuilder = Graphviz.digraph()
             .fontSize( 12f )
             .tempNode( Node.builder().shape( NodeShapeEnum.PLAIN ).build() );
 
-      final Map<Box, Node> boxMap = diagram.getBoxes()
+      final Map<Diagram.Box, Node> boxMap = diagram.getBoxes()
             .stream()
             .map( box -> {
                final Html.Table table = table()

@@ -14,15 +14,15 @@
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
 record Context(
-      Box parent,
+      Diagram.Box parent,
       String prototype,
       String edgeLabel
 ) {
-   Context( final Box parent ) {
+   Context( final Diagram.Box parent ) {
       this( parent, "", "" );
    }
 
-   Context( final Box parent, final String prototype ) {
+   Context( final Diagram.Box parent, final String prototype ) {
       this( parent, prototype, "" );
    }
 }
