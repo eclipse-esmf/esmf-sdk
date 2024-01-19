@@ -13,11 +13,16 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-class AbstractDiagram {
+/**
+ * An abstract representation of a diagram consisting of {@link Box}es and {@link Edge}s between them
+ */
+public class Diagram {
    private final Box focusBox;
    private final Set<Box> boxes;
    private final Set<Edge> edges;
@@ -25,14 +30,14 @@ class AbstractDiagram {
    // Used for the special case where a value element is rendered as a string (as part of a parent's attribute)
    private String scalarValue = null;
 
-   public AbstractDiagram( final Box focusBox ) {
+   public Diagram( final Box focusBox ) {
       this.focusBox = focusBox;
       boxes = new HashSet<>();
       addBox( focusBox );
       edges = new HashSet<>();
    }
 
-   static final AbstractDiagram EMPTY = new AbstractDiagram( null );
+   static final Diagram EMPTY = new Diagram( null );
 
    public void addBox( final Box box ) {
       if ( box != null ) {
@@ -54,9 +59,9 @@ class AbstractDiagram {
       this.edges.addAll( edges );
    }
 
-   public void add( final AbstractDiagram abstractDiagram ) {
-      addBoxes( abstractDiagram.getBoxes() );
-      addEdges( abstractDiagram.getEdges() );
+   public void add( final Diagram diagram ) {
+      addBoxes( diagram.getBoxes() );
+      addEdges( diagram.getEdges() );
    }
 
    public void setScalarValue( final String value ) {
@@ -77,5 +82,48 @@ class AbstractDiagram {
 
    public String getScalarValue() {
       return scalarValue;
+   }
+
+   /**
+    * A box in the diagram with a prototype, title and a list of entries
+    */
+   public static class Box {
+      private String prototype;
+      private final String title;
+      private final List<String> entries = new ArrayList<>();
+
+      public Box( final String prototype, final String title ) {
+         this.prototype = prototype;
+         this.title = title;
+      }
+
+      public void addEntry( final List<String> entry ) {
+         entries.addAll( entry );
+      }
+
+      public void setPrototype( final String prototype ) {
+         this.prototype = prototype;
+      }
+
+      public String getPrototype() {
+         return prototype;
+      }
+
+      public String getTitle() {
+         return title;
+      }
+
+      public List<String> getEntries() {
+         return entries;
+      }
+   }
+
+   /**
+    * An edge between two {@link Box}es
+    * @param from the source box
+    * @param to the target box
+    * @param label the label on the edge
+    */
+   public record Edge( Box from, Box to, String label ) {
    }
 }
