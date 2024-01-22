@@ -13,10 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
-import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * A Resolution strategy that supports two types of inputs and wraps two dedicated sub-resolution strategies
@@ -38,5 +38,10 @@ public class EitherStrategy implements ResolutionStrategy {
          return result;
       }
       return strategy2.apply( input );
+   }
+
+   @Override
+   public String toString() {
+      return "EitherStrategy(strategy1=" + strategy1 + ", strategy2=" + strategy2 + ")";
    }
 }

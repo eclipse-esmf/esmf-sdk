@@ -15,7 +15,7 @@ import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import fs.ModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +52,10 @@ public class AasToAspectCommand extends AbstractCommand {
    }
 
    private void generateAspects( final AasToAspectModelGenerator generator ) {
-      final ModelsRoot modelsRoot = new ModelsRoot( Path.of( outputPath ) );
+      final StructuredModelsRoot modelsRoot = new StructuredModelsRoot( Path.of( outputPath ) );
       for ( final Aspect aspect : generator.generateAspects() ) {
          final String aspectString = AspectSerializer.INSTANCE.apply( aspect );
-         final File targetFile = modelsRoot.determineOutputFile( aspect.getAspectModelUrn().get() );
+         final File targetFile = modelsRoot.determineAspectModelFile( aspect.getAspectModelUrn().get() );
          LOG.info( "Writing {}", targetFile.getAbsolutePath() );
          final File directory = targetFile.getParentFile();
          if ( !directory.exists() && !directory.mkdirs() ) {

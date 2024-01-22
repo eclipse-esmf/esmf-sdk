@@ -26,21 +26,19 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.apache.jena.rdf.model.RDFNode;
-
 import org.eclipse.esmf.aspectmodel.shacl.JsLibrary;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsFactory;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsGraph;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsTerm;
+import org.eclipse.esmf.aspectmodel.shacl.constraint.js.TermFactory;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.JsConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
+import org.apache.jena.rdf.model.RDFNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsFactory;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsGraph;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.js.JsTerm;
-import org.eclipse.esmf.aspectmodel.shacl.constraint.js.TermFactory;
 
 /**
  * Represents a SHACL JavaScript constraint as specified by the <a href="https://www.w3.org/TR/shacl-js/">SHACL JavaScript Extensions</a>.
@@ -118,24 +116,26 @@ public class JsConstraint implements Constraint {
             return List.of( new JsConstraintViolation( context, "JavaScript evaluation of " + jsFunctionName() + " returned null",
                   jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );
          }
-         if ( result instanceof Boolean booleanResult ) {
+         if ( result instanceof final Boolean booleanResult ) {
             if ( booleanResult ) {
                return List.of();
             }
             return List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), Collections.emptyMap() ) );
          }
-         if ( result instanceof Map<?, ?> map ) {
+         if ( result instanceof final Map<?, ?> map ) {
             final Map<String, Object> resultMap = map.entrySet().stream()
                   .filter( entry -> entry.getKey() instanceof String )
                   .collect( Collectors.toMap(
                         entry -> (String) entry.getKey(),
-                        entry -> entry.getValue() instanceof JsTerm term ? term.getNode() : entry.getValue() ) );
+                        entry -> entry.getValue() instanceof final JsTerm term ? term.getNode() : entry.getValue() ) );
             return List.of( new JsConstraintViolation( context, message(), jsLibrary(), jsFunctionName(), resultMap ) );
          }
 
+         LOG.debug( "JavaScript evaluation of {} returned invalid result: {}", jsFunctionName(), result );
          return List.of( new ProcessingViolation( "JavaScript evaluation of " + jsFunctionName() + " returned an invalid result",
                new IllegalArgumentException() ) );
       } catch ( final ScriptException exception ) {
+         LOG.debug( "JavaScript evaluation of {} failed", jsFunctionName(), exception );
          return List.of( new ProcessingViolation( "JavaScript evaluation of " + jsFunctionName() + " failed", exception ) );
       } catch ( final NoSuchMethodException exception ) {
          return List.of( new ProcessingViolation( "JavaScript function " + jsFunctionName() + " was not found", exception ) );
