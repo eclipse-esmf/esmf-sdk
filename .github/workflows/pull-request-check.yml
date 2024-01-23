@@ -56,7 +56,6 @@ jobs:
         run: |
           java --version
           export MAVEN_OPTS="-Xmx4096m"
-          rm -rf ~/.m2/repository/org/eclipse/esmf
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           cd tools/samm-cli
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
