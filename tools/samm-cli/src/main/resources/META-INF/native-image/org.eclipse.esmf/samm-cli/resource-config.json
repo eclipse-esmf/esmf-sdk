@@ -24,6 +24,7 @@
   ],
     "bundles":[
       {"name":"org.apache.jena.ext.xerces.impl.xpath.regex.message"},
+      {"name":"org.apache.jena.ext.xerces.impl.msg.XMLSchemaMessages"},
       {"name":"sun.awt.resources.awt","classNames":["sun.awt.resources.awt"]}
     ]
 }

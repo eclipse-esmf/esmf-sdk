@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,9 +11,8 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package fs;
+package org.eclipse.esmf.aspectmodel.resolver.fs;
 
-import java.io.File;
 import java.nio.file.Path;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -33,22 +32,18 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
  *         └── ...
  * </pre>
  */
-public class ModelsRoot {
-   private final Path root;
-
-   public ModelsRoot( final Path path ) {
-      root = path;
+public class StructuredModelsRoot extends ModelsRoot {
+   public StructuredModelsRoot( final Path path ) {
+      super( path );
    }
 
-   public Path rootPath() {
-      return root;
-   }
-
-   public File determineOutputFile( final AspectModelUrn urn ) {
-      return directoryForNamespace( urn ).resolve( urn.getName() + ".ttl" ).toFile();
-   }
-
+   @Override
    public Path directoryForNamespace( final AspectModelUrn urn ) {
-      return root.resolve( urn.getNamespace() ).resolve( urn.getVersion() );
+      return rootPath().resolve( urn.getNamespace() ).resolve( urn.getVersion() );
+   }
+
+   @Override
+   public String toString() {
+      return "StructuredModelsRoot(rootPath=" + rootPath() + ")";
    }
 }

@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
-import static io.vavr.API.*;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
 import static io.vavr.Predicates.instanceOf;
 
 import java.io.ByteArrayInputStream;
@@ -36,15 +37,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
@@ -58,17 +53,27 @@ import org.eclipse.esmf.aspectmodel.versionupdate.migrator.BammUriRewriter;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Streams;
-
 import io.vavr.CheckedFunction1;
 import io.vavr.Value;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides facilities for loading an Aspect model and resolving referenced meta model elements and
  * model elements from other Aspect models
  */
 public class AspectModelResolver {
+   private static final Logger LOG = LoggerFactory.getLogger( AspectModelResolver.class );
 
    private final MigratorService migratorService = MigratorServiceLoader.getInstance().getMigratorService();
    private final BammUriRewriter bamm100UriRewriter = new BammUriRewriter( BammUriRewriter.BAMM_VERSION.BAMM_1_0_0 );
@@ -130,9 +135,7 @@ public class AspectModelResolver {
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final InputStream inputStream ) {
-      return TurtleLoader.loadTurtle( inputStream )
-            .flatMap( model -> resolveAspectModel( FileSystemStrategy.DefaultNamespace.withDefaultNamespace( resolutionStrategy, model ),
-                  model ) );
+      return TurtleLoader.loadTurtle( inputStream ).flatMap( model -> resolveAspectModel( resolutionStrategy, model ) );
    }
 
    /**
@@ -185,8 +188,16 @@ public class AspectModelResolver {
             .map( bamm200UriRewriter::migrate );
 
       if ( mergedModel.isFailure() ) {
-         if ( mergedModel.getCause() instanceof FileNotFoundException ) {
-            return Try.failure( new ModelResolutionException( "Could not resolve " + input, mergedModel.getCause() ) );
+         if ( mergedModel.getCause() instanceof final FileNotFoundException fileNotFoundException ) {
+            final String failedUrns = input.stream()
+                  .filter( urn -> !urn.getElementType().equals( ElementType.META_MODEL ) )
+                  .filter( urn -> !urn.getElementType().equals( ElementType.CHARACTERISTIC ) )
+                  .filter( urn -> !urn.getElementType().equals( ElementType.ENTITY ) )
+                  .filter( urn -> !urn.getElementType().equals( ElementType.UNIT ) )
+                  .map( AspectModelUrn::toString )
+                  .collect( Collectors.joining( ", " ) );
+            LOG.debug( "Could not resolve {}", failedUrns, fileNotFoundException );
+            return Try.failure( new ModelResolutionException( "Could not resolve " + failedUrns, fileNotFoundException ) );
          }
          return Try.failure( mergedModel.getCause() );
       }
@@ -236,9 +247,14 @@ public class AspectModelResolver {
     */
    public static boolean containsDefinition( final Model model, final AspectModelUrn urn ) {
       if ( model.getNsPrefixMap().values().stream().anyMatch( prefixUri -> prefixUri.startsWith( "urn:bamm:" ) ) ) {
-         return model.contains( model.createResource( urn.toString().replace( "urn:samm:", "urn:bamm:" ) ), RDF.type, (RDFNode) null );
+         final boolean result = model.contains( model.createResource( urn.toString().replace( "urn:samm:", "urn:bamm:" ) ), RDF.type,
+               (RDFNode) null );
+         LOG.debug( "Checking if model contains {}: {}", urn, result );
+         return result;
       }
-      return model.contains( model.createResource( urn.toString() ), RDF.type, (RDFNode) null );
+      final boolean result = model.contains( model.createResource( urn.toString() ), RDF.type, (RDFNode) null );
+      LOG.debug( "Checking if model contains {}: {}", urn, result );
+      return result;
    }
 
    /**
@@ -262,6 +278,7 @@ public class AspectModelResolver {
          final String urnToResolve = unresolvedUrns.pop();
          final Try<Model> resolvedModel = getModelForUrn( urnToResolve, resolutionStrategy );
          if ( resolvedModel.isFailure() ) {
+            LOG.debug( "Tried to resolve {} using {}, but it failed", urnToResolve, resolutionStrategy );
             return resolvedModel;
          }
          final Model model = resolvedModel.get();
@@ -399,40 +416,18 @@ public class AspectModelResolver {
     * @return the resolved model on success
     */
    public static Try<VersionedModel> loadAndResolveModel( final File input ) {
-      return loadAndResolveModelFromUrnLikeDir( input )
-            .orElse( () -> loadAndResolveModelFromDir( input ) );
-   }
-
-   private static Try<VersionedModel> loadAndResolveModelFromUrnLikeDir( final File input ) {
       final AspectModelResolver resolver = new AspectModelResolver();
       final File inputFile = input.getAbsoluteFile();
-      final Try<AspectModelUrn> urnTry = fileToUrn( inputFile );
-      final Try<FileSystemStrategy> strategyTry = getModelRoot( inputFile ).map( FileSystemStrategy::new );
-      //noinspection unchecked
-      return urnTry
-            .flatMap( urn -> strategyTry
-                  .flatMap( strategy -> resolver.resolveAspectModel( strategy, urn ) )
-                  .mapFailure(
-                        Case( $( instanceOf( IOException.class ) ),
-                              e -> new ModelResolutionException( "Could not load model " + urn + " from file " + input, e ) )
-                  )
-            );
-   }
+      final ResolutionStrategy fromSameDirectory = new FileSystemStrategy( new FlatModelsRoot( inputFile.getParentFile().toPath() ) );
 
-   private static Try<VersionedModel> loadAndResolveModelFromDir( final File input ) {
-      final AspectModelResolver resolver = new AspectModelResolver();
-      final File inputFile = input.getAbsoluteFile();
-      final Try<Path> modelsRoot = Try.of( () -> inputFile.getParentFile().toPath() );
-      final Try<FileSystemStrategy> strategyTry = modelsRoot.map( FileSystemStrategy.DefaultNamespace::new );
-
-      //noinspection unchecked
-      return strategyTry
-            .flatMapTry( strategy -> Try
-                  .withResources( () -> new FileInputStream( input ) )
-                  .of( stream -> resolver.resolveAspectModel( strategy, stream ) ) )
-            .flatMap( Function.identity() )
-            .mapFailure( Case( $( instanceOf( IOException.class ) ),
-                  e -> new ModelResolutionException( "Could not open file " + input, e ) ) );
+      // Construct the resolution strategy: Models should be searched in the structured folder (if it exists) and then in the
+      // same directory. If the structured folder can not be resolved, directly search in the same directory.
+      final ResolutionStrategy resolutionStrategy = getModelRoot( inputFile ).map(
+                  modelsRoot -> new FileSystemStrategy( new StructuredModelsRoot( modelsRoot ) ) )
+            .<ResolutionStrategy> map( structured -> new EitherStrategy( structured, fromSameDirectory ) ).getOrElse( fromSameDirectory );
+      return Try.withResources( () -> new FileInputStream( input ) )
+            .of( stream -> resolver.resolveAspectModel( resolutionStrategy, stream ) )
+            .flatMap( Function.identity() );
    }
 
    /**
@@ -488,9 +483,9 @@ public class AspectModelResolver {
     * @param file the input model file
     * @return the URN of the model element that corresponds to the file name and its location inside the models root
     */
-   public static AspectModelUrn urnFromModel(final VersionedModel model, final File file) {
+   public static AspectModelUrn urnFromModel( final VersionedModel model, final File file ) {
       final String aspectName = FilenameUtils.removeExtension( file.getName() );
-      return Streams.stream( model.getRawModel().listSubjects()).filter( s-> aspectName.equals( s.getLocalName() ) )
+      return Streams.stream( model.getRawModel().listSubjects() ).filter( s -> aspectName.equals( s.getLocalName() ) )
             .findFirst()
             .map( Resource::getURI )
             .map( AspectModelUrn::fromUrn )

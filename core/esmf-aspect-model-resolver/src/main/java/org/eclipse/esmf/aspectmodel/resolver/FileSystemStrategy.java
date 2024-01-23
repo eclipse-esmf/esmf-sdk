@@ -13,10 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.Predicates.instanceOf;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -24,9 +20,10 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import fs.ModelsRoot;
 import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
@@ -58,7 +55,16 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
     * @param modelsRoot The root directory for model files
     */
    public FileSystemStrategy( final Path modelsRoot ) {
-      this.modelsRoot = new ModelsRoot( modelsRoot );
+      this( new StructuredModelsRoot( modelsRoot ) );
+   }
+
+   /**
+    * Initialize the FileSystemStrategy with the root path of models.
+    *
+    * @param modelsRoot The root directory for model files
+    */
+   public FileSystemStrategy( final ModelsRoot modelsRoot ) {
+      this.modelsRoot = modelsRoot;
    }
 
    /**
@@ -73,11 +79,7 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
     */
    @Override
    public Try<Model> apply( final AspectModelUrn aspectModelUrn ) {
-      final Path directory = resolve( aspectModelUrn );
-      return loadFromDirectory( aspectModelUrn, directory );
-   }
-
-   protected Try<Model> loadFromDirectory( final AspectModelUrn aspectModelUrn, final Path directory ) {
+      final Path directory = modelsRoot.directoryForNamespace( aspectModelUrn );
       final File namedResourceFile = directory.resolve( aspectModelUrn.getName() + ".ttl" ).toFile();
       if ( namedResourceFile.exists() ) {
          return loadFromUri( namedResourceFile.toURI() );
@@ -86,70 +88,32 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
       LOG.warn( "Looking for {}, but no {}.ttl was found. Inspecting files in {}", aspectModelUrn.getName(),
             aspectModelUrn.getName(), directory );
 
-      return Arrays.stream( Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} ) )
-            .filter( File::isFile )
-            .filter( file -> file.getName().endsWith( ".ttl" ) )
-            .map( File::toURI )
-            .sorted()
-            .map( this::loadFromUri )
-            .filter( tryModel -> tryModel
-                  .map( model -> AspectModelResolver.containsDefinition( model, aspectModelUrn ) )
-                  .getOrElse( false ) )
-            .findFirst()
-            .orElse( Try.failure( new FileNotFoundException(
-                  "No model file containing " + aspectModelUrn + " could be found in directory: " + directory ) ) );
-   }
+      final File[] files = Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} );
+      Arrays.sort( files );
 
-   protected Path resolve( final AspectModelUrn aspectModelUrn ) {
-      return modelsRoot.directoryForNamespace( aspectModelUrn );
+      for ( final File file : files ) {
+         if ( !file.isFile() || !file.getName().endsWith( ".ttl" ) ) {
+            continue;
+         }
+         LOG.debug( "Looking for {} in {}", aspectModelUrn, file );
+         final Try<Model> tryModel = loadFromUri( file.toURI() );
+         if ( tryModel.isFailure() ) {
+            LOG.debug( "Could not load model from {}", file, tryModel.getCause() );
+         } else {
+            final Model model = tryModel.get();
+            if ( AspectModelResolver.containsDefinition( model, aspectModelUrn ) ) {
+               return Try.success( model );
+            } else {
+               LOG.debug( "File {} does not contain {}", file, aspectModelUrn );
+            }
+         }
+      }
+      return Try.failure(
+            new FileNotFoundException( "No model file containing " + aspectModelUrn + " could be found in directory: " + directory ) );
    }
 
    @Override
    public String toString() {
       return "FileSystemStrategy(root=" + modelsRoot + ')';
-   }
-
-   /**
-    * Initialize the File System Strategy where the default namespace is resolved in the root folder.
-    */
-   public static class DefaultNamespace extends FileSystemStrategy {
-      AspectModelUrn defaultUrn;
-
-      public DefaultNamespace( final Path modelsRoot ) {
-         super( modelsRoot );
-      }
-
-      @Override
-      protected Path resolve( final AspectModelUrn urn ) {
-         return (urn.getNamespace().equals( defaultUrn.getNamespace() ) && urn.getVersion().equals( defaultUrn.getVersion() ))
-               ? modelsRoot.rootPath()
-               : super.resolve( urn );
-      }
-
-      @Override
-      public Try<Model> apply( final AspectModelUrn urn ) {
-         final Path directory = resolve( urn );
-         return loadFromDirectory( urn, directory )
-               .recoverWith( FileNotFoundException.class,
-                     ex -> loadFromDirectory( urn, super.resolve( urn ) )
-                           .mapFailure( Case( $( instanceOf( FileNotFoundException.class ) ),
-                                 e -> new FileNotFoundException( ex.getMessage() + ". AND " + e.getMessage() ) ) )
-               );
-      }
-
-      public static <T extends ResolutionStrategy> T withDefaultNamespace( final T strategy, final Model model ) {
-         if ( strategy instanceof DefaultNamespace ) {
-            Optional.ofNullable( model.getNsPrefixURI( "" ) ).ifPresent( ns ->
-                  ((DefaultNamespace) strategy).defaultUrn = AspectModelUrn.fromUrn( ns + "DefaultPath" )
-            );
-         }
-
-         return strategy;
-      }
-
-      @Override
-      public String toString() {
-         return super.toString() + ".DefaultNamespace(ns=" + defaultUrn + ')';
-      }
    }
 }

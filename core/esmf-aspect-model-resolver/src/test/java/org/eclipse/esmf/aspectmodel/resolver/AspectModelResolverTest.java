@@ -49,8 +49,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( metaModelVersion.toString().toLowerCase() )
-                  .toURI()
-                  .getPath() );
+                  .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( TEST_NAMESPACE + "Test" );
 
@@ -69,8 +68,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( metaModelVersion.toString().toLowerCase() )
-                  .toURI()
-                  .getPath() );
+                  .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( TEST_NAMESPACE + "BammAspectWithoutPrefixes" );
 
@@ -88,8 +86,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( metaModelVersion.toString().toLowerCase() )
-                  .toURI()
-                  .getPath() );
+                  .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:bamm:org.eclipse.esmf.test:2.0.0#BammTest" );
 
@@ -107,8 +104,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( metaModelVersion.toString().toLowerCase() )
-                  .toURI()
-                  .getPath() );
+                  .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelResolver.fileToUrn(
             Paths.get( aspectModelsRootDirectory.toString(), "org.eclipse.esmf.test", "2.0.0", "BammTest.ttl" ).toFile() ).get();
@@ -128,8 +124,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( metaModelVersion.toString().toLowerCase() )
-                  .toURI()
-                  .getPath() );
+                  .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.1.0#Test" );
 
@@ -201,8 +196,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( metaModelVersion.toString().toLowerCase() )
-                  .toURI()
-                  .getPath() );
+                  .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn
             .fromUrn( TEST_NAMESPACE + "AnotherFailingTest" );
@@ -371,8 +365,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( metaModelVersion.toString().toLowerCase() )
-                  .toURI()
-                  .getPath() );
+                  .toURI().getPath() );
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( TEST_NAMESPACE + "VehicleInstance" );
 

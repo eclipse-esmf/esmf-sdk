@@ -45,8 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractCommand implements Runnable {
-   protected static final Logger LOG = LoggerFactory.getLogger( AbstractCommand.class );
-
    protected Try<VersionedModel> loadAndResolveModel( final File input, final ExternalResolverMixin resolverConfig ) {
       final Try<VersionedModel> versionedModel;
       if ( resolverConfig.commandLine.isBlank() ) {
