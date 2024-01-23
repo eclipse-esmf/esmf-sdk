@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
@@ -87,7 +88,10 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
       LOG.warn( "Looking for {}, but no {}.ttl was found. Inspecting files in {}", aspectModelUrn.getName(),
             aspectModelUrn.getName(), directory );
 
-      for ( final File file : Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} ) ) {
+      final File[] files = Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} );
+      Arrays.sort( files );
+
+      for ( final File file : files ) {
          if ( !file.isFile() || !file.getName().endsWith( ".ttl" ) ) {
             continue;
          }
