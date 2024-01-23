@@ -274,7 +274,13 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Model model = result.get().getModel();
       final Resource testCharacteristic = createResource( TEST_NAMESPACE + "TestCharacteristic" );
-      assertThat( Streams.stream( model.listStatements( testCharacteristic, RDF.type, (RDFNode) null ) ).count() ).isEqualTo( 1 );
+      final long count = Streams.stream( model.listStatements( testCharacteristic, RDF.type, (RDFNode) null ) ).count();
+      if ( count > 1 ) {
+         System.out.println( "=====" );
+         model.write( System.out, "TTL" );
+         System.out.println( "=====" );
+      }
+      assertThat( count ).isEqualTo( 1 );
    }
 
    @ParameterizedTest
