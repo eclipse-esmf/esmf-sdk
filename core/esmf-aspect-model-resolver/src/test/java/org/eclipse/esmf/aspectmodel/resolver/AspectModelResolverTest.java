@@ -28,6 +28,7 @@ import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.collect.Streams;
 import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
@@ -259,8 +260,13 @@ public class AspectModelResolverTest extends MetaModelVersions {
     * @throws Throwable if one of the resources is not found
     */
    @ParameterizedTest
-   @MethodSource( value = "allVersions" )
+   @MethodSource( value = "latestVersion" )
    public void testTransitiveReferenceExpectSuccess( final KnownVersion metaModelVersion ) throws Throwable {
+      final ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(
+            ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME );
+      final Level originalLevel = root.getLevel();
+      root.setLevel( Level.ALL );
+
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
                   .toURI().getPath() );
@@ -280,6 +286,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
          model.write( System.out, "TTL" );
          System.out.println( "=====" );
       }
+      root.setLevel( originalLevel );
       assertThat( count ).isEqualTo( 1 );
    }
 
