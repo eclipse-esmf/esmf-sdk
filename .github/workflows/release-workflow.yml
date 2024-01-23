@@ -134,6 +134,7 @@ jobs:
           path: |
             nexus-staging/
             samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
+            samm-cli-${{ github.event.inputs.release_version }}.jar
             samm-cli-${{ github.event.inputs.release_version }}-javadoc.jar
             samm-cli-${{ github.event.inputs.release_version }}-sources.jar
             samm-cli-${{ github.event.inputs.release_version }}-tests.jar
