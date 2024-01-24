@@ -49,8 +49,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * The tests for the CLI that are executed by Maven Surefire. They work using the {@link MainClassProcessLauncher}, i.e. directly call
@@ -172,6 +175,16 @@ public class SammCliTest extends MetaModelVersions {
       assertThat( result.stderr() ).isEmpty();
    }
 
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
+   public void testAspectValidateValidModelAllTestFiles( final TestModel aspect ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "validate" );
+      assertThat( result.stdout() ).contains( "Input model is valid" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
    @Test
    public void testAspectValidateWithRelativePath() {
       final File workingDirectory = new File( defaultInputFile ).getParentFile();
@@ -226,9 +239,35 @@ public class SammCliTest extends MetaModelVersions {
       assertThat( targetFile ).content().startsWith( "<?xml" );
    }
 
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
+   public void testAspectToAasXmlToFileAllTestFiles( final TestModel aspect ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final File targetFile = outputFile( "output.xml" );
+      assertThat( targetFile ).doesNotExist();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
+            "xml", "-o", targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists();
+      assertThat( targetFile ).content().startsWith( "<?xml" );
+   }
+
    @Test
    public void testAspectToAasXmlToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
+            "xml" );
+      assertThat( result.stdout() ).startsWith( "<?xml" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
+   public void testAspectToAasXmlToStdoutAllTestFiles( final TestModel aspect ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
             "xml" );
       assertThat( result.stdout() ).startsWith( "<?xml" );
       assertThat( result.stderr() ).isEmpty();
@@ -238,6 +277,21 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToAasAasxToFile() {
       final File targetFile = outputFile( "output.aasx" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
+            "aasx", "-o", targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists();
+      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.application( "x-tika-ooxml" ) );
+   }
+
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
+   public void testAspectToAasAasxToFileAllTestFiles( final TestModel aspect ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final File targetFile = outputFile( "output.aasx" );
+      assertThat( targetFile ).doesNotExist();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
             "aasx", "-o", targetFile.getAbsolutePath() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
@@ -265,9 +319,36 @@ public class SammCliTest extends MetaModelVersions {
       assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
    }
 
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
+   public void testAspectToAasJsonToFileAllTestFiles( final TestModel aspect ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final File targetFile = outputFile( "output.json" );
+      assertThat( targetFile ).doesNotExist();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
+            "json", "-o",
+            targetFile.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists();
+      assertThat( contentType( targetFile ) ).isEqualTo( MediaType.text( "plain" ) );
+   }
+
    @Test
    public void testAspectToAasJsonToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
+            "json" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
+   }
+
+   @ParameterizedTest
+   @EnumSource( TestAspect.class )
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
+   public void testAspectToAasJsonToStdoutAllTestFiles( final TestModel aspect ) {
+      final String input = inputFile( aspect ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
             "json" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.text( "plain" ) );
