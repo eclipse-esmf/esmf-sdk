@@ -60,7 +60,6 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
          "ASPECT_WITH_ABSTRACT_PROPERTY",
          "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND",
          "ASPECT_WITH_UMLAUT_DESCRIPTION",
-         "MODEL_WITH_CYCLES",
          "MODEL_WITH_BROKEN_CYCLES",
          "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES"
    } )
