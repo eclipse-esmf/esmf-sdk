@@ -140,8 +140,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_CONSTRAINED_COLLECTION", // Broken model
          "ASPECT_WITH_ENUMERATION_WITHOUT_SCALAR_VARIABLE", //Invalid Aspect Model
-         "MODEL_WITH_CYCLES", // contains cycles
-         "MODEL_WITH_BROKEN_CYCLES" // also contains cycles, but all of them should be "breakable", need to be investigated
+         "MODEL_WITH_BROKEN_CYCLES" // contains cycles, but all of them should be "breakable", need to be investigated
    } )
    public void testGeneration( final TestAspect testAspect ) {
       final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );

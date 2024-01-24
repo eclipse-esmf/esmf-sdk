@@ -56,20 +56,14 @@ class AspectModelValidatorTest extends MetaModelVersions {
          .collect( Collectors.toMap( Function.identity(), AspectModelValidator::new ) );
 
    @Test
-   void testValidAspect( ) {
+   void testValidAspect() {
       final Try<VersionedModel> validAspectModel = TestResources.getModel( TestAspect.ASPECT, KnownVersion.getLatest() );
       final List<Violation> violations = service.get( KnownVersion.getLatest() ).validateModel( validAspectModel );
       assertThat( violations ).isEmpty();
    }
 
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_FIXED_POINT",
-         "ASPECT_WITH_FIXED_POINT_CONSTRAINT",
-         "ASPECT_WITH_LANGUAGE_CONSTRAINT",
-         "MODEL_WITH_CYCLES",
-         "MODEL_WITH_BROKEN_CYCLES"// contains cycles
-   } )
+   @EnumSource( value = TestAspect.class )
    void testValidateTestAspectModel( final TestAspect testAspect ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
       final Try<VersionedModel> tryModel = TestResources.getModel( testAspect, metaModelVersion );
@@ -222,7 +216,7 @@ class AspectModelValidatorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    void testCycleDetection( final KnownVersion metaModelVersion ) {
-      final Try<VersionedModel> versionedModel = TestResources.getModel( TestAspect.MODEL_WITH_CYCLES, metaModelVersion );
+      final Try<VersionedModel> versionedModel = TestResources.getModel( InvalidTestAspect.MODEL_WITH_CYCLES, metaModelVersion );
       final List<Violation> report = service.get( metaModelVersion ).validateModel( versionedModel );
       assertThat( report ).hasSize( 7 );
       assertThat( report ).containsAll( cycles(
