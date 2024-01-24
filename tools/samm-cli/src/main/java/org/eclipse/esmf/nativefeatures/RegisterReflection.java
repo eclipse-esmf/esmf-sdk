@@ -15,6 +15,8 @@ package org.eclipse.esmf.nativefeatures;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
+import org.graalvm.nativeimage.Platform;
+import org.graalvm.nativeimage.Platforms;
 import org.graalvm.nativeimage.hosted.RuntimeReflection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract base class that provides facilities for registering classes and packages for reflection in native image builds.
  */
+@Platforms( Platform.HOSTED_ONLY.class )
 public abstract class RegisterReflection {
    private static final Logger LOG = LoggerFactory.getLogger( RegisterReflection.class );
 
