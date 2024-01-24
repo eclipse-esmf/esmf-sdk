@@ -51,7 +51,7 @@ public class MigratorServiceLoader {
    }
 
    private void loadMigratorService() {
-      try ( final ScanResult scanResult = new ClassGraph().enableAllInfo().whitelistPackages(
+      try ( final ScanResult scanResult = new ClassGraph().enableAllInfo().acceptPackages(
             MigratorFactory.class.getPackageName() ).scan() ) {
          final ClassInfoList migratorFactoryClasses = scanResult
                .getClassesImplementing( MigratorFactory.class.getName() );
