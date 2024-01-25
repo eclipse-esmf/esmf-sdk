@@ -24,7 +24,7 @@ import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
  * Extends {@link StaticProperty} to represent container or wrapper types like {@code Collection} or {code @Optional}
  * and carries type information about the contained type.
  */
-public abstract class StaticContainerProperty<C, T> extends StaticProperty<T> implements ContainerProperty<C> {
+public abstract class StaticContainerProperty<E, C, T> extends StaticProperty<E, T> implements ContainerProperty<C> {
 
    public StaticContainerProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,

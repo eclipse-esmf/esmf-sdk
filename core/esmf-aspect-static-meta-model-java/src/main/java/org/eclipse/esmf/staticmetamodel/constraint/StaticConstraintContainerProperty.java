@@ -25,8 +25,8 @@ import org.eclipse.esmf.staticmetamodel.ContainerProperty;
  * Extends {@link StaticConstraintProperty} to represent container or wrapper types like {@code Collection} or {@code
  * Optional} and carries type information about the contained type and includes a constraint
  */
-public abstract class StaticConstraintContainerProperty<R, T, C extends Characteristic>
-      extends StaticConstraintProperty<T, C> implements ContainerProperty<R> {
+public abstract class StaticConstraintContainerProperty<E, R, T, C extends Characteristic>
+      extends StaticConstraintProperty<E, T, C> implements ContainerProperty<R> {
 
    public StaticConstraintContainerProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,

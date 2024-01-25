@@ -15,6 +15,7 @@ package org.eclipse.esmf.staticmetamodel;
 
 import java.util.Optional;
 
+import org.checkerframework.checker.units.qual.C;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
@@ -24,7 +25,7 @@ import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 /**
  * Extends the SAMM {@link DefaultProperty} definition with a concrete type.
  */
-public abstract class StaticProperty<T> extends DefaultProperty {
+public abstract class StaticProperty<C, T> extends DefaultProperty {
 
    public StaticProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
@@ -42,4 +43,9 @@ public abstract class StaticProperty<T> extends DefaultProperty {
     * @return the type of the Property represented as a class.
     */
    public abstract Class<T> getPropertyType();
+
+   /**
+    * @return the property value of the given instance.
+    */
+   public abstract T getValue( C object);
 }

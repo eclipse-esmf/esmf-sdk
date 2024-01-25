@@ -29,8 +29,8 @@ import org.eclipse.esmf.staticmetamodel.UnitProperty;
  * Only {@link Quantifiable} properties that actually carry a {@code Unit} will be represented by a {@code
  * StaticConstraintUnitProperty}, however in practice this will be the case for most quantifiables.
  */
-public abstract class StaticConstraintUnitProperty<T, C extends Characteristic>
-      extends StaticConstraintProperty<T, C> implements UnitProperty {
+public abstract class StaticConstraintUnitProperty<E, T, C extends Characteristic>
+      extends StaticConstraintProperty<E, T, C> implements UnitProperty {
 
    public StaticConstraintUnitProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,

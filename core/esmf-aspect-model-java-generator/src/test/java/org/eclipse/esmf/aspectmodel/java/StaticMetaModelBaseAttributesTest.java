@@ -16,14 +16,13 @@ package org.eclipse.esmf.aspectmodel.java;
 import java.io.IOException;
 import java.util.Set;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.TestAspect;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.test.TestAspect;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
 
@@ -142,6 +141,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
             .put( "getAllProperties", "return getProperties();" )
             .put( "getPropertyType", "return Boolean.class;" )
+            .put( "getValue", "return object.isTestBoolean();" )
             .build();
 
       result.assertMethods( "MetaAspectWithBoolean", expectedMethodBodies );
@@ -182,6 +182,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getPreferredNames", getPreferredNamesBody )
             .put( "getDescriptions", getDescriptionsBody )
             .put( "getPropertyType", "return Boolean.class;" )
+            .put( "getValue", "return object.isTestBoolean();" )
             .build();
 
       result.assertMethods( "MetaAspectWithAllBaseAttributes", expectedMethodBodies );
@@ -212,6 +213,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getAllProperties", "return getProperties();" )
             .put( "getPreferredNames", getPreferredNamesBody )
             .put( "getPropertyType", "return Boolean.class;" )
+            .put( "getValue", "return object.isTestBoolean();" )
             .build();
 
       result.assertMethods( "MetaAspectWithPreferredNames", expectedMethodBodies );
@@ -242,6 +244,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getAllProperties", "return getProperties();" )
             .put( "getDescriptions", getDescriptionsBody )
             .put( "getPropertyType", "return Boolean.class;" )
+            .put( "getValue", "return object.isTestBoolean();" )
             .build();
 
       result.assertMethods( "MetaAspectWithDescriptions", expectedMethodBodies );
@@ -263,6 +266,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
             .put( "getAllProperties", "return getProperties();" )
             .put( "getPropertyType", "return Boolean.class;" )
+            .put( "getValue", "return object.isTestBoolean();" )
             .build();
 
       result.assertMethods( "MetaAspectWithPropertyWithSee", expectedMethodBodies );
