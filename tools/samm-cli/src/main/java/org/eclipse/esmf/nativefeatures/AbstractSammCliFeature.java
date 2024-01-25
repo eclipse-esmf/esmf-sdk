@@ -15,18 +15,16 @@ package org.eclipse.esmf.nativefeatures;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
-import org.graalvm.nativeimage.Platform;
-import org.graalvm.nativeimage.Platforms;
+import org.graalvm.nativeimage.hosted.Feature;
 import org.graalvm.nativeimage.hosted.RuntimeReflection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract base class that provides facilities for registering classes and packages for reflection in native image builds.
+ * Base class for native compilation features
  */
-@Platforms( Platform.HOSTED_ONLY.class )
-public abstract class RegisterReflection {
-   private static final Logger LOG = LoggerFactory.getLogger( RegisterReflection.class );
+public abstract class AbstractSammCliFeature implements Feature {
+   private static final Logger LOG = LoggerFactory.getLogger( AbstractSammCliFeature.class );
 
    /**
     * Registers all classes in the given package for reflection.
@@ -50,5 +48,19 @@ public abstract class RegisterReflection {
       RuntimeReflection.register( cls.getDeclaredConstructors() );
       RuntimeReflection.register( cls.getDeclaredMethods() );
       RuntimeReflection.register( cls.getDeclaredFields() );
+   }
+
+   /**
+    * Returns the class for the given class name.
+    *
+    * @param className the class name
+    * @return the class
+    */
+   protected Class<?> getClass( final String className ) {
+      try {
+         return Class.forName( className );
+      } catch ( final ClassNotFoundException exception ) {
+         throw new RuntimeException( "Could not access class for reflection registry", exception );
+      }
    }
 }
