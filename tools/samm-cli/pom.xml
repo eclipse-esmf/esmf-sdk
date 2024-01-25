@@ -518,6 +518,8 @@
                   <arg>java.desktop/sun.awt=ALL-UNNAMED</arg>
                   <arg>--add-exports</arg>
                   <arg>java.desktop/sun.font=ALL-UNNAMED</arg>
+                  <arg>--add-exports</arg>
+                  <arg>org.graalvm.sdk/org.graalvm.nativeimage.impl=ALL-UNNAMED</arg>
                </compilerArgs>
                <forceJavacCompilerUse>true</forceJavacCompilerUse>
             </configuration>
@@ -648,10 +650,28 @@
                      <mainClass>${main-class}</mainClass>
                      <imageName>${binary-name}</imageName>
                      <buildArgs>
+                        <arg>-H:Name=${binary-name}</arg>
+                        <arg>-H:EnableURLProtocols=http,https</arg>
+                        <arg>--enable-https</arg>
+                        <arg>--no-fallback</arg>
+                        <arg>--report-unsupported-elements-at-runtime</arg>
+                        <arg>--features=org.eclipse.esmf.nativefeatures.SammCliFeatures</arg>
+                        <arg>--language:js</arg>
+                        <arg>-H:JNIConfigurationFiles=src/main/resources/META-INF/native-image/${project.groupId}/${project.artifactId}/jni-config.json</arg>
+                        <arg>-H:DynamicProxyConfigurationFiles=src/main/resources/META-INF/native-image/${project.groupId}/${project.artifactId}/proxy-config.json</arg>
+                        <arg>-H:ReflectionConfigurationFiles=src/main/resources/META-INF/native-image/${project.groupId}/${project.artifactId}/reflect-config.json</arg>
+                        <arg>-H:ResourceConfigurationFiles=src/main/resources/META-INF/native-image/${project.groupId}/${project.artifactId}/resource-config.json</arg>
+                        <arg>-H:-DeadlockWatchdogExitOnTimeout</arg>
+                        <arg>-H:DeadlockWatchdogInterval=0</arg>
+                        <arg>-H:+AddAllCharsets</arg>
+                        <arg>-H:+ReportExceptionStackTraces</arg>
+                        <arg>-H:+PrintClassInitialization</arg>
                         <arg>-J-XX:MaxRAMPercentage=90.0</arg>
                         <arg>-J-XX:GCTimeRatio=19</arg>
                         <arg>-J--add-exports=java.desktop/sun.awt=ALL-UNNAMED</arg>
                         <arg>-J--add-exports=java.desktop/sun.font=ALL-UNNAMED</arg>
+                        <arg>-J--add-exports=org.graalvm.sdk/org.graalvm.nativeimage.impl=ALL-UNNAMED</arg>
+                        <arg>-J--add-exports=org.graalvm.nativeimage.builder/com.oracle.svm.core.configure=ALL-UNNAMED</arg>
                      </buildArgs>
                      <quickBuild>true</quickBuild>
                      <classpath>
