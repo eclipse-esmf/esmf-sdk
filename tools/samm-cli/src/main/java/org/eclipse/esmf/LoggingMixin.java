@@ -15,8 +15,6 @@ package org.eclipse.esmf;
 
 import static picocli.CommandLine.Spec.Target.MIXEE;
 
-import org.slf4j.LoggerFactory;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -24,6 +22,8 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
+import org.apache.jena.shared.LockMRSW;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 public class LoggingMixin {
@@ -71,6 +71,10 @@ public class LoggingMixin {
       final Logger root = loggerContext.getLogger( Logger.ROOT_LOGGER_NAME );
       root.detachAndStopAllAppenders();
       root.setLevel( level );
+
+      // In any case disable messages from this particularly spammy and unhelpful logger
+      final Logger lockMrsw = loggerContext.getLogger( LockMRSW.class );
+      lockMrsw.setLevel( Level.OFF );
 
       if ( level == Level.OFF ) {
          return;
