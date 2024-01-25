@@ -15,6 +15,7 @@ package org.eclipse.esmf.staticmetamodel;
 
 import java.util.Optional;
 
+import org.checkerframework.checker.units.qual.C;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.characteristic.Quantifiable;
 import org.eclipse.esmf.metamodel.ScalarValue;
@@ -27,7 +28,7 @@ import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
  * Only {@link Quantifiable} properties that actually carry a {@code Unit} will be represented by a {@code
  * StaticUnitProperty}, however in practice this will be the case for most quantifiables.
  */
-public abstract class StaticUnitProperty<T> extends StaticProperty<T> implements UnitProperty {
+public abstract class StaticUnitProperty<C, T> extends StaticProperty<C, T> implements UnitProperty {
 
    public StaticUnitProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,

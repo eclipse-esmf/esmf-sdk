@@ -374,4 +374,8 @@ class GenerationResult {
       final Comment copyrightComment = compilationUnit.getComment().get();
       assertThat( copyrightComment.toString() ).contains( expectedCopyright );
    }
+
+   Class<?> getGeneratedClass(final QualifiedName qualifiedName) {
+      return generatedClasses.get( qualifiedName );
+   }
 }

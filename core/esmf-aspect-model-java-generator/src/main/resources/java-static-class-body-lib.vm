@@ -41,11 +41,11 @@ static {
 #end
 
 #foreach( $property in $deconstructor.getAllProperties() )
-    #javaStaticClassProperty( $property $codeGenerationConfig )
+    #javaStaticClassProperty( $property $codeGenerationConfig $element )
 #end
 #foreach( $property in $element.getProperties() )
     #if ( !$property.isAbstract() )
-        #javaStaticClassProperty( $property $codeGenerationConfig )
+        #javaStaticClassProperty( $property $codeGenerationConfig $element )
     #end
 #end
 
@@ -68,15 +68,20 @@ static {
         return "${element.getName()}";
     }
 
+    #if( $element.getExtends().isPresent() )
+        #set( $propertyTypeParameter = "? super ${element.getName()}" )
+    #else
+        #set( $propertyTypeParameter = ${element.getName()} )
+    #end
     @Override
-    public List<StaticProperty<?>> getProperties() {
+    public List<StaticProperty<$propertyTypeParameter, ?>> getProperties() {
        return Arrays.asList(
         ${util.staticPropertiesExpression( $element )}
        );
     }
 
     @Override
-    public List<StaticProperty<?>> getAllProperties() {
+    public List<StaticProperty<$propertyTypeParameter, ?>> getAllProperties() {
     #if( $element.getExtends().isPresent() )
         #set( $extendedElement = $element.getExtends().get() )
         $codeGenerationConfig.importTracker().importExplicit( "java.util.stream.Stream" )
