@@ -47,7 +47,6 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestSharedAspect;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.printer.lexicalpreservation.changes.Change;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;

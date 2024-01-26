@@ -15,7 +15,6 @@ package org.eclipse.esmf.staticmetamodel;
 
 import java.util.Optional;
 
-import org.checkerframework.checker.units.qual.C;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
