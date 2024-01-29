@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.java;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.anyOf;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.assertj.core.api.Condition;
 
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ParserConfiguration;
@@ -58,6 +57,7 @@ import com.github.javaparser.utils.SourceRoot;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.util.Types;
+import org.assertj.core.api.Condition;
 
 class GenerationResult {
 
@@ -113,12 +113,14 @@ class GenerationResult {
     * @param fieldTypesOrTypeNames the expected fields and their types or type names
     * @param annotations the expected annotations concatenated as one string, indexed by field name
     */
-   void assertFields( final String className, final ImmutableMap<String, Object> fieldTypesOrTypeNames, final Map<String, String> annotations ) {
+   void assertFields( final String className, final ImmutableMap<String, Object> fieldTypesOrTypeNames,
+         final Map<String, String> annotations ) {
       assertThat( compilationUnits ).containsKey( className );
 
       final List<FieldDeclaration> fields = compilationUnits.get( className ).findAll( FieldDeclaration.class );
       assertThat( fields ).hasSize( fieldTypesOrTypeNames.size() );
-      assertThat( fields ).extracting( field -> field.resolve().getName() ).containsExactlyInAnyOrderElementsOf( fieldTypesOrTypeNames.keySet() );
+      assertThat( fields ).extracting( field -> field.resolve().getName() )
+            .containsExactlyInAnyOrderElementsOf( fieldTypesOrTypeNames.keySet() );
       assertThat( fields )
             .allSatisfy(
                   field -> {
@@ -142,7 +144,8 @@ class GenerationResult {
       }
    }
 
-   void assertCollectionElementValidationAnnotations( final String className, final String fieldName, final String expectedFieldDeclaration ) {
+   void assertCollectionElementValidationAnnotations( final String className, final String fieldName,
+         final String expectedFieldDeclaration ) {
       final List<FieldDeclaration> fields = compilationUnits.get( className ).findAll( FieldDeclaration.class );
       fields.stream().filter( fieldDeclaration -> fieldDeclaration.resolve().getName().equals( fieldName ) )
             .forEach( fieldDeclaration -> {
@@ -184,7 +187,8 @@ class GenerationResult {
             bodyStatements.stream().map( Node::toString ).collect( Collectors.joining() ) );
    }
 
-   void assertMethodBody( final String className, final String methodName, final boolean override, final Optional<PrimitiveType> expectedReturnType,
+   void assertMethodBody( final String className, final String methodName, final boolean override,
+         final Optional<PrimitiveType> expectedReturnType,
          final int expectedNumberOfParameters, final List<String> expectedMethodBody ) {
       final Optional<MethodDeclaration> possibleMethodDeclaration = compilationUnits.get( className )
             .findAll( MethodDeclaration.class ).stream()
@@ -256,10 +260,11 @@ class GenerationResult {
     * @param className the name of the {@code Enumeration} to be tested
     * @param expectedConstants a list of the expected constants
     * @param expectedConstantArguments a {@code Map} containing the {@code String} representation of the argument
-    *       for a constant. The key is the name of the constant. If this map is given, the number of entries should
-    *       match the number of expected constants.
+    * for a constant. The key is the name of the constant. If this map is given, the number of entries should
+    * match the number of expected constants.
     */
-   void assertEnumConstants( final String className, final Collection<String> expectedConstants, final Map<String, String> expectedConstantArguments ) {
+   void assertEnumConstants( final String className, final Collection<String> expectedConstants,
+         final Map<String, String> expectedConstantArguments ) {
       assertThat( compilationUnits ).containsKey( className );
       assertThat( compilationUnits.get( className ).getPrimaryType() ).hasValueSatisfying( type -> {
          assertThat( type.isEnumDeclaration() ).isTrue();
@@ -336,24 +341,16 @@ class GenerationResult {
             if ( toResolve.asArrayType().getComponentType().isReferenceType() ) {
                return "[L" + toResolve.asArrayType().getComponentType().asReferenceType().getQualifiedName() + ";";
             }
-            switch ( toResolve.asArrayType().getComponentType().asPrimitive() ) {
-            case BOOLEAN:
-               return "[Z";
-            case BYTE:
-               return "[B";
-            case CHAR:
-               return "[C";
-            case DOUBLE:
-               return "[D";
-            case FLOAT:
-               return "[F";
-            case INT:
-               return "[I";
-            case LONG:
-               return "[J";
-            case SHORT:
-               return "[S";
-            }
+            return switch ( toResolve.asArrayType().getComponentType().asPrimitive() ) {
+               case BOOLEAN -> "[Z";
+               case BYTE -> "[B";
+               case CHAR -> "[C";
+               case DOUBLE -> "[D";
+               case FLOAT -> "[F";
+               case INT -> "[I";
+               case LONG -> "[J";
+               case SHORT -> "[S";
+            };
          }
          final String fullName = toResolve.describe();
          return fullName.contains( "<" ) ? fullName.substring( 0, fullName.indexOf( "<" ) ) : fullName;
@@ -375,7 +372,7 @@ class GenerationResult {
       assertThat( copyrightComment.toString() ).contains( expectedCopyright );
    }
 
-   Class<?> getGeneratedClass(final QualifiedName qualifiedName) {
+   Class<?> getGeneratedClass( final QualifiedName qualifiedName ) {
       return generatedClasses.get( qualifiedName );
    }
 }
