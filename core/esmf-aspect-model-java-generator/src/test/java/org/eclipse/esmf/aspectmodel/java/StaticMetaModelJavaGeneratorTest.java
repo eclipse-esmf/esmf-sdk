@@ -82,8 +82,7 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   void testGenerateStaticMetaModelWithOptionalProperties( final KnownVersion metaModelVersion )
-         throws IOException, ClassNotFoundException {
+   void testGenerateStaticMetaModelWithOptionalProperties( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES_WITH_ENTITY;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
 
@@ -676,11 +675,11 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
        * @param <T> type of the property
        * @return the newly created type token
        */
-      static <C, T> TypeToken<StaticProperty<C, T>> staticProperty( Class<C> containingClass, Class<T> propertyClass ) {
+      static <C, T> TypeToken<StaticProperty<C, T>> staticProperty( final Class<C> containingClass, final Class<T> propertyClass ) {
          return new TypeToken<StaticProperty<C, T>>() {
          }
-               .where( new TypeParameter<C>() {}, containingClass )
-               .where( new TypeParameter<T>() {}, propertyClass );
+               .where( new TypeParameter</*C*/>() {}, containingClass )
+               .where( new TypeParameter</*T*/>() {}, propertyClass );
       }
 
       /**
@@ -692,11 +691,11 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
        * @param <T> type of the property
        * @return the newly created type token
        */
-      static <C, T> TypeToken<StaticProperty<C, T>> staticProperty( Class<C> containingClass, TypeToken<T> propertyTypeToken ) {
+      static <C, T> TypeToken<StaticProperty<C, T>> staticProperty( final Class<C> containingClass, final TypeToken<T> propertyTypeToken ) {
          return new TypeToken<StaticProperty<C, T>>() {
          }
-               .where( new TypeParameter<C>() {}, containingClass )
-               .where( new TypeParameter<T>() {}, propertyTypeToken );
+               .where( new TypeParameter</*C*/>() {}, containingClass )
+               .where( new TypeParameter</*T*/>() {}, propertyTypeToken );
       }
 
       /**
@@ -708,11 +707,11 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
        * @param <T> type of the property
        * @return the newly created type token
        */
-      static <C, T> TypeToken<StaticUnitProperty<C, T>> staticUnitProperty( Class<C> containingClass, Class<T> propertyClass ) {
+      static <C, T> TypeToken<StaticUnitProperty<C, T>> staticUnitProperty( final Class<C> containingClass, final Class<T> propertyClass ) {
          return new TypeToken<StaticUnitProperty<C, T>>() {
          }
-               .where( new TypeParameter<C>() {}, containingClass )
-               .where( new TypeParameter<T>() {}, propertyClass );
+               .where( new TypeParameter</*C*/>() {}, containingClass )
+               .where( new TypeParameter</*T*/>() {}, propertyClass );
       }
 
       /**
@@ -726,13 +725,13 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
        * @param <T> type of the property (i.e. the container type and the contained type)
        * @return the newly created type token
        */
-      static <E, C, T> TypeToken<StaticContainerProperty<E, C, T>> staticContainerProperty( Class<E> containingClass,
-            Class<C> containedClass, TypeToken<T> propertyClass ) {
+      static <E, C, T> TypeToken<StaticContainerProperty<E, C, T>> staticContainerProperty( final Class<E> containingClass,
+            final Class<C> containedClass, final TypeToken<T> propertyClass ) {
          return new TypeToken<StaticContainerProperty<E, C, T>>() {
          }
-               .where( new TypeParameter<E>() {}, containingClass )
-               .where( new TypeParameter<C>() {}, containedClass )
-               .where( new TypeParameter<T>() {}, propertyClass );
+               .where( new TypeParameter</*E*/>() {}, containingClass )
+               .where( new TypeParameter</*C*/>() {}, containedClass )
+               .where( new TypeParameter</*T*/>() {}, propertyClass );
       }
 
       /**
@@ -747,12 +746,12 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
        * @return the newly created type token
        */
       static <E, T, C extends Characteristic> TypeToken<StaticConstraintProperty<E, T, C>> staticConstraintProperty(
-            Class<E> containingClass, Class<T> propertyClass, Class<C> constraintClass ) {
+            final Class<E> containingClass, final Class<T> propertyClass, final Class<C> constraintClass ) {
          return new TypeToken<StaticConstraintProperty<E, T, C>>() {
          }
-               .where( new TypeParameter<E>() {}, containingClass )
-               .where( new TypeParameter<T>() {}, propertyClass )
-               .where( new TypeParameter<C>() {}, constraintClass );
+               .where( new TypeParameter</*E*/>() {}, containingClass )
+               .where( new TypeParameter</*T*/>() {}, propertyClass )
+               .where( new TypeParameter</*C*/>() {}, constraintClass );
       }
 
       /**
@@ -769,65 +768,66 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
        * @return the newly created type token
        */
       static <E, R, T, C extends Characteristic> TypeToken<StaticConstraintContainerProperty<E, R, T, C>> staticConstraintContainerProperty(
-            Class<E> containingClass, Class<R> containedClass, TypeToken<T> propertyClass, Class<C> constraintClass ) {
+            final Class<E> containingClass, final Class<R> containedClass, final TypeToken<T> propertyClass,
+            final Class<C> constraintClass ) {
          return new TypeToken<StaticConstraintContainerProperty<E, R, T, C>>() {
          }
-               .where( new TypeParameter<E>() {}, containingClass )
-               .where( new TypeParameter<R>() {}, containedClass )
-               .where( new TypeParameter<T>() {}, propertyClass )
-               .where( new TypeParameter<C>() {}, constraintClass );
+               .where( new TypeParameter</*E*/>() {}, containingClass )
+               .where( new TypeParameter</*R*/>() {}, containedClass )
+               .where( new TypeParameter</*T*/>() {}, propertyClass )
+               .where( new TypeParameter</*C*/>() {}, constraintClass );
       }
 
       /**
        * Create a type token for an {@link Optional}.
        *
        * @param clazz the class of the element inside the {@code Optional}
-       * @return the newly created type token
        * @param <T> the type of the element inside the {@code Optional}
+       * @return the newly created type token
        */
-      static <T> TypeToken<Optional<T>> optional( Class<T> clazz ) {
+      static <T> TypeToken<Optional<T>> optional( final Class<T> clazz ) {
          return new TypeToken<Optional<T>>() {
          }
-               .where( new TypeParameter<T>() {}, clazz );
+               .where( new TypeParameter</*T*/>() {}, clazz );
       }
 
       /**
        * Create a type token for a {@link Collection}.
        *
        * @param clazz the class of the element inside the {@code Collection}
-       * @return the newly created type token
        * @param <T> the type of the element inside the {@code Collection}
+       * @return the newly created type token
        */
-      static <T> TypeToken<Collection<T>> collection( Class<T> clazz ) {
+      static <T> TypeToken<Collection<T>> collection( final Class<T> clazz ) {
          return new TypeToken<Collection<T>>() {
          }
-               .where( new TypeParameter<T>() {}, clazz );
+               .where( new TypeParameter</*T*/>() {}, clazz );
       }
 
       /**
        * Create a type token for a {@link List}.
        *
        * @param clazz the class of the element inside the {@code List}
-       * @return the newly created type token
        * @param <T> the type of the element inside the {@code List}
+       * @return the newly created type token
        */
-      static <T> TypeToken<List<T>> list( Class<T> clazz ) {
+      static <T> TypeToken<List<T>> list( final Class<T> clazz ) {
          return new TypeToken<List<T>>() {
          }
-               .where( new TypeParameter<T>() {}, clazz );
+               .where( new TypeParameter</*T*/>() {}, clazz );
       }
 
       /**
        * Create a type token for a {@link LinkedHashSet}.
        *
        * @param clazz the class of the element inside the {@code LinkedHashSet}
-       * @return the newly created type token
        * @param <T> the type of the element inside the {@code LinkedHashSet}
+       * @return the newly created type token
        */
-      static <T> TypeToken<LinkedHashSet<T>> linkedHashSet( Class<T> clazz ) {
+      static <T> TypeToken<LinkedHashSet<T>> linkedHashSet( final Class<T> clazz ) {
          return new TypeToken<LinkedHashSet<T>>() {
          }
-               .where( new TypeParameter<T>() {}, clazz );
+               .where( new TypeParameter</*T*/>() {}, clazz );
       }
 
       /**
@@ -835,15 +835,15 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
        *
        * @param leftClass the class of the left element inside the {@code Either}
        * @param rightClass the class of the right element inside the {@code Either}
-       * @return the newly created type token
        * @param <L> the type of the left element inside the {@code Either}
        * @param <L> the type of the right element inside the {@code Either}
+       * @return the newly created type token
        */
-      static <L, R> TypeToken<Either<L, R>> either( Class<L> leftClass, Class<R> rightClass ) {
+      static <L, R> TypeToken<Either<L, R>> either( final Class<L> leftClass, final Class<R> rightClass ) {
          return new TypeToken<Either<L, R>>() {
          }
-               .where( new TypeParameter<L>() {}, leftClass )
-               .where( new TypeParameter<R>() {}, rightClass );
+               .where( new TypeParameter</*L*/>() {}, leftClass )
+               .where( new TypeParameter</*R*/>() {}, rightClass );
       }
    }
 
