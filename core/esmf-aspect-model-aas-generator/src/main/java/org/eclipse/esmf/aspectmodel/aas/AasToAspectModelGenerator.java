@@ -30,6 +30,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.digitaltwin.aas4j.v3.model.Referable;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
@@ -163,6 +164,14 @@ public class AasToAspectModelGenerator {
             .filter( submodel -> submodel.getKind().equals( ModellingKind.TEMPLATE ) )
             .map( this::submodelToAspect )
             .toList();
+   }
+
+   public List<String> getSubmodelNames() {
+      return aasEnvironment.getSubmodels()
+            .stream()
+            .filter( submodel -> submodel.getKind().equals( ModellingKind.TEMPLATE ) )
+            .map( Referable::getIdShort )
+            .collect( Collectors.toList());
    }
 
    protected String escapeUrnNamespacePart( final String namespacePart ) {
