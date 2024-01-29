@@ -15,10 +15,10 @@ jobs:
         os: [windows-latest, ubuntu-20.04]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup JDK
-        uses: graalvm/setup-graalvm@v1
+        uses: graalvm/setup-graalvm@b8dc5fccfbc65b21dd26e8341e7b21c86547f61b # v1
         with:
           java-version: '17.0.8'
           distribution: 'graalvm'
@@ -27,7 +27,7 @@ jobs:
           native-image-job-reports: 'true'
 
       - name: Cache Maven packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -40,7 +40,7 @@ jobs:
         # This seems to be caused by running out of memory; increasing page file
         # size suggested here:
         # https://github.com/actions/virtual-environments/issues/3420#issuecomment-861342418
-        uses: al-cheb/configure-pagefile-action@v1.3
+        uses: al-cheb/configure-pagefile-action@86589fd789a4de3e62ba628dda2cb10027b66d67 # v1.3
         with:
           minimum-size: 32GB
           maximum-size: 32GB
@@ -48,7 +48,7 @@ jobs:
 
       - name: Set Swap Space (Linux)
         if: matrix.os == 'ubuntu-20.04'
-        uses: pierotofy/set-swap-space@master
+        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # master
         with:
           swap-size-gb: 12
 
@@ -63,7 +63,7 @@ jobs:
         shell: bash
 
       - name: Switch to Temurin JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -78,14 +78,14 @@ jobs:
       - name: Upload executable jar
         # We only need one OS job to upload the jar
         if: matrix.os == 'ubuntu-20.04'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: samm-cli-jar
           path: tools/samm-cli/target/samm-cli-*.jar
 
       - name: Upload binary (Windows)
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |
@@ -95,7 +95,7 @@ jobs:
 
       - name: Upload binary (Linux/Mac)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: samm-cli-binary-${{ matrix.os }}
           path: |
