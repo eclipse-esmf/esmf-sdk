@@ -24,14 +24,17 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.eclipse.esmf.aspectmodel.java.types.Either;
 import org.eclipse.esmf.characteristic.impl.DefaultList;
 import org.eclipse.esmf.characteristic.impl.DefaultMeasurement;
+import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -45,12 +48,13 @@ import org.eclipse.esmf.test.TestSharedAspect;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
+class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
    /**
     * Tests that code generation succeeds for all test models for the latest meta model version
@@ -59,7 +63,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
     */
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
-   public void testCodeGeneration( final TestAspect testAspect ) {
+   void testCodeGeneration( final TestAspect testAspect ) {
       assertThatCode( () -> TestContext.generateStaticAspectCode()
             .apply( getGenerators( testAspect, KnownVersion.getLatest() ) ) ).doesNotThrowAnyException();
    }
@@ -71,183 +75,209 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
     */
    @ParameterizedTest
    @EnumSource( value = TestSharedAspect.class )
-   public void testCodeGenerationSharedAspect( final TestSharedAspect testAspect ) {
+   void testCodeGenerationSharedAspect( final TestSharedAspect testAspect ) {
       assertThatCode( () -> TestContext.generateStaticAspectCode()
             .apply( getGenerators( testAspect, KnownVersion.getLatest() ) ) ).doesNotThrowAnyException();
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithOptionalProperties( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithOptionalProperties( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES_WITH_ENTITY;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithOptionalPropertiesWithEntity" );
+      final Class<?> entityClass = findGeneratedClass( result, "TestEntity" );
+
       result.assertNumberOfFiles( 4 );
       result.assertFields( "MetaAspectWithOptionalPropertiesWithEntity",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithOptionalPropertiesWithEntity" )
-                  .put( "TEST_STRING", new TypeToken<StaticProperty<String>>() {
-                  } ).put( "TEST_OPTIONAL_STRING", new TypeToken<StaticContainerProperty<String, Optional<String>>>() {
-                  } ).put( "TEST_OPTIONAL_ENTITY", "StaticContainerProperty<TestEntity, java.util.Optional<TestEntity>>" ).build(),
+            fieldAssertions( "MetaAspectWithOptionalPropertiesWithEntity" )
+                  .put( "TEST_STRING", TypeTokens.staticProperty( aspectClass, String.class ) )
+                  .put( "TEST_OPTIONAL_STRING",
+                        TypeTokens.staticContainerProperty( aspectClass, String.class, TypeTokens.optional( String.class ) ) )
+                  .put( "TEST_OPTIONAL_ENTITY",
+                        TypeTokens.staticContainerProperty( aspectClass, entityClass, TypeTokens.optional( entityClass ) ) )
+                  .build(),
             new HashMap<>() );
 
       result.assertFields( "MetaTestEntity",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaTestEntity" )
-                  .put( "CODE_PROPERTY", new TypeToken<StaticProperty<Integer>>() {
-                  } ).put( "TEST_SECOND_STRING", new TypeToken<StaticProperty<String>>() {
-                  } ).put( "TEST_INT_LIST", new TypeToken<StaticContainerProperty<Integer, List<Integer>>>() {
-                  } ).build(), new HashMap<>() );
+            fieldAssertions( "MetaTestEntity" )
+                  .put( "CODE_PROPERTY", TypeTokens.staticProperty( entityClass, Integer.class ) )
+                  .put( "TEST_SECOND_STRING", TypeTokens.staticProperty( entityClass, String.class ) )
+                  .put( "TEST_INT_LIST",
+                        TypeTokens.staticContainerProperty( entityClass, Integer.class, TypeTokens.list( Integer.class ) ) ).build(),
+            new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithExtendedEnums( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithExtendedEnums( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENUMS;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithExtendedEnums" );
+      final Class<?> evaluationResultClass = findGeneratedClass( result, "EvaluationResult" );
+      final Class<?> evaluationResultsClass = findGeneratedClass( result, "EvaluationResults" );
+      final Class<?> nestedResultClass = findGeneratedClass( result, "NestedResult" );
+
       result.assertNumberOfFiles( 8 );
       result.assertFields( "MetaAspectWithExtendedEnums",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithExtendedEnums" )
-                  .put( "RESULT", "StaticProperty<EvaluationResults>" ).put( "SIMPLE_RESULT", "StaticProperty<YesNo>" ).build(),
+            fieldAssertions( "MetaAspectWithExtendedEnums" )
+                  .put( "RESULT", TypeTokens.staticProperty( aspectClass, evaluationResultsClass ) )
+                  .put( "SIMPLE_RESULT", TypeTokens.staticProperty( aspectClass, findGeneratedClass( result, "YesNo" ) ) ).build(),
             new HashMap<>() );
       result.assertFields( "MetaEvaluationResult",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaEvaluationResult" )
-                  .put( "AVERAGE", new TypeToken<StaticContainerProperty<BigInteger, Optional<BigInteger>>>() {
-                  } ).put( "NUMERIC_CODE", new TypeToken<StaticProperty<Short>>() {
-                  } ).put( "DESCRIPTION", new TypeToken<StaticProperty<String>>() {
-                  } ).put( "NESTED_RESULT", "StaticProperty<NestedResult>" ).build(), new HashMap<>() );
+            fieldAssertions( "MetaEvaluationResult" )
+                  .put( "AVERAGE", TypeTokens.staticContainerProperty( evaluationResultClass, BigInteger.class,
+                        TypeTokens.optional( BigInteger.class ) ) )
+                  .put( "NUMERIC_CODE", TypeTokens.staticProperty( evaluationResultClass, Short.class ) )
+                  .put( "DESCRIPTION", TypeTokens.staticProperty( evaluationResultClass, String.class ) )
+                  .put( "NESTED_RESULT", TypeTokens.staticProperty( evaluationResultClass, findGeneratedClass( result, "NestedResult" ) ) )
+                  .build(), new HashMap<>() );
       result.assertFields( "MetaNestedResult",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaNestedResult" )
-                  .put( "AVERAGE", new TypeToken<StaticProperty<BigInteger>>() {
-                  } ).put( "DESCRIPTION", new TypeToken<StaticProperty<String>>() {
-                  } ).build(), new HashMap<>() );
+            fieldAssertions( "MetaNestedResult" )
+                  .put( "AVERAGE", TypeTokens.staticProperty( nestedResultClass, BigInteger.class ) )
+                  .put( "DESCRIPTION", TypeTokens.staticProperty( nestedResultClass, String.class ) )
+                  .build(), new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithEither( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithEither( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> leftEntityClass = findGeneratedClass( result, "LeftEntity" );
+      final Class<?> rightEntityClass = findGeneratedClass( result, "RightEntity" );
+
       result.assertNumberOfFiles( 6 );
       result.assertFields( "MetaAspectWithEitherWithComplexTypes",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithEitherWithComplexTypes" )
-                  .put( "TEST_PROPERTY", "StaticProperty<Either<LeftEntity, RightEntity>>" ).build(), new HashMap<>() );
+            fieldAssertions( "MetaAspectWithEitherWithComplexTypes" )
+                  .put( "TEST_PROPERTY", TypeTokens.staticProperty( findGeneratedClass( result, "AspectWithEitherWithComplexTypes" ),
+                        TypeTokens.either( leftEntityClass, rightEntityClass ) ) ).build(), new HashMap<>() );
 
       result.assertFields( "MetaLeftEntity",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaLeftEntity" )
-                  .put( "RESULT", new TypeToken<StaticProperty<String>>() {
-                  } ).build(), new HashMap<>() );
+            fieldAssertions( "MetaLeftEntity" )
+                  .put( "RESULT", TypeTokens.staticProperty( leftEntityClass, String.class ) ).build(),
+            new HashMap<>() );
 
       result.assertFields( "MetaRightEntity",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaRightEntity" )
-                  .put( "ERROR", new TypeToken<StaticProperty<String>>() {
-                  } ).build(), new HashMap<>() );
+            fieldAssertions( "MetaRightEntity" )
+                  .put( "ERROR", TypeTokens.staticProperty( rightEntityClass, String.class ) ).build(),
+            new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithMeasurement( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithMeasurement( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_MEASUREMENT;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
       result.assertFields( "MetaAspectWithMeasurement",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithMeasurement" )
-                  .put( "TEST_PROPERTY", new TypeToken<StaticUnitProperty<Float>>() {
-                  } ).build(), new HashMap<>() );
+            fieldAssertions( "MetaAspectWithMeasurement" )
+                  .put( "TEST_PROPERTY",
+                        TypeTokens.staticUnitProperty( findGeneratedClass( result, "AspectWithMeasurement" ), Float.class ) ).build(),
+            new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testGenerateStaticMetaModelWithMeasurementTwo( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithExtendedEntityAssertProperties( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENTITY;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> testEntityClass = findGeneratedClass( result, "TestEntity" );
+
       result.assertNumberOfFiles( 8 );
       result.assertFields( "MetaAspectWithExtendedEntity",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithExtendedEntity" )
-                  .put( "TEST_PROPERTY", "StaticContainerProperty<TestEntity, java.util.LinkedHashSet<TestEntity>>" ).build(),
+            fieldAssertions( "MetaAspectWithExtendedEntity" )
+                  .put( "TEST_PROPERTY", TypeTokens.staticContainerProperty( findGeneratedClass( result, "AspectWithExtendedEntity" ),
+                        testEntityClass, TypeTokens.linkedHashSet( testEntityClass ) ) ).build(),
             new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithRecursiveAspectWithOptional( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithRecursiveAspectWithOptional( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithRecursivePropertyWithOptional" );
+      final Class<?> testEntityClass = findGeneratedClass( result, "TestEntity" );
+
       result.assertNumberOfFiles( 4 );
       result.assertFields( "MetaAspectWithRecursivePropertyWithOptional",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithRecursivePropertyWithOptional" )
-                  .put( "TEST_PROPERTY", "StaticProperty<TestEntity>" ).build(), new HashMap<>() );
+            fieldAssertions( "MetaAspectWithRecursivePropertyWithOptional" )
+                  .put( "TEST_PROPERTY", TypeTokens.staticProperty( aspectClass, testEntityClass ) ).build(), new HashMap<>() );
       result.assertFields( "MetaTestEntity",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaTestEntity" )
-                  .put( "TEST_PROPERTY", "StaticContainerProperty<TestEntity, java.util.Optional<TestEntity>>" ).build(), new HashMap<>() );
+            fieldAssertions( "MetaTestEntity" )
+                  .put( "TEST_PROPERTY",
+                        TypeTokens.staticContainerProperty( testEntityClass, testEntityClass, TypeTokens.optional( testEntityClass ) ) )
+                  .build(), new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithDuration( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithDuration( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_DURATION;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
       result.assertFields( "MetaAspectWithDuration",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithDuration" )
-                  .put( "TEST_PROPERTY", new TypeToken<StaticUnitProperty<Integer>>() {
-                  } ).build(), new HashMap<>() );
+            fieldAssertions( "MetaAspectWithDuration" )
+                  .put( "TEST_PROPERTY",
+                        TypeTokens.staticUnitProperty( findGeneratedClass( result, "AspectWithDuration" ), Integer.class ) ).build(),
+            new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithCurie( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithCurie( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_CURIE;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithCurie" );
+
       result.assertNumberOfFiles( 2 );
       result.assertFields( "MetaAspectWithCurie",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithCurie" )
-                  .put( "TEST_CURIE", new TypeToken<StaticProperty<Curie>>() {
-                  } ).put( "TEST_CURIE_WITHOUT_EXAMPLE_VALUE", new TypeToken<StaticProperty<Curie>>() {
-                  } ).build(), new HashMap<>() );
+            fieldAssertions( "MetaAspectWithCurie" )
+                  .put( "TEST_CURIE", TypeTokens.staticProperty( aspectClass, Curie.class ) )
+                  .put( "TEST_CURIE_WITHOUT_EXAMPLE_VALUE", TypeTokens.staticProperty( aspectClass, Curie.class ) ).build(),
+            new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithBinary( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithBinary( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BINARY;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
       result.assertFields( "MetaAspectWithBinary",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithBinary" )
-                  .put( "TEST_BINARY", new TypeToken<StaticProperty<byte[]>>() {
-                  } ).build(), new HashMap<>() );
+            fieldAssertions( "MetaAspectWithBinary" )
+                  .put( "TEST_BINARY", TypeTokens.staticProperty( findGeneratedClass( result, "AspectWithBinary" ), byte[].class ) )
+                  .build(),
+            new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithState( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithState( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_STATE;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithState" );
+      final Class<?> testStateClass = findGeneratedClass( result, "TestState" );
+
       result.assertNumberOfFiles( 3 );
 
       result.assertFields( "MetaAspectWithState",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithState" )
-                  .put( "STATUS", "StaticProperty<TestState>" )
+            fieldAssertions( "MetaAspectWithState" )
+                  .put( "STATUS", TypeTokens.staticProperty( aspectClass, testStateClass ) )
                   .build(), new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "latestVersion" )
-   public void testGenerateStaticMetaModelWithExtendedEntity( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithExtendedEntity( final KnownVersion metaModelVersion ) throws IOException {
       final TestSharedAspect aspect = TestSharedAspect.ASPECT_WITH_EXTENDED_ENTITY;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 8 );
@@ -273,151 +303,163 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "latestVersion" )
-   public void testGenerateStaticMetaModelWithConstraints( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_CONSTRAINTS;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithConstraints" );
+
       result.assertNumberOfFiles( 2 );
 
       result.assertFields( "MetaAspectWithConstraints",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithConstraints" )
+            fieldAssertions( "MetaAspectWithConstraints" )
                   .put( "TEST_PROPERTY_WITH_REGULAR_EXPRESSION",
-                        new TypeToken<StaticConstraintProperty<String, DefaultCharacteristic>>() {
-                        } ).put( "TEST_PROPERTY_WITH_DECIMAL_MIN_DECIMAL_MAX_RANGE_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<BigDecimal, DefaultMeasurement>>() {
-                        } ).put( "TEST_PROPERTY_WITH_DECIMAL_MAX_RANGE_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<BigDecimal, DefaultMeasurement>>() {
-                        } ).put( "TEST_PROPERTY_WITH_MIN_MAX_RANGE_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<Integer, DefaultMeasurement>>() {
-                        } ).put( "TEST_PROPERTY_WITH_MIN_RANGE_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<Integer, DefaultMeasurement>>() {
-                        } ).put( "TEST_PROPERTY_RANGE_CONSTRAINT_WITH_FLOAT_TYPE",
-                        new TypeToken<StaticConstraintProperty<Float, DefaultMeasurement>>() {
-                        } ).put( "TEST_PROPERTY_RANGE_CONSTRAINT_WITH_DOUBLE_TYPE",
-                        new TypeToken<StaticConstraintProperty<Double, DefaultMeasurement>>() {
-                        } ).put( "TEST_PROPERTY_WITH_MIN_MAX_LENGTH_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<String, DefaultCharacteristic>>() {
-                        } ).put( "TEST_PROPERTY_WITH_MIN_LENGTH_CONSTRAINT",
-                        new TypeToken<StaticConstraintProperty<BigInteger, DefaultCharacteristic>>() {
-                        } ).put( "TEST_PROPERTY_COLLECTION_LENGTH_CONSTRAINT",
-                        new TypeToken<StaticConstraintContainerProperty<BigInteger, List<BigInteger>, DefaultList>>() {
-                        } ).build(), new HashMap<>() );
+                        TypeTokens.staticConstraintProperty( aspectClass, String.class, DefaultCharacteristic.class ) )
+                  .put( "TEST_PROPERTY_WITH_DECIMAL_MIN_DECIMAL_MAX_RANGE_CONSTRAINT",
+                        TypeTokens.staticConstraintProperty( aspectClass, BigDecimal.class, DefaultMeasurement.class ) )
+                  .put( "TEST_PROPERTY_WITH_DECIMAL_MAX_RANGE_CONSTRAINT",
+                        TypeTokens.staticConstraintProperty( aspectClass, BigDecimal.class, DefaultMeasurement.class ) )
+                  .put( "TEST_PROPERTY_WITH_MIN_MAX_RANGE_CONSTRAINT",
+                        TypeTokens.staticConstraintProperty( aspectClass, Integer.class, DefaultMeasurement.class ) )
+                  .put( "TEST_PROPERTY_WITH_MIN_RANGE_CONSTRAINT",
+                        TypeTokens.staticConstraintProperty( aspectClass, Integer.class, DefaultMeasurement.class ) )
+                  .put( "TEST_PROPERTY_RANGE_CONSTRAINT_WITH_FLOAT_TYPE",
+                        TypeTokens.staticConstraintProperty( aspectClass, Float.class, DefaultMeasurement.class ) )
+                  .put( "TEST_PROPERTY_RANGE_CONSTRAINT_WITH_DOUBLE_TYPE",
+                        TypeTokens.staticConstraintProperty( aspectClass, Double.class, DefaultMeasurement.class ) )
+                  .put( "TEST_PROPERTY_WITH_MIN_MAX_LENGTH_CONSTRAINT",
+                        TypeTokens.staticConstraintProperty( aspectClass, String.class, DefaultCharacteristic.class ) )
+                  .put( "TEST_PROPERTY_WITH_MIN_LENGTH_CONSTRAINT",
+                        TypeTokens.staticConstraintProperty( aspectClass, BigInteger.class, DefaultCharacteristic.class ) )
+                  .put( "TEST_PROPERTY_COLLECTION_LENGTH_CONSTRAINT",
+                        TypeTokens.staticConstraintContainerProperty( aspectClass, BigInteger.class, TypeTokens.list( BigInteger.class ),
+                              DefaultList.class ) ).build(), new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithStructuredValue( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithStructuredValue( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_NUMERIC_STRUCTURED_VALUE;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithNumericStructuredValue" );
+
       result.assertNumberOfFiles( 2 );
 
       result.assertFields( "MetaAspectWithNumericStructuredValue",
-            ImmutableMap.<String, Object> builder()
+            fieldAssertions( "MetaAspectWithNumericStructuredValue" )
                   .put( "_datatypeFactory", DatatypeFactory.class )
-                  .put( "NAMESPACE", String.class )
-                  .put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class )
-                  .put( "INSTANCE", "MetaAspectWithNumericStructuredValue" )
-                  .put( "YEAR", new TypeToken<StaticProperty<Long>>() {
-                  } ).put( "MONTH", new TypeToken<StaticProperty<Long>>() {
-                  } ).put( "DAY", new TypeToken<StaticProperty<Long>>() {
-                  } ).put( "DATE", new TypeToken<StaticProperty<XMLGregorianCalendar>>() {
-                  } ).build(), new HashMap<>() );
+                  .put( "YEAR", TypeTokens.staticProperty( aspectClass, Long.class ) )
+                  .put( "MONTH", TypeTokens.staticProperty( aspectClass, Long.class ) )
+                  .put( "DAY", TypeTokens.staticProperty( aspectClass, Long.class ) )
+                  .put( "DATE", TypeTokens.staticProperty( aspectClass, XMLGregorianCalendar.class ) ).build(), new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithErrorCollection( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithErrorCollection( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ERROR_COLLECTION;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithErrorCollection" );
+      final Class<?> errorEntityClass = findGeneratedClass( result, "Error" );
+
       result.assertNumberOfFiles( 4 );
 
       result.assertFields( "MetaError",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaError" )
-                  .put( "ERROR_NO", new TypeToken<StaticProperty<Integer>>() {
-                  } ).put( "ERROR_TEXT", new TypeToken<StaticProperty<String>>() {
-                  } ).put( "START_TIMESTAMP", new TypeToken<StaticProperty<XMLGregorianCalendar>>() {
-                  } ).put( "_datatypeFactory", DatatypeFactory.class ).build(), new HashMap<>() );
+            fieldAssertions( "MetaError" )
+                  .put( "ERROR_NO", TypeTokens.staticProperty( errorEntityClass, Integer.class ) )
+                  .put( "ERROR_TEXT", TypeTokens.staticProperty( errorEntityClass, String.class ) )
+                  .put( "START_TIMESTAMP", TypeTokens.staticProperty( errorEntityClass, XMLGregorianCalendar.class ) )
+                  .put( "_datatypeFactory", DatatypeFactory.class ).build(), new HashMap<>() );
 
       result.assertFields( "MetaAspectWithErrorCollection",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithErrorCollection" )
-                  .put( "ITEMS", "StaticContainerProperty<Error, java.util.Collection<Error>>" )
+            fieldAssertions( "MetaAspectWithErrorCollection" )
+                  .put( "ITEMS",
+                        TypeTokens.staticContainerProperty( aspectClass, errorEntityClass, TypeTokens.collection( errorEntityClass ) ) )
                   .put( "_datatypeFactory", DatatypeFactory.class ).build(),
             new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithCollectionAndSimpleElementCharacteristic( final KnownVersion metaModelVersion )
+   void testGenerateStaticMetaModelWithCollectionAndSimpleElementCharacteristic( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_AND_SIMPLE_ELEMENT_CHARACTERISTIC;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
 
       result.assertFields( "MetaAspectWithCollectionAndSimpleElementCharacteristic",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class )
-                  .put( "INSTANCE", "MetaAspectWithCollectionAndSimpleElementCharacteristic" )
-                  .put( "ITEMS", "StaticContainerProperty<String, java.util.Collection<String>>" ).build(), new HashMap<>() );
+            fieldAssertions( "MetaAspectWithCollectionAndSimpleElementCharacteristic" )
+                  .put( "ITEMS", TypeTokens.staticContainerProperty(
+                        findGeneratedClass( result, "AspectWithCollectionAndSimpleElementCharacteristic" ), String.class,
+                        TypeTokens.collection( String.class ) ) ).build(), new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithCollectionAndElementCharacteristic( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithCollectionAndElementCharacteristic( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_AND_ELEMENT_CHARACTERISTIC;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithCollectionAndElementCharacteristic" );
+      final Class<?> testEntityClass = findGeneratedClass( result, "TestEntity" );
+
       result.assertNumberOfFiles( 4 );
 
       result.assertFields( "MetaAspectWithCollectionAndElementCharacteristic",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithCollectionAndElementCharacteristic" )
-                  .put( "ITEMS", "StaticContainerProperty<TestEntity, java.util.Collection<TestEntity>>" ).build(), new HashMap<>() );
-   }
-
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithFixedPointConstraints( final KnownVersion metaModelVersion ) throws IOException {
-      final TestAspect aspect = TestAspect.ASPECT_WITH_FIXED_POINT;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
-      result.assertNumberOfFiles( 2 );
-
-      result.assertFields( "MetaAspectWithFixedPoint",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithFixedPoint" )
-                  .put( "TEST_PROPERTY", new TypeToken<StaticConstraintProperty<BigDecimal, DefaultMeasurement>>() {
-                  } ).build(), new HashMap<>() );
-   }
-
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithComplexEntityCollectionEnumeration( final KnownVersion metaModelVersion ) throws IOException {
-      final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
-      result.assertNumberOfFiles( 7 );
-
-      result.assertFields( "MetaAspectWithComplexEntityCollectionEnum",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithComplexEntityCollectionEnum" )
-                  .put( "MY_PROPERTY_ONE", "StaticProperty<MyEnumerationOne>" ).build(), new HashMap<>() );
-
-      result.assertFields( "MetaMyEntityOne",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaMyEntityOne" )
-                  .put( "ENTITY_PROPERTY_ONE", "StaticContainerProperty<MyEntityTwo, java.util.List<MyEntityTwo>>" ).build(),
-            new HashMap<>() );
-
-      result.assertFields( "MetaMyEntityTwo",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaMyEntityTwo" )
-                  .put( "ENTITY_PROPERTY_TWO", "StaticProperty<String>" )
+            fieldAssertions( "MetaAspectWithCollectionAndElementCharacteristic" )
+                  .put( "ITEMS",
+                        TypeTokens.staticContainerProperty( aspectClass, testEntityClass, TypeTokens.collection( testEntityClass ) ) )
                   .build(), new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testCharacteristicInstantiationForEnums( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithFixedPointConstraints( final KnownVersion metaModelVersion ) throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_FIXED_POINT;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+      result.assertNumberOfFiles( 2 );
+
+      result.assertFields( "MetaAspectWithFixedPoint",
+            fieldAssertions( "MetaAspectWithFixedPoint" )
+                  .put( "TEST_PROPERTY",
+                        TypeTokens.staticConstraintProperty( findGeneratedClass( result, "AspectWithFixedPoint" ), BigDecimal.class,
+                              DefaultMeasurement.class ) ).build(), new HashMap<>() );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testGenerateStaticMetaModelWithComplexEntityCollectionEnumeration( final KnownVersion metaModelVersion ) throws IOException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithComplexEntityCollectionEnum" );
+      final Class<?> enumerationClass = findGeneratedClass( result, "MyEnumerationOne" );
+      final Class<?> entityOneClass = findGeneratedClass( result, "MyEntityOne" );
+      final Class<?> entityTwoClass = findGeneratedClass( result, "MyEntityTwo" );
+
+      result.assertNumberOfFiles( 7 );
+
+      result.assertFields( "MetaAspectWithComplexEntityCollectionEnum",
+            fieldAssertions( "MetaAspectWithComplexEntityCollectionEnum" )
+                  .put( "MY_PROPERTY_ONE", TypeTokens.staticProperty( aspectClass, enumerationClass ) ).build(), new HashMap<>() );
+
+      result.assertFields( "MetaMyEntityOne",
+            fieldAssertions( "MetaMyEntityOne" )
+                  .put( "ENTITY_PROPERTY_ONE",
+                        TypeTokens.staticContainerProperty( entityOneClass, entityTwoClass, TypeTokens.list( entityTwoClass ) ) ).build(),
+            new HashMap<>() );
+
+      result.assertFields( "MetaMyEntityTwo",
+            fieldAssertions( "MetaMyEntityTwo" )
+                  .put( "ENTITY_PROPERTY_TWO", TypeTokens.staticProperty( entityTwoClass, String.class ) )
+                  .build(), new HashMap<>() );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testCharacteristicInstantiationForEnums( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ENUM_AND_OPTIONAL_ENUM_PROPERTIES;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 3 );
@@ -448,7 +490,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectWithPropertyWithPayloadName( final KnownVersion metaModelVersion ) throws IOException {
+   void testAspectWithPropertyWithPayloadName( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
@@ -461,21 +503,20 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectWithBlankNode( final KnownVersion metaModelVersion ) throws IOException {
+   void testAspectWithBlankNode( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BLANK_NODE;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
 
       result.assertFields( "MetaAspectWithBlankNode",
-            ImmutableMap.<String, Object> builder().put( "NAMESPACE", String.class ).put( "MODEL_ELEMENT_URN", String.class )
-                  .put( "CHARACTERISTIC_NAMESPACE", String.class ).put( "INSTANCE", "MetaAspectWithBlankNode" )
-                  .put( "LIST", new TypeToken<StaticContainerProperty<String, Collection<String>>>() {
-                  } ).build(), new HashMap<>() );
+            fieldAssertions( "MetaAspectWithBlankNode" )
+                  .put( "LIST", TypeTokens.staticContainerProperty( findGeneratedClass( result, "AspectWithBlankNode" ), String.class,
+                        TypeTokens.collection( String.class ) ) ).build(), new HashMap<>() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testCharacteristicInstantiationForQuantifiableWithoutUnit( final KnownVersion metaModelVersion ) throws IOException {
+   void testCharacteristicInstantiationForQuantifiableWithoutUnit( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_QUANTIFIABLE_WITHOUT_UNIT;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
@@ -495,7 +536,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testCharacteristicInstantiationForQuantifiableWithUnit( final KnownVersion metaModelVersion ) throws IOException {
+   void testCharacteristicInstantiationForQuantifiableWithUnit( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_QUANTIFIABLE_WITH_UNIT;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 2 );
@@ -512,7 +553,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testGenerateStaticMetaModelForAspectModelWithAbstractEntity( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelForAspectModelWithAbstractEntity( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ABSTRACT_ENTITY;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       result.assertNumberOfFiles( 6 );
@@ -549,7 +590,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testGenerateStaticMetaModelForAspectModelWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion )
+   void testGenerateStaticMetaModelForAspectModelWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion )
          throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
@@ -575,7 +616,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testGenerateStaticMetaModelWithoutFileHeader( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithoutFileHeader( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
       final CompilationUnit aspectClass = result.compilationUnits.get( TestAspect.ASPECT_WITH_COMPLEX_ENUM.getName() );
@@ -592,7 +633,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testGenerateAspectWithFileHeader( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateAspectWithFileHeader( final KnownVersion metaModelVersion ) throws IOException {
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
       final File templateLibFile = Path.of( currentWorkingDirectory, "/templates", "/test-macro-lib.vm" ).toFile();
 
@@ -611,7 +652,7 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateStaticMetaModelWithUmlauts( final KnownVersion metaModelVersion ) throws IOException {
+   void testGenerateStaticMetaModelWithUmlauts( final KnownVersion metaModelVersion ) throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_UMLAUT_DESCRIPTION;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
 
@@ -619,5 +660,227 @@ public class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTe
             List.of(
                   "returnnewHashSet<>(){{add(newLangString(\"ImWortEntitätisteinUmlaut\",Locale.forLanguageTag(\"de\")));add(newLangString"
                         + "(\"Thisisatestdescription\",Locale.forLanguageTag(\"en\")));}};" ) );
+   }
+
+   /**
+    * Static methods to conveniently generate property type tokens that can be used for test assertions.
+    */
+   static class TypeTokens {
+      /**
+       * Create a type token for a static property.
+       *
+       * @param containingClass the class that contains the property
+       * @param propertyClass the class of the property
+       * @param <C> type of the containing class
+       * @param <T> type of the property
+       * @return the newly created type token
+       */
+      static <C, T> TypeToken<StaticProperty<C, T>> staticProperty( final Class<C> containingClass, final Class<T> propertyClass ) {
+         return new TypeToken<StaticProperty<C, T>>() {
+         }
+               .where( new TypeParameter</*C*/>() {}, containingClass )
+               .where( new TypeParameter</*T*/>() {}, propertyClass );
+      }
+
+      /**
+       * Create a type token for a static property.
+       *
+       * @param containingClass the class that contains the property
+       * @param propertyTypeToken the class of the property, given as a TypeToken
+       * @param <C> type of the containing class
+       * @param <T> type of the property
+       * @return the newly created type token
+       */
+      static <C, T> TypeToken<StaticProperty<C, T>> staticProperty( final Class<C> containingClass, final TypeToken<T> propertyTypeToken ) {
+         return new TypeToken<StaticProperty<C, T>>() {
+         }
+               .where( new TypeParameter</*C*/>() {}, containingClass )
+               .where( new TypeParameter</*T*/>() {}, propertyTypeToken );
+      }
+
+      /**
+       * Create a type token for a static unit property.
+       *
+       * @param containingClass the class that contains the property
+       * @param propertyClass the class of the property
+       * @param <C> type of the containing class
+       * @param <T> type of the property
+       * @return the newly created type token
+       */
+      static <C, T> TypeToken<StaticUnitProperty<C, T>> staticUnitProperty( final Class<C> containingClass, final Class<T> propertyClass ) {
+         return new TypeToken<StaticUnitProperty<C, T>>() {
+         }
+               .where( new TypeParameter</*C*/>() {}, containingClass )
+               .where( new TypeParameter</*T*/>() {}, propertyClass );
+      }
+
+      /**
+       * Create a type token for a static container property.
+       *
+       * @param containingClass the class that contains the property
+       * @param containedClass the class of the value inside the container
+       * @param propertyClass a type token for the property (i.e. the container class and the contained class)
+       * @param <E> type of the containing class
+       * @param <C> type of the value inside the container
+       * @param <T> type of the property (i.e. the container type and the contained type)
+       * @return the newly created type token
+       */
+      static <E, C, T> TypeToken<StaticContainerProperty<E, C, T>> staticContainerProperty( final Class<E> containingClass,
+            final Class<C> containedClass, final TypeToken<T> propertyClass ) {
+         return new TypeToken<StaticContainerProperty<E, C, T>>() {
+         }
+               .where( new TypeParameter</*E*/>() {}, containingClass )
+               .where( new TypeParameter</*C*/>() {}, containedClass )
+               .where( new TypeParameter</*T*/>() {}, propertyClass );
+      }
+
+      /**
+       * Create a type token for a static constraint property.
+       *
+       * @param containingClass the class that contains the property
+       * @param propertyClass the class of the property
+       * @param constraintClass the class of the constraint
+       * @param <E> type of the containing class
+       * @param <T> type of the property
+       * @param <C> type of the constraint
+       * @return the newly created type token
+       */
+      static <E, T, C extends Characteristic> TypeToken<StaticConstraintProperty<E, T, C>> staticConstraintProperty(
+            final Class<E> containingClass, final Class<T> propertyClass, final Class<C> constraintClass ) {
+         return new TypeToken<StaticConstraintProperty<E, T, C>>() {
+         }
+               .where( new TypeParameter</*E*/>() {}, containingClass )
+               .where( new TypeParameter</*T*/>() {}, propertyClass )
+               .where( new TypeParameter</*C*/>() {}, constraintClass );
+      }
+
+      /**
+       * Create a type token for a static constraint container property.
+       *
+       * @param containingClass the class that contains the property
+       * @param containedClass the class of the value inside the container
+       * @param propertyClass a type token for the property (i.e. the container class and the contained class)
+       * @param constraintClass the class of the constraint
+       * @param <E> type of the containing class
+       * @param <R> type of the contained class
+       * @param <T> type of the property
+       * @param <C> type of the constraint
+       * @return the newly created type token
+       */
+      static <E, R, T, C extends Characteristic> TypeToken<StaticConstraintContainerProperty<E, R, T, C>> staticConstraintContainerProperty(
+            final Class<E> containingClass, final Class<R> containedClass, final TypeToken<T> propertyClass,
+            final Class<C> constraintClass ) {
+         return new TypeToken<StaticConstraintContainerProperty<E, R, T, C>>() {
+         }
+               .where( new TypeParameter</*E*/>() {}, containingClass )
+               .where( new TypeParameter</*R*/>() {}, containedClass )
+               .where( new TypeParameter</*T*/>() {}, propertyClass )
+               .where( new TypeParameter</*C*/>() {}, constraintClass );
+      }
+
+      /**
+       * Create a type token for an {@link Optional}.
+       *
+       * @param clazz the class of the element inside the {@code Optional}
+       * @param <T> the type of the element inside the {@code Optional}
+       * @return the newly created type token
+       */
+      static <T> TypeToken<Optional<T>> optional( final Class<T> clazz ) {
+         return new TypeToken<Optional<T>>() {
+         }
+               .where( new TypeParameter</*T*/>() {}, clazz );
+      }
+
+      /**
+       * Create a type token for a {@link Collection}.
+       *
+       * @param clazz the class of the element inside the {@code Collection}
+       * @param <T> the type of the element inside the {@code Collection}
+       * @return the newly created type token
+       */
+      static <T> TypeToken<Collection<T>> collection( final Class<T> clazz ) {
+         return new TypeToken<Collection<T>>() {
+         }
+               .where( new TypeParameter</*T*/>() {}, clazz );
+      }
+
+      /**
+       * Create a type token for a {@link List}.
+       *
+       * @param clazz the class of the element inside the {@code List}
+       * @param <T> the type of the element inside the {@code List}
+       * @return the newly created type token
+       */
+      static <T> TypeToken<List<T>> list( final Class<T> clazz ) {
+         return new TypeToken<List<T>>() {
+         }
+               .where( new TypeParameter</*T*/>() {}, clazz );
+      }
+
+      /**
+       * Create a type token for a {@link LinkedHashSet}.
+       *
+       * @param clazz the class of the element inside the {@code LinkedHashSet}
+       * @param <T> the type of the element inside the {@code LinkedHashSet}
+       * @return the newly created type token
+       */
+      static <T> TypeToken<LinkedHashSet<T>> linkedHashSet( final Class<T> clazz ) {
+         return new TypeToken<LinkedHashSet<T>>() {
+         }
+               .where( new TypeParameter</*T*/>() {}, clazz );
+      }
+
+      /**
+       * Create a type token for a {@link Either}.
+       *
+       * @param leftClass the class of the left element inside the {@code Either}
+       * @param rightClass the class of the right element inside the {@code Either}
+       * @param <L> the type of the left element inside the {@code Either}
+       * @param <L> the type of the right element inside the {@code Either}
+       * @return the newly created type token
+       */
+      static <L, R> TypeToken<Either<L, R>> either( final Class<L> leftClass, final Class<R> rightClass ) {
+         return new TypeToken<Either<L, R>>() {
+         }
+               .where( new TypeParameter</*L*/>() {}, leftClass )
+               .where( new TypeParameter</*R*/>() {}, rightClass );
+      }
+   }
+
+   /**
+    * Looks up a class from a code generation result using the default package {@code org.eclipse.esmf.test}.
+    *
+    * @param result the code generation result to look up the class from
+    * @param className the class name
+    * @return the class or {@code null} if it could not be found
+    */
+   static Class<?> findGeneratedClass( final GenerationResult result, final String className ) {
+      return findGeneratedClass( result, "org.eclipse.esmf.test", className );
+   }
+
+   /**
+    * Looks up a class from a code generation result using a given package and class name.
+    *
+    * @param result the code generation result to look up the class from
+    * @param packageName the package name
+    * @param className the class name
+    * @return the class or {@code null} if it could not be found
+    */
+   static Class<?> findGeneratedClass( final GenerationResult result, final String packageName, final String className ) {
+      return result.getGeneratedClass( new QualifiedName( className, packageName ) );
+   }
+
+   /**
+    * Provides a builder for field assertions that already contains the standard assertions for each static metamodel test.
+    *
+    * @param className the static meta model class name
+    * @return the pre-initialized builder
+    */
+   static ImmutableMap.Builder<String, Object> fieldAssertions( final String className ) {
+      return ImmutableMap.<String, Object> builder()
+            .put( "NAMESPACE", String.class )
+            .put( "MODEL_ELEMENT_URN", String.class )
+            .put( "CHARACTERISTIC_NAMESPACE", String.class )
+            .put( "INSTANCE", className );
    }
 }
