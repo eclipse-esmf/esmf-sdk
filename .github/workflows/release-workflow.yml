@@ -111,7 +111,7 @@ jobs:
           tar cfvz samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz samm
           popd
           mv tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz .
-          mv tools/samm-cli/target/samm-cli-*.jar .
+          cp tools/samm-cli/target/samm-cli-*.jar .
         env:
           PGP_KEY_PASSWORD: ${{ secrets.PGP_KEY_PASSWORD }}
 
@@ -134,6 +134,7 @@ jobs:
           path: |
             nexus-staging/
             samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
+            samm-cli-${{ github.event.inputs.release_version }}.jar
             samm-cli-${{ github.event.inputs.release_version }}-javadoc.jar
             samm-cli-${{ github.event.inputs.release_version }}-sources.jar
             samm-cli-${{ github.event.inputs.release_version }}-tests.jar

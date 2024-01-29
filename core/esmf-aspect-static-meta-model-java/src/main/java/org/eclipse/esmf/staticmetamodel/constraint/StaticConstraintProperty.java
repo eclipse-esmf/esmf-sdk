@@ -25,8 +25,8 @@ import org.eclipse.esmf.staticmetamodel.StaticProperty;
 /**
  * Extends the SAMM {@link DefaultProperty} definition with a concrete type and a constraint.
  */
-public abstract class StaticConstraintProperty<T, C extends Characteristic>
-      extends StaticProperty<T> implements ConstraintProperty<C> {
+public abstract class StaticConstraintProperty<E, T, C extends Characteristic>
+      extends StaticProperty<E, T> implements ConstraintProperty<C> {
 
    public StaticConstraintProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,

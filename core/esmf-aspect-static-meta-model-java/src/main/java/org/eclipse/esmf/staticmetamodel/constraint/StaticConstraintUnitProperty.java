@@ -15,9 +15,9 @@ package org.eclipse.esmf.staticmetamodel.constraint;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.characteristic.Quantifiable;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.characteristic.Quantifiable;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
@@ -29,8 +29,8 @@ import org.eclipse.esmf.staticmetamodel.UnitProperty;
  * Only {@link Quantifiable} properties that actually carry a {@code Unit} will be represented by a {@code
  * StaticConstraintUnitProperty}, however in practice this will be the case for most quantifiables.
  */
-public abstract class StaticConstraintUnitProperty<T, C extends Characteristic>
-      extends StaticConstraintProperty<T, C> implements UnitProperty {
+public abstract class StaticConstraintUnitProperty<E, T, C extends Characteristic>
+      extends StaticConstraintProperty<E, T, C> implements UnitProperty {
 
    public StaticConstraintUnitProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,

@@ -18,17 +18,17 @@ import java.util.List;
 /**
  * Defines a Meta Model element which contains {@link StaticProperty}(ies).
  */
-public interface PropertyContainer {
-
+public interface PropertyContainer<C> {
    /**
     * @return a {@link List} of {@link StaticProperty}(ies) contained in this Meta Model element
     */
    @SuppressWarnings( "squid:S1452" )
-   List<StaticProperty<?>> getProperties();
+   List<StaticProperty<C, ?>> getProperties();
 
    /**
-    * @return a {@link List} of {@link StaticProperty}(ies) contained in this Meta Model element and the {@link StaticProperty}(ies) of the extended elements.
+    * @return a {@link List} of {@link StaticProperty}(ies) contained in this Meta Model element and the {@link StaticProperty}(ies) of the
+    * extended elements.
     */
    @SuppressWarnings( "squid:S1452" )
-   List<StaticProperty<?>> getAllProperties();
+   List<StaticProperty<C, ?>> getAllProperties();
 }
