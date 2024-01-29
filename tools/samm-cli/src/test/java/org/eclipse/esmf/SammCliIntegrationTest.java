@@ -23,9 +23,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * The CLI integration tests that are executed by Maven Failsafe.
- * The tests either execute the CLI's executable jar (using the {@link ExecutableJarLauncher}) or the CLI's native binary (using the {@link BinaryLauncher}).
- * Which one is executed is determined using the system property "packaging-type" which can be "jar" or "native". See the documentation of the respective
- * launchers on how they are configured.
+ * The tests either execute the CLI's executable jar (using the {@link ExecutableJarLauncher}) or the CLI's native binary (using the
+ * {@link BinaryLauncher}). Which one is executed is determined using the system property "packaging-type" which can be "jar" or "native".
+ * See the documentation of the respective launchers on how they are configured.
  */
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )

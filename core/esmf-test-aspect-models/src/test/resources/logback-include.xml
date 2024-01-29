@@ -22,6 +22,7 @@
    <logger name="org.apache.jena" level="OFF"/>
    <logger name="org.apache.jena.util" level="OFF"/>
    <logger name="org.apache.jena.shared" level="OFF"/>
+   <logger name="org.apache.jena.shared.LockMRSW" level="OFF"/>
 
    <root level="warn">
       <appender-ref ref="console"/>
