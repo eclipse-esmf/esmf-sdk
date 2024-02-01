@@ -21,10 +21,15 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 
+import com.google.common.reflect.TypeToken;
+
 /**
  * Extends the SAMM {@link DefaultProperty} definition with a concrete type.
  */
-public abstract class StaticProperty<C, T> extends DefaultProperty {
+public abstract class StaticProperty<C, T> extends DefaultProperty implements PropertyAccessor<C, T> {
+
+   private TypeToken<C> containingType = new TypeToken<>( getClass() ) {
+   };
 
    public StaticProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
@@ -35,7 +40,8 @@ public abstract class StaticProperty<C, T> extends DefaultProperty {
          final Optional<String> payloadName,
          final boolean isAbstract,
          final Optional<Property> extends_ ) {
-      super( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, optional, notInPayload, payloadName, isAbstract, extends_ );
+      super( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, optional, notInPayload, payloadName, isAbstract,
+            extends_ );
    }
 
    /**
@@ -44,7 +50,9 @@ public abstract class StaticProperty<C, T> extends DefaultProperty {
    public abstract Class<T> getPropertyType();
 
    /**
-    * @return the property value of the given instance.
+    * @return the type of the class containing the Property, represented as a class
     */
-   public abstract T getValue( C object);
+   public Class<C> getContainingType() {
+      return (Class<C>) containingType.getRawType();
+   }
 }

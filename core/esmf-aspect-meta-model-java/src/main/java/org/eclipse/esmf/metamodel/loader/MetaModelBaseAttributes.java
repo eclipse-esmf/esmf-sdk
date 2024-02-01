@@ -21,6 +21,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.google.common.collect.Streams;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
@@ -28,14 +36,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
-
-import com.google.common.collect.Streams;
-
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
 
 /**
  * Wrapper class for the attributes all Aspect Meta Model elements have.
@@ -135,7 +135,8 @@ public class MetaModelBaseAttributes {
     * @param name the meta model element name
     * @return the newly created instance
     */
-   public static MetaModelBaseAttributes from( final KnownVersion metaModelVersion, final AspectModelUrn urn, final String name, final String preferredName ) {
+   public static MetaModelBaseAttributes from( final KnownVersion metaModelVersion, final AspectModelUrn urn, final String name,
+         final String preferredName ) {
       return builderFor( name ).withMetaModelVersion( metaModelVersion ).withUrn( urn )
             .withPreferredName( Locale.ENGLISH, preferredName ).build();
    }
@@ -160,7 +161,19 @@ public class MetaModelBaseAttributes {
       final String name = getName( modelElement, samm )
             .orElseGet( () -> getSyntheticName( modelElement, model, samm ) );
       final boolean isSyntheticName = urn.isEmpty();
-      return new MetaModelBaseAttributes( metaModelVersion, urn.orElse( null ), name, preferredNames, descriptions, seeValues, isSyntheticName );
+      return new MetaModelBaseAttributes( metaModelVersion, urn.orElse( null ), name, preferredNames, descriptions, seeValues,
+            isSyntheticName );
+   }
+
+   /**
+    * Creates an instance of {@link MetaModelBaseAttributes} by copying them from a given {@link NamedElement}.
+    *
+    * @param modelElement the named model element to copy the base attributes from
+    * @return the newly created instance
+    */
+   public static MetaModelBaseAttributes fromModelElement( final NamedElement modelElement ) {
+      return new MetaModelBaseAttributes( modelElement.getMetaModelVersion(), modelElement.getAspectModelUrn().get(),
+            modelElement.getName(), modelElement.getPreferredNames(), modelElement.getDescriptions(), modelElement.getSee() );
    }
 
    private static Optional<AspectModelUrn> getUrn( final Resource modelElement, final SAMM samm ) {
@@ -221,7 +234,8 @@ public class MetaModelBaseAttributes {
 
    // We have to be careful when searching for the parent nodes with a regular name - the "listStatements" API returns the matching nodes
    // in no particular order; with some very specific models this could lead to non-deterministic behavior.
-   // In the following very simplified example we are looking for ":NumberList" as the parent of "_:blankNode", but could get the anonymous node [] instead.
+   // In the following very simplified example we are looking for ":NumberList" as the parent of "_:blankNode", but could get the
+   // anonymous node [] instead.
    // [
    //  aux:contains _:blankNode ;
    // ] .
