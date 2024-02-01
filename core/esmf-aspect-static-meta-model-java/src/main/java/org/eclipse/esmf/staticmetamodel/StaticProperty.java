@@ -21,15 +21,10 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 
-import com.google.common.reflect.TypeToken;
-
 /**
  * Extends the SAMM {@link DefaultProperty} definition with a concrete type.
  */
 public abstract class StaticProperty<C, T> extends DefaultProperty implements PropertyAccessor<C, T> {
-
-   private TypeToken<C> containingType = new TypeToken<>( getClass() ) {
-   };
 
    public StaticProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
@@ -52,7 +47,5 @@ public abstract class StaticProperty<C, T> extends DefaultProperty implements Pr
    /**
     * @return the type of the class containing the Property, represented as a class
     */
-   public Class<C> getContainingType() {
-      return (Class<C>) containingType.getRawType();
-   }
+   public abstract Class<C> getContainingType();
 }

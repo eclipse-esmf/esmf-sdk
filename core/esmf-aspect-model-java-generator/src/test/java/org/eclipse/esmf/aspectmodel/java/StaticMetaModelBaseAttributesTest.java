@@ -142,6 +142,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getAllProperties", "return getProperties();" )
             .put( "getPropertyType", "return Boolean.class;" )
             .put( "getValue", "return object.isTestBoolean();" )
+            .put( "getContainingType", "return AspectWithBoolean.class;" )
             .build();
 
       result.assertMethods( "MetaAspectWithBoolean", expectedMethodBodies );
@@ -183,6 +184,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getDescriptions", getDescriptionsBody )
             .put( "getPropertyType", "return Boolean.class;" )
             .put( "getValue", "return object.isTestBoolean();" )
+            .put( "getContainingType", "return AspectWithAllBaseAttributes.class;" )
             .build();
 
       result.assertMethods( "MetaAspectWithAllBaseAttributes", expectedMethodBodies );
@@ -214,6 +216,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getPreferredNames", getPreferredNamesBody )
             .put( "getPropertyType", "return Boolean.class;" )
             .put( "getValue", "return object.isTestBoolean();" )
+            .put( "getContainingType", "return AspectWithPreferredNames.class;" )
             .build();
 
       result.assertMethods( "MetaAspectWithPreferredNames", expectedMethodBodies );
@@ -245,6 +248,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getDescriptions", getDescriptionsBody )
             .put( "getPropertyType", "return Boolean.class;" )
             .put( "getValue", "return object.isTestBoolean();" )
+            .put( "getContainingType", "return AspectWithDescriptions.class;" )
             .build();
 
       result.assertMethods( "MetaAspectWithDescriptions", expectedMethodBodies );
@@ -267,6 +271,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             .put( "getAllProperties", "return getProperties();" )
             .put( "getPropertyType", "return Boolean.class;" )
             .put( "getValue", "return object.isTestBoolean();" )
+            .put( "getContainingType", "return AspectWithPropertyWithSee.class;" )
             .build();
 
       result.assertMethods( "MetaAspectWithPropertyWithSee", expectedMethodBodies );
