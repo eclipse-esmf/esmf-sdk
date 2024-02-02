@@ -28,8 +28,7 @@
    samm:dataType :Entity .
 
 :Entity a samm:Entity ;
-   samm:properties ( :code
-   					 [ samm:property :testList ; samm:notInPayload "true"^^xsd:boolean ] ) .
+   samm:properties ( :code :testList ) .
 
 :code a samm:Property ;
    samm:characteristic :ShortCode .
