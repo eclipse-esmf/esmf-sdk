@@ -24,7 +24,7 @@ import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 /**
  * Extends the SAMM {@link DefaultProperty} definition with a concrete type.
  */
-public abstract class StaticProperty<C, T> extends DefaultProperty implements PropertyAccessor<C, T> {
+public abstract class StaticProperty<C, T> extends DefaultProperty implements PropertyTypeInformation<C, T>, PropertyAccessor<C, T> {
 
    public StaticProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
@@ -38,14 +38,4 @@ public abstract class StaticProperty<C, T> extends DefaultProperty implements Pr
       super( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, optional, notInPayload, payloadName, isAbstract,
             extends_ );
    }
-
-   /**
-    * @return the type of the Property represented as a class.
-    */
-   public abstract Class<T> getPropertyType();
-
-   /**
-    * @return the type of the class containing the Property, represented as a class
-    */
-   public abstract Class<C> getContainingType();
 }

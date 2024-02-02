@@ -22,34 +22,23 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.eclipse.esmf.aspectmodel.java.types.Either;
 import org.eclipse.esmf.characteristic.impl.DefaultList;
 import org.eclipse.esmf.characteristic.impl.DefaultMeasurement;
-import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
-import org.eclipse.esmf.staticmetamodel.StaticProperty;
-import org.eclipse.esmf.staticmetamodel.StaticUnitProperty;
-import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintContainerProperty;
-import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintProperty;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestSharedAspect;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.reflect.TypeParameter;
-import com.google.common.reflect.TypeToken;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;

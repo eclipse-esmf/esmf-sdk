@@ -1,0 +1,3 @@
+org.eclipse.esmf.staticmetamodel.propertychain.DefaultPropertyChainElementAccessor
+org.eclipse.esmf.staticmetamodel.propertychain.OptionalPropertyChainElementAccessor
+org.eclipse.esmf.staticmetamodel.propertychain.CollectionPropertyChainElementAccessor

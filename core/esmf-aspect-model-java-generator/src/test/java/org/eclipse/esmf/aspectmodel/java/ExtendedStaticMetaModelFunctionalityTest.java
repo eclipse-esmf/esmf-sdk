@@ -18,11 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.staticmetamodel.ComputedProperty;
-import org.eclipse.esmf.staticmetamodel.PropertyChain;
+import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
 import org.eclipse.esmf.staticmetamodel.StaticProperty;
+import org.eclipse.esmf.staticmetamodel.propertychain.ContainerPropertyChain;
+import org.eclipse.esmf.staticmetamodel.propertychain.PropertyChain;
 import org.eclipse.esmf.test.TestAspect;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -109,5 +112,46 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       assertThat( nestedEntityStringChain.getPropertyType() ).isEqualTo( String.class );
       assertThat( nestedEntityStringChain.getContainingType() ).isEqualTo( aspectClass );
       assertThat( nestedEntityStringChain.getValue( aspectInstance ) ).isEqualTo( "nested-entity-string" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testCollectionPropertyChain( final KnownVersion metaModelVersion ) throws IOException, ReflectiveOperationException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY_WITH_NESTED_ENTITY_LIST_PROPERTY;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithEntityWithNestedEntityListProperty" );
+      final Class<?> entityClass = findGeneratedClass( result, "Entity" );
+      final Class<?> nestedEntityClass = findGeneratedClass( result, "NestedEntity" );
+      final Class<?> metaAspectClass = findGeneratedClass( result, "MetaAspectWithEntityWithNestedEntityListProperty" );
+      final Class<?> metaEntity = findGeneratedClass( result, "MetaEntity" );
+      final Class<?> metaNestedEntity = findGeneratedClass( result, "MetaNestedEntity" );
+
+      final StaticProperty<Object, Object> entityProperty =
+            (StaticProperty<Object, Object>) metaAspectClass.getField( "TEST_PROPERTY" ).get( null );
+
+      final StaticContainerProperty<Object, Object, Object> entityNestedListProperty =
+            (StaticContainerProperty<Object, Object, Object>) metaEntity.getField( "TEST_LIST" ).get( null );
+
+      final StaticProperty<Object, Object> nestedEntityStringProperty =
+            (StaticProperty<Object, Object>) metaNestedEntity.getField( "NESTED_ENTITY_PROPERTY" ).get( null );
+
+      final ContainerPropertyChain<Object, List<Object>, Object> entityStringCollectionChain = PropertyChain.from( entityProperty )
+            .viaCollection( entityNestedListProperty )
+            .to( nestedEntityStringProperty );
+
+      final Object nestedEntityInstance1 = ConstructorUtils.invokeConstructor( nestedEntityClass, "nested-entity-string-1" );
+      final Object nestedEntityInstance2 = ConstructorUtils.invokeConstructor( nestedEntityClass, "nested-entity-string-2" );
+      final Object entityInstance = ConstructorUtils.invokeConstructor( entityClass,  Short.valueOf( (short) 123 ),
+            List.of( nestedEntityInstance1, nestedEntityInstance2 ) );
+      final Object aspectInstance = ConstructorUtils.invokeConstructor( aspectClass, entityInstance );
+
+      assertThat( entityStringCollectionChain.getProperties() ).hasSize( 3 );
+      assertThat( entityStringCollectionChain.getFirstProperty() ).isEqualTo( entityProperty );
+      assertThat( entityStringCollectionChain.getLastProperty() ).isEqualTo( nestedEntityStringProperty );
+      assertThat( entityStringCollectionChain.getPropertyType() ).isEqualTo( List.class );
+      assertThat( entityStringCollectionChain.getContainingType() ).isEqualTo( aspectClass );
+      assertThat( entityStringCollectionChain.getValue( aspectInstance ) ).containsExactlyInAnyOrder( "nested-entity-string-1",
+            "nested-entity-string-2" );
    }
 }
