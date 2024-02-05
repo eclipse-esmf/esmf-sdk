@@ -31,6 +31,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.apache.tika.config.TikaConfig;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
 import org.eclipse.esmf.ProcessLauncher.ExecutionResult;
 import org.eclipse.esmf.aspect.AspectValidateCommand;
 import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
@@ -39,11 +43,6 @@ import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
-
-import org.apache.tika.config.TikaConfig;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -367,6 +366,47 @@ public class SammCliTest extends MetaModelVersions {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aas", aasXmlFile.getAbsolutePath(), "to", "aspect",
             "--output-directory", outputDir.getAbsolutePath() );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+
+      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespace() )
+            .resolve( testModel.getUrn().getVersion() )
+            .toFile();
+      assertThat( directory ).exists();
+      final String expectedAspectModelFileName = testModel.getName() + ".ttl";
+      assertThat( directory ).isDirectoryContaining( file -> file.getName().equals( expectedAspectModelFileName ) );
+
+      final File sourceFile = directory.toPath().resolve( expectedAspectModelFileName ).toFile();
+      assertThat( sourceFile ).content().contains( ":" + testModel.getName() + " a samm:Aspect" );
+   }
+
+   @Test
+   public void testAasListSubmodels() {
+      final File aasXmlFile = outputFile( "output.xml" );
+      final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
+            "--format", "xml", "-o", aasXmlFile.getAbsolutePath() );
+      assertThat( generateAasXmlResult.stdout() ).isEmpty();
+      assertThat( generateAasXmlResult.stderr() ).isEmpty();
+
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aas", aasXmlFile.getAbsolutePath(), "list" );
+      assertThat( result.stdout() ).isNotEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).isEqualTo( " 1: AspectWithEntity2\n 2: TestSubmodel2\n 3: TestSubmodel3\n 4: TestSubmodel4\n" );
+   }
+
+   @Test
+   public void testAasToAspectModelWithSelectedSubmodels() {
+      // First create the AAS XML file we want to read
+      final File aasXmlFile = outputFile( "output.xml" );
+      final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
+            "--format", "xml", "-o", aasXmlFile.getAbsolutePath() );
+      assertThat( generateAasXmlResult.stdout() ).isEmpty();
+      assertThat( generateAasXmlResult.stderr() ).isEmpty();
+
+      // Now the actual test, convert it to an Aspect Model
+      final File outputDir = outputDirectory.toFile();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aas", aasXmlFile.getAbsolutePath(), "to", "aspect",
+            "--output-directory", outputDir.getAbsolutePath(), "-s", "1" );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
