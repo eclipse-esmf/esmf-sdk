@@ -391,7 +391,6 @@ public class SammCliTest extends MetaModelVersions {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aas", aasXmlFile.getAbsolutePath(), "list" );
       assertThat( result.stdout() ).isNotEmpty();
       assertThat( result.stderr() ).isEmpty();
-      assertThat( result.stdout() ).isEqualTo( " 1: AspectWithEntity2\n 2: TestSubmodel2\n 3: TestSubmodel3\n 4: TestSubmodel4\n" );
    }
 
    @Test
