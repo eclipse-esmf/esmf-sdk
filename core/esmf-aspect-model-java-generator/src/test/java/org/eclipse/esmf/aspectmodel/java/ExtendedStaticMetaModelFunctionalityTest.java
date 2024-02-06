@@ -240,7 +240,7 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       final StaticProperty<Object, String> nestedStringProperty =
             (StaticProperty<Object, String>) metaNestedEntity.getField( "RANDOM_VALUE" ).get( null );
       final ContainerPropertyChain entityStringCollectionChain =
-            PropertyChain.collectionFrom( entityProperty ).to( nestedStringProperty );
+            PropertyChain.fromCollection( entityProperty ).to( nestedStringProperty );
       final var matchNestedEntityString1 = PropertyPredicates.onCollection( entityStringCollectionChain ).contains( "nested-string1" );
       final var matchNestedEntityString2 = PropertyPredicates.onCollection( entityStringCollectionChain ).contains( "nested-string2" );
       assertThat( entities.stream().filter( matchNestedEntityString1 ) ).containsExactly( e1 );

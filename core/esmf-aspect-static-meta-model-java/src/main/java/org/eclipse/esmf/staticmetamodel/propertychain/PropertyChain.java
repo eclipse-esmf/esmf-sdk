@@ -68,8 +68,8 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
     * <p>
     * <b>Important:</b> This constructor does not ensure that the chain is valid and thus should only be used in situations where this is
     * explicitly known.
-    * Prefer to use a builder using {@link #from(StaticProperty)}, {@link #optionalFrom(StaticContainerProperty)} (StaticContainerProperty)}
-    * or {@link #collectionFrom(StaticContainerProperty)}.
+    * Prefer to use a builder using {@link #from(StaticProperty)}, {@link #fromOptional(StaticContainerProperty)} (StaticContainerProperty)}
+    * or {@link #fromCollection(StaticContainerProperty)}.
     *
     * @param properties
     */
@@ -98,7 +98,7 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
     * @param <C> the type of the container containing the property value(s)
     * @return the property chain builder
     */
-   public static <F, T, C extends Optional<T>> PropertyChainBuilder.OptionalBuilder<F, C, T> optionalFrom(
+   public static <F, T, C extends Optional<T>> PropertyChainBuilder.OptionalBuilder<F, C, T> fromOptional(
          final StaticContainerProperty<F, T, C> firstProperty ) {
       return new PropertyChainBuilder.OptionalBuilder<>( List.of( (StaticProperty) firstProperty ) );
    }
@@ -112,7 +112,7 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
     * @param <C> the type of the collection containing the property value(s)
     * @return the property chain builder
     */
-   public static <F, T, C extends Collection<T>> PropertyChainBuilder.CollectionBuilder<F, C, T> collectionFrom(
+   public static <F, T, C extends Collection<T>> PropertyChainBuilder.CollectionBuilder<F, C, T> fromCollection(
          final StaticContainerProperty<F, T, C> firstProperty ) {
       return new PropertyChainBuilder.CollectionBuilder<>( List.of( (StaticProperty) firstProperty ) );
    }

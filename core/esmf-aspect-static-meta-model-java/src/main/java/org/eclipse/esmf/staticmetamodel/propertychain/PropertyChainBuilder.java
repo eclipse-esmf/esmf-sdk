@@ -52,12 +52,20 @@ class PropertyChainBuilder {
          return new SingleBuilder<>( append( property ) );
       }
 
-      public <C extends Collection<V>, V> CollectionBuilder<F, C, V> viaCollection(final ContainerProperty<V> property ) {
+      public <C extends Collection<V>, V> CollectionBuilder<F, C, V> viaCollection( final ContainerProperty<V> property ) {
          return new CollectionBuilder<>( append( (StaticProperty<?, ?>) property ) );
       }
 
-      public <L> PropertyChain<F, L> to( final StaticProperty<T, L> lastProperty ) {
-         return new PropertyChain<>( this.properties, lastProperty );
+      public <L> PropertyChain<F, L> to( final StaticProperty<F, L> lastProperty ) {
+         return new PropertyChain<>( append( lastProperty ) );
+      }
+
+      public <C extends Optional<V>, V, P extends ContainerProperty<V>> ContainerPropertyChain<F, C, V> to( final P lastProperty ) {
+         return new ContainerPropertyChain<>( append( (StaticProperty<?, ?>) lastProperty ) );
+      }
+
+      public <C extends Collection<V>, V> ContainerPropertyChain<F, C, V> toCollection( final ContainerProperty<V> lastProperty ) {
+         return new ContainerPropertyChain<>( append( (StaticProperty<?, ?>) lastProperty ) );
       }
    }
 
