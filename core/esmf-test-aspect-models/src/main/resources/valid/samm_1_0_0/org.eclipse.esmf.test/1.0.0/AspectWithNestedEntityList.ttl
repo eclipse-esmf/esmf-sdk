@@ -21,10 +21,10 @@
 :testList a samm:Property ;
    samm:characteristic [
      a samm-c:List ;
-     samm:dataType :TestEntity
+     samm:dataType :TestFirstEntity
    ] .
 
-:TestEntity a samm:Entity ;
+:TestFirstEntity a samm:Entity ;
    samm:properties ( :testString :testInt :testFloat :testSecondList ) .
 
 :testSecondList a samm:Property ;

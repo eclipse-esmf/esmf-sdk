@@ -24,6 +24,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.staticmetamodel.ComputedProperty;
 import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
 import org.eclipse.esmf.staticmetamodel.StaticProperty;
+import org.eclipse.esmf.staticmetamodel.predicate.PropertyPredicates;
 import org.eclipse.esmf.staticmetamodel.propertychain.ContainerPropertyChain;
 import org.eclipse.esmf.staticmetamodel.propertychain.PropertyChain;
 import org.eclipse.esmf.test.TestAspect;
@@ -142,7 +143,7 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
 
       final Object nestedEntityInstance1 = ConstructorUtils.invokeConstructor( nestedEntityClass, "nested-entity-string-1" );
       final Object nestedEntityInstance2 = ConstructorUtils.invokeConstructor( nestedEntityClass, "nested-entity-string-2" );
-      final Object entityInstance = ConstructorUtils.invokeConstructor( entityClass,  Short.valueOf( (short) 123 ),
+      final Object entityInstance = ConstructorUtils.invokeConstructor( entityClass, Short.valueOf( (short) 123 ),
             List.of( nestedEntityInstance1, nestedEntityInstance2 ) );
       final Object aspectInstance = ConstructorUtils.invokeConstructor( aspectClass, entityInstance );
 
@@ -153,5 +154,103 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       assertThat( entityStringCollectionChain.getContainingType() ).isEqualTo( aspectClass );
       assertThat( entityStringCollectionChain.getValue( aspectInstance ) ).containsExactlyInAnyOrder( "nested-entity-string-1",
             "nested-entity-string-2" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testSinglePropertyPredicates( final KnownVersion metaModelVersion ) throws IOException, ReflectiveOperationException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithNestedEntityList" );
+      final Class<?> entityClass = findGeneratedClass( result, "TestFirstEntity" );
+      final Class<?> nestedEntityClass = findGeneratedClass( result, "TestSecondEntity" );
+      final Class<?> metaAspectClass = findGeneratedClass( result, "MetaAspectWithNestedEntityList" );
+      final Class<?> metaEntity = findGeneratedClass( result, "MetaTestFirstEntity" );
+      final Class<?> metaNestedEntity = findGeneratedClass( result, "MetaTestSecondEntity" );
+
+      final Object ne1 = ConstructorUtils.invokeConstructor( nestedEntityClass, null, "nested-string1" );
+      final Object ne2 = ConstructorUtils.invokeConstructor( nestedEntityClass, null, "nested-string2" );
+
+      final Object e1 = ConstructorUtils.invokeConstructor( entityClass, "string1", 1, 1.0f, List.of( ne1, ne2 ) );
+      final Object e2 = ConstructorUtils.invokeConstructor( entityClass, "string2", 2, 2.0f, List.of( ne2 ) );
+      final Object e3 = ConstructorUtils.invokeConstructor( entityClass, "string3", 3, 3.0f, List.of() );
+
+      final StaticProperty<Object, String> stringProperty =
+            (StaticProperty<Object, String>) metaEntity.getField( "TEST_STRING" ).get( null );
+      final StaticProperty<Object, Integer> intProperty =
+            (StaticProperty<Object, Integer>) metaEntity.getField( "TEST_INT" ).get( null );
+      final var entities = List.of( e1, e2, e3 );
+
+      final var matchSingleString = PropertyPredicates.on( stringProperty ).isEqualTo( "string1" );
+      assertThat( entities.stream().filter( matchSingleString ) ).containsExactly( e1 );
+      assertThat( entities.stream().filter( matchSingleString.negate() ) ).containsExactlyInAnyOrder( e2, e3 );
+
+      final var matchSubString = PropertyPredicates.matchOn( stringProperty ).contains( "ing1" );
+      assertThat( entities.stream().filter( matchSubString ) ).containsExactly( e1 );
+      assertThat( entities.stream().filter( matchSubString.negate() ) ).containsExactlyInAnyOrder( e2, e3 );
+
+      final var matchRegex = PropertyPredicates.matchOn( stringProperty ).matches( ".*[12]" );
+      assertThat( entities.stream().filter( matchRegex ) ).containsExactlyInAnyOrder( e1, e2 );
+      assertThat( entities.stream().filter( matchRegex.negate() ) ).containsExactly( e3 );
+
+      assertThat( entities.stream().filter( PropertyPredicates.compareOn( intProperty ).greaterThan( 1 ) ) )
+            .containsExactlyInAnyOrder( e2, e3 );
+      assertThat( entities.stream().filter( PropertyPredicates.compareOn( intProperty ).atLeast( 1 ) ) )
+            .containsExactlyInAnyOrder( e1, e2, e3 );
+      assertThat( entities.stream().filter( PropertyPredicates.compareOn( intProperty ).lessThan( 3 ) ) )
+            .containsExactlyInAnyOrder( e1, e2 );
+      assertThat( entities.stream().filter( PropertyPredicates.compareOn( intProperty ).atMost( 3 ) ) )
+            .containsExactlyInAnyOrder( e1, e2, e3 );
+
+      assertThat( entities.stream().filter( PropertyPredicates.compareOn( intProperty ).withinClosed( 1, 3 ) ) )
+            .containsExactlyInAnyOrder( e1, e2, e3 );
+      assertThat( entities.stream().filter( PropertyPredicates.compareOn( intProperty ).withinClosedOpen( 1, 3 ) ) )
+            .containsExactlyInAnyOrder( e1, e2 );
+      assertThat( entities.stream().filter( PropertyPredicates.compareOn( intProperty ).withinOpen( 1, 3 ) ) )
+            .containsExactly( e2 );
+      assertThat( entities.stream().filter( PropertyPredicates.compareOn( intProperty ).withinOpenClosed( 1, 3 ) ) )
+            .containsExactlyInAnyOrder( e2, e3 );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testCollectionPropertyPredicates( final KnownVersion metaModelVersion ) throws IOException, ReflectiveOperationException {
+      final TestAspect aspect = TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST;
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+
+      final Class<?> aspectClass = findGeneratedClass( result, "AspectWithNestedEntityList" );
+      final Class<?> entityClass = findGeneratedClass( result, "TestFirstEntity" );
+      final Class<?> nestedEntityClass = findGeneratedClass( result, "TestSecondEntity" );
+      final Class<?> metaAspectClass = findGeneratedClass( result, "MetaAspectWithNestedEntityList" );
+      final Class<?> metaEntity = findGeneratedClass( result, "MetaTestFirstEntity" );
+      final Class<?> metaNestedEntity = findGeneratedClass( result, "MetaTestSecondEntity" );
+
+      final Object ne1 = ConstructorUtils.invokeConstructor( nestedEntityClass, null, "nested-string1" );
+      final Object ne2 = ConstructorUtils.invokeConstructor( nestedEntityClass, null, "nested-string2" );
+
+      final Object e1 = ConstructorUtils.invokeConstructor( entityClass, "string1", 1, 1.0f, List.of( ne1, ne2 ) );
+      final Object e2 = ConstructorUtils.invokeConstructor( entityClass, "string2", 2, 2.0f, List.of( ne2 ) );
+      final Object e3 = ConstructorUtils.invokeConstructor( entityClass, "string3", 3, 3.0f, List.of() );
+
+      final var entities = List.of( e1, e2, e3 );
+
+      final StaticContainerProperty entityProperty =
+            (StaticContainerProperty) metaEntity.getField( "TEST_SECOND_LIST" ).get( null );
+      final StaticProperty<Object, String> nestedStringProperty =
+            (StaticProperty<Object, String>) metaNestedEntity.getField( "RANDOM_VALUE" ).get( null );
+      final ContainerPropertyChain entityStringCollectionChain =
+            PropertyChain.collectionFrom( entityProperty ).to( nestedStringProperty );
+      final var matchNestedEntityString1 = PropertyPredicates.onCollection( entityStringCollectionChain ).contains( "nested-string1" );
+      final var matchNestedEntityString2 = PropertyPredicates.onCollection( entityStringCollectionChain ).contains( "nested-string2" );
+      assertThat( entities.stream().filter( matchNestedEntityString1 ) ).containsExactly( e1 );
+      assertThat( entities.stream().filter( matchNestedEntityString2 ) ).containsExactly( e1, e2 );
+
+      final var matchNestedEntityStringAny = PropertyPredicates.onCollection( entityStringCollectionChain )
+            .containsAnyOf( List.of( "nested-string1", "nested-string2" ) );
+      final var matchNestedEntityStringAll = PropertyPredicates.onCollection( entityStringCollectionChain )
+            .containsAllOf( List.of( "nested-string1", "nested-string2" ) );
+      assertThat( entities.stream().filter( matchNestedEntityStringAny ) ).containsExactlyInAnyOrder( e1, e2 );
+      assertThat( entities.stream().filter( matchNestedEntityStringAll ) ).containsExactly( e1 );
    }
 }

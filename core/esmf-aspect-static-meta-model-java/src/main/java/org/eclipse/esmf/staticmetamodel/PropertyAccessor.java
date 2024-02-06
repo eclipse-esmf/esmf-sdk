@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.staticmetamodel;
 
+import java.util.function.Function;
+
 /**
  * Interface for any function that provides a property value access.
  *
@@ -20,8 +22,8 @@ package org.eclipse.esmf.staticmetamodel;
  * @param <T> the type of the property
  * @see StaticProperty
  */
-@FunctionalInterface
-public interface PropertyAccessor<C, T> {
+
+public interface PropertyAccessor<C, T> extends Function<C, T> {
 
    /**
     * Performs the property access and returns its value.
@@ -30,4 +32,9 @@ public interface PropertyAccessor<C, T> {
     * @return the property value of the given instance.
     */
    T getValue( C object );
+
+   @Override
+   default T apply( C object ) {
+      return getValue( object );
+   }
 }
