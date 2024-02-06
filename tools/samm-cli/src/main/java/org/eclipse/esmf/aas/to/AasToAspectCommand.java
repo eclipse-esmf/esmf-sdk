@@ -41,7 +41,7 @@ public class AasToAspectCommand extends AbstractCommand {
    private String outputPath = ".";
 
    @CommandLine.Option( names = { "--submodel-template", "-s" },
-         description = "Select one submodel or a few submodels for generation an Aspect Model from. Before use 'list' command for getting possible options." )
+         description = "Select one or a few options for generation an Aspect Model from AAS. Before run 'list' command for getting possible options." )
    private List<Integer> selectedOptions = new ArrayList<>();
 
    @CommandLine.Mixin
