@@ -136,9 +136,14 @@ The available options and their meaning can also be seen in the help text of the
                                    | _--format, -f_ : output file format (xml, json, or aasx, default: xml)                  |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--aspect-data, -a_ : path to a JSON file containing aspect data corresponding to the Aspect Model |
-.2+| aas <aas file> to aspect      | Translate Asset Administration Shell (AAS) Submodel Templates to Aspect Models          | `samm aas AssetAdminShell.aasx to aspect`
+.3+| aas <aas file> to aspect      | Translate Asset Administration Shell (AAS) Submodel Templates to Aspect Models          | `samm aas AssetAdminShell.aasx to aspect`
                                    | _--output-directory, -d_ : output directory to write files to (default:
                                        current directory)                                                                    |
+                                   | _--submodel-template, -s_ : selected submodel for generating. For getting these options
+                                       run `aas <aas file> list` command.                                                    | `samm aas AssetAdminShell.aasx to aspect -s 1 -s 2`
+.1+| aas <aas file> list           | Retrieve a list of submodel templates contained within the provided
+                                      Asset Administration Shell (AAS) file.                                                 | `samm ass AssetAdminShell.aasx list`
+
 |===
 
 === Custom model resolver
