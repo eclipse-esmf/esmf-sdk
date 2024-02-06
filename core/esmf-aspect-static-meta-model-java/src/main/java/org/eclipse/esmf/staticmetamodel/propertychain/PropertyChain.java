@@ -171,7 +171,6 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
     * @param <T> the type containing the last property
     * @return the last property of the chain
     */
-
    public <T> StaticProperty<T, P> getLastProperty() {
       return (StaticProperty<T, P>) properties.get( properties.size() - 1 );
    }
