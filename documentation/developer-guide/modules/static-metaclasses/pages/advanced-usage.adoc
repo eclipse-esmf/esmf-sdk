@@ -64,3 +64,92 @@ Map<Integer, SubComponent> componentsById =
 Map<Integer, String> componentOemsById =
     index( subComponents, MetaSubComponent.ID, MetaSubComponent.OEM );
 ----
+
+== Filtering and Sorting with Properties
+
+In the same way that properties can be used to access data, they can also be used to filter and sort data.
+
+=== Filtering
+
+To filter elements based on their properties (or nested properties, via a Property Chain), the convenient builder
+`PropertyPredicates` exists. It provides the following entry points:
+
+[%autowidth]
+|===
+|Entry Point |Types| Description
+
+|`on( PropertyAccessor<C, T> property )`
+|`C` any containing type +
+`T` any non-container property type
+|For simple predicates on single-valued properties
+
+|`matchOn( PropertyAccessor<C, T> property )`
+|`C` any containing type +
+`T` any type that extends a `CharSequence`
+|Used to build `contains` and RegEx predicates
+
+|`compareOn( PropertyAccessor<C, T> property )`
+|`C` any containing type +
+`T` any type that extends a `Comparable`
+|Used to build (partial) range predicates like `greaterThan` or `withinClosed` on comparable properties
+
+|`onOptional( PropertyAccessor<C, T> property )`
+|`C` any containing type +
+`T` any `Optional` type
+|For simple predicates on `Optional` values.
+
+|`onCollection( PropertyAccessor<C, T> property )`
+|`C` any containing type +
+`T` any type that extends a `Collection`
+|Used to build predicates on collections, like `contains` or `containsAllOf`
+
+|===
+
+Let's take a look and some examples using those builders:
+
+[source,java]
+----
+List<Movement> movements = retrieveMovements();
+
+// find all that are currently moving
+List<Movement> currentlyMoving =
+    movements.stream()
+             .filter( PropertyPredicates.on( MetaMovement.IS_MOVING ).isEqualTo( true ) )
+             .toList();
+
+// find all that have a speed within the range 10km/h <= speed <= 30km/h
+List<Movement> withinSpeedRange =
+    movements.stream()
+             .filter( PropertyPredicates.compareOn( MetaMovement.SPEED ).withinClosed( 10.0f, 30.0f ) )
+             .toList();
+----
+
+Again assuming our example with a component and its subcomponents, let's filter on collection-valued properties:
+
+[source,java]
+----
+List<Components> components = retrieveComponents();
+
+var componentOem = PropertyChain.fromCollection( MetaComponent.SUB_COMPONENTS )
+                                .to( MetaSubComponent.OEM );
+List<Components> withOemAcme =
+    components.stream()
+              .filter( PropertyPredicates.onCollection( componentOem ).contains( "ACME" ) )
+              .toList();
+----
+
+TIP: To conveniently build even more complex predicates with `AND` or `OR` semantics you can for example use
+the `Predicates` utility from the awesome https://docs.vavr.io[Vavr] library.
+
+=== Sorting
+
+Property-based sorting doesn't require any special utilities at all, due to the fact that properties already implement
+the `Function` interface and thus can directly be used as a `keyExtractor` with `Comparator.comparing()`:
+
+[source,java]
+----
+List<Movement> bySpeedAscending =
+    movements.stream()
+             .sorted( Comparator.comparing( MetaMovement.SPEED ) )
+             .toList();
+----
