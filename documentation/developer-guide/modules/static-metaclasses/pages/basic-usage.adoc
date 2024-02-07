@@ -105,6 +105,11 @@ The Java Class of the element contained _within_ the container.
 |`Class<...>`
 |`Class<Movement>`
 
+|`isComplexType()`
+|Whether this property has a complex type, e.g. an `Entity`.
+|`boolean`
+|`true` for complex types, `false` else
+
 |`getValue(Movement object)`
 |The property value of the given element instance
 |The property type

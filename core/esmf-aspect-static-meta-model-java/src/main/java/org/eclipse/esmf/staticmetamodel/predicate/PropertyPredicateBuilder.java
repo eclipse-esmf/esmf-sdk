@@ -1,7 +1,7 @@
 package org.eclipse.esmf.staticmetamodel.predicate;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -200,7 +200,7 @@ public class PropertyPredicateBuilder<P extends PropertyAccessor<?, T>, T> {
        * @return the predicate
        */
       public Predicate<E> containsAnyOf( final T elements ) {
-         return object -> Set.copyOf( property.getValue( object ) ).removeAll( elements );
+         return object -> !Collections.disjoint( property.getValue( object ), elements );
       }
 
       /**

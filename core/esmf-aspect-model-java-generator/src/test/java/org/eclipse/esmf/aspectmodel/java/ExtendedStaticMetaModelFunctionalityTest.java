@@ -250,7 +250,10 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
             .containsAnyOf( List.of( "nested-string1", "nested-string2" ) );
       final var matchNestedEntityStringAll = PropertyPredicates.onCollection( entityStringCollectionChain )
             .containsAllOf( List.of( "nested-string1", "nested-string2" ) );
+      final var matchNestedEntityStringAnyWithNoneMatching = PropertyPredicates.onCollection( entityStringCollectionChain )
+            .containsAnyOf( List.of( "some-string1", "some-string2" ) );
       assertThat( entities.stream().filter( matchNestedEntityStringAny ) ).containsExactlyInAnyOrder( e1, e2 );
       assertThat( entities.stream().filter( matchNestedEntityStringAll ) ).containsExactly( e1 );
+      assertThat( entities.stream().filter( matchNestedEntityStringAnyWithNoneMatching ) ).isEmpty();
    }
 }

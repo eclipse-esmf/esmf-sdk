@@ -155,6 +155,11 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
    }
 
    @Override
+   public boolean isComplexType() {
+      return getLastProperty().isComplexType();
+   }
+
+   @Override
    public P getValue( final C object ) {
       return accessor.getValue( object );
    }

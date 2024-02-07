@@ -29,4 +29,11 @@ public interface PropertyTypeInformation<C, T> {
     * @return the type of the class containing the Property, represented as a class
     */
    Class<C> getContainingType();
+
+   /**
+    * Returns whether this property has a complex type, e.g. an {@code Entity}.
+    *
+    * @return whether this property has a complex type
+    */
+   boolean isComplexType();
 }

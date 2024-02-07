@@ -18,6 +18,7 @@ import java.util.Optional;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 
@@ -37,5 +38,12 @@ public abstract class StaticProperty<C, T> extends DefaultProperty implements Pr
          final Optional<Property> extends_ ) {
       super( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, optional, notInPayload, payloadName, isAbstract,
             extends_ );
+   }
+
+   @Override
+   public boolean isComplexType() {
+      return getCharacteristic().flatMap( Characteristic::getDataType )
+            .map( Type::isComplexType )
+            .orElse( false );
    }
 }
