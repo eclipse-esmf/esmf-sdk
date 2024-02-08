@@ -51,20 +51,6 @@ import org.apache.jena.vocabulary.RDF;
 public class SammAspectMetaModelResourceResolver implements AspectMetaModelResourceResolver {
 
    /**
-    * Extends the given {@link Model} with elements contained in the given {@link InputStream}s.
-    *
-    * @param model the {@link Model} to be extended
-    * @param streams the {@link InputStream}s containing the additional model elements
-    * @return the extended {@link Model}
-    */
-   private Try<Model> addToModel( final Model model, final Stream<InputStream> streams ) {
-      return streams.map( TurtleLoader::loadTurtle ).map( loadedModel -> loadedModel.flatMap( otherModel -> {
-         model.add( otherModel );
-         return Try.success( model );
-      } ) ).reduce( Try.success( model ), Try::orElse );
-   }
-
-   /**
     * Loads an RDF model using a function that knows how to turn a target meta model version into a set of URLs
     *
     * @param version The meta model version
@@ -72,8 +58,17 @@ public class SammAspectMetaModelResourceResolver implements AspectMetaModelResou
     * @return The model
     */
    private Try<Model> loadUrlSet( final KnownVersion version, final Function<KnownVersion, Set<URL>> resolver ) {
-      final Model model = ModelFactory.createDefaultModel();
-      return addToModel( model, resolver.apply( version ).stream().map( TurtleLoader::openUrl ) );
+      final Model result = ModelFactory.createDefaultModel();
+
+      var error = resolver.apply( version ).stream()
+            .map( url -> Try.withResources( url::openStream )
+                  .of( TurtleLoader::loadTurtle )
+                  .mapTry(Try::get)
+                  .mapTry( result::add ))
+            .filter( Try::isFailure )
+            .findFirst();
+
+      return error.orElse( Try.success( result ) );
    }
 
    /**

@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.fs;
 
+import java.net.URI;
 import java.nio.file.Path;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -21,12 +22,12 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
  * A models root directory that assumes all model files are in the same directory.
  */
 public class FlatModelsRoot extends ModelsRoot {
-   public FlatModelsRoot( final Path root ) {
+   public FlatModelsRoot( final URI root ) {
       super( root );
    }
 
    @Override
-   public Path directoryForNamespace( final AspectModelUrn urn ) {
+   public URI directoryForNamespace( final AspectModelUrn urn ) {
       return rootPath();
    }
 

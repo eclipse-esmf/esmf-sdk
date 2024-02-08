@@ -13,17 +13,20 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
+import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 
 /**
- * Abstract base class for the implementation of {@link ResolutionStrategy}s.
+ * Abstract base class for the implementation of {@link ResolutionStrategy}s
  */
 public abstract class AbstractResolutionStrategy implements ResolutionStrategy {
    /**
@@ -47,6 +50,11 @@ public abstract class AbstractResolutionStrategy implements ResolutionStrategy {
     * @return The model
     */
    protected Try<Model> loadFromUrl( final URL url ) {
-      return Try.ofSupplier( () -> TurtleLoader.openUrl( url ) ).flatMap( TurtleLoader::loadTurtle );
+      return Try.withResources( url::openStream ).of( TurtleLoader::loadTurtle ).map( Try::get );
+   }
+
+   @Override
+   public InputStream read( URI uri ) throws Exception {
+      return new FileInputStream( new File( uri ) );
    }
 }

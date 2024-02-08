@@ -14,24 +14,25 @@
 package org.eclipse.esmf.aspectmodel.resolver.fs;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.file.Path;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 public abstract class ModelsRoot {
-   private final Path root;
+   private final URI root;
 
-   protected ModelsRoot( final Path root ) {
+   protected ModelsRoot( final URI root ) {
       this.root = root;
    }
 
-   public Path rootPath() {
+   public URI rootPath() {
       return root;
    }
 
-   public abstract Path directoryForNamespace( final AspectModelUrn urn );
+   public abstract URI directoryForNamespace( final AspectModelUrn urn );
 
-   public File determineAspectModelFile( final AspectModelUrn urn ) {
-      return directoryForNamespace( urn ).resolve( urn.getName() + ".ttl" ).toFile();
+   public URI determineAspectModelFile( final AspectModelUrn urn ) {
+      return directoryForNamespace( urn ).resolve( urn.getName() + ".ttl" );
    }
 }

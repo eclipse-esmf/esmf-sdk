@@ -61,7 +61,7 @@ public class TestContext {
 
       final Map<QualifiedName, ByteArrayOutputStream> outputs = new LinkedHashMap<>();
       generators.forEach( generator ->
-            generator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) ) );
+            generator.generate( name -> outputs.computeIfAbsent( name, __ -> new ByteArrayOutputStream() ) ) );
 
       final Map<QualifiedName, String> sources = new LinkedHashMap<>();
       final List<QualifiedName> loadOrder = new ArrayList<>();
@@ -84,8 +84,8 @@ public class TestContext {
 
    private static void writeFile( final String className, final byte[] content, final File targetDirectory ) {
       final String fileName = className + ".java";
-      try {
-         IOUtils.write( content, Files.newOutputStream( new File( targetDirectory, fileName ).toPath() ) );
+      try (var stream = Files.newOutputStream( new File( targetDirectory, fileName ).toPath() )) {
+         IOUtils.write( content, stream );
       } catch ( final IOException e ) {
          fail( "Could not create file " + fileName );
       }

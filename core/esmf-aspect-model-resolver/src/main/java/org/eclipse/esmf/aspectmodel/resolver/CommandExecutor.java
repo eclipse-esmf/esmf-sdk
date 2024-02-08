@@ -13,10 +13,15 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.function.FailableBiFunction;
 
 /**
  * Executes an external resolver via the underlying OS command and returns the stdout from the command as result.
@@ -30,14 +35,33 @@ public class CommandExecutor {
 
       try {
          final Process p = Runtime.getRuntime().exec( command );
-         final int result = p.waitFor();
-         if ( result != 0 ) {
-            throw new ModelResolutionException( getOutputFrom( p.getErrorStream() ) );
+
+         // Start threads to consume the stdout and stderr
+         Future<String> stdout = readStreamAsync( p.getInputStream() );
+         Future<String> stderr = readStreamAsync( p.getErrorStream() );
+
+         final boolean result = p.waitFor( 60, TimeUnit.SECONDS );
+         if ( !result || p.exitValue() != 0 ) {
+            FailableBiFunction<String, Future<String>, String, Exception> ifFuture =
+                  ( title, future ) -> future.get().isEmpty() ? "" : title + future.get();
+            throw new ModelResolutionException( "The attempt to execute external resolver [" + command + "] failed with the exit value: " + p.exitValue() +
+                  ifFuture.apply( ", and stdout: ", stdout ) + ifFuture.apply( ", and stderr: ", stderr ) );
          }
-         return getOutputFrom( p.getInputStream() );
-      } catch ( final IOException | InterruptedException e ) {
-         throw new ModelResolutionException( "The attempt to execute external resolver failed with the error:", e );
+         return stdout.get();
+      } catch ( ModelResolutionException e ) {
+         throw e;
+      } catch ( final Exception e ) {
+         throw new ModelResolutionException( "The attempt to execute external resolver [" + command + "] failed with the error: " + e.getMessage(), e );
       }
+   }
+
+   private static Future<String> readStreamAsync( InputStream stream ) {
+      ExecutorService executor = Executors.newSingleThreadExecutor();
+      return executor.submit( () -> {
+         String output = getOutputFrom( stream );
+         executor.shutdown(); ;
+         return output;
+      } );
    }
 
    private static boolean isJarInvocation( final String command ) {

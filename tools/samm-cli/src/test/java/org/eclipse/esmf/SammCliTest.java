@@ -193,8 +193,8 @@ public class SammCliTest extends MetaModelVersions {
             List.of( "--disable-color", "aspect", relativeFileName, "validate" ), Optional.empty(), workingDirectory );
 
       final ExecutionResult result = sammCli.apply( executionContext );
-      assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( "Input model is valid" );
    }
 
    @Test
@@ -913,7 +913,7 @@ public class SammCliTest extends MetaModelVersions {
                      ? ".bat" : ".sh" ) ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
-         return resolverScript + " " + modelsRoot + " " + metaModelVersion;
+         return resolverScript + " " + modelsRoot + " " + metaModelVersion+ " ";
       } catch ( final IOException exception ) {
          throw new RuntimeException( exception );
       }

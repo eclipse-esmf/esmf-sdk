@@ -140,6 +140,7 @@ class AspectModelValidatorTest extends MetaModelVersions {
       assertThat( invalidTurtleSyntax.isFailure() ).isTrue();
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidTurtleSyntax );
       assertThat( violations ).hasSize( 1 );
+      assertThat( violations.get( 0 ) ).isInstanceOf( InvalidSyntaxViolation.class );
       final InvalidSyntaxViolation violation = (InvalidSyntaxViolation) violations.get( 0 );
       assertThat( violation.line() ).isEqualTo( 17 );
       assertThat( violation.column() ).isEqualTo( 2 );
@@ -153,6 +154,7 @@ class AspectModelValidatorTest extends MetaModelVersions {
       assertThat( invalidTurtleSyntax.isFailure() ).isTrue();
       final List<Violation> violations = service.get( metaModelVersion ).validateModel( invalidTurtleSyntax );
       assertThat( violations ).hasSize( 1 );
+      assertThat( violations.get( 0 ) ).isInstanceOf( InvalidSyntaxViolation.class );
       final InvalidSyntaxViolation violation = (InvalidSyntaxViolation) violations.get( 0 );
       assertThat( violation.line() ).isEqualTo( 12 );
       assertThat( violation.column() ).isEqualTo( 1 );

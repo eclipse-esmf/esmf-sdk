@@ -13,13 +13,14 @@
 
 package org.eclipse.esmf;
 
-import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.fileToUrn;
+import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +28,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
@@ -44,55 +46,74 @@ import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 
 import io.vavr.control.Try;
-import org.apache.commons.io.FilenameUtils;
 
 public abstract class AbstractCommand implements Runnable {
-   protected Try<VersionedModel> loadAndResolveModel( final File input, final ExternalResolverMixin resolverConfig ) {
+   protected Try<VersionedModel> loadAndResolveModel( final URI input, final ExternalResolverMixin resolverConfig ) {
       final Try<VersionedModel> versionedModel;
       if ( resolverConfig.commandLine.isBlank() ) {
-         if ( input.isAbsolute() ) {
+         File inputFile = toFile( input );
+         if ( inputFile == null || inputFile.isAbsolute() ) {
             versionedModel = AspectModelResolver.loadAndResolveModel( input );
          } else {
-            final File newInput = new File( System.getProperty( "user.dir" ) + File.separator + input );
+            final File newInput = new File( System.getProperty( "user.dir" ) + File.separator + input.getPath() );
             versionedModel = AspectModelResolver.loadAndResolveModel( newInput );
          }
       } else {
-         final AspectModelUrn urn = fileToUrn( input.getAbsoluteFile() ).get();
-         versionedModel = new AspectModelResolver().resolveAspectModel( new ExternalResolverStrategy( resolverConfig.commandLine ), urn );
+         final Try<AspectModelUrn> urn = uriToUrn( input );
+         if ( urn.isSuccess() )
+            versionedModel = new AspectModelResolver().resolveAspectModel( new ExternalResolverStrategy( resolverConfig.commandLine ), urn.get() );
+         else
+            versionedModel = new AspectModelResolver().resolveAspectModel( new ExternalResolverStrategy( resolverConfig.commandLine ), input );
       }
       return versionedModel;
    }
 
-   protected AspectContext loadModelOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig ) {
-      final File inputFile = new File( modelFileName );
-      final Try<VersionedModel> versionedModel = loadAndResolveModel( inputFile, resolverConfig );
+   protected boolean isFile( final URI uri ) {
+      return "file".equalsIgnoreCase( uri.getScheme() );
+   }
+
+   protected File toFile( URI uri ) {
+      return isFile( uri )
+            ? new File( uri )
+            : null;
+   }
+
+   protected AspectContext loadModelOrFail( final URI modelUri, final ExternalResolverMixin resolverConfig ) {
+      final Try<VersionedModel> versionedModel = loadAndResolveModel( modelUri, resolverConfig );
       final Try<AspectContext> context = versionedModel.flatMap( model -> {
-         final String expectedAspectName = FilenameUtils.removeExtension( inputFile.getName() );
-         final Try<List<Aspect>> tryAspects = AspectModelLoader.getAspects( model );
-         if ( tryAspects.isFailure() ) {
-            return Try.failure( tryAspects.getCause() );
+         final File inputFile = toFile( modelUri );
+         final AspectModelUrn urn = uriToUrn( modelUri ).getOrElse( () -> urnFromModel( model, inputFile ) );
+         if ( inputFile == null || !inputFile.exists() )
+            return AspectModelLoader.getSingleAspect( model, aspect -> aspect.getName().equals( urn.getName() ) )
+                  .map( aspect -> new AspectContext( model, aspect ) );
+         else {
+            final String expectedAspectName = FilenameUtils.removeExtension( inputFile.getName() );
+            final Try<List<Aspect>> tryAspects = AspectModelLoader.getAspects( model );
+            if ( tryAspects.isFailure() ) {
+               return Try.failure( tryAspects.getCause() );
+            }
+            final List<Aspect> aspects = tryAspects.get();
+            if ( aspects.isEmpty() ) {
+               return Try.failure( new InvalidRootElementCountException( "No Aspects were found in the model" ) );
+            }
+            // If there is exactly one Aspect in the file, even if does not have the same name as the file, use it
+            if ( aspects.size() == 1 ) {
+               return Try.success( new AspectContext( model, aspects.get( 0 ) ) );
+            }
+            return aspects.stream().filter( aspect -> aspect.getName().equals( expectedAspectName ) )
+                  .findFirst()
+                  .map( aspect -> Try.success( new AspectContext( model, aspect ) ) )
+                  .orElseGet( () -> Try.failure( new InvalidRootElementCountException(
+                        "Found multiple Aspects in the file " + inputFile.getAbsolutePath() + ", but none is called '"
+                              + expectedAspectName + "': " + aspects.stream().map( Aspect::getName )
+                              .collect( Collectors.joining( ", " ) ) ) ) );
          }
-         final List<Aspect> aspects = tryAspects.get();
-         if ( aspects.isEmpty() ) {
-            return Try.failure( new InvalidRootElementCountException( "No Aspects were found in the model" ) );
-         }
-         // If there is exactly one Aspect in the file, even if does not have the same name as the file, use it
-         if ( aspects.size() == 1 ) {
-            return Try.success( new AspectContext( model, aspects.get( 0 ) ) );
-         }
-         return aspects.stream().filter( aspect -> aspect.getName().equals( expectedAspectName ) )
-               .findFirst()
-               .map( aspect -> Try.success( new AspectContext( model, aspect ) ) )
-               .orElseGet( () -> Try.failure( new InvalidRootElementCountException(
-                     "Found multiple Aspects in the file " + inputFile.getAbsolutePath() + ", but none is called '"
-                           + expectedAspectName + "': " + aspects.stream().map( Aspect::getName )
-                           .collect( Collectors.joining( ", " ) ) ) ) );
       } );
 
       return context.recover( throwable -> {
          // Model can not be loaded, root cause e.g. File not found
          if ( throwable instanceof IllegalArgumentException ) {
-            throw new CommandException( "Can not open file for reading: " + modelFileName, throwable );
+            throw new CommandException( "Can not open file for reading: " + modelUri, throwable );
          }
 
          if ( throwable instanceof ModelResolutionException ) {
@@ -108,10 +129,10 @@ public abstract class AbstractCommand implements Runnable {
       } ).get();
    }
 
-   protected void generateDiagram( final String inputFileName, final AspectModelDiagramGenerator.Format targetFormat,
+   protected void generateDiagram( final URI input, final AspectModelDiagramGenerator.Format targetFormat,
          final String outputFileName,
          final String languageTag, final ExternalResolverMixin resolverConfig ) throws IOException {
-      final AspectContext context = loadModelOrFail( inputFileName, resolverConfig );
+      final AspectContext context = loadModelOrFail( input, resolverConfig );
       final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( context );
       final Set<AspectModelDiagramGenerator.Format> targetFormats = new HashSet<>();
       targetFormats.add( targetFormat );

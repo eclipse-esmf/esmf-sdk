@@ -17,23 +17,23 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
+
 import javax.annotation.Nullable;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
-
-import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.riot.RiotException;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
+import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Try;
 
 public final class TurtleLoader {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLoader.class );
@@ -89,21 +89,6 @@ public final class TurtleLoader {
             RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRiotTurtle.factory );
             isTurtleRegistered = true;
          }
-      }
-   }
-
-   /**
-    * Opens an URL and returns its InputStream, but does not throw a checked exception.
-    *
-    * @param url The URL to open
-    * @return The InputStream on success
-    * @throws IllegalArgumentException if an {@link IOException} occurs
-    */
-   public static InputStream openUrl( final URL url ) {
-      try {
-         return url.openStream();
-      } catch ( final IOException exception ) {
-         throw new IllegalArgumentException( exception );
       }
    }
 }
