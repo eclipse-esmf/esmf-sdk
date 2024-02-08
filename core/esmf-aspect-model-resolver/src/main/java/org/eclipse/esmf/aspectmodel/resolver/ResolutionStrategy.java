@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import java.io.InputStream;
+import java.net.URI;
 import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -24,4 +26,16 @@ import org.apache.jena.rdf.model.Model;
  * Represents one way to load and resolve an Aspect model from a given source.
  */
 public interface ResolutionStrategy extends Function<AspectModelUrn, Try<Model>> {
+
+   /**
+    * Load and resolve the Aspect model from the given uri.
+    *
+    * @param uri the URL of the Aspect model to resolve
+    * @return the resolved Aspect model
+    */
+   default Try<Model> applyUri( URI uri ) {
+      return Try.of( () -> AspectModelUrn.fromUrn( uri ) ).flatMap( this );
+   }
+
+   InputStream read( URI uri ) throws Exception;
 }

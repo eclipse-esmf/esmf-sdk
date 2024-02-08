@@ -13,8 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
+import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 import java.io.ByteArrayInputStream;
@@ -23,20 +22,30 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
@@ -51,49 +60,40 @@ import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorServiceLoader;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.BammUriRewriter;
 import org.eclipse.esmf.samm.KnownVersion;
-
-import com.google.common.collect.Streams;
-import io.vavr.CheckedFunction1;
-import io.vavr.Value;
-import io.vavr.control.Option;
-import io.vavr.control.Try;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Streams;
+
+import io.vavr.Value;
+import io.vavr.control.Option;
+import io.vavr.control.Try;
+
 /**
  * Provides facilities for loading an Aspect model and resolving referenced meta model elements and
- * model elements from other Aspect models.
+ * model elements from other Aspect models
  */
 public class AspectModelResolver {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelResolver.class );
+   private static final List<Pair<Predicate<URI>, Function<URI, Try<ResolutionStrategy>>>> STRATEGY_BUILDERS = new ArrayList<>();
 
    private final MigratorService migratorService = MigratorServiceLoader.getInstance().getMigratorService();
    private final BammUriRewriter bamm100UriRewriter = new BammUriRewriter( BammUriRewriter.BammVersion.BAMM_1_0_0 );
    private final BammUriRewriter bamm200UriRewriter = new BammUriRewriter( BammUriRewriter.BammVersion.BAMM_2_0_0 );
 
    /**
-    * Returns all valid model URNs for Aspects and model elements in a model.
+    * Returns all valid model URNs for Aspects and model elements in a model
     *
     * @param model The RDF model
     * @return The set of URNs
     */
    public static Set<String> getAllUrnsInModel( final Model model ) {
       return Streams.stream( model.listStatements().mapWith( statement -> {
-         final Stream<String> subjectUri = statement.getSubject().isURIResource()
-               ? Stream.of( statement.getSubject().getURI() )
-               : Stream.empty();
+         final Stream<String> subjectUri = statement.getSubject().isURIResource() ?
+               Stream.of( statement.getSubject().getURI() ) : Stream.empty();
          final Stream<String> propertyUri = Stream.of( statement.getPredicate().getURI() );
-         final Stream<String> objectUri = statement.getObject().isURIResource()
-               ? Stream.of( statement.getObject().asResource().getURI() )
-               : Stream.empty();
+         final Stream<String> objectUri = statement.getObject().isURIResource() ?
+               Stream.of( statement.getObject().asResource().getURI() ) : Stream.empty();
 
          return Stream.of( subjectUri, propertyUri, objectUri )
                .flatMap( Function.identity() )
@@ -103,7 +103,7 @@ public class AspectModelResolver {
    }
 
    /**
-    * Tries to resolve the given SAMM URN {@link AspectModelUrn}.
+    * Tries to resolve the given SAMM URN {@link AspectModelUrn}
     *
     * @param urn The Aspect (meta) model URN
     * @return The {@link String} if it is resolvable, an {@link UrnSyntaxException} otherwise
@@ -117,23 +117,36 @@ public class AspectModelResolver {
       }
    }
 
+   static {
+      Predicate<URI> all = __ -> true;
+
+      // Construct the resolution strategy: Models should be searched in the structured folder (if it exists) and then in the
+      // same directory. If the structured folder can not be resolved, directly search in the same directory.
+      STRATEGY_BUILDERS.add( Pair.of( all, uri -> Try.success( new FileSystemStrategy( new FlatModelsRoot( uri ) ) ) ) );
+      STRATEGY_BUILDERS.add( Pair.of( all, uri -> Try.of( () -> new FileSystemStrategy( new StructuredModelsRoot( uri ) ) ) ) );
+   }
+
    /**
     * Method to resolve a given {@link AspectModelUrn} using a suitable {@link ResolutionStrategy}.
     * This creates the closure (merged model) of all referenced models and the corresponding meta model.
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param input the input to be resolved by the strategy
+    * @param input              the input to be resolved by the strategy
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final AspectModelUrn input ) {
       return resolveAspectModel( resolutionStrategy, List.of( input ) );
    }
 
+   public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final URI input ) {
+      return resolutionStrategy.applyUri( input ).flatMap( model -> resolveAspectModel( resolutionStrategy, model ) );
+   }
+
    /**
     * Method to load an Aspect Model from an input stream, and resolve it using a suitable {@link ResolutionStrategy}.
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param inputStream the inputs stream to read the RDF/Turtle representation from
+    * @param inputStream        the inputs stream to read the RDF/Turtle representation from
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final InputStream inputStream ) {
@@ -144,7 +157,7 @@ public class AspectModelResolver {
     * Method to load an Aspect Model from a string, and resolve it using a suitable {@link ResolutionStrategy}.
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param modelContent a string containing the RDF/Turtle representation
+    * @param modelContent       a string containing the RDF/Turtle representation
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final String modelContent ) {
@@ -155,7 +168,7 @@ public class AspectModelResolver {
     * Method to resolve a given aspect model.
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param model the initial aspect model
+    * @param model              the initial aspect model
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final Model model ) {
@@ -167,7 +180,7 @@ public class AspectModelResolver {
     * This creates the closure (merged model) of all referenced models and the corresponding meta model.
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param input the input to be resolved by the strategy
+    * @param input              the input to be resolved by the strategy
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final List<AspectModelUrn> input ) {
@@ -178,9 +191,9 @@ public class AspectModelResolver {
     * Method to resolve multiple {@link AspectModelUrn}s using a suitable {@link ResolutionStrategy} against an inital model.
     * This creates the closure (merged model) of all referenced models and the corresponding meta model.
     *
-    * @param initialModel the initial model
+    * @param initialModel       the initial model
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
-    * @param input the input to resolved by the strategy
+    * @param input              the input to resolved by the strategy
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final Model initialModel, final ResolutionStrategy resolutionStrategy,
@@ -244,7 +257,7 @@ public class AspectModelResolver {
     * Checks if a given model contains the definition of a model element.
     *
     * @param model the model
-    * @param urn the URN of the model element
+    * @param urn   the URN of the model element
     * @return true if the model contains the definition of the model element
     */
    public static boolean containsDefinition( final Model model, final AspectModelUrn urn ) {
@@ -264,8 +277,8 @@ public class AspectModelResolver {
     * The strategy is applied to the URNs to load a model, and then repeated for all URNs in the loaded model that
     * have not yet been loaded.
     *
-    * @param result the (possibly pre-filled) model for which elements need to be resolved
-    * @param urns the Aspect Model element URNs
+    * @param result             the (possibly pre-filled) model for which elements need to be resolved
+    * @param urns               the Aspect Model element URNs
     * @param resolutionStrategy the resolution strategy that knowns how to turn a URN into a Model
     * @return the fully resolved model, or a failure if one of the transitively referenced elements can't be found
     */
@@ -335,7 +348,7 @@ public class AspectModelResolver {
     * For meta model elements or other URIs, an empty model is returned. This method returns only a failure, when the used resolution
     * strategy fails.
     *
-    * @param urn the URN to resolve
+    * @param urn                the URN to resolve
     * @param resolutionStrategy the resolution strategy to apply
     * @return the model containing the defintion of the given model element
     */
@@ -382,7 +395,7 @@ public class AspectModelResolver {
    }
 
    /**
-    * Adapter that enables the resolver to handle URNs with the legacy "urn:bamm:" prefix.
+    * Adapter that enables the resolver to handle URNs with the legacy "urn:bamm:" prefix
     *
     * @param urn the URN to clean up
     * @return the original URN (if using valid urn:samm: scheme) or the the cleaned up URN
@@ -399,7 +412,7 @@ public class AspectModelResolver {
     * a model won't overwrite the empty prefix of the target model.
     *
     * @param target the model to merge into
-    * @param other the model to be merged
+    * @param other  the model to be merged
     */
    private void mergeModels( final Model target, final Model other ) {
       for ( final Map.Entry<String, String> prefixEntry : other.getNsPrefixMap().entrySet() ) {
@@ -412,39 +425,49 @@ public class AspectModelResolver {
    }
 
    /**
-    * Convenience method for loading an resolving an Aspect Model from a file.
+    * Convenience method for loading an resolving an Aspect Model from a file
     *
     * @param input the input file
     * @return the resolved model on success
     */
    public static Try<VersionedModel> loadAndResolveModel( final File input ) {
-      final AspectModelResolver resolver = new AspectModelResolver();
-      final File inputFile = input.getAbsoluteFile();
-      final ResolutionStrategy fromSameDirectory = new FileSystemStrategy( new FlatModelsRoot( inputFile.getParentFile().toPath() ) );
+      return loadAndResolveModel( input.toURI() );
+   }
 
-      // Construct the resolution strategy: Models should be searched in the structured folder (if it exists) and then in the
-      // same directory. If the structured folder can not be resolved, directly search in the same directory.
-      final ResolutionStrategy resolutionStrategy = getModelRoot( inputFile ).map(
-                  modelsRoot -> new FileSystemStrategy( new StructuredModelsRoot( modelsRoot ) ) )
-            .<ResolutionStrategy> map( structured -> new EitherStrategy( structured, fromSameDirectory ) ).getOrElse( fromSameDirectory );
-      return Try.withResources( () -> new FileInputStream( input ) )
-            .of( stream -> resolver.resolveAspectModel( resolutionStrategy, stream ) )
+   /**
+    * Convenience method for loading an resolving an Aspect Model from a URI
+    *
+    * @param input the input URI
+    * @return the resolved model on success
+    */
+   public static Try<VersionedModel> loadAndResolveModel( final URI input ) {
+      final AspectModelResolver resolver = new AspectModelResolver();
+
+      var strategy = new GroupStrategy( STRATEGY_BUILDERS.stream()
+            .filter( p -> p.getKey().test( input ) )
+            .map( p -> p.getValue().apply( input ) )
+            .filter( Try::isSuccess )
+            .map( Try::get )
+            .toList() );
+
+      return Try.withResources( () -> strategy.read( input )  )
+            .of( stream -> resolver.resolveAspectModel( strategy, stream ) )
             .flatMap( Function.identity() );
    }
 
    /**
-    * From an input Aspect Model file, determines the models root directory if it exists.
+    * From an input Aspect Model URI, which is assumed to contain a model element definition with the same local name as the file,
+    * determines the URN of this model element. The file is expected to reside in a valid location inside the models root
+    * (see {@link FileSystemStrategy}). Note that the file is not opened or loaded and the method does not check whether an element
+    * with the given URN actually exists in the file.
     *
-    * @param inputFile the input model file
-    * @return the models root directory
+    * @param uri the input model uri
+    * @return the URN of the model element that corresponds to the file name and its location inside the models root
     */
-   public static Try<Path> getModelRoot( final File inputFile ) {
-      return Option.of( Paths.get( inputFile.getParent(), "..", ".." ) )
-            .map( Path::toFile )
-            .flatMap( file -> CheckedFunction1.lift( File::getCanonicalFile ).apply( file ) )
-            .map( File::toPath )
-            .filter( path -> path.toFile().exists() && path.toFile().isDirectory() )
-            .toTry( () -> new ModelResolutionException( "Could not locate models root directory" ) );
+   public static Try<AspectModelUrn> uriToUrn( final URI uri ) {
+      return AspectModelUrn.from( uri )
+            .recoverWith( UrnSyntaxException.class, throwable -> fileToUrn( new File( uri ) ) )
+            ;
    }
 
    /**
@@ -481,10 +504,11 @@ public class AspectModelResolver {
     * Finds URN matched to file in the loaded model.
     *
     * @param model the loaded version model
-    * @param file the input model file
+    * @param file  the input model file
     * @return the URN of the model element that corresponds to the file name and its location inside the models root
     */
    public static AspectModelUrn urnFromModel( final VersionedModel model, final File file ) {
+      // TODO replace File file to URI uri
       final String aspectName = FilenameUtils.removeExtension( file.getName() );
       return Streams.stream( model.getRawModel().listSubjects() ).filter( s -> aspectName.equals( s.getLocalName() ) )
             .findFirst()
@@ -509,5 +533,14 @@ public class AspectModelResolver {
       } catch ( final IOException exception ) {
          return Try.failure( exception );
       }
+   }
+
+   public static void register( Predicate<URI> predicate, Function<URI, Try<ResolutionStrategy>> strategy ) {
+      Objects.requireNonNull( strategy );
+      if ( predicate == null )
+         predicate = __ -> true;
+
+      STRATEGY_BUILDERS.add( Pair.of( predicate, strategy ) );
+
    }
 }

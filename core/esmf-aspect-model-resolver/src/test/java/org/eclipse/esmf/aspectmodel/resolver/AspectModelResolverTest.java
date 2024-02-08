@@ -18,26 +18,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
-
-import com.google.common.collect.Streams;
-import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import com.google.common.collect.Streams;
+
+import io.vavr.control.Try;
 
 public class AspectModelResolverTest extends MetaModelVersions {
    private final AspectModelResolver resolver = new AspectModelResolver();
@@ -121,14 +123,14 @@ public class AspectModelResolverTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testLoadModelWithVersionEqualToUnsupportedMetaModelVersionExpectSuccess(
          final KnownVersion metaModelVersion ) throws URISyntaxException {
-      final File aspectModelsRootDirectory = new File(
+      final Path aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( metaModelVersion.toString().toLowerCase() )
-                  .toURI().getPath() );
+                  .toURI() ).toPath();
 
       final AspectModelUrn testUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.1.0#Test" );
 
-      final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
+      final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory );
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
       assertThat( result.isSuccess() ).isTrue();
 
@@ -155,6 +157,35 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final EitherStrategy inMemoryResolutionStrategy = new EitherStrategy( urnStrategy, inMemoryStrategy );
 
       final Try<VersionedModel> result = resolver.resolveAspectModel( inMemoryResolutionStrategy, inputUrn );
+      assertThat( result.isSuccess() ).isTrue();
+
+      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final Resource aspect = createResource( TEST_NAMESPACE + "AnotherTest" );
+      assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
+
+      final Resource propertyFromReferencedAspect = createResource( TEST_NAMESPACE + "foo" );
+      assertThat(
+            result.get().getModel().listStatements( propertyFromReferencedAspect, RDF.type, samm.Property() ).nextOptional() ).isNotEmpty();
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   public void testGroupResolveReferencedModelFromMemoryExpectSuccess( final KnownVersion metaModelVersion ) throws URISyntaxException {
+      final File aspectModelsRootDirectory = new File(
+            AspectModelResolverTest.class.getClassLoader().getResource( metaModelVersion.toString().toLowerCase() )
+                  .toURI().getPath() );
+
+      final ResolutionStrategy urnStrategy = new FileSystemStrategy( aspectModelsRootDirectory.toPath() );
+      final AspectModelUrn inputUrn = AspectModelUrn
+            .fromUrn( TEST_NAMESPACE + "AnotherTest" );
+      final Model model = TurtleLoader.loadTurtle(
+            AspectModelResolverTest.class.getResourceAsStream(
+                  "/" + metaModelVersion.toString().toLowerCase()
+                        + "/org.eclipse.esmf.test/1.0.0/Test.ttl" ) ).get();
+      final ResolutionStrategy inMemoryStrategy = anyUrn -> Try.success( model );
+      final GroupStrategy groupStrategy = new GroupStrategy( urnStrategy, inMemoryStrategy );
+
+      final Try<VersionedModel> result = resolver.resolveAspectModel( groupStrategy, inputUrn );
       assertThat( result.isSuccess() ).isTrue();
 
       final SAMM samm = new SAMM( KnownVersion.getLatest() );

@@ -13,9 +13,16 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.fs;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+
+import io.vavr.control.Try;
 
 /**
  * Represents the root directory of the directory hierarchy in which Aspect Models are organized.
@@ -33,17 +40,64 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
  * </pre>
  */
 public class StructuredModelsRoot extends ModelsRoot {
-   public StructuredModelsRoot( final Path path ) {
-      super( path );
+   private static final String PATH_SEPARATOR = "/";
+
+   public StructuredModelsRoot( Path modelsRoot ) {
+      super( modelsRoot.toUri() );
+   }
+
+   public StructuredModelsRoot( final URI resource ) {
+      super( forUri( resource ).get() );
+   }
+
+   private static Try<URI> forUri( final URI uri ) {
+      return getModelRoot( uri )
+            .orElse( () -> Try.failure( new ModelResolutionException( "Could not locate models root directory for " + uri ) ) );
    }
 
    @Override
-   public Path directoryForNamespace( final AspectModelUrn urn ) {
-      return rootPath().resolve( urn.getNamespace() ).resolve( urn.getVersion() );
+   public URI directoryForNamespace( final AspectModelUrn urn ) {
+      return rootPath()
+            .resolve( urn.getNamespace() + PATH_SEPARATOR )
+            .resolve( urn.getVersion() + PATH_SEPARATOR );
    }
 
    @Override
    public String toString() {
       return "StructuredModelsRoot(rootPath=" + rootPath() + ")";
    }
+
+   /**
+    * From an input Aspect Model file, determines the models root directory if it exists
+    *
+    * @param input the input model uri
+    * @return the models root directory
+    */
+   public static Try<URI> getModelRoot( final URI input ) {
+      return Try.of( () -> new File( input ) )
+            .flatMap( StructuredModelsRoot::findModelsRoot )
+            .orElse( StructuredModelsRoot.findModelsRootFromUrl( input ) )
+            ;
+   }
+
+   private static Try<URI> findModelsRootFromUrl( URI input ) {
+      return Try.of( input::toURL )
+            //change path to parent
+            .mapTry( url -> {
+               var path = Paths.get( url.getPath(), "..", "..", "..", "." );
+               return new URL( url.getProtocol(), url.getHost(), url.getPort(), path.toString() );
+            } )
+            .mapTry( URL::toURI );
+   }
+
+   private static Try<URI> findModelsRoot( File file ) {
+      return Try.success( file.getParent() )
+            .map( parent -> Paths.get( parent, "..", ".." ) )
+            .map( Path::toFile )
+            .mapTry( File::getCanonicalFile )
+            .filter( path -> path.exists() && path.isDirectory() )
+            .map( File::toURI )
+            .toTry( () -> new ModelResolutionException( "Could not locate models root directory for " + file ) );
+   }
+
 }

@@ -13,8 +13,7 @@
 
 package org.eclipse.esmf.aspect;
 
-import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.fileToUrn;
-import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.loadButNotResolveModel;
+import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.*;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -51,7 +50,7 @@ public class AspectMigrateCommand extends AbstractCommand {
    public void run() {
       try ( final PrintWriter printWriter = new PrintWriter( getStreamForFile( outputFilePath ) ) ) {
          final File inputFile = new File( parentCommand.getInput() ).getAbsoluteFile();
-         final AspectModelUrn aspectModelUrn = fileToUrn( inputFile ).get();
+         final AspectModelUrn aspectModelUrn = uriToUrn( parentCommand.getInput() ).get();
 
          final MigratorService migratorService = new MigratorService();
          loadButNotResolveModel( inputFile ).flatMap( migratorService::updateMetaModelVersion )

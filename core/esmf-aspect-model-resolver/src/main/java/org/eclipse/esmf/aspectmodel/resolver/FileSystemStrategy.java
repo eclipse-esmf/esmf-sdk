@@ -13,21 +13,25 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import static io.vavr.API.*;
+import static io.vavr.Predicates.instanceOf;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-
-import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Try;
 
 /**
  * Resolution strategy for Aspect model URNs that finds Aspect model files in the local file system.
@@ -77,7 +81,17 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
     */
    @Override
    public Try<Model> apply( final AspectModelUrn aspectModelUrn ) {
-      final Path directory = modelsRoot.directoryForNamespace( aspectModelUrn );
+      Try<Path> tryPath = Try.of( () -> new File( modelsRoot.directoryForNamespace( aspectModelUrn ) ) ).map( File::toPath );
+      if ( tryPath.isFailure() ) {
+         //noinspection unchecked
+         return tryPath.map( __ -> (Model) null ).mapFailure(
+               Case(
+                     $( instanceOf( IllegalArgumentException.class ) ),
+                     e -> new IllegalArgumentException( "Could not locate models root directory for " + aspectModelUrn, e )
+               )
+         );
+      }
+      final Path directory = tryPath.get();
       final File namedResourceFile = directory.resolve( aspectModelUrn.getName() + ".ttl" ).toFile();
       if ( namedResourceFile.exists() ) {
          return loadFromUri( namedResourceFile.toURI() );
@@ -114,4 +128,5 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
    public String toString() {
       return "FileSystemStrategy(root=" + modelsRoot + ')';
    }
+
 }

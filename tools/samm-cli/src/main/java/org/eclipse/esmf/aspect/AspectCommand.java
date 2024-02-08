@@ -13,6 +13,9 @@
 
 package org.eclipse.esmf.aspect;
 
+import java.io.File;
+import java.net.URI;
+
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.exception.SubCommandException;
@@ -40,11 +43,25 @@ public class AspectCommand extends AbstractCommand {
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
 
-   @CommandLine.Parameters( paramLabel = "INPUT", description = "Input file name of the Aspect Model .ttl file", arity = "1", index = "0" )
+   @CommandLine.Parameters( paramLabel = "INPUT", description = "Input file name of the Aspect Model .ttl file or URI", arity = "1", index = "0" )
    private String input;
+   private URI inputUri;
 
-   public String getInput() {
-      return input;
+   public URI getInput() {
+      if ( inputUri == null ) {
+         var file = new File( input );
+         if ( file.exists() )
+            inputUri = file.toURI();
+         else {
+            try {
+               inputUri = URI.create( input );
+            } catch ( final IllegalArgumentException e ) {
+               throw new SubCommandException( "The file does not exist or invalid input URI: " + input );
+            }
+         }
+      }
+
+      return inputUri;
    }
 
    @Override
