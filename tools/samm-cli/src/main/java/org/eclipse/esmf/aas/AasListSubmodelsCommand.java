@@ -1,17 +1,19 @@
 package org.eclipse.esmf.aas;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.aspectmodel.aas.AasToAspectModelGenerator;
 import org.eclipse.esmf.exception.CommandException;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AasListSubmodelsCommand.COMMAND_NAME, description = "Get list submodel templates of AAS input.",
+@CommandLine.Command( name = AasListSubmodelsCommand.COMMAND_NAME, description = "Get list of submodel templates of AAS input",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n",
@@ -30,19 +32,16 @@ public class AasListSubmodelsCommand extends AbstractCommand {
    public void run() {
       final String path = parentCommand.getInput();
       final String extension = FilenameUtils.getExtension( path );
-      if ( !extension.equals( "xml" ) && !extension.equals( "json" ) && !extension.equals( "aasx" ) ) {
-         throw new CommandException( "Input file name must be an .xml, .aasx or .json file" );
+
+      if ( Arrays.stream( AasFileFormat.values() ).noneMatch( format -> format.toString().equals( extension ) ) ) {
+         throw new CommandException( "Input file name must be one of " + AasFileFormat.allValues() );
       }
 
-      List<String> submodelNames = AasToAspectModelGenerator.fromFile( new File( path ) ).getSubmodelNames();
+      final List<String> submodelNames = AasToAspectModelGenerator.fromFile( new File( path ) ).getSubmodelNames();
 
-      for ( String submodelName : submodelNames ) {
-         int count = submodelNames.indexOf( submodelName );
-         if ( count < 10 ) {
-            System.out.printf( " %s: %s%n", count + 1, submodelName );
-         } else {
-            System.out.printf( "%s: %s%n", count + 1, submodelName );
-         }
+      for ( final String submodelName : submodelNames ) {
+         final int index = submodelNames.indexOf( submodelName );
+         System.out.printf( "%2s: %s%n", index + 1, submodelName );
       }
    }
 }

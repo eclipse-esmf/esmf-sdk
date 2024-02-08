@@ -139,10 +139,10 @@ The available options and their meaning can also be seen in the help text of the
 .3+| aas <aas file> to aspect      | Translate Asset Administration Shell (AAS) Submodel Templates to Aspect Models          | `samm aas AssetAdminShell.aasx to aspect`
                                    | _--output-directory, -d_ : output directory to write files to (default:
                                        current directory)                                                                    |
-                                   | _--submodel-template, -s_ : selected submodel for generating. For getting these options
-                                       run `aas <aas file> list` command.                                                    | `samm aas AssetAdminShell.aasx to aspect -s 1 -s 2`
+                                   | _--submodel-template, -s_ : selected submodel template for generating;
+                                       run `samm aas <aas file> list` to list them.                                          | `samm aas AssetAdminShell.aasx to aspect -s 1 -s 2`
 .1+| aas <aas file> list           | Retrieve a list of submodel templates contained within the provided
-                                      Asset Administration Shell (AAS) file.                                                 | `samm ass AssetAdminShell.aasx list`
+                                       Asset Administration Shell (AAS) file.                                                | `samm ass AssetAdminShell.aasx list`
 
 |===
 

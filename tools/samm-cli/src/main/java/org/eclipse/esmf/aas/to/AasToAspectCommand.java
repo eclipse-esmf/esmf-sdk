@@ -8,6 +8,7 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.esmf.AbstractCommand;
@@ -40,8 +41,7 @@ public class AasToAspectCommand extends AbstractCommand {
    @CommandLine.Option( names = { "--output-directory", "-d" }, description = "Output directory to write files to" )
    private String outputPath = ".";
 
-   @CommandLine.Option( names = { "--submodel-template", "-s" },
-         description = "Select one or a few options for generation an Aspect Model from AAS. Before run 'list' command for getting possible options." )
+   @CommandLine.Option( names = { "--submodel-template", "-s" }, description = "Select the submodel template(s) to include, as returned by the aas list command" )
    private List<Integer> selectedOptions = new ArrayList<>();
 
    @CommandLine.Mixin
@@ -61,12 +61,10 @@ public class AasToAspectCommand extends AbstractCommand {
       final StructuredModelsRoot modelsRoot = new StructuredModelsRoot( Path.of( outputPath ) );
       final List<Aspect> generatedAspects = generator.generateAspects();
 
-      List<Aspect> filteredAspects = generatedAspects;
-      if ( !this.selectedOptions.isEmpty() ) {
-         filteredAspects = this.selectedOptions.stream()
-               .map( index -> generatedAspects.get( index - 1 ) )
-               .toList();
-      }
+      final List<Aspect> filteredAspects = IntStream.range( 0, generatedAspects.size() )
+            .filter( index -> selectedOptions.contains( index + 1 ) )
+            .mapToObj( generatedAspects::get )
+            .toList();
 
       for ( final Aspect aspect : filteredAspects ) {
          final String aspectString = AspectSerializer.INSTANCE.apply( aspect );
