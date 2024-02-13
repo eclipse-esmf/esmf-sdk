@@ -11,6 +11,7 @@ import picocli.CommandLine;
       subcommands = {
             CommandLine.HelpCommand.class,
             AasToCommand.class,
+            AasListSubmodelsCommand.class
       },
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",

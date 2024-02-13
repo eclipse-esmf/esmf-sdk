@@ -6,19 +6,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aas.AasToCommand;
 import org.eclipse.esmf.aspectmodel.aas.AasToAspectModelGenerator;
+import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
-
-import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import picocli.CommandLine;
 
 @CommandLine.Command(
@@ -38,6 +41,10 @@ public class AasToAspectCommand extends AbstractCommand {
    @CommandLine.Option( names = { "--output-directory", "-d" }, description = "Output directory to write files to" )
    private String outputPath = ".";
 
+   @CommandLine.Option( names = { "--submodel-template",
+         "-s" }, description = "Select the submodel template(s) to include, as returned by the aas list command" )
+   private List<Integer> selectedOptions = new ArrayList<>();
+
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
 
@@ -53,7 +60,15 @@ public class AasToAspectCommand extends AbstractCommand {
 
    private void generateAspects( final AasToAspectModelGenerator generator ) {
       final StructuredModelsRoot modelsRoot = new StructuredModelsRoot( Path.of( outputPath ) );
-      for ( final Aspect aspect : generator.generateAspects() ) {
+      final List<Aspect> generatedAspects = generator.generateAspects();
+
+      final List<Aspect> filteredAspects = this.selectedOptions.isEmpty() ? generatedAspects :
+            IntStream.range( 0, generatedAspects.size() )
+                  .filter( index -> selectedOptions.contains( index + 1 ) )
+                  .mapToObj( generatedAspects::get )
+                  .toList();
+
+      for ( final Aspect aspect : filteredAspects ) {
          final String aspectString = AspectSerializer.INSTANCE.apply( aspect );
          final File targetFile = modelsRoot.determineAspectModelFile( aspect.getAspectModelUrn().get() );
          LOG.info( "Writing {}", targetFile.getAbsolutePath() );
