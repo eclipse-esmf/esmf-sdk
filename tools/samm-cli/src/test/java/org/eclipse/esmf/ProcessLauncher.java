@@ -47,9 +47,9 @@ public abstract class ProcessLauncher implements Function<ProcessLauncher.Execut
       return result;
    }
 
-   public static record ExecutionContext(List<String> arguments, Optional<byte[]> stdin, File workingDirectory) {
+   public static record ExecutionContext( List<String> arguments, Optional<byte[]> stdin, File workingDirectory ) {
    }
 
-   public static record ExecutionResult(int exitStatus, String stdout, String stderr, byte[] stdoutRaw, byte[] stderrRaw) {
+   public static record ExecutionResult( int exitStatus, String stdout, String stderr, byte[] stdoutRaw, byte[] stderrRaw ) {
    }
 }
