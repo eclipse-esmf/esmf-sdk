@@ -15,12 +15,13 @@ package org.eclipse.esmf.test;
 
 import java.io.StringWriter;
 
-import org.apache.jena.rdf.model.Model;
-
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+
+import org.apache.jena.rdf.model.Model;
 
 public interface TestSharedModel {
    String TEST_NAMESPACE = "urn:samm:org.eclipse.esmf.test.shared:1.0.0#";
+
    String getName();
 
    default AspectModelUrn getUrn() {

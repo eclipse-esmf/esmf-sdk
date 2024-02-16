@@ -22,7 +22,6 @@ import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import jakarta.validation.constraints.NotNull;
 
 /** Generated class for AspectWithGTypeForRangeConstraints. */

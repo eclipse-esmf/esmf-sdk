@@ -64,8 +64,8 @@ public class QualifiedName {
          return false;
       }
       final QualifiedName that = (QualifiedName) o;
-      return Objects.equals( className, that.className ) &&
-             Objects.equals( packageName, that.packageName );
+      return Objects.equals( className, that.className )
+            && Objects.equals( packageName, that.packageName );
    }
 
    @Override

@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.characteristic.Either;
-
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
@@ -89,8 +88,8 @@ public class DefaultEither extends DefaultCharacteristic implements Either {
          return false;
       }
       final DefaultEither that = (DefaultEither) o;
-      return Objects.equals( left, that.left ) &&
-            Objects.equals( right, that.right );
+      return Objects.equals( left, that.left )
+            && Objects.equals( right, that.right );
    }
 
    @Override

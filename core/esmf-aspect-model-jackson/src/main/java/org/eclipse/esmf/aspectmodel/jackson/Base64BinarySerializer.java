@@ -15,11 +15,11 @@ package org.eclipse.esmf.aspectmodel.jackson;
 
 import java.io.IOException;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-
-import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 
 public class Base64BinarySerializer extends StdSerializer<byte[]> {
    private static final long serialVersionUID = 2028371627433200656L;

@@ -15,7 +15,6 @@ package org.eclipse.esmf.test.shared.compiler;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaFileObject;
@@ -33,7 +32,8 @@ public class InMemoryClassFileManager extends ForwardingJavaFileManager<Standard
    }
 
    @Override
-   public JavaFileObject getJavaFileForOutput( final Location location, final String className, final JavaFileObject.Kind kind, final FileObject sibling ) {
+   public JavaFileObject getJavaFileForOutput( final Location location, final String className, final JavaFileObject.Kind kind,
+         final FileObject sibling ) {
       final CompilerOutput compilerOutput = new CompilerOutput( className, kind );
       output.put( className, compilerOutput );
       return compilerOutput;

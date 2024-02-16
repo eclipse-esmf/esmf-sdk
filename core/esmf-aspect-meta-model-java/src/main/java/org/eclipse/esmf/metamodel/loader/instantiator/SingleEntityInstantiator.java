@@ -13,14 +13,14 @@
 
 package org.eclipse.esmf.metamodel.loader.instantiator;
 
-import org.apache.jena.rdf.model.Resource;
-
 import org.eclipse.esmf.characteristic.SingleEntity;
-import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.characteristic.impl.DefaultSingleEntity;
+import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 public class SingleEntityInstantiator extends Instantiator<SingleEntity> {
    public SingleEntityInstantiator( final ModelElementFactory modelElementFactory ) {

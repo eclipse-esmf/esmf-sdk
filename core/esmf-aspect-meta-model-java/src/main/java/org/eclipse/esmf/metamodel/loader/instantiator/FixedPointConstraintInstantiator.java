@@ -13,13 +13,13 @@
 
 package org.eclipse.esmf.metamodel.loader.instantiator;
 
-import org.apache.jena.rdf.model.Resource;
-
 import org.eclipse.esmf.constraint.FixedPointConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultFixedPointConstraint;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 public class FixedPointConstraintInstantiator extends Instantiator<FixedPointConstraint> {
    public FixedPointConstraintInstantiator( final ModelElementFactory modelElementFactory ) {

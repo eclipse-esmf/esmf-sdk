@@ -17,7 +17,6 @@ import org.eclipse.esmf.aspectmodel.generator.Artifact;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.aspectmodel.java.QualifiedName;
-
 import org.eclipse.esmf.metamodel.ModelElement;
 
 /**

@@ -18,6 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.google.common.collect.Streams;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -26,10 +30,6 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
-import org.eclipse.esmf.samm.KnownVersion;
-
-import com.google.common.collect.Streams;
 
 /**
  * Abstract migration function that is used to apply a change to all URIs in a model
@@ -41,6 +41,7 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
 
    /**
     * The URI rewriter implementation decides whether a URI needs to be rewritten, given the map of old to new namespaces
+    *
     * @param oldUri the URI to rewrite
     * @param oldToNewNamespaces the map of old to new namespaces
     * @return empty if the URI should be kept as-is, the replacement URI otherwise
@@ -101,8 +102,8 @@ public abstract class AbstractUriRewriter extends AbstractSammMigrator {
     */
    protected Map<String, String> buildPrefixMap( final Model sourceModel, final Map<String, String> targetPrefixes,
          final Map<String, String> oldToNewNamespaces ) {
-      return sourceModel.getNsPrefixMap().keySet().stream()
-            .map( prefix -> Map.<String, String> entry( prefix, targetPrefixes.getOrDefault( prefix, sourceModel.getNsPrefixURI( prefix ) ) ) )
+      return sourceModel.getNsPrefixMap().keySet().stream().map( prefix ->
+                  Map.<String, String> entry( prefix, targetPrefixes.getOrDefault( prefix, sourceModel.getNsPrefixURI( prefix ) ) ) )
             .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
    }
 

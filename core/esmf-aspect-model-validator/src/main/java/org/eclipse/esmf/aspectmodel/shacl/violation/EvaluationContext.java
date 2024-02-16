@@ -66,8 +66,9 @@ public record EvaluationContext( Resource element, Shape shape, Optional<Shape.P
 
    public String shortUri( final String uri ) {
       final String shortened = element().getModel().shortForm( uri );
-      return shortened.equals( uri ) ?
-            validator().getShapesModel().shortForm( uri ) : shortened;
+      return shortened.equals( uri )
+            ? validator().getShapesModel().shortForm( uri )
+            : shortened;
    }
 
    public String elementName() {

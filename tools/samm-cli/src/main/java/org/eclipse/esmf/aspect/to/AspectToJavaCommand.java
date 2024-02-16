@@ -30,6 +30,7 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToJavaCommand.COMMAND_NAME,
@@ -42,7 +43,8 @@ import picocli.CommandLine;
 public class AspectToJavaCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "java";
 
-   @CommandLine.Option( names = { "--no-jackson", "-nj" }, description = "Disable Jackson annotation generation in generated Java classes." )
+   @CommandLine.Option( names = { "--no-jackson",
+         "-nj" }, description = "Disable Jackson annotation generation in generated Java classes." )
    private boolean disableJacksonAnnotations = false;
 
    @CommandLine.Option( names = { "--template-library-file", "-tlf" },
@@ -52,7 +54,8 @@ public class AspectToJavaCommand extends AbstractCommand {
    @CommandLine.Option( names = { "--package-name", "-pn" }, description = "Package to use for generated Java classes" )
    private String packageName = "";
 
-   @CommandLine.Option( names = { "--execute-library-macros", "-elm" }, description = "Execute the macros provided in the Velocity macro library." )
+   @CommandLine.Option( names = { "--execute-library-macros",
+         "-elm" }, description = "Execute the macros provided in the Velocity macro library." )
    private boolean executeLibraryMacros = false;
 
    @CommandLine.Option( names = { "--output-directory", "-d" }, description = "Output directory to write files to" )
@@ -73,7 +76,9 @@ public class AspectToJavaCommand extends AbstractCommand {
    @Override
    public void run() {
       final AspectContext context = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
-      final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses ? getStaticModelGenerator( context ) : getModelGenerator( context );
+      final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses
+            ? getStaticModelGenerator( context )
+            : getModelGenerator( context );
       javaGenerator.generate( artifact -> {
          final String path = artifact.getPackageName();
          final String fileName = artifact.getClassName();

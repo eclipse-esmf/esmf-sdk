@@ -27,10 +27,11 @@ import java.util.stream.Collectors;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 
 /**
- * An instance of this class encapsulates the information normally stored by {@link ReflectionHelper}. It is used in its substitution class,
- * see {@link Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper} for more information.
- * This class provides capabilities to serialize and deserialize its objects to/from a {@link Properties} object; more convenient serialization
- * (e.g., Java's builtin serialization or Jackson's ObjectMapper) can't be used here due to the limitations of the GraalVM substitution classes.
+ * An instance of this class encapsulates the information normally stored by {@link ReflectionHelper}. It is used in its substitution
+ * class, see {@link Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper} for more information.
+ * This class provides capabilities to serialize and deserialize its objects to/from a {@link Properties} object; more convenient
+ * serialization (e.g., Java's builtin serialization or Jackson's ObjectMapper) can't be used here due to the limitations of the GraalVM
+ * substitution classes.
  */
 public class AdminShellConfig {
    public Set<Class<?>> typesWithModelType;
@@ -79,7 +80,8 @@ public class AdminShellConfig {
       properties.setProperty( DEFAULT_IMPLEMENTATIONS, serialize( defaultImplementations, this::serialize ) );
       properties.setProperty( INTERFACES, serialize( interfaces, this::serialize ) );
       properties.setProperty( ENUMS, serialize( enums, this::serialize ) );
-      properties.setProperty( INTERFACES_WITHOUT_DEFAULT_IMPLEMENTATION, serialize( interfacesWithoutDefaultImplementation, this::serialize ) );
+      properties.setProperty( INTERFACES_WITHOUT_DEFAULT_IMPLEMENTATION,
+            serialize( interfacesWithoutDefaultImplementation, this::serialize ) );
       return properties;
    }
 
@@ -91,7 +93,8 @@ public class AdminShellConfig {
       }
    }
 
-   private static <T, C extends Collection<T>> C deserializeCollection( final String collection, final Function<String, T> elementDeserializer,
+   private static <T, C extends Collection<T>> C deserializeCollection( final String collection,
+         final Function<String, T> elementDeserializer,
          final Collector<? super T, ?, C> collector ) {
       return Arrays.asList( collection.split( "," ) ).stream()
             .filter( entry -> !entry.isEmpty() )
@@ -117,17 +120,23 @@ public class AdminShellConfig {
 
    public static AdminShellConfig fromProperties( final Properties properties ) {
       final AdminShellConfig config = new AdminShellConfig();
-      config.typesWithModelType = deserializeCollection( properties.getProperty( TYPES_WITH_MODEL_TYPE ), AdminShellConfig::deserializeClass,
+      config.typesWithModelType = deserializeCollection( properties.getProperty( TYPES_WITH_MODEL_TYPE ),
+            AdminShellConfig::deserializeClass,
             Collectors.toSet() );
       config.subtypes = deserializeMap( properties.getProperty( SUBTYPES ), AdminShellConfig::deserializeClass,
             set -> deserializeCollection( set, AdminShellConfig::deserializeClass, Collectors.toSet() ) );
-      config.jsonMixins = deserializeMap( properties.getProperty( JSON_MIXINS ), AdminShellConfig::deserializeClass, AdminShellConfig::deserializeClass );
-      config.xmlMixins = deserializeMap( properties.getProperty( XML_MIXINS ), AdminShellConfig::deserializeClass, AdminShellConfig::deserializeClass );
+      config.jsonMixins = deserializeMap( properties.getProperty( JSON_MIXINS ), AdminShellConfig::deserializeClass,
+            AdminShellConfig::deserializeClass );
+      config.xmlMixins = deserializeMap( properties.getProperty( XML_MIXINS ), AdminShellConfig::deserializeClass,
+            AdminShellConfig::deserializeClass );
       config.defaultImplementations = deserializeCollection( properties.getProperty( DEFAULT_IMPLEMENTATIONS ),
             AdminShellConfig::deserializeImplementationInfo, Collectors.toList() );
-      config.interfaces = deserializeCollection( properties.getProperty( INTERFACES ), AdminShellConfig::deserializeClass, Collectors.toSet() );
-      config.enums = deserializeCollection( properties.getProperty( ENUMS ), element -> (Class<Enum>) deserializeClass( element ), Collectors.toList() );
-      config.interfacesWithoutDefaultImplementation = deserializeCollection( properties.getProperty( INTERFACES_WITHOUT_DEFAULT_IMPLEMENTATION ),
+      config.interfaces = deserializeCollection( properties.getProperty( INTERFACES ), AdminShellConfig::deserializeClass,
+            Collectors.toSet() );
+      config.enums = deserializeCollection( properties.getProperty( ENUMS ), element -> (Class<Enum>) deserializeClass( element ),
+            Collectors.toList() );
+      config.interfacesWithoutDefaultImplementation = deserializeCollection(
+            properties.getProperty( INTERFACES_WITHOUT_DEFAULT_IMPLEMENTATION ),
             AdminShellConfig::deserializeClass, Collectors.toSet() );
       return config;
    }

@@ -22,29 +22,32 @@ import org.apache.jena.rdf.model.Resource;
 public sealed interface Target permits Target.Class, Target.Node, Target.ObjectsOf, Target.Sparql, Target.SubjectsOf {
    /**
     * Implements {@code sh:targetClass}. This means that this shape applies to elements of the given class.
-    * @param class_ the referred class
+    *
+    * @param clazz the referred class
     */
-   record Class(Resource class_) implements Target {
+   record Class( Resource clazz ) implements Target {
    }
 
-   record Node(Resource node) implements Target {
+   record Node( Resource node ) implements Target {
    }
 
-   record ObjectsOf(org.apache.jena.rdf.model.Property property) implements Target {
+   record ObjectsOf( org.apache.jena.rdf.model.Property property ) implements Target {
    }
 
    /**
     * Implements {@code sh:targetSubjectsOf}. This means that the shape applies to all elements that use a certain property.
+    *
     * @param property the given property
     */
-   record SubjectsOf(org.apache.jena.rdf.model.Property property) implements Target {
+   record SubjectsOf( org.apache.jena.rdf.model.Property property ) implements Target {
    }
 
    /**
     * Implements {@code sh:target [ a sh:SPARQLTarget ... ]}. This means that the shape applies to all elements returned
     * by a given SPARQL query
+    *
     * @param query the given SPARQL query
     */
-   record Sparql(Query query) implements Target {
+   record Sparql( Query query ) implements Target {
    }
 }

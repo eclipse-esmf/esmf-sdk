@@ -15,13 +15,13 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.nio.charset.Charset;
 
-import org.apache.jena.rdf.model.Resource;
-
 import org.eclipse.esmf.constraint.EncodingConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultEncodingConstraint;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 public class EncodingConstraintInstantiator extends Instantiator<EncodingConstraint> {
    public EncodingConstraintInstantiator( final ModelElementFactory modelElementFactory ) {

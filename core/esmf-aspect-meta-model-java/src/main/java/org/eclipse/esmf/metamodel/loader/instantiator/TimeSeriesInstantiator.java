@@ -15,15 +15,15 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Resource;
-
-import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.characteristic.TimeSeries;
-import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.characteristic.impl.DefaultTimeSeries;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 public class TimeSeriesInstantiator extends Instantiator<TimeSeries> {
    public TimeSeriesInstantiator( final ModelElementFactory modelElementFactory ) {
@@ -34,9 +34,9 @@ public class TimeSeriesInstantiator extends Instantiator<TimeSeries> {
    public TimeSeries apply( final Resource timeSeries ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( timeSeries );
       final Optional<Characteristic> elementCharacteristic = getElementCharacteristic( timeSeries );
-      final Optional<Type> dataType = elementCharacteristic.isPresent() ?
-            elementCharacteristic.get().getDataType() :
-            Optional.of( getType( timeSeries ) );
+      final Optional<Type> dataType = elementCharacteristic.isPresent()
+            ? elementCharacteristic.get().getDataType()
+            : Optional.of( getType( timeSeries ) );
       return new DefaultTimeSeries( metaModelBaseAttributes, dataType, elementCharacteristic );
    }
 }

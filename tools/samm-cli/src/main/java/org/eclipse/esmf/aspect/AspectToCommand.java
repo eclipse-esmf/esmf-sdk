@@ -13,17 +13,15 @@
 
 package org.eclipse.esmf.aspect;
 
-import org.eclipse.esmf.aspect.to.AspectToAasCommand;
-import org.eclipse.esmf.aspect.to.AspectToJsonCommand;
-import org.eclipse.esmf.aspect.to.AspectToJsonSchemaCommand;
-import org.eclipse.esmf.aspect.to.AspectToPngCommand;
-
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
-
+import org.eclipse.esmf.aspect.to.AspectToAasCommand;
 import org.eclipse.esmf.aspect.to.AspectToHtmlCommand;
 import org.eclipse.esmf.aspect.to.AspectToJavaCommand;
+import org.eclipse.esmf.aspect.to.AspectToJsonCommand;
+import org.eclipse.esmf.aspect.to.AspectToJsonSchemaCommand;
 import org.eclipse.esmf.aspect.to.AspectToOpenapiCommand;
+import org.eclipse.esmf.aspect.to.AspectToPngCommand;
 import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
 import org.eclipse.esmf.exception.SubCommandException;
 

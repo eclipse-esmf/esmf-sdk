@@ -19,18 +19,17 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
+import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NumericNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.metamodel.Type;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NumericNode;
-import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * Provides often needed information about various properties of the numeric types
@@ -43,28 +42,27 @@ public class NumericTypeTraits {
    private static final List<Class<?>> FLOATING_POINT_TYPES = List.of( Float.class, Double.class, BigDecimal.class );
    private static final List<Class<?>> UNBOUNDED_TYPES = List.of( BigDecimal.class, BigInteger.class );
 
-   private static final Map<Class<?>, BiFunction<Number, Float, Number>> ADDERS = Map.of (
-         Byte.class, ( base, add ) ->  (byte) ( base.byteValue() + add.byteValue() ),
-         Short.class, ( base, add ) -> (short) ( base.shortValue() + add.shortValue() ),
+   private static final Map<Class<?>, BiFunction<Number, Float, Number>> ADDERS = Map.of(
+         Byte.class, ( base, add ) -> (byte) (base.byteValue() + add.byteValue()),
+         Short.class, ( base, add ) -> (short) (base.shortValue() + add.shortValue()),
          Integer.class, ( base, add ) -> base.intValue() + add.intValue(),
-         Long.class, ( base, add ) ->  base.longValue() + add.longValue(),
+         Long.class, ( base, add ) -> base.longValue() + add.longValue(),
          Float.class, ( base, add ) -> base.floatValue() + add,
          Double.class, ( base, add ) -> base.doubleValue() + add,
-         BigInteger.class, ( base, add ) -> ( (BigInteger) base).add( BigInteger.valueOf( add.longValue() ) )
+         BigInteger.class, ( base, add ) -> ((BigInteger) base).add( BigInteger.valueOf( add.longValue() ) )
    );
 
    private static final Map<Class<?>, Function<Number, BigDecimal>> CONVERTERS = Map.of(
-         Long.class, number ->  BigDecimal.valueOf( number.longValue() ),
+         Long.class, number -> BigDecimal.valueOf( number.longValue() ),
          BigInteger.class, number -> new BigDecimal( (BigInteger) number ),
-         BigDecimal.class, number -> (BigDecimal) number
+         BigDecimal.class, BigDecimal.class::cast
    );
 
    /**
     * Does the given Java numeric type represent a floating point number type?
     *
     * @param valueType one of the native Java numeric types
-    * @return true, when the given type is one of the floating point types
-    *         false otherwise (integral numeric type)
+    * @return true, when the given type is one of the floating point types false otherwise (integral numeric type)
     */
    public static boolean isFloatingPointNumberType( final java.lang.reflect.Type valueType ) {
       return FLOATING_POINT_TYPES.contains( valueType );
@@ -77,8 +75,9 @@ public class NumericTypeTraits {
     * @param add number to add
     * @return result of the operation, has the same numeric type as the base
     */
-   public static Number polymorphicAdd( Number base, float add ) {
-      return ADDERS.getOrDefault( base.getClass(), ( num, adder ) -> ( (BigDecimal) num).add( BigDecimal.valueOf( adder ) ) ).apply( base, add );
+   public static Number polymorphicAdd( final Number base, final float add ) {
+      return ADDERS.getOrDefault( base.getClass(), ( num, adder ) -> ((BigDecimal) num).add( BigDecimal.valueOf( adder ) ) )
+            .apply( base, add );
    }
 
    /**
@@ -87,7 +86,7 @@ public class NumericTypeTraits {
     * @param number number to convert to BigDecimal
     * @return result
     */
-   public static BigDecimal convertToBigDecimal( Number number ) {
+   public static BigDecimal convertToBigDecimal( final Number number ) {
       return CONVERTERS.getOrDefault( number.getClass(), num -> BigDecimal.valueOf( num.doubleValue() ) ).apply( number );
    }
 
@@ -167,10 +166,11 @@ public class NumericTypeTraits {
       return getModelBound( dataTypeResource, valueType, ModelBounds.MAX_VALUE );
    }
 
-   private static Number getModelBound( final Resource dataTypeResource, final java.lang.reflect.Type valueType, final ModelBounds whichBound ) {
-      Map<String, JsonNode> dataTypeConstraints = AspectModelJsonSchemaVisitor.openApiTypeData.get( dataTypeResource );
+   private static Number getModelBound( final Resource dataTypeResource, final java.lang.reflect.Type valueType,
+         final ModelBounds whichBound ) {
+      final Map<String, JsonNode> dataTypeConstraints = AspectModelJsonSchemaVisitor.OPEN_API_TYPE_DATA.get( dataTypeResource );
       if ( null != dataTypeConstraints ) {
-         NumericNode bound = (NumericNode) dataTypeConstraints.get( whichBound.getValue() );
+         final NumericNode bound = (NumericNode) dataTypeConstraints.get( whichBound.getValue() );
          if ( null != bound ) {
             return bound.numberValue();
          }
@@ -183,8 +183,14 @@ public class NumericTypeTraits {
       MAX_VALUE( "maximum" );
 
       private final String value;
-      ModelBounds( final String s ) { value = s; }
-      public String getValue() { return value; }
+
+      ModelBounds( final String s ) {
+         value = s;
+      }
+
+      public String getValue() {
+         return value;
+      }
    }
 
    private enum NativeBounds {
@@ -192,25 +198,31 @@ public class NumericTypeTraits {
       MAX_VALUE( "MAX_VALUE" );
 
       private final String value;
-      NativeBounds( final String s ) { value = s; }
-      public String getValue() { return value; }
+
+      NativeBounds( final String s ) {
+         value = s;
+      }
+
+      public String getValue() {
+         return value;
+      }
    }
 
    private static Number getNativeBound( final java.lang.reflect.Type valueType, final NativeBounds whichBound ) {
-      if ( UNBOUNDED_TYPES.contains( valueType )) {
+      if ( UNBOUNDED_TYPES.contains( valueType ) ) {
          // for BigDecimal and BigInteger, get the widest range we technically have (that of the Double class)
-         BigDecimal bigBound = BigDecimal.valueOf( getNativeBound( Double.class, whichBound ).doubleValue() );
+         final BigDecimal bigBound = BigDecimal.valueOf( getNativeBound( Double.class, whichBound ).doubleValue() );
          return BigDecimal.class.equals( valueType.getClass() ) ? bigBound : bigBound.toBigInteger();
       }
       // inconsistent API: for Double and Float the MIN_VALUE returns semantically something different than for the other types
       if ( NumericTypeTraits.isFloatingPointNumberType( valueType ) ) {
-         Number max = (Number) getStaticFieldValue( valueType, NativeBounds.MAX_VALUE.getValue() );
+         final Number max = (Number) getStaticFieldValue( valueType, NativeBounds.MAX_VALUE.getValue() );
          return NativeBounds.MAX_VALUE.equals( whichBound ) ? max : getMinFromMax( max );
       }
       return (Number) getStaticFieldValue( valueType, whichBound.getValue() );
    }
 
-   private static Number getMinFromMax( Number max ) {
+   private static Number getMinFromMax( final Number max ) {
       if ( Double.class.equals( max.getClass() ) ) {
          return -max.doubleValue();
       } else {
@@ -220,12 +232,12 @@ public class NumericTypeTraits {
 
    // We take advantage of the fact that most relevant Java classes have a static fields named "MIN_VALUE" and "MAX_VALUE"
    // and the resulting values are polymorphic over the Number class.
-   private static Object getStaticFieldValue( final java.lang.reflect.Type valueType, String fieldName ) {
+   private static Object getStaticFieldValue( final java.lang.reflect.Type valueType, final String fieldName ) {
       try {
          return Class.forName( valueType.getTypeName() )
                .getField( fieldName )
                .get( null );
-      } catch(Exception e) {
+      } catch ( final Exception e ) {
          LOG.error( "Exception {}, caused by unexpected data type: {}", e, valueType.getTypeName() );
          return 0;
       }

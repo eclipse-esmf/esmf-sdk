@@ -19,11 +19,10 @@ import java.util.StringJoiner;
 
 import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.metamodel.Unit;
-
-import com.google.common.base.Objects;
-
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+
+import com.google.common.base.Objects;
 
 public class DefaultUnit extends ModelElementImpl implements Unit {
    private final Optional<String> symbol;
@@ -81,8 +80,8 @@ public class DefaultUnit extends ModelElementImpl implements Unit {
          return false;
       }
       final DefaultUnit that = (DefaultUnit) o;
-      return Objects.equal( getName(), that.getName() ) &&
-            Objects.equal( code, that.code );
+      return Objects.equal( getName(), that.getName() )
+            && Objects.equal( code, that.code );
    }
 
    @Override

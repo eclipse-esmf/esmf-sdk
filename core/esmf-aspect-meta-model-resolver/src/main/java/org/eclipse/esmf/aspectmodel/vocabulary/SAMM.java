@@ -12,14 +12,17 @@
  */
 package org.eclipse.esmf.aspectmodel.vocabulary;
 
+import org.eclipse.esmf.samm.KnownVersion;
+
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-
-import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * The RDF jena vocabulary of the aspect meta model.
  */
+// Since the class is an RDF vocabulary, naming rules for the class and for several methods (which should be named identically
+// to the corresponding model elements) are suppressed.
+@SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "NewMethodNamingConvention" } )
 public class SAMM implements Namespace {
    final KnownVersion metaModelVersion;
    private static final String BASE_URI = "urn:samm:org.eclipse.esmf.samm:";
@@ -69,22 +72,21 @@ public class SAMM implements Namespace {
    /**
     * @return a {@link Resource} for the samm:Property RDF Class definition.
     */
-   @SuppressWarnings( { "squid:S00100", "squid:S1845" } ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Property() {
       return resource( "Property" );
    }
 
-   @SuppressWarnings( { "squid:S00100", "squid:S1845" } ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource AbstractProperty() {
       return resource( "AbstractProperty" );
    }
 
-   @SuppressWarnings( { "squid:S00100", "squid:S1845" } ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Characteristic() {
       return resource( "Characteristic" );
    }
 
-   @SuppressWarnings( { "squid:S1845" } ) // Method name should match model element
    public Property characteristic() {
       return property( "characteristic" );
    }
@@ -93,7 +95,7 @@ public class SAMM implements Namespace {
       return property( "baseCharacteristic" );
    }
 
-   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Constraint() {
       return resource( "Constraint" );
    }
@@ -125,12 +127,11 @@ public class SAMM implements Namespace {
    /**
     * @return a {@link Property} for the samm:property RDF Property definition
     */
-   @SuppressWarnings( "squid:S1845" ) // Method name should match model element
    public Property property() {
       return property( "property" );
    }
 
-   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Aspect() {
       return resource( "Aspect" );
    }
@@ -151,26 +152,27 @@ public class SAMM implements Namespace {
       return property( "events" );
    }
 
-   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Operation() {
       return resource( "Operation" );
    }
 
-   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Event() {
       return resource( "Event" );
    }
 
-   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Entity() {
       return resource( "Entity" );
    }
 
-   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource AbstractEntity() {
       return resource( "AbstractEntity" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Property _extends() {
       return property( "extends" );
    }
@@ -179,17 +181,16 @@ public class SAMM implements Namespace {
       return property( "value" );
    }
 
-   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Unit() {
       return resource( "Unit" );
    }
 
-   @SuppressWarnings( "squid:S00100" ) // Method name should match model element
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource QuantityKind() {
       return resource( "QuantityKind" );
    }
 
-   @SuppressWarnings( "squid:S1845" ) // Method name should match model element
    public Property quantityKind() {
       return property( "quantityKind" );
    }

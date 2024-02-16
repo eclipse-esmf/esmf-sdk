@@ -15,14 +15,14 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.RDFNode;
-
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.NodeKindViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#DatatypeConstraintComponent">sh:datatype</a>
@@ -37,9 +37,9 @@ public record DatatypeConstraint( String allowedTypeUri ) implements Constraint 
       }
       final Literal value = rdfNode.asLiteral();
       final String actualTypeUri = value.getDatatypeURI();
-      return actualTypeUri.endsWith( allowedTypeUri ) ?
-            List.of() :
-            List.of( new DatatypeViolation( context, allowedTypeUri, actualTypeUri ) );
+      return actualTypeUri.endsWith( allowedTypeUri )
+            ? List.of()
+            : List.of( new DatatypeViolation( context, allowedTypeUri, actualTypeUri ) );
    }
 
    @Override

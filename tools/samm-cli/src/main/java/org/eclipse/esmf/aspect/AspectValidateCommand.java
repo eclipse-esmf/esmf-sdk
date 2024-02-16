@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
-import org.eclipse.esmf.JAnsiRdfSyntaxHighlighter;
+import org.eclipse.esmf.JansiRdfSyntaxHighlighter;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
@@ -68,7 +68,7 @@ public class AspectValidateCommand extends AbstractCommand {
       } else {
          LOG.debug( "Printing regular validation results" );
          final String message = versionedModel.map( model ->
-               new ViolationRustLikeFormatter( versionedModel.get().getRawModel(), new JAnsiRdfSyntaxHighlighter() ).apply(
+               new ViolationRustLikeFormatter( versionedModel.get().getRawModel(), new JansiRdfSyntaxHighlighter() ).apply(
                      violations ) ).getOrElse( () -> new ViolationFormatter().apply( violations ) );
          System.out.println( message );
       }

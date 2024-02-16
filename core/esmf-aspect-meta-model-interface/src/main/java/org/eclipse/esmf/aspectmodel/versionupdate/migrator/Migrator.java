@@ -15,9 +15,9 @@ package org.eclipse.esmf.aspectmodel.versionupdate.migrator;
 
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Model;
-
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+
+import org.apache.jena.rdf.model.Model;
 
 public interface Migrator {
 

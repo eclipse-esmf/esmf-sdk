@@ -15,11 +15,11 @@ package org.eclipse.esmf.aspectmodel.versionupdate.migrator;
 
 import java.util.Map;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
+
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 public class SammRemoveSammNameMigrator extends AbstractSammMigrator {
 

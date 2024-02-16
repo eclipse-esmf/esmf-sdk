@@ -25,8 +25,8 @@ import org.apache.jena.util.iterator.ExtendedIterator;
 public record JsGraph( Graph graph ) {
 
    @SuppressWarnings( "unused" ) // The find function is called from JavaScript contexts
-   public JSTripleIterator find( final Object subject, final Object predicate, final Object object ) {
-      return new JSTripleIterator( graph().find( getNode( subject ), getNode( predicate ), getNode( object ) ) );
+   public JsTripleIterator find( final Object subject, final Object predicate, final Object object ) {
+      return new JsTripleIterator( graph().find( getNode( subject ), getNode( predicate ), getNode( object ) ) );
    }
 
    private Node getNode( final Object obj ) {
@@ -39,10 +39,10 @@ public record JsGraph( Graph graph ) {
       }
    }
 
-   public static class JSTripleIterator {
+   public static class JsTripleIterator {
       private final ExtendedIterator<Triple> it;
 
-      JSTripleIterator( final ExtendedIterator<Triple> it ) {
+      JsTripleIterator( final ExtendedIterator<Triple> it ) {
          this.it = it;
       }
 

@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
  * The term "safe character" refers to an upper case letter, a digit, a colon, a period, or an underscore.
  * An IRDI uses only digits (0-9), upper case letters (A-Z) and the symbols {@code - # . : _}.
  */
-public class IRDI {
+public class Irdi {
    private static final int IRDI_MAX_LENGTH = 290;
    // Min/max lengths of attributes taken from ISO/TS 29002-5:2009(E) section 8.
    private static final Pattern IRDI_PATTERN = Pattern.compile( "N{1,4}-X{1,35}(-X{1,35}-A-X{1,70})?#X{1,2}-X{1,131}#N{1,10}"
@@ -54,7 +54,7 @@ public class IRDI {
 
    private final String lexicalRepresentation;
 
-   private IRDI( final String lexicalRepresentation ) {
+   private Irdi( final String lexicalRepresentation ) {
       this.lexicalRepresentation = lexicalRepresentation;
    }
 
@@ -64,9 +64,9 @@ public class IRDI {
     * @param string the lexical representation
     * @return the IRDI instance
     */
-   public static Optional<IRDI> from( final String string ) {
+   public static Optional<Irdi> from( final String string ) {
       if ( IRDI_PATTERN.matcher( string ).matches() && string.length() <= IRDI_MAX_LENGTH ) {
-         return Optional.of( new IRDI( string ) );
+         return Optional.of( new Irdi( string ) );
       }
       return Optional.empty();
    }
@@ -84,7 +84,7 @@ public class IRDI {
       if ( o == null || getClass() != o.getClass() ) {
          return false;
       }
-      final IRDI irdi = (IRDI) o;
+      final Irdi irdi = (Irdi) o;
       return Objects.equals( lexicalRepresentation, irdi.lexicalRepresentation );
    }
 

@@ -20,13 +20,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.UnaryOperator;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Uses the Velocity engine to load templates and apply context maps to them

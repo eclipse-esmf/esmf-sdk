@@ -794,7 +794,7 @@ public class SammCliTest extends MetaModelVersions {
     */
    private File inputFile( final TestModel testModel ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
-      final boolean isValid = !(testModel instanceof InvalidTestAspect);
+      final boolean isValid = !( testModel instanceof InvalidTestAspect );
       final String resourcePath = String.format(
             "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
             System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", metaModelVersion.toString().toLowerCase(),
@@ -846,8 +846,8 @@ public class SammCliTest extends MetaModelVersions {
       // are not resolved to the file system but to the jar)
       try {
          final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + (OS.WINDOWS.isCurrentOs() ?
-                     ".bat" : ".sh") ).getCanonicalPath();
+               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
+                     ? ".bat" : ".sh" ) ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
          return resolverScript + " " + modelsRoot + " " + metaModelVersion;

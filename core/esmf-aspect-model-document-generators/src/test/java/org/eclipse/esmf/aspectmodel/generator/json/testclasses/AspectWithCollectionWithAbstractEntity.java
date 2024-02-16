@@ -16,11 +16,10 @@ package org.eclipse.esmf.aspectmodel.generator.json.testclasses;
 import java.util.Collection;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.eclipse.esmf.aspectmodel.java.CollectionAspect;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 
 public class AspectWithCollectionWithAbstractEntity implements CollectionAspect<Collection<AbstractTestEntity>, AbstractTestEntity> {

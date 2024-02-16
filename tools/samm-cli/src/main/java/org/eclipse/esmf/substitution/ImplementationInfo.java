@@ -36,7 +36,8 @@ public class ImplementationInfo<T> extends ReflectionHelper.ImplementationInfo<T
          return false;
       }
       final ImplementationInfo impl = (ImplementationInfo) o;
-      return Objects.equals( getInterfaceType(), impl.getInterfaceType() ) && Objects.equals( getImplementationType(), impl.getImplementationType() );
+      return Objects.equals( getInterfaceType(), impl.getInterfaceType() ) && Objects.equals( getImplementationType(),
+            impl.getImplementationType() );
    }
 
    @Override

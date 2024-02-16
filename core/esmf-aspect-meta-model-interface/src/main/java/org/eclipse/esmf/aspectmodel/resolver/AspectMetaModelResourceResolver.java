@@ -16,16 +16,16 @@ package org.eclipse.esmf.aspectmodel.resolver;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Statement;
-
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.MissingMetaModelVersionException;
 import org.eclipse.esmf.aspectmodel.MultipleMetaModelVersionsException;
 import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.samm.KnownVersion;
+
 import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
 
 /**
  * Provides functionality to resolve Aspect Meta Model resources which reside in the classpath.
@@ -50,9 +50,9 @@ public interface AspectMetaModelResourceResolver {
     * Retrieves the meta model version an Aspect model uses
     *
     * @param model The RDF model containing an Aspect Model
-    * @return A {@link Try.Success} with the used meta model version, or a {@link Try.Failure} with
-    *       one of {@link MissingMetaModelVersionException}, {@link MultipleMetaModelVersionsException}
-    *       or {@link UnsupportedVersionException} (if the version can not be parsed).
+    * @return A {@link Try.Success} with the used meta model version, or a {@link Try.Failure} with one of
+    * {@link MissingMetaModelVersionException}, {@link MultipleMetaModelVersionsException} or {@link UnsupportedVersionException} (if the
+    * version can not be parsed).
     */
    default Try<VersionNumber> getMetaModelVersion( final Model model ) {
       final Set<VersionNumber> metaModelVersionsUsedInModel = getUsedMetaModelVersions( model );

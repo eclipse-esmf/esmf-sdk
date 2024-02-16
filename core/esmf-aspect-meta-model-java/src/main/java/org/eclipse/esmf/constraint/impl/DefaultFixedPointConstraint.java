@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.constraint.FixedPointConstraint;
-
 import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
@@ -76,8 +75,8 @@ public class DefaultFixedPointConstraint extends DefaultConstraint implements Fi
          return false;
       }
       final DefaultFixedPointConstraint that = (DefaultFixedPointConstraint) o;
-      return Objects.equals( scale, that.scale ) &&
-            Objects.equals( integer, that.integer );
+      return Objects.equals( scale, that.scale )
+            && Objects.equals( integer, that.integer );
    }
 
    @Override

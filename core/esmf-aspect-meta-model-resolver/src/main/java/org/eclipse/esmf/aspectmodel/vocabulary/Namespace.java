@@ -16,14 +16,14 @@ package org.eclipse.esmf.aspectmodel.vocabulary;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.esmf.samm.KnownVersion;
+
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.XSD;
-
-import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * Abstracts an RDF namespace

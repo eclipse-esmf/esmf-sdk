@@ -47,6 +47,9 @@ public abstract class JsTerm {
       return node.isLiteral();
    }
 
+   // This method must be called exactly as is, since it implements the SHACL-JS binding
+   // see https://www.w3.org/TR/shacl-js/#js-api-terms
+   @SuppressWarnings( { "checkstyle:MethodName", "checkstyle:AbbreviationAsWordInName" } )
    public boolean isURI() {
       return node.isURI();
    }

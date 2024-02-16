@@ -16,22 +16,21 @@ package org.eclipse.esmf.aspectmodel.java;
 import java.math.BigInteger;
 import java.util.Optional;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 import org.eclipse.esmf.aspectmodel.java.rangeconstraint.AnnotationExpression;
 import org.eclipse.esmf.aspectmodel.java.rangeconstraint.AnnotationFactory;
 import org.eclipse.esmf.aspectmodel.java.rangeconstraint.AnnotationTypeMapping;
-import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.constraint.FixedPointConstraint;
 import org.eclipse.esmf.constraint.LengthConstraint;
 import org.eclipse.esmf.constraint.RangeConstraint;
 import org.eclipse.esmf.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * Provides functionality to create jakarta.validation.constraints that are displayed in the generated java class

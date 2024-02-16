@@ -16,8 +16,8 @@ package org.eclipse.esmf.aspectmodel;
 import java.util.Arrays;
 import java.util.Set;
 
-import org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator;
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
+import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
 import org.eclipse.esmf.metamodel.AspectContext;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -35,7 +35,7 @@ public class GenerateAas extends AspectModelMojo {
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
       final Set<AspectContext> aspectModels = loadModelsOrFail();
-      final AspectModelAASGenerator generator = new AspectModelAASGenerator();
+      final AspectModelAasGenerator generator = new AspectModelAasGenerator();
       for ( final AspectContext aspectModel : aspectModels ) {
          generator.generate( AasFileFormat.valueOf( targetFormat.toUpperCase() ), aspectModel.aspect(),
                name -> getOutputStreamForFile( name + "." + targetFormat, outputDirectory ) );

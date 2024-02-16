@@ -14,32 +14,30 @@
 package org.eclipse.esmf.aspectmodel.jackson;
 
 import java.io.IOException;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonTokenId;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Jackson deserializer for {@see XMLGregorianCalendar}
+ * Jackson deserializer for {@see XMLGregorianCalendar}.
  */
-public class XMLGregorianCalendarDeserializer extends StdScalarDeserializer<XMLGregorianCalendar> {
+public class XmlGregorianCalendarDeserializer extends StdScalarDeserializer<XMLGregorianCalendar> {
    private static final long serialVersionUID = 8911315963918963886L;
-   private static final Logger LOG = LoggerFactory.getLogger( XMLGregorianCalendarDeserializer.class );
-   public static final XMLGregorianCalendarDeserializer INSTANCE = new XMLGregorianCalendarDeserializer();
+   private static final Logger LOG = LoggerFactory.getLogger( XmlGregorianCalendarDeserializer.class );
+   public static final XmlGregorianCalendarDeserializer INSTANCE = new XmlGregorianCalendarDeserializer();
 
    private final transient DatatypeFactory datatypeFactory;
 
    @SuppressWarnings( "squid:S2139" ) // Must throw runtime exception to fail fast
-   private XMLGregorianCalendarDeserializer() {
+   private XmlGregorianCalendarDeserializer() {
       super( XMLGregorianCalendar.class );
       try {
          datatypeFactory = DatatypeFactory.newInstance();

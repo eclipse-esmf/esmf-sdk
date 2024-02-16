@@ -22,10 +22,8 @@ import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 
 /**
- * Extends the {@link StaticProperty} definition with a {@link Unit}.
- *
- * Only {@link Quantifiable} properties that actually carry a {@code Unit} will be represented by a {@code
- * StaticUnitProperty}, however in practice this will be the case for most quantifiables.
+ * Extends the {@link StaticProperty} definition with a {@link Unit}. Only {@link Quantifiable} properties that actually carry a
+ * {@code Unit} will be represented by a {@code StaticUnitProperty}, however in practice this will be the case for most quantifiables.
  */
 public abstract class StaticUnitProperty<C, T> extends StaticProperty<C, T> implements UnitProperty {
 
@@ -37,7 +35,7 @@ public abstract class StaticUnitProperty<C, T> extends StaticProperty<C, T> impl
          final boolean notInPayload,
          final Optional<String> payloadName,
          final boolean isAbstract,
-         final Optional<Property> extends_ ) {
+         @SuppressWarnings( { "checkstyle:ParameterName", "MethodParameterNamingConvention" } ) final Optional<Property> extends_ ) {
       super( metaModelBaseAttributes, characteristic, exampleValue, optional, notInPayload, payloadName, isAbstract, extends_ );
    }
 }

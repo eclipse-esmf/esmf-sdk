@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.characteristic.TimeSeries;
-
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;

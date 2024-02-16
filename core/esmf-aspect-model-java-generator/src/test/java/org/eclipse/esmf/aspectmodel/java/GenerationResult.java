@@ -217,7 +217,7 @@ class GenerationResult {
    private TypeToken typeTokenToCheck( final Object fieldTypeOrTypeName ) {
       TypeToken typeToCheck = null;
       if ( fieldTypeOrTypeName instanceof TypeToken ) {
-         typeToCheck = ((TypeToken) fieldTypeOrTypeName);
+         typeToCheck = ( (TypeToken) fieldTypeOrTypeName );
       } else {
          typeToCheck = TypeToken.of( (Type) fieldTypeOrTypeName );
       }
@@ -238,11 +238,11 @@ class GenerationResult {
                      entry.getKey().toString().equals( toResolve.getClassNameToResolve() ) )
                .findAny().map( Map.Entry::getValue ).orElseThrow( () -> new RuntimeException( e ) );
       }
-      if ( !toResolve.getToResolve().isReferenceType() || ((ResolvedReferenceType) toResolve.getToResolve())
+      if ( !toResolve.getToResolve().isReferenceType() || ( (ResolvedReferenceType) toResolve.getToResolve() )
             .getTypeParametersMap().isEmpty() ) {
          return TypeResolution.resolved( rawType );
       }
-      final Type[] typeParameters = ((ResolvedReferenceType) toResolve.getToResolve())
+      final Type[] typeParameters = ( (ResolvedReferenceType) toResolve.getToResolve() )
             .getTypeParametersMap()
             .stream()
             .map( pair -> pair.b )
@@ -259,9 +259,8 @@ class GenerationResult {
     *
     * @param className the name of the {@code Enumeration} to be tested
     * @param expectedConstants a list of the expected constants
-    * @param expectedConstantArguments a {@code Map} containing the {@code String} representation of the argument
-    * for a constant. The key is the name of the constant. If this map is given, the number of entries should
-    * match the number of expected constants.
+    * @param expectedConstantArguments a {@code Map} containing the {@code String} representation of the argument for a constant. The key is
+    * the name of the constant. If this map is given, the number of entries should match the number of expected constants.
     */
    void assertEnumConstants( final String className, final Collection<String> expectedConstants,
          final Map<String, String> expectedConstantArguments ) {

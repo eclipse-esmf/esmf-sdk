@@ -145,6 +145,7 @@ public class AspectModelDiagramGenerator {
    /**
     * Generates an SVG diagram for the Aspect in the given target language and write it to the given output stream.
     * Note that the document will always be encoded in UTF-8, regardless of the platform's encoding.
+    *
     * @param language the language
     * @param out the output stream
     * @throws IOException if writing to the output stream fails
@@ -194,7 +195,7 @@ public class AspectModelDiagramGenerator {
 
          switch ( outputFormat ) {
             case PNG -> generatePng( svgResult, out );
-            case SVG -> IOUtils.copy( new ByteArrayInputStream( svgResult.getBytes() ), out );
+            default -> IOUtils.copy( new ByteArrayInputStream( svgResult.getBytes() ), out );
          }
       } catch ( final IOException exception ) {
          throw new DocumentGenerationException( exception );
@@ -245,7 +246,7 @@ public class AspectModelDiagramGenerator {
          try ( final OutputStream outputStream = nameMapper.apply( format.getArtifactFilename( aspectName, language ) ) ) {
             switch ( format ) {
                case PNG -> generatePng( svgDocument, outputStream );
-               case SVG -> outputStream.write( svgDocument.getBytes( StandardCharsets.UTF_8 ) );
+               default -> outputStream.write( svgDocument.getBytes( StandardCharsets.UTF_8 ) );
             }
          }
       }

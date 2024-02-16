@@ -32,13 +32,23 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
+import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
+import org.eclipse.esmf.aspectmodel.java.QualifiedName;
+import org.eclipse.esmf.aspectmodel.java.exception.EnumAttributeNotFoundException;
+import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestResources;
+import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,23 +57,10 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.io.Resources;
 import com.google.common.reflect.TypeToken;
-
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
-import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
-import org.eclipse.esmf.aspectmodel.java.QualifiedName;
-import org.eclipse.esmf.aspectmodel.java.exception.EnumAttributeNotFoundException;
-import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
-
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.eclipse.esmf.test.MetaModelVersions;
-import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
-import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class AspectModelJacksonModuleTest extends MetaModelVersions {
    private static final String PACKAGE = "org.eclipse.esmf.test";
@@ -190,7 +187,8 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testAspectWithEntityEnumeration( final KnownVersion metaModelVersion ) throws Exception {
-      final Object instance = generateInstance( Tuple.of( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM, "AspectWithEntityEnumeration" ),
+      final Object instance = generateInstance(
+            Tuple.of( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_NOT_EXISTING_ENUM, "AspectWithEntityEnumeration" ),
             metaModelVersion );
       final Class<?> clazz = instance.getClass();
       final Field enumerationField = clazz.getDeclaredField( "systemState" );
@@ -262,7 +260,8 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       return generateInstance( Tuple.of( model, model.getName() ), knownVersion );
    }
 
-   private Object generateInstance( final Tuple2<TestAspect, String> modelNameAndPayloadName, final KnownVersion knownVersion ) throws IOException {
+   private Object generateInstance( final Tuple2<TestAspect, String> modelNameAndPayloadName, final KnownVersion knownVersion )
+         throws IOException {
       final VersionedModel versionedModel = TestResources.getModel( modelNameAndPayloadName._1(), knownVersion ).get();
       final Class<?> pojo = AspectModelLoader.getSingleAspect( versionedModel ).map( this::generatePojo ).get();
       final String jsonPayload = loadJsonPayload( modelNameAndPayloadName._1(), knownVersion,

@@ -33,9 +33,9 @@ public class SammCliIntegrationTest extends SammCliTest {
    @BeforeEach
    @Override
    public void beforeEach() throws IOException {
-      sammCli = Optional.ofNullable( System.getProperty( "packaging-type" ) ).orElse( "jar" ).equals( "jar" ) ?
-            new ExecutableJarLauncher() :
-            new BinaryLauncher();
+      sammCli = Optional.ofNullable( System.getProperty( "packaging-type" ) ).orElse( "jar" ).equals( "jar" )
+            ? new ExecutableJarLauncher()
+            : new BinaryLauncher();
       outputDirectory = Files.createTempDirectory( "junit" );
    }
 }

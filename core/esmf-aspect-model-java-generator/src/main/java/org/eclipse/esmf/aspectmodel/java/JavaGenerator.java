@@ -21,10 +21,10 @@ import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
 import org.eclipse.esmf.aspectmodel.generator.Generator;
+import org.eclipse.esmf.metamodel.Aspect;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.esmf.metamodel.Aspect;
 
 /**
  * Base class for all generators that want to create java sourcecode.

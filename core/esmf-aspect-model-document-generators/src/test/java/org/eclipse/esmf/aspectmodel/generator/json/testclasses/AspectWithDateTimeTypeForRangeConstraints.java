@@ -16,12 +16,12 @@ import java.util.Objects;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.eclipse.esmf.aspectmodel.java.customconstraint.GregorianCalendarMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.GregorianCalendarMin;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /** Generated class for AspectWithDateTimeTypeForRangeConstraints. */
 public class AspectWithDateTimeTypeForRangeConstraints {

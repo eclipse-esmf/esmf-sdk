@@ -20,27 +20,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.apache.jena.vocabulary.XSD;
-import org.assertj.core.api.Assertions;
-import org.eclipse.esmf.metamodel.AbstractEntity;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.ComplexType;
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.ScalarValue;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.characteristic.Code;
 import org.eclipse.esmf.characteristic.Either;
 import org.eclipse.esmf.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.AbstractEntity;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.ComplexType;
+import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Scalar;
+import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
+
+import org.apache.jena.vocabulary.XSD;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
    @ParameterizedTest
@@ -152,9 +151,9 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       assertBaseAttributes( either, expectedAspectModelUrn, "TestEither",
             "Test Either", "This is a test Either.", "http://example.com/" );
 
-      Assertions.assertThat( either.getDataType() ).isNotPresent();
-      Assertions.assertThat( either.getLeft().getName() ).isEqualTo( "Text" );
-      Assertions.assertThat( either.getRight().getName() ).isEqualTo( "Boolean" );
+      assertThat( either.getDataType() ).isNotPresent();
+      assertThat( either.getLeft().getName() ).isEqualTo( "Text" );
+      assertThat( either.getRight().getName() ).isEqualTo( "Boolean" );
    }
 
    @ParameterizedTest
@@ -170,7 +169,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       assertBaseAttributes( singleEntity, expectedAspectModelUrn, "EntityCharacteristic",
             "Test Entity Characteristic", "This is a test Entity Characteristic", "http://example.com/" );
 
-      Assertions.assertThat( singleEntity.getDataType().get() ).isInstanceOf( Entity.class );
+      assertThat( singleEntity.getDataType().get() ).isInstanceOf( Entity.class );
    }
 
    @ParameterizedTest
@@ -200,7 +199,8 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       final AbstractEntity abstractEntity = (AbstractEntity) aspect.getProperties().get( 0 ).getCharacteristic().get().getDataType().get();
       assertThat( abstractEntity.getExtends() ).isEmpty();
-      assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity", "AbstractTestEntity", "This is an abstract test entity" );
+      assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity", "AbstractTestEntity",
+            "This is an abstract test entity" );
       final List<ComplexType> extendingElements = abstractEntity.getExtendingElements();
       assertThat( extendingElements ).hasSize( 1 );
    }
@@ -271,8 +271,10 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL, metaModelVersion );
       assertThat( aspect.getProperties().size() ).isEqualTo( 1 );
       final Property firstProperty = aspect.getProperties().get( 0 );
-      final Property secondProperty = ((DefaultEntity) firstProperty.getCharacteristic().get().getDataType().get()).getProperties().get( 0 );
-      final Property thirdProperty = ((DefaultEntity) secondProperty.getCharacteristic().get().getDataType().get()).getProperties().get( 0 );
+      final Property secondProperty = ((DefaultEntity) firstProperty.getCharacteristic().get().getDataType().get()).getProperties()
+            .get( 0 );
+      final Property thirdProperty = ((DefaultEntity) secondProperty.getCharacteristic().get().getDataType().get()).getProperties()
+            .get( 0 );
       assertThat( firstProperty ).isNotEqualTo( secondProperty );
       assertThat( secondProperty ).isEqualTo( thirdProperty );
       assertThat( firstProperty.getCharacteristic() ).isEqualTo( secondProperty.getCharacteristic() );
@@ -306,8 +308,10 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       assertThat( baseAttributes.getUrn() ).contains( urn );
       assertThat( baseAttributes.getName() ).isEqualTo( "someName" );
-      assertThat( baseAttributes.getPreferredNames() ).hasSize( 1 ).allMatch( preferredName -> preferredName.getLanguageTag().equals( Locale.ENGLISH ) );
-      assertThat( baseAttributes.getDescriptions() ).hasSize( 1 ).allMatch( description -> description.getLanguageTag().equals( Locale.ENGLISH ) );
+      assertThat( baseAttributes.getPreferredNames() ).hasSize( 1 )
+            .allMatch( preferredName -> preferredName.getLanguageTag().equals( Locale.ENGLISH ) );
+      assertThat( baseAttributes.getDescriptions() ).hasSize( 1 )
+            .allMatch( description -> description.getLanguageTag().equals( Locale.ENGLISH ) );
       assertThat( baseAttributes.getSee() ).hasSize( 2 ).contains( "see1", "see2" );
    }
 }

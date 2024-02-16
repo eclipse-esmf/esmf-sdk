@@ -21,18 +21,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.characteristic.SingleEntity;
+import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.characteristic.SingleEntity;
-import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public class AspectModelHelper {
    private final KnownVersion metaModelVersion;
@@ -93,7 +93,7 @@ public class AspectModelHelper {
                   + " in list of entities: " + entities ) );
    }
 
-   public static String getNameFromURN( final String urn ) {
+   public static String getNameFromUrn( final String urn ) {
       final String[] parts = urn.split( "#" );
       return parts.length == 2 ? parts[1] : urn;
    }

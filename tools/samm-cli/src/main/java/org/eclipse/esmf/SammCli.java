@@ -18,10 +18,8 @@ import java.util.Properties;
 
 import org.eclipse.esmf.aas.AasCommand;
 import org.eclipse.esmf.aspect.AspectCommand;
-import org.eclipse.esmf.aas.AasCommand;
 
 import org.fusesource.jansi.AnsiConsole;
-
 import picocli.CommandLine;
 
 @CommandLine.Command( name = SammCli.COMMAND_NAME,
@@ -148,5 +146,11 @@ public class SammCli extends AbstractCommand {
       }
       System.out.println( commandLine.getHelp().fullSynopsis() );
       System.out.println( format( "Run @|bold " + commandLine.getCommandName() + " help|@ for help." ) );
+   }
+
+   void testProgrammaticConfiguration() {
+      final CommandLine.Model.CommandSpec spec = CommandLine.Model.CommandSpec.create();
+      spec.usageMessage().footer( "asdf" ).description( "asdf" );
+      spec.addOption( CommandLine.Model.OptionSpec.builder( "-c" ).type( int.class ).build() );
    }
 }

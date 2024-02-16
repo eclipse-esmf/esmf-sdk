@@ -73,6 +73,7 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<ModelE
          return Stream.empty();
       }
       hasVisited.add( property );
+
       return Stream.of( Stream.<ModelElement> of( property ),
             visit( property.getCharacteristic() ),
             visit( property.getExtends() )

@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -845,7 +844,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testGenerateAspectModelWithGTypeForRangeConstraints( final KnownVersion metaModelVersion ) throws IOException {
+   public void testGenerateAspectModelWithGtypeForRangeConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final ImmutableMap<String, Object> expectedFieldsForAspectClass = ImmutableMap.<String, Object> builder()
             .put( "testPropertyWithGYear", XMLGregorianCalendar.class )
             .put( "testPropertyWithGMonth", XMLGregorianCalendar.class )

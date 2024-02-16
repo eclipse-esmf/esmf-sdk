@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.characteristic.Enumeration;
-
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;

@@ -103,7 +103,7 @@ public class AasToAspectModelGenerator {
    private static final Logger LOG = LoggerFactory.getLogger( AasToAspectModelGenerator.class );
    private final Environment aasEnvironment;
    private final Map<org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement, Property> properties = new HashMap<>();
-   private final SAMMC SAMMC = new SAMMC( KnownVersion.getLatest() );
+   private final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
    private final ValueInstantiator valueInstantiator = new ValueInstantiator( KnownVersion.getLatest() );
    private AspectModelUrn aspectUrn;
 
@@ -236,7 +236,7 @@ public class AasToAspectModelGenerator {
       // suffix to prevent name clashes.
       final String id = submodel.getId();
       LOG.warn( "Submodel with id {} has no idShort", id );
-      final Optional<String> nameFromIrdi = IRDI.from( id ).map( irdi ->
+      final Optional<String> nameFromIrdi = Irdi.from( id ).map( irdi ->
             sanitizeAspectModelElementName( irdi.toString() ) + DigestUtils.sha1Hex( id ).substring( 0, 8 ) );
       // Fallback: Hash the id
       return new ElementName( nameFromIrdi.orElseGet( () -> randomElementName( id ) ), true );
@@ -464,7 +464,7 @@ public class AasToAspectModelGenerator {
    }
 
    private Optional<String> validIrdiOrUri( final String input ) {
-      return IRDI.from( input ).map( irdi -> "urn:irdi:" + irdi )
+      return Irdi.from( input ).map( irdi -> "urn:irdi:" + irdi )
             .or( () -> {
                if ( input.startsWith( "http:" ) || input.startsWith( "https:" ) ) {
                   return Optional.of( input );
@@ -477,11 +477,10 @@ public class AasToAspectModelGenerator {
 
    private Characteristic createCharacteristicFromRelationShipElement( final RelationshipElement relationshipElement,
          final AspectModelUrn propertyUrn ) {
-      final Function<Reference, String> describeReference = ref ->
-            switch ( ref.getType() ) {
-               case MODEL_REFERENCE -> "Model reference ";
-               case EXTERNAL_REFERENCE -> "External reference ";
-            } + ref.getKeys().stream().map( Key::getValue ).collect( Collectors.joining( "/" ) );
+      final Function<Reference, String> describeReference = ref -> switch ( ref.getType() ) {
+         case MODEL_REFERENCE -> "Model reference ";
+         case EXTERNAL_REFERENCE -> "External reference ";
+      } + ref.getKeys().stream().map( Key::getValue ).collect( Collectors.joining( "/" ) );
 
       final Function<Reference, Optional<String>> referenceToUri = ref ->
             ref.getKeys().isEmpty()
@@ -520,22 +519,22 @@ public class AasToAspectModelGenerator {
 
    private Characteristic createCharacteristicFromFile( final File file ) {
       return createDefaultScalarCharacteristic( file, XSD.anyURI.getURI(),
-            new UseGivenUrn( AspectModelUrn.fromUrn( SAMMC.ResourcePath().getURI() ) ) );
+            new UseGivenUrn( AspectModelUrn.fromUrn( sammc.ResourcePath().getURI() ) ) );
    }
 
    private Characteristic createCharacteristicFromMultiLanguageProperty( final MultiLanguageProperty multiLanguageProperty ) {
       return createDefaultScalarCharacteristic( multiLanguageProperty, RDF.langString.getURI(),
-            new UseGivenUrn( AspectModelUrn.fromUrn( SAMMC.MultiLanguageText().getURI() ) ) );
+            new UseGivenUrn( AspectModelUrn.fromUrn( sammc.MultiLanguageText().getURI() ) ) );
    }
 
    private Characteristic createCharacteristicFromProperty( final org.eclipse.digitaltwin.aas4j.v3.model.Property property,
          final AspectModelUrn propertyUrn ) {
-      final String dataTypeUri = AasDataTypeMapper.mapAASXSDataTypeToAspectType( property.getValueType() ).getURI();
+      final String dataTypeUri = AasDataTypeMapper.mapAasXsdDataTypeToAspectType( property.getValueType() ).getURI();
       final ElementNamingStrategy elementNamingStrategy;
       if ( dataTypeUri.equals( XSD.xboolean.getURI() ) ) {
-         elementNamingStrategy = new UseGivenUrn( AspectModelUrn.fromUrn( SAMMC.Boolean().getURI() ) );
+         elementNamingStrategy = new UseGivenUrn( AspectModelUrn.fromUrn( sammc.Boolean().getURI() ) );
       } else if ( dataTypeUri.equals( XSD.dateTime.getURI() ) ) {
-         elementNamingStrategy = new UseGivenUrn( AspectModelUrn.fromUrn( SAMMC.Timestamp().getURI() ) );
+         elementNamingStrategy = new UseGivenUrn( AspectModelUrn.fromUrn( sammc.Timestamp().getURI() ) );
       } else {
          elementNamingStrategy = new DetermineAutomatically( propertyUrn.getName() + "Property" );
       }
@@ -543,7 +542,7 @@ public class AasToAspectModelGenerator {
    }
 
    private Characteristic createCharacteristicFromRange( final Range range, final AspectModelUrn propertyUrn ) {
-      final String dataTypeUri = AasDataTypeMapper.mapAASXSDataTypeToAspectType( range.getValueType() ).getURI();
+      final String dataTypeUri = AasDataTypeMapper.mapAasXsdDataTypeToAspectType( range.getValueType() ).getURI();
       final Optional<ScalarValue> maxValue = Optional.ofNullable( range.getMax() )
             .flatMap( maxLexical -> valueInstantiator.buildScalarValue( maxLexical, null, dataTypeUri ) );
       final Optional<ScalarValue> minValue = Optional.ofNullable( range.getMin() )
@@ -609,8 +608,8 @@ public class AasToAspectModelGenerator {
       return Arrays.stream( AasSubmodelElements.values() )
             .filter( entry -> {
                try {
-                  final Class<?> correspondingClass = Class.forName( "org.eclipse.digitaltwin.aas4j.v3.model." +
-                        CaseFormat.UPPER_UNDERSCORE.to( CaseFormat.UPPER_CAMEL, entry.toString() ) );
+                  final Class<?> correspondingClass = Class.forName( "org.eclipse.digitaltwin.aas4j.v3.model."
+                        + CaseFormat.UPPER_UNDERSCORE.to( CaseFormat.UPPER_CAMEL, entry.toString() ) );
                   return correspondingClass.isAssignableFrom( element.getClass() );
                } catch ( final ClassNotFoundException exception ) {
                   return false;

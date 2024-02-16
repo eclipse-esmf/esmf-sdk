@@ -77,8 +77,8 @@ public class DefaultStructuredValue extends DefaultCharacteristic implements Str
          return false;
       }
       final DefaultStructuredValue that = (DefaultStructuredValue) o;
-      return Objects.equals( deconstructionRule, that.deconstructionRule ) &&
-            Objects.equals( elements, that.elements );
+      return Objects.equals( deconstructionRule, that.deconstructionRule )
+            && Objects.equals( elements, that.elements );
    }
 
    @Override

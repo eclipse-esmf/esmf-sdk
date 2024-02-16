@@ -164,8 +164,9 @@ public class ShaclValidator {
    }
 
    public List<Violation> validateElements( final List<Resource> elements ) {
-      final Map<Resource, List<Shape.Node>> sparqlTargets = !elements.isEmpty() ?
-            findSparqlTargets( elements.get( 0 ).getModel() ) : Map.of();
+      final Map<Resource, List<Shape.Node>> sparqlTargets = !elements.isEmpty()
+            ? findSparqlTargets( elements.get( 0 ).getModel() )
+            : Map.of();
       return elements.stream().flatMap( element -> validateElement( element, sparqlTargets, element.getModel() ).stream() ).toList();
    }
 
@@ -215,9 +216,9 @@ public class ShaclValidator {
          // MinCount needs to be handled separately: If the property is not used at all on the target node, but a MinCount constraints
          // >= 1 exists, a violation must be emitted even though no value for the property exists
          if ( reachableNodes.isEmpty() && constraint instanceof MinCountConstraint ) {
-            final Optional<Property> property = propertyShape.path() instanceof PredicatePath ?
-                  Optional.of( resolvedModel.createProperty( ((PredicatePath) propertyShape.path()).predicate().getURI() ) ) :
-                  Optional.empty();
+            final Optional<Property> property = propertyShape.path() instanceof PredicatePath
+                  ? Optional.of( resolvedModel.createProperty( ((PredicatePath) propertyShape.path()).predicate().getURI() ) )
+                  : Optional.empty();
             final EvaluationContext context = new EvaluationContext( element, nodeShape, Optional.of( propertyShape ),
                   property, parentContext, List.of(), this, resolvedModel );
             violations.addAll( constraint.apply( null, context ) );

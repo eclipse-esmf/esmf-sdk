@@ -13,26 +13,25 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.services;
 
-import static org.assertj.vavr.api.VavrAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
 
+import org.eclipse.esmf.aspectmodel.MissingMetaModelVersionException;
+import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.MetaModelVersions;
+
+import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
-import org.assertj.vavr.api.VavrAssertions;
-import org.eclipse.esmf.aspectmodel.MissingMetaModelVersionException;
-import org.eclipse.esmf.aspectmodel.VersionNumber;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.test.MetaModelVersions;
-import io.vavr.control.Try;
 
 public class SammAspectMetaModelResourceResolverTest extends MetaModelVersions {
    private final SammAspectMetaModelResourceResolver aspectMetaModelResourceResolver = new SammAspectMetaModelResourceResolver();
@@ -48,8 +47,8 @@ public class SammAspectMetaModelResourceResolverTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testGetMetaModelVersionExpectSuccess( final KnownVersion metaModelVersion ) {
       final Model model = getModel( "valid_aspect.ttl", metaModelVersion );
-      VavrAssertions.assertThat( aspectMetaModelResourceResolver.getMetaModelVersion( model ) ).isSuccess();
-      VavrAssertions.assertThat( aspectMetaModelResourceResolver.getMetaModelVersion( model ) )
+      assertThat( aspectMetaModelResourceResolver.getMetaModelVersion( model ) ).isNotEmpty();
+      assertThat( aspectMetaModelResourceResolver.getMetaModelVersion( model ) )
             .contains( VersionNumber.parse( metaModelVersion.toVersionString() ) );
    }
 
@@ -58,8 +57,8 @@ public class SammAspectMetaModelResourceResolverTest extends MetaModelVersions {
    public void testGetMetaModelVersionInvalidPrefixExpectFailure( final KnownVersion metaModelVersion ) {
       final Model model = getModel( "invalid_aspect_urn_prefix.ttl", metaModelVersion );
       final Try<VersionNumber> modelVersion = aspectMetaModelResourceResolver.getMetaModelVersion( model );
-      assertThat( modelVersion ).isFailure();
-      assertThat( modelVersion ).failBecauseOf( MissingMetaModelVersionException.class );
+      assertThat( modelVersion ).isEmpty();
+      assertThat( modelVersion.getCause() ).isInstanceOf( MissingMetaModelVersionException.class );
    }
 
    @ParameterizedTest
@@ -67,8 +66,8 @@ public class SammAspectMetaModelResourceResolverTest extends MetaModelVersions {
    public void testGetMetaModelVersionInvalidUrnExpectFailure( final KnownVersion metaModelVersion ) {
       final Model model = getModel( "invalid_aspect_urn.ttl", metaModelVersion );
       final Try<VersionNumber> modelVersion = aspectMetaModelResourceResolver.getMetaModelVersion( model );
-      assertThat( modelVersion ).isFailure();
-      assertThat( modelVersion ).failBecauseOf( MissingMetaModelVersionException.class );
+      assertThat( modelVersion ).isEmpty();
+      assertThat( modelVersion.getCause() ).isInstanceOf( MissingMetaModelVersionException.class );
    }
 
    @ParameterizedTest
@@ -76,8 +75,8 @@ public class SammAspectMetaModelResourceResolverTest extends MetaModelVersions {
    public void testGetMetaModelVersionInvalidMetaModelUrnElementExpectFailure( final KnownVersion metaModelVersion ) {
       final Model model = getModel( "invalid_aspect_meta_model_urn_element.ttl", metaModelVersion );
       final Try<VersionNumber> modelVersion = aspectMetaModelResourceResolver.getMetaModelVersion( model );
-      assertThat( modelVersion ).isFailure();
-      assertThat( modelVersion ).failBecauseOf( MissingMetaModelVersionException.class );
+      assertThat( modelVersion ).isEmpty();
+      assertThat( modelVersion.getCause() ).isInstanceOf( MissingMetaModelVersionException.class );
    }
 
    @ParameterizedTest
@@ -85,8 +84,8 @@ public class SammAspectMetaModelResourceResolverTest extends MetaModelVersions {
    public void testGetAspectModelUrnExpectSuccess( final KnownVersion metaModelVersion ) {
       final Try<AspectModelUrn> aspectModelUrn = AspectModelUrn.from(
             "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() + "#Aspect" );
-      assertThat( aspectModelUrn ).isSuccess();
-      org.assertj.core.api.Assertions.assertThat( aspectModelUrn.get().getUrn().toString() )
+      assertThat( aspectModelUrn ).isNotEmpty();
+      assertThat( aspectModelUrn.get().getUrn().toString() )
             .isEqualTo( "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion
                   .toVersionString() + "#Aspect" );
    }
@@ -94,15 +93,16 @@ public class SammAspectMetaModelResourceResolverTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testGetAspectModelUrnInvalidUrnExpectFailure( final KnownVersion metaModelVersion ) {
-      final Try<AspectModelUrn> aspectModelUrn = AspectModelUrn.from( "urn:foo:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() );
-      assertThat( aspectModelUrn ).isFailure();
+      final Try<AspectModelUrn> aspectModelUrn = AspectModelUrn.from(
+            "urn:foo:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() );
+      assertThat( aspectModelUrn ).isEmpty();
    }
 
    @ParameterizedTest
    @MethodSource( "allVersions" )
    public void testGetKnownVersionExpectSuccess( final KnownVersion metaModelVersion ) {
       final KnownVersion parsedVersion = KnownVersion.fromVersionString( metaModelVersion.toVersionString() ).get();
-      org.assertj.core.api.Assertions.assertThat( parsedVersion ).isEqualTo( metaModelVersion );
+      assertThat( parsedVersion ).isEqualTo( metaModelVersion );
    }
 
    @Test
@@ -110,7 +110,7 @@ public class SammAspectMetaModelResourceResolverTest extends MetaModelVersions {
       final Model model = ModelFactory.createDefaultModel();
       model.setNsPrefix( "samm", "urn:samm:org.eclipse.esmf.samm:meta-model:5.0.0#" );
       final Try<VersionNumber> metaModelVersion = aspectMetaModelResourceResolver.getMetaModelVersion( model );
-      assertThat( metaModelVersion ).isFailure();
+      assertThat( metaModelVersion ).isEmpty();
    }
 
    @ParameterizedTest
@@ -118,7 +118,7 @@ public class SammAspectMetaModelResourceResolverTest extends MetaModelVersions {
    public void testLoadMetaModelExpectSuccess( final KnownVersion metaModelVersion ) {
       final Model model = aspectMetaModelResourceResolver.loadMetaModel( metaModelVersion ).get();
 
-      org.assertj.core.api.Assertions.assertThat( model.contains( ResourceFactory.createResource(
+      assertThat( model.contains( ResourceFactory.createResource(
                   "urn:samm:org.eclipse.esmf.samm:meta-model:" + metaModelVersion.toVersionString() + "#value" ),
             RDF.type, (RDFNode) null ) ).isTrue();
    }

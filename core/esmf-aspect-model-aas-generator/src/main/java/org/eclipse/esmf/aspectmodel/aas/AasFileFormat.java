@@ -34,6 +34,7 @@ public enum AasFileFormat {
 
    /**
     * Returns a formatted list of the valid formats
+    *
     * @return the list of formats
     */
    public static String allValues() {

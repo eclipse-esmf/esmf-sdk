@@ -15,6 +15,9 @@ package org.eclipse.esmf.substitution;
 
 import java.lang.reflect.InvocationTargetException;
 
+import com.oracle.svm.core.annotate.Alias;
+import com.oracle.svm.core.annotate.Substitute;
+import com.oracle.svm.core.annotate.TargetClass;
 import org.apache.velocity.Template;
 import org.apache.velocity.context.InternalContextAdapter;
 import org.apache.velocity.exception.MethodInvocationException;
@@ -29,10 +32,6 @@ import org.apache.velocity.util.introspection.IntrospectionCacheData;
 import org.apache.velocity.util.introspection.VelMethod;
 import org.slf4j.Logger;
 
-import com.oracle.svm.core.annotate.Alias;
-import com.oracle.svm.core.annotate.Substitute;
-import com.oracle.svm.core.annotate.TargetClass;
-
 /**
  * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
  * for {@link ASTMethod}.
@@ -42,8 +41,10 @@ import com.oracle.svm.core.annotate.TargetClass;
 @TargetClass( ASTMethod.class )
 @SuppressWarnings( {
       "unused",
-      "squid:S00101" // Class name uses GraalVM substitution class naming schema, see
+      "squid:S00101", // Class name uses GraalVM substitution class naming schema, see
       // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
+      "checkstyle:TypeName",
+      "checkstyle:AbbreviationAsWordInName"
 } )
 public final class Target_org_apache_velocity_runtime_parser_node_ASTMethod {
    @Alias
@@ -104,7 +105,8 @@ public final class Target_org_apache_velocity_runtime_parser_node_ASTMethod {
             }
          }
 
-         final VelMethod method = ClassUtils.getMethod( methodName, params, paramClasses, o, context, (SimpleNode) (Object) this, strictRef );
+         final VelMethod method = ClassUtils.getMethod( methodName, params, paramClasses, o, context, (SimpleNode) (Object) this,
+               strictRef );
 
          if ( o != null && method == null && logOnInvalid ) {
             final StringBuilder plist = new StringBuilder();
@@ -135,7 +137,8 @@ public final class Target_org_apache_velocity_runtime_parser_node_ASTMethod {
             for ( int i = 0; i < params.length; i++ ) {
                paramString += String.format( "%d:%s ", i, params[i] );
             }
-            log.trace( "Invoking template method: template:{} method:{} returntype:{} params:{}", template.getName(), method.getMethodName(),
+            log.trace( "Invoking template method: template:{} method:{} returntype:{} params:{}", template.getName(),
+                  method.getMethodName(),
                   method.getReturnType().getName(), paramString );
             final Object obj = method.invoke( o, params );
 

@@ -23,6 +23,12 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.samm.KnownVersion;
+
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -38,12 +44,6 @@ import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.binding.Binding;
 import org.apache.jena.vocabulary.RDF;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
-
 /**
  * Cycle detector for SAMM models.
  * <br/>
@@ -57,11 +57,11 @@ import org.eclipse.esmf.samm.KnownVersion;
  * present in the model.
  */
 public class ModelCycleDetector {
-   final static String ERR_CYCLE_DETECTED =
+   static final String ERR_CYCLE_DETECTED =
          "The Aspect Model contains a cycle which includes following properties: %s. Please remove any cycles that do not allow a finite "
                + "json payload.";
 
-   private final static String PREFIXES = """
+   private static final String PREFIXES = """
          prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#>
          prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%s#>
          prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -107,9 +107,9 @@ public class ModelCycleDetector {
    }
 
    private void depthFirstTraversal( final Resource currentProperty, final BiConsumer<String, Set<String>> cycleHandler ) {
-      final Resource resolvedProperty = currentProperty.isAnon() ?
-            resolvePropertyReference( currentProperty.asResource() ) :
-            currentProperty.asResource();
+      final Resource resolvedProperty = currentProperty.isAnon()
+            ? resolvePropertyReference( currentProperty.asResource() )
+            : currentProperty.asResource();
       final String currentPropertyName = getUniqueName( resolvedProperty );
       if ( finished.contains( currentPropertyName ) ) {
          return;
@@ -191,7 +191,7 @@ public class ModelCycleDetector {
 
    private boolean isOptionalProperty( final Resource propertyNode ) {
       final Statement optional = propertyNode.getProperty( samm.optional() );
-      return (optional != null) && optional.getBoolean();
+      return ( optional != null ) && optional.getBoolean();
    }
 
    private String getUniqueName( final Resource property ) {
@@ -226,6 +226,7 @@ public class ModelCycleDetector {
       cycleDetectionReport.add( new ProcessingViolation( String.format( ERR_CYCLE_DETECTED, cyclePath ), null ) );
    }
 
+   @SuppressWarnings( "checkstyle:LineLength" )
    private void initializeQuery( final KnownVersion metaModelVersion ) {
       final String currentVersionPrefixes = String.format( PREFIXES, metaModelVersion.toVersionString(),
             metaModelVersion.toVersionString() );

@@ -23,24 +23,23 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
+import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectContext;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
-import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
 
 @Mojo( name = "generateOpenApiSpec", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateOpenApiSpec extends AspectModelMojo {
@@ -125,7 +124,8 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
                throw new MojoExecutionException( "Could not parse the file to JSON.", e );
             }
          }
-         final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
+         final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl,
+               Optional.ofNullable( aspectResourcePath ),
                Optional.of( result ), includeQueryApi, getPagingFromArgs(), locale );
 
          final OutputStream out = getOutputStreamForFile( aspect.getName() + ".oai.json", outputDirectory );
@@ -142,7 +142,8 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       for ( final AspectContext context : aspectModels ) {
          final Aspect aspect = context.aspect();
          try {
-            final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
+            final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl,
+                  Optional.ofNullable( aspectResourcePath ),
                   getFileAsString( aspectParameterFile ), includeQueryApi, getPagingFromArgs(), locale );
             final OutputStream out = getOutputStreamForFile( aspect.getName() + ".oai.yaml", outputDirectory );
             out.write( yamlSpec.getBytes() );
@@ -162,7 +163,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       if ( f.exists() && !f.isDirectory() ) {
          try {
             final InputStream inputStream = new FileInputStream( filePath );
-            return Optional.of( IOUtils.toString( inputStream, StandardCharsets.UTF_8.name() ) );
+            return Optional.of( IOUtils.toString( inputStream, StandardCharsets.UTF_8 ) );
          } catch ( final IOException e ) {
             final String errorMessage = String.format( "Could not load file %s.", filePath );
             throw new MojoExecutionException( errorMessage, e );

@@ -34,8 +34,9 @@ public abstract class StaticProperty<C, T> extends DefaultProperty {
          final boolean notInPayload,
          final Optional<String> payloadName,
          final boolean isAbstract,
-         final Optional<Property> extends_ ) {
-      super( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, optional, notInPayload, payloadName, isAbstract, extends_ );
+         @SuppressWarnings( { "checkstyle:ParameterName", "MethodParameterNamingConvention" } ) final Optional<Property> extends_ ) {
+      super( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, optional, notInPayload, payloadName, isAbstract,
+            extends_ );
    }
 
    /**
@@ -46,5 +47,5 @@ public abstract class StaticProperty<C, T> extends DefaultProperty {
    /**
     * @return the property value of the given instance.
     */
-   public abstract T getValue( C object);
+   public abstract T getValue( C object );
 }

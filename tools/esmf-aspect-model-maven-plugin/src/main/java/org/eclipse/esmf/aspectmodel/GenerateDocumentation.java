@@ -19,16 +19,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
+import org.eclipse.esmf.metamodel.AspectContext;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.eclipse.esmf.metamodel.AspectContext;
 
 @Mojo( name = "generateDocumentation", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDocumentation extends AspectModelMojo {
@@ -36,7 +36,7 @@ public class GenerateDocumentation extends AspectModelMojo {
    private final Logger logger = LoggerFactory.getLogger( GenerateDocumentation.class );
 
    @Parameter
-   private final String htmlCustomCSSFilePath = "";
+   private final String htmlCustomCssFilePath = "";
 
    @Override
    public void execute() throws MojoExecutionException {
@@ -48,8 +48,9 @@ public class GenerateDocumentation extends AspectModelMojo {
             final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( context );
             final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
             generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );
-            if ( !htmlCustomCSSFilePath.isEmpty() ) {
-               final String css = FileUtils.readFileToString( new File( htmlCustomCSSFilePath ), "UTF-8" );
+            //noinspection ConstantValue
+            if ( !htmlCustomCssFilePath.isEmpty() ) {
+               final String css = FileUtils.readFileToString( new File( htmlCustomCssFilePath ), "UTF-8" );
                generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, css );
             }
             generator.generate( artifact -> getOutputStreamForFile( artifact, outputDirectory ), generationArgs );

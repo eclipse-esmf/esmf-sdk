@@ -16,15 +16,15 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.impl.DefaultOperation;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 
 public class OperationInstantiator extends Instantiator<Operation> {
    public OperationInstantiator( final ModelElementFactory modelElementFactory ) {

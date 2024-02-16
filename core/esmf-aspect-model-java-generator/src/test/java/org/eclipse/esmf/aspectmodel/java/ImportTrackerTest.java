@@ -20,34 +20,37 @@ import org.junit.jupiter.api.Test;
 class ImportTrackerTest {
    @Test
    void testType() {
-      var importTracker = new ImportTracker();
-      var type = "java.lang.Long";
+      final ImportTracker importTracker = new ImportTracker();
+      final String type = "java.lang.Long";
       importTracker.trackPotentiallyParameterizedType( type );
       assertThat( importTracker.getUsedImports() ).containsExactlyInAnyOrder( "java.lang.Long" );
    }
 
    @Test
    void testGenericType() {
-      var importTracker = new ImportTracker();
-      var type = "java.util.LinkedHashSet<java.lang.Long>>";
+      final ImportTracker importTracker = new ImportTracker();
+      final String type = "java.util.LinkedHashSet<java.lang.Long>>";
       importTracker.trackPotentiallyParameterizedType( type );
       assertThat( importTracker.getUsedImports() ).containsExactlyInAnyOrder( "java.lang.Long", "java.util.LinkedHashSet" );
    }
 
    @Test
    void testOptionalGenericType() {
-      var importTracker = new ImportTracker();
-      var type = "java.util.Optional<java.util.LinkedHashSet<java.lang.Long>>";
+      final ImportTracker importTracker = new ImportTracker();
+      final String type = "java.util.Optional<java.util.LinkedHashSet<java.lang.Long>>";
       importTracker.trackPotentiallyParameterizedType( type );
-      assertThat( importTracker.getUsedImports() ).containsExactlyInAnyOrder( "java.util.Optional", "java.util.LinkedHashSet", "java.lang.Long" );
+      assertThat( importTracker.getUsedImports() ).containsExactlyInAnyOrder( "java.util.Optional", "java.util.LinkedHashSet",
+            "java.lang.Long" );
    }
 
    @Test
    void testDoubleGenericType() {
-      var importTracker = new ImportTracker();
-      var type = "test.importTracker.StaticContainerProperty<test.importTracker.TestEntity,java.util.Optional<test.importTracker.TestEntity>>";
+      final ImportTracker importTracker = new ImportTracker();
+      final String type = "test.importTracker.StaticContainerProperty<test.importTracker.TestEntity,java.util.Optional<test.importTracker"
+            + ".TestEntity>>";
       importTracker.trackPotentiallyParameterizedType( type );
-      assertThat( importTracker.getUsedImports() ).containsExactlyInAnyOrder( "test.importTracker.StaticContainerProperty", "test.importTracker.TestEntity",
+      assertThat( importTracker.getUsedImports() ).containsExactlyInAnyOrder( "test.importTracker.StaticContainerProperty",
+            "test.importTracker.TestEntity",
             "java.util.Optional" );
    }
 }

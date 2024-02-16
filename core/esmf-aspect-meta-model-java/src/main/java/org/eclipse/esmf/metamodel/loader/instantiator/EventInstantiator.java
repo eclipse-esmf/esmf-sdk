@@ -15,14 +15,14 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.Resource;
-
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.impl.DefaultEvent;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 public class EventInstantiator extends Instantiator<Event> {
    public EventInstantiator( final ModelElementFactory modelElementFactory ) {

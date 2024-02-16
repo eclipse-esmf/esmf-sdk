@@ -28,10 +28,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.io.IOUtils;
-
 import org.eclipse.esmf.functions.ThrowingFunction;
 import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
+
+import org.apache.commons.io.IOUtils;
 
 public class TestContext {
    public static ThrowingFunction<Collection<JavaGenerator>, GenerationResult, IOException> generateAspectCode() {
@@ -50,7 +50,8 @@ public class TestContext {
       };
    }
 
-   private static Map<QualifiedName, Class<?>> generateJavaCode( final File tempDirectory, final Collection<JavaGenerator> generators ) throws IOException {
+   private static Map<QualifiedName, Class<?>> generateJavaCode( final File tempDirectory, final Collection<JavaGenerator> generators )
+         throws IOException {
       final File subFolder = new File(
             tempDirectory.getAbsolutePath() + File.separator + generators.iterator().next().getConfig().packageName()
                   .replace( '.', File.separatorChar ) );

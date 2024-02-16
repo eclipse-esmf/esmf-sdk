@@ -35,17 +35,11 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
@@ -73,8 +67,6 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
-import org.jeasy.random.EasyRandom;
-import org.jeasy.random.EasyRandomParameters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -82,6 +74,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.curiousoddman.rgxgen.RgxGen;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
 
 public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    /**
@@ -122,11 +120,9 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    }
 
    /**
-    * Generates a sample JSON payload.
-    * <p>
-    * The example values in Aspect Models, which are passed in the constructor, are extracted and used to create the
-    * JSON payload as a {@link String}.
-    * In case an example value has not been given in the Model, a random value is generated and used instead.
+    * Generates a sample JSON payload. The example values in Aspect Models, which are passed in the constructor, are extracted and used to
+    * create the JSON payload as a {@link String}. In case an example value has not been given in the Model, a random value is generated and
+    * used instead.
     *
     * @param nameMapper The callback function that maps the Aspect name to an OutputStream
     */
@@ -192,19 +188,17 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private Map<String, Object> recursiveProperty( final Property property ) {
       if ( !property.isNotInPayload() && !property.isOptional() ) {
          throw new IllegalArgumentException(
-               String.format( "Having a recursive Property: %s which is not Optional nor marked as NotInPayload is not valid.", property ) );
+               String.format( "Having a recursive Property: %s which is not Optional nor marked as NotInPayload is not valid.",
+                     property ) );
       }
       return Map.of();
    }
 
    /**
     * A meta model {@link Property#getCharacteristic()} can represent different types.
-    * This method recursively transforms the types to corresponding data structures or primitives each having the {@link Property#getName()}
-    * as key.
-    *
-    * A {@link Collection} will be represented as a {@link List}.
-    * {@link Entity} and {@link Either} will be represented as {@link Map}.
-    * As such the returned map can contain 1 to n entries.
+    * This method recursively transforms the types to corresponding data structures or primitives each having the
+    * {@link Property#getName()} as key. A {@link Collection} will be represented as a {@link List}. {@link Entity} and {@link Either} will
+    * be represented as {@link Map}. As such the returned map can contain 1 to n entries.
     *
     * @param property the property to transform
     * @return a map representing the property names as key and the property values as value
@@ -226,13 +220,14 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
          final Collection collection = characteristic.as( Trait.class ).getBaseCharacteristic().as( Collection.class );
 
-         final List<Constraint> constraints = characteristic.as( Trait.class ).getConstraints().stream().filter( trait -> trait.is( LengthConstraint.class ) )
+         final List<Constraint> constraints = characteristic.as( Trait.class ).getConstraints().stream()
+               .filter( trait -> trait.is( LengthConstraint.class ) )
                .toList();
 
-         return !constraints.isEmpty() ?
-               toMap( property.getName(), getCollectionValues( property, collection,
-                     (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) ) :
-               toMap( property.getName(), getCollectionValues( property, collection ) );
+         return !constraints.isEmpty()
+               ? toMap( property.getName(), getCollectionValues( property, collection,
+               (LengthConstraint) characteristic.as( Trait.class ).getConstraints().get( 0 ) ) )
+               : toMap( property.getName(), getCollectionValues( property, collection ) );
       }
       return ImmutableMap.of();
    }
@@ -242,7 +237,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return false;
       }
       final Trait trait = characteristic.as( Trait.class );
-      return trait.getBaseCharacteristic().is( Collection.class ) && (!trait.getConstraints().isEmpty());
+      return trait.getBaseCharacteristic().is( Collection.class ) && ( !trait.getConstraints().isEmpty() );
    }
 
    private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property, final boolean useModelExampleValue ) {
@@ -250,7 +245,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       if ( dataType.isPresent() ) {
          final AbstractEntity abstractEntity = dataType.get();
          final ComplexType extendingComplexType = abstractEntity.getExtendingElements().get( 0 );
-         final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties(), useModelExampleValue );
+         final Map<String, Object> generatedProperties = transformProperties( extendingComplexType.getAllProperties(),
+               useModelExampleValue );
          generatedProperties.put( "@type", extendingComplexType.getName() );
          return toMap( property.getName(), generatedProperties );
       }
@@ -285,7 +281,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       final Characteristic characteristic = property.getCharacteristic();
       return getForCharacteristic( characteristic, Either.class )
             .map( value -> transformProperty(
-                  new BasicProperty( AspectModelJsonPayloadGenerator.EITHER_LEFT, value.getLeft(), Optional.empty() ), useModelExampleValue ) )
+                  new BasicProperty( AspectModelJsonPayloadGenerator.EITHER_LEFT, value.getLeft(), Optional.empty() ),
+                  useModelExampleValue ) )
             .map( value -> toMap( property.getName(), value ) )
             .orElseGet( ImmutableMap::of );
    }
@@ -309,7 +306,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
       Optional<Characteristic> elementCharacteristics = Optional.empty();
       if ( characteristic.is( Collection.class ) ) {
-         elementCharacteristics = ((Collection) characteristic).getElementCharacteristic();
+         elementCharacteristics = ( (Collection) characteristic ).getElementCharacteristic();
       }
       final Characteristic effectiveCharacteristics = elementCharacteristics.orElse( characteristic );
 
@@ -329,8 +326,10 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       return getCollectionValues( property, collection, null );
    }
 
-   private List<Object> getCollectionValues( final BasicProperty property, final Collection collection, final LengthConstraint lengthConstraint ) {
-      final Type dataType = collection.getDataType().orElseThrow( () -> new IllegalArgumentException( "DataType for collection is required." ) );
+   private List<Object> getCollectionValues( final BasicProperty property, final Collection collection,
+         final LengthConstraint lengthConstraint ) {
+      final Type dataType = collection.getDataType()
+            .orElseThrow( () -> new IllegalArgumentException( "DataType for collection is required." ) );
 
       if ( dataType.is( Scalar.class ) ) {
          final Object payload = getExampleValueOrElseRandom( property, lengthConstraint == null );
@@ -423,7 +422,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
             Integer.class, ( min, max ) -> getRandomInteger( min.intValue(), max.intValue() ),
             Long.class, ( min, max ) -> getRandomLong( min.longValue(), max.longValue() ),
             Float.class, ( min, max ) -> getRandomDouble( min.floatValue(), max.floatValue() ).floatValue(),
-            BigInteger.class, ( min, max ) -> BigDecimal.valueOf( getRandomDouble( safelyNarrowDown( min ), safelyNarrowDown( max ) ) ).toBigInteger(),
+            BigInteger.class,
+            ( min, max ) -> BigDecimal.valueOf( getRandomDouble( safelyNarrowDown( min ), safelyNarrowDown( max ) ) ).toBigInteger(),
             BigDecimal.class, ( min, max ) -> BigDecimal.valueOf( getRandomDouble( safelyNarrowDown( min ), safelyNarrowDown( max ) ) )
       );
 
@@ -440,7 +440,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       private Object generateExampleValue( final Characteristic characteristic ) {
          final Type dataType = getDataType( characteristic );
 
-         if ( !(dataType.is( Scalar.class )) ) {
+         if ( !( dataType.is( Scalar.class ) ) ) {
             throw new IllegalArgumentException( "Example values can only be generated for scalar types." );
          }
 
@@ -462,7 +462,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          }
 
          if ( characteristic.is( Trait.class ) ) {
-            final Optional<Object> traitExampleValue = generateExampleValueForTrait( characteristic.as( Trait.class ), exampleValueType, dataTypeResource );
+            final Optional<Object> traitExampleValue = generateExampleValueForTrait( characteristic.as( Trait.class ), exampleValueType,
+                  dataTypeResource );
             if ( traitExampleValue.isPresent() ) {
                return traitExampleValue.get();
             }
@@ -477,10 +478,12 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return defaultEasyRandom.nextObject( exampleValueType );
       }
 
-      private Optional<Object> generateExampleValueForTrait( final Trait trait, final Class<?> exampleValueType, final Resource dataTypeResource ) {
+      private Optional<Object> generateExampleValueForTrait( final Trait trait, final Class<?> exampleValueType,
+            final Resource dataTypeResource ) {
          for ( final Constraint constraint : trait.getConstraints() ) {
             if ( constraint.is( LengthConstraint.class ) ) {
-               return Optional.of( getRandomValue( constraint.as( LengthConstraint.class ), exampleValueType, trait.getBaseCharacteristic() ) );
+               return Optional.of(
+                     getRandomValue( constraint.as( LengthConstraint.class ), exampleValueType, trait.getBaseCharacteristic() ) );
             }
             if ( constraint.is( RangeConstraint.class ) ) {
                return Optional.of( getRandomValue( constraint.as( RangeConstraint.class ), exampleValueType, dataTypeResource ) );
@@ -493,7 +496,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       }
 
       private Object getGregorianRandomValue( final Type dataType ) {
-         final XMLGregorianCalendar randomCalendar = DatatypeFactory.newDefaultInstance().newXMLGregorianCalendar( new GregorianCalendar() );
+         final XMLGregorianCalendar randomCalendar = DatatypeFactory.newDefaultInstance()
+               .newXMLGregorianCalendar( new GregorianCalendar() );
          final Optional<DateFormat> dateFormat = getDateFormat( dataType.getUrn() );
          if ( dateFormat.isPresent() ) {
             final Date date = randomCalendar.toGregorianCalendar().getTime();
@@ -536,7 +540,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
          final BigInteger maxLength = lengthConstraint.getMaxValue().orElse( BigInteger.valueOf( 30 ) );
          final BigInteger minLength = lengthConstraint.getMinValue().orElse( BigInteger.ZERO );
-         final EasyRandomParameters easyRandomParameters = new EasyRandomParameters().stringLengthRange( minLength.intValue(), maxLength.intValue() );
+         final EasyRandomParameters easyRandomParameters = new EasyRandomParameters().stringLengthRange( minLength.intValue(),
+               maxLength.intValue() );
          final EasyRandom easyRandom = new EasyRandom( easyRandomParameters );
          return easyRandom.nextObject( (Class<?>) exampleValueType );
       }
@@ -562,7 +567,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return returnValues;
       }
 
-      private Number getRandomValue( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType, final Resource dataTypeResource ) {
+      private Number getRandomValue( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType,
+            final Resource dataTypeResource ) {
          final Number min = calculateLowerBound( rangeConstraint, valueType, dataTypeResource );
          final Number max = calculateUpperBound( rangeConstraint, valueType, dataTypeResource );
          return generateForNumericTypeInRange( valueType, min, max );
@@ -576,7 +582,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
       // narrowing conversion from BigDecimal to double
       private double safelyNarrowDown( final Number bound ) {
-         if ( !(BigDecimal.class.equals( bound.getClass() )) ) {
+         if ( !( BigDecimal.class.equals( bound.getClass() ) ) ) {
             return bound.doubleValue();
          }
 
@@ -585,11 +591,12 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          // Example: xsd:unsignedLong has a max. value of 18446744073709551615; when converting it to double
          // it will get represented as 1.8446744073709552E16, thereby exceeding the upper bound.
          // Therefore we need to take care of always rounding down when narrowing to double.
-         final BigDecimal narrowed = ((BigDecimal) bound).round( new MathContext( 15, RoundingMode.DOWN ) );
+         final BigDecimal narrowed = ( (BigDecimal) bound ).round( new MathContext( 15, RoundingMode.DOWN ) );
          return narrowed.doubleValue();
       }
 
-      private Number calculateLowerBound( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType, final Resource dataTypeResource ) {
+      private Number calculateLowerBound( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType,
+            final Resource dataTypeResource ) {
          return rangeConstraint.getMinValue()
                .map( ScalarValue::getValue )
                .map( value -> (Number) value )
@@ -601,7 +608,8 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
                .orElse( NumericTypeTraits.getModelMinValue( dataTypeResource, valueType ) );
       }
 
-      private Number calculateUpperBound( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType, final Resource dataTypeResource ) {
+      private Number calculateUpperBound( final RangeConstraint rangeConstraint, final java.lang.reflect.Type valueType,
+            final Resource dataTypeResource ) {
          return rangeConstraint.getMaxValue()
                .map( ScalarValue::getValue )
                .map( value -> (Number) value )

@@ -14,8 +14,8 @@ package org.eclipse.esmf.aspectmodel.versionupdate;
 
 import java.util.List;
 
-import org.eclipse.esmf.aspectmodel.resolver.AspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.resolver.AspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
 
 public interface MigratorFactory {

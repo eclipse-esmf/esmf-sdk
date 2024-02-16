@@ -64,8 +64,9 @@ public class DefaultPropertyWrapper extends DefaultProperty {
 
    @Override
    public boolean equals( final Object o ) {
-      if ( o != null )
+      if ( o != null ) {
          return o.equals( property );
+      }
       return false;
    }
 

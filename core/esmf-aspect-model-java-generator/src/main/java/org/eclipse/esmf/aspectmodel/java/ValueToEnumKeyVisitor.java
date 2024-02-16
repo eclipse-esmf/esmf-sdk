@@ -15,9 +15,9 @@ package org.eclipse.esmf.aspectmodel.java;
 
 import java.util.regex.Pattern;
 
-import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;

@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.versionupdate.migrator;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
-
 import org.eclipse.esmf.samm.KnownVersion;
 
 /**

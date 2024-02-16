@@ -41,8 +41,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 public class AasToAspectModelGeneratorTest {
    @Test
-   @Disabled
-      // IDTA-provided sample files can currently not be read with AAS4J
+   @Disabled // IDTA-provided sample files can currently not be read with AAS4J
    void testTranslateDigitalNameplate() {
       final InputStream aasx = AasToAspectModelGeneratorTest.class.getClassLoader()
             .getResourceAsStream( "Sample_ZVEI_Digital_Nameplate_V10.aasx" );
@@ -64,11 +63,11 @@ public class AasToAspectModelGeneratorTest {
             } ).doesNotThrowAnyException();
 
       final Environment aasEnvironmentFromXml = new XmlDeserializer().read(
-            new ByteArrayInputStream( new AspectModelAASGenerator().generateAsByteArray( AasFileFormat.XML, aspect ) ) );
+            new ByteArrayInputStream( new AspectModelAasGenerator().generateAsByteArray( AasFileFormat.XML, aspect ) ) );
       assertForValidator.accept( AasToAspectModelGenerator.fromEnvironment( aasEnvironmentFromXml ) );
 
       final Environment aasEnvironmentFromJson = new JsonDeserializer().read(
-            new ByteArrayInputStream( new AspectModelAASGenerator().generateAsByteArray( AasFileFormat.JSON, aspect ) ) );
+            new ByteArrayInputStream( new AspectModelAasGenerator().generateAsByteArray( AasFileFormat.JSON, aspect ) ) );
       assertForValidator.accept( AasToAspectModelGenerator.fromEnvironment( aasEnvironmentFromJson ) );
    }
 

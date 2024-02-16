@@ -34,9 +34,11 @@ import com.oracle.svm.core.annotate.TargetClass;
 @TargetClass( className = "sun.awt.FontConfiguration", onlyWith = IsWindows.class )
 @SuppressWarnings( {
       "unused",
-      "squid:S00101" // Class name uses GraalVM substitution class naming schema, see
+      "squid:S00101", // Class name uses GraalVM substitution class naming schema, see
       // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
-      , "NewClassNamingConvention" } )
+      "NewClassNamingConvention",
+      "checkstyle:TypeName"
+} )
 public final class Target_sun_awt_FontConfiguration {
    @Substitute
    private void readFontConfigFile( final File f ) {

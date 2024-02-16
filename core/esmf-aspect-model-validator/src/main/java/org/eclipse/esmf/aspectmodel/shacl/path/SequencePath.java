@@ -20,9 +20,10 @@ import org.apache.jena.rdf.model.Resource;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#property-path-sequence">Sequence Path</a>
+ *
  * @param subPaths the sequence of paths
  */
-public record SequencePath(List<Path> subPaths) implements Path {
+public record SequencePath( List<Path> subPaths ) implements Path {
    @Override
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitSequencePath( resource, this );

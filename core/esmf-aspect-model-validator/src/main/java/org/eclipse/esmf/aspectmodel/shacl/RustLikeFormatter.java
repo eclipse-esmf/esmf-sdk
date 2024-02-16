@@ -19,9 +19,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import javax.annotation.Nullable;
 
+import org.eclipse.esmf.aspectmodel.resolver.parser.PlainTextFormatter;
+import org.eclipse.esmf.aspectmodel.resolver.parser.RdfTextFormatter;
+import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
+
+import com.google.common.collect.Ordering;
 import org.apache.jena.graph.AnyNode;
 import org.apache.jena.graph.BlankNode;
 import org.apache.jena.graph.LiteralNode;
@@ -35,11 +39,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.graph.NodeConst;
 import org.apache.jena.vocabulary.RDF;
-import org.eclipse.esmf.aspectmodel.resolver.parser.PlainTextFormatter;
-import org.eclipse.esmf.aspectmodel.resolver.parser.RdfTextFormatter;
-import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
-
-import com.google.common.collect.Ordering;
 
 /**
  * Rust-like message formatter. Formatted messages look something like the following example:
@@ -62,8 +61,8 @@ public class RustLikeFormatter {
    private final Set<Statement> seen = new HashSet<>();
    private List<Statement> candidateStatements;
 
-   // The parsed model does not contain all the original tokens ( braces in lists, semicolons between statements etc.). But as we want to achieve
-   // as nice and natural formatting as possible, we look at the available information to achieve the proper spacing.
+   // The parsed model does not contain all the original tokens ( braces in lists, semicolons between statements etc.). But as we want to
+   // achieve as nice and natural formatting as possible, we look at the available information to achieve the proper spacing.
    private List<Integer> knownPositions;
 
    // Will use the PlainTextFormatter as default formatter.
@@ -89,7 +88,8 @@ public class RustLikeFormatter {
       }
 
       candidateStatements = sourceModel.listStatements()
-            .filterDrop( statement -> Objects.equals( statement.getPredicate(), RDF.rest ) ) // internal Jena list bookkeeping, nothing interesting for us
+            .filterDrop( statement -> Objects.equals( statement.getPredicate(),
+                  RDF.rest ) ) // internal Jena list bookkeeping, nothing interesting for us
             .filterKeep( statement -> spansLine( statement, highlightToken.line() ) )
             .toList();
       return formatError( message );
@@ -109,7 +109,8 @@ public class RustLikeFormatter {
    private String formatError( final String errorMessage ) {
       final int prefixWidth = String.valueOf( highlightToken.line() ).length() + 1;
       final String prefix = " ".repeat( prefixWidth ) + "| ";
-      return errorStyle( String.format( "%s> Error at line %d column %d%n", "-".repeat( prefixWidth ), highlightToken.line(), highlightToken.column() ) )
+      return errorStyle(
+            String.format( "%s> Error at line %d column %d%n", "-".repeat( prefixWidth ), highlightToken.line(), highlightToken.column() ) )
             + prefix + System.lineSeparator()
             + highlightToken.line() + " | " + formatStatements() + System.lineSeparator()
             + prefix + " ".repeat( highlightToken.column() ) + errorStyle(
@@ -150,7 +151,8 @@ public class RustLikeFormatter {
       final SmartToken t1;
       final SmartToken t2;
       if ( Objects.equals( s1.getSubject(), s2.getSubject() ) ) {
-         // several statements can share a subject with the same position, so try to determine the source order based on predicates and objects
+         // several statements can share a subject with the same position, so try to determine the source order based on predicates and
+         // objects
          t1 = excludeSubject( s1 );
          t2 = excludeSubject( s2 );
       } else {
@@ -158,7 +160,7 @@ public class RustLikeFormatter {
          t2 = includeSubject( s2 );
       }
       final int res = Integer.compare( t1.line(), t2.line() );
-      return (res != 0) ? res : Integer.compare( t1.column(), t2.column() );
+      return ( res != 0 ) ? res : Integer.compare( t1.column(), t2.column() );
    }
 
    private SmartToken includeSubject( final Statement statement ) {
@@ -218,7 +220,8 @@ public class RustLikeFormatter {
       return true;
    }
 
-   // as the "whitespace" is not preserved by the parser ( in this case ';' and '.' ), we have to reconstruct it by looking at the relative positions of the
+   // as the "whitespace" is not preserved by the parser ( in this case ';' and '.' ), we have to reconstruct it by looking at the
+   // relative positions of the
    // statements as they would appear in the original document
    private boolean isLastSubjectedStatement( final Statement statement ) {
       final List<Statement> sameSubject = statement.getModel().listStatements( statement.getSubject(), null, (RDFNode) null ).toList();
@@ -244,7 +247,7 @@ public class RustLikeFormatter {
 
       // one RDF statement can span multiple lines, we are only interested in parts located on exactly the given line and not rendered yet
       if ( nodePosition.line() != highlightToken.line() || nodePosition.column() < currentColumn ) {
-         return !(nodePosition.line() > highlightToken.line());
+         return !( nodePosition.line() > highlightToken.line() );
       }
 
       // whitespace is swallowed by the lexer, but we can reconstruct the proper positioning from the position information
@@ -255,11 +258,12 @@ public class RustLikeFormatter {
    }
 
    private boolean isListStatement( final Statement statement ) {
-      return statement.getPredicate().asNode().equals( NodeConst.nodeFirst ) || statement.getPredicate().asNode().equals( NodeConst.nodeRest );
+      return statement.getPredicate().asNode().equals( NodeConst.nodeFirst ) || statement.getPredicate().asNode()
+            .equals( NodeConst.nodeRest );
    }
 
    private boolean isList( final Model model, final RDFNode node ) {
-      return node.equals( RDF.nil ) || (node.isResource() && model.contains( node.asResource(), RDF.rest, (RDFNode) null ));
+      return node.equals( RDF.nil ) || ( node.isResource() && model.contains( node.asResource(), RDF.rest, (RDFNode) null ) );
    }
 
    private Statement findListHead( final Statement listElement ) {
@@ -331,7 +335,7 @@ public class RustLikeFormatter {
 
    private boolean enoughRoomForSpace( final String content ) {
       final int upperBoundIndex = Math.abs( Collections.binarySearch( knownPositions, currentColumn ) ) - 1;
-      return upperBoundIndex >= knownPositions.size() || knownPositions.get( upperBoundIndex ) > (currentColumn + content.length());
+      return upperBoundIndex >= knownPositions.size() || knownPositions.get( upperBoundIndex ) > ( currentColumn + content.length() );
    }
 
    private void spacedIfPossible( final String content ) {

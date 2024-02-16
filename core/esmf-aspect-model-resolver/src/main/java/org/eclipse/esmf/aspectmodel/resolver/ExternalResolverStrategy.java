@@ -16,12 +16,11 @@ package org.eclipse.esmf.aspectmodel.resolver;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.jena.rdf.model.Model;
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-
 import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * A ResolutionStrategy that executes an external command, which will be executed using a {@link CommandExecutor}.
