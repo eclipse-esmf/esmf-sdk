@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.characteristic.State;
-
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
@@ -26,7 +25,8 @@ import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 public class DefaultState extends DefaultEnumeration implements State {
    private final Value defaultValue;
 
-   public DefaultState( final MetaModelBaseAttributes metaModelBaseAttributes, final Type dataType, final List<Value> values, final Value defaultValue ) {
+   public DefaultState( final MetaModelBaseAttributes metaModelBaseAttributes, final Type dataType, final List<Value> values,
+         final Value defaultValue ) {
       super( metaModelBaseAttributes, dataType, values );
       this.defaultValue = defaultValue;
    }

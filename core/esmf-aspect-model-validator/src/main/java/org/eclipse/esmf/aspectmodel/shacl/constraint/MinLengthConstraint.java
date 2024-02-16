@@ -15,12 +15,12 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.RDFNode;
-
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.MinLengthViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#MinLengthConstraintComponent">sh:minLength</a>
@@ -37,9 +37,9 @@ public record MinLengthConstraint( int minLength ) implements Constraint {
       }
 
       final String value = rdfNode.asLiteral().getLexicalForm();
-      return value.length() >= minLength ?
-            List.of() :
-            List.of( new MinLengthViolation( context, minLength, value.length() ) );
+      return value.length() >= minLength
+            ? List.of()
+            : List.of( new MinLengthViolation( context, minLength, value.length() ) );
    }
 
    @Override

@@ -14,20 +14,18 @@
 package org.eclipse.esmf.aspectmodel.resolver.services;
 
 import java.util.List;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.rdf.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-
-import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * This class acts as the bridge between the scalar types used in RDF (XSD/RDF/SAMM-specific (i.e. samm:curie)) and
@@ -64,7 +62,7 @@ public class DataType {
     * @return the list of supported XSD types
     */
    public static List<RDFDatatype> getSupportedXsdTypes() {
-      return ExtendedXsdDataType.supportedXsdTypes;
+      return ExtendedXsdDataType.SUPPORTED_XSD_TYPES;
    }
 
    /**
@@ -98,11 +96,11 @@ public class DataType {
     */
    public static Class<?> getJavaTypeForMetaModelType( final Resource type, final KnownVersion metaModelVersion ) {
       return DataType.getAllSupportedTypesForMetaModelVersion( metaModelVersion )
-                     .stream()
-                     .filter( xsdType -> xsdType.getURI().equals( type.getURI() ) )
-                     .map( RDFDatatype::getJavaClass )
-                     .findAny()
-                     .orElseThrow(
-                           () -> new IllegalStateException( "Invalid data type " + type + " found in model." ) );
+            .stream()
+            .filter( xsdType -> xsdType.getURI().equals( type.getURI() ) )
+            .map( RDFDatatype::getJavaClass )
+            .findAny()
+            .orElseThrow(
+                  () -> new IllegalStateException( "Invalid data type " + type + " found in model." ) );
    }
 }

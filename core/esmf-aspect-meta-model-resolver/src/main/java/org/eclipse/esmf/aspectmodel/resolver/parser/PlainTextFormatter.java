@@ -14,7 +14,8 @@
 package org.eclipse.esmf.aspectmodel.resolver.parser;
 
 /**
- * Special implementation of the formatter, always returning plain text. Useful in unit tests and on systems which do not support coloring text.
+ * Special implementation of the formatter, always returning plain text. Useful in unit tests and on systems which do not support coloring
+ * text.
  */
 public class PlainTextFormatter implements RdfTextFormatter {
 

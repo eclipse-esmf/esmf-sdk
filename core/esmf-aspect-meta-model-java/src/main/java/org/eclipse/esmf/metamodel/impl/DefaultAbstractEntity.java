@@ -28,17 +28,17 @@ public class DefaultAbstractEntity extends DefaultComplexType implements Abstrac
    public static DefaultAbstractEntity createDefaultAbstractEntity(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
-         final Optional<ComplexType> _extends,
+         @SuppressWarnings( "checkstyle:ParameterName" ) final Optional<ComplexType> extends_,
          final List<AspectModelUrn> extendingElements ) {
-      return new DefaultAbstractEntity( metaModelBaseAttributes, properties, _extends, extendingElements, null );
+      return new DefaultAbstractEntity( metaModelBaseAttributes, properties, extends_, extendingElements, null );
    }
 
    public DefaultAbstractEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
-         final Optional<ComplexType> _extends,
+         @SuppressWarnings( "checkstyle:ParameterName" ) final Optional<ComplexType> extends_,
          final List<AspectModelUrn> extendingElements,
          final ModelElementFactory loadedElements ) {
-      super( metaModelBaseAttributes, properties, _extends, extendingElements, loadedElements );
+      super( metaModelBaseAttributes, properties, extends_, extendingElements, loadedElements );
    }
 
    /**

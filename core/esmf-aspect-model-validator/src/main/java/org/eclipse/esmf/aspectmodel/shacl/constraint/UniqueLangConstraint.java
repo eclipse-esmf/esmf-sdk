@@ -52,9 +52,9 @@ public record UniqueLangConstraint( ) implements Constraint {
             .filter( e -> !seen.add( e ) )
             .collect( Collectors.toSet() );
 
-      return duplicates.isEmpty() ?
-            List.of() :
-            List.of( new UniqueLanguageViolation( context, seen ) );
+      return duplicates.isEmpty()
+            ? List.of()
+            : List.of( new UniqueLanguageViolation( context, seen ) );
    }
 
    @Override

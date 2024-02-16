@@ -29,6 +29,7 @@ public class DefaultProperty extends ModelElementImpl implements Property {
    private final boolean notInPayload;
    private final Optional<String> payloadName;
    private final boolean isAbstract;
+   @SuppressWarnings( "checkstyle:MemberName" )
    private final Optional<Property> extends_;
 
    public DefaultProperty( final MetaModelBaseAttributes metaModelBaseAttributes,
@@ -38,7 +39,7 @@ public class DefaultProperty extends ModelElementImpl implements Property {
          final boolean notInPayload,
          final Optional<String> payloadName,
          final boolean isAbstract,
-         final Optional<Property> extends_ ) {
+         @SuppressWarnings( "checkstyle:ParameterName" ) final Optional<Property> extends_ ) {
       super( metaModelBaseAttributes );
       this.characteristic = characteristic;
       this.exampleValue = exampleValue;
@@ -81,7 +82,6 @@ public class DefaultProperty extends ModelElementImpl implements Property {
 
    /**
     * Defines whether a property is included in the runtime data of an Aspect.
-    *
     */
    @Override
    public boolean isNotInPayload() {
@@ -140,14 +140,14 @@ public class DefaultProperty extends ModelElementImpl implements Property {
          return false;
       }
       final DefaultProperty that = (DefaultProperty) o;
-      return Objects.equals( getName(), that.getName() ) &&
-            Objects.equals( getAspectModelUrn(), that.getAspectModelUrn() ) &&
-            optional == that.optional &&
-            notInPayload == that.notInPayload &&
-            isAbstract == that.isAbstract &&
-            Objects.equals( characteristic, that.characteristic ) &&
-            Objects.equals( exampleValue, that.exampleValue ) &&
-            Objects.equals( extends_, that.extends_ );
+      return Objects.equals( getName(), that.getName() )
+            && Objects.equals( getAspectModelUrn(), that.getAspectModelUrn() )
+            && optional == that.optional
+            && notInPayload == that.notInPayload
+            && isAbstract == that.isAbstract
+            && Objects.equals( characteristic, that.characteristic )
+            && Objects.equals( exampleValue, that.exampleValue )
+            && Objects.equals( extends_, that.extends_ );
    }
 
    @Override

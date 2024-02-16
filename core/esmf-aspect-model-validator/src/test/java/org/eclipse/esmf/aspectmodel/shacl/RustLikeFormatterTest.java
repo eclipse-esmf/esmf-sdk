@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
+import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -246,7 +246,7 @@ public class RustLikeFormatterTest {
    private Model model( final String ttlRepresentation ) {
       final Model model = ModelFactory.createDefaultModel();
       final InputStream in = new ByteArrayInputStream( ttlRepresentation.getBytes( StandardCharsets.UTF_8 ) );
-      RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRIOTTurtle.factory );
+      RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRiotTurtle.factory );
       model.read( in, "", RDFLanguages.strLangTurtle );
       return model;
    }

@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
  * instantiate it. To load a regular Aspect Model, use {@link #getElements(VersionedModel)} or
  * {@link #getElementsUnchecked(VersionedModel)}.
  * To load elements from an RDF model that might contain elements from multiple namespaces, use {@link #getNamespaces(VersionedModel)}.
- * <p>
  * Instances of {@code VersionedModel} are gained through an {@link AspectModelResolver}.
  */
 public class AspectModelLoader {
@@ -66,7 +65,7 @@ public class AspectModelLoader {
          KnownVersion.SAMM_2_1_0
    );
 
-   private static final MigratorService migratorService = new MigratorService();
+   private static final MigratorService MIGRATOR_SERVICE = new MigratorService();
 
    private AspectModelLoader() {
    }
@@ -122,8 +121,9 @@ public class AspectModelLoader {
          return Try.failure( new UnsupportedVersionException( versionedModel.getMetaModelVersion() ) );
       }
 
-      final Try<VersionedModel> updatedModel = metaModelVersion.get().isOlderThan( KnownVersion.getLatest() ) ?
-            migratorService.updateMetaModelVersion( versionedModel ) : Try.success( versionedModel );
+      final Try<VersionedModel> updatedModel = metaModelVersion.get().isOlderThan( KnownVersion.getLatest() )
+            ? MIGRATOR_SERVICE.updateMetaModelVersion( versionedModel )
+            : Try.success( versionedModel );
       if ( updatedModel.isFailure() ) {
          return Try.failure( updatedModel.getCause() );
       }
@@ -196,7 +196,6 @@ public class AspectModelLoader {
 
    /**
     * Convenience method to load the single Aspect from a model, when the model contains exactly one Aspect.
-    *
     * <b>Caution:</b> The method handles this special case. Aspect Models are allowed to contain any number of Aspects (including zero),
     * so for the general case you should use {@link #getElements(VersionedModel)} instead.
     *
@@ -210,7 +209,6 @@ public class AspectModelLoader {
    /**
     * Convenience method to load the single Aspect from a model, when the model contains exactly one Aspect. Does the same as
     * {@link #getSingleAspect(VersionedModel)} but throws an exception on failure.
-    *
     * <b>Caution:</b> The method handles this special case. Aspect Models are allowed to contain any number of Aspects (including zero),
     * so for the general case you should use {@link #getElementsUnchecked(VersionedModel)} instead.
     *

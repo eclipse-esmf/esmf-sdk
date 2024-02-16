@@ -15,14 +15,14 @@ package org.eclipse.esmf.metamodel.loader;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.TypedRdfDatatype;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.datatypes.Curie;
+import org.eclipse.esmf.samm.KnownVersion;
+
 import org.apache.jena.datatypes.DatatypeFormatException;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.impl.LiteralLabel;
-
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.resolver.services.TypedRdfDatatype;
-import org.eclipse.esmf.metamodel.datatypes.Curie;
 
 public class CurieRdfType implements TypedRdfDatatype<Curie> {
    @Override

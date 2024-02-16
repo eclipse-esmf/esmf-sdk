@@ -47,9 +47,9 @@ public record JsConstraintViolation( EvaluationContext context, String constrain
    @Override
    public String violationSpecificMessage() {
       if ( constraintMessage().isEmpty() ) {
-         return context.property().isPresent() ?
-               String.format( "Property %s on %s is invalid.", context.propertyName(), context.elementName() ) :
-               String.format( "%s is invalid.", context.elementName() );
+         return context.property().isPresent()
+               ? String.format( "Property %s on %s is invalid.", context.propertyName(), context.elementName() )
+               : String.format( "%s is invalid.", context.elementName() );
       }
       String interpolatedMessage = bindings.getOrDefault( "message", constraintMessage() ).toString();
       for ( final Map.Entry<String, Object> entry : bindings.entrySet() ) {

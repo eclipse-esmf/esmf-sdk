@@ -19,18 +19,17 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-import org.eclipse.esmf.metamodel.Aspect;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
+import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.constraint.EncodingConstraint;
 import org.eclipse.esmf.constraint.LanguageConstraint;
 import org.eclipse.esmf.constraint.LengthConstraint;
 import org.eclipse.esmf.constraint.RegularExpressionConstraint;
-import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 
-import org.eclipse.esmf.samm.KnownVersion;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class ConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 

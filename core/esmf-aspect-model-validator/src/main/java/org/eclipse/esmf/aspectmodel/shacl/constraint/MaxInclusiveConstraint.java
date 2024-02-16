@@ -15,16 +15,15 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.RDFNode;
-
 import org.eclipse.esmf.aspectmodel.shacl.LiteralComparator;
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
+import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.MaxInclusiveViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
-import org.eclipse.esmf.aspectmodel.shacl.violation.DatatypeViolation;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#MaxInclusiveConstraintComponent">sh:maxInclusive</a>
@@ -41,9 +40,9 @@ public record MaxInclusiveConstraint( Literal maxValue ) implements Constraint {
 
       final Literal actual = rdfNode.asLiteral();
       try {
-         return new LiteralComparator().compare( maxValue, actual ) >= 0 ?
-               List.of() :
-               List.of( new MaxInclusiveViolation( context, maxValue, actual ) );
+         return new LiteralComparator().compare( maxValue, actual ) >= 0
+               ? List.of()
+               : List.of( new MaxInclusiveViolation( context, maxValue, actual ) );
       } catch ( final ClassCastException exception ) {
          return List.of( new DatatypeViolation( context, maxValue.getDatatypeURI(), actual.getDatatypeURI() ) );
       }

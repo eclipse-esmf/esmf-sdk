@@ -46,9 +46,7 @@ public interface PropertyMapper<T extends SubmodelElement> {
    T mapToAasProperty( Type type, Property property, Context context );
 
    /**
-    * Whether this {@code PropertyMapper} can handle the given property.
-    *
-    * Defaults to {@code true}, implementors should override.
+    * Whether this {@code PropertyMapper} can handle the given property. Defaults to {@code true}, implementors should override.
     *
     * @param property the property to test
     * @return {@code true} if this property mapper can handle the given property, {@code false} else
@@ -64,11 +62,10 @@ public interface PropertyMapper<T extends SubmodelElement> {
     * @return the newly created reference
     */
    default Reference buildReferenceToConceptDescription( final Property property ) {
-      final Key key =
-            new DefaultKey.Builder()
-                  .type( KeyTypes.CONCEPT_DESCRIPTION )
-                  .value( determineIdentifierFor( property ) )
-                  .build();
+      final Key key = new DefaultKey.Builder()
+            .type( KeyTypes.CONCEPT_DESCRIPTION )
+            .value( determineIdentifierFor( property ) )
+            .build();
       return new DefaultReference.Builder().type( ReferenceTypes.EXTERNAL_REFERENCE ).keys( key ).build();
    }
 

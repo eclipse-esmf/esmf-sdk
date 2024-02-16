@@ -20,21 +20,20 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nullable;
 
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
+import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
+
+import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.riot.RiotException;
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.vavr.control.Try;
 
 public final class TurtleLoader {
    private static final Logger LOG = LoggerFactory.getLogger( TurtleLoader.class );
@@ -82,11 +81,12 @@ public final class TurtleLoader {
    }
 
    private static void registerTurtle() {
-      if( isTurtleRegistered )
+      if ( isTurtleRegistered ) {
          return;
-      synchronized ( TurtleLoader.class ){
-         if( !isTurtleRegistered ){
-            RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRIOTTurtle.factory );
+      }
+      synchronized ( TurtleLoader.class ) {
+         if ( !isTurtleRegistered ) {
+            RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRiotTurtle.factory );
             isTurtleRegistered = true;
          }
       }
@@ -97,7 +97,6 @@ public final class TurtleLoader {
     *
     * @param url The URL to open
     * @return The InputStream on success
-    *
     * @throws IllegalArgumentException if an {@link IOException} occurs
     */
    public static InputStream openUrl( final URL url ) {

@@ -1092,7 +1092,7 @@ public class DummyLoggerContextFactory implements LoggerContextFactory {
 
       @SuppressWarnings( "NewClassNamingConvention" )
       @Override
-      public <MF extends MessageFactory> MF getMessageFactory() {
+      public <M extends MessageFactory> M getMessageFactory() {
          return null;
       }
 

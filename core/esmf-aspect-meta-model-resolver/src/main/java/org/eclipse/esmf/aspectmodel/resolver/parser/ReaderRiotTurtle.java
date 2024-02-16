@@ -26,27 +26,27 @@ import org.apache.jena.riot.tokens.Tokenizer;
 import org.apache.jena.riot.tokens.TokenizerText;
 import org.apache.jena.sparql.util.Context;
 
-public class ReaderRIOTTurtle implements ReaderRIOT {
+public class ReaderRiotTurtle implements ReaderRIOT {
 
-   public static ReaderRIOTFactory factory = ReaderRIOTTurtle::new;
+   public static ReaderRIOTFactory factory = ReaderRiotTurtle::new;
 
    private final Lang lang;
    private final ParserProfile parserProfile;
 
-   ReaderRIOTTurtle( final Lang lang, final ParserProfile parserProfile ) {
+   ReaderRiotTurtle( final Lang lang, final ParserProfile parserProfile ) {
       this.lang = lang;
       this.parserProfile = new TurtleParserProfile( parserProfile );
    }
 
    @Override
-   public void read( final InputStream in, final String baseURI, final ContentType ct, final StreamRDF output, final Context context ) {
+   public void read( final InputStream in, final String baseUri, final ContentType ct, final StreamRDF output, final Context context ) {
       final TurtleTokenizer tokenizer = new TurtleTokenizer( in, parserProfile.getErrorHandler() );
       final TurtleParser parser = TurtleParser.create( tokenizer, parserProfile, output );
       parser.parse();
    }
 
    @Override
-   public void read( final Reader in, final String baseURI, final ContentType ct, final StreamRDF output, final Context context ) {
+   public void read( final Reader in, final String baseUri, final ContentType ct, final StreamRDF output, final Context context ) {
       final Tokenizer tokenizer = TokenizerText.create().source( in ).errorHandler( parserProfile.getErrorHandler() ).build();
       final TurtleParser parser = TurtleParser.create( tokenizer, parserProfile, output );
       parser.parse();

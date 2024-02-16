@@ -15,11 +15,12 @@ package org.apache.jena.graph;
 
 import java.io.ObjectStreamException;
 
+import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
+
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.riot.tokens.Token;
 import org.apache.jena.shared.PrefixMapping;
-import org.eclipse.esmf.aspectmodel.resolver.parser.SmartToken;
 
 public class TokenNode extends Node {
    private final SmartToken token;

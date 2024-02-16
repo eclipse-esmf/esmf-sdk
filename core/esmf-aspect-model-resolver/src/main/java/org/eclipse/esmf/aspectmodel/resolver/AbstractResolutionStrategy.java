@@ -17,13 +17,13 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
+
+import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-import io.vavr.control.Try;
-
 /**
- * Abstract base class for the implementation of {@link ResolutionStrategy}s
+ * Abstract base class for the implementation of {@link ResolutionStrategy}s.
  */
 public abstract class AbstractResolutionStrategy implements ResolutionStrategy {
    /**

@@ -19,6 +19,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
+
 import org.junit.jupiter.api.Test;
 
 public class JavaCodeGenerationConfigurationTest {
@@ -57,7 +58,8 @@ public class JavaCodeGenerationConfigurationTest {
                   .executeLibraryMacros( true )
                   .templateLibFile( emptyTemplateLibFile )
                   .build()
-      ).isExactlyInstanceOf( CodeGenerationException.class ).hasMessage( "Missing configuration. Please provide path to velocity template library file." );
+      ).isExactlyInstanceOf( CodeGenerationException.class )
+            .hasMessage( "Missing configuration. Please provide path to velocity template library file." );
    }
 
    @Test
@@ -72,5 +74,4 @@ public class JavaCodeGenerationConfigurationTest {
       ).isExactlyInstanceOf( CodeGenerationException.class )
             .hasMessage( "Incorrect configuration. Please provide a valid path to the velocity template library file." );
    }
-
 }

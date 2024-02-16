@@ -17,15 +17,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.jena.rdf.model.Resource;
-
 import org.eclipse.esmf.characteristic.Enumeration;
+import org.eclipse.esmf.characteristic.impl.DefaultEnumeration;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.characteristic.impl.DefaultEnumeration;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 public class EnumerationInstantiator extends Instantiator<Enumeration> {
    public EnumerationInstantiator( final ModelElementFactory modelElementFactory ) {

@@ -15,20 +15,20 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-
 import org.eclipse.esmf.constraint.RangeConstraint;
+import org.eclipse.esmf.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
-import org.eclipse.esmf.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 
 public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
    public RangeConstraintInstantiator( final ModelElementFactory modelElementFactory ) {

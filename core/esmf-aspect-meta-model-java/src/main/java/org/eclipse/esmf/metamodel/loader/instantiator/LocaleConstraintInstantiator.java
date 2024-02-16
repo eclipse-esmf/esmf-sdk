@@ -15,13 +15,13 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Locale;
 
-import org.apache.jena.rdf.model.Resource;
-
 import org.eclipse.esmf.constraint.LocaleConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultLocaleConstraint;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 public class LocaleConstraintInstantiator extends Instantiator<LocaleConstraint> {
    public LocaleConstraintInstantiator( final ModelElementFactory modelElementFactory ) {

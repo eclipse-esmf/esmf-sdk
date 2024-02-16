@@ -111,10 +111,10 @@ public class DefaultAspect extends ModelElementImpl implements Aspect {
          return false;
       }
       final DefaultAspect that = (DefaultAspect) o;
-      return isCollectionAspect == that.isCollectionAspect &&
-            Objects.equals( properties, that.properties ) &&
-            Objects.equals( operations, that.operations ) &&
-            Objects.equals( events, that.events );
+      return isCollectionAspect == that.isCollectionAspect
+            && Objects.equals( properties, that.properties )
+            && Objects.equals( operations, that.operations )
+            && Objects.equals( events, that.events );
    }
 
    @Override

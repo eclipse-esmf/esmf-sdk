@@ -17,10 +17,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.apache.jena.datatypes.BaseDatatype;
-
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import org.apache.jena.datatypes.BaseDatatype;
 
 public class SammDataType<T> extends BaseDatatype implements TypedRdfDatatype<T> {
    private final Class<T> javaClass;

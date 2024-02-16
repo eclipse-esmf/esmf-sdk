@@ -29,6 +29,15 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.BlankNodeId;
@@ -55,17 +64,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.impl.Util;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
-import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-
-import com.google.common.collect.ImmutableList;
-
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
-
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 
 /**
  * Allows to serialize a {@link Model} that contains an Aspect model to RDF/Turtle while following
@@ -96,7 +94,8 @@ public class PrettyPrinter {
     * @param rootElementUrn the URN of the root model element
     * @param writer the writer to write to
     */
-   public PrettyPrinter( final Model model, final KnownVersion metaModelVersion, final AspectModelUrn rootElementUrn, final PrintWriter writer ) {
+   public PrettyPrinter( final Model model, final KnownVersion metaModelVersion, final AspectModelUrn rootElementUrn,
+         final PrintWriter writer ) {
       this( new VersionedModel( ModelFactory.createDefaultModel(), metaModelVersion, model ), rootElementUrn, writer );
    }
 
@@ -165,9 +164,9 @@ public class PrettyPrinter {
       predefinedPropertyOrder.add( sammc.scale() );
 
       return Comparator.<Property> comparingInt( property ->
-                  predefinedPropertyOrder.contains( property ) ?
-                        predefinedPropertyOrder.indexOf( property ) :
-                        Integer.MAX_VALUE )
+                  predefinedPropertyOrder.contains( property )
+                        ? predefinedPropertyOrder.indexOf( property )
+                        : Integer.MAX_VALUE )
             .thenComparing( Property::getLocalName );
    }
 
@@ -183,9 +182,9 @@ public class PrettyPrinter {
       predefinedPrefixOrder.add( "" );
 
       return Comparator.<Map.Entry<String, String>> comparingInt( entry ->
-                  predefinedPrefixOrder.contains( entry.getKey() ) ?
-                        predefinedPrefixOrder.indexOf( entry.getKey() ) :
-                        Integer.MAX_VALUE )
+                  predefinedPrefixOrder.contains( entry.getKey() )
+                        ? predefinedPrefixOrder.indexOf( entry.getKey() )
+                        : Integer.MAX_VALUE )
             .thenComparing( Map.Entry::getKey );
    }
 
@@ -216,7 +215,8 @@ public class PrettyPrinter {
    public void print() {
       showMilestoneBanner();
 
-      prefixMap.entrySet().stream().sorted( prefixOrder ).forEach( entry -> writer.format( "@prefix %s: <%s> .%n", entry.getKey(), entry.getValue() ) );
+      prefixMap.entrySet().stream().sorted( prefixOrder )
+            .forEach( entry -> writer.format( "@prefix %s: <%s> .%n", entry.getKey(), entry.getValue() ) );
       writer.println();
 
       final Resource rootElementResource = ResourceFactory.createResource( rootElementUrn.toString() );
@@ -303,10 +303,10 @@ public class PrettyPrinter {
       final char[] chars = escapedSpecialCharacters.toCharArray();
       int index = 0;
       while ( index < chars.length ) {
-         final boolean indexAtUnicodeEscapeSequence = chars[index] == '\\' &&
-               (index + 1) < chars.length &&
-               chars[index + 1] == 'u' &&
-               (index + 5) <= (chars.length - 1);
+         final boolean indexAtUnicodeEscapeSequence = chars[index] == '\\'
+               && (index + 1) < chars.length
+               && chars[index + 1] == 'u'
+               && (index + 5) <= (chars.length - 1);
          if ( indexAtUnicodeEscapeSequence ) {
             final long codepoint = Long.parseLong( new String( chars, index + 2, 4 ), 16 );
             builder.append( (char) codepoint );
@@ -390,9 +390,9 @@ public class PrettyPrinter {
       final String serializedProperty = serialize( elementDefinition.get().getPredicate(), indentationLevel );
       final String serializedObject = serialize( elementDefinition.get().getObject().asResource(), indentationLevel );
 
-      final String firstLine = element.isAnon() ?
-            String.format( "[%n%s%s %s", INDENT.repeat( indentationLevel + 1 ), serializedProperty, serializedObject ) :
-            String.format( "%s %s %s", serialize( element, indentationLevel ), serializedProperty, serializedObject );
+      final String firstLine = element.isAnon()
+            ? String.format( "[%n%s%s %s", INDENT.repeat( indentationLevel + 1 ), serializedProperty, serializedObject )
+            : String.format( "%s %s %s", serialize( element, indentationLevel ), serializedProperty, serializedObject );
 
       processedResources.add( element );
       final String body = statements( element, null, null )
@@ -405,8 +405,9 @@ public class PrettyPrinter {
             .map( statement -> String.format( "%s%s %s", INDENT.repeat( indentationLevel + 1 ),
                   serialize( statement.getPredicate(), indentationLevel ),
                   serialize( statement.getObject(), indentationLevel ) ) )
-            .collect( Collectors.joining( String.format( " ;%n" ), "", (element.isAnon() ?
-                  String.format( " %n%s]", INDENT.repeat( indentationLevel ) ) : "") ) );
+            .collect( Collectors.joining( String.format( " ;%n" ), "", (element.isAnon()
+                  ? String.format( " %n%s]", INDENT.repeat( indentationLevel ) )
+                  : "") ) );
       if ( body.isEmpty() ) {
          return String.format( "%s .%n%n", firstLine );
       } else {
@@ -428,7 +429,7 @@ public class PrettyPrinter {
       return (String) node.asNode().visitWith( printVisitor );
    }
 
-   record PrintVisitor(Model model) implements NodeVisitor {
+   record PrintVisitor( Model model ) implements NodeVisitor {
 
       @Override
       public Object visitAny( final Node_ANY it ) {

@@ -15,15 +15,15 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Resource;
-
-import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.characteristic.Set;
-import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.characteristic.impl.DefaultSet;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 public class SetInstantiator extends Instantiator<Set> {
    public SetInstantiator( final ModelElementFactory modelElementFactory ) {
@@ -34,9 +34,9 @@ public class SetInstantiator extends Instantiator<Set> {
    public Set apply( final Resource set ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( set );
       final Optional<Characteristic> elementCharacteristic = getElementCharacteristic( set );
-      final Optional<Type> dataType = elementCharacteristic.isPresent() ?
-            elementCharacteristic.get().getDataType() :
-            Optional.of( getType( set ) );
+      final Optional<Type> dataType = elementCharacteristic.isPresent()
+            ? elementCharacteristic.get().getDataType()
+            : Optional.of( getType( set ) );
       return new DefaultSet( metaModelBaseAttributes, dataType, elementCharacteristic );
    }
 }

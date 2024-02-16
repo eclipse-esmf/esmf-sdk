@@ -113,9 +113,9 @@ public class PathNodeRetriever implements Path.Visitor<List<Statement>> {
    @Override
    public List<Statement> visitOneOrMorePath( final Resource resource, final OneOrMorePath path ) {
       return path.path().accept( resource, this ).stream()
-            .flatMap( statement -> statement.getObject().isResource() ?
-                  visitZeroOrMorePath( statement.getResource(), new ZeroOrMorePath( path.path() ) ).stream() :
-                  Stream.empty() )
+            .flatMap( statement -> statement.getObject().isResource()
+                  ? visitZeroOrMorePath( statement.getResource(), new ZeroOrMorePath( path.path() ) ).stream()
+                  : Stream.empty() )
             .toList();
    }
 

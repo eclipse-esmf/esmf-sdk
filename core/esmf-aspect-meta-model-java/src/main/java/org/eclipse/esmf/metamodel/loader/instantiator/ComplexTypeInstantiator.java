@@ -21,9 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.metamodel.AbstractEntity;
@@ -35,6 +32,10 @@ import org.eclipse.esmf.metamodel.impl.DefaultAbstractEntity;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.RDF;
 
 public abstract class ComplexTypeInstantiator<T extends ComplexType> extends Instantiator<T> {
 
@@ -50,7 +51,6 @@ public abstract class ComplexTypeInstantiator<T extends ComplexType> extends Ins
     * Since {@link ComplexType}s have a reference to the element which is extended by a particular {@link ComplexType},
     * and the {@link AbstractEntity} has a list of references to all elements which extend the {@link AbstractEntity},
     * a circular dependency exists between the {@link ComplexType} and the {@link AbstractEntity}.
-    *
     * The reference between the {@link ComplexType}s represents the `extends` relationship between an {@link Entity} or
     * an {@link AbstractEntity} and another {@link Entity} or {@link AbstractEntity}.
     * The list of references between an {@link AbstractEntity} and all {@link ComplexType}s extending the

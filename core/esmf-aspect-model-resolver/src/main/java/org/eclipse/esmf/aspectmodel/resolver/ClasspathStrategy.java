@@ -29,17 +29,17 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+
+import io.vavr.control.Try;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.vavr.control.Try;
-
 /**
- * Resolution strategy to resolve Aspect models by URN from a well-defined directory structure from the class path
+ * Resolution strategy to resolve Aspect models by URN from a well-defined directory structure from the class path.
  */
 public class ClasspathStrategy extends AbstractResolutionStrategy {
    private static final Logger LOG = LoggerFactory.getLogger( ClasspathStrategy.class );
@@ -47,7 +47,7 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
 
    /**
     * Initialize the ClasspathStrategy with an empty root path for models. The classpath
-    * is assumed to contain a file system hierarchy as follows: <code>N/V/X.ttl</code> where N is the namespace,
+    * is assumed to contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace,
     * V is the version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
     * Example:
     * <pre>
@@ -69,7 +69,7 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
 
    /**
     * Initialize the ClasspathStrategy with the root path of models. The directory
-    * is assumed to contain a file system hierarchy as follows: <code>N/V/X.ttl</code> where N is the namespace,
+    * is assumed to contain a file system hierarchy as follows: {@code N/V/X.ttl} where N is the namespace,
     * V is the version of the namespace and X is the name of the model element (Aspect, Characteristic, ...).
     * Example:
     * <pre>
@@ -111,7 +111,8 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
 
    private Optional<File> getDirectoryFile( String directory ) {
       // The incoming URL will look like this:  jar:file:/pathToJar/o.jar/packageName/className
-      // In case we run the code from a jar. Because of that we need to deconstruct the path to get the path to the jar only and remove the unwanted part of the URL.
+      // In case we run the code from a jar. Because of that we need to deconstruct the path to get the path to the jar only and remove
+      // the unwanted part of the URL.
       final URL url = getClass().getClassLoader().getResource( directory );
       if ( url == null ) {
          return Optional.empty();

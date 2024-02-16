@@ -17,9 +17,10 @@ import org.apache.jena.rdf.model.Resource;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#property-path-zero-or-one">Zero-Or-One Path</a>
+ *
  * @param path the path that can be repeated zero or one times
  */
-public record ZeroOrOnePath(Path path) implements Path {
+public record ZeroOrOnePath( Path path ) implements Path {
    @Override
    public <T> T accept( final Resource resource, final Visitor<T> visitor ) {
       return visitor.visitZeroOrOnePath( resource, this );

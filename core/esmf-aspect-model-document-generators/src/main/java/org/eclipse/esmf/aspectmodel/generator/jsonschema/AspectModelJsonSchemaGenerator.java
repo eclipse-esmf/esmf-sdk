@@ -16,9 +16,9 @@ package org.eclipse.esmf.aspectmodel.generator.jsonschema;
 import java.util.Locale;
 import java.util.function.BiFunction;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import org.eclipse.esmf.metamodel.Aspect;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Generator that generates a JSON Schema for payloads corresponding to a given Aspect model.

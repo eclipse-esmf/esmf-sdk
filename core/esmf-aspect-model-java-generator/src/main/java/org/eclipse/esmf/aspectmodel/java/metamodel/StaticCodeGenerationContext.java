@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.java.metamodel;
 
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
-
 import org.eclipse.esmf.metamodel.Characteristic;
 
 @lombok.Value

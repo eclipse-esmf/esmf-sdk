@@ -144,12 +144,12 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
          html = insertAspectModelDiagram( html, artifactLanguage );
          html = insertPanZoomJs( html );
          html = insertPanZoomLicense( html );
-         html = insertTocbotCSS( html );
+         html = insertTocbotCss( html );
          html = insertTocbotLicense( html );
          html = insertTocbotJs( html );
-         html = insertTailwindCSS( html );
+         html = insertTailwindCss( html );
          html = insertTailwindLicense( html );
-         html = insertCustomCSS( html, generationOptions.get( HtmlGenerationOption.STYLESHEET ) );
+         html = insertCustomCss( html, generationOptions.get( HtmlGenerationOption.STYLESHEET ) );
 
          try ( final OutputStream outputStreamForArtifactName = nameMapper
                .apply( Format.HTML.getArtifactFilename( artifactName ) ) ) {
@@ -184,13 +184,13 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
       engineConfiguration.put( RuntimeConstants.FILE_RESOURCE_LOADER_PATH, ".," + DOCU_TEMPLATE_ROOT_DIR + "/html" );
       engineConfiguration.put( "event_handler.reference_insertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference" );
       engineConfiguration.put( RuntimeConstants.VM_LIBRARY,
-            DOCU_TEMPLATE_ROOT_DIR + "/html/characteristic-documentation-lib.vm," +
-                  DOCU_TEMPLATE_ROOT_DIR + "/html/constraint-documentation-lib.vm," +
-                  DOCU_TEMPLATE_ROOT_DIR + "/html/diagram-documentation-lib.vm," +
-                  DOCU_TEMPLATE_ROOT_DIR + "/html/entity-documentation-lib.vm," +
-                  DOCU_TEMPLATE_ROOT_DIR + "/html/operation-documentation-lib.vm," +
-                  DOCU_TEMPLATE_ROOT_DIR + "/html/property-documentation-lib.vm," +
-                  DOCU_TEMPLATE_ROOT_DIR + "/html/common-documentation-lib.vm" );
+            DOCU_TEMPLATE_ROOT_DIR + "/html/characteristic-documentation-lib.vm,"
+                  + DOCU_TEMPLATE_ROOT_DIR + "/html/constraint-documentation-lib.vm,"
+                  + DOCU_TEMPLATE_ROOT_DIR + "/html/diagram-documentation-lib.vm,"
+                  + DOCU_TEMPLATE_ROOT_DIR + "/html/entity-documentation-lib.vm,"
+                  + DOCU_TEMPLATE_ROOT_DIR + "/html/operation-documentation-lib.vm,"
+                  + DOCU_TEMPLATE_ROOT_DIR + "/html/property-documentation-lib.vm,"
+                  + DOCU_TEMPLATE_ROOT_DIR + "/html/common-documentation-lib.vm" );
 
       final Predicate<Locale> byLanguage = locale -> selectedLanguage == null || locale.getLanguage()
             .equals( selectedLanguage.getLanguage() );
@@ -249,72 +249,65 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
       final AspectModelDiagramGenerator diagramGenerator = new AspectModelDiagramGenerator( context );
       final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       diagramGenerator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, language, buffer );
-      final String encodedImage = "data:image/svg+xml;base64," +
-            Base64.getEncoder().encodeToString( buffer.toByteArray() );
+      final String encodedImage = "data:image/svg+xml;base64," + Base64.getEncoder().encodeToString( buffer.toByteArray() );
       return html.replace( "diagram_svg_placeholder", encodedImage );
    }
 
-   private String insertCustomCSS( final String html, final String customCSS ) throws IOException {
-      if ( customCSS != null && !customCSS.isEmpty() ) {
-         return html.replace( "custom_css_placeholder", customCSS );
+   private String insertCustomCss( final String html, final String customCss ) throws IOException {
+      if ( customCss != null && !customCss.isEmpty() ) {
+         return html.replace( "custom_css_placeholder", customCss );
       }
-      try ( final InputStream defaultCss = getClass().getResourceAsStream( DOCU_ROOT_DIR + "/styles/default-aspect-docu-theme.css" ) ) {
-         final String defaultCSS = CharStreams.toString( new InputStreamReader( defaultCss ) );
-         return html.replace( "custom_css_placeholder", defaultCSS );
+      try ( final InputStream defaultCssInput = getClass().getResourceAsStream(
+            DOCU_ROOT_DIR + "/styles/default-aspect-docu-theme.css" ) ) {
+         final String defaultCss = CharStreams.toString( new InputStreamReader( defaultCssInput ) );
+         return html.replace( "custom_css_placeholder", defaultCss );
       }
    }
 
    private String insertPanZoomJs( final String html ) throws IOException {
-      try ( final InputStream panZoomJs = getClass().getResourceAsStream(
-            DOCU_ROOT_DIR + "/static/panzoom-9-4-2.min.js" ) ) {
+      try ( final InputStream panZoomJs = getClass().getResourceAsStream( DOCU_ROOT_DIR + "/static/panzoom-9-4-2.min.js" ) ) {
          final String javaScript = CharStreams.toString( new InputStreamReader( panZoomJs ) );
          return html.replace( "panzoom_js_placeholder", javaScript );
       }
    }
 
    private String insertPanZoomLicense( final String html ) throws IOException {
-      try ( final InputStream panZoomJs = getClass().getResourceAsStream(
-            DOCU_ROOT_DIR + "/static/panzoom-license.txt" ) ) {
+      try ( final InputStream panZoomJs = getClass().getResourceAsStream( DOCU_ROOT_DIR + "/static/panzoom-license.txt" ) ) {
          final String javaScript = CharStreams.toString( new InputStreamReader( panZoomJs ) );
          return html.replace( "panzoom_license_placeholder", javaScript );
       }
    }
 
    private String insertTocbotJs( final String html ) throws IOException {
-      try ( final InputStream tocbot = getClass().getResourceAsStream(
-            DOCU_ROOT_DIR + "/static/tocbot-4-11-1.min.js" ) ) {
+      try ( final InputStream tocbot = getClass().getResourceAsStream( DOCU_ROOT_DIR + "/static/tocbot-4-11-1.min.js" ) ) {
          final String javaScript = CharStreams.toString( new InputStreamReader( tocbot ) );
          return html.replace( "tocbot_js_placeholder", javaScript );
       }
    }
 
    private String insertTocbotLicense( final String html ) throws IOException {
-      try ( final InputStream panZoomJs = getClass().getResourceAsStream(
-            DOCU_ROOT_DIR + "/static/tocbot-license.txt" ) ) {
+      try ( final InputStream panZoomJs = getClass().getResourceAsStream( DOCU_ROOT_DIR + "/static/tocbot-license.txt" ) ) {
          final String javaScript = CharStreams.toString( new InputStreamReader( panZoomJs ) );
          return html.replace( "tocbot_license_placeholder", javaScript );
       }
    }
 
-   private String insertTocbotCSS( final String html ) throws IOException {
-      try ( final InputStream tailwindCss = getClass().getResourceAsStream(
-            DOCU_ROOT_DIR + "/styles/tocbot-4-11-1.css" ) ) {
+   private String insertTocbotCss( final String html ) throws IOException {
+      try ( final InputStream tailwindCss = getClass().getResourceAsStream( DOCU_ROOT_DIR + "/styles/tocbot-4-11-1.css" ) ) {
          final String css = CharStreams.toString( new InputStreamReader( tailwindCss ) );
          return html.replace( "tocbot_css_placeholder", css );
       }
    }
 
-   private String insertTailwindCSS( final String html ) throws IOException {
-      try ( final InputStream tailwindCss = getClass().getResourceAsStream(
-            DOCU_ROOT_DIR + "/styles/tailwind.purged.css" ) ) {
+   private String insertTailwindCss( final String html ) throws IOException {
+      try ( final InputStream tailwindCss = getClass().getResourceAsStream( DOCU_ROOT_DIR + "/styles/tailwind.purged.css" ) ) {
          final String css = CharStreams.toString( new InputStreamReader( tailwindCss ) );
          return html.replace( "tailwind_css_placeholder", css );
       }
    }
 
    private String insertTailwindLicense( final String html ) throws IOException {
-      try ( final InputStream panZoomJs = getClass().getResourceAsStream(
-            DOCU_ROOT_DIR + "/static/tailwind-license.txt" ) ) {
+      try ( final InputStream panZoomJs = getClass().getResourceAsStream( DOCU_ROOT_DIR + "/static/tailwind-license.txt" ) ) {
          final String javaScript = CharStreams.toString( new InputStreamReader( panZoomJs ) );
          return html.replace( "tailwind_license_placeholder", javaScript );
       }
@@ -322,8 +315,8 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
 
    private void logMissingTranslations( final Aspect aspectMetaModel, final Locale locale ) {
       aspectMetaModel.accept( new AspectStreamTraversalVisitor(), null )
-            .filter( element -> element instanceof NamedElement )
-            .map( element -> (NamedElement) element )
+            .filter( NamedElement.class::isInstance )
+            .map( NamedElement.class::cast )
             .forEach( modelElement -> {
                final boolean hasPreferredNameWithLocale = modelElement.getPreferredNames().stream()
                      .anyMatch( preferredName -> preferredName.getLanguageTag().equals( locale ) );

@@ -21,7 +21,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRIOTTurtle;
+import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
@@ -2437,7 +2437,7 @@ public class ShaclValidatorTest {
    private Model model( final String ttlRepresentation ) {
       final Model model = ModelFactory.createDefaultModel();
       final InputStream in = new ByteArrayInputStream( ttlRepresentation.getBytes( StandardCharsets.UTF_8 ) );
-      RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRIOTTurtle.factory );
+      RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRiotTurtle.factory );
       model.read( in, "", RDFLanguages.strLangTurtle );
       return model;
    }

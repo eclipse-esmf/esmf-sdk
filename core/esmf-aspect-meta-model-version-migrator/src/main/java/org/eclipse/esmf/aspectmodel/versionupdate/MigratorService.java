@@ -16,16 +16,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The service that migrates all migrators in the correct order.
@@ -88,14 +88,17 @@ public class MigratorService {
          migrationModel = migrate( sammMigratorFactory.createMigrators(), sourceVersion, latestKnownVersion, migrationModel );
       }
 
-      return getSdsMigratorFactory().createAspectMetaModelResourceResolver().mergeMetaModelIntoRawModel( migrationModel, latestKnownVersion );
+      return getSdsMigratorFactory().createAspectMetaModelResourceResolver()
+            .mergeMetaModelIntoRawModel( migrationModel, latestKnownVersion );
    }
 
-   private Model customMigration( final MigratorFactory migratorFactory, final VersionNumber sourceVersion, final VersionedModel versionedModel ) {
+   private Model customMigration( final MigratorFactory migratorFactory, final VersionNumber sourceVersion,
+         final VersionedModel versionedModel ) {
       return migrate( migratorFactory.createMigrators(), sourceVersion, migratorFactory.getLatestVersion(), versionedModel.getRawModel() );
    }
 
-   private Model migrate( final List<Migrator> migrators, final VersionNumber sourceVersion, final VersionNumber targetVersion, final Model targetModel ) {
+   private Model migrate( final List<Migrator> migrators, final VersionNumber sourceVersion, final VersionNumber targetVersion,
+         final Model targetModel ) {
       if ( migrators.isEmpty() ) {
          return targetModel;
       }

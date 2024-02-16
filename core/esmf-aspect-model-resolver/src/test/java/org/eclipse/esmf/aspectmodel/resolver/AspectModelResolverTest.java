@@ -41,7 +41,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class AspectModelResolverTest extends MetaModelVersions {
    private final AspectModelResolver resolver = new AspectModelResolver();
-   private final static String TEST_NAMESPACE = "urn:samm:org.eclipse.esmf.test:1.0.0#";
+   private static final String TEST_NAMESPACE = "urn:samm:org.eclipse.esmf.test:1.0.0#";
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )

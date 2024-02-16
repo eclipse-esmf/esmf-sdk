@@ -13,10 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.services;
 
-import org.apache.jena.rdf.model.Model;
-
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import org.apache.jena.rdf.model.Model;
 
 /**
  * Encapsulates an Aspect Model (as RDF model) and the Meta Model version it uses

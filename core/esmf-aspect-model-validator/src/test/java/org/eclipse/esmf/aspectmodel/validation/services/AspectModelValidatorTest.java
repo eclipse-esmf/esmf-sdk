@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.validation.services;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,9 +23,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.XSD;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
@@ -42,13 +40,14 @@ import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestProperty;
 import org.eclipse.esmf.test.TestResources;
 
+import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import io.vavr.control.Try;
 
 class AspectModelValidatorTest extends MetaModelVersions {
    // One specific validator instance for each meta model version
@@ -226,9 +225,9 @@ class AspectModelValidatorTest extends MetaModelVersions {
             ":h -> :i -> :h",
             ":l -> :l",
             // TimeSeries are handled differently between v1 and v2 meta models.
-            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 ) ?
-                  ":n -> :refinedValue -> :n" :
-                  ":n -> :NTimeSeriesEntity|samm-e:value -> :n",
+            metaModelVersion.isOlderThan( KnownVersion.SAMM_2_0_0 )
+                  ? ":n -> :refinedValue -> :n"
+                  : ":n -> :NTimeSeriesEntity|samm-e:value -> :n",
             ":p -> :q -> :r -> :q" ) );
    }
 

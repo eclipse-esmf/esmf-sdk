@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.validation.services;
 
-import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.resolver.parser.RdfTextFormatter;
 import org.eclipse.esmf.aspectmodel.shacl.RustLikeFormatter;
 import org.eclipse.esmf.aspectmodel.shacl.fix.Fix;
@@ -44,6 +43,8 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.UniqueLanguageViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ValueFromListViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.XoneViolation;
+
+import org.apache.jena.rdf.model.Model;
 
 public class ViolationRustLikeFormatter extends ViolationFormatter {
 

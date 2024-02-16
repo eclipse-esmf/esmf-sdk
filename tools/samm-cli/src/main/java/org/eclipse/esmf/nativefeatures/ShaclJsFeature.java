@@ -28,7 +28,7 @@ public class ShaclJsFeature extends AbstractSammCliFeature {
       register( JsBlankNode.class );
       register( JsFactory.class );
       register( JsGraph.class );
-      register( JsGraph.JSTripleIterator.class );
+      register( JsGraph.JsTripleIterator.class );
       register( JsLiteral.class );
       register( JsNamedNode.class );
       register( JsTerm.class );

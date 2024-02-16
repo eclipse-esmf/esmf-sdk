@@ -15,12 +15,6 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.vocabulary.RDF;
-
 import org.eclipse.esmf.aspectmodel.shacl.RdfTypes;
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ClassTypeViolation;
@@ -28,6 +22,12 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.MissingTypeViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.NodeKindViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.vocabulary.RDF;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#ClassConstraintComponent">sh:class</a>
@@ -56,9 +56,9 @@ public record ClassConstraint( Resource allowedClass ) implements Constraint {
                      Shape.NodeKind.forNode( rdfNode ) ) );
       }
       final Resource actualClass = assertedTypeNode.asResource();
-      return RdfTypes.typesOfElement( typeAssertionStatement.getSubject(), context.resolvedModel() ).contains( allowedClass ) ?
-            List.of() :
-            List.of( new ClassTypeViolation( context, allowedClass, actualClass ) );
+      return RdfTypes.typesOfElement( typeAssertionStatement.getSubject(), context.resolvedModel() ).contains( allowedClass )
+            ? List.of()
+            : List.of( new ClassTypeViolation( context, allowedClass, actualClass ) );
    }
 
    @Override

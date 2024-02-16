@@ -21,9 +21,8 @@ import java.util.stream.Collectors;
 
 /**
  * Tracks necessary Java imports during type resolution so that code generators can apply this information in order
- * to avoid statically bulk-importing all classes one might need.
- *
- * Code generators should use {@link #getUsedImportsWithoutJavaLang()} to generate a final list of imports.
+ * to avoid statically bulk-importing all classes one might need. Code generators should use {@link #getUsedImportsWithoutJavaLang()} to
+ * generate a final list of imports.
  */
 public class ImportTracker {
    private static final String GENERICS_START = "<";
@@ -49,7 +48,7 @@ public class ImportTracker {
       if ( potentiallyParameterizedType.contains( GENERICS_START ) ) {
          final List<String> types = Arrays.stream( potentiallyParameterizedType.split( GENERICS_START ) )
                .flatMap( substring -> Arrays.stream( substring.split( COMMA_STRING ) ) )
-               .map( substring -> substring.replaceAll( TYPE_BRACKETS_AND_WHITESPACE, EMPTY_STRING ) ).collect( Collectors.toList() );
+               .map( substring -> substring.replaceAll( TYPE_BRACKETS_AND_WHITESPACE, EMPTY_STRING ) ).toList();
          usedImports.addAll( types );
       } else {
          usedImports.add( potentiallyParameterizedType );
@@ -96,7 +95,6 @@ public class ImportTracker {
    /**
     * Returns all used imports EXCEPT for imports of other generated classes and those from {@code java.lang} as they
     * are implicitly imported and don't need to be added to the list of imports.
-    *
     * The imports are returned in natural order.
     *
     * @return the used imports without classes from {@code java.lang}

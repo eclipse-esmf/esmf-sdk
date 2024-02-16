@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.jackson;
 
 import java.io.IOException;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -24,11 +23,11 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 /**
  * Jackson serializer for {@see XMLGregorianCalendar}
  */
-class XMLGregorianCalendarSerializer extends StdSerializer<XMLGregorianCalendar> {
+class XmlGregorianCalendarSerializer extends StdSerializer<XMLGregorianCalendar> {
    private static final long serialVersionUID = -7121579663349330794L;
-   public static final XMLGregorianCalendarSerializer INSTANCE = new XMLGregorianCalendarSerializer();
+   public static final XmlGregorianCalendarSerializer INSTANCE = new XmlGregorianCalendarSerializer();
 
-   private XMLGregorianCalendarSerializer() {
+   private XmlGregorianCalendarSerializer() {
       super( XMLGregorianCalendar.class );
    }
 

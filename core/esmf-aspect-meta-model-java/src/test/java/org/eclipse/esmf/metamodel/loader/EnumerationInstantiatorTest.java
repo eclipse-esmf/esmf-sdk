@@ -20,29 +20,28 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
-import org.assertj.core.api.Assertions;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.characteristic.Enumeration;
+import org.eclipse.esmf.characteristic.impl.DefaultSet;
+import org.eclipse.esmf.characteristic.impl.DefaultSingleEntity;
+import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.EntityInstance;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.characteristic.impl.DefaultSet;
-import org.eclipse.esmf.characteristic.impl.DefaultSingleEntity;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
+
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
 
@@ -75,7 +74,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
             "Test Enumeration", "This is a test for enumeration.", "http://example.com/" );
 
-      Assertions.assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
+      assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
 
       final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
       final Property property = entityInstance.getEntityType().getPropertyByName( "entityProperty" ).get();
@@ -85,8 +84,10 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testEnumerationCharacteristicWithEntityDataTypeWithOptionalAndNotInPayloadPropertiesExpectSuccess( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_OPTIONAL_AND_NOT_IN_PAYLOAD_PROPERTIES, metaModelVersion );
+   public void testEnumerationCharacteristicWithEntityDataTypeWithOptionalAndNotInPayloadPropertiesExpectSuccess(
+         final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_WITH_OPTIONAL_AND_NOT_IN_PAYLOAD_PROPERTIES,
+            metaModelVersion );
       final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
 
       final Type dataType = enumeration.getDataType().get();
@@ -126,13 +127,14 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       assertBaseAttributes( enumeration, expectedAspectModelUrn, "TestEnumeration",
             "Test Enumeration", "This is a test for enumeration.", "http://example.com/" );
 
-      Assertions.assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
+      assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
 
       final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
       final Entity entity = entityInstance.getEntityType();
       final Property property = entity.getPropertyByName( "entityProperty" ).get();
       final Collection<Value> values = entityInstance.getAssertions().get( property ).as( CollectionValue.class ).getValues();
-      final String joined = values.stream().map( value -> value.as( ScalarValue.class ).getValue().toString() ).collect( Collectors.joining( "," ) );
+      final String joined = values.stream().map( value -> value.as( ScalarValue.class ).getValue().toString() )
+            .collect( Collectors.joining( "," ) );
       assertThat( joined ).isEqualTo( "foo,bar,baz" );
    }
 
@@ -143,7 +145,7 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final Enumeration enumeration = (Enumeration) aspect.getProperties().get( 0 ).getCharacteristic().get();
-      Assertions.assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
+      assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
 
       final Entity dataType = enumeration.getDataType().get().as( Entity.class );
       assertThat( dataType.getProperties().size() ).isEqualTo( 2 );
@@ -161,18 +163,20 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
       final EntityInstance nestedEntityInstance = entityInstance.getAssertions().get( nestedInstanceProperty ).as( EntityInstance.class );
 
       final Entity nestedEntity = nestedEntityInstance.getEntityType();
-      assertThat( nestedEntityInstance.getAssertions().get( nestedEntity.getPropertyByName( "notInPayloadProperty" ).get() ).as( ScalarValue.class ).getValue()
+      assertThat( nestedEntityInstance.getAssertions().get( nestedEntity.getPropertyByName( "notInPayloadProperty" ).get() )
+            .as( ScalarValue.class ).getValue()
             .toString() ).isEqualTo( "foo" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testEnumerationCharacteristicWithNestedEntityListAndNotInPayloadDataTypeExpectSuccess( final KnownVersion metaModelVersion ) throws Exception {
+   public void testEnumerationCharacteristicWithNestedEntityListAndNotInPayloadDataTypeExpectSuccess(
+         final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST_ENUMERATION_WITH_NOT_IN_PAYLOAD, metaModelVersion );
       assertThat( aspect.getProperties() ).hasSize( 1 );
 
       final Enumeration enumeration = aspect.getProperties().get( 0 ).getCharacteristic().get().as( Enumeration.class );
-      Assertions.assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
+      assertThat( enumeration.getDataType().get() ).isInstanceOf( Entity.class );
 
       final Entity dataType = enumeration.getDataType().get().as( Entity.class );
       assertThat( dataType.getProperties().size() ).isEqualTo( 2 );
@@ -183,11 +187,13 @@ public class EnumerationInstantiatorTest extends MetaModelInstantiatorTest {
 
       final EntityInstance entityInstance = enumeration.getValues().get( 0 ).as( EntityInstance.class );
       final Entity entity = entityInstance.getEntityType();
-      final Property entityProperty = entity.getProperties().stream().filter( property -> property.getName().equals( "entityProperty" ) ).findAny().get();
+      final Property entityProperty = entity.getProperties().stream().filter( property -> property.getName().equals( "entityProperty" ) )
+            .findAny().get();
       assertThat( entityInstance.getAssertions().get( entityProperty ).as( ScalarValue.class ).getValue() ).isEqualTo( "This is a test." );
 
-      final CollectionValue nestedEntityListValue = entityInstance.getAssertions().get( nestedEntityListProperty ).as( CollectionValue.class );
-      Assertions.assertThat( nestedEntityListValue.getValues() ).hasSize( 1 );
+      final CollectionValue nestedEntityListValue = entityInstance.getAssertions().get( nestedEntityListProperty )
+            .as( CollectionValue.class );
+      assertThat( nestedEntityListValue.getValues() ).hasSize( 1 );
 
       final EntityInstance nestedEntityInstance = nestedEntityListValue.getValues().iterator().next().as( EntityInstance.class );
       final Entity nestedEntity = nestedEntityInstance.getEntityType();

@@ -18,12 +18,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * The base implemenation of all model elements.
@@ -48,7 +48,8 @@ public abstract class ModelElementImpl implements ModelElement, NamedElement, Co
    }
 
    /**
-    * The URN for the element, if present. Certain elements (such as Constraints) are allowed to not have URNs, which is why the URN is optional.
+    * The URN for the element, if present. Certain elements (such as Constraints) are allowed to not have URNs, which is why the URN is
+    * optional.
     *
     * @return the URN.
     */
@@ -114,8 +115,8 @@ public abstract class ModelElementImpl implements ModelElement, NamedElement, Co
          return false;
       }
       final ModelElementImpl base = (ModelElementImpl) o;
-      return Objects.equals( urn, base.urn ) &&
-            Objects.equals( name, base.name );
+      return Objects.equals( urn, base.urn )
+            && Objects.equals( name, base.name );
    }
 
    @Override
@@ -124,9 +125,10 @@ public abstract class ModelElementImpl implements ModelElement, NamedElement, Co
    }
 
    @Override
-   public int compareTo( ModelElementImpl o ) {
-      if ( this.urn.isPresent() && o.urn.isPresent() )
-         return this.urn.get().compareTo( o.urn.get() );
+   public int compareTo( final ModelElementImpl o ) {
+      if ( urn.isPresent() && o.urn.isPresent() ) {
+         return urn.get().compareTo( o.urn.get() );
+      }
       return Comparator
             .comparing( ModelElementImpl::getMetaModelVersion )
             .thenComparing( ModelElementImpl::getName )

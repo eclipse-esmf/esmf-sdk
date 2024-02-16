@@ -64,7 +64,7 @@ public interface Property extends NamedElement {
    /**
     * Returns true if the Property is abstract
     *
-    * @return
+    * @return true if the Property is abstract
     */
    default boolean isAbstract() {
       return false;

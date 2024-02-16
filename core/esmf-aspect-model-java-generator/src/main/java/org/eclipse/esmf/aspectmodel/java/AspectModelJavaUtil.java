@@ -26,13 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.commons.text.translate.UnicodeUnescaper;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.characteristic.Collection;
@@ -59,6 +52,13 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.translate.UnicodeUnescaper;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
 
 public class AspectModelJavaUtil {
 
@@ -76,13 +76,14 @@ public class AspectModelJavaUtil {
     * @param codeGenerationConfig the configuration for code generation
     * @return the final type of the property
     */
-   public static String getPropertyType( final Property property, final boolean inclValidation, final JavaCodeGenerationConfig codeGenerationConfig ) {
+   public static String getPropertyType( final Property property, final boolean inclValidation,
+         final JavaCodeGenerationConfig codeGenerationConfig ) {
       final String propertyType = determinePropertyType( property.getCharacteristic(), inclValidation, codeGenerationConfig );
       if ( property.isOptional() ) {
          return containerType( Optional.class, propertyType,
-               inclValidation && property.getCharacteristic().isPresent() && property.getCharacteristic().get() instanceof Trait t ?
-                     Optional.of( buildConstraintsForCharacteristic( t, codeGenerationConfig ) ) :
-                     Optional.empty() );
+               inclValidation && property.getCharacteristic().isPresent() && property.getCharacteristic().get() instanceof final Trait t
+                     ? Optional.of( buildConstraintsForCharacteristic( t, codeGenerationConfig ) )
+                     : Optional.empty() );
       }
       return propertyType;
    }
@@ -114,7 +115,7 @@ public class AspectModelJavaUtil {
     */
    public static boolean hasContainerType( final Property property ) {
       return property.isOptional()
-            || (property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ));
+            || ( property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ) );
    }
 
    /**
@@ -124,8 +125,7 @@ public class AspectModelJavaUtil {
     * @return {@code true} if the property carries a Unit, {@code false} else
     */
    public static boolean hasUnit( final Characteristic characteristic ) {
-      if ( characteristic instanceof Quantifiable ) {
-         final Quantifiable quantifiable = (Quantifiable) characteristic;
+      if ( characteristic instanceof final Quantifiable quantifiable ) {
          return quantifiable.getUnit().isPresent();
       }
       return false;
@@ -135,8 +135,8 @@ public class AspectModelJavaUtil {
     * Determines the type of a property
     *
     * @param optionalCharacteristic the {@link Characteristic} which describes the data type for a property
-    * @param inclValidation a boolean indicating whether the element validation annotations should be included for
-    *       the Collection declarations
+    * @param inclValidation a boolean indicating whether the element validation annotations should be included for the Collection
+    * declarations
     * @return {@link String} containing the definition of the Java Data Type for the property
     */
    public static String determinePropertyType( final Optional<Characteristic> optionalCharacteristic, final boolean inclValidation,
@@ -177,9 +177,11 @@ public class AspectModelJavaUtil {
       return getDataType( dataType, codeGenerationConfig.importTracker() );
    }
 
-   public static String determineCollectionAspectClassDefinition( final StructureElement element, final JavaCodeGenerationConfig codeGenerationConfig ) {
+   public static String determineCollectionAspectClassDefinition( final StructureElement element,
+         final JavaCodeGenerationConfig codeGenerationConfig ) {
       final Supplier<RuntimeException> error = () -> new CodeGenerationException(
-            "Tried to generate a Collection Aspect class definition, but no " + "Property has a Collection Characteristic in " + element.getName() );
+            "Tried to generate a Collection Aspect class definition, but no " + "Property has a Collection Characteristic in "
+                  + element.getName() );
       codeGenerationConfig.importTracker().importExplicit( CollectionAspect.class );
       for ( final Property property : element.getProperties() ) {
          final Characteristic characteristic = property.getEffectiveCharacteristic().orElseThrow( error );
@@ -192,7 +194,8 @@ public class AspectModelJavaUtil {
       throw error.get();
    }
 
-   public static String determineComplexTypeClassDefinition( final ComplexType element, final JavaCodeGenerationConfig codeGenerationConfig ) {
+   public static String determineComplexTypeClassDefinition( final ComplexType element,
+         final JavaCodeGenerationConfig codeGenerationConfig ) {
       final StringBuilder classDefinitionBuilder = new StringBuilder( "public " );
       if ( element.isAbstractEntity() ) {
          classDefinitionBuilder.append( "abstract " );
@@ -214,7 +217,8 @@ public class AspectModelJavaUtil {
       return classDefinitionBuilder.toString();
    }
 
-   public static String generateAbstractEntityClassAnnotations( final ComplexType element, final JavaCodeGenerationConfig codeGenerationConfig,
+   public static String generateAbstractEntityClassAnnotations( final ComplexType element,
+         final JavaCodeGenerationConfig codeGenerationConfig,
          final Set<ComplexType> extendingEntities ) {
       final StringBuilder classAnnotationBuilder = new StringBuilder();
       if ( element.isAbstractEntity() || !element.getExtendingElements().isEmpty() ) {
@@ -251,7 +255,9 @@ public class AspectModelJavaUtil {
          final JavaCodeGenerationConfig codeGenerationConfig ) {
       final Optional<Type> dataType = collection.getDataType();
 
-      final Optional<String> elementConstraint = inclValidation ? buildConstraintForCollectionElements( collection, codeGenerationConfig ) : Optional.empty();
+      final Optional<String> elementConstraint = inclValidation
+            ? buildConstraintForCollectionElements( collection, codeGenerationConfig )
+            : Optional.empty();
 
       if ( collection.isAllowDuplicates() && collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( List.class );
@@ -263,7 +269,8 @@ public class AspectModelJavaUtil {
       }
       if ( collection.isAllowDuplicates() && !collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( java.util.Collection.class );
-         return containerType( java.util.Collection.class, getDataType( dataType, codeGenerationConfig.importTracker() ), elementConstraint );
+         return containerType( java.util.Collection.class, getDataType( dataType, codeGenerationConfig.importTracker() ),
+               elementConstraint );
       }
       if ( !collection.isAllowDuplicates() && !collection.isOrdered() ) {
          codeGenerationConfig.importTracker().importExplicit( Set.class );
@@ -272,7 +279,8 @@ public class AspectModelJavaUtil {
       throw new CodeGenerationException( "Could not determine Java collection type for " + collection.getName() );
    }
 
-   private static Optional<String> buildConstraintForCollectionElements( final Collection collection, final JavaCodeGenerationConfig codeGenerationConfig ) {
+   private static Optional<String> buildConstraintForCollectionElements( final Collection collection,
+         final JavaCodeGenerationConfig codeGenerationConfig ) {
       return collection.getElementCharacteristic()
             .filter( elementCharacteristic -> elementCharacteristic.is( Trait.class ) )
             .map( elementCharacteristic -> buildConstraintsForCharacteristic( (Trait) elementCharacteristic, codeGenerationConfig ) );
@@ -296,7 +304,7 @@ public class AspectModelJavaUtil {
       return dataType.map( type -> {
          final Type actualDataType = dataType.get();
          if ( actualDataType instanceof ComplexType ) {
-            return ((ComplexType) actualDataType).getName();
+            return ( (ComplexType) actualDataType ).getName();
          }
 
          if ( actualDataType instanceof Scalar ) {
@@ -310,13 +318,14 @@ public class AspectModelJavaUtil {
             return result.getTypeName();
          }
 
-         throw new CodeGenerationException( "Could not determine Java type for model type that is " + "neither Scalar nor Entity: " + type.getUrn() );
+         throw new CodeGenerationException(
+               "Could not determine Java type for model type that is " + "neither Scalar nor Entity: " + type.getUrn() );
       } ).orElseThrow( () -> new CodeGenerationException( "Failed to determine Java data type for empty model type" ) );
    }
 
    public static Class<?> getDataTypeClass( final Type dataType ) {
       if ( dataType instanceof ComplexType ) {
-         return ((ComplexType) dataType).getClass();
+         return ( (ComplexType) dataType ).getClass();
       }
 
       final Resource typeResource = ResourceFactory.createResource( dataType.getUrn() );
@@ -328,9 +337,8 @@ public class AspectModelJavaUtil {
    }
 
    /**
-    * Convert a string given as upper or lower camel case into a constant format.
-    *
-    * For example {@code someVariable} would become {@code SOME_VARIABLE}.
+    * Convert a string given as upper or lower camel case into a constant format. For example {@code someVariable} would become
+    * {@code SOME_VARIABLE}.
     *
     * @param upperOrLowerCamelString the string to convert
     * @return the string formatted as a constant.
@@ -340,9 +348,8 @@ public class AspectModelJavaUtil {
    }
 
    /**
-    * Creates a string literal with escaped double quotes around the given string.
-    *
-    * The string is escaped using {@link #escapeForLiteral(String)}.
+    * Creates a string literal with escaped double quotes around the given string. The string is escaped using
+    * {@link #escapeForLiteral(String)}.
     *
     * @param value the string to create the literal for
     * @return the literal
@@ -352,10 +359,9 @@ public class AspectModelJavaUtil {
    }
 
    /**
-    * Escapes a string properly to be used as a literal.
-    *
-    * Performs escaping according to Java String rules and afterwards additionally translates escaped Unicode characters back to Unicode. The latter step is
-    * necessary to avoid Unicode escape sequences within the String literal.
+    * Escapes a string properly to be used as a literal. Performs escaping according to Java String rules and afterwards additionally
+    * translates escaped Unicode characters back to Unicode. The latter step is necessary to avoid Unicode escape sequences within the
+    * String literal.
     *
     * @param value the string to be escaped
     * @return the escaped string
@@ -396,7 +402,8 @@ public class AspectModelJavaUtil {
 
    public static String buildConstraintsForCharacteristic( final Trait trait, final JavaCodeGenerationConfig codeGenerationConfig ) {
       return trait.getConstraints().stream()
-            .map( constraint -> new ConstraintAnnotationBuilder().setConstraintClass( constraint ).setImportTracker( codeGenerationConfig.importTracker() )
+            .map( constraint -> new ConstraintAnnotationBuilder().setConstraintClass( constraint )
+                  .setImportTracker( codeGenerationConfig.importTracker() )
                   .build() ).collect( Collectors.joining() );
    }
 
@@ -430,7 +437,8 @@ public class AspectModelJavaUtil {
       return element.getProperties().stream().filter( inPayload ).collect( Collectors.toList() );
    }
 
-   public static String generateInitializer( final Property property, final String value, final JavaCodeGenerationConfig codeGenerationConfig,
+   public static String generateInitializer( final Property property, final String value,
+         final JavaCodeGenerationConfig codeGenerationConfig,
          final ValueInitializer valueInitializer ) {
       return property.getDataType().map( type -> {
          final Resource typeResource = ResourceFactory.createResource( type.getUrn() );
@@ -438,7 +446,8 @@ public class AspectModelJavaUtil {
          final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource, metaModelVersion );
          codeGenerationConfig.importTracker().importExplicit( result );
          return valueInitializer.apply( typeResource, value, metaModelVersion );
-      } ).orElseThrow( () -> new CodeGenerationException( "The Either Characteristic is not allowed for Properties used as elements in a StructuredValue" ) );
+      } ).orElseThrow( () -> new CodeGenerationException(
+            "The Either Characteristic is not allowed for Properties used as elements in a StructuredValue" ) );
    }
 
    public static String generateEnumValue( final Value value, final JavaCodeGenerationConfig codeGenerationConfig ) {
@@ -486,12 +495,13 @@ public class AspectModelJavaUtil {
       if ( object instanceof String ) {
          return createLiteral( object.toString() );
       }
-      return toConstant( ((Property) object).getName() );
+      return toConstant( ( (Property) object ).getName() );
    }
 
    public static boolean isXmlDatatypeFactoryRequired( final StructureElement element ) {
       final AspectStreamTraversalVisitor visitor = new AspectStreamTraversalVisitor();
-      return visitor.visitStructureElement( element, null ).filter( modelElement -> Scalar.class.isAssignableFrom( modelElement.getClass() ) )
+      return visitor.visitStructureElement( element, null )
+            .filter( modelElement -> Scalar.class.isAssignableFrom( modelElement.getClass() ) )
             .map( Scalar.class::cast ).map( Type::getUrn ).anyMatch(
                   typeUrn -> typeUrn.equals( XSD.date.getURI() )
                         || typeUrn.equals( XSD.time.getURI() )
@@ -544,8 +554,8 @@ public class AspectModelJavaUtil {
     *
     * @param allProperties the list of properties that are turned into arguments
     * @param codeGenerationConfig the code generation context
-    * @param enableJacksonAnnotations overriding whether Jackson annotations should be generated or not. This is because in certain situations multiple
-    *                                 constructors are generated, only one of which is @JsonCreator and uses @JsonProperty on the arguments
+    * @param enableJacksonAnnotations overriding whether Jackson annotations should be generated or not. This is because in certain
+    * situations multiple constructors are generated, only one of which is @JsonCreator and uses @JsonProperty on the arguments
     * @return the constructor argument string
     */
    public static String constructorArguments( final List<Property> allProperties, final JavaCodeGenerationConfig codeGenerationConfig,
@@ -629,6 +639,6 @@ public class AspectModelJavaUtil {
             .filter( Type::isScalar )
             .map( type -> XSD.xboolean.getURI().equals( type.getUrn() ) )
             .orElse( false );
-      return (isBooleanType ? "is" : "get") + StringUtils.capitalize( property.getPayloadName() );
+      return ( isBooleanType ? "is" : "get" ) + StringUtils.capitalize( property.getPayloadName() );
    }
 }

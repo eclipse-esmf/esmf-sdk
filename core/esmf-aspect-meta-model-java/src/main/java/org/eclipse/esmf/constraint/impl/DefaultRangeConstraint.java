@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.constraint.RangeConstraint;
-
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
@@ -106,10 +105,10 @@ public class DefaultRangeConstraint extends DefaultConstraint implements RangeCo
          return false;
       }
       final DefaultRangeConstraint that = (DefaultRangeConstraint) o;
-      return Objects.equals( minValue, that.minValue ) &&
-            Objects.equals( maxValue, that.maxValue ) &&
-            lowerBoundDefinition == that.lowerBoundDefinition &&
-            upperBoundDefinition == that.upperBoundDefinition;
+      return Objects.equals( minValue, that.minValue )
+            && Objects.equals( maxValue, that.maxValue )
+            && lowerBoundDefinition == that.lowerBoundDefinition
+            && upperBoundDefinition == that.upperBoundDefinition;
    }
 
    @Override

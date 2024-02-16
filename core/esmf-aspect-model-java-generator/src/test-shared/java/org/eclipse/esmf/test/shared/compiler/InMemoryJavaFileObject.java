@@ -14,7 +14,6 @@
 package org.eclipse.esmf.test.shared.compiler;
 
 import java.net.URI;
-
 import javax.tools.SimpleJavaFileObject;
 
 /**

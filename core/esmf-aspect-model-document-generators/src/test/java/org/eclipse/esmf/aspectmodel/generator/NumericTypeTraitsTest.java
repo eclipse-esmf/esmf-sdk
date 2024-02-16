@@ -17,16 +17,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.test.MetaModelVersions;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.impl.DefaultScalar;
-import org.eclipse.esmf.test.MetaModelVersions;
 
 public class NumericTypeTraitsTest extends MetaModelVersions {
 

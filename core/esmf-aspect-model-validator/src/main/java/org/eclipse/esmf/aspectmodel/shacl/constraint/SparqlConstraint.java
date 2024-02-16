@@ -19,6 +19,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
+import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
+import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
 import org.apache.jena.graph.Node;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -34,10 +38,6 @@ import org.apache.jena.sparql.syntax.syntaxtransform.ElementTransform;
 import org.apache.jena.sparql.syntax.syntaxtransform.ElementTransformSubst;
 import org.apache.jena.sparql.syntax.syntaxtransform.ExprTransformNodeElement;
 import org.apache.jena.sparql.syntax.syntaxtransform.QueryTransformOps;
-
-import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
-import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
-import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#sparql-constraints">sh:sparql</a>

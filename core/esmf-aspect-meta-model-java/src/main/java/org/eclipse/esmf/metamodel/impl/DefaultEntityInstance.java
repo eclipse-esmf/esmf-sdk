@@ -28,7 +28,8 @@ public class DefaultEntityInstance extends ModelElementImpl implements EntityIns
    private final Map<Property, Value> assertions;
    private final Entity type;
 
-   public DefaultEntityInstance( final MetaModelBaseAttributes metaModelBaseAttributes, final Map<Property, Value> assertions, final Entity type ) {
+   public DefaultEntityInstance( final MetaModelBaseAttributes metaModelBaseAttributes, final Map<Property, Value> assertions,
+         final Entity type ) {
       super( metaModelBaseAttributes );
       this.assertions = assertions;
       this.type = type;

@@ -15,15 +15,14 @@ package org.eclipse.esmf.metamodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.eclipse.esmf.metamodel.Aspect;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import org.eclipse.esmf.constraint.FixedPointConstraint;
 import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.constraint.FixedPointConstraint;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 
-import org.eclipse.esmf.samm.KnownVersion;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class FixedPointConstraintInstantiatorTest extends MetaModelInstantiatorTest {
 

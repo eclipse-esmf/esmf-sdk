@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
-
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -59,13 +58,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.xml.sax.SAXException;
 
-class AspectModelAASGeneratorTest {
+class AspectModelAasGeneratorTest {
 
    // The AAS XML Schema is also present in the AAS4j library for testing purposes. So we can read
    // the file from the classpath
    public static final String XML_XSD_AAS_SCHEMA_LOCATION = "/AAS.xsd";
 
-   AspectModelAASGenerator generator = new AspectModelAASGenerator();
+   AspectModelAasGenerator generator = new AspectModelAasGenerator();
 
    @Test
    void generateAasxWithAspectDataForMultilanguageText() throws DeserializationException {
@@ -133,7 +132,7 @@ class AspectModelAASGeneratorTest {
             Set.of( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty",
                   "urn:samm:org.eclipse.esmf.test:1.0.0#testPropertyTwo" );
 
-      checkDataSpecificationIEC61360( semanticIds, env );
+      checkDataSpecificationIec61360( semanticIds, env );
    }
 
    @Test
@@ -152,7 +151,7 @@ class AspectModelAASGeneratorTest {
          } );
       } );
 
-      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
+      getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -164,7 +163,7 @@ class AspectModelAASGeneratorTest {
       assertThat( submodelElement ).isInstanceOf( SubmodelElementList.class );
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
 
-      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
+      getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -176,7 +175,7 @@ class AspectModelAASGeneratorTest {
       assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
 
-      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
+      getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -188,7 +187,7 @@ class AspectModelAASGeneratorTest {
       assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
 
-      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
+      getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -200,7 +199,7 @@ class AspectModelAASGeneratorTest {
       assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
 
-      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
+      getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -217,7 +216,7 @@ class AspectModelAASGeneratorTest {
             Set.of( "urn:samm:org.eclipse.esmf.test:1.0.0#result",
                   "urn:samm:org.eclipse.esmf.test:1.0.0#error" );
 
-      checkDataSpecificationIEC61360( semanticIds, env );
+      checkDataSpecificationIec61360( semanticIds, env );
    }
 
    @Test
@@ -228,7 +227,7 @@ class AspectModelAASGeneratorTest {
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
 
-      final DataSpecificationContent dataSpecificationContent = getDataSpecificationIEC61360(
+      final DataSpecificationContent dataSpecificationContent = getDataSpecificationIec61360(
             "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
 
       assertThat( ((DataSpecificationIec61360) dataSpecificationContent).getUnit() ).isEqualTo( "percent" );
@@ -254,7 +253,7 @@ class AspectModelAASGeneratorTest {
                   "urn:samm:org.eclipse.esmf.test:1.0.0#floatRcProperty",
                   "urn:samm:org.eclipse.esmf.test:1.0.0#stringRegexcProperty" );
 
-      checkDataSpecificationIEC61360( semanticIds, env );
+      checkDataSpecificationIec61360( semanticIds, env );
    }
 
    @Test
@@ -272,7 +271,7 @@ class AspectModelAASGeneratorTest {
       final Property submodelElement = (Property) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertThat( submodelElement.getValueType() ).isEqualTo( DataTypeDefXsd.INT );
 
-      getDataSpecificationIEC61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
+      getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
 
    @Test
@@ -311,7 +310,7 @@ class AspectModelAASGeneratorTest {
       assertThat( aasXml ).doesNotContain( "DefaultEntity[" );
       assertThat( aasXml ).doesNotContain( "Optional[" );
 
-      final Environment env = loadAASX( new ByteArrayInputStream( xmlFile ) );
+      final Environment env = loadAasx( new ByteArrayInputStream( xmlFile ) );
       assertThat( env.getSubmodels() ).isNotEmpty();
       validate( new ByteArrayInputStream( xmlFile ) );
    }
@@ -352,11 +351,11 @@ class AspectModelAASGeneratorTest {
       assertThat( property.getDescription() ).isEmpty();
    }
 
-   private void checkDataSpecificationIEC61360( final Set<String> semanticIds, final Environment env ) {
-      semanticIds.forEach( x -> getDataSpecificationIEC61360( x, env ) );
+   private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {
+      semanticIds.forEach( x -> getDataSpecificationIec61360( x, env ) );
    }
 
-   private DataSpecificationContent getDataSpecificationIEC61360( final String semanticId, final Environment env ) {
+   private DataSpecificationContent getDataSpecificationIec61360( final String semanticId, final Environment env ) {
       final List<ConceptDescription> conceptDescriptions = env.getConceptDescriptions();
       final List<ConceptDescription> filteredConceptDescriptions =
             conceptDescriptions.stream()
@@ -374,13 +373,13 @@ class AspectModelAASGeneratorTest {
 
    private Environment getAssetAdministrationShellFromAspect( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = loadAspect( testAspect );
-      return loadAASX( generator.generateAsByteArray( AasFileFormat.XML, aspect ) );
+      return loadAasx( generator.generateAsByteArray( AasFileFormat.XML, aspect ) );
    }
 
    private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect ) throws DeserializationException {
       final Aspect aspect = loadAspect( testAspect );
       final JsonNode aspectData = loadPayload( testAspect );
-      return loadAASX( generator.generateAsByteArray( AasFileFormat.XML, aspect, aspectData ) );
+      return loadAasx( generator.generateAsByteArray( AasFileFormat.XML, aspect, aspectData ) );
    }
 
    private String aspectToString( final TestAspect testAspect ) {
@@ -408,12 +407,12 @@ class AspectModelAASGeneratorTest {
       return TestResources.getPayload( testAspect, KnownVersion.getLatest() ).get();
    }
 
-   private Environment loadAASX( final ByteArrayInputStream byteStream ) throws DeserializationException {
+   private Environment loadAasx( final ByteArrayInputStream byteStream ) throws DeserializationException {
       final XmlDeserializer deserializer = new XmlDeserializer();
       return deserializer.read( byteStream );
    }
 
-   private Environment loadAASX( final byte[] data ) throws DeserializationException {
+   private Environment loadAasx( final byte[] data ) throws DeserializationException {
       final XmlDeserializer deserializer = new XmlDeserializer();
       return deserializer.read( new ByteArrayInputStream( data ) );
    }

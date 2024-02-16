@@ -34,6 +34,7 @@ public class DefaultModelNamespace implements ModelNamespace {
 
    /**
     * Accepts a namespace URI such as 'urn:samm:com.example:1.0.0'
+    *
     * @param uri the namspace uri
     * @param elements the list of elements in the namspace
     * @return the model namespace
@@ -45,6 +46,7 @@ public class DefaultModelNamespace implements ModelNamespace {
 
    /**
     * Accepts a namespace URI such as 'urn:samm:com.example:1.0.0'
+    *
     * @param uri the namspace uri
     * @return the model namespace
     */

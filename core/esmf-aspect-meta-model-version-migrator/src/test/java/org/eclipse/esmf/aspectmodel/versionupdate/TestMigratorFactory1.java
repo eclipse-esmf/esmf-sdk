@@ -14,16 +14,15 @@ package org.eclipse.esmf.aspectmodel.versionupdate;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.AspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.versionupdate.migrator.AbstractMigrator;
+import org.eclipse.esmf.aspectmodel.versionupdate.migrator.Migrator;
+import org.eclipse.esmf.samm.KnownVersion;
+
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 public class TestMigratorFactory1 implements MigratorFactory {
 

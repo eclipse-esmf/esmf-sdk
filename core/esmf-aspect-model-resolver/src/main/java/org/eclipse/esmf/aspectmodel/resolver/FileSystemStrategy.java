@@ -71,10 +71,8 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
     * Returns the {@link Model} that corresponds to the given model URN
     *
     * @param aspectModelUrn The model URN
-    * @return The model on success,
-    * {@link IllegalArgumentException} if the model file can not be read,
-    * {@link org.apache.jena.riot.RiotException} on parser error,
-    * {@link MalformedURLException} if the AspectModelUrn is invalid,
+    * @return The model on success, {@link IllegalArgumentException} if the model file can not be read,
+    * {@link org.apache.jena.riot.RiotException} on parser error, {@link MalformedURLException} if the AspectModelUrn is invalid,
     * {@link FileNotFoundException} if no file containing the element was found
     */
    @Override

@@ -34,12 +34,12 @@ import org.apache.jena.vocabulary.RDF;
  * A {@link AbstractUriRewriter} that replaces all references to the legacy BAMM Aspect Meta Model to their corresponding SAMM counterparts
  */
 public class BammUriRewriter extends AbstractUriRewriter {
-   private final BAMM_VERSION bammVersion;
+   private final BammVersion bammVersion;
 
    private static final String SAMM_C_PREFIX = "samm-c";
    private static final String SAMM_E_PREFIX = "samm-e";
 
-   public BammUriRewriter( final BAMM_VERSION bammVersion ) {
+   public BammUriRewriter( final BammVersion bammVersion ) {
       // Translating versions will only fail if there are no SAMM versions (i.e., KnownVersion) for the versions in BAMM_VERSION
       super( KnownVersion.fromVersionString( bammVersion.versionString() ).orElseThrow( () ->
                   new InvalidVersionException( "BAMM version " + bammVersion.versionString() + " can not be translated to SAMM" ) ),
@@ -92,8 +92,8 @@ public class BammUriRewriter extends AbstractUriRewriter {
       final Predicate<String> isBammRelated = uri ->
             uri.startsWith( bammPrefix ) && uri.contains( bammVersion.versionString() );
       return // BAMM prefix is present
-            model.getNsPrefixMap().values().stream().anyMatch( isBammRelated ) ||
-                  // Or any referred resource uses a BAMM URN
+            model.getNsPrefixMap().values().stream().anyMatch( isBammRelated )
+                  || // Or any referred resource uses a BAMM URN
                   Streams.stream( model.listObjectsOfProperty( RDF.type ) )
                         .flatMap( object -> object.isURIResource() ? Stream.of( object.asResource().getURI() ) : Stream.empty() )
                         .anyMatch( isBammRelated );
@@ -123,7 +123,7 @@ public class BammUriRewriter extends AbstractUriRewriter {
       return sourceModel;
    }
 
-   public enum BAMM_VERSION {
+   public enum BammVersion {
       BAMM_1_0_0,
       BAMM_2_0_0;
 

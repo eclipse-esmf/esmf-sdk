@@ -26,19 +26,20 @@ import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultComplexType extends ModelElementImpl implements ComplexType {
    private final List<Property> properties;
-   private final Optional<ComplexType> _extends;
+   @SuppressWarnings( "checkstyle:MemberName" )
+   private final Optional<ComplexType> extends_;
    private final List<AspectModelUrn> extendingElements;
    private final ModelElementFactory loadedElements;
 
    protected DefaultComplexType(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
-         final Optional<ComplexType> _extends,
+         @SuppressWarnings( "checkstyle:ParameterName" ) final Optional<ComplexType> extends_,
          final List<AspectModelUrn> extendingElements,
          final ModelElementFactory loadedElements ) {
       super( metaModelBaseAttributes );
       this.properties = new ArrayList<>( properties );
-      this._extends = _extends;
+      this.extends_ = extends_;
       this.extendingElements = extendingElements;
       this.loadedElements = loadedElements;
    }
@@ -55,7 +56,7 @@ public class DefaultComplexType extends ModelElementImpl implements ComplexType 
 
    @Override
    public Optional<ComplexType> getExtends() {
-      return _extends;
+      return extends_;
    }
 
    /**

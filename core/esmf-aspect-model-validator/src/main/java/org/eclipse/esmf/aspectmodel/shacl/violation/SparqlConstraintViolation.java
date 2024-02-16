@@ -51,9 +51,9 @@ public record SparqlConstraintViolation( EvaluationContext context, String const
 
       String interpolatedMessage = constraintMessage();
       for ( final Map.Entry<String, RDFNode> entry : bindings.entrySet() ) {
-         final String value = entry.getValue().isURIResource() ?
-               context.shortUri( entry.getValue().asResource().getURI() ) :
-               entry.getValue().toString();
+         final String value = entry.getValue().isURIResource()
+               ? context.shortUri( entry.getValue().asResource().getURI() )
+               : entry.getValue().toString();
          interpolatedMessage = interpolatedMessage.replaceAll( "\\{[$?]" + entry.getKey() + "\\}", value );
       }
       return interpolatedMessage;

@@ -15,15 +15,15 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Resource;
-
-import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.characteristic.SortedSet;
-import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.characteristic.impl.DefaultSortedSet;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 public class SortedSetInstantiator extends Instantiator<SortedSet> {
    public SortedSetInstantiator( final ModelElementFactory modelElementFactory ) {
@@ -34,9 +34,9 @@ public class SortedSetInstantiator extends Instantiator<SortedSet> {
    public SortedSet apply( final Resource sortedSet ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( sortedSet );
       final Optional<Characteristic> elementCharacteristic = getElementCharacteristic( sortedSet );
-      final Optional<Type> dataType = elementCharacteristic.isPresent() ?
-            elementCharacteristic.get().getDataType() :
-            Optional.of( getType( sortedSet ) );
+      final Optional<Type> dataType = elementCharacteristic.isPresent()
+            ? elementCharacteristic.get().getDataType()
+            : Optional.of( getType( sortedSet ) );
       return new DefaultSortedSet( metaModelBaseAttributes, dataType, elementCharacteristic );
    }
 }

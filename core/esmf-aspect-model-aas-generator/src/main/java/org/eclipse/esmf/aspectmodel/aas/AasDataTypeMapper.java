@@ -1,12 +1,12 @@
 package org.eclipse.esmf.aspectmodel.aas;
 
+import java.util.Map;
+
 import com.google.common.collect.ImmutableMap;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataTypeDefXsd;
-
-import java.util.Map;
 
 public class AasDataTypeMapper {
 
@@ -90,7 +90,7 @@ public class AasDataTypeMapper {
     * @param urn the URN to map
     * @return the {@code DataTypeDefXsd} for the given URN
     */
-   public static DataTypeDefXsd mapAspectTypeToAASXSDataType( final String urn ) {
+   public static DataTypeDefXsd mapAspectTypeToAasXsdDataType( final String urn ) {
       final Resource resource = ResourceFactory.createResource( urn );
       return ASPECT_TYPE_TO_AAS_XSD_TYPE_MAP.getOrDefault( resource, DataTypeDefXsd.STRING );
    }
@@ -98,10 +98,10 @@ public class AasDataTypeMapper {
    /**
     * Maps the given URN to a {@link Resource} schema type.
     *
-    * @param dataTypeDefXSD the URN to map
+    * @param dataTypeDefXsd the URN to map
     * @return the {@code Resource} for the given URN
     */
-   public static Resource mapAASXSDataTypeToAspectType( final DataTypeDefXsd dataTypeDefXSD ) {
-      return AAS_XSD_TYPE_TO_ASPECT_TYPE_MAP.getOrDefault( dataTypeDefXSD, XSD.xstring );
+   public static Resource mapAasXsdDataTypeToAspectType( final DataTypeDefXsd dataTypeDefXsd ) {
+      return AAS_XSD_TYPE_TO_ASPECT_TYPE_MAP.getOrDefault( dataTypeDefXsd, XSD.xstring );
    }
 }

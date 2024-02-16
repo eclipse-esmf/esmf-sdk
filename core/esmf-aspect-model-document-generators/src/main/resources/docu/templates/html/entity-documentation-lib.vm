@@ -15,7 +15,7 @@
     <div class="pb-10">
         #paragraph( $entity.getPreferredName( $i18n.getLocale() ) "${aspectModelHelper.buildAnchor( $entity, null, 'entity' )}" $weight)
         #if( $entity.getExtends().isPresent() )
-          $i18n.getText( "docu.label.extends" )&nbsp;<a href="#$aspectModelHelper.getNameFromURN( $entity.getExtends().get().getUrn() )-entity"
+          $i18n.getText( "docu.label.extends" )&nbsp;<a href="#$aspectModelHelper.getNameFromUrn( $entity.getExtends().get().getUrn() )-entity"
         class="break-all underline">$entity.getExtends().get().getPreferredName( $i18n.getLocale() )</a>
         #end
         <div class="flex border-b pb-1 py-4">

@@ -15,10 +15,10 @@ package org.eclipse.esmf.aspectmodel.generator.json.testclasses;
 
 import java.util.Objects;
 
+import org.eclipse.esmf.metamodel.datatypes.LangString;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.eclipse.esmf.metamodel.datatypes.LangString;
 
 /** Generated class for AspectWithMultiLanguageText. */
 public class AspectWithMultiLanguageText {

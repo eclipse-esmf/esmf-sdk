@@ -16,17 +16,17 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-
-import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.characteristic.StructuredValue;
-import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.characteristic.impl.DefaultStructuredValue;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 
 public class StructuredValueInstantiator extends Instantiator<StructuredValue> {
    public StructuredValueInstantiator( final ModelElementFactory modelElementFactory ) {

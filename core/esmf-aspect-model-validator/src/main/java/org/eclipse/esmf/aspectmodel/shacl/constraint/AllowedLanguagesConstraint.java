@@ -15,12 +15,12 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.RDFNode;
-
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.LanguageFromListViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#LanguageInConstraintComponent">sh:languageIn</a>
@@ -36,9 +36,9 @@ public record AllowedLanguagesConstraint( List<String> allowedLanguages ) implem
       }
 
       final String language = rdfNode.asLiteral().getLanguage();
-      return allowedLanguages.contains( language ) ?
-            List.of() :
-            List.of( new LanguageFromListViolation( context, allowedLanguages, language ) );
+      return allowedLanguages.contains( language )
+            ? List.of()
+            : List.of( new LanguageFromListViolation( context, allowedLanguages, language ) );
    }
 
    @Override

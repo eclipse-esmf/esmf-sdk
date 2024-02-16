@@ -120,6 +120,7 @@ public class Diagram {
 
    /**
     * An edge between two {@link Box}es
+    *
     * @param from the source box
     * @param to the target box
     * @param label the label on the edge

@@ -17,7 +17,6 @@ import java.math.BigInteger;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.stream.Stream;
-
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
@@ -161,7 +160,7 @@ public interface XsdArbitraries {
    }
 
    @Provide
-   default Arbitrary<XMLGregorianCalendar> anyGYear() {
+   default Arbitrary<XMLGregorianCalendar> anyGyear() {
       return Combinators.combine( anyYear(), anyTimezone().optional() )
             .as( ( year, optionalTimezone ) -> {
                final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
@@ -173,7 +172,7 @@ public interface XsdArbitraries {
    }
 
    @Provide
-   default Arbitrary<XMLGregorianCalendar> anyGMonth() {
+   default Arbitrary<XMLGregorianCalendar> anyGmonth() {
       return Combinators.combine( anyMonth(), anyTimezone().optional() )
             .as( ( month, optionalTimezone ) -> {
                final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
@@ -186,7 +185,7 @@ public interface XsdArbitraries {
    }
 
    @Provide
-   default Arbitrary<XMLGregorianCalendar> anyGDay() {
+   default Arbitrary<XMLGregorianCalendar> anyGday() {
       return Combinators.combine( anyDayInMonth(), anyTimezone().optional() )
             .as( ( day, optionalTimezone ) -> {
                final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
@@ -198,7 +197,7 @@ public interface XsdArbitraries {
    }
 
    @Provide
-   default Arbitrary<XMLGregorianCalendar> anyGYearMonth() {
+   default Arbitrary<XMLGregorianCalendar> anyGyearMonth() {
       return Combinators.combine( anyYear(), anyMonth(), anyTimezone().optional() )
             .as( ( year, month, optionalTimezone ) -> {
                final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );
@@ -228,7 +227,7 @@ public interface XsdArbitraries {
    }
 
    @Provide
-   default Arbitrary<XMLGregorianCalendar> anyGMonthDay() {
+   default Arbitrary<XMLGregorianCalendar> anyGmonthDay() {
       return Combinators.combine( anyMonthDay(), anyTimezone().optional() )
             .as( ( monthDay, optionalTimezone ) -> {
                final int timezone = optionalTimezone.orElse( DatatypeConstants.FIELD_UNDEFINED );

@@ -16,12 +16,13 @@ package org.eclipse.esmf;
 import static org.fusesource.jansi.Ansi.ansi;
 
 import org.eclipse.esmf.aspectmodel.resolver.parser.RdfTextFormatter;
+
 import org.fusesource.jansi.Ansi;
 
 /**
  * RDF syntax highlighting using JAnsi format, usable in JAnsi-enhanced environments.
  */
-public class JAnsiRdfSyntaxHighlighter implements RdfTextFormatter {
+public class JansiRdfSyntaxHighlighter implements RdfTextFormatter {
    private static final Ansi.Color IRI_COLOR = Ansi.Color.GREEN;
    private static final Ansi.Color ERROR_COLOR = Ansi.Color.RED;
    private static final Ansi.Color PREFIX_COLOR = Ansi.Color.BLUE;
@@ -86,15 +87,15 @@ public class JAnsiRdfSyntaxHighlighter implements RdfTextFormatter {
    @Override
    public RdfTextFormatter formatPrimitive( final String primitive ) {
       switch ( primitive ) {
-      case "<" -> builder.append( coloredFragment( IRI_COLOR, primitive ) );
-      case ">" -> builder.append( coloredFragment( IRI_COLOR, primitive ) );
-      case ":" -> builder.append( coloredFragment( PREFIX_COLOR, primitive ) );
-      case "@" -> builder.append( coloredFragment( DIRECTIVE_COLOR, primitive ) );
-      case "\"" -> builder.append( coloredFragment( STRING_COLOR, primitive ) );
-      case "(" -> builder.append( coloredFragment( DIRECTIVE_COLOR, primitive ) );
-      case ")" -> builder.append( coloredFragment( DIRECTIVE_COLOR, primitive ) );
-      case "a" -> builder.append( coloredFragment( STRING_COLOR, primitive ) );
-      default -> builder.append( ansi().a( primitive ).toString() );
+         case "<" -> builder.append( coloredFragment( IRI_COLOR, primitive ) );
+         case ">" -> builder.append( coloredFragment( IRI_COLOR, primitive ) );
+         case ":" -> builder.append( coloredFragment( PREFIX_COLOR, primitive ) );
+         case "@" -> builder.append( coloredFragment( DIRECTIVE_COLOR, primitive ) );
+         case "\"" -> builder.append( coloredFragment( STRING_COLOR, primitive ) );
+         case "(" -> builder.append( coloredFragment( DIRECTIVE_COLOR, primitive ) );
+         case ")" -> builder.append( coloredFragment( DIRECTIVE_COLOR, primitive ) );
+         case "a" -> builder.append( coloredFragment( STRING_COLOR, primitive ) );
+         default -> builder.append( ansi().a( primitive ).toString() );
       }
       return this;
    }

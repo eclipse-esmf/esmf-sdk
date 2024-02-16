@@ -87,8 +87,8 @@ public class DefaultOperation extends ModelElementImpl implements Operation {
          return false;
       }
       final DefaultOperation that = (DefaultOperation) o;
-      return Objects.equals( input, that.input ) &&
-            Objects.equals( output, that.output );
+      return Objects.equals( input, that.input )
+            && Objects.equals( output, that.output );
    }
 
    @Override

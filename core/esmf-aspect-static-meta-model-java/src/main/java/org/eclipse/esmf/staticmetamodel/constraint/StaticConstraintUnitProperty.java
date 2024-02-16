@@ -24,10 +24,9 @@ import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.staticmetamodel.UnitProperty;
 
 /**
- * Extends the {@link StaticConstraintProperty} definition with a {@link Unit} and includes an constraint.
- *
- * Only {@link Quantifiable} properties that actually carry a {@code Unit} will be represented by a {@code
- * StaticConstraintUnitProperty}, however in practice this will be the case for most quantifiables.
+ * Extends the {@link StaticConstraintProperty} definition with a {@link Unit} and includes an constraint. Only {@link Quantifiable}
+ * properties that actually carry a {@code Unit} will be represented by a {@code StaticConstraintUnitProperty}, however in practice this
+ * will be the case for most quantifiables.
  */
 public abstract class StaticConstraintUnitProperty<E, T, C extends Characteristic>
       extends StaticConstraintProperty<E, T, C> implements UnitProperty {
@@ -40,7 +39,7 @@ public abstract class StaticConstraintUnitProperty<E, T, C extends Characteristi
          final boolean notInPayload,
          final Optional<String> payloadName,
          final boolean isAbstract,
-         final Optional<Property> extends_ ) {
+         @SuppressWarnings( { "checkstyle:ParameterName", "MethodParameterNamingConvention" } ) final Optional<Property> extends_ ) {
       super( metaModelBaseAttributes, characteristic, exampleValue, optional, notInPayload, payloadName, isAbstract, extends_ );
    }
 }

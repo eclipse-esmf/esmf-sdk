@@ -21,6 +21,7 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.exception.CommandException;
+
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToPngCommand.COMMAND_NAME,
@@ -34,10 +35,12 @@ public class AspectToPngCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "png";
 
    @CommandLine.Option( names = { "--output", "-o" },
-         description = "Output file path (default: stdout; as PNG is a binary format, it is strongly recommended to output the result to a file by using the -o option or the console redirection operator '>')" )
+         description = "Output file path (default: stdout; as PNG is a binary format, it is strongly recommended to output the result to "
+               + "a file by using the -o option or the console redirection operator '>')" )
    private String outputFilePath = "-";
 
-   @CommandLine.Option( names = { "--language", "-l" }, description = "The language from the model for which the diagram should be generated (default: en)" )
+   @CommandLine.Option( names = { "--language",
+         "-l" }, description = "The language from the model for which the diagram should be generated (default: en)" )
    private String language = "en";
 
    @CommandLine.ParentCommand
@@ -52,7 +55,8 @@ public class AspectToPngCommand extends AbstractCommand {
    @Override
    public void run() {
       try {
-         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.PNG, outputFilePath, language, customResolver );
+         generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.PNG, outputFilePath, language,
+               customResolver );
       } catch ( final IOException e ) {
          throw new CommandException( e );
       }

@@ -13,13 +13,13 @@
 
 package org.eclipse.esmf.metamodel.loader.instantiator;
 
-import org.apache.jena.rdf.model.Resource;
-
 import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 public class ConstraintInstantiator extends Instantiator<Constraint> {
    public ConstraintInstantiator( final ModelElementFactory modelElementFactory ) {

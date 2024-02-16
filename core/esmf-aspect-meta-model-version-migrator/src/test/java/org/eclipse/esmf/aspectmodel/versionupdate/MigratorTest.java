@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -134,8 +133,9 @@ public class MigratorTest extends MetaModelVersions {
       return Streams.stream( model.listStatements() ).flatMap( statement -> {
          final Stream<String> subjectUri = Stream.of( statement.getSubject().getURI() );
          final Stream<String> predicateUri = Stream.of( statement.getPredicate().getURI() );
-         final Stream<String> objectUri = statement.getObject().isURIResource() ?
-               Stream.of( statement.getObject().asResource().getURI() ) : Stream.empty();
+         final Stream<String> objectUri = statement.getObject().isURIResource()
+               ? Stream.of( statement.getObject().asResource().getURI() )
+               : Stream.empty();
          return Stream.of( subjectUri, predicateUri, objectUri ).flatMap( Function.identity() );
       } ).filter( Objects::nonNull ).collect( Collectors.toSet() );
    }

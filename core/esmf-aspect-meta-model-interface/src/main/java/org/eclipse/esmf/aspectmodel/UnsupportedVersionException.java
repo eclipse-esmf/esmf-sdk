@@ -21,10 +21,10 @@ public class UnsupportedVersionException extends RuntimeException {
    }
 
    public UnsupportedVersionException( final VersionNumber versionNumber ) {
-      super( "Meta model version " + versionNumber + " is not supported");
+      super( "Meta model version " + versionNumber + " is not supported" );
    }
 
    public UnsupportedVersionException( final String versionNumber ) {
-      super( "Meta model version " + versionNumber + " is not supported");
+      super( "Meta model version " + versionNumber + " is not supported" );
    }
 }

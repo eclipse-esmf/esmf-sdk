@@ -70,28 +70,30 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides facilities for loading an Aspect model and resolving referenced meta model elements and
- * model elements from other Aspect models
+ * model elements from other Aspect models.
  */
 public class AspectModelResolver {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelResolver.class );
 
    private final MigratorService migratorService = MigratorServiceLoader.getInstance().getMigratorService();
-   private final BammUriRewriter bamm100UriRewriter = new BammUriRewriter( BammUriRewriter.BAMM_VERSION.BAMM_1_0_0 );
-   private final BammUriRewriter bamm200UriRewriter = new BammUriRewriter( BammUriRewriter.BAMM_VERSION.BAMM_2_0_0 );
+   private final BammUriRewriter bamm100UriRewriter = new BammUriRewriter( BammUriRewriter.BammVersion.BAMM_1_0_0 );
+   private final BammUriRewriter bamm200UriRewriter = new BammUriRewriter( BammUriRewriter.BammVersion.BAMM_2_0_0 );
 
    /**
-    * Returns all valid model URNs for Aspects and model elements in a model
+    * Returns all valid model URNs for Aspects and model elements in a model.
     *
     * @param model The RDF model
     * @return The set of URNs
     */
    public static Set<String> getAllUrnsInModel( final Model model ) {
       return Streams.stream( model.listStatements().mapWith( statement -> {
-         final Stream<String> subjectUri = statement.getSubject().isURIResource() ?
-               Stream.of( statement.getSubject().getURI() ) : Stream.empty();
+         final Stream<String> subjectUri = statement.getSubject().isURIResource()
+               ? Stream.of( statement.getSubject().getURI() )
+               : Stream.empty();
          final Stream<String> propertyUri = Stream.of( statement.getPredicate().getURI() );
-         final Stream<String> objectUri = statement.getObject().isURIResource() ?
-               Stream.of( statement.getObject().asResource().getURI() ) : Stream.empty();
+         final Stream<String> objectUri = statement.getObject().isURIResource()
+               ? Stream.of( statement.getObject().asResource().getURI() )
+               : Stream.empty();
 
          return Stream.of( subjectUri, propertyUri, objectUri )
                .flatMap( Function.identity() )
@@ -101,7 +103,7 @@ public class AspectModelResolver {
    }
 
    /**
-    * Tries to resolve the given SAMM URN {@link AspectModelUrn}
+    * Tries to resolve the given SAMM URN {@link AspectModelUrn}.
     *
     * @param urn The Aspect (meta) model URN
     * @return The {@link String} if it is resolvable, an {@link UrnSyntaxException} otherwise
@@ -150,7 +152,7 @@ public class AspectModelResolver {
    }
 
    /**
-    * Method to resolve a given aspect model
+    * Method to resolve a given aspect model.
     *
     * @param resolutionStrategy the strategy to resolve input URNs to RDF models
     * @param model the initial aspect model
@@ -326,7 +328,7 @@ public class AspectModelResolver {
       return resolvedModels.stream().anyMatch( model::isIsomorphicWith );
    }
 
-   private final Model EMPTY_MODEL = ModelFactory.createDefaultModel();
+   private final Model emptyModel = ModelFactory.createDefaultModel();
 
    /**
     * Applies a {@link ResolutionStrategy} to a URI to be resolved, but only if the URI is actually a valid {@link AspectModelUrn}.
@@ -339,13 +341,13 @@ public class AspectModelResolver {
     */
    private Try<Model> getModelForUrn( final String urn, final ResolutionStrategy resolutionStrategy ) {
       if ( urn.startsWith( RDF.getURI() ) || urn.startsWith( XSD.getURI() ) ) {
-         return Try.success( EMPTY_MODEL );
+         return Try.success( emptyModel );
       }
 
       try {
          final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( replaceLegacyBammUrn( urn ) );
          if ( aspectModelUrn.getElementType() != ElementType.NONE ) {
-            return Try.success( EMPTY_MODEL );
+            return Try.success( emptyModel );
          }
          return resolutionStrategy.apply( aspectModelUrn ).flatMap( model -> {
             if ( !containsType( model, urn ) ) {
@@ -357,7 +359,7 @@ public class AspectModelResolver {
       } catch ( final UrnSyntaxException e ) {
          // If it's no valid Aspect Model URN but some other URI (e.g., a samm:see value), there is nothing
          // to resolve, so we return just an empty model
-         return Try.success( EMPTY_MODEL );
+         return Try.success( emptyModel );
       }
    }
 
@@ -380,7 +382,7 @@ public class AspectModelResolver {
    }
 
    /**
-    * Adapter that enables the resolver to handle URNs with the legacy "urn:bamm:" prefix
+    * Adapter that enables the resolver to handle URNs with the legacy "urn:bamm:" prefix.
     *
     * @param urn the URN to clean up
     * @return the original URN (if using valid urn:samm: scheme) or the the cleaned up URN
@@ -410,7 +412,7 @@ public class AspectModelResolver {
    }
 
    /**
-    * Convenience method for loading an resolving an Aspect Model from a file
+    * Convenience method for loading an resolving an Aspect Model from a file.
     *
     * @param input the input file
     * @return the resolved model on success
@@ -431,7 +433,7 @@ public class AspectModelResolver {
    }
 
    /**
-    * From an input Aspect Model file, determines the models root directory if it exists
+    * From an input Aspect Model file, determines the models root directory if it exists.
     *
     * @param inputFile the input model file
     * @return the models root directory

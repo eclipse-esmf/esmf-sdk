@@ -26,7 +26,6 @@ import org.eclipse.esmf.samm.KnownVersion;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-
 import io.vavr.control.Try;
 
 public class TestResources {

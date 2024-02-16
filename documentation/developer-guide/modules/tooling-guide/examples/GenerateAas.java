@@ -17,7 +17,7 @@ package examples;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator;
+import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -39,7 +39,7 @@ public class GenerateAas extends AbstractGenerator {
             AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
       // tag::generate[]
 
-      final AspectModelAASGenerator generator = new AspectModelAASGenerator();
+      final AspectModelAasGenerator generator = new AspectModelAasGenerator();
 
       // Generate AAS .aasx for input Aspect
       generator.generate( AasFileFormat.AASX, aspect, this::outputStreamForName );
