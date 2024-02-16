@@ -27,7 +27,6 @@ import org.slf4j.spi.SLF4JServiceProvider;
  * for {@link MigratorServiceLoader}.
  * Reason: The logger factory displays false positive logger configuration errors (only in native image setup), this silences it.
  */
-@TargetClass( MigratorServiceLoader.class )
 @SuppressWarnings( {
       "unused",
       "squid:S00101", // Class name uses GraalVM substitution class naming schema, see
