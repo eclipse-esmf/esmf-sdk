@@ -89,6 +89,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.ModellingKind;
 import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
 import org.eclipse.digitaltwin.aas4j.v3.model.OperationVariable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Range;
+import org.eclipse.digitaltwin.aas4j.v3.model.Referable;
 import org.eclipse.digitaltwin.aas4j.v3.model.Reference;
 import org.eclipse.digitaltwin.aas4j.v3.model.ReferenceElement;
 import org.eclipse.digitaltwin.aas4j.v3.model.RelationshipElement;
@@ -163,6 +164,14 @@ public class AasToAspectModelGenerator {
             .filter( submodel -> submodel.getKind().equals( ModellingKind.TEMPLATE ) )
             .map( this::submodelToAspect )
             .toList();
+   }
+
+   public List<String> getSubmodelNames() {
+      return aasEnvironment.getSubmodels()
+            .stream()
+            .filter( submodel -> submodel.getKind().equals( ModellingKind.TEMPLATE ) )
+            .map( Referable::getIdShort )
+            .collect( Collectors.toList() );
    }
 
    protected String escapeUrnNamespacePart( final String namespacePart ) {

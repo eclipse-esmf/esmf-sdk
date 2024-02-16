@@ -382,6 +382,46 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
+   public void testAasListSubmodels() {
+      final File aasXmlFile = outputFile( "output.xml" );
+      final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
+            "--format", "xml", "-o", aasXmlFile.getAbsolutePath() );
+      assertThat( generateAasXmlResult.stdout() ).isEmpty();
+      assertThat( generateAasXmlResult.stderr() ).isEmpty();
+
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aas", aasXmlFile.getAbsolutePath(), "list" );
+      assertThat( result.stdout() ).isNotEmpty();
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   public void testAasToAspectModelWithSelectedSubmodels() {
+      // First create the AAS XML file we want to read
+      final File aasXmlFile = outputFile( "output.xml" );
+      final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
+            "--format", "xml", "-o", aasXmlFile.getAbsolutePath() );
+      assertThat( generateAasXmlResult.stdout() ).isEmpty();
+      assertThat( generateAasXmlResult.stderr() ).isEmpty();
+
+      // Now the actual test, convert it to an Aspect Model
+      final File outputDir = outputDirectory.toFile();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aas", aasXmlFile.getAbsolutePath(), "to", "aspect",
+            "--output-directory", outputDir.getAbsolutePath(), "-s", "1" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+
+      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespace() )
+            .resolve( testModel.getUrn().getVersion() )
+            .toFile();
+      assertThat( directory ).exists();
+      final String expectedAspectModelFileName = testModel.getName() + ".ttl";
+      assertThat( directory ).isDirectoryContaining( file -> file.getName().equals( expectedAspectModelFileName ) );
+
+      final File sourceFile = directory.toPath().resolve( expectedAspectModelFileName ).toFile();
+      assertThat( sourceFile ).content().contains( ":" + testModel.getName() + " a samm:Aspect" );
+   }
+
+   @Test
    public void testAspectToHtmlWithDefaultLanguageToFile() {
       final File targetFile = outputFile( "output.html" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "-o",

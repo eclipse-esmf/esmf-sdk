@@ -34,8 +34,7 @@ public abstract class ProcessLauncher implements Function<ProcessLauncher.Execut
    }
 
    public ExecutionResult runAndExpectSuccess( final String... arguments ) {
-      final ExecutionResult result = apply(
-            new ExecutionContext( Arrays.asList( arguments ), Optional.empty(), new File( System.getProperty( "user.dir" ) ) ) );
+      final ExecutionResult result = apply( arguments );
       if ( result.exitStatus() != 0 ) {
          System.out.printf( "Execution failed (status %d):%n", result.exitStatus() );
          System.out.println( "stdout:" );
