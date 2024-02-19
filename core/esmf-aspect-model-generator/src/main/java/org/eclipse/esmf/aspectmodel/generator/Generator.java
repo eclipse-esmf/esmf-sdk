@@ -32,7 +32,7 @@ import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
  */
 public abstract class Generator<I, T> {
    protected final Aspect aspectModel;
-   private static final Map<Object, String> generatedModelElementIdentifiers = new HashMap<>();
+   private static final Map<Object, String> GENERATED_MODEL_ELEMENT_IDENTIFIERS = new HashMap<>();
 
    protected Generator( final Aspect aspectModel ) {
       this.aspectModel = aspectModel;
@@ -54,16 +54,16 @@ public abstract class Generator<I, T> {
    }
 
    private static String generateIdentifierForAnonymousModelElement( final Object modelElement ) {
-      return generatedModelElementIdentifiers.computeIfAbsent( modelElement, element ->
-            "GeneratedElementId_" + generatedModelElementIdentifiers.size() );
+      return GENERATED_MODEL_ELEMENT_IDENTIFIERS.computeIfAbsent( modelElement, element ->
+            "GeneratedElementId_" + GENERATED_MODEL_ELEMENT_IDENTIFIERS.size() );
    }
 
    protected <E extends NamedElement> Stream<E> elements( final Class<E> clazz ) {
       return aspectModel.accept( new AspectStreamTraversalVisitor(), null )
-                        .filter( clazz::isInstance )
-                        .map( clazz::cast )
-                        .sorted( uniqueByModelElementIdentifier() )
-                        .distinct();
+            .filter( clazz::isInstance )
+            .map( clazz::cast )
+            .sorted( uniqueByModelElementIdentifier() )
+            .distinct();
    }
 
    protected <E extends NamedElement, C extends GenerationConfig, R extends Artifact<I, T>> Stream<R> applyTemplate(

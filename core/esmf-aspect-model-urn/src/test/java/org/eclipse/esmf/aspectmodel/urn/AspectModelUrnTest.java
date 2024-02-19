@@ -20,9 +20,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
-import org.junit.jupiter.api.Test;
-
 import com.google.common.base.Strings;
+import org.junit.jupiter.api.Test;
 
 public class AspectModelUrnTest {
    private final String baseUri = "urn:samm:org.eclipse.esmf.test:";

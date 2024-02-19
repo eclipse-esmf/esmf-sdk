@@ -24,6 +24,7 @@ public final class InvalidNamespaceException extends RuntimeException {
 
    /**
     * Creates an instance of the exception.
+    *
     * @param message The detailed message of the problem.
     * @param cause The cause of the problem.
     */
@@ -33,10 +34,10 @@ public final class InvalidNamespaceException extends RuntimeException {
 
    /**
     * Creates an instance of the exception.
+    *
     * @param message The detailed message of the problem.
     */
    public InvalidNamespaceException( final String message ) {
       super( message );
    }
-
 }

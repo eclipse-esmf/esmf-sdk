@@ -38,11 +38,11 @@ import org.eclipse.esmf.substitution.AdminShellConfig;
 import org.eclipse.esmf.substitution.ImplementationInfo;
 import org.eclipse.esmf.substitution.Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper;
 
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 
 /**
  * This class generates the reflection information normally stored by {@link ReflectionHelper} and serializes it into a .properties file.
@@ -132,7 +132,8 @@ public class Aas4jClassSetup {
             .loadClasses()
             .forEach( x -> {
                final String modelClassName = x.getSimpleName().substring( 0, x.getSimpleName().length() - MIXIN_SUFFIX.length() );
-               final ClassInfoList modelClassInfos = modelScan.getAllClasses().filter( y -> Objects.equals( y.getSimpleName(), modelClassName ) );
+               final ClassInfoList modelClassInfos = modelScan.getAllClasses()
+                     .filter( y -> Objects.equals( y.getSimpleName(), modelClassName ) );
                if ( !modelClassInfos.isEmpty() ) {
                   mixins.put( modelClassInfos.get( 0 ).loadClass(), x );
                }
@@ -153,7 +154,7 @@ public class Aas4jClassSetup {
             .filter( x -> x.getSimpleName().startsWith( DEFAULT_IMPLEMENTATION_PREFIX ) )
             .loadClasses()
             .forEach( x -> {
-               final String interfaceName = x.getSimpleName().substring( DEFAULT_IMPLEMENTATION_PREFIX.length() );// using conventions
+               final String interfaceName = x.getSimpleName().substring( DEFAULT_IMPLEMENTATION_PREFIX.length() ); // using conventions
                final ClassInfoList interfaceClassInfos = modelScan.getAllClasses()
                      .filter( y -> y.isInterface() && Objects.equals( y.getSimpleName(), interfaceName ) );
                if ( !interfaceClassInfos.isEmpty() ) {
@@ -168,7 +169,8 @@ public class Aas4jClassSetup {
     * Logic duplicated from {@link ReflectionHelper#scanAasInterfaces()}
     */
    private Set<Class> scanAasInterfaces() {
-      return config.defaultImplementations.stream().map( ReflectionHelper.ImplementationInfo::getInterfaceType ).collect( Collectors.toSet() );
+      return config.defaultImplementations.stream().map( ReflectionHelper.ImplementationInfo::getInterfaceType )
+            .collect( Collectors.toSet() );
    }
 
    /**

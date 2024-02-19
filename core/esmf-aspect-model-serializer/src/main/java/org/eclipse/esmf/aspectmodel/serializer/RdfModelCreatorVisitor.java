@@ -582,9 +582,9 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
       model.add( resource, sammc.deconstructionRule(), serializePlainString( structuredValue.getDeconstructionRule() ) );
       final RDFList elementsList = model.createList(
-            structuredValue.getElements().stream().map( element -> element instanceof String ?
-                  serializePlainString( (String) element ) :
-                  getElementResource( (Property) element ) ).iterator() );
+            structuredValue.getElements().stream().map( element -> element instanceof String
+                  ? serializePlainString( (String) element )
+                  : getElementResource( (Property) element ) ).iterator() );
       model.add( resource, sammc.elements(), elementsList );
 
       structuredValue.getElements().stream()

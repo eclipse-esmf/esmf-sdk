@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf;
 
-import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.*;
+import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.fileToUrn;
+import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.urnFromModel;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,8 +42,6 @@ import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 
 import io.vavr.control.Try;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractCommand implements Runnable {
    protected Try<VersionedModel> loadAndResolveModel( final File input, final ExternalResolverMixin resolverConfig ) {
@@ -65,7 +64,7 @@ public abstract class AbstractCommand implements Runnable {
       final File inputFile = new File( modelFileName );
       final Try<VersionedModel> versionedModel = loadAndResolveModel( inputFile, resolverConfig );
       final Try<AspectContext> context = versionedModel.flatMap( model -> {
-         final AspectModelUrn urn = fileToUrn( inputFile.getAbsoluteFile() ).getOrElse( () -> urnFromModel(model, inputFile) );
+         final AspectModelUrn urn = fileToUrn( inputFile.getAbsoluteFile() ).getOrElse( () -> urnFromModel( model, inputFile ) );
          return AspectModelLoader.getSingleAspect( model, aspect -> aspect.getName().equals( urn.getName() ) )
                .map( aspect -> new AspectContext( model, aspect ) );
       } );
@@ -131,9 +130,9 @@ public abstract class AbstractCommand implements Runnable {
    }
 
    protected void withOutputStream( final String outputFileName, final Consumer<OutputStream> worker ) {
-      try ( final OutputStream stream = "-".equals( outputFileName ) ?
-            new ProtectedOutputStream( System.out ) :
-            new FileOutputStream( outputFileName ) ) {
+      try ( final OutputStream stream = "-".equals( outputFileName )
+            ? new ProtectedOutputStream( System.out )
+            : new FileOutputStream( outputFileName ) ) {
          worker.accept( stream );
       } catch ( final IOException exception ) {
          throw new CommandException( exception );

@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.aspectmodel.aas.AasToAspectModelGenerator;
-import org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator;
+import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
@@ -46,7 +46,7 @@ public class GenerateAspectFromAas extends AbstractGenerator {
    @Test
    public void generate() throws IOException {
       final Path outputDirectory = Files.createTempDirectory( "junit" );
-      new AspectModelAASGenerator().generate( AasFileFormat.AASX,
+      new AspectModelAasGenerator().generate( AasFileFormat.AASX,
             AspectModelResolver.loadAndResolveModel( new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) )
                   .flatMap( AspectModelLoader::getSingleAspect ).get(),
             name -> outputStream( outputDirectory, name ) );

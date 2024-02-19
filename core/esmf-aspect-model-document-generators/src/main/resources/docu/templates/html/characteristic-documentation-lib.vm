@@ -43,7 +43,7 @@
 #macro( AnchorLinkToType $characteristic )
     #if( $characteristic.getDataType().isPresent()  )
         #if( !$characteristic.getDataType().get().is( $Scalar ) )
-            <a href="#$aspectModelHelper.getNameFromURN( $characteristic.getDataType().get().getUrn() )-entity"
+            <a href="#$aspectModelHelper.getNameFromUrn( $characteristic.getDataType().get().getUrn() )-entity"
         #else
             <a href="https://eclipse-esmf.github.io/samm-specification/$aspectModelHelper.getMetaModelVersion().toVersionString()/datatypes.html" target="_blank"
         #end

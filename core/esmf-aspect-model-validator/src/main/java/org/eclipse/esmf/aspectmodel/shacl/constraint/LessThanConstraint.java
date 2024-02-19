@@ -15,15 +15,15 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-
 import org.eclipse.esmf.aspectmodel.shacl.LiteralComparator;
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.LessThanViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#LessThanConstraintComponent">sh:lessThan</a>
@@ -53,9 +53,9 @@ public record LessThanConstraint( Property otherProperty ) implements Constraint
       }
 
       final Literal otherValue = otherValueNode.asLiteral();
-      return new LiteralComparator().compare( actual, otherValue ) < 0 ?
-            List.of() :
-            List.of( new LessThanViolation( context, otherProperty, otherValue, actual ) );
+      return new LiteralComparator().compare( actual, otherValue ) < 0
+            ? List.of()
+            : List.of( new LessThanViolation( context, otherProperty, otherValue, actual ) );
    }
 
    @Override

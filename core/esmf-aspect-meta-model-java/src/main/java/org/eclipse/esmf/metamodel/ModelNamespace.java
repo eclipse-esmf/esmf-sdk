@@ -24,24 +24,28 @@ public interface ModelNamespace {
    /**
     * The package part of the model namespace is an identifier given in
     * <a href="https://en.wikipedia.org/wiki/Reverse_domain_name_notation">reverse domain name notation</a>, e.g., com.example.myapp.
+    *
     * @return the package part of the namespace
     */
    String packagePart();
 
    /**
     * The version part of the namespace. This is always a semantic version, e.g. 1.2.3.
+    *
     * @return the version part
     */
    VersionNumber version();
 
    /**
     * The model elements contained in this namespace
+    *
     * @return the model elements
     */
    List<ModelElement> elements();
 
    /**
     * Convenience method to get the Aspects in this namespace
+    *
     * @return the list of aspects
     */
    default List<Aspect> aspects() {
@@ -53,6 +57,7 @@ public interface ModelNamespace {
 
    /**
     * The identifier of the namespace, e.g. urn:samm:com.example.myapp:1.2.3
+    *
     * @return the identifier
     */
    default String urn() {
@@ -61,6 +66,7 @@ public interface ModelNamespace {
 
    /**
     * The RDF prefix to use for elements in this namespace, e.g. urn:samm:com.example.myapp:1.2.3#
+    *
     * @return the prefix
     */
    default String elementUrnPrefix() {

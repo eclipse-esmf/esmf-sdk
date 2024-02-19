@@ -14,12 +14,11 @@ package org.eclipse.esmf.aspectmodel.versionupdate;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Collects a custom migration factory in the classpath and uses it to build a {@link MigratorService}

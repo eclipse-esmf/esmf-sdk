@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -414,12 +413,12 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    @MethodSource( "allVersions" )
    public void testGenerateAspectWithDateTimeTypeForRangeConstraints( final KnownVersion metaModelVersion ) throws IOException {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS, metaModelVersion );
-      final AspectWithGTypeForRangeConstraints aspectWithGTypeForRangeConstraints = parseJson( generatedJson,
+      final AspectWithGTypeForRangeConstraints aspectWithGtypeForRangeConstraints = parseJson( generatedJson,
             AspectWithGTypeForRangeConstraints.class );
       final Pattern dayPattern = Pattern.compile( "---(0[1-9]|[12][0-9]|3[01])(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
       final Pattern monthPattern = Pattern.compile( "--(0[1-9]|1[0-2])(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
-      assertThat( dayPattern.matcher( aspectWithGTypeForRangeConstraints.getTestPropertyWithGDay().toString() ) ).matches();
-      assertThat( monthPattern.matcher( aspectWithGTypeForRangeConstraints.getTestPropertyWithGMonth().toString() ) ).matches();
+      assertThat( dayPattern.matcher( aspectWithGtypeForRangeConstraints.getTestPropertyWithGDay().toString() ) ).matches();
+      assertThat( monthPattern.matcher( aspectWithGtypeForRangeConstraints.getTestPropertyWithGMonth().toString() ) ).matches();
    }
 
    @ParameterizedTest
@@ -774,9 +773,9 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       }
       // unsigned & positive types?
       if ( helperMin.compareTo( BigDecimal.ZERO ) == 0 || helperMin.compareTo( BigDecimal.ONE ) == 0 ) {
-         range = Pair.of( min, helperMax.compareTo( NumericTypeTraits.convertToBigDecimal( range.getRight() ) ) < 0 ?
-               max :
-               range.getRight() );
+         range = Pair.of( min, helperMax.compareTo( NumericTypeTraits.convertToBigDecimal( range.getRight() ) ) < 0
+               ? max
+               : range.getRight() );
       }
 
       return range;

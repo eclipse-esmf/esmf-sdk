@@ -15,12 +15,12 @@ package org.eclipse.esmf.aspectmodel.shacl.constraint;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-
 import org.eclipse.esmf.aspectmodel.shacl.violation.EqualsViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#EqualsConstraintComponent">sh:equals</a>
@@ -36,9 +36,9 @@ public record EqualsConstraint( Property otherProperty ) implements Constraint {
    @Override
    public List<Violation> apply( final RDFNode rdfNode, final EvaluationContext context ) {
       final RDFNode otherValue = context.element().getProperty( otherProperty ).getObject();
-      return rdfNode.equals( otherValue ) ?
-            List.of() :
-            List.of( new EqualsViolation( context, otherProperty, otherValue, rdfNode ) );
+      return rdfNode.equals( otherValue )
+            ? List.of()
+            : List.of( new EqualsViolation( context, otherProperty, otherValue, rdfNode ) );
    }
 
    @Override

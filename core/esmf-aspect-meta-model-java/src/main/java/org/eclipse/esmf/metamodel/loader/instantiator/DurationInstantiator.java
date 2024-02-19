@@ -15,16 +15,16 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-
 import org.eclipse.esmf.characteristic.Duration;
+import org.eclipse.esmf.characteristic.impl.DefaultDuration;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.characteristic.impl.DefaultDuration;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 
 public class DurationInstantiator extends Instantiator<Duration> {
    public DurationInstantiator( final ModelElementFactory modelElementFactory ) {

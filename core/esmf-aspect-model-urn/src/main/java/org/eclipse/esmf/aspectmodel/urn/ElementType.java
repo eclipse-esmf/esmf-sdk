@@ -14,11 +14,9 @@
 package org.eclipse.esmf.aspectmodel.urn;
 
 /**
- * Provides the element types defined for the Aspect Model URN.
- *
- * It is differentiated between root model elements, these are the element types defined in the SAMM, and
- * model elements, these are elements which are defined in the scope of a root element. For example a Property
- * defined in an Aspect, or a Property defined in an Entity.
+ * Provides the element types defined for the Aspect Model URN. It is differentiated between root model elements, these are the element
+ * types defined in the SAMM, and model elements, these are elements which are defined in the scope of a root element. For example a
+ * Property defined in an Aspect, or a Property defined in an Entity.
  */
 public enum ElementType {
 

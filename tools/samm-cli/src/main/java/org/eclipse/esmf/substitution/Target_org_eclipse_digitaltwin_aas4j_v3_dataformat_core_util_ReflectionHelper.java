@@ -45,7 +45,6 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
  *    <li>The original ReflectionHelper is substituted by this class. The fields holding the information are initialized with the
  *    values read from the .properties file.</li>
  * </ol>
- * <p>
  * Unfortunately, the ClassGraph logic in the ReflectionHelper is part of its static constructor, which means it can't be overridden by a
  * regular substitution method. For this reason, the whole class must be substituted which means that (1) all public static fields need to
  * be aliased and (2) all methods with public interfaces need to be mentioned explicitly with @KeepOriginal.
@@ -54,8 +53,10 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
 @TargetClass( ReflectionHelper.class )
 @SuppressWarnings( {
       "unused",
-      "squid:S00101", "NewClassNamingConvention"  // Class name uses GraalVM substitution class naming schema, see
+      "squid:S00101", // Class name uses GraalVM substitution class naming schema, see
       // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
+      "NewClassNamingConvention",
+      "checkstyle:TypeName"
 } )
 public final class Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper {
    @Alias
@@ -137,7 +138,7 @@ public final class Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_
    static {
       try ( final InputStream input =
             Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper.class.getResourceAsStream(
-            "/adminshell.properties" ) ) {
+                  "/adminshell.properties" ) ) {
          final Properties properties = new Properties();
          properties.load( input );
          final AdminShellConfig config = AdminShellConfig.fromProperties( properties );

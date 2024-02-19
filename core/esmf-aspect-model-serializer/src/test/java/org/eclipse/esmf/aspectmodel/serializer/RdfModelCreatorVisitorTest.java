@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -30,10 +29,11 @@ import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 
 import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 public class RdfModelCreatorVisitorTest extends MetaModelVersions {
 

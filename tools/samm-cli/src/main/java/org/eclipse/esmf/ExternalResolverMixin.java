@@ -20,6 +20,7 @@ import picocli.CommandLine;
  * as given, with the model URN to resolve added as the last parameter automatically by the program logic.
  */
 public class ExternalResolverMixin {
-   @CommandLine.Option( names = { "--custom-resolver" }, description = "External command to execute to produce the custom model resolution." )
+   @CommandLine.Option( names = {
+         "--custom-resolver" }, description = "External command to execute to produce the custom model resolution." )
    protected String commandLine = "";
 }

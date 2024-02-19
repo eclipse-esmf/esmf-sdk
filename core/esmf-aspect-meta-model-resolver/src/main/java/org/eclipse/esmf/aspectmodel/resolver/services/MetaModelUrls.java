@@ -18,12 +18,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.ImmutableList;
-
-import org.eclipse.esmf.samm.KnownVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the facility for the resolution of meta model resources

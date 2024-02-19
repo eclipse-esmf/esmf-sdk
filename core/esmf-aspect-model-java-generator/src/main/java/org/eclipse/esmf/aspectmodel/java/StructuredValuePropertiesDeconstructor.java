@@ -17,10 +17,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.HasProperties;
-import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.HasProperties;
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 

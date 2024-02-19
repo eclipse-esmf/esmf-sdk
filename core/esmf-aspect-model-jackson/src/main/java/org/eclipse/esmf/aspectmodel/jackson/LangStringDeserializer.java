@@ -16,11 +16,11 @@ package org.eclipse.esmf.aspectmodel.jackson;
 import java.io.IOException;
 import java.util.Locale;
 
+import org.eclipse.esmf.metamodel.datatypes.LangString;
+
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdNodeBasedDeserializer;
-
-import org.eclipse.esmf.metamodel.datatypes.LangString;
 
 public class LangStringDeserializer extends StdNodeBasedDeserializer<LangString> {
    private static final long serialVersionUID = 8007942189722606011L;

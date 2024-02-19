@@ -17,16 +17,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.XSD;
-
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 
 /**
  * Provides the code needed in code generation to create an instance of the Java type corresponding to

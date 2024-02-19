@@ -17,14 +17,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Statement;
-
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.path.Path;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.NodeKindViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#NodeConstraintComponent">sh:node</a>

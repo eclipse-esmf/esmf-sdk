@@ -73,19 +73,19 @@ public class TurtleParserProfile implements ParserProfile {
          case INTEGER:
             return new LiteralNode( (Node_Literal) createTypedLiteral( str, XSDDatatype.XSDinteger, line, col ), smartToken );
          case LITERAL_DT: {
-            final Token tokenDT = token.getSubToken2();
+            final Token tokenDt = token.getSubToken2();
             String uriStr;
-            switch ( tokenDT.getType() ) {
-               case IRI -> uriStr = tokenDT.getImage();
+            switch ( tokenDt.getType() ) {
+               case IRI -> uriStr = tokenDt.getImage();
                case PREFIXED_NAME -> {
-                  final String prefix = tokenDT.getImage();
-                  final String suffix = tokenDT.getImage2();
-                  uriStr = expandPrefixedName( prefix, suffix, tokenDT );
+                  final String prefix = tokenDt.getImage();
+                  final String suffix = tokenDt.getImage2();
+                  uriStr = expandPrefixedName( prefix, suffix, tokenDt );
                   break;
                }
                default -> throw new RiotException( "Expected IRI for datatype: " + token );
             }
-            uriStr = resolveIRI( uriStr, tokenDT.getLine(), tokenDT.getColumn() );
+            uriStr = resolveIRI( uriStr, tokenDt.getLine(), tokenDt.getColumn() );
             final RDFDatatype dt = NodeFactory.getType( uriStr );
             return new LiteralNode( (Node_Literal) createTypedLiteral( str, dt, line, col ), smartToken );
          }
@@ -136,8 +136,8 @@ public class TurtleParserProfile implements ParserProfile {
    }
 
    @Override
-   public void setBaseIRI( final String baseIRI ) {
-      parserProfile.setBaseIRI( baseIRI );
+   public void setBaseIRI( final String baseIri ) {
+      parserProfile.setBaseIRI( baseIri );
    }
 
    @Override

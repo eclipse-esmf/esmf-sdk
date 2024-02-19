@@ -27,8 +27,8 @@ import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 public class DefaultEntity extends DefaultComplexType implements Entity {
 
    public static DefaultEntity createDefaultEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
-         final List<? extends Property> properties, final Optional<ComplexType> _extends ) {
-      return new DefaultEntity( metaModelBaseAttributes, properties, _extends, Collections.emptyList(), null );
+         final List<? extends Property> properties, @SuppressWarnings( "checkstyle:ParameterName" ) final Optional<ComplexType> extends_ ) {
+      return new DefaultEntity( metaModelBaseAttributes, properties, extends_, Collections.emptyList(), null );
    }
 
    public DefaultEntity(
@@ -40,10 +40,10 @@ public class DefaultEntity extends DefaultComplexType implements Entity {
    public DefaultEntity(
          final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties,
-         final Optional<ComplexType> _extends,
+         @SuppressWarnings( "checkstyle:ParameterName" ) final Optional<ComplexType> extends_,
          final List<AspectModelUrn> extendingElements,
          final ModelElementFactory loadedElements ) {
-      super( metaModelBaseAttributes, properties, _extends, extendingElements, loadedElements );
+      super( metaModelBaseAttributes, properties, extends_, extendingElements, loadedElements );
    }
 
    /**

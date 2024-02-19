@@ -41,8 +41,7 @@ import org.apache.jena.vocabulary.RDF;
  * Wrapper class for the attributes all Aspect Meta Model elements have.
  */
 public class MetaModelBaseAttributes {
-
-   private static final SammAspectMetaModelResourceResolver metaModelResourceResolver = new SammAspectMetaModelResourceResolver();
+   private static final SammAspectMetaModelResourceResolver META_MODEL_RESOURCE_RESOLVER = new SammAspectMetaModelResourceResolver();
    private final KnownVersion metaModelVersion;
    private final Optional<AspectModelUrn> urn;
    private final String name;
@@ -105,7 +104,7 @@ public class MetaModelBaseAttributes {
    }
 
    /**
-    * Creates a builder for {@link MetaModelBaseAttributes} for the given meta model element name.
+    * Creates a builder for the given meta model element name.
     *
     * @param name the meta model element name
     * @return the builder instance
@@ -115,7 +114,7 @@ public class MetaModelBaseAttributes {
    }
 
    /**
-    * Creates an instance of {@link MetaModelBaseAttributes} from a meta model version, an URN and a name.
+    * Creates an instance from a meta model version, an URN and a name.
     *
     * @param metaModelVersion the used meta model version
     * @param urn the meta model element URN
@@ -127,7 +126,7 @@ public class MetaModelBaseAttributes {
    }
 
    /**
-    * Creates an instance of {@link MetaModelBaseAttributes} from a meta model version, an URN, a name and
+    * Creates an instance from a meta model version, an URN, a name and
     * a preferredName for {@link Locale#ENGLISH}.
     *
     * @param metaModelVersion the used meta model version
@@ -142,7 +141,7 @@ public class MetaModelBaseAttributes {
    }
 
    /**
-    * Creates an instance of {@link MetaModelBaseAttributes} for a specific Meta Model element.
+    * Creates an instance for a specific Meta Model element.
     *
     * @param metaModelVersion the used meta model version
     * @param modelElement the Aspect model element to be processed.

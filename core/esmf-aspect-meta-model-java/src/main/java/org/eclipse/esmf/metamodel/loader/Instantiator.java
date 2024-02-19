@@ -99,8 +99,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
     * Extracts all {@link SAMM#Property()} model elements which are referenced in the given Property List, e.g.
     * {@link SAMM#properties()}, and creates {@link Property} instances for these model elements.
     *
-    * @param elementWithProperties the {@link Resource} which has the propertyRdfClass list for which the model
-    * elements are extracted
+    * @param elementWithProperties the {@link Resource} which has the propertyRdfClass list for which the model elements are extracted
     * @param rootProperty the {@link org.apache.jena.rdf.model.Property} defining the property list
     * @return a {@link List} containing the {@link Property} instances
     */
@@ -173,8 +172,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
     *
     * @param node the RDF node that represents the value
     * @param characteristicResource the resources that represents the Characteristic that describes the value. This can be empty for the
-    * values of collections
-    * that have no samm-c:elementCharacterisic set
+    * values of collections that have no samm-c:elementCharacterisic set
     * @param type the type that describes the value
     * @return a value instance
     */

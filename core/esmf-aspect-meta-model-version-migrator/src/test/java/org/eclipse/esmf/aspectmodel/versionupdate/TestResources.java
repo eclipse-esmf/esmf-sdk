@@ -16,13 +16,10 @@ package org.eclipse.esmf.aspectmodel.versionupdate;
 import java.io.InputStream;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 
 public class TestResources {

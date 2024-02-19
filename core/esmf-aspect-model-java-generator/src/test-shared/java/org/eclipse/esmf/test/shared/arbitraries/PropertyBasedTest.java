@@ -18,27 +18,26 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMME;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public abstract class PropertyBasedTest implements SammArbitraries {
    private final DatatypeFactory datatypeFactory;
-   private final Map<KnownVersion, SAMM> SAMM_VERSIONS;
-   private final Map<KnownVersion, SAMMC> SAMMC_VERSIONS;
-   private final Map<KnownVersion, SAMME> SAMME_VERSIONS;
+   private final Map<KnownVersion, SAMM> sammVersions;
+   private final Map<KnownVersion, SAMMC> sammcVersions;
+   private final Map<KnownVersion, SAMME> sammeVersions;
 
    public PropertyBasedTest() {
-      SAMM_VERSIONS = KnownVersion.getVersions().stream().collect( Collectors.toMap( Function.identity(), SAMM::new ) );
-      SAMMC_VERSIONS = KnownVersion.getVersions().stream()
+      sammVersions = KnownVersion.getVersions().stream().collect( Collectors.toMap( Function.identity(), SAMM::new ) );
+      sammcVersions = KnownVersion.getVersions().stream()
             .collect( Collectors.toMap( Function.identity(), SAMMC::new ) );
-      SAMME_VERSIONS = KnownVersion.getVersions().stream().collect( Collectors.toMap( Function.identity(),
-            version -> new SAMME( version, SAMM_VERSIONS.get( version ) ) ) );
+      sammeVersions = KnownVersion.getVersions().stream().collect( Collectors.toMap( Function.identity(),
+            version -> new SAMME( version, sammVersions.get( version ) ) ) );
       try {
          datatypeFactory = DatatypeFactory.newInstance();
       } catch ( final DatatypeConfigurationException exception ) {
@@ -49,17 +48,17 @@ public abstract class PropertyBasedTest implements SammArbitraries {
 
    @Override
    public SAMM samm( final KnownVersion metaModelVersion ) {
-      return SAMM_VERSIONS.get( metaModelVersion );
+      return sammVersions.get( metaModelVersion );
    }
 
    @Override
    public SAMMC sammc( final KnownVersion metaModelVersion ) {
-      return SAMMC_VERSIONS.get( metaModelVersion );
+      return sammcVersions.get( metaModelVersion );
    }
 
    @Override
    public SAMME samme( final KnownVersion metaModelVersion ) {
-      return SAMME_VERSIONS.get( metaModelVersion );
+      return sammeVersions.get( metaModelVersion );
    }
 
    @Override

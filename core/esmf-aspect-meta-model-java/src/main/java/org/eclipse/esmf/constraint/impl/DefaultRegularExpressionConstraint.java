@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.constraint.RegularExpressionConstraint;
-
 import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;

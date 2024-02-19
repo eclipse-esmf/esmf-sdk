@@ -13,12 +13,12 @@
 
 package org.eclipse.esmf.metamodel.loader.instantiator;
 
-import org.apache.jena.rdf.model.Resource;
-
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.Resource;
 
 /**
  * Instantiates entity instances for a certain given entity type

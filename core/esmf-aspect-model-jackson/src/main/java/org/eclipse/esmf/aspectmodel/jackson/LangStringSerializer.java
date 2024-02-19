@@ -15,11 +15,11 @@ package org.eclipse.esmf.aspectmodel.jackson;
 
 import java.io.IOException;
 
+import org.eclipse.esmf.metamodel.datatypes.LangString;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-
-import org.eclipse.esmf.metamodel.datatypes.LangString;
 
 public class LangStringSerializer extends StdSerializer<LangString> {
    private static final long serialVersionUID = 963449916984100611L;

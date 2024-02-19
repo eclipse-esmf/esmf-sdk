@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
@@ -26,8 +28,6 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
-
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 
 /**
  * This class provides utilities to retrieve attribute values from model elements, e.g., a samm:Property's samm:characteristic.
@@ -71,30 +71,30 @@ public class AttributeValueRetriever {
    }
 
    private boolean isRdfList( final Resource resource ) {
-      return resource.isAnon() && (resource.hasProperty( RDF.rest ) || resource.equals( RDF.nil ));
+      return resource.isAnon() && ( resource.hasProperty( RDF.rest ) || resource.equals( RDF.nil ) );
    }
 
    /**
-    * Returns the values of n-ary attributes on a model element (or its super elements), or if a given attribute is an rdf:List, the list elements.
-    * The list will be ordered by precedence, e.g., if a Property is present on both the current element and it's superelement, the assertion on the
-    * current element will be on a lower list index.
-    * Duplicate attribute assertions are removed and only the assertion with the highest precedence will be returned (bottom-most in the inheritance tree),
-    * this includes multiple assertions for the same attribute with rdf:langString values with the same language tag. For example:
-    *
+    * Returns the values of n-ary attributes on a model element (or its super elements), or if a given attribute is an rdf:List, the list
+    * elements. The list will be ordered by precedence, e.g., if a Property is present on both the current element and it's superelement,
+    * the assertion on the current element will be on a lower list index. Duplicate attribute assertions are removed and only the assertion
+    * with the highest precedence will be returned (bottom-most in the inheritance tree), this includes multiple assertions for the same
+    * attribute with rdf:langString values with the same language tag. For example:
+    * <p>
     * :SuperEntity a samm:AbstractEntity ;
-    *   samm:description "I'm abstract"@en ;
-    *   samm:description "Ich bin abstrakt"@de ;
-    *   samm:properties () .
-    *
+    * samm:description "I'm abstract"@en ;
+    * samm:description "Ich bin abstrakt"@de ;
+    * samm:properties () .
+    * </p><p>
     * :MyEntity a samm:Entity ;
-    *   samm:extends :SuperEntity ;
-    *   samm:description "I'm concrete"@en ;
-    *   samm:properties () .
-    *
+    * samm:extends :SuperEntity ;
+    * samm:description "I'm concrete"@en ;
+    * samm:properties () .
+    * </p><p>
     * Here, attributeValues( :MyEntity, samm:description ) will return:
-    *   List( Statement( :MyEntity samm:description "I'm contrete"@en ),
-    *         Statement( :SuperEntity samm:description "Ich bin abstrakt"@de ) )
-    *
+    * List( Statement( :MyEntity samm:description "I'm contrete"@en ),
+    * Statement( :SuperEntity samm:description "Ich bin abstrakt"@de ) )
+    * </p>
     * The attribute that is overridden with a new value takes precedence, the one that is not overridden is inherited.
     *
     * @param modelElement the model element
@@ -116,7 +116,8 @@ public class AttributeValueRetriever {
          }
       }
 
-      // If the model element is a bnode with samm:property given, it's a Property reference. Follow it to retrieve the sought-for attribute assertions.
+      // If the model element is a bnode with samm:property given, it's a Property reference. Follow it to retrieve the sought-for
+      // attribute assertions.
       final StmtIterator referenceIterator = modelElement.listProperties( samm.property() );
       if ( referenceIterator.hasNext() ) {
          final RDFNode referencedElement = referenceIterator.next().getObject();

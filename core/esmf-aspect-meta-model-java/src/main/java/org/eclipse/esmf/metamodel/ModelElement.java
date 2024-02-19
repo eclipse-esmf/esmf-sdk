@@ -13,8 +13,8 @@
 
 package org.eclipse.esmf.metamodel;
 
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * The Base interface provides all facilities that all Aspect Model elements have.
@@ -27,11 +27,11 @@ public interface ModelElement {
 
    <T, C> T accept( AspectVisitor<T, C> visitor, C context );
 
-   default <T extends ModelElement> boolean is( final Class<T> class_ ) {
-      return class_.isAssignableFrom( getClass() );
+   default <T extends ModelElement> boolean is( final Class<T> clazz ) {
+      return clazz.isAssignableFrom( getClass() );
    }
 
-   default <T extends ModelElement> T as( final Class<T> class_ ) {
-      return class_.cast( this );
+   default <T extends ModelElement> T as( final Class<T> clazz ) {
+      return clazz.cast( this );
    }
 }

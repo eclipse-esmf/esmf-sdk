@@ -48,6 +48,7 @@ public class AspectModelValidator {
 
    /**
     * Constructor to choose the meta model version to use for validation
+    *
     * @param metaModelVersion the meta model version
     */
    public AspectModelValidator( final KnownVersion metaModelVersion ) {
@@ -58,6 +59,7 @@ public class AspectModelValidator {
 
    /**
     * Validates an Aspect Model that is provided as a {@link VersionedModel}.
+    *
     * @param versionedModel the Aspect Model
     * @return a list of {@link Violation}s. An empty list indicates that the model is valid.
     */
@@ -69,6 +71,7 @@ public class AspectModelValidator {
     * Validates an Aspect Model that is provided as a {@link Try} of a {@link VersionedModel} that can
     * contain either a syntactically valid (but semantically invalid) Aspect model, or a Throwable
     * if an error during parsing or resolution occurred.
+    *
     * @param versionedModel the Aspect Model or the corresponding error
     * @return a list of {@link Violation}s. An empty list indicates that the model is valid.
     */
@@ -103,7 +106,7 @@ public class AspectModelValidator {
 
          // To catch false positives, also try to load the model
          final Try<List<ModelElement>> modelElements = AspectModelLoader.getElements( model );
-         if ( modelElements.isFailure() && !(modelElements.getCause() instanceof InvalidRootElementCountException) ) {
+         if ( modelElements.isFailure() && !( modelElements.getCause() instanceof InvalidRootElementCountException ) ) {
             return List.of( new ProcessingViolation(
                   "Validation succeeded, but an error was found while processing the model. "
                         + "This indicates an error in the model validation; please consider reporting this issue including the model "
@@ -117,8 +120,9 @@ public class AspectModelValidator {
 
    /**
     * Validates a single model element.
-    * @param element the aspect model element to validate. The element MUST be part of the fully resolved model (i.e., element.getModel() should return
-    *                the same value as versionedModel.getModel())
+    *
+    * @param element the aspect model element to validate. The element MUST be part of the fully resolved model (i.e., element.getModel()
+    * should return the same value as versionedModel.getModel())
     * @return the list of violations
     */
    public List<Violation> validateElement( final Resource element ) {

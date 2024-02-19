@@ -20,8 +20,8 @@ import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
-import org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator;
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
+import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -85,6 +85,6 @@ public class AspectToAasCommand extends AbstractCommand {
       // we intentionally override the name of the generated artifact here to the name explicitly
       // desired by the user (outputFilePath), as opposed to what the model thinks it should be
       // called (name)
-      new AspectModelAASGenerator().generate( format, aspect, loadedAspectData, name -> getStreamForFile( outputFilePath ) );
+      new AspectModelAasGenerator().generate( format, aspect, loadedAspectData, name -> getStreamForFile( outputFilePath ) );
    }
 }

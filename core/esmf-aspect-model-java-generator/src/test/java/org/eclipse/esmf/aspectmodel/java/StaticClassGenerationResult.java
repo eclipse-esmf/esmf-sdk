@@ -22,6 +22,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.staticmetamodel.StaticMetaClass;
+import org.eclipse.esmf.staticmetamodel.StaticProperty;
+
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -29,10 +33,6 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.stmt.Statement;
-
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.staticmetamodel.StaticMetaClass;
-import org.eclipse.esmf.staticmetamodel.StaticProperty;
 
 public class StaticClassGenerationResult extends GenerationResult {
 
@@ -50,7 +50,7 @@ public class StaticClassGenerationResult extends GenerationResult {
     *
     * @param className the name of the generated Java class analyze
     * @param expectedBaseAttributeArguments the expected fields and the expected values for their {@link
-    *       MetaModelBaseAttributes}
+    * MetaModelBaseAttributes}
     */
    public void assertMetaModelBaseAttributesForProperties( final String className,
          final Map<String, Set<String>> expectedBaseAttributeArguments ) {
@@ -58,7 +58,7 @@ public class StaticClassGenerationResult extends GenerationResult {
 
       final List<FieldDeclaration> fields = compilationUnits.get( className ).findAll( FieldDeclaration.class );
 
-      fields.stream().filter( field -> expectedBaseAttributeArguments.keySet().contains( field.resolve().getName() ) )
+      fields.stream().filter( field -> expectedBaseAttributeArguments.containsKey( field.resolve().getName() ) )
             .forEach( field -> {
                final String fieldName = field.resolve().getName();
                final Set<String> expectedArguments = expectedBaseAttributeArguments.get( fieldName );
@@ -67,8 +67,8 @@ public class StaticClassGenerationResult extends GenerationResult {
 
                final VariableDeclarator declarator = declarators.get( 0 );
                final Expression metaModelBaseAttributesDeclarationExpression = declarator.getInitializer().get()
-                                                                                         .asObjectCreationExpr()
-                                                                                         .getArguments().get( 0 );
+                     .asObjectCreationExpr()
+                     .getArguments().get( 0 );
                final NodeList<Expression> metaModelBaseAttributesArguments = metaModelBaseAttributesDeclarationExpression
                      .asMethodCallExpr()
                      .getArguments();
@@ -90,8 +90,7 @@ public class StaticClassGenerationResult extends GenerationResult {
     * Note, that ALL fields have to be passed for assertion, you can't assert only a subset.
     *
     * @param className the name of the generated Java class analyze
-    * @param expectedConstructorArgument the expected fields and the expected values for their
-    *       {@link MetaModelBaseAttributes}
+    * @param expectedConstructorArgument the expected fields and the expected values for their {@link MetaModelBaseAttributes}
     * @param constructorArgumentIndex the index of the constructor argument to be asserted
     */
    public void assertConstructorArgumentForProperties( final String className,
@@ -101,7 +100,7 @@ public class StaticClassGenerationResult extends GenerationResult {
       final List<FieldDeclaration> fields = compilationUnits.get( className ).findAll( FieldDeclaration.class );
 
       fields.stream()
-            .filter( field -> expectedConstructorArgument.keySet().contains( field.resolve().getName() ) )
+            .filter( field -> expectedConstructorArgument.containsKey( field.resolve().getName() ) )
             .forEach( field -> {
                final String fieldName = field.resolve().getName();
                final String expectedBuilderCall = expectedConstructorArgument.get( fieldName )
@@ -112,11 +111,11 @@ public class StaticClassGenerationResult extends GenerationResult {
 
                final VariableDeclarator declarator = declarators.get( 0 );
                final Expression metaModelBaseAttributesDeclarationExpression = declarator.getInitializer().get()
-                                                                                         .asObjectCreationExpr()
-                                                                                         .getArguments()
-                                                                                         .get( constructorArgumentIndex );
-               String actualBuilderCall = metaModelBaseAttributesDeclarationExpression.toString().
-                     replace( "\r", "" )
+                     .asObjectCreationExpr()
+                     .getArguments()
+                     .get( constructorArgumentIndex );
+               final String actualBuilderCall = metaModelBaseAttributesDeclarationExpression.toString()
+                     .replace( "\r", "" )
                      .replace( "\n", "" );
                assertThat( actualBuilderCall ).isEqualTo( expectedBuilderCall );
             } );
@@ -134,18 +133,18 @@ public class StaticClassGenerationResult extends GenerationResult {
       assertThat( compilationUnits ).containsKey( className );
 
       final List<MethodDeclaration> methodDeclarations = compilationUnits.get( className )
-                                                                         .findAll( MethodDeclaration.class );
+            .findAll( MethodDeclaration.class );
 
       assertThat( methodDeclarations ).hasSize( expectedMethodBodies.size() );
 
       assertThat( methodDeclarations ).allSatisfy( methodDeclaration -> {
          assertThat( expectedMethodBodies ).containsKey( methodDeclaration.getName().getIdentifier() );
          final String expectedBody = expectedMethodBodies.get( methodDeclaration.getName().getIdentifier() )
-                                                         .replace( "\r", "" ).replace( "\n", "" );
+               .replace( "\r", "" ).replace( "\n", "" );
 
          final NodeList<Statement> actualStatements = methodDeclaration.getBody().get().getStatements();
          final String actualBody = actualStatements.stream().map( Node::toString ).collect( Collectors.joining( " " ) )
-                                                   .replace( "\r", "" ).replace( "\n", "" );
+               .replace( "\r", "" ).replace( "\n", "" );
          assertThat( actualBody ).isEqualTo( expectedBody );
       } );
    }

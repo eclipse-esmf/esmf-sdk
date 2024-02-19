@@ -16,7 +16,6 @@ package org.eclipse.esmf.characteristic;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 
-@SuppressWarnings( { "squid:S1150", "This is not java.util.Enumeration." } )
 /**
  * A list of possible states. Provides a default value.
  *
@@ -25,8 +24,8 @@ import org.eclipse.esmf.metamodel.Value;
 public interface State extends Enumeration {
 
    /**
-    * @return the default value defined for this State. The type of the values is determined by the {@link Type}
-    *       returned by {@link State#getDataType()}.
+    * @return the default value defined for this State. The type of the values is determined by the {@link Type} returned by
+    * {@link State#getDataType()}.
     */
    Value getDefaultValue();
 }

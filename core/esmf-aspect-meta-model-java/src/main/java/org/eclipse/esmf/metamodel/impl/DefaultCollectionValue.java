@@ -20,10 +20,8 @@ import java.util.StringJoiner;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public class DefaultCollectionValue implements CollectionValue {
    private final Collection<Value> values;

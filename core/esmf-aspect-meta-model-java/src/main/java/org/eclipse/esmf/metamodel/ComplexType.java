@@ -31,7 +31,7 @@ public interface ComplexType extends Type, StructureElement {
    default List<ComplexType> getExtendingElements() {
       return Collections.emptyList();
    }
-   
+
    default boolean isAbstractEntity() {
       return false;
    }
@@ -41,7 +41,8 @@ public interface ComplexType extends Type, StructureElement {
     */
    default List<Property> getAllProperties() {
       if ( getExtends().isPresent() ) {
-         return Stream.of( getProperties(), getExtends().get().getAllProperties() ).flatMap( Collection::stream ).collect( Collectors.toList() );
+         return Stream.of( getProperties(), getExtends().get().getAllProperties() ).flatMap( Collection::stream )
+               .collect( Collectors.toList() );
       }
       return List.copyOf( getProperties() );
    }

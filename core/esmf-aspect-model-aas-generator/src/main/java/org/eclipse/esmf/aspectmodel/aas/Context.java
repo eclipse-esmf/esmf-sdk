@@ -32,7 +32,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.Submodel;
 import org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement;
 
 /**
- * Contains and tracks the context while the {@link AspectModelAASVisitor} traverses the metamodel.
+ * Contains and tracks the context while the {@link AspectModelAasVisitor} traverses the metamodel.
  */
 public class Context {
 

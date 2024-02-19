@@ -24,7 +24,7 @@ The first call generates a plain xml representation of the AAS whereas the secon
 with the AAS xml file in it.
  
 Should the generator be integrated into custom implementations, the class `AspectModelAASGenerator`
-with its method `org.eclipse.esmf.aspectmodel.aas.AspectModelAASGenerator.generateOutput` is the 
+with its method `org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator.generateOutput` is the 
 proper entry point. It expects an `org.eclipse.esmf.metamodel.Aspect` and returns a 
 `ByteArrayOutputStream`.
 

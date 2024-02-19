@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.constraint.LengthConstraint;
-
 import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
@@ -87,8 +86,8 @@ public class DefaultLengthConstraint extends DefaultConstraint implements Length
          return false;
       }
       final DefaultLengthConstraint that = (DefaultLengthConstraint) o;
-      return Objects.equals( minValue, that.minValue ) &&
-            Objects.equals( maxValue, that.maxValue );
+      return Objects.equals( minValue, that.minValue )
+            && Objects.equals( maxValue, that.maxValue );
    }
 
    @Override

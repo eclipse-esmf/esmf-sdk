@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import javax.script.Bindings;
 import javax.script.Invocable;
 import javax.script.ScriptContext;

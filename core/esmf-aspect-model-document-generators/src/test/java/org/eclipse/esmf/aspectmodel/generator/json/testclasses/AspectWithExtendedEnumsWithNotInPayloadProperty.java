@@ -17,13 +17,13 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.java.exception.EnumAttributeNotFoundException;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-
-import org.eclipse.esmf.aspectmodel.java.exception.EnumAttributeNotFoundException;
 
 /** Generated class for AspectWithExtendedEnumsWithNotInPayloadProperty. */
 public class AspectWithExtendedEnumsWithNotInPayloadProperty {

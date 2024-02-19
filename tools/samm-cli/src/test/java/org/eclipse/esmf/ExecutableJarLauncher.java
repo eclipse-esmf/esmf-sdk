@@ -26,10 +26,10 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.SystemUtils;
 
 /**
- * A {@link ProcessLauncher} that executes an executable jar. The absolute path of the jar must be set using the system property "executableJar".
- * Additionally, if GraalVM's native-binary tool is found on the PATH and the system property "graalVmConfigPath" is set, the execution of the
- * executable jar will use GraalVM's
- * <a href="https://www.graalvm.org/22.3/reference-manual/native-image/metadata/AutomaticMetadataCollection/">Tracing Agent</a>
+ * A {@link ProcessLauncher} that executes an executable jar. The absolute path of the jar must be set using the system property
+ * "executableJar". Additionally, if GraalVM's native-binary tool is found on the PATH and the system property "graalVmConfigPath" is set,
+ * the execution of the executable jar will use GraalVM's <a
+ * href="https://www.graalvm.org/22.3/reference-manual/native-image/metadata/AutomaticMetadataCollection/">Tracing Agent</a>
  * and write corresponding config files to the directory given in graalVmConfigPath.
  */
 public class ExecutableJarLauncher extends OsProcessLauncher {

@@ -32,9 +32,11 @@ import com.oracle.svm.core.annotate.TargetClass;
 @TargetClass( className = "sun.awt.X11FontManager", onlyWith = IsLinux.class )
 @SuppressWarnings( {
       "unused",
-      "squid:S00101" // Class name uses GraalVM substitution class naming schema, see
+      "squid:S00101", // Class name uses GraalVM substitution class naming schema, see
       // https://github.com/oracle/graal/tree/master/substratevm/src/com.oracle.svm.core/src/com/oracle/svm/core/jdk
-      , "NewClassNamingConvention" } )
+      "NewClassNamingConvention",
+      "checkstyle:TypeName"
+} )
 public final class Target_sun_awt_X11FontManager {
    /**
     * This method actually returns a sun.awt.FontConfiguration. Due to the fact that we can not refer to sun.awt classes,
@@ -55,8 +57,8 @@ public final class Target_sun_awt_X11FontManager {
          // ignore result
          init.invoke( fcFontConfig );
          return fcFontConfig;
-      } catch ( final ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException |
-                      IllegalAccessException e ) {
+      } catch ( final ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException
+                      | IllegalAccessException e ) {
          throw new RuntimeException( e );
       }
    }

@@ -103,8 +103,8 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultValueReferencePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelAASVisitor implements AspectVisitor<Environment, Context> {
-   private static final Logger LOG = LoggerFactory.getLogger( AspectModelAASVisitor.class );
+public class AspectModelAasVisitor implements AspectVisitor<Environment, Context> {
+   private static final Logger LOG = LoggerFactory.getLogger( AspectModelAasVisitor.class );
    private static final ValueSerializer VALUE_SERIALIZER = new ValueSerializer();
 
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
@@ -149,7 +149,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
 
    private final List<PropertyMapper<?>> customPropertyMappers = new ArrayList<>();
 
-   public AspectModelAASVisitor withPropertyMapper( final PropertyMapper<?> propertyMapper ) {
+   public AspectModelAasVisitor withPropertyMapper( final PropertyMapper<?> propertyMapper ) {
       customPropertyMappers.add( propertyMapper );
 
       return this;
@@ -173,16 +173,13 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    protected List<Reference> buildGlobalReferenceForSeeReferences( final NamedElement modelElement ) {
-      return modelElement.getSee().stream().map( seeReference -> {
-               final DefaultKey key = new DefaultKey.Builder()
-                     .type( KeyTypes.GLOBAL_REFERENCE )
-                     .value( seeReference.startsWith( "urn:irdi:" ) ? seeReference.substring( 9 ) : seeReference )
-                     .build();
-               return (Reference) new DefaultReference.Builder()
-                     .type( ReferenceTypes.EXTERNAL_REFERENCE )
-                     .keys( key )
-                     .build();
-            } )
+      return modelElement.getSee().stream().map( seeReference -> (Reference) new DefaultReference.Builder()
+                  .type( ReferenceTypes.EXTERNAL_REFERENCE )
+                  .keys( new DefaultKey.Builder()
+                        .type( KeyTypes.GLOBAL_REFERENCE )
+                        .value( seeReference.startsWith( "urn:irdi:" ) ? seeReference.substring( 9 ) : seeReference )
+                        .build() )
+                  .build() )
             .toList();
    }
 
@@ -460,22 +457,22 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       final List<LangStringDefinitionTypeIec61360> definitionsProperty = property.getDescriptions().stream()
             .map( LangStringMapper.DEFINITION::map ).toList();
 
-      final List<LangStringPreferredNameTypeIec61360> preferredNames = property.getPreferredNames().isEmpty() ?
-            Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) ) :
-            property.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
+      final List<LangStringPreferredNameTypeIec61360> preferredNames = property.getPreferredNames().isEmpty()
+            ? Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) )
+            : property.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIec61360.Builder()
             .definition( definitionsProperty )
             .preferredName( preferredNames )
             .shortName( LangStringMapper.SHORT_NAME.createLangString( property.getName(), DEFAULT_LOCALE ) )
-            .dataType( mapIEC61360DataType( property.getCharacteristic() ) )
+            .dataType( mapIec61360DataType( property.getCharacteristic() ) )
             .build();
    }
 
    private DataSpecificationIec61360 extractDataSpecificationContent( final org.eclipse.esmf.metamodel.Operation operation ) {
-      final List<LangStringPreferredNameTypeIec61360> preferredNames = operation.getPreferredNames().isEmpty() ?
-            Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( operation.getName(), DEFAULT_LOCALE ) ) :
-            operation.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
+      final List<LangStringPreferredNameTypeIec61360> preferredNames = operation.getPreferredNames().isEmpty()
+            ? Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( operation.getName(), DEFAULT_LOCALE ) )
+            : operation.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIec61360.Builder()
             .definition( operation.getDescriptions().stream().map( LangStringMapper.DEFINITION::map ).collect( Collectors.toList() ) )
@@ -485,9 +482,9 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    private DataSpecificationIec61360 extractDataSpecificationContent( final Aspect aspect ) {
-      final List<LangStringPreferredNameTypeIec61360> preferredNames = aspect.getPreferredNames().isEmpty() ?
-            Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( aspect.getName(), DEFAULT_LOCALE ) ) :
-            aspect.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
+      final List<LangStringPreferredNameTypeIec61360> preferredNames = aspect.getPreferredNames().isEmpty()
+            ? Collections.singletonList( LangStringMapper.PREFERRED_NAME.createLangString( aspect.getName(), DEFAULT_LOCALE ) )
+            : aspect.getPreferredNames().stream().map( LangStringMapper.PREFERRED_NAME::map ).collect( Collectors.toList() );
 
       return new DefaultDataSpecificationIec61360.Builder()
             .definition( aspect.getDescriptions().stream().map( LangStringMapper.DEFINITION::map ).collect( Collectors.toList() ) )
@@ -496,16 +493,16 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
             .build();
    }
 
-   private DataTypeIec61360 mapIEC61360DataType( final Optional<Characteristic> characteristic ) {
-      return mapIEC61360DataType(
+   private DataTypeIec61360 mapIec61360DataType( final Optional<Characteristic> characteristic ) {
+      return mapIec61360DataType(
             characteristic.flatMap( Characteristic::getDataType ).map( Type::getUrn ).orElse( RDF.langString.getURI() ) );
    }
 
-   private DataTypeIec61360 mapIEC61360DataType( final Characteristic characteristic ) {
-      return mapIEC61360DataType( Optional.of( characteristic ) );
+   private DataTypeIec61360 mapIec61360DataType( final Characteristic characteristic ) {
+      return mapIec61360DataType( Optional.of( characteristic ) );
    }
 
-   private DataTypeIec61360 mapIEC61360DataType( final String urn ) {
+   private DataTypeIec61360 mapIec61360DataType( final String urn ) {
       final Resource resource = ResourceFactory.createResource( urn );
       return TYPE_MAP.getOrDefault( resource, DataTypeIec61360.STRING );
    }
@@ -628,9 +625,8 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
    }
 
    /**
-    * Handles one {@code Either} field depending on whether a submodel template or a submodel is generated.
-    * <p>
-    * In the latter case, a synthetic property is used to access the serialized data and retrieve the value to be added.
+    * Handles one {@code Either} field depending on whether a submodel template or a submodel is generated. In the latter case, a synthetic
+    * property is used to access the serialized data and retrieve the value to be added.
     *
     * @param field the name of the {@code Either} field ({@code left} or {@code right})
     * @param fieldCharacteristic the characteristic of the {@code Either} field
@@ -705,7 +701,7 @@ public class AspectModelAASVisitor implements AspectVisitor<Environment, Context
       if ( embeddedDataSpecification.stream().findFirst().isPresent() ) {
          final DataSpecificationIec61360 dataSpecificationContent =
                (DataSpecificationIec61360) embeddedDataSpecification.stream().findFirst().get().getDataSpecificationContent();
-         dataSpecificationContent.setDataType( mapIEC61360DataType( enumeration ) );
+         dataSpecificationContent.setDataType( mapIec61360DataType( enumeration ) );
          final List<ValueReferencePair> valueReferencePairs =
                enumeration.getValues().stream()
                      .map( enumerationValue -> {

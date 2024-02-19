@@ -43,7 +43,7 @@ public class AspectModelUrnPropertyTest {
 
    @Provide
    Arbitrary<String> validModelUrnType() {
-      return Arbitraries.of( "aspect-model",  "characteristic", "entity" );
+      return Arbitraries.of( "aspect-model", "characteristic", "entity" );
    }
 
    @Provide
@@ -52,7 +52,7 @@ public class AspectModelUrnPropertyTest {
       final Arbitrary<Integer> minor = Arbitraries.integers().greaterOrEqual( 0 );
       final Arbitrary<Integer> maintenance = Arbitraries.integers().greaterOrEqual( 0 );
       return Combinators.combine( major, minor, maintenance )
-                        .as( ( i1, i2, i3 ) -> String.format( "%d.%d.%d", i1, i2, i3 ) );
+            .as( ( i1, i2, i3 ) -> String.format( "%d.%d.%d", i1, i2, i3 ) );
    }
 
    @Property
@@ -68,6 +68,6 @@ public class AspectModelUrnPropertyTest {
    public boolean allValidMetaModelStringsAreValidMetaModelUrns(
          @ForAll @AlphaChars @Chars( { '.' } ) @StringLength( min = 1, max = 100 ) final String namespace,
          @ForAll( "validVersion" ) final String version ) {
-         return isValidUrn( String.format( "urn:samm:%s:meta-model:%s#Foo", namespace, version ) );
-      }
+      return isValidUrn( String.format( "urn:samm:%s:meta-model:%s#Foo", namespace, version ) );
+   }
 }

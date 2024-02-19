@@ -17,10 +17,8 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.metamodel.Scalar;
-
-import org.eclipse.esmf.samm.KnownVersion;
-
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.samm.KnownVersion;
 
 public class DefaultScalar implements Scalar {
    private final KnownVersion metaModelVersion;
@@ -70,8 +68,8 @@ public class DefaultScalar implements Scalar {
          return false;
       }
       final DefaultScalar that = (DefaultScalar) o;
-      return metaModelVersion == that.metaModelVersion &&
-            Objects.equals( urn, that.urn );
+      return metaModelVersion == that.metaModelVersion
+            && Objects.equals( urn, that.urn );
    }
 
    @Override

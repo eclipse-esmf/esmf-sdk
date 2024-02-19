@@ -17,13 +17,14 @@ import java.io.File;
 
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
+
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 /**
  * A {@link GenerationConfig} for Java code
  */
 @RecordBuilder
-public record JavaCodeGenerationConfig (
+public record JavaCodeGenerationConfig(
       boolean enableJacksonAnnotations,
       String packageName,
       ImportTracker importTracker,

@@ -15,17 +15,17 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.List;
 
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.characteristic.impl.DefaultTrait;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
+
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 
 public class TraitInstantiator extends Instantiator<Trait> {
    public TraitInstantiator( final ModelElementFactory modelElementFactory ) {

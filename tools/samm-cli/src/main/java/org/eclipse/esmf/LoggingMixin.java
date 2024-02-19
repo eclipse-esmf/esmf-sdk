@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 public class LoggingMixin {
-   private @CommandLine.Spec( MIXEE )
-   CommandLine.Model.CommandSpec mixee;
+   private @CommandLine.Spec( MIXEE ) CommandLine.Model.CommandSpec mixee;
 
    private boolean[] verbosity = new boolean[0];
 

@@ -16,12 +16,10 @@ package org.eclipse.esmf.aspectmodel.java.rangeconstraint;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
-
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.java.customconstraint.DoubleMax;
-
 import org.eclipse.esmf.aspectmodel.java.customconstraint.DoubleMin;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.DurationMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.DurationMin;
@@ -37,7 +35,6 @@ import org.eclipse.esmf.aspectmodel.java.customconstraint.ShortMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.ShortMin;
 
 import com.google.common.collect.ImmutableMap;
-
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 

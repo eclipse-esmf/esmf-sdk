@@ -28,6 +28,7 @@ public class StaticMetaModelJavaGenerator extends JavaGenerator {
    public StaticMetaModelJavaGenerator( final Aspect aspect, final JavaCodeGenerationConfig config ) {
       super( aspect, config );
    }
+
    @Override
    protected Stream<Artifact<QualifiedName, String>> generateArtifacts() {
       final StaticMetaModelJavaArtifactGenerator<StructureElement> template = new StaticMetaModelJavaArtifactGenerator<>();

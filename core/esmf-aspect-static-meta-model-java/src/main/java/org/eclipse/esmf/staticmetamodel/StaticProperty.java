@@ -35,7 +35,7 @@ public abstract class StaticProperty<C, T> extends DefaultProperty implements Pr
          final boolean notInPayload,
          final Optional<String> payloadName,
          final boolean isAbstract,
-         final Optional<Property> extends_ ) {
+         @SuppressWarnings( { "checkstyle:ParameterName", "MethodParameterNamingConvention" } ) final Optional<Property> extends_ ) {
       super( metaModelBaseAttributes, Optional.of( characteristic ), exampleValue, optional, notInPayload, payloadName, isAbstract,
             extends_ );
    }

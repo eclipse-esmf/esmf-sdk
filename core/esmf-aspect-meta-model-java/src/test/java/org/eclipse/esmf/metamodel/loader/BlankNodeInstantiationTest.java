@@ -15,15 +15,14 @@ package org.eclipse.esmf.metamodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.characteristic.List;
 import org.eclipse.esmf.metamodel.Aspect;
-
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class BlankNodeInstantiationTest extends MetaModelInstantiatorTest {
 

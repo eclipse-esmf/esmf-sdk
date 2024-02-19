@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Streams;
 import org.apache.jena.atlas.iterator.PeekIterator;
 import org.apache.jena.riot.RiotParseException;
 import org.apache.jena.riot.system.ErrorHandler;
@@ -26,15 +27,14 @@ import org.apache.jena.riot.tokens.Token;
 import org.apache.jena.riot.tokens.Tokenizer;
 import org.apache.jena.riot.tokens.TokenizerText;
 
-import com.google.common.collect.Streams;
-
 /**
  * This tokenizer implementation wraps a {@link TokenizerText} and does things on top: (1) It swallows the wrapped tokenizer's exceptions,
- * (2) it provides diagnostics about errors using a custom error handler, (3) it tokenizes the input document on construction and caches the results.
- * There are two ways to retrieve the tokens: Via the {@link #tokens()} method which returns a regular immutable list of the tokens, and via the
- * iterator interface ({@link #hasNext()}, {@link #next()}. In order to reset the iterator to the start to re-read the tokens, call {@link #close()}.
- * The second method is implemented mainly to make the TurtleTokenizer usable with Apache Jena's {@link org.apache.jena.riot.lang.LangEngine}, the
- * base class for RDF parsers, and its derived classes such as {@link org.apache.jena.riot.lang.LangTurtle}.
+ * (2) it provides diagnostics about errors using a custom error handler, (3) it tokenizes the input document on construction and caches
+ * the results. There are two ways to retrieve the tokens: Via the {@link #tokens()} method which returns a regular immutable list of the
+ * tokens, and via the iterator interface ({@link #hasNext()}, {@link #next()}. In order to reset the iterator to the start to re-read the
+ * tokens, call {@link #close()}. The second method is implemented mainly to make the TurtleTokenizer usable with Apache Jena's
+ * {@link org.apache.jena.riot.lang.LangEngine}, the base class for RDF parsers, and its derived classes such as
+ * {@link org.apache.jena.riot.lang.LangTurtle}.
  */
 public class TurtleTokenizer implements Tokenizer {
    private PeekIterator<Token> iterator;

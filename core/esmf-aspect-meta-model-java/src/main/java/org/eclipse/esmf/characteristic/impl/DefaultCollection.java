@@ -16,8 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.characteristic.Collection;
+import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
@@ -109,9 +109,9 @@ public class DefaultCollection extends DefaultCharacteristic implements Collecti
          return false;
       }
       final DefaultCollection that = (DefaultCollection) o;
-      return allowDuplicates == that.allowDuplicates &&
-            ordered == that.ordered &&
-            Objects.equals( elementCharacteristic, that.elementCharacteristic );
+      return allowDuplicates == that.allowDuplicates
+            && ordered == that.ordered
+            && Objects.equals( elementCharacteristic, that.elementCharacteristic );
    }
 
    @Override

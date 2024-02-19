@@ -21,7 +21,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.Test;
 
 public class AspectModelUrnJsonTest {
@@ -30,7 +29,8 @@ public class AspectModelUrnJsonTest {
    private static final TestModel TEST_MODEL = new TestModel( "test",
          AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm:aspect-model:Aspect:1.0.0" ) );
 
-   private static final String TEST_MODEL_JSON = "{\"description\":\"test\",\"urn\":\"urn:samm:org.eclipse.esmf.samm:aspect-model:Aspect:1.0.0\"}";
+   private static final String TEST_MODEL_JSON = "{\"description\":\"test\",\"urn\":\"urn:samm:org.eclipse.esmf"
+         + ".samm:aspect-model:Aspect:1.0.0\"}";
 
    @Test
    public void serializeToJson() throws JsonProcessingException {
@@ -48,8 +48,7 @@ public class AspectModelUrnJsonTest {
 
       public AspectModelUrn urn;
 
-      public TestModel( @JsonProperty( "description" ) final String description, @JsonProperty( "urn" )
-      final AspectModelUrn urn ) {
+      public TestModel( @JsonProperty( "description" ) final String description, @JsonProperty( "urn" ) final AspectModelUrn urn ) {
          this.description = description;
          this.urn = urn;
       }
@@ -63,8 +62,8 @@ public class AspectModelUrnJsonTest {
             return false;
          }
          final TestModel testModel = (TestModel) o;
-         return Objects.equals( description, testModel.description ) &&
-               Objects.equals( urn.getUrn(), testModel.urn.getUrn() );
+         return Objects.equals( description, testModel.description )
+               && Objects.equals( urn.getUrn(), testModel.urn.getUrn() );
       }
 
       @Override

@@ -42,11 +42,11 @@ public record NodeKindViolation( EvaluationContext context, Shape.NodeKind allow
          return String.format( "Property %s on %s is %s, but it must be %s.",
                context.parentPropertyName(), context.parentElementName(), actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() );
       }
-      return context.element().isAnon() ?
-            String.format( "The element is %s, but it must be %s.",
-                  actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() ) :
-            String.format( "Element %s is %s, but it must be %s.",
-                  context.elementName(), actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() );
+      return context.element().isAnon()
+            ? String.format( "The element is %s, but it must be %s.",
+            actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() )
+            : String.format( "Element %s is %s, but it must be %s.",
+            context.elementName(), actualNodeKind.humanReadable(), allowedNodeKind.humanReadable() );
    }
 
    @Override

@@ -22,13 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.apache.commons.io.IOUtils;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
@@ -37,6 +30,12 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerato
 import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import org.apache.commons.io.IOUtils;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToOpenapiCommand.COMMAND_NAME,
@@ -49,7 +48,8 @@ import picocli.CommandLine;
 public class AspectToOpenapiCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "openapi";
 
-   @CommandLine.Option( names = { "--api-base-url", "-b" }, description = "The base url for the Aspect API used in the OpenAPI specification.",
+   @CommandLine.Option( names = { "--api-base-url",
+         "-b" }, description = "The base url for the Aspect API used in the OpenAPI specification.",
          required = true )
    private String aspectApiBaseUrl = "";
 
@@ -66,7 +66,8 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       boolean generateCommentForSeeAttributes = false;
    }
 
-   @CommandLine.Option( names = { "--parameter-file", "-p" }, description = "The path to a file including the parameter for the Aspect API endpoints." )
+   @CommandLine.Option( names = { "--parameter-file",
+         "-p" }, description = "The path to a file including the parameter for the Aspect API endpoints." )
    private String aspectParameterFile;
 
    @CommandLine.Option( names = { "--semantic-version", "-sv" },
@@ -126,7 +127,8 @@ public class AspectToOpenapiCommand extends AbstractCommand {
 
    private void generateYaml( final AspectModelOpenApiGenerator generator, final Aspect aspect, final Locale locale ) {
       try {
-         final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
+         final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl,
+               Optional.ofNullable( aspectResourcePath ),
                getFileAsString( aspectParameterFile ), includeQueryApi, getPaging(), locale );
          final OutputStream out = getStreamForFile( outputFilePath );
          out.write( yamlSpec.getBytes() );
@@ -147,7 +149,8 @@ public class AspectToOpenapiCommand extends AbstractCommand {
             throw new CommandException( "Could not parse the file to JSON.", e );
          }
       }
-      final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl, Optional.ofNullable( aspectResourcePath ),
+      final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl,
+            Optional.ofNullable( aspectResourcePath ),
             Optional.of( result ), includeQueryApi, getPaging(), locale, jsonCommandGroup.generateCommentForSeeAttributes );
 
       final OutputStream out = getStreamForFile( outputFilePath );

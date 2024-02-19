@@ -5,7 +5,17 @@ write code for the ESMF SDK.
 ## General Conventions
 Our code conventions are based on the [Google Java Style
 Guide](https://google.github.io/styleguide/javaguide.html) but detailed and adjusted for the needs
-of the ESMF SDK.
+of the ESMF SDK. The code style is described using [Checkstyle](https://checkstyle.sourceforge.io/)
+and can be found in the file esmf-checkstyle.xml. You can use this file to configure Checkstyle
+using a suitable plugin in your favorite IDE, or to run Checkstyle via the command line, e.g., from
+the root directory of the esmf-sdk, run:
+`java -jar /path/to/checkstyle-10.13.0-all.jar com.puppycrawl.tools.checkstyle.Main -c esmf-checkstyle.xml .`
+Furthermore, the files esmf-intellij-codestyle.xml and esmf-intellij-inspections.xml are provided
+that can be
+[imported](https://www.jetbrains.com/help/idea/configuring-code-style.html#import-export-schemes) in
+the Java code style settings and
+[imported](https://www.jetbrains.com/help/idea/inspections-settings.html#profile_management) in the
+Inspections, respectively, in the IntelliJ IDEA IDE.
  
 ## Copyright header
 See [CONTRIBUTING](CONTRIBUTING.md)

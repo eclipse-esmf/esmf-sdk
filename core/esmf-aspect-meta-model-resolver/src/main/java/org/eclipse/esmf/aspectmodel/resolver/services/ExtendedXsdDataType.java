@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.impl.RDFLangString;
@@ -32,9 +32,6 @@ import org.apache.jena.ext.xerces.impl.dv.XSSimpleType;
 import org.apache.jena.ext.xerces.impl.dv.xs.ExtendedSchemaDVFactoryImpl;
 import org.apache.jena.rdf.model.Resource;
 
-import jakarta.xml.bind.DatatypeConverter;
-
-@SuppressWarnings( "squid:S1213" )
 // the order of the variables is required because of the way they reference each other
 public class ExtendedXsdDataType<T> extends XSDDatatype implements TypedRdfDatatype<T> {
    static DatatypeFactory datatypeFactory;
@@ -44,7 +41,7 @@ public class ExtendedXsdDataType<T> extends XSDDatatype implements TypedRdfDatat
    private final Function<T, String> unparser;
    private final Predicate<String> lexicalValidator;
    private static boolean checking = true;
-   private static final ExtendedSchemaDVFactoryImpl extendedSchemaDVFactory = new ExtendedSchemaDVFactoryImpl();
+   private static final ExtendedSchemaDVFactoryImpl EXTENDED_SCHEMA_DV_FACTORY = new ExtendedSchemaDVFactoryImpl();
 
    public ExtendedXsdDataType( final Resource dataTypeResource, final Class<T> correspondingJavaClass,
          final Function<String, T> parser,
@@ -139,7 +136,7 @@ public class ExtendedXsdDataType<T> extends XSDDatatype implements TypedRdfDatat
 
    public static final ExtendedXsdDataType<XMLGregorianCalendar> DATE_TIME_STAMP = new ExtendedXsdDataType<>(
          org.apache.jena.vocabulary.XSD.dateTimeStamp,
-         extendedSchemaDVFactory.getBuiltInType( org.apache.jena.vocabulary.XSD.dateTimeStamp.getLocalName() ),
+         EXTENDED_SCHEMA_DV_FACTORY.getBuiltInType( org.apache.jena.vocabulary.XSD.dateTimeStamp.getLocalName() ),
          XMLGregorianCalendar.class, value -> datatypeFactory.newXMLGregorianCalendar( value ),
          XMLGregorianCalendar::toXMLFormat, XSDDatatype.XSDdateTimeStamp::isValid );
 
@@ -174,13 +171,13 @@ public class ExtendedXsdDataType<T> extends XSDDatatype implements TypedRdfDatat
 
    public static final ExtendedXsdDataType<Duration> YEAR_MONTH_DURATION = new ExtendedXsdDataType<>(
          org.apache.jena.vocabulary.XSD.yearMonthDuration,
-         extendedSchemaDVFactory.getBuiltInType( org.apache.jena.vocabulary.XSD.yearMonthDuration.getLocalName() ),
+         EXTENDED_SCHEMA_DV_FACTORY.getBuiltInType( org.apache.jena.vocabulary.XSD.yearMonthDuration.getLocalName() ),
          Duration.class, value -> datatypeFactory.newDurationYearMonth( value ), Duration::toString,
          XSDDatatype.XSDyearMonthDuration::isValid );
 
    public static final ExtendedXsdDataType<Duration> DAY_TIME_DURATION = new ExtendedXsdDataType<>(
          org.apache.jena.vocabulary.XSD.dayTimeDuration,
-         extendedSchemaDVFactory.getBuiltInType( org.apache.jena.vocabulary.XSD.dayTimeDuration.getLocalName() ),
+         EXTENDED_SCHEMA_DV_FACTORY.getBuiltInType( org.apache.jena.vocabulary.XSD.dayTimeDuration.getLocalName() ),
          Duration.class, value -> datatypeFactory.newDurationDayTime( value ), Duration::toString,
          XSDDatatype.XSDdayTimeDuration::isValid );
 
@@ -243,7 +240,7 @@ public class ExtendedXsdDataType<T> extends XSDDatatype implements TypedRdfDatat
          value -> URI.create( (String) XSDDatatype.XSDanyURI.parse( value ) ),
          URI::toString, XSDDatatype.XSDanyURI::isValid );
 
-   public static final List<RDFDatatype> supportedXsdTypes = List
+   public static final List<RDFDatatype> SUPPORTED_XSD_TYPES = List
          .of( XSDDatatype.XSDstring, BOOLEAN, DECIMAL, INTEGER, DOUBLE, FLOAT, DATE, TIME, DATE_TIME, DATE_TIME_STAMP,
                G_YEAR, G_MONTH, G_YEAR_MONTH, G_DAY, G_MONTH_DAY, DURATION, YEAR_MONTH_DURATION, DAY_TIME_DURATION,
                BYTE, SHORT, INT, LONG, UNSIGNED_BYTE, UNSIGNED_SHORT, UNSIGNED_INT, UNSIGNED_LONG,
@@ -262,8 +259,8 @@ public class ExtendedXsdDataType<T> extends XSDDatatype implements TypedRdfDatat
     * Parses a lexical representation of a value of the type
     *
     * @param lexicalForm the lexical representation
-    * @return if the lexical representation is valid for the type, an object of the corresponding Java
-    *       type (@see {@link #getJavaClass()}), otherwise the original lexical value.
+    * @return if the lexical representation is valid for the type, an object of the corresponding Java type (@see {@link #getJavaClass()}),
+    * otherwise the original lexical value.
     */
    @Override
    public Object parse( final String lexicalForm ) {
@@ -281,8 +278,8 @@ public class ExtendedXsdDataType<T> extends XSDDatatype implements TypedRdfDatat
     * Parses a lexical representaion of a value of the type
     *
     * @param lexicalForm the lexical representation
-    * @return if the lexical representation is valid for the type, Optional.of(x) where x is an object of the
-    *       corresponding Java type (@see {@link #getJavaClass()}), otherwise Optional.empty.
+    * @return if the lexical representation is valid for the type, Optional.of(x) where x is an object of the corresponding Java type (@see
+    * {@link #getJavaClass()}), otherwise Optional.empty.
     */
    @Override
    public Optional<T> parseTyped( final String lexicalForm ) {

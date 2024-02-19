@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.jena.rdf.model.RDFNode;
-
 import org.eclipse.esmf.aspectmodel.shacl.Shape;
 import org.eclipse.esmf.aspectmodel.shacl.violation.EvaluationContext;
 import org.eclipse.esmf.aspectmodel.shacl.violation.PatternViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
+
+import org.apache.jena.rdf.model.RDFNode;
 
 /**
  * Implements <a href="https://www.w3.org/TR/shacl/#PatternConstraintComponent">sh:pattern</a>
@@ -39,9 +39,9 @@ public record PatternConstraint( Pattern pattern ) implements Constraint {
 
       final String value = rdfNode.asLiteral().getLexicalForm();
       final Matcher matcher = pattern.matcher( value );
-      return matcher.find() ?
-            List.of() :
-            List.of( new PatternViolation( context, value, pattern.toString() ) );
+      return matcher.find()
+            ? List.of()
+            : List.of( new PatternViolation( context, value, pattern.toString() ) );
    }
 
    @Override

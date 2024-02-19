@@ -12,9 +12,10 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
+import org.eclipse.esmf.metamodel.Type;
+
 import org.eclipse.digitaltwin.aas4j.v3.model.Property;
 import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
-import org.eclipse.esmf.metamodel.Type;
 
 /**
  * The default mapper used for all properties.
@@ -24,7 +25,7 @@ public class DefaultPropertyMapper implements PropertyMapper<Property> {
    public Property mapToAasProperty( final Type type, final org.eclipse.esmf.metamodel.Property property, final Context context ) {
       return new DefaultProperty.Builder()
             .idShort( context.getPropertyShortId() )
-            .valueType( AasDataTypeMapper.mapAspectTypeToAASXSDataType( mapType( type ) ) )
+            .valueType( AasDataTypeMapper.mapAspectTypeToAasXsdDataType( mapType( type ) ) )
             .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
             .value( context.getPropertyValue( UNKNOWN_EXAMPLE ) )
             .semanticId( buildReferenceToConceptDescription( property ) )

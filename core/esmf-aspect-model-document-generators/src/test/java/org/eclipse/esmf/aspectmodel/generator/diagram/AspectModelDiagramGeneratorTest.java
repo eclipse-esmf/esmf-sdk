@@ -49,7 +49,7 @@ public class AspectModelDiagramGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @ValueSource( strings = { "UTF-8", "US-ASCII" } )
-   void generateDiagramsShouldReturnUTF8StringRegardlessOfPlatformEncoding( final String encoding ) throws Exception {
+   void generateDiagramsShouldReturnUtf8StringRegardlessOfPlatformEncoding( final String encoding ) {
       final String platformEncoding = System.getProperty( "file.encoding" );
       try {
          System.setProperty( "file.encoding", encoding );

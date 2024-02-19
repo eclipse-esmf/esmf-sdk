@@ -15,10 +15,10 @@ package org.eclipse.esmf.aspectmodel.resolver;
 
 import java.util.function.Function;
 
-import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
 
 /**
  * Represents one way to load and resolve an Aspect model from a given source.

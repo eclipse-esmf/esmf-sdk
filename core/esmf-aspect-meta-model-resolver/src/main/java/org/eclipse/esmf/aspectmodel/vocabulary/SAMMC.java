@@ -23,7 +23,9 @@ import org.apache.jena.rdf.model.Resource;
 /**
  * The RDF jena vocabulary of the Characteristic meta model.
  */
-@SuppressWarnings( "squid:S00100" ) // Method names should match model element
+// Since the class is an RDF vocabulary, naming rules for the class and for several methods (which should be named identically
+// to the corresponding model elements) are suppressed.
+@SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "NewMethodNamingConvention" } )
 public class SAMMC implements Namespace {
    private final KnownVersion metaModelVersion;
    private final SAMM samm;
@@ -42,26 +44,32 @@ public class SAMMC implements Namespace {
     * Constraints
     */
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource RangeConstraint() {
       return resource( "RangeConstraint" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource EncodingConstraint() {
       return resource( "EncodingConstraint" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource RegularExpressionConstraint() {
       return resource( "RegularExpressionConstraint" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource LengthConstraint() {
       return resource( "LengthConstraint" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource LanguageConstraint() {
       return resource( "LanguageConstraint" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource LocaleConstraint() {
       return resource( "LocaleConstraint" );
    }
@@ -70,6 +78,7 @@ public class SAMMC implements Namespace {
     * Characteristic classes and their properties
     */
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource StructuredValue() {
       return resource( "StructuredValue" );
    }
@@ -82,10 +91,12 @@ public class SAMMC implements Namespace {
       return property( "maxValue" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Quantifiable() {
       return resource( "Quantifiable" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Measurement() {
       return resource( "Measurement" );
    }
@@ -94,50 +105,62 @@ public class SAMMC implements Namespace {
       return property( "unit" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Duration() {
       return resource( "Duration" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource State() {
       return resource( "State" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Enumeration() {
       return resource( "Enumeration" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Collection() {
       return resource( "Collection" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Set() {
       return resource( "Set" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource SortedSet() {
       return resource( "SortedSet" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource List() {
       return resource( "List" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource TimeSeries() {
       return resource( "TimeSeries" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource SingleEntity() {
       return resource( "SingleEntity" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Code() {
       return resource( "Code" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource FixedPointConstraint() {
       return resource( "FixedPointConstraint" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Trait() {
       return resource( "Trait" );
    }
@@ -154,6 +177,7 @@ public class SAMMC implements Namespace {
       return property( "defaultValue" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Either() {
       return resource( "Either" );
    }
@@ -210,38 +234,47 @@ public class SAMMC implements Namespace {
     * Characteristic instances
     */
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Timestamp() {
       return resource( "Timestamp" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Text() {
       return resource( "Text" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MultiLanguageText() {
       return resource( "MultiLanguageText" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Language() {
       return resource( "Language" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Locale() {
       return resource( "Locale" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource Boolean() {
       return resource( "Boolean" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource ResourcePath() {
       return resource( "ResourcePath" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource MimeType() {
       return resource( "MimeType" );
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
    public Resource UnitReference() {
       return resource( "UnitReference" );
    }

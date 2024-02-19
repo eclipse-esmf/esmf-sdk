@@ -17,10 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.jena.vocabulary.RDF;
-
-import com.google.common.collect.ImmutableMap;
-
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.ModelElement;
@@ -30,6 +26,9 @@ import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+
+import com.google.common.collect.ImmutableMap;
+import org.apache.jena.vocabulary.RDF;
 
 /**
  * Simple {@link AspectVisitor} that turns a {@link Value} into the corresponding simple Java objects,
