@@ -29,7 +29,7 @@ The Meta Classes contain some general Model information within static fields:
 |`CHARACTERISTIC_NAMESPACE`
 |The Characteristic Namespace of the Model
 |`String`
-|`urn:samm:org.eclipse.esmf.samm:characteristic:2.1.0`
+|`{samm-c}`
 
 |`INSTANCE`
 |The singleton instance of this Meta class. Used to access non-static information.
