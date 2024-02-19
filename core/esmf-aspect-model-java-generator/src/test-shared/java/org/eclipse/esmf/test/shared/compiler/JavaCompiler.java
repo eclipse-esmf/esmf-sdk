@@ -85,20 +85,21 @@ public class JavaCompiler {
 
       final List<String> compilerOptions = List.of( "-classpath", System.getProperty( "java.class.path" ) );
       compiler.getTask( null, manager, diagnosticListener, compilerOptions, null, compilerInput ).call();
+      final ClassLoader classLoader = new ClassLoader() {
+         @Override
+         protected Class<?> findClass( final String name ) {
+            final byte[] classBytes = manager.getOutput( name ).getBytes();
+            return defineClass( name, classBytes, 0, classBytes.length );
+         }
+      };
       return loadOrder.stream().collect( Collectors.toMap( Function.identity(), qualifiedName ->
-            defineAndLoad( qualifiedName, manager ) ) );
+            defineAndLoad( qualifiedName, classLoader ) ) );
    }
 
    @SuppressWarnings( "unchecked" )
-   private static <T> Class<T> defineAndLoad( final QualifiedName className, final InMemoryClassFileManager manager ) {
+   private static <T> Class<T> defineAndLoad( final QualifiedName className, final ClassLoader classLoader ) {
       try {
-         return (Class<T>) new ClassLoader() {
-            @Override
-            protected Class<?> findClass( final String name ) {
-               final byte[] classBytes = manager.getOutput( name ).getBytes();
-               return defineClass( name, classBytes, 0, classBytes.length );
-            }
-         }.loadClass( className.toString() );
+         return (Class<T>) classLoader.loadClass( className.toString() );
       } catch ( final ClassNotFoundException exception ) {
          throw new RuntimeException( exception );
       }

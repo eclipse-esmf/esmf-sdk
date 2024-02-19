@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.samm.KnownVersion;
 
@@ -161,6 +162,17 @@ public class MetaModelBaseAttributes {
       final boolean isSyntheticName = urn.isEmpty();
       return new MetaModelBaseAttributes( metaModelVersion, urn.orElse( null ), name, preferredNames, descriptions, seeValues,
             isSyntheticName );
+   }
+
+   /**
+    * Creates an instance of {@link MetaModelBaseAttributes} by copying them from a given {@link NamedElement}.
+    *
+    * @param modelElement the named model element to copy the base attributes from
+    * @return the newly created instance
+    */
+   public static MetaModelBaseAttributes fromModelElement( final NamedElement modelElement ) {
+      return new MetaModelBaseAttributes( modelElement.getMetaModelVersion(), modelElement.getAspectModelUrn().get(),
+            modelElement.getName(), modelElement.getPreferredNames(), modelElement.getDescriptions(), modelElement.getSee() );
    }
 
    private static Optional<AspectModelUrn> getUrn( final Resource modelElement, final SAMM samm ) {

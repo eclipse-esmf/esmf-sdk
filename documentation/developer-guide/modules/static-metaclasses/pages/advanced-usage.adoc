@@ -1,0 +1,155 @@
+= Advanced Usage
+
+== Writing Generic Code
+
+So far our examples have been working in an ad-hoc fashion on our Aspect data which already gives you elegant, type safe
+and intent-explaining code. Still, such code partially also could be written directly on the domain model. Let's now take
+a look at functionality, that is very complicated to write without the support of a Meta Model at hand.
+
+We're talking about _generic code_, i.e. code that knows how to work with data and its properties, but doesn't care,
+_what data_ it exactly is.
+
+Let's define a simple, but realistic example of such a generic piece of code.
+
+Assume you're modeling data structures that handle all sorts of technical components, maybe a device that is broken up
+into its sub-components. Each sub-component is modeled with different properties, but they all share one thing: their
+unique identifier.
+
+For the application we're developing it now is regularly needed, to retrieve a set of components and index them by their
+unique id, something like this:
+
+[source,java]
+----
+Map<Integer, SubComponent> =
+    subComponents.stream()
+                 .collect( Collectors.toMap( SubComponent::getId, Function.identity() ) );
+----
+
+However, we don't only have this single kind of `SubComponent`. We have multiple, on different levels of our domain model.
+Additionally, we don't have a clean inheritance hierarchy where we can assume that the unique id is always an `Integer` and
+always within the property `getId()`. If we still want to be able to write a generic solution to this requirement,
+our Static Meta Model comes to the rescue! All we need to know is _any_ property (or property chain) which we use to perform
+the indexing:
+
+[source,java]
+----
+public <K, V> Map<K, V> index( List<V> components, StaticProperty<V, K> uniqueId ) {
+    return components.stream()
+                     .collect( Collectors.toMap( uniqueId, Function.identity() ) );
+}
+
+...
+
+Map<Integer, SubComponent> componentsById =
+    index( subComponents, MetaSubComponent.ID );
+----
+
+Now you have an algorithm that will work on _any_ Aspect or Entity which does have an unique identifier.
+
+Maybe you already spotted how easily such generic code can be pushed even further. Assume, that for some parts of the
+application you don't want to index the component itself, but one of its properties (maybe the OEM). Again, using
+properties such an extension is elegant and simple:
+
+[source,java]
+----
+public <K, T, V> Map<K, T> index( List<V> components, StaticProperty<V, K> uniqueId, Function<V, T> valueMapper ) {
+    return components.stream()
+                     .collect( Collectors.toMap( uniqueId, valueMapper ) );
+}
+
+...
+
+Map<Integer, SubComponent> componentsById =
+    index( subComponents, MetaSubComponent.ID, Function.identity() );
+Map<Integer, String> componentOemsById =
+    index( subComponents, MetaSubComponent.ID, MetaSubComponent.OEM );
+----
+
+== Filtering and Sorting with Properties
+
+In the same way that properties can be used to access data, they can also be used to filter and sort data.
+
+=== Filtering
+
+To filter elements based on their properties (or nested properties, via a Property Chain), the convenient builder
+`PropertyPredicates` exists. It provides the following entry points:
+
+[%autowidth]
+|===
+|Entry Point |Types| Description
+
+|`on( PropertyAccessor<C, T> property )`
+|`C` any containing type +
+`T` any non-container property type
+|For simple predicates on single-valued properties
+
+|`matchOn( PropertyAccessor<C, T> property )`
+|`C` any containing type +
+`T` any type that extends a `CharSequence`
+|Used to build `contains` and RegEx predicates
+
+|`compareOn( PropertyAccessor<C, T> property )`
+|`C` any containing type +
+`T` any type that extends a `Comparable`
+|Used to build (partial) range predicates like `greaterThan` or `withinClosed` on comparable properties
+
+|`onOptional( PropertyAccessor<C, T> property )`
+|`C` any containing type +
+`T` any `Optional` type
+|For simple predicates on `Optional` values.
+
+|`onCollection( PropertyAccessor<C, T> property )`
+|`C` any containing type +
+`T` any type that extends a `Collection`
+|Used to build predicates on collections, like `contains` or `containsAllOf`
+
+|===
+
+Let's take a look and some examples using those builders:
+
+[source,java]
+----
+List<Movement> movements = retrieveMovements();
+
+// find all that are currently moving
+List<Movement> currentlyMoving =
+    movements.stream()
+             .filter( PropertyPredicates.on( MetaMovement.IS_MOVING ).isEqualTo( true ) )
+             .toList();
+
+// find all that have a speed within the range 10km/h <= speed <= 30km/h
+List<Movement> withinSpeedRange =
+    movements.stream()
+             .filter( PropertyPredicates.compareOn( MetaMovement.SPEED ).withinClosed( 10.0f, 30.0f ) )
+             .toList();
+----
+
+Again assuming our example with a component and its subcomponents, let's filter on collection-valued properties:
+
+[source,java]
+----
+List<Components> components = retrieveComponents();
+
+var componentOem = PropertyChain.fromCollection( MetaComponent.SUB_COMPONENTS )
+                                .to( MetaSubComponent.OEM );
+List<Components> withOemAcme =
+    components.stream()
+              .filter( PropertyPredicates.onCollection( componentOem ).contains( "ACME" ) )
+              .toList();
+----
+
+TIP: To conveniently build even more complex predicates with `AND` or `OR` semantics you can for example use
+the `Predicates` utility from the https://docs.vavr.io[Vavr] library.
+
+=== Sorting
+
+Property-based sorting doesn't require any special utilities at all, due to the fact that properties already implement
+the `Function` interface and thus can directly be used as a `keyExtractor` with `Comparator.comparing()`:
+
+[source,java]
+----
+List<Movement> bySpeedAscending =
+    movements.stream()
+             .sorted( Comparator.comparing( MetaMovement.SPEED ) )
+             .toList();
+----

@@ -175,6 +175,11 @@ public Class<$propertyType> getPropertyType() {
     #end
 }
 
+    @Override
+    public Class<${element.getName()}> getContainingType() {
+    return ${element.getName()}.class;
+    }
+
     #if( $util.hasContainerType( $property ) && !$propertyType.startsWith( "Map" ) )
     @Override
     public Class<$containedType> getContainedType() {

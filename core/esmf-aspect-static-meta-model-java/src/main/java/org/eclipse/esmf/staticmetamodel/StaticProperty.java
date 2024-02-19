@@ -18,13 +18,14 @@ import java.util.Optional;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 
 /**
  * Extends the SAMM {@link DefaultProperty} definition with a concrete type.
  */
-public abstract class StaticProperty<C, T> extends DefaultProperty {
+public abstract class StaticProperty<C, T> extends DefaultProperty implements PropertyTypeInformation<C, T>, PropertyAccessor<C, T> {
 
    public StaticProperty(
          final MetaModelBaseAttributes metaModelBaseAttributes,
@@ -39,13 +40,10 @@ public abstract class StaticProperty<C, T> extends DefaultProperty {
             extends_ );
    }
 
-   /**
-    * @return the type of the Property represented as a class.
-    */
-   public abstract Class<T> getPropertyType();
-
-   /**
-    * @return the property value of the given instance.
-    */
-   public abstract T getValue( C object );
+   @Override
+   public boolean isComplexType() {
+      return getCharacteristic().flatMap( Characteristic::getDataType )
+            .map( Type::isComplexType )
+            .orElse( false );
+   }
 }
