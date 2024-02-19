@@ -2,7 +2,7 @@
 
 To get started with using Static Meta Models within your application you need to generate the respective Java artifacts using either the xref:tooling-guide:java-aspect-tooling.adoc[Java Tooling] or xref:tooling-guide:maven-plugin.adoc[Maven plugin].
 
-After the artifacts have been generated you'll find for each Aspect and Entity a new source file called `Meta<ElementName>.java`
+After the artifacts have been generated you'll find for each Aspect and Entity a new source file called `Meta__ElementName__.java`
 which contains the Static Meta Model.
 
 NOTE: All the following chapters again assume the `Movement` Aspect with its accompanying static `MetaMovement` class.

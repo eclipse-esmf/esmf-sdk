@@ -7,10 +7,10 @@ application that uses the data of single Aspects, it does not help to build appl
 the data of Aspects in a generic way, that means: using the Meta Model.
 
 What would be an example for such a case? Let's assume a very simple application, that still shows
-very well, why using the Meta Model is mandatory despite the problem at hand seems not very complex at first.
+very well, why using the Meta Model is mandatory despite the problem at hand seeming not very complex at first.
 
-Let's assume we're starting our application with the well-known `Movement` Aspect, but possibly more Aspects
-are to come in the future.  +
+Let's assume we're starting our application with the well-known https://github.com/eclipse-esmf/esmf-aspect-model-editor/blob/main/core/apps/ame/src/assets/aspect-models/org.eclipse.examples/1.0.0/Movement.ttl[Movement]
+Aspect, but possibly more Aspects are to come in the future. +
 To easily get a quick overview of the Aspect data we want to write a console application that pulls the data
 from the Aspect and prints it to console nicely formatted. Using a built-in mechanism like generated
 `toString` methods might work for a very first version and for simple Aspect Models, but our Aspect already
@@ -78,7 +78,7 @@ Even this over-simplified example already shows the great benefits of this appro
 to write very stable _generic_ code that can easily also perform much more complex tasks, as long as the input
 that is required is made up of an Aspect Model and its data.
 
-Granted, code like above could also be written using a dynamically loaded Meta Model (note the missing _Static_).
+Granted, code like above could also be written using a dynamically loaded Aspect Model (note the missing _Static_).
 So in order to close this motivation let's assume another small requirement for our application that is at least
 rather ugly to implement: our Aspects not only carry the data we need for our daily work, but also a lot of
 data which is not strictly required to be printed - or maybe we just want to print it when some kind of verbose
@@ -91,8 +91,8 @@ to use string matching on human knowledge about the Aspect Model, we again can q
 * if we ever remove e.g. the property `speedLimitWarning` this will not break our code, but leave us with something
 that can be surprising to another developer taking over - code, that's outdated and nobody noticed.
 
-How would this requirement look like, if we now assume we already have our accompanying static `MetaMovement` class for
-our Aspect?
+How would this requirement look like, if we now assume we already have such an accompanying static meta class being
+called `MetaMovement` for our Aspect?
 
 [source,java]
 ----

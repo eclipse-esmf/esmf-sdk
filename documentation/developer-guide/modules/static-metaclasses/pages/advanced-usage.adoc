@@ -139,7 +139,7 @@ List<Components> withOemAcme =
 ----
 
 TIP: To conveniently build even more complex predicates with `AND` or `OR` semantics you can for example use
-the `Predicates` utility from the awesome https://docs.vavr.io[Vavr] library.
+the `Predicates` utility from the https://docs.vavr.io[Vavr] library.
 
 === Sorting
 
