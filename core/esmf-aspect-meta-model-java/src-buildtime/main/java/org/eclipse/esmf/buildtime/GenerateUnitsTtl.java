@@ -17,7 +17,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
@@ -255,21 +257,24 @@ public class GenerateUnitsTtl {
 
       final GenerateUnitsTtl generator = new GenerateUnitsTtl( unitsModel );
       try {
-         try ( final OutputStream units = new FileOutputStream( unitsFile ) ) {
-            generator.writeUnitsJava( new PrintStream( units ) );
+         try ( final OutputStream outputStream = new FileOutputStream( unitsFile );
+               final OutputStreamWriter outputStreamWriter = new OutputStreamWriter( outputStream, StandardCharsets.UTF_8 );
+               final PrintWriter units = new PrintWriter( outputStreamWriter ) ) {
+            generator.writeUnitsJava( units );
          }
          System.out.println( "Written " + unitsFile );
-         try ( final OutputStream quantityKinds = new FileOutputStream( quantityKindsFile ) ) {
-            generator.writeQuantityKindsJava( new PrintStream( quantityKinds ) );
+         try ( final OutputStream outputStream = new FileOutputStream( quantityKindsFile );
+               final OutputStreamWriter outputStreamWriter = new OutputStreamWriter( outputStream, StandardCharsets.UTF_8 );
+               final PrintWriter quantityKinds = new PrintWriter( outputStreamWriter ) ) {
+            generator.writeQuantityKindsJava( quantityKinds );
          }
          System.out.println( "Written " + quantityKindsFile );
       } catch ( final IOException exception ) {
-         throw new RuntimeException( "Cound not write units file", exception );
+         throw new RuntimeException( "Could not write units file", exception );
       }
    }
 
    public GenerateUnitsTtl( final Model unitsModel ) {
-      //      super( new SAMM( KnownVersion.getLatest() ) );
       this.unitsModel = unitsModel;
    }
 
@@ -277,7 +282,7 @@ public class GenerateUnitsTtl {
       return s.replaceAll( "([A-Z])", "_$1" ).toUpperCase().replaceAll( "^_", "" );
    }
 
-   private void writeUnitsJava( final PrintStream out ) {
+   private void writeUnitsJava( final PrintWriter out ) {
       final List<List<String>> declarationSlices = Lists.partition( unitDeclarations(), 100 );
       UNITS_CLASS_TEMPLATE.lines().forEach( line -> {
          if ( line.contains( "${initMethods}" ) ) {
@@ -292,7 +297,7 @@ public class GenerateUnitsTtl {
       } );
    }
 
-   private void printInitMethods( final PrintStream out, final List<List<String>> declarationSlices ) {
+   private void printInitMethods( final PrintWriter out, final List<List<String>> declarationSlices ) {
       for ( int i = 0; i < declarationSlices.size(); i++ ) {
          final List<String> statements = declarationSlices.get( i );
          out.println( "private static void init" + i + "() {" );
@@ -363,7 +368,7 @@ public class GenerateUnitsTtl {
             } ).toList();
    }
 
-   private void writeQuantityKindsJava( final PrintStream out ) {
+   private void writeQuantityKindsJava( final PrintWriter out ) {
       QUANTITY_KINDS_CLASS_TEMPLATE.lines().forEach( line -> {
          if ( line.contains( "${joinedQuantityKinds}" ) ) {
             out.println( String.join( ",\n", quantityKindDeclarations() ) + ";" );
