@@ -70,8 +70,8 @@ import org.apache.jena.iri.IRIFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.aasx.AASXDeserializer;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.json.JsonDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
@@ -134,7 +134,7 @@ public class AasToAspectModelGenerator {
    public static AasToAspectModelGenerator fromAasJson( final InputStream inputStream ) {
       final JsonDeserializer deserializer = new JsonDeserializer();
       try {
-         return fromEnvironment( deserializer.read( inputStream ) );
+         return fromEnvironment( deserializer.read( inputStream, Environment.class ) );
       } catch ( final DeserializationException exception ) {
          throw new AspectModelGenerationException( exception );
       }

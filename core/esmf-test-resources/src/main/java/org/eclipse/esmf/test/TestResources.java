@@ -39,9 +39,8 @@ public class TestResources {
             model.getUrn().getNamespace(), model.getUrn().getVersion(), model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       return TurtleLoader.loadTurtle( inputStream ).flatMap( rawModel ->
-                  metaModelResourceResolver
-                        .mergeMetaModelIntoRawModel( rawModel, VersionNumber.parse( knownVersion.toVersionString() ) ) )
-            .get();
+            metaModelResourceResolver
+                  .mergeMetaModelIntoRawModel( rawModel, VersionNumber.parse( knownVersion.toVersionString() ) ) ).get();
    }
 
    public static Try<VersionedModel> getModel( final TestModel model, final KnownVersion knownVersion ) {
@@ -51,7 +50,7 @@ public class TestResources {
    }
 
    public static Try<JsonNode> getPayload( final TestModel model, final KnownVersion knownVersion ) {
-      final String baseDirectory = "payloads/" + (model instanceof InvalidTestAspect ? "invalid" : "valid");
+      final String baseDirectory = "payloads/" + ( model instanceof InvalidTestAspect ? "invalid" : "valid" );
       final String modelsRoot = baseDirectory + "/" + knownVersion.toString().toLowerCase();
       return Try.of( () -> new ObjectMapper().readTree( Resources.getResource( modelsRoot + "/" + model.getName() + ".json" ) ) );
    }

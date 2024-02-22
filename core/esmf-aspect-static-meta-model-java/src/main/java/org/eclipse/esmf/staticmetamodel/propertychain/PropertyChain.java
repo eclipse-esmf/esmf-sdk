@@ -33,9 +33,7 @@ import org.eclipse.esmf.staticmetamodel.propertychain.spi.PropertyChainElementAc
 
 /**
  * Defines a chain of properties to be able to access properties of nested entities as if they were properties of one of the containing
- * entities or aspects.
- * <p>
- * To build instances of property chains it is recommended to use the type safe builders.
+ * entities or aspects. To build instances of property chains it is recommended to use the type safe builders.
  *
  * @param <C> the type containing the property (this is the containing type of the first chain element)
  * @param <P> the type of the property (this is the property type of the last chain element)
@@ -56,24 +54,23 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
             lastProperty.getExampleValue(), lastProperty.isOptional(), lastProperty.isNotInPayload(),
             Optional.ofNullable( lastProperty.getPayloadName() ),
             lastProperty.isAbstract(), lastProperty.getExtends() );
-      this.accessor = getAccessor();
+      accessor = getAccessor();
       this.properties = Stream.concat( properties.stream(), Stream.of( lastProperty ) )
             .map( p -> (StaticProperty<Object, Object>) p )
             .toList();
-      this.chainElementAccessors = PropertyChainElementAccessors.getAllPropertyAccessors();
+      chainElementAccessors = PropertyChainElementAccessors.getAllPropertyAccessors();
    }
 
    /**
     * Creates a property chain using the given list of properties.
-    * <p>
     * <b>Important:</b> This constructor does not ensure that the chain is valid and thus should only be used in situations where this is
     * explicitly known.
     * Prefer to use a builder using {@link #from(StaticProperty)}, {@link #fromOptional(StaticContainerProperty)} (StaticContainerProperty)}
     * or {@link #fromCollection(StaticContainerProperty)}.
     *
-    * @param properties
+    * @param properties the properties of the chain
     */
-   public PropertyChain( final List<? extends StaticProperty<? extends Object, ? extends Object>> properties ) {
+   public PropertyChain( final List<? extends StaticProperty<?, ?>> properties ) {
       this( properties.subList( 0, properties.size() - 1 ), (StaticProperty<? extends Object, P>) properties.get( properties.size() - 1 ) );
    }
 
@@ -118,9 +115,9 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
    }
 
    private PropertyAccessor<C, P> getAccessor() {
-      return ( C object ) -> {
+      return ( final C object ) -> {
          Object currentValue = object;
-         final Iterator<StaticProperty<Object, Object>> propertyIterator = PropertyChain.this.properties.iterator();
+         final Iterator<StaticProperty<Object, Object>> propertyIterator = properties.iterator();
          while ( currentValue != null && propertyIterator.hasNext() ) {
             currentValue = getNextValue( currentValue, propertyIterator.next() );
          }
@@ -138,7 +135,7 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
    }
 
    private PropertyChainElementAccessor<Object> findPropertyChainElementAccessor( final Object currentValue ) {
-      return this.chainElementAccessors.stream()
+      return chainElementAccessors.stream()
             .filter( chainElementAccessor -> chainElementAccessor.getHandledElementClass().isAssignableFrom( currentValue.getClass() ) )
             .findAny()
             .orElseGet( PropertyChainElementAccessors::getDefaultAccessor );
