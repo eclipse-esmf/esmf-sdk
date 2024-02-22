@@ -331,7 +331,7 @@
     </module>
   </module>
   <module name="SuppressionSingleFilter">
-    <property name="checks" value="(LineLength|Indentation|CustomImportOrder)"/>
+    <property name="checks" value=".*"/>
     <property name="files" value="(Units|QuantityKinds)\.java"/>
   </module>
   <module name="SuppressionSingleFilter">

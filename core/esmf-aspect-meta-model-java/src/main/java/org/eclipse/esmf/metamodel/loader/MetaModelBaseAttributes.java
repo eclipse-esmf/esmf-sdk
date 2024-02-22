@@ -50,7 +50,17 @@ public class MetaModelBaseAttributes {
    private final List<String> see;
    private final boolean hasSyntheticName;
 
-   public MetaModelBaseAttributes( final KnownVersion metaModelVersion,
+   public MetaModelBaseAttributes(
+         final AspectModelUrn urn,
+         final String name,
+         final Set<LangString> preferredNames,
+         final Set<LangString> descriptions,
+         final List<String> see ) {
+      this( KnownVersion.getLatest(), urn, name, preferredNames, descriptions, see, false );
+   }
+
+   public MetaModelBaseAttributes(
+         final KnownVersion metaModelVersion,
          final AspectModelUrn urn,
          final String name,
          final Set<LangString> preferredNames,

@@ -34,7 +34,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -64,8 +63,7 @@ public class MigratorTest extends MetaModelVersions {
       final VersionedModel versionedModel = TestResources.getModelWithoutResolution( TestAspect.ASPECT, metaModelVersion );
       final VersionedModel rewrittenModel = migratorService.updateMetaModelVersion( versionedModel ).get();
 
-      Assertions.assertThat( rewrittenModel.getMetaModelVersion() )
-            .isEqualTo( VersionNumber.parse( KnownVersion.getLatest().toVersionString() ) );
+      assertThat( rewrittenModel.getMetaModelVersion() ).isEqualTo( VersionNumber.parse( KnownVersion.getLatest().toVersionString() ) );
       final Model model = rewrittenModel.getRawModel();
       assertThat( model.getNsPrefixURI( "samm" ) ).contains( KnownVersion.getLatest().toVersionString() );
 

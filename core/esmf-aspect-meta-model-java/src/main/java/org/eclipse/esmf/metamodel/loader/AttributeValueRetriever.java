@@ -67,7 +67,7 @@ public class AttributeValueRetriever {
     * @return the optional statement asserting the value
     */
    protected Optional<Statement> optionalAttributeValue( final Resource modelElement, final Property attribute ) {
-      return attributeValues( modelElement, attribute ).stream().sequential().findFirst();
+      return attributeValues( modelElement, attribute ).stream().findFirst();
    }
 
    private boolean isRdfList( final Resource resource ) {
