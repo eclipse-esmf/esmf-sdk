@@ -90,6 +90,7 @@ jobs:
       - name: Build and run tests
         run: |
           export MAVEN_OPTS="-Xmx4096m"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
           mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}

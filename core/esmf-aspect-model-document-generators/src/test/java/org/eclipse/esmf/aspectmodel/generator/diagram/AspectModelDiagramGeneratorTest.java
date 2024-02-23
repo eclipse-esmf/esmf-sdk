@@ -48,7 +48,7 @@ public class AspectModelDiagramGeneratorTest extends MetaModelVersions {
    }
 
    @ParameterizedTest
-   @ValueSource( strings = { "UTF-8", "US-ASCII" } )
+   @ValueSource( strings = { "UTF-8", "US-ASCII", "Windows-1252" } )
    void generateDiagramsShouldReturnUtf8StringRegardlessOfPlatformEncoding( final String encoding ) {
       final String platformEncoding = System.getProperty( "file.encoding" );
       try {
@@ -63,6 +63,7 @@ public class AspectModelDiagramGeneratorTest extends MetaModelVersions {
             generator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, Locale.ENGLISH, out );
             final String svg = out.toString( StandardCharsets.UTF_8 );
             assertThat( svg ).contains( "«Aspect»" );
+            assertThat( out.toByteArray() ).containsSubsequence( "«Aspect»".getBytes( StandardCharsets.UTF_8 ) );
          } ).doesNotThrowAnyException();
       } finally {
          System.setProperty( "file.encoding", platformEncoding );
