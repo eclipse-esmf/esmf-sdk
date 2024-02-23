@@ -182,6 +182,7 @@ jobs:
       - name: Build and run tests
         run: |
           export MAVEN_OPTS="-Xmx4096m"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
           mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
@@ -191,6 +192,7 @@ jobs:
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           # Build of CLI
           cd tools/samm-cli
+          unset JAVA_TOOL_OPTIONS
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
@@ -300,8 +302,7 @@ jobs:
       # Full release: Github
       - name: "Create Github release (full)"
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844v1 # v0.1.15
-        id: esmf_sdk_release
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
           body: "Release version ${{ github.event.inputs.release_version }}."
           tag_name: v${{ github.event.inputs.release_version }}
@@ -365,8 +366,7 @@ jobs:
       # Milestone release: Github
       - name: "Create Github release (milestone)"
         if: contains( github.event.inputs.release_version, '-M' )
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844v1 # v0.1.15
-        id: esmf_sdk_release
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
           body: "Release version ${{ github.event.inputs.release_version }}."
           tag_name: v${{ github.event.inputs.release_version }}
