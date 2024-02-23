@@ -302,7 +302,7 @@ jobs:
       # Full release: Github
       - name: "Create Github release (full)"
         if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844v1 # v0.1.15
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
           body: "Release version ${{ github.event.inputs.release_version }}."
           tag_name: v${{ github.event.inputs.release_version }}
@@ -366,7 +366,7 @@ jobs:
       # Milestone release: Github
       - name: "Create Github release (milestone)"
         if: contains( github.event.inputs.release_version, '-M' )
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844v1 # v0.1.15
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v0.1.15
         with:
           body: "Release version ${{ github.event.inputs.release_version }}."
           tag_name: v${{ github.event.inputs.release_version }}
