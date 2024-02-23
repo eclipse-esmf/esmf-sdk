@@ -124,8 +124,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    private static DatatypeFactory datatypeFactory;
 
-   private final Random random = new Random();
-
    @BeforeAll
    static void setup() {
       try {
@@ -415,8 +413,8 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
       final String generatedJson = generateJsonForModel( TestAspect.ASPECT_WITH_G_TYPE_FOR_RANGE_CONSTRAINTS, metaModelVersion );
       final AspectWithGTypeForRangeConstraints aspectWithGtypeForRangeConstraints = parseJson( generatedJson,
             AspectWithGTypeForRangeConstraints.class );
-      final Pattern dayPattern = Pattern.compile( "---(0[1-9]|[12][0-9]|3[01])(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
-      final Pattern monthPattern = Pattern.compile( "--(0[1-9]|1[0-2])(Z|(\\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
+      final Pattern dayPattern = Pattern.compile( "---(0[1-9]|[12][0-9]|3[01])(Z|([+\\-])((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
+      final Pattern monthPattern = Pattern.compile( "--(0[1-9]|1[0-2])(Z|([+\\-])((0[0-9]|1[0-3]):[0-5][0-9]|14:00))?" );
       assertThat( dayPattern.matcher( aspectWithGtypeForRangeConstraints.getTestPropertyWithGDay().toString() ) ).matches();
       assertThat( monthPattern.matcher( aspectWithGtypeForRangeConstraints.getTestPropertyWithGMonth().toString() ) ).matches();
    }

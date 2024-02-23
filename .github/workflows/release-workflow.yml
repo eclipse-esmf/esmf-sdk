@@ -90,6 +90,7 @@ jobs:
       - name: Build and run tests
         run: |
           export MAVEN_OPTS="-Xmx4096m"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
           # Required for reactor dependencies
           mvn clean install -DskipTests -Dmaven.javadoc.skip=true
           mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
@@ -101,6 +102,7 @@ jobs:
           mvn -B -pl '!org.eclipse.esmf:samm-cli' clean deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 -DaltDeploymentRepository=local::default::file://nexus-staging -Psign
           # Build of CLI
           pushd tools/samm-cli
+          unset JAVA_TOOL_OPTIONS
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           popd

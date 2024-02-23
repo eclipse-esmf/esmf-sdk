@@ -256,10 +256,10 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
 
    @Override
    public String visitUnit( final Unit unit, final StaticCodeGenerationContext context ) {
-      final Optional<Unit> unitFromCatalog = Units.fromName( unit.getName(), unit.getMetaModelVersion() );
+      final Optional<Unit> unitFromCatalog = Units.fromName( unit.getName() );
       if ( unitFromCatalog.isPresent() ) {
          context.getCodeGenerationConfig().importTracker().importExplicit( Units.class );
-         return "Units.fromName(\"" + unit.getName() + "\", KnownVersion." + unit.getMetaModelVersion() + ")";
+         return "Units.fromName(\"" + unit.getName() + "\")";
       }
 
       context.getCodeGenerationConfig().importTracker().importExplicit( DefaultUnit.class );
@@ -535,7 +535,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       }
 
       if ( optionalValue.get() instanceof ScalarValue ) {
-         return "Optional.of(" + ((ScalarValue) optionalValue.get()).accept( this, context ) + ")";
+         return "Optional.of(" + ( (ScalarValue) optionalValue.get() ).accept( this, context ) + ")";
       }
 
       context.getCodeGenerationConfig().importTracker().importExplicit( AspectModelJavaUtil.getDataTypeClass( type ) );

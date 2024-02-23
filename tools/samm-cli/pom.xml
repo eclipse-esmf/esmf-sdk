@@ -266,6 +266,7 @@
                   <configuration>
                      <finalName>${native-image-jar}</finalName>
                      <createDependencyReducedPom>false</createDependencyReducedPom>
+                     <createSourcesJar>false</createSourcesJar>
                      <skip>${skip.maven.shade}</skip>
                      <transformers>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -364,6 +365,7 @@
                   </goals>
                   <configuration>
                      <createDependencyReducedPom>false</createDependencyReducedPom>
+                     <createSourcesJar>false</createSourcesJar>
                      <skip>${skip.maven.shade}</skip>
                      <transformers>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -629,6 +631,7 @@
             <packaging-type>native</packaging-type>
             <skip.maven.surefire>true</skip.maven.surefire>
             <maven.resources.skip>true</maven.resources.skip>
+            <maven.source.skip>true</maven.source.skip>
          </properties>
 
          <build>
@@ -648,9 +651,10 @@
                   </executions>
                   <configuration>
                      <mainClass>${main-class}</mainClass>
-                     <imageName>${binary-name}</imageName>
+                     <imageName>./${binary-name}</imageName>
                      <buildArgs>
-                        <arg>-H:Name=${binary-name}</arg>
+                        <arg>--verbose</arg>
+                        <arg>-march=compatibility</arg>
                         <arg>-H:EnableURLProtocols=http,https</arg>
                         <arg>--enable-https</arg>
                         <arg>--no-fallback</arg>

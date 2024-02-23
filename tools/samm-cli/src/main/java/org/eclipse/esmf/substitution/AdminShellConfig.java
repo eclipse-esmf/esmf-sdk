@@ -24,11 +24,11 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.internal.util.ReflectionHelper;
 
 /**
  * An instance of this class encapsulates the information normally stored by {@link ReflectionHelper}. It is used in its substitution
- * class, see {@link Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper} for more information.
+ * class, see {@link Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_internal_util_ReflectionHelper} for more information.
  * This class provides capabilities to serialize and deserialize its objects to/from a {@link Properties} object; more convenient
  * serialization (e.g., Java's builtin serialization or Jackson's ObjectMapper) can't be used here due to the limitations of the GraalVM
  * substitution classes.
@@ -58,7 +58,7 @@ public class AdminShellConfig {
    }
 
    private <T, C extends Collection<T>> String serialize( final C collection, final Function<T, String> mapper ) {
-      return collection.stream().map( element -> mapper.apply( element ) ).collect( Collectors.joining( "," ) );
+      return collection.stream().map( mapper::apply ).collect( Collectors.joining( "," ) );
    }
 
    private <K, V> String serialize( final Map<K, V> map, final Function<K, String> keyMapper, final Function<V, String> valueMapper ) {
@@ -96,15 +96,15 @@ public class AdminShellConfig {
    private static <T, C extends Collection<T>> C deserializeCollection( final String collection,
          final Function<String, T> elementDeserializer,
          final Collector<? super T, ?, C> collector ) {
-      return Arrays.asList( collection.split( "," ) ).stream()
+      return Arrays.stream( collection.split( "," ) )
             .filter( entry -> !entry.isEmpty() )
-            .map( element -> elementDeserializer.apply( element ) )
+            .map( elementDeserializer )
             .collect( collector );
    }
 
    private static <K, V> Map<K, V> deserializeMap( final String map, final Function<String, K> keyDeserializer,
          final Function<String, V> valueDeserializer ) {
-      return Arrays.asList( map.split( ";" ) ).stream()
+      return Arrays.stream( map.split( ";" ) )
             .filter( entry -> !entry.isEmpty() )
             .map( entry -> {
                final String[] parts = entry.split( "->" );

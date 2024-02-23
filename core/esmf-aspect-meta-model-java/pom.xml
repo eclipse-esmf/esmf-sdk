@@ -28,6 +28,11 @@
    <name>ESMF Aspect Meta Model Java</name>
    <packaging>jar</packaging>
 
+   <properties>
+      <generated-sources>${project.basedir}/src-gen</generated-sources>
+      <build-time-sources>${project.basedir}/src-buildtime</build-time-sources>
+   </properties>
+
    <dependencies>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
@@ -45,6 +50,10 @@
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-meta-model-types</artifactId>
       </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-text</artifactId>
+      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
@@ -55,11 +64,6 @@
       <dependency>
          <groupId>org.assertj</groupId>
          <artifactId>assertj-core</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.mozilla</groupId>
-         <artifactId>rhino</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
@@ -92,60 +96,6 @@
                <skip>true</skip>
             </configuration>
          </plugin>
-         <plugin>
-            <groupId>org.codehaus.gmaven</groupId>
-            <artifactId>groovy-maven-plugin</artifactId>
-            <version>${groovy-maven-plugin-version}</version>
-            <executions>
-               <execution>
-                  <id>generate-unit-java</id>
-                  <phase>generate-sources</phase>
-                  <goals>
-                     <goal>execute</goal>
-                  </goals>
-                  <configuration>
-                     <source>${project.basedir}/buildSrc/main/groovy/unit2java.groovy</source>
-                  </configuration>
-               </execution>
-               <execution>
-                  <id>generate-unit-js</id>
-                  <phase>generate-resources</phase>
-                  <goals>
-                     <goal>execute</goal>
-                  </goals>
-                  <configuration>
-                     <source>${project.basedir}/buildSrc/main/groovy/unit2js.groovy</source>
-                  </configuration>
-               </execution>
-            </executions>
-            <dependencies>
-               <dependency>
-                  <groupId>org.apache.jena</groupId>
-                  <artifactId>jena-arq</artifactId>
-                  <version>${jena-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.apache.jena</groupId>
-                  <artifactId>jena-core</artifactId>
-                  <version>${jena-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>org.eclipse.esmf</groupId>
-                  <artifactId>esmf-semantic-aspect-meta-model</artifactId>
-                  <version>${aspect-meta-model-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>com.google.guava</groupId>
-                  <artifactId>guava</artifactId>
-                  <version>${guava-version}</version>
-               </dependency>
-               <dependency>
-                  <groupId>com.github.javaparser</groupId>
-                  <artifactId>javaparser-symbol-solver-core</artifactId>
-                  <version>${javaparser-version}</version>
-               </dependency>
-            </dependencies>
-         </plugin>
 
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -153,7 +103,7 @@
             <configuration>
                <filesets>
                   <fileset>
-                     <directory>${project.basedir}/src-gen</directory>
+                     <directory>${generated-sources}</directory>
                   </fileset>
                </filesets>
             </configuration>
@@ -171,22 +121,20 @@
                   </goals>
                   <configuration>
                      <sources>
-                        <source>${project.basedir}/src-gen/main/java</source>
+                        <source>${generated-sources}/main/java</source>
                      </sources>
                   </configuration>
                </execution>
                <execution>
-                  <id>add-resource</id>
+                  <id>add-src-buildtime-source</id>
                   <phase>initialize</phase>
                   <goals>
-                     <goal>add-resource</goal>
+                     <goal>add-source</goal>
                   </goals>
                   <configuration>
-                     <resources>
-                        <resource>
-                           <directory>${project.basedir}/src-gen/main/resources</directory>
-                        </resource>
-                     </resources>
+                     <sources>
+                        <source>${build-time-sources}/main/java</source>
+                     </sources>
                   </configuration>
                </execution>
             </executions>
@@ -203,6 +151,38 @@
                   </path>
                </annotationProcessorPaths>
             </configuration>
+            <executions>
+               <execution>
+                  <id>compile-build-time-code</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                     <goal>compile</goal>
+                  </goals>
+                  <configuration>
+                     <compileSourceRoots>${build-time-sources}</compileSourceRoots>
+                     <generatedSourcesDirectory>${generated-sources}</generatedSourcesDirectory>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>generate-units-and-quantitykinds</id>
+                  <phase>process-sources</phase>
+                  <goals>
+                     <goal>java</goal>
+                  </goals>
+                  <configuration>
+                     <mainClass>org.eclipse.esmf.buildtime.GenerateUnitsTtl</mainClass>
+                     <!-- args[0]: Path to src-gen directory -->
+                     <commandlineArgs>${generated-sources}</commandlineArgs>
+                  </configuration>
+               </execution>
+            </executions>
          </plugin>
       </plugins>
    </build>

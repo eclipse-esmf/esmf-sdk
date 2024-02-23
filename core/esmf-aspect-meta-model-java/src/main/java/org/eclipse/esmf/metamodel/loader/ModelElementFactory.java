@@ -176,7 +176,7 @@ public class ModelElementFactory extends AttributeValueRetriever {
    public Unit findOrCreateUnit( final Resource unitResource ) {
       if ( unit.getNamespace().equals( unitResource.getNameSpace() ) ) {
          final AspectModelUrn unitUrn = AspectModelUrn.fromUrn( unitResource.getURI() );
-         return Units.fromName( unitUrn.getName(), metaModelVersion ).orElseThrow( () ->
+         return Units.fromName( unitUrn.getName() ).orElseThrow( () ->
                new AspectLoadingException( "Unit definition for " + unitUrn + " is invalid" ) );
       }
 

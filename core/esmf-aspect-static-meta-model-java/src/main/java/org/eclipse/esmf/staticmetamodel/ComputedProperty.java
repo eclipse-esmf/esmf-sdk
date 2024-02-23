@@ -22,10 +22,8 @@ import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 /**
  * Allows ad-hoc definitions of static properties that wrap another property and compute their value using a given function, taking the
  * original property value as an input. The computed property value also can be of a different type.
- * <p>
  * A typical example would be a unit conversion, e.g. transforming a property value that is given in {@code kg} into a value that is given
  * in {@code gram}, by using the function {@code v -> v * 1000}.
- * <p>
  * Using computation functions that use further input it is also possible to create dynamic computed properties. It is however not
  * recommended to build functions where the <i>result type</i> is dynamic.
  *
@@ -33,9 +31,9 @@ import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
  * @param <R> the type of the computation result
  */
 public class ComputedProperty<C, R> extends StaticProperty<C, R> {
-   private PropertyAccessor<C, ?> accessor;
+   private final PropertyAccessor<C, ?> accessor;
 
-   private Function<Object, R> computation;
+   private final Function<Object, R> computation;
 
    private <T> ComputedProperty( final DefaultProperty wrappedProperty, final PropertyAccessor<C, T> accessor,
          final Function<T, R> computation ) {
@@ -86,7 +84,7 @@ public class ComputedProperty<C, R> extends StaticProperty<C, R> {
 
    @Override
    public Class<R> getPropertyType() {
-      if ( accessor instanceof StaticProperty<C, ?> staticProperty ) {
+      if ( accessor instanceof final StaticProperty<C, ?> staticProperty ) {
          return (Class<R>) staticProperty.getPropertyType();
       }
       return (Class<R>) Object.class;
@@ -94,14 +92,14 @@ public class ComputedProperty<C, R> extends StaticProperty<C, R> {
 
    @Override
    public Class<C> getContainingType() {
-      if ( accessor instanceof StaticProperty<C, ?> staticProperty ) {
+      if ( accessor instanceof final StaticProperty<C, ?> staticProperty ) {
          return staticProperty.getContainingType();
       }
       return (Class<C>) Object.class;
    }
 
    @Override
-   public R getValue( C object ) {
+   public R getValue( final C object ) {
       return computation.apply( accessor.getValue( object ) );
    }
 }

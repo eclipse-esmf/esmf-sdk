@@ -17,11 +17,9 @@ import org.eclipse.esmf.staticmetamodel.StaticProperty;
 
 /**
  * Service Provider Interface (SPI) for classes that can handle specific cases during the resolving of a property chain.
- * <p>
- * These are e.g. needed when types within the chain are switched to complex ones like container types ({@code Optional}, {@code Collection}
- * or similar).
- *
- * Application developers can provide custom accessors using this interface and they will be picked up by the property chain implementation.
+ * These are e.g. needed when types within the chain are switched to complex ones like container types ({@code Optional},
+ * {@code Collection} or similar). Application developers can provide custom accessors using this interface and they will be picked up by
+ * the property chain implementation.
  *
  * @param <T> the type of the chain element this accessor is able to handle
  */

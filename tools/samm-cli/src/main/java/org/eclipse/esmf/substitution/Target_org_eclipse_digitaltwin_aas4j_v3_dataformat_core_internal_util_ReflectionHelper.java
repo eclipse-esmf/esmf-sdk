@@ -28,7 +28,7 @@ import com.oracle.svm.core.annotate.KeepOriginal;
 import com.oracle.svm.core.annotate.RecomputeFieldValue;
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
-import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
+import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.internal.util.ReflectionHelper;
 
 /**
  * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
@@ -58,7 +58,7 @@ import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.util.ReflectionHelper;
       "NewClassNamingConvention",
       "checkstyle:TypeName"
 } )
-public final class Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper {
+public final class Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_internal_util_ReflectionHelper {
    @Alias
    @RecomputeFieldValue( kind = RecomputeFieldValue.Kind.FromAlias )
    private static final String ROOT_PACKAGE_NAME = "org.eclipse.digitaltwin.aas4j.v3";
@@ -137,7 +137,7 @@ public final class Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_
 
    static {
       try ( final InputStream input =
-            Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_util_ReflectionHelper.class.getResourceAsStream(
+            Target_org_eclipse_digitaltwin_aas4j_v3_dataformat_core_internal_util_ReflectionHelper.class.getResourceAsStream(
                   "/adminshell.properties" ) ) {
          final Properties properties = new Properties();
          properties.load( input );

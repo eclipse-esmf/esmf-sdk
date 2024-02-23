@@ -533,7 +533,7 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
             "new DefaultQuantifiable(MetaModelBaseAttributes.from(KnownVersion." + KnownVersion.getLatest() + ","
                   + " AspectModelUrn.fromUrn(NAMESPACE + \"TestQuantifiable\"), \"TestQuantifiable\"),"
                   + " new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#float\", KnownVersion." + KnownVersion.getLatest()
-                  + "), Units.fromName(\"percent\", KnownVersion." + KnownVersion.getLatest() + "))";
+                  + "), Units.fromName(\"percent\"))";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithQuantifiableWithUnit",
             ImmutableMap.<String, String> builder().put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall ).build(), 1 );

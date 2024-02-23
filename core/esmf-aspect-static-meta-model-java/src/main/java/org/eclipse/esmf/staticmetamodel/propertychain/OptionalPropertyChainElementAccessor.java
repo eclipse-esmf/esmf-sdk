@@ -32,7 +32,7 @@ public class OptionalPropertyChainElementAccessor
    public Optional<Object> getValue( final Optional<Object> currentValue, final StaticProperty<Object, Object> property ) {
       return currentValue.map( v -> {
          final Object nextValue = property.getValue( v );
-         if (nextValue instanceof Optional<?> nextOptional ) {
+         if ( nextValue instanceof Optional<?> nextOptional ) {
             return nextOptional.orElse( null );
          }
 

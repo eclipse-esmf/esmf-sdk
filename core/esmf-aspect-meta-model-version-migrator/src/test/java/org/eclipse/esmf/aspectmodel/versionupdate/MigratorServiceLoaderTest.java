@@ -15,7 +15,6 @@ package org.eclipse.esmf.aspectmodel.versionupdate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class MigratorServiceLoaderTest {
@@ -24,6 +23,6 @@ public class MigratorServiceLoaderTest {
    @Test
    public void testLoadService() {
       assertThat( migratorService.getMigratorFactory().get() ).isInstanceOf( TestMigratorFactory1.class );
-      Assertions.assertThat( migratorService.getMigratorFactory().get().createMigrators() ).hasSize( 4 );
+      assertThat( migratorService.getMigratorFactory().get().createMigrators() ).hasSize( 4 );
    }
 }

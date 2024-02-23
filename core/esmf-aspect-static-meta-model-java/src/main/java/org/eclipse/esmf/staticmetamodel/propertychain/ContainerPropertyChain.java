@@ -22,7 +22,6 @@ import org.eclipse.esmf.staticmetamodel.StaticProperty;
 
 /**
  * A {@link PropertyChain} that holds chain elements of type {@link ContainerProperty}, e.g. {@link Optional} or {@link Collection}.
- *
  * The first container type within the chain is the one propagated to the end of the chain, i.e. if somewhere an {@code Optional} appears,
  * the final property type will also be an optional. The same holds true for {@code Collection}s in between. However, independent from the
  * collection types that are found within the chain, the final collection type will always be a {@link List}.
@@ -41,9 +40,9 @@ public class ContainerPropertyChain<C, P, T> extends PropertyChain<C, P> impleme
 
    @Override
    public Class<T> getContainedType() {
-      return (getLastProperty() instanceof ContainerProperty container) ?
-            container.getContainedType() :
-            (Class<T>) getLastProperty().getPropertyType();
+      return ( getLastProperty() instanceof ContainerProperty container )
+            ? container.getContainedType()
+            : (Class<T>) getLastProperty().getPropertyType();
    }
 
    @Override
