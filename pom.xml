@@ -69,6 +69,7 @@
       <module>core/esmf-test-aspect-models</module>
       <module>core/esmf-test-resources</module>
       <module>tools/esmf-aspect-model-maven-plugin</module>
+      <module>tools/esmf-aspect-model-github-resolver</module>
       <module>tools/samm-cli</module>
       <module>documentation</module>
    </modules>
@@ -102,6 +103,11 @@
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-model-resolver</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-github-resolver</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>

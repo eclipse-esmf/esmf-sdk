@@ -15,7 +15,6 @@ package org.eclipse.esmf.aspectmodel.resolver.fs;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -52,7 +51,7 @@ public class StructuredModelsRoot extends ModelsRoot {
 
    private static Try<URI> forUri( final URI uri ) {
       return getModelRoot( uri )
-            .orElse( () -> Try.failure( new ModelResolutionException( "Could not locate models root directory for " + uri ) ) );
+            .recoverWith( x -> Try.failure( new ModelResolutionException( "Could not locate models root directory for " + uri, x ) ) );
    }
 
    @Override
@@ -81,13 +80,8 @@ public class StructuredModelsRoot extends ModelsRoot {
    }
 
    private static Try<URI> findModelsRootFromUrl( URI input ) {
-      return Try.of( input::toURL )
-            //change path to parent
-            .mapTry( url -> {
-               var path = Paths.get( url.getPath(), "..", "..", "..", "." );
-               return new URL( url.getProtocol(), url.getHost(), url.getPort(), path.toString() );
-            } )
-            .mapTry( URL::toURI );
+      return Try.of(() -> input.resolve( "../.." ) )
+            .map( URI::normalize );
    }
 
    private static Try<URI> findModelsRoot( File file ) {

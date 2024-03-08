@@ -17,10 +17,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.function.Function;
 
+import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 
 /**
  * Represents one way to load and resolve an Aspect model from a given source.
@@ -37,5 +37,7 @@ public interface ResolutionStrategy extends Function<AspectModelUrn, Try<Model>>
       return Try.of( () -> AspectModelUrn.fromUrn( uri ) ).flatMap( this );
    }
 
-   InputStream read( URI uri ) throws Exception;
+   default InputStream read( URI uri ) throws Exception {
+      return uri.toURL().openStream();
+   }
 }

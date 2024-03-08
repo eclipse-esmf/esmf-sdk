@@ -508,7 +508,6 @@ public class AspectModelResolver {
     * @return the URN of the model element that corresponds to the file name and its location inside the models root
     */
    public static AspectModelUrn urnFromModel( final VersionedModel model, final File file ) {
-      // TODO replace File file to URI uri
       final String aspectName = FilenameUtils.removeExtension( file.getName() );
       return Streams.stream( model.getRawModel().listSubjects() ).filter( s -> aspectName.equals( s.getLocalName() ) )
             .findFirst()
