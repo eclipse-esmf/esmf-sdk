@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspect;
 
-import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.*;
+import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.loadButNotResolveModel;
+import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.uriToUrn;
 
 import java.io.File;
 import java.io.PrintWriter;

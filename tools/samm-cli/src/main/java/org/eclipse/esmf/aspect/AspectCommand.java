@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspect;
 
+import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
+
 import java.io.File;
 import java.net.URI;
 
@@ -20,6 +22,7 @@ import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.exception.SubCommandException;
 
+import io.vavr.control.Try;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectCommand.COMMAND_NAME,
@@ -49,16 +52,14 @@ public class AspectCommand extends AbstractCommand {
 
    public URI getInput() {
       if ( inputUri == null ) {
-         var file = new File( input );
-         if ( file.exists() )
-            inputUri = file.toURI();
-         else {
-            try {
-               inputUri = URI.create( input );
-            } catch ( final IllegalArgumentException e ) {
-               throw new SubCommandException( "The file does not exist or invalid input URI: " + input );
-            }
-         }
+         inputUri = Try.success( input )
+               .map( File::new )
+               .filter( File::exists )
+               .map( File::toURI )
+               .orElse( Try.success( input ).map( in -> IS_OS_WINDOWS ? in.replaceAll( "\\\\", "/" ) : in )
+                     .map( URI::create ) )
+               .recoverWith( e -> Try.failure( new SubCommandException( "The file does not exist or invalid input URI: " + input, e ) ) )
+               .get();
       }
 
       return inputUri;

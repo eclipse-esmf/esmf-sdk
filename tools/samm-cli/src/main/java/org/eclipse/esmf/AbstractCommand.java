@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.*;
 
 import java.io.File;
@@ -68,14 +69,12 @@ public abstract class AbstractCommand implements Runnable {
       return versionedModel;
    }
 
-   protected boolean isFile( final URI uri ) {
-      return "file".equalsIgnoreCase( uri.getScheme() );
-   }
-
    protected File toFile( URI uri ) {
-      return isFile( uri )
+      return "file".equalsIgnoreCase( uri.getScheme() )
             ? new File( uri )
-            : null;
+            : isBlank( uri.getScheme() )
+               ? new File( uri.getPath() )
+               : null;
    }
 
    protected AspectContext loadModelOrFail( final URI modelUri, final ExternalResolverMixin resolverConfig ) {
