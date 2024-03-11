@@ -414,7 +414,7 @@ public class OpenApiTest extends MetaModelVersions {
       validateUnsupportedKeywords( jsonNode );
 
       final SwaggerParseResult result = new OpenAPIParser().readContents( json, null, null );
-      assertThat( result.getMessages().size() ).isZero();
+      assertThat( result.getMessages() ).isEmpty();
 
       final OpenAPI openApi = result.getOpenAPI();
       validateOpenApiSpec( jsonNode, openApi, aspect );
@@ -438,8 +438,9 @@ public class OpenApiTest extends MetaModelVersions {
       final String expectedApiVersion = getExpectedApiVersion( aspect );
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
 
-      assertThat( node.get( "info" ).get( "x-samm-aspect-model-urn" ) ).isNotNull();
-      assertThat( node.get( "info" ).get( "x-samm-aspect-model-urn" ).asText() ).isEqualTo( aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+      final String xSammAspectModelUrn = "x-samm-aspect-model-urn";
+      assertThat( node.get( "info" ).get( xSammAspectModelUrn ) ).isNotNull();
+      assertThat( node.get( "info" ).get( xSammAspectModelUrn ).asText() ).isEqualTo( aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
       assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
@@ -455,6 +456,8 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getSchemas().keySet() ).contains( aspect.getName() );
       assertThat( openApi.getComponents().getResponses().keySet() ).contains( aspect.getName() );
       assertThat( openApi.getComponents().getRequestBodies().keySet() ).contains( aspect.getName() );
+      assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( xSammAspectModelUrn ) ).isNotNull();
+      assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( xSammAspectModelUrn ).toString() ).contains( aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ));
 
       validateReferences( node );
    }
