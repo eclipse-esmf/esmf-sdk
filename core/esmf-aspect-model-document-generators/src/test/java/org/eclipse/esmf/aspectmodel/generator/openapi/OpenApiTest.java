@@ -95,6 +95,8 @@ public class OpenApiTest extends MetaModelVersions {
       final OpenAPI openApi = result.getOpenAPI();
 
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( "v1.0.0" );
+      assertThat( json.get( "info" ).get( "x-samm-aspect-model-urn" ) ).isNotNull();
+      assertThat( json.get( "info" ).get( "x-samm-aspect-model-urn" ).asText() ).isEqualTo( aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
       openApi.getServers().forEach( server -> assertThat( server.getUrl() ).contains( "v1.0.0" ) );
    }
@@ -435,6 +437,9 @@ public class OpenApiTest extends MetaModelVersions {
 
       final String expectedApiVersion = getExpectedApiVersion( aspect );
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
+
+      assertThat( node.get( "info" ).get( "x-samm-aspect-model-urn" ) ).isNotNull();
+      assertThat( node.get( "info" ).get( "x-samm-aspect-model-urn" ).asText() ).isEqualTo( aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
       assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
