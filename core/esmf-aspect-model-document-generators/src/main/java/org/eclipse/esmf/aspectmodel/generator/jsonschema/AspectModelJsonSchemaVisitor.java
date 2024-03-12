@@ -674,6 +674,6 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    private void addXSammAspectModelUrn( final ObjectNode node, final NamedElement describedElement ) {
-      node.put( "x-samm-aspect-model-urn", describedElement.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+      describedElement.getAspectModelUrn().ifPresent( urn -> node.put( "x-samm-aspect-model-urn", urn.toString() ) );
    }
 }
