@@ -471,11 +471,10 @@ public class AspectModelResolver {
       final String namespace = namespaceDirectory.getName();
       final String aspectName = FilenameUtils.removeExtension( inputFile.getName() );
       final String urn = String.format( "urn:samm:%s:%s#%s", namespace, version, aspectName );
-      return AspectModelUrn.from( urn )
-            .mapFailure( Case(
-                  $( instanceOf( UrnSyntaxException.class ) ),
-                  e -> new ModelResolutionException( "The URN constructed from the input file path is invalid: " + urn, e ) )
-            );
+      return AspectModelUrn.from( urn ).mapFailure( Case(
+            $( instanceOf( UrnSyntaxException.class ) ),
+            e -> new ModelResolutionException( "The URN constructed from the input file path is invalid: " + urn, e ) )
+      );
    }
 
    /**
