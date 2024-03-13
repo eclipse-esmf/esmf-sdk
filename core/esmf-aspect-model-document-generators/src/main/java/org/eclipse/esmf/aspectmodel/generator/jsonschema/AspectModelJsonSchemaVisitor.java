@@ -231,6 +231,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    public JsonNode visitAspectForOpenApi( final Aspect aspect ) {
       addDescription( rootNode, aspect, locale );
+      addXSammAspectModelUrn( rootNode, aspect );
       return visitHasProperties( aspect, rootNode );
    }
 
@@ -670,5 +671,9 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       }
 
       return node;
+   }
+
+   private void addXSammAspectModelUrn( final ObjectNode node, final NamedElement describedElement ) {
+      describedElement.getAspectModelUrn().ifPresent( urn -> node.put( "x-samm-aspect-model-urn", urn.toString() ) );
    }
 }
