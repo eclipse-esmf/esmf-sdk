@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Operation;
@@ -169,6 +170,7 @@ public class AspectModelOpenApiGenerator {
 
          ( (ObjectNode) rootNode.get( "info" ) ).put( "title", aspect.getPreferredName( locale ) );
          ( (ObjectNode) rootNode.get( "info" ) ).put( "version", apiVersion );
+         ( (ObjectNode) rootNode.get( "info" ) ).put( "x-samm-aspect-model-urn", aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
          setServers( rootNode, baseUrl, apiVersion, READ_SERVER_PATH );
          final boolean includePaging = includePaging( aspect, pagingOption );
