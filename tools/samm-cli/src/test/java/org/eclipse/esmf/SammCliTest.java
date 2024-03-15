@@ -522,8 +522,7 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToJavaWithDefaultPackageNameWithCustomResolver() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
-            "--output-directory",
-            outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand() );
+            "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 

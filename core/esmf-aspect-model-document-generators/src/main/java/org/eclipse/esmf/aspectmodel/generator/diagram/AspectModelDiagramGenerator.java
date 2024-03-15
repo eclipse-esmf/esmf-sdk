@@ -195,7 +195,7 @@ public class AspectModelDiagramGenerator {
 
          switch ( outputFormat ) {
             case PNG -> generatePng( svgResult, out );
-            default -> IOUtils.copy( new ByteArrayInputStream( svgResult.getBytes() ), out );
+            default -> IOUtils.copy( new ByteArrayInputStream( svgResult.getBytes( StandardCharsets.UTF_8 ) ), out );
          }
       } catch ( final IOException exception ) {
          throw new DocumentGenerationException( exception );
