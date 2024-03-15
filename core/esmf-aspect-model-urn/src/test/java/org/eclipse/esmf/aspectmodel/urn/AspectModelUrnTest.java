@@ -23,12 +23,12 @@ import java.text.MessageFormat;
 import com.google.common.base.Strings;
 import org.junit.jupiter.api.Test;
 
-public class AspectModelUrnTest {
+class AspectModelUrnTest {
    private final String baseUri = "urn:samm:org.eclipse.esmf.test:";
    private final String sammBaseUri = "urn:samm:org.eclipse.esmf.samm:";
 
    @Test
-   public void createFromValidUrn() throws URISyntaxException {
+   void createFromValidUrn() throws URISyntaxException {
       URI validUrn = new URI( baseUri + "1.0.0#Errors" );
       AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -41,7 +41,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromValidLegacyUrn() throws URISyntaxException {
+   void createFromValidLegacyUrn() throws URISyntaxException {
       URI validUrn = new URI( baseUri + "aspect-model:Errors:1.0.0" );
       AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -59,7 +59,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromValidUrnMaxLength() throws URISyntaxException {
+   void createFromValidUrnMaxLength() throws URISyntaxException {
       final String namespace = Strings.repeat( "x", 221 );
       final URI validUrn = new URI(
             "urn:samm:" + namespace + ":aspect-model:Errors:1.0.0" );
@@ -69,14 +69,14 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromNull() {
+   void createFromNull() {
       assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( (URI) null ) )
             .withMessage( UrnSyntaxException.URN_IS_NULL_MESSAGE );
    }
 
    @Test
-   public void createFromUrnMissingSections() throws URISyntaxException {
+   void createFromUrnMissingSections() throws URISyntaxException {
       final URI invalidUrn = new URI( baseUri );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
@@ -85,7 +85,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromUrnInvalidProtocol() throws URISyntaxException {
+   void createFromUrnInvalidProtocol() throws URISyntaxException {
       final String errorMessage = MessageFormat
             .format( UrnSyntaxException.URN_INVALID_PROTOCOL_MESSAGE, AspectModelUrn.VALID_PROTOCOL );
 
@@ -97,7 +97,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromUrnInvalidNamespaceIdentifier() throws URISyntaxException {
+   void createFromUrnInvalidNamespaceIdentifier() throws URISyntaxException {
       final String errorMessage = MessageFormat
             .format( UrnSyntaxException.URN_INVALID_NAMESPACE_IDENTIFIER_MESSAGE,
                   AspectModelUrn.VALID_NAMESPACE_IDENTIFIER );
@@ -110,11 +110,11 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromUrnInvalidNamespace() throws URISyntaxException {
+   void createFromUrnInvalidNamespace() throws URISyntaxException {
       final String errorMessage = MessageFormat
             .format( UrnSyntaxException.URN_INVALID_NAMESPACE_MESSAGE, AspectModelUrn.NAMESPACE_REGEX );
 
-      final URI invalidUrn = new URI( "urn:samm:org.eclipse.esmf.samm.tes?t:aspect-model:Errors:1.0.0" );
+      final URI invalidUrn = new URI( "urn:samm:org.eclipse.esmf.samm.tes$t:aspect-model:Errors:1.0.0" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( invalidUrn ) )
@@ -122,7 +122,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromUrnInvalidAspectName() {
+   void createFromUrnInvalidAspectName() {
       assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( baseUri + "aspect-model:123Error:1.0.0" ) ) )
             .withMessage( "The aspect name must match \\p{Alpha}\\p{Alnum}*: 123Error" );
@@ -161,7 +161,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromUrnEmptyString() throws URISyntaxException {
+   void createFromUrnEmptyString() throws URISyntaxException {
       final String errorMessage = MessageFormat
             .format( UrnSyntaxException.URN_IS_MISSING_SECTIONS_MESSAGE, AspectModelUrn.NAMESPACE_REGEX );
       final URI emptyUrn = new URI( "" );
@@ -171,7 +171,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromUrnTooLongString() throws URISyntaxException {
+   void createFromUrnTooLongString() throws URISyntaxException {
       final String errorMessage = MessageFormat
             .format( MessageFormat.format( UrnSyntaxException.URN_IS_TOO_LONG, AspectModelUrn.MAX_URN_LENGTH ),
                   AspectModelUrn.NAMESPACE_REGEX );
@@ -186,7 +186,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromUrnInvalidElementType() throws URISyntaxException {
+   void createFromUrnInvalidElementType() throws URISyntaxException {
       final URI invalidUrn = new URI( baseUri + "some-model:Errors:1.0.0" );
 
       assertThatExceptionOfType( UrnSyntaxException.class )
@@ -195,7 +195,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createFromUrnWithInvalidVersion() {
+   void createFromUrnWithInvalidVersion() {
       assertThatExceptionOfType( UrnSyntaxException.class )
             .isThrownBy( () -> AspectModelUrn.fromUrn( new URI( baseUri + "aspect-model:Errors:1.b.0" ) ) )
             .withMessage( "Invalid version in URN: 1.b.0." );
@@ -254,7 +254,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createUrnForModelElement() throws URISyntaxException {
+   void createUrnForModelElement() throws URISyntaxException {
       final URI validUrn = new URI( baseUri + "aspect-model:Errors:1.0.0#property" );
       final AspectModelUrn elementUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -266,7 +266,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createUrnForSammCharacteristic() throws URISyntaxException {
+   void createUrnForSammCharacteristic() throws URISyntaxException {
       final URI validUrn = new URI( sammBaseUri + "characteristic:1.0.0#Either" );
       final AspectModelUrn metaModelElementUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -278,7 +278,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createUrnForCharacteristic() throws URISyntaxException {
+   void createUrnForCharacteristic() throws URISyntaxException {
       final URI validUrn = new URI( baseUri + "characteristic:TestCharacteristic:1.0.0" );
       final AspectModelUrn elementUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -290,7 +290,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createUrnForCharacteristicModelElement() throws URISyntaxException {
+   void createUrnForCharacteristicModelElement() throws URISyntaxException {
       final URI validUrn = new URI( baseUri + "characteristic:EitherTestCharacteristic:1.0.0#RightCharacteristic" );
       final AspectModelUrn elementUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -302,7 +302,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createUrnForSammEntity() throws URISyntaxException {
+   void createUrnForSammEntity() throws URISyntaxException {
       final URI validUrn = new URI( sammBaseUri + "entity:1.0.0#TimeSeriesEntity" );
       final AspectModelUrn metaModelElementUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -314,7 +314,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createUrnForSammEntityProperty() throws URISyntaxException {
+   void createUrnForSammEntityProperty() throws URISyntaxException {
       final URI validUrn = new URI( sammBaseUri + "entity:1.0.0#value" );
       final AspectModelUrn metaModelElementUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -326,7 +326,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createUrnForEntity() throws URISyntaxException {
+   void createUrnForEntity() throws URISyntaxException {
       final URI validUrn = new URI( baseUri + "entity:TestEntity:1.0.0" );
       final AspectModelUrn elementUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -338,7 +338,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createUrnForEntityProperty() throws URISyntaxException {
+   void createUrnForEntityProperty() throws URISyntaxException {
       final URI validUrn = new URI( baseUri + "entity:TestEntity:1.0.0#property" );
       final AspectModelUrn elementUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -350,7 +350,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createUrnForSammUnit() throws URISyntaxException {
+   void createUrnForSammUnit() throws URISyntaxException {
       final URI validUrn = new URI( sammBaseUri + "unit:1.0.0#litre" );
       final AspectModelUrn metaModelElementUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -362,7 +362,7 @@ public class AspectModelUrnTest {
    }
 
    @Test
-   public void createUrnForUnit() throws URISyntaxException {
+   void createUrnForUnit() throws URISyntaxException {
       final URI validUrn = new URI( baseUri + "unit:litre:1.0.0" );
       final AspectModelUrn elementUrn = AspectModelUrn.fromUrn( validUrn );
 
@@ -371,5 +371,18 @@ public class AspectModelUrnTest {
       assertThat( elementUrn.getNamespace() ).isEqualTo( "org.eclipse.esmf.test" );
       assertThat( elementUrn.getElementType() ).isEqualTo( ElementType.UNIT );
       assertThat( elementUrn.isSammUrn() ).isFalse();
+   }
+
+   @Test
+   void validNamespaceTest() throws URISyntaxException  {
+      final URI validNamespaceUrnUnderscore = new URI( "urn:samm:org.eclipse.esmf_test:0.0.1#TestAspect" );
+      final AspectModelUrn elementUrnWithUnderscore = AspectModelUrn.fromUrn( validNamespaceUrnUnderscore );
+      assertThat( elementUrnWithUnderscore.getNamespace() ).isNotEmpty();
+      assertThat( elementUrnWithUnderscore.getNamespace() ).isEqualTo( "org.eclipse.esmf_test" );
+
+      final URI invalidNamespaceUrnDash = new URI( "urn:samm:org.eclipse.esmf-test:0.0.1#TestAspect" );
+      final AspectModelUrn elementUrnWithDash = AspectModelUrn.fromUrn( invalidNamespaceUrnDash );
+      assertThat( elementUrnWithDash.getNamespace() ).isNotEmpty();
+      assertThat( elementUrnWithDash.getNamespace() ).isEqualTo( "org.eclipse.esmf-test" );
    }
 }

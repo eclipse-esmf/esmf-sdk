@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @see <a href="https://eclipse-esmf.github.io/samm-specification/2.0.0/namespaces.html">Definition of the URN</a>
  */
 public class AspectModelUrn implements Comparable<AspectModelUrn> {
-   public static final String NAMESPACE_REGEX = "([a-zA-Z0-9()+,\\-.:=@;$_!*']|%[0-9a-fA-F]{2})+";
+   public static final String NAMESPACE_REGEX = "[a-zA-Z0-9._\\-]+";
    public static final Pattern NAMESPACE_PATTERN = Pattern.compile( NAMESPACE_REGEX );
    public static final String MODEL_ELEMENT_NAME_REGEX = "\\p{Alpha}\\p{Alnum}*";
    public static final String VERSION_REGEX = "^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$";
