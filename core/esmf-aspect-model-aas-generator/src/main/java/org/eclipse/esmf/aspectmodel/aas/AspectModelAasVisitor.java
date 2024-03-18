@@ -549,6 +549,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                   .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                   .value( List.of( decideOnMapping( property, context ) ) )
+                  .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
                   .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) )
                   .build();
       final Optional<JsonNode> rawValue = context.getRawPropertyValue();
@@ -561,6 +562,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                      .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                      .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                      .value( values )
+                     .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
                      .build();
             };
             createSubmodelElement( listBuilder, context );
