@@ -48,7 +48,6 @@ import com.google.common.base.CaseFormat;
 
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
 public class AspectModelOpenApiGenerator {
-
    private static final String APPLICATION_JSON = "application/json";
    private static final String CLIENT_ERROR = "ClientError";
    private static final String COMPONENTS_RESPONSES = "#/components/responses/";
@@ -170,8 +169,8 @@ public class AspectModelOpenApiGenerator {
 
          ( (ObjectNode) rootNode.get( "info" ) ).put( "title", aspect.getPreferredName( locale ) );
          ( (ObjectNode) rootNode.get( "info" ) ).put( "version", apiVersion );
-         ( (ObjectNode) rootNode.get( "info" ) ).put( "x-samm-aspect-model-urn", aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
-
+         ( (ObjectNode) rootNode.get( "info" ) ).put( AspectModelJsonSchemaVisitor.SAMM_EXTENSION,
+               aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
          setServers( rootNode, baseUrl, apiVersion, READ_SERVER_PATH );
          final boolean includePaging = includePaging( aspect, pagingOption );
          setOptionalSchemas( aspect, includeQueryApi, includePaging, pagingOption, rootNode );
@@ -180,8 +179,8 @@ public class AspectModelOpenApiGenerator {
          setResponseBodies( aspect, rootNode, includePaging );
          rootNode.set( "paths", getPathsNode( aspect, baseUrl, apiVersion, resourcePath, jsonProperties, includeQueryApi, pagingOption ) );
          return rootNode;
-      } catch ( final Exception e ) {
-         LOG.error( "There was an exception during the read of the root or the validation.", e );
+      } catch ( final Exception exception ) {
+         LOG.error( "There was an exception during the read of the root or the validation.", exception );
       }
       return FACTORY.objectNode();
    }
@@ -247,8 +246,7 @@ public class AspectModelOpenApiGenerator {
    }
 
    private void setOptionalSchemas( final Aspect aspect, final boolean includeQueryApi, final boolean includePaging,
-         final Optional<PagingOption> pagingOption, final ObjectNode rootNode )
-         throws IOException {
+         final Optional<PagingOption> pagingOption, final ObjectNode rootNode ) throws IOException {
       final ObjectNode schemas = (ObjectNode) rootNode.get( FIELD_COMPONENTS ).get( FIELD_SCHEMAS );
       if ( includeQueryApi ) {
          try ( final InputStream inputStream = getClass().getResourceAsStream( "/openapi/Filter.json" ) ) {
@@ -606,7 +604,7 @@ public class AspectModelOpenApiGenerator {
    }
 
    private JsonNode getAspectSchemaNode( final Aspect aspect, final Locale locale, final boolean generateCommentsForSeeAttribute ) {
-      return SCHEMA_GENERATOR.applyForOpenApi( aspect, locale, generateCommentsForSeeAttribute );
+      return SCHEMA_GENERATOR.applyForOpenApi( aspect, locale, generateCommentsForSeeAttribute, List.of( "Error", "ErrorResponse" ) );
    }
 
    private void setAspectSchemaNode( final ObjectNode schemas, final Aspect aspect, final Locale locale,

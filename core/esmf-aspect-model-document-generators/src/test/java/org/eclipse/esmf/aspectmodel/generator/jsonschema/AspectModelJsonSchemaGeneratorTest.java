@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.generator.jsonschema;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
@@ -25,11 +24,13 @@ import java.util.Map;
 
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,7 +47,6 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.PathNotFoundException;
 import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -138,8 +138,6 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
     */
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         "ASPECT_WITH_CONSTRAINED_COLLECTION", // Broken model
-         "ASPECT_WITH_ENUMERATION_WITHOUT_SCALAR_VARIABLE", //Invalid Aspect Model
          "MODEL_WITH_BROKEN_CYCLES" // contains cycles, but all of them should be "breakable", need to be investigated
    } )
    public void testGeneration( final TestAspect testAspect ) {
@@ -154,10 +152,26 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
+   public void testSchemaNameClash( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY, KnownVersion.getLatest() );
+      final JsonNode schema = new AspectModelJsonSchemaGenerator().apply( aspect, Locale.ENGLISH, List.of( "TestEntity" ) );
+      final DocumentContext context = JsonPath.parse( schema.toString() );
+      assertThat( context.<String> read( "$['$schema']" ) ).isEqualTo( AspectModelJsonSchemaVisitor.JSON_SCHEMA_VERSION );
+      assertThat( context.<String> read( "$['type']" ) ).isEqualTo( "object" );
+      assertPayloadIsValid( schema, aspect );
+      assertThat( context.<String> read( "$['components']['schemas']['TestEntity0']['type']" ) ).isEqualTo( "object" );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
    public void testTypeMapping( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SIMPLE_TYPES, metaModelVersion );
       final JsonNode schema = buildJsonSchema( aspect );
+      showJson( schema );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
+
+      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
+      final String booleanName = sammc.Boolean().getLocalName();
 
       String characteristicReference = context.<String> read( "$['properties']['anyUriProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/AnyUriPropertyCharacteristic" );
@@ -176,11 +190,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['contentEncoding']" ) ).isEqualTo(
             "base64" );
 
-      final String booleanUrn = String.format( "urn_samm_org.eclipse.esmf.samm_characteristic_%s_Boolean",
-            KnownVersion.getLatest().toVersionString() );
       assertThat( context.<String> read( "$['properties']['booleanProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/" + booleanUrn );
-      assertThat( context.<String> read( "$['components']['schemas']['" + booleanUrn + "']['type']" ) )
+            .isEqualTo( "#/components/schemas/" + booleanName );
+      assertThat( context.<String> read( "$['components']['schemas']['" + booleanName + "']['type']" ) )
             .isEqualTo( "boolean" );
 
       characteristicReference = context.<String> read( "$['properties']['byteProperty']['$ref']" );
@@ -190,13 +202,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "This is a byteProperty characteristic." );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
-      final String unitReferenceUrn = String
-            .format( "urn_samm_org.eclipse.esmf.samm_characteristic_%s_UnitReference",
-                  KnownVersion.getLatest().toVersionString() );
+      final String unitReference = sammc.UnitReference().getLocalName();
       assertThat( context.<String> read( "$['properties']['curieProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/" + unitReferenceUrn );
-      assertThat( context.<String> read( "$['components']['schemas']['" + unitReferenceUrn + "']['type']" ) )
+            .isEqualTo( "#/components/schemas/" + unitReference );
+      assertThat( context.<String> read( "$['components']['schemas']['" + unitReference + "']['type']" ) )
             .isEqualTo( "string" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + unitReference + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( sammc.UnitReference().getURI() );
 
       characteristicReference = context.<String> read( "$['properties']['dateProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/DatePropertyCharacteristic" );
@@ -204,12 +217,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['format']" ) ).isEqualTo( "date" );
 
-      final String timestampUrn = String.format( "urn_samm_org.eclipse.esmf.samm_characteristic_%s_Timestamp",
-            KnownVersion.getLatest().toVersionString() );
+      final String timestamp = sammc.Timestamp().getLocalName();
       assertThat( context.<String> read( "$['properties']['dateTimeProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/" + timestampUrn );
-      assertThat( context.<String> read( "$['components']['schemas']['" + timestampUrn + "']['type']" ) )
+            .isEqualTo( "#/components/schemas/" + timestamp );
+      assertThat( context.<String> read( "$['components']['schemas']['" + timestamp + "']['type']" ) )
             .isEqualTo( "string" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + timestamp + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( sammc.Timestamp().getURI() );
 
       characteristicReference = context.<String> read( "$['properties']['dateTimeStampProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/DateTimeStampPropertyCharacteristic" );
@@ -280,13 +295,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
-      final String multiLanguageTextUrn = String
-            .format( "urn_samm_org.eclipse.esmf.samm_characteristic_%s_MultiLanguageText",
-                  KnownVersion.getLatest().toVersionString() );
+      final String multiLanguageText = sammc.MultiLanguageText().getLocalName();
       assertThat( context.<String> read( "$['properties']['langStringProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/" + multiLanguageTextUrn );
+            .isEqualTo( "#/components/schemas/" + multiLanguageText );
       assertThat( context.<String> read( "$['components']['schemas']"
-            + "['" + multiLanguageTextUrn + "']['type']" ) ).isEqualTo( "object" );
+            + "['" + multiLanguageText + "']['type']" ) ).isEqualTo( "object" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + multiLanguageText + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( sammc.MultiLanguageText().getURI() );
 
       characteristicReference = context.<String> read( "$['properties']['longProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/LongPropertyCharacteristic" );
@@ -318,11 +334,13 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
-      final String textUrn = String.format( "urn_samm_org.eclipse.esmf.samm_characteristic_%s_Text",
-            KnownVersion.getLatest().toVersionString() );
+      final String text = sammc.Text().getLocalName();
       assertThat( context.<String> read( "$['properties']['stringProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/" + textUrn );
-      assertThat( context.<String> read( "$['components']['schemas']['" + textUrn + "']['type']" ) ).isEqualTo( "string" );
+            .isEqualTo( "#/components/schemas/" + text );
+      assertThat( context.<String> read( "$['components']['schemas']['" + text + "']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + text + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( sammc.Text().getURI() );
 
       characteristicReference = context.<String> read( "$['properties']['timeProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/TimePropertyCharacteristic" );
@@ -362,12 +380,15 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY, metaModelVersion );
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
-      final String textUrn = String.format( "urn_samm_org.eclipse.esmf.samm_characteristic_%s_Text",
-            KnownVersion.getLatest().toVersionString() );
+      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
+      final String text = sammc.Text().getLocalName();
 
-      assertThat( context.<String> read( "$['components']['schemas']['" + textUrn + "']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['" + text + "']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + text + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( sammc.Text().getURI() );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/" + textUrn );
+            .isEqualTo( "#/components/schemas/" + text );
       assertThat( context.<List<String>> read( "$['required']" ) ).isNull();
    }
 
@@ -378,11 +399,13 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEntity']['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestEntity" );
-      assertThat( context.<List<String>> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_testItemCharacteristic']['required']" ) ).isNull();
+      assertThat( context.<String> read( "$['components']['schemas']['TestEntity']['properties']['testProperty']['$ref']" ) )
+            .isEqualTo( "#/components/schemas/TestItemCharacteristic" );
+      assertThat(
+            context.<String> read(
+                  "$['components']['schemas']['TestItemCharacteristic']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestItemCharacteristic" );
+      assertThat( context.<List<String>> read( "$['components']['schemas']['TestItemCharacteristic']['required']" ) ).isNull();
       assertThat( context.<List<String>> read( "$['required']" ).stream().findFirst().get() ).isEqualTo( "testProperty" );
    }
 
@@ -406,23 +429,20 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
 
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestCollection']['description']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestCollection']['description']" ) )
             .isEqualTo( "This is a test collection." );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestCollection']['items']['type']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestCollection']['items']['type']" ) )
             .isEqualTo( "number" );
-      assertThat( context.<Double> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestCollection']['items']['minimum']" ) )
+      assertThat(
+            context.<String> read( "$['components']['schemas']['TestCollection']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestCollection" );
+      assertThat( context.<Double> read( "$['components']['schemas']['TestCollection']['items']['minimum']" ) )
             .isCloseTo( 2.3d, Percentage.withPercentage( 1.0d ) );
-      assertThat( context.<Double> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestCollection']['items']['maximum']" ) )
+      assertThat( context.<Double> read( "$['components']['schemas']['TestCollection']['items']['maximum']" ) )
             .isCloseTo( 10.5d, Percentage.withPercentage( 1.0d ) );
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestCollection']['items']['exclusiveMaximum']" ) )
+      assertThat( context.<Boolean> read( "$['components']['schemas']['TestCollection']['items']['exclusiveMaximum']" ) )
             .isEqualTo( false );
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestCollection']['items']['exclusiveMinimum']" ) )
+      assertThat( context.<Boolean> read( "$['components']['schemas']['TestCollection']['items']['exclusiveMinimum']" ) )
             .isEqualTo( false );
    }
 
@@ -433,25 +453,24 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
       final DocumentContext context = JsonPath.parse( schema.toString() );
-      final String textUrn = String.format( "urn_samm_org.eclipse.esmf.samm_characteristic_%s_Text",
-            KnownVersion.getLatest().toVersionString() );
+
+      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
+      final String text = sammc.Text().getLocalName();
 
       assertThat( context.<String> read( "$['type']" ) ).isEqualTo( "object" );
       assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) )
             .isEqualTo( "This is a test property." );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestEntity" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEntity']['description']" ) )
-            .isEqualTo( "This is a test Entity Characteristic" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEntity']['type']" ) ).isEqualTo( "object" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEntity']['properties']"
-            + "['entityProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/" + textUrn );
-      assertThat( context.<List<String>> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEntity']['required']" ) )
+            .isEqualTo( "#/components/schemas/EntityCharacteristic" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestEntity']['description']" ) )
+            .isEqualTo( "This is a test entity" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestEntity']['type']" ) ).isEqualTo( "object" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestEntity']['properties']['entityProperty']['$ref']" ) )
+            .isEqualTo( "#/components/schemas/" + text );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + text + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( sammc.Text().getURI() );
+      assertThat( context.<List<String>> read( "$['components']['schemas']['TestEntity']['required']" ) )
             .isEqualTo( List.of( "entityProperty" ) );
       assertThat( context.<List<String>> read( "$['required']" ) ).isEqualTo( List.of( "testProperty" ) );
    }
@@ -463,16 +482,16 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraint" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraint']['description']" ) )
+            .isEqualTo( "#/components/schemas/TestLengthConstraint" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestLengthConstraint']['description']" ) )
             .isEqualTo( "This is a test length constraint." );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraint']['type']" ) ).isEqualTo( "string" );
-      assertThat( context.<Integer> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraint']['maxLength']" ) ).isEqualTo( 10 );
-      assertThat( context.<Integer> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraint']['minLength']" ) ).isEqualTo( 5 );
+      assertThat( context.<String> read( "$['components']['schemas']['TestLengthConstraint']['type']" ) ).isEqualTo( "string" );
+      assertThat(
+            context.<String> read(
+                  "$['components']['schemas']['TestLengthConstraint']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestLengthConstraint" );
+      assertThat( context.<Integer> read( "$['components']['schemas']['TestLengthConstraint']['maxLength']" ) ).isEqualTo( 10 );
+      assertThat( context.<Integer> read( "$['components']['schemas']['TestLengthConstraint']['minLength']" ) ).isEqualTo( 5 );
    }
 
    /**
@@ -506,21 +525,21 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read(
             "$['properties']['testPropertyCollectionLengthConstraint']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraintWithCollection" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraintWithCollection']['description']" ) )
+            .isEqualTo( "#/components/schemas/TestLengthConstraintWithCollection" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestLengthConstraintWithCollection']['description']" ) )
             .isEqualTo( "Test Length Constraint with collection" );
-      assertThat( context.<String> read(
-            "$['components']['schemas']['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraintWithCollection']['type']" ) ).isEqualTo(
-            "array" );
-      assertThat( context.<Integer> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraintWithCollection']['maxItems']" ) )
+      assertThat(
+            context.<String> read(
+                  "$['components']['schemas']['TestLengthConstraintWithCollection']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION
+                        + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestLengthConstraintWithCollection" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestLengthConstraintWithCollection']['type']" ) )
+            .isEqualTo( "array" );
+      assertThat( context.<Integer> read( "$['components']['schemas']['TestLengthConstraintWithCollection']['maxItems']" ) )
             .isEqualTo( 10 );
-      assertThat( context.<Integer> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraintWithCollection']['minItems']" ) )
+      assertThat( context.<Integer> read( "$['components']['schemas']['TestLengthConstraintWithCollection']['minItems']" ) )
             .isEqualTo( 1 );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestLengthConstraintWithCollection']['items']['type']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestLengthConstraintWithCollection']['items']['type']" ) )
             .isEqualTo( "number" );
 
       final ObjectNode payload = JsonNodeFactory.instance.objectNode();
@@ -538,17 +557,16 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestRangeConstraint" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRangeConstraint']['description']" ) )
+            .isEqualTo( "#/components/schemas/TestRangeConstraint" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestRangeConstraint']['description']" ) )
             .isEqualTo( "This is a test range constraint." );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRangeConstraint']['type']" ) ).isEqualTo( "number" );
-      assertThat( context.<Double> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRangeConstraint']['minimum']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestRangeConstraint']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['TestRangeConstraint']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestRangeConstraint" );
+      assertThat( context.<Double> read( "$['components']['schemas']['TestRangeConstraint']['minimum']" ) )
             .isCloseTo( 2.3d, Percentage.withPercentage( 1.0d ) );
-      assertThat( context.<Double> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRangeConstraint']['maximum']" ) )
+      assertThat( context.<Double> read( "$['components']['schemas']['TestRangeConstraint']['maximum']" ) )
             .isCloseTo( 10.5d, Percentage.withPercentage( 1.0d ) );
    }
 
@@ -561,16 +579,16 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestRangeConstraint" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRangeConstraint']['description']" ) )
+            .isEqualTo( "#/components/schemas/TestRangeConstraint" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestRangeConstraint']['description']" ) )
             .isEqualTo( "This is a test range constraint." );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRangeConstraint']['type']" ) ).isEqualTo( "number" );
-      assertThat( context.<Integer> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRangeConstraint']['minimum']" ) ).isEqualTo( 5 );
-      assertThat( context.<Integer> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRangeConstraint']['maximum']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestRangeConstraint']['type']" ) ).isEqualTo( "number" );
+      assertThat(
+            context.<String> read(
+                  "$['components']['schemas']['TestRangeConstraint']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestRangeConstraint" );
+      assertThat( context.<Integer> read( "$['components']['schemas']['TestRangeConstraint']['minimum']" ) ).isEqualTo( 5 );
+      assertThat( context.<Integer> read( "$['components']['schemas']['TestRangeConstraint']['maximum']" ) )
             .isEqualTo( Short.MAX_VALUE );
    }
 
@@ -582,87 +600,72 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['floatProp']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_FloatRange" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_FloatRange']['description']" ) )
+            .isEqualTo( "#/components/schemas/FloatRange" );
+      assertThat( context.<String> read( "$['components']['schemas']['FloatRange']['description']" ) )
             .isEqualTo( "This is a floating range constraint" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_FloatRange']['type']" ) ).isEqualTo( "number" );
-      assertThat( context.<Double> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_FloatRange']['minimum']" ) )
+      assertThat(
+            context.<String> read( "$['components']['schemas']['FloatRange']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "FloatRange" );
+      assertThat( context.<String> read( "$['components']['schemas']['FloatRange']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<Double> read( "$['components']['schemas']['FloatRange']['minimum']" ) )
             .isCloseTo( 12.3d, Percentage.withPercentage( 1.0d ) );
-      assertThat( context.<Double> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_FloatRange']['maximum']" ) )
+      assertThat( context.<Double> read( "$['components']['schemas']['FloatRange']['maximum']" ) )
             .isCloseTo( 23.45d, Percentage.withPercentage( 1.0d ) );
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_FloatRange']['exclusiveMaximum']" ) ).isTrue();
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_FloatRange']['exclusiveMinimum']" ) ).isTrue();
+      assertThat( context.<Boolean> read( "$['components']['schemas']['FloatRange']['exclusiveMaximum']" ) ).isTrue();
+      assertThat( context.<Boolean> read( "$['components']['schemas']['FloatRange']['exclusiveMinimum']" ) ).isTrue();
 
       assertThat( context.<String> read( "$['properties']['doubleProp']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_DoubleRange" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DoubleRange']['description']" ) )
+            .isEqualTo( "#/components/schemas/DoubleRange" );
+      assertThat( context.<String> read( "$['components']['schemas']['DoubleRange']['description']" ) )
             .isEqualTo( "This is a double range constraint" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DoubleRange']['type']" ) ).isEqualTo( "number" );
-      assertThat( context.<Double> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DoubleRange']['minimum']" ) )
+      assertThat(
+            context.<String> read( "$['components']['schemas']['DoubleRange']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "DoubleRange" );
+      assertThat( context.<String> read( "$['components']['schemas']['DoubleRange']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<Double> read( "$['components']['schemas']['DoubleRange']['minimum']" ) )
             .isCloseTo( 12.3d, Percentage.withPercentage( 1.0d ) );
-      assertThat( context.<Double> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DoubleRange']['maximum']" ) )
+      assertThat( context.<Double> read( "$['components']['schemas']['DoubleRange']['maximum']" ) )
             .isCloseTo( 23.45d, Percentage.withPercentage( 1.0d ) );
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DoubleRange']['exclusiveMaximum']" ) ).isTrue();
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DoubleRange']['exclusiveMinimum']" ) ).isTrue();
+      assertThat( context.<Boolean> read( "$['components']['schemas']['DoubleRange']['exclusiveMaximum']" ) ).isTrue();
+      assertThat( context.<Boolean> read( "$['components']['schemas']['DoubleRange']['exclusiveMinimum']" ) ).isTrue();
 
       assertThat( context.<String> read( "$['properties']['decimalProp']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_DecimalRange" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DecimalRange']['description']" ) )
+            .isEqualTo( "#/components/schemas/DecimalRange" );
+      assertThat( context.<String> read( "$['components']['schemas']['DecimalRange']['description']" ) )
             .isEqualTo( "This is a decimal range constraint" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DecimalRange']['type']" ) ).isEqualTo( "number" );
-      assertThat( context.<Double> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DecimalRange']['minimum']" ) )
+      assertThat(
+            context.<String> read( "$['components']['schemas']['DecimalRange']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "DecimalRange" );
+      assertThat( context.<String> read( "$['components']['schemas']['DecimalRange']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<Double> read( "$['components']['schemas']['DecimalRange']['minimum']" ) )
             .isCloseTo( 12.3d, Percentage.withPercentage( 1.0d ) );
-      assertThat( context.<Double> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DecimalRange']['maximum']" ) )
+      assertThat( context.<Double> read( "$['components']['schemas']['DecimalRange']['maximum']" ) )
             .isCloseTo( 23.45d, Percentage.withPercentage( 1.0d ) );
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DecimalRange']['exclusiveMaximum']" ) ).isTrue();
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_DecimalRange']['exclusiveMinimum']" ) ).isTrue();
+      assertThat( context.<Boolean> read( "$['components']['schemas']['DecimalRange']['exclusiveMaximum']" ) ).isTrue();
+      assertThat( context.<Boolean> read( "$['components']['schemas']['DecimalRange']['exclusiveMinimum']" ) ).isTrue();
 
       assertThat( context.<String> read( "$['properties']['integerProp']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_IntegerRange" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntegerRange']['description']" ) )
+            .isEqualTo( "#/components/schemas/IntegerRange" );
+      assertThat( context.<String> read( "$['components']['schemas']['IntegerRange']['description']" ) )
             .isEqualTo( "This is a integer range constraint" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntegerRange']['type']" ) ).isEqualTo( "number" );
-      assertThat( context.<Integer> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntegerRange']['minimum']" ) ).isEqualTo( 12 );
-      assertThat( context.<Integer> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntegerRange']['maximum']" ) ).isEqualTo( 23 );
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntegerRange']['exclusiveMaximum']" ) ).isTrue();
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntegerRange']['exclusiveMinimum']" ) ).isTrue();
+      assertThat(
+            context.<String> read( "$['components']['schemas']['IntegerRange']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "IntegerRange" );
+      assertThat( context.<String> read( "$['components']['schemas']['IntegerRange']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<Integer> read( "$['components']['schemas']['IntegerRange']['minimum']" ) ).isEqualTo( 12 );
+      assertThat( context.<Integer> read( "$['components']['schemas']['IntegerRange']['maximum']" ) ).isEqualTo( 23 );
+      assertThat( context.<Boolean> read( "$['components']['schemas']['IntegerRange']['exclusiveMaximum']" ) ).isTrue();
+      assertThat( context.<Boolean> read( "$['components']['schemas']['IntegerRange']['exclusiveMinimum']" ) ).isTrue();
 
       assertThat( context.<String> read( "$['properties']['intProp']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_IntRange" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntRange']['type']" ) ).isEqualTo( "number" );
-      assertThat( context.<Integer> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntRange']['minimum']" ) ).isEqualTo( 12 );
-      assertThat( context.<Integer> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntRange']['maximum']" ) ).isEqualTo( 23 );
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntRange']['exclusiveMaximum']" ) ).isTrue();
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_IntRange']['exclusiveMinimum']" ) ).isTrue();
+            .isEqualTo( "#/components/schemas/IntRange" );
+      assertThat( context.<String> read( "$['components']['schemas']['IntRange']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "IntRange" );
+      assertThat( context.<String> read( "$['components']['schemas']['IntRange']['type']" ) ).isEqualTo( "number" );
+      assertThat( context.<Integer> read( "$['components']['schemas']['IntRange']['minimum']" ) ).isEqualTo( 12 );
+      assertThat( context.<Integer> read( "$['components']['schemas']['IntRange']['maximum']" ) ).isEqualTo( 23 );
+      assertThat( context.<Boolean> read( "$['components']['schemas']['IntRange']['exclusiveMaximum']" ) ).isTrue();
+      assertThat( context.<Boolean> read( "$['components']['schemas']['IntRange']['exclusiveMinimum']" ) ).isTrue();
    }
 
    @ParameterizedTest
@@ -675,34 +678,29 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) )
             .isEqualTo( "This is a test property." );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestList" );
+            .isEqualTo( "#/components/schemas/TestList" );
 
-      assertThat( context.<String> read( "$['components']['schemas']['urn_samm_org.eclipse.esmf.test_1.0.0_TestList']['description']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestList']['description']" ) )
             .isEqualTo( "This is a test list." );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestList']['type']" ) ).isEqualTo( "array" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestList']['items']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestList']['type']" ) ).isEqualTo( "array" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestList']['items']['type']" ) ).isEqualTo( "string" );
    }
 
    @Test
    public void testSetMapping() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SET, KnownVersion.getLatest() );
       final JsonNode schema = buildJsonSchema( aspect );
+      showJson( schema );
       final DocumentContext context = JsonPath.parse( schema.toString() );
 
-      assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) )
-            .isEqualTo( "This is a test property." );
-      assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestSet" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestSet']['type']" ) ).isEqualTo( "array" );
-      assertThat( context.<String> read( "$['components']['schemas']['urn_samm_org.eclipse.esmf.test_1.0.0_TestSet']['description']" ) )
-            .isEqualTo( "This is a test set." );
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestSet']['uniqueItems']" ) ).isTrue();
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestSet']['items']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) ).isEqualTo( "This is a test property." );
+      assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) ).isEqualTo( "#/components/schemas/TestSet" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestSet']['type']" ) ).isEqualTo( "array" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestSet']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestSet" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestSet']['description']" ) ).isEqualTo( "This is a test set." );
+      assertThat( context.<Boolean> read( "$['components']['schemas']['TestSet']['uniqueItems']" ) ).isTrue();
+      assertThat( context.<String> read( "$['components']['schemas']['TestSet']['items']['type']" ) ).isEqualTo( "string" );
    }
 
    @Test
@@ -715,16 +713,15 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) )
             .isEqualTo( "This is a test property." );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestSortedSet" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestSortedSet']['type']" ) ).isEqualTo( "array" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestSortedSet']['description']" ) )
+            .isEqualTo( "#/components/schemas/TestSortedSet" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestSortedSet']['type']" ) ).isEqualTo( "array" );
+      assertThat(
+            context.<String> read( "$['components']['schemas']['TestSortedSet']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestSortedSet" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestSortedSet']['description']" ) )
             .isEqualTo( "This is a test sorted set." );
-      assertThat( context.<Boolean> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestSortedSet']['uniqueItems']" ) ).isTrue();
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestSortedSet']['items']['type']" ) ).isEqualTo( "string" );
+      assertThat( context.<Boolean> read( "$['components']['schemas']['TestSortedSet']['uniqueItems']" ) ).isTrue();
+      assertThat( context.<String> read( "$['components']['schemas']['TestSortedSet']['items']['type']" ) ).isEqualTo( "string" );
    }
 
    @ParameterizedTest
@@ -732,20 +729,26 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    public void testLangStringMapping( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT, metaModelVersion );
       final JsonNode schema = buildJsonSchema( aspect );
-      final String multiLanguageTextUrn = String
-            .format( "urn_samm_org.eclipse.esmf.samm_characteristic_%s_MultiLanguageText",
-                  KnownVersion.getLatest().toVersionString() );
+      showJson( schema );
+      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
+      final String multiLanguageText = sammc.MultiLanguageText().getLocalName();
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['prop']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/" + multiLanguageTextUrn );
-      assertThat( context.<String> read( "$['components']['schemas']['" + multiLanguageTextUrn + "']['type']" ) )
+            .isEqualTo( "#/components/schemas/" + multiLanguageText );
+      assertThat( context.<String> read( "$['components']['schemas']['" + multiLanguageText + "']['type']" ) )
             .isEqualTo( "object" );
-      assertThat( context.<String> read( "$['components']['schemas']['" + multiLanguageTextUrn + "']['description']" ) )
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + multiLanguageText + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( sammc.MultiLanguageText().getURI() );
+      assertThat( context.<String> read( "$['components']['schemas']['" + multiLanguageText + "']['description']" ) )
             .isEqualTo( "Describes a Property which contains plain text in multiple "
                   + "languages. This is intended exclusively for human readable strings, not for "
                   + "identifiers, measurement values, etc." );
-      assertThat( context.<String> read( "$['components']['schemas']['" + multiLanguageTextUrn + "']['patternProperties']"
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + multiLanguageText + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( sammc.MultiLanguageText().getURI() );
+      assertThat( context.<String> read( "$['components']['schemas']['" + multiLanguageText + "']['patternProperties']"
             + "['^.*$']['type']" ) ).isEqualTo( "string" );
 
       final ObjectNode payload = JsonNodeFactory.instance.objectNode();
@@ -761,18 +764,19 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    public void testEitherMapping( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_EITHER, metaModelVersion );
       final JsonNode schema = buildJsonSchema( aspect );
+      showJson( schema );
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestEither" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEither']['description']" ) )
+            .isEqualTo( "#/components/schemas/TestEither" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestEither']['description']" ) )
             .isEqualTo( "This is a test Either." );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEither']['properties']['left']['type']" ) )
+      assertThat(
+            context.<String> read( "$['components']['schemas']['TestEither']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestEither" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestEither']['properties']['left']['type']" ) )
             .isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEither']['properties']['right']['type']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestEither']['properties']['right']['type']" ) )
             .isEqualTo( "boolean" );
 
       final ObjectNode leftPayload = JsonNodeFactory.instance.objectNode();
@@ -798,14 +802,15 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) )
             .isEqualTo( "This is a test property." );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestEnumeration" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEnumeration']['description']" ) )
+            .isEqualTo( "#/components/schemas/TestEnumeration" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestEnumeration']['description']" ) )
             .isEqualTo( "This is a test for enumeration." );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEnumeration']['type']" ) ).isEqualTo( "number" );
-      assertThat( context.<List<Integer>> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestEnumeration']['enum']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestEnumeration']['type']" ) ).isEqualTo( "number" );
+      assertThat(
+            context.<String> read(
+                  "$['components']['schemas']['TestEnumeration']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestEnumeration" );
+      assertThat( context.<List<Integer>> read( "$['components']['schemas']['TestEnumeration']['enum']" ) )
             .containsExactly( 1, 2, 3 );
    }
 
@@ -817,18 +822,17 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['result']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_EvaluationResults" );
+            .isEqualTo( "#/components/schemas/EvaluationResults" );
 
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_EvaluationResults']['description']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['EvaluationResults']['description']" ) )
             .isEqualTo( "Possible values for the evaluation of a process" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_EvaluationResults']['type']" ) ).isEqualTo( "object" );
-      assertThat( context.<String> read( "$['components']"
-            + "['schemas']['urn_samm_org.eclipse.esmf.test_1.0.0_EvaluationResults']['oneOf'][0]['$ref']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['EvaluationResults']['type']" ) ).isEqualTo( "object" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['EvaluationResults']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "EvaluationResults" );
+      assertThat( context.<String> read( "$['components']['schemas']['EvaluationResults']['oneOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/ResultGood" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_EvaluationResults']['oneOf'][1]['$ref']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['EvaluationResults']['oneOf'][1]['$ref']" ) )
             .isEqualTo( "#/components/schemas/ResultBad" );
 
       assertThat( context.<String> read( "$['components']['schemas']['ResultGood']['properties']['details']"
@@ -851,7 +855,11 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['result']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_EvaluationResults" );
+            .isEqualTo( "#/components/schemas/EvaluationResults" );
+      assertThat(
+            context.<String> read(
+                  "$['components']['schemas']['EvaluationResults']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "EvaluationResults" );
 
       assertThat( context.<String> read( "$['components']['schemas']['ResultNoStatus']['properties']['average']"
             + "['description']" ) ).isEqualTo( "Some artifical average value" );
@@ -875,11 +883,13 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) )
             .isEqualTo( "This is a test property." );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestEnumeration" );
+            .isEqualTo( "#/components/schemas/TestEnumeration" );
 
-      assertThat( context.<String> read(
-            "$['components']['schemas']['urn_samm_org.eclipse.esmf.test_1.0.0_TestEnumeration']['description']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestEnumeration']['description']" ) )
             .isEqualTo( "This is a test for enumeration." );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['TestEnumeration']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestEnumeration" );
 
       assertThat( context.<String> read( "$['components']['schemas']['entityInstance']['type']" ) )
             .isEqualTo( "object" );
@@ -897,15 +907,16 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) )
             .isEqualTo( "This is a test property." );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_TestRegularExpressionConstraint" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRegularExpressionConstraint']['description']" ) )
+            .isEqualTo( "#/components/schemas/TestRegularExpressionConstraint" );
+      assertThat(
+            context.<String> read(
+                  "$['components']['schemas']['TestRegularExpressionConstraint']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "TestRegularExpressionConstraint" );
+      assertThat( context.<String> read( "$['components']['schemas']['TestRegularExpressionConstraint']['description']" ) )
             .isEqualTo( "This is a test regular expression constraint." );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRegularExpressionConstraint']['type']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestRegularExpressionConstraint']['type']" ) )
             .isEqualTo( "string" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_TestRegularExpressionConstraint']['pattern']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['TestRegularExpressionConstraint']['pattern']" ) )
             .isEqualTo( "^[0-9]*$" );
    }
 
@@ -918,19 +929,18 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       showJson( schema );
       assertThat( context.<String> read( "$['type']" ) ).isEqualTo( "object" );
       assertThat( context.<String> read( "$['properties']['myPropertyOne']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_MyEnumerationOne" );
+            .isEqualTo( "#/components/schemas/MyEnumerationOne" );
 
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_MyEnumerationOne']['description']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['MyEnumerationOne']['description']" ) )
             .isEqualTo( "This is my enumeration one" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_MyEnumerationOne']['type']" ) ).isEqualTo( "object" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_MyEnumerationOne']['oneOf'][0]['$ref']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['MyEnumerationOne']['type']" ) )
+            .isEqualTo( "object" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['MyEnumerationOne']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "MyEnumerationOne" );
+      assertThat( context.<String> read( "$['components']['schemas']['MyEnumerationOne']['oneOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/entityInstanceOne" );
 
-      assertThat( context.<String> read( "$['components']['schemas']['entityInstanceOne']['type']" ) )
-            .isEqualTo( "object" );
       assertThat( context.<String> read( "$['components']['schemas']['entityInstanceOne']['required'][0]" ) )
             .isEqualTo( "entityPropertyOne" );
       assertThat( context.<String> read( "$['components']['schemas']['entityInstanceOne']['properties']"
@@ -953,26 +963,26 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final DocumentContext context = JsonPath.parse( schema.toString() );
       showJson( schema );
 
-      assertThatExceptionOfType( PathNotFoundException.class )
-            .isThrownBy( () -> context.<String> read( "$['components']['schemas']['ExtendingTestEntity']" ) );
-      assertThatExceptionOfType( PathNotFoundException.class )
-            .isThrownBy( () -> context.<String> read( "$['components']['schemas']['AbstractTestEntity']" ) );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
-            .isEqualTo(
-                  "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_" + KnownVersion.getLatest().toVersionString()
-                        + "_Text" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity']['description']" ) )
+      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
+      final String text = sammc.Text().getLocalName();
+
+      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['allOf'][0]['$ref']" ) )
+            .isEqualTo( "#/components/schemas/AbstractTestEntity" );
+      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
+            .isEqualTo( "#/components/schemas/" + text );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['ExtendingTestEntity']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "ExtendingTestEntity" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + text + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( sammc.Text().getURI() );
+      assertThat( context.<String> read( "$['components']['schemas']['AbstractTestEntity']['description']" ) )
             .isEqualTo( "This is an abstract test entity" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']" ) )
+      assertThat(
+            context.<String> read( "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestPropertyCharacteristic" );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity" );
+            .isEqualTo( "#/components/schemas/EntityCharacteristic" );
    }
 
    @ParameterizedTest
@@ -983,25 +993,28 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final DocumentContext context = JsonPath.parse( schema.toString() );
       showJson( schema );
 
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity']['description']" ) )
-            .isEqualTo( "This is a test Entity Characteristic" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
-            .isEqualTo(
-                  "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_" + KnownVersion.getLatest().toVersionString()
-                        + "_Text" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity']['description']" ) )
+      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
+      final String text = sammc.Text().getLocalName();
+
+      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['description']" ) )
+            .isEqualTo( "This is a test entity" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['ExtendingTestEntity']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "ExtendingTestEntity" );
+      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['allOf'][0]['$ref']" ) )
+            .isEqualTo( "#/components/schemas/AbstractTestEntity" );
+      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
+            .isEqualTo( "#/components/schemas/" + text );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + text + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( sammc.Text().getURI() );
+      assertThat( context.<String> read( "$['components']['schemas']['AbstractTestEntity']['description']" ) )
             .isEqualTo( "This is a abstract test entity" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']" ) )
+      assertThat(
+            context.<String> read( "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestPropertyCharacteristic" );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity" );
+            .isEqualTo( "#/components/schemas/EntityCharacteristic" );
    }
 
    /**
@@ -1014,18 +1027,15 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    public void testAspectWithAbstractProperty( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ABSTRACT_PROPERTY, metaModelVersion );
       final JsonNode schema = buildJsonSchema( aspect );
+      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
+      final String text = sammc.Text().getLocalName();
 
-      assertThat( schema.at( "/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity/"
-            + "description" ).asText() )
+      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/description" ).asText() )
             .isEqualTo( "This is a test entity" );
-      assertThat( schema.at( "/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity/"
-            + "properties/abstractTestProperty/description" ).asText() )
+      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/properties/abstractTestProperty/description" ).asText() )
             .isEqualTo( "This is an abstract test property" );
-      assertThat( schema.at( "/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity/"
-            + "properties/abstractTestProperty/$ref" ).asText() )
-            .isEqualTo(
-                  "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_" + KnownVersion.getLatest().toVersionString()
-                        + "_Text" );
+      assertThat( schema.at( "/components/schemas/ExtendingTestEntity/properties/abstractTestProperty/$ref" ).asText() )
+            .isEqualTo( "#/components/schemas/" + text );
    }
 
    @ParameterizedTest
@@ -1036,30 +1046,29 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       final DocumentContext context = JsonPath.parse( schema.toString() );
       showJson( schema );
 
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity']['allOf'][0]['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity']['description']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['allOf'][0]['$ref']" ) )
+            .isEqualTo( "#/components/schemas/AbstractTestEntity" );
+      assertThat( context.<String> read( "$['components']['schemas']['AbstractTestEntity']['description']" ) )
             .isEqualTo( "This is an abstract test entity" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
-            .isEqualTo(
-                  "#/components/schemas/urn_samm_org.eclipse.esmf.samm_characteristic_" + KnownVersion.getLatest().toVersionString()
-                        + "_Text" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['description']" ) )
+      assertThat( context.<String> read(
+            "$['components']['schemas']['AbstractTestEntity']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "AbstractTestEntity" );
+      assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['properties']['entityProperty']['$ref']" ) )
+            .isEqualTo( "#/components/schemas/Text" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['description']" ) )
             .isEqualTo( "This is an abstract test property" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity']['properties']['abstractTestProperty']['$ref']" ) )
+      assertThat(
+            context.<String> read( "$['components']['schemas']['AbstractTestEntity']['properties']['abstractTestProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestPropertyCharacteristic" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_EntityCollectionCharacteristic']['description']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['EntityCollectionCharacteristic']['description']" ) )
             .isEqualTo( "This is an entity collection characteristic" );
-      assertThat( context.<String> read( "$['components']['schemas']"
-            + "['urn_samm_org.eclipse.esmf.test_1.0.0_EntityCollectionCharacteristic']['items']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_AbstractTestEntity" );
+      assertThat( context.<String> read(
+            "$['components']['schemas']['EntityCollectionCharacteristic']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) )
+            .isEqualTo( TestModel.TEST_NAMESPACE + "EntityCollectionCharacteristic" );
+      assertThat( context.<String> read( "$['components']['schemas']['EntityCollectionCharacteristic']['items']['$ref']" ) )
+            .isEqualTo( "#/components/schemas/AbstractTestEntity" );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
-            .isEqualTo( "#/components/schemas/urn_samm_org.eclipse.esmf.test_1.0.0_EntityCollectionCharacteristic" );
+            .isEqualTo( "#/components/schemas/EntityCollectionCharacteristic" );
    }
 }

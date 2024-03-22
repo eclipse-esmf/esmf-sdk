@@ -130,8 +130,8 @@ class AspectModelPagingGenerator {
       node.forEach( subNode -> propertiesNode.set( UUID.randomUUID().toString(), subNode ) );
    }
 
-   private void setSchemaInformation( final Aspect aspect, final PagingOption pagingOption,
-         final ObjectNode schemaNode ) throws IOException {
+   private void setSchemaInformation( final Aspect aspect, final PagingOption pagingOption, final ObjectNode schemaNode )
+         throws IOException {
       final ObjectNode node = (ObjectNode) getPathRootNode( pagingOption ).get( "response" );
       schemaNode.set( AspectModelOpenApiGenerator.FIELD_PAGING_SCHEMA, node );
 
@@ -156,7 +156,8 @@ class AspectModelPagingGenerator {
          case TIME_BASED_PAGING -> "TimeBasedPaging.json";
          case CURSOR_BASED_PAGING -> "CursorBasedPaging.json";
          case OFFSET_BASED_PAGING -> "OffsetBasedPaging.json";
-         default -> throw new IllegalArgumentException( String.format( "There is no file defined for the chosen paging option %s", pagingOption ) );
+         default -> throw new IllegalArgumentException(
+               String.format( "There is no file defined for the chosen paging option %s", pagingOption ) );
       };
       try ( final InputStream inputStream = getClass().getResourceAsStream( "/openapi/" + fileName ) ) {
          return (ObjectNode) OBJECT_MAPPER.readTree( IOUtils.toString( inputStream, StandardCharsets.UTF_8 ) );

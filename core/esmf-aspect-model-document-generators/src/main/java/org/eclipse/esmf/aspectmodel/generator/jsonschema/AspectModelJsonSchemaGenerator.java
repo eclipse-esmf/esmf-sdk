@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator.jsonschema;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.function.BiFunction;
 
@@ -30,8 +31,19 @@ public class AspectModelJsonSchemaGenerator implements BiFunction<Aspect, Locale
       return visitor.visitAspect( aspect, null );
    }
 
+   public JsonNode apply( final Aspect aspect, final Locale locale, final List<String> reservedSchemaNames ) {
+      final AspectModelJsonSchemaVisitor visitor = new AspectModelJsonSchemaVisitor( false, locale, false, reservedSchemaNames );
+      return visitor.visitAspect( aspect, null );
+   }
+
    public JsonNode applyForOpenApi( final Aspect aspect, final Locale locale, final boolean generateCommentForSeeAttributes ) {
-      final AspectModelJsonSchemaVisitor visitor = new AspectModelJsonSchemaVisitor( false, locale, generateCommentForSeeAttributes );
+      return applyForOpenApi( aspect, locale, generateCommentForSeeAttributes );
+   }
+
+   public JsonNode applyForOpenApi( final Aspect aspect, final Locale locale, final boolean generateCommentForSeeAttributes,
+         final List<String> reservedSchemaNames ) {
+      final AspectModelJsonSchemaVisitor visitor = new AspectModelJsonSchemaVisitor( false, locale, generateCommentForSeeAttributes,
+            reservedSchemaNames );
       return visitor.visitAspectForOpenApi( aspect );
    }
 }

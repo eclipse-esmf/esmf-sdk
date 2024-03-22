@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.generator.openapi;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -25,8 +26,10 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
@@ -58,6 +61,8 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.apache.commons.io.IOUtils;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -82,21 +87,37 @@ public class OpenApiTest extends MetaModelVersions {
       final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );
       final JsonNode json = apiJsonGenerator.applyForJson( aspect, false, TEST_BASE_URL, TEST_RESOURCE_PATH,
             Optional.empty(), false, Optional.empty() );
+      showJson( json );
       assertSpecificationIsValid( json, json.toString(), aspect );
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo(
+            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+   }
+
+   private void showJson( final JsonNode node ) {
+      final ByteArrayOutputStream out = new ByteArrayOutputStream();
+      try {
+         new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue( out, node );
+      } catch ( final IOException e ) {
+         e.printStackTrace();
+         Assertions.fail();
+      }
+      System.out.println( out );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testUseSemanticVersion( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT, metaModelVersion );
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_PROPERTY, metaModelVersion );
       final JsonNode json = apiJsonGenerator.applyForJson( aspect, true, TEST_BASE_URL, TEST_RESOURCE_PATH,
             Optional.empty(), false, Optional.empty() );
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( "v1.0.0" );
-      assertThat( json.get( "info" ).get( "x-samm-aspect-model-urn" ) ).isNotNull();
-      assertThat( json.get( "info" ).get( "x-samm-aspect-model-urn" ).asText() ).isEqualTo( aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo(
+            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
       openApi.getServers().forEach( server -> assertThat( server.getUrl() ).contains( "v1.0.0" ) );
    }
@@ -384,10 +405,11 @@ public class OpenApiTest extends MetaModelVersions {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat(
-            ((Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf().get( 1 )).getProperties() ).doesNotContainKey(
+            ( (Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
+                  .get( 1 ) ).getProperties() ).doesNotContainKey(
             "params" );
-      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
-            .get( 1 )).getProperties() ).doesNotContainKey( "params" );
+      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
+            .get( 1 ) ).getProperties() ).doesNotContainKey( "params" );
    }
 
    @ParameterizedTest
@@ -402,10 +424,10 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openApi.getSpecVersion() ).isEqualTo( SpecVersion.V31 );
       assertThat( openApi.getComponents().getSchemas().get( "AspectWithCollection" ).get$comment() ).isEqualTo(
             "See: http://example.com/" );
-      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
-            .get( "testProperty" )).get$comment() )
+      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
+            .get( "testProperty" ) ).get$comment() )
             .isEqualTo( "See: http://example.com/, http://example.com/me" );
-      assertThat( openApi.getComponents().getSchemas().get( "urn_samm_org.eclipse.esmf.test_1.0.0_TestCollection" ).get$comment() )
+      assertThat( openApi.getComponents().getSchemas().get( "TestCollection" ).get$comment() )
             .isEqualTo( "See: http://example.com/" );
    }
 
@@ -419,16 +441,34 @@ public class OpenApiTest extends MetaModelVersions {
       final OpenAPI openApi = result.getOpenAPI();
       validateOpenApiSpec( jsonNode, openApi, aspect );
 
+      System.out.println( prettyPrintJson( json ) );
+
       final DocumentContext context = JsonPath.parse( json );
       assertThat( context.<Object> read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();
+      assertThat( context.<String> read(
+            "$['components']['schemas']['" + aspect.getName() + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) ).isEqualTo(
+            aspect.getAspectModelUrn().get().toString() );
+
+      for ( final Property property : aspect.getProperties() ) {
+         assertThat( context.<String> read( "$['components']['schemas']"
+               + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
+               + AspectModelJsonSchemaVisitor.SAMM_EXTENSION
+               + "']" ) ).isEqualTo( property.getAspectModelUrn().get().toString() );
+      }
+
       // $comment keywords should only be generated on demand, not by default
-      assertThat( context.<Object> read( "$..$comment" ) ).asList().isEmpty();
+      assertThat( context.<Object> read( "$..$comment" ) ).asInstanceOf( InstanceOfAssertFactories.LIST ).isEmpty();
       if ( !aspect.getOperations().isEmpty() ) {
          validateOperation( openApi );
       } else {
          assertThat( openApi.getComponents().getSchemas().keySet() ).doesNotContain( "JsonRpc" );
       }
       validateYaml( aspect );
+   }
+
+   public static String prettyPrintJson( final String json ) throws JsonProcessingException {
+      final ObjectMapper m = new ObjectMapper();
+      return m.writerWithDefaultPrettyPrinter().writeValueAsString( m.readTree( json ) );
    }
 
    private void validateOpenApiSpec( final JsonNode node, final OpenAPI openApi, final Aspect aspect ) {
@@ -438,9 +478,9 @@ public class OpenApiTest extends MetaModelVersions {
       final String expectedApiVersion = getExpectedApiVersion( aspect );
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
 
-      final String xSammAspectModelUrn = "x-samm-aspect-model-urn";
-      assertThat( node.get( "info" ).get( xSammAspectModelUrn ) ).isNotNull();
-      assertThat( node.get( "info" ).get( xSammAspectModelUrn ).asText() ).isEqualTo( aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+      assertThat( node.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( node.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo(
+            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
       assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
@@ -456,8 +496,12 @@ public class OpenApiTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getSchemas().keySet() ).contains( aspect.getName() );
       assertThat( openApi.getComponents().getResponses().keySet() ).contains( aspect.getName() );
       assertThat( openApi.getComponents().getRequestBodies().keySet() ).contains( aspect.getName() );
-      assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( xSammAspectModelUrn ) ).isNotNull();
-      assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( xSammAspectModelUrn ).toString() ).contains( aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ));
+      assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
+            .get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
+      assertThat(
+            openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION )
+                  .toString() ).contains(
+            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
       validateReferences( node );
    }
@@ -508,8 +552,8 @@ public class OpenApiTest extends MetaModelVersions {
       final AspectModelOpenApiGenerator apiJsonGenerator = new AspectModelOpenApiGenerator();
       try {
          apiJsonGenerator.applyForYaml( aspect, false, TEST_BASE_URL, TEST_RESOURCE_PATH, Optional.empty(), false, Optional.empty() );
-      } catch ( final JsonProcessingException e ) {
-         fail( "Exception occurred during OpenAPI Yaml creation.", e );
+      } catch ( final JsonProcessingException exception ) {
+         fail( "Exception occurred during OpenAPI Yaml creation.", exception );
       }
    }
 
