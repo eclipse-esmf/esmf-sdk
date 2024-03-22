@@ -14,7 +14,6 @@
 package org.eclipse.esmf;
 
 import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.fileToUrn;
-import static org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver.urnFromModel;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,22 +25,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.ExternalResolverStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.exception.CommandException;
+import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 
 import io.vavr.control.Try;
+import org.apache.commons.io.FilenameUtils;
 
 public abstract class AbstractCommand implements Runnable {
    protected Try<VersionedModel> loadAndResolveModel( final File input, final ExternalResolverMixin resolverConfig ) {
@@ -64,9 +67,26 @@ public abstract class AbstractCommand implements Runnable {
       final File inputFile = new File( modelFileName );
       final Try<VersionedModel> versionedModel = loadAndResolveModel( inputFile, resolverConfig );
       final Try<AspectContext> context = versionedModel.flatMap( model -> {
-         final AspectModelUrn urn = fileToUrn( inputFile.getAbsoluteFile() ).getOrElse( () -> urnFromModel( model, inputFile ) );
-         return AspectModelLoader.getSingleAspect( model, aspect -> aspect.getName().equals( urn.getName() ) )
-               .map( aspect -> new AspectContext( model, aspect ) );
+         final String expectedAspectName = FilenameUtils.removeExtension( inputFile.getName() );
+         final Try<List<Aspect>> tryAspects = AspectModelLoader.getAspects( model );
+         if ( tryAspects.isFailure() ) {
+            return Try.failure( tryAspects.getCause() );
+         }
+         final List<Aspect> aspects = tryAspects.get();
+         if ( aspects.isEmpty() ) {
+            return Try.failure( new InvalidRootElementCountException( "No Aspects were found in the model" ) );
+         }
+         // If there is exactly one Aspect in the file, even if does not have the same name as the file, use it
+         if ( aspects.size() == 1 ) {
+            return Try.success( new AspectContext( model, aspects.get( 0 ) ) );
+         }
+         return aspects.stream().filter( aspect -> aspect.getName().equals( expectedAspectName ) )
+               .findFirst()
+               .map( aspect -> Try.success( new AspectContext( model, aspect ) ) )
+               .orElseGet( () -> Try.failure( new InvalidRootElementCountException(
+                     "Found multiple Aspects in the file " + inputFile.getAbsolutePath() + ", but none is called '"
+                           + expectedAspectName + "': " + aspects.stream().map( Aspect::getName )
+                           .collect( Collectors.joining( ", " ) ) ) ) );
       } );
 
       return context.recover( throwable -> {

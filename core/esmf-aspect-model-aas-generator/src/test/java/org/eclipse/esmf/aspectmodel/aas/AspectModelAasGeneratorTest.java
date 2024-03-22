@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -37,6 +38,7 @@ import org.eclipse.esmf.test.TestResources;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
+import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
 import org.eclipse.digitaltwin.aas4j.v3.model.AbstractLangString;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;
 import org.eclipse.digitaltwin.aas4j.v3.model.DataSpecificationContent;
@@ -160,8 +162,11 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels() ).hasSize( 1 );
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertThat( submodelElement ).isInstanceOf( SubmodelElementList.class );
-      assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
+      assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
+            .satisfies( submodelElementList -> {
+               assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+            } );
 
       getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -172,8 +177,11 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels() ).hasSize( 1 );
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
-      assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
+      assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
+            .satisfies( submodelElementList -> {
+               assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+            } );
 
       getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
@@ -184,8 +192,11 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels() ).hasSize( 1 );
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
-      assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
-      assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
+      assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
+            .satisfies( submodelElementList -> {
+               assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+            } );
 
       getDataSpecificationIec61360( "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
    }
