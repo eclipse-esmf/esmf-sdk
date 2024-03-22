@@ -68,7 +68,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
 
-public class OpenApiTest extends MetaModelVersions {
+public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
    private static final String TEST_BASE_URL = "https://test-aspect.example.com";
    private static final Optional<String> TEST_RESOURCE_PATH = Optional.of( "my-test-aspect" );
@@ -431,8 +431,7 @@ public class OpenApiTest extends MetaModelVersions {
             .isEqualTo( "See: http://example.com/" );
    }
 
-   private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect )
-         throws IOException {
+   private void assertSpecificationIsValid( final JsonNode jsonNode, final String json, final Aspect aspect ) throws IOException {
       validateUnsupportedKeywords( jsonNode );
 
       final SwaggerParseResult result = new OpenAPIParser().readContents( json, null, null );

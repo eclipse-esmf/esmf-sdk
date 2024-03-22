@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Operation;
@@ -91,7 +93,10 @@ public class AspectModelOpenApiGenerator {
 
    private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
    private static final AspectModelJsonSchemaGenerator SCHEMA_GENERATOR = new AspectModelJsonSchemaGenerator();
-   private static final AspectModelJsonSchemaVisitor SCHEMA_VISITOR = new AspectModelJsonSchemaVisitor( false );
+   private static final AspectModelJsonSchemaVisitor SCHEMA_VISITOR = new AspectModelJsonSchemaVisitor(
+         JsonSchemaGenerationConfigBuilder.builder()
+               .useExtendedTypes( false )
+               .build() );
    private static final AspectModelPagingGenerator PAGING_GENERATOR = new AspectModelPagingGenerator();
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelOpenApiGenerator.class );
 
@@ -604,7 +609,13 @@ public class AspectModelOpenApiGenerator {
    }
 
    private JsonNode getAspectSchemaNode( final Aspect aspect, final Locale locale, final boolean generateCommentsForSeeAttribute ) {
-      return SCHEMA_GENERATOR.applyForOpenApi( aspect, locale, generateCommentsForSeeAttribute, List.of( "Error", "ErrorResponse" ) );
+      final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
+            .locale( locale )
+            .generateCommentForSeeAttributes( generateCommentsForSeeAttribute )
+            .useExtendedTypes( false )
+            .generateForOpenApi( true )
+            .build();
+      return SCHEMA_GENERATOR.apply( aspect, config ).getContent();
    }
 
    private void setAspectSchemaNode( final ObjectNode schemas, final Aspect aspect, final Locale locale,

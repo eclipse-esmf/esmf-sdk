@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.AspectContext;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -49,7 +51,10 @@ public class GenerateJsonSchema extends AspectModelMojo {
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       try {
          for ( final AspectContext context : aspectModels ) {
-            final JsonNode schema = generator.apply( context.aspect(), locale );
+            final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
+                  .locale( locale )
+                  .build();
+            final JsonNode schema = generator.apply( context.aspect(), config ).getContent();
             final OutputStream out = getOutputStreamForFile( context.aspect().getName() + ".schema.json", outputDirectory );
             final ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, schema );

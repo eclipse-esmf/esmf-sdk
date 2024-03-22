@@ -95,7 +95,11 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    }
 
    private JsonNode buildJsonSchema( final Aspect aspect ) {
-      return new AspectModelJsonSchemaGenerator().apply( aspect, Locale.ENGLISH );
+      final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
+            .locale( Locale.ENGLISH )
+            .useExtendedTypes( true )
+            .build();
+      return new AspectModelJsonSchemaGenerator().apply( aspect, config ).getContent();
    }
 
    private JsonSchema parseSchema( final JsonNode jsonSchema ) {
@@ -154,7 +158,11 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testSchemaNameClash( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY, KnownVersion.getLatest() );
-      final JsonNode schema = new AspectModelJsonSchemaGenerator().apply( aspect, Locale.ENGLISH, List.of( "TestEntity" ) );
+      final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
+            .locale( Locale.ENGLISH )
+            .reservedSchemaNames( List.of( "TestEntity" ) )
+            .build();
+      final JsonNode schema = new AspectModelJsonSchemaGenerator().apply( aspect, config ).getContent();
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['$schema']" ) ).isEqualTo( AspectModelJsonSchemaVisitor.JSON_SCHEMA_VERSION );
       assertThat( context.<String> read( "$['type']" ) ).isEqualTo( "object" );
@@ -503,14 +511,16 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    public void testMultilingualDescriptions( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENGLISH_AND_GERMAN_DESCRIPTION, metaModelVersion );
-      final JsonNode schemaEnglish = new AspectModelJsonSchemaGenerator().apply( aspect, Locale.ENGLISH );
+      final JsonNode schemaEnglish = new AspectModelJsonSchemaGenerator().apply( aspect,
+            JsonSchemaGenerationConfigBuilder.builder().locale( Locale.ENGLISH ).build() ).getContent();
 
       assertThat( schemaEnglish.get( "description" ).asText() )
             .isEqualTo( "Aspect With Multilingual Descriptions" );
       assertThat( schemaEnglish.at( "/properties/testString/description" ).asText() )
             .isEqualTo( "This is a test string" );
 
-      final JsonNode schemaGerman = new AspectModelJsonSchemaGenerator().apply( aspect, Locale.GERMAN );
+      final JsonNode schemaGerman = new AspectModelJsonSchemaGenerator().apply( aspect,
+            JsonSchemaGenerationConfigBuilder.builder().locale( Locale.GERMAN ).build() ).getContent();
       assertThat( schemaGerman.get( "description" ).asText() )
             .isEqualTo( "Aspekt mit mehrsprachigen Beschreibungen" );
       assertThat( schemaGerman.at( "/properties/testString/description" ).asText() )

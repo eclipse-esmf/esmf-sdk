@@ -38,7 +38,7 @@ public record JavaCodeGenerationConfig(
       if ( importTracker == null ) {
          importTracker = new ImportTracker();
       }
-      if ( executeLibraryMacros && (templateLibFile == null || templateLibFile.toString().isEmpty()) ) {
+      if ( executeLibraryMacros && ( templateLibFile == null || templateLibFile.toString().isEmpty() ) ) {
          throw new CodeGenerationException( "Missing configuration. Please provide path to velocity template library file." );
       }
       if ( executeLibraryMacros && !templateLibFile.exists() ) {
