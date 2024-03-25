@@ -24,13 +24,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
+import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaArtifact;
+import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -39,8 +40,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-
 import io.vavr.control.Try;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToOpenapiCommand.COMMAND_NAME,
@@ -55,26 +57,24 @@ public class AspectToOpenapiCommand extends AbstractCommand {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
    private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
 
-   @CommandLine.Option( names = { "--api-base-url",
-         "-b" }, description = "The base url for the Aspect API used in the OpenAPI specification.",
+   @CommandLine.Option( names = { "--api-base-url", "-b" },
+         description = "The base url for the Aspect API used in the OpenAPI specification.",
          required = true )
    private String aspectApiBaseUrl = "";
 
-   @CommandLine.ArgGroup( exclusive = false )
-   private JsonCommandGroup jsonCommandGroup;
+   @CommandLine.Option( names = { "--json", "-j" },
+         required = true,
+         description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
+   boolean generateJsonOpenApiSpec = false;
 
-   static class JsonCommandGroup {
-      @CommandLine.Option( names = { "--json", "-j" }, required = true,
-            description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
-      boolean generateJsonOpenApiSpec = false;
+   @CommandLine.Option( names = { "--comment", "-c" },
+         required = false,
+         description = "Generate $comment OpenAPI keyword for samm:see attributes in the model." )
+   boolean generateCommentForSeeAttributes = false;
 
-      @CommandLine.Option( names = { "--comment", "-c" }, required = false,
-            description = "Generate $comment OpenAPI keyword for samm:see attributes in the model." )
-      boolean generateCommentForSeeAttributes = false;
-   }
-
-   @CommandLine.Option( names = { "--parameter-file",
-         "-p" }, description = "The path to a file including the parameter for the Aspect API endpoints." )
+   @CommandLine.Option( names = { "--parameter-file", "-p" },
+         description = "The path to a file including the parameter for the Aspect API endpoints. When --json is given, this file "
+               + "should contain the parameter definition in JSON, otherwise it should contain the definition in YAML." )
    private String aspectParameterFile;
 
    @CommandLine.Option( names = { "--semantic-version", "-sv" },
@@ -125,32 +125,27 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
       final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
-
-      final JsonNode spec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl,
-            Optional.ofNullable( aspectResourcePath ),
-            readAspectParameterFile(), includeQueryApi, getPaging(), locale );
-
-      if ( jsonCommandGroup != null && jsonCommandGroup.generateJsonOpenApiSpec ) {
-         saveJson( spec );
-      } else {
-         saveYaml( spec );
-      }
-   }
-
-   private void saveYaml( final JsonNode spec ) {
+      final ObjectMapper objectMapper = new ObjectMapper();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( useSemanticApiVersion )
+            .baseUrl( aspectApiBaseUrl )
+            .resourcePath( Optional.ofNullable( aspectResourcePath ) )
+            .jsonProperties( readAspectParameterFile() )
+            .includeQueryApi( includeQueryApi )
+            .pagingOption( getPaging() )
+            .locale( locale )
+            .generateCommentForSeeAttributes( generateCommentForSeeAttributes )
+            .build();
+      final OpenApiSchemaArtifact openApiSpec = generator.apply( aspect, config );
 
       try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
-         YAML_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, spec );
+         if ( generateJsonOpenApiSpec ) {
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, openApiSpec.getContent() );
+         } else {
+            out.write( openApiSpec.getContentAsYaml().getBytes( StandardCharsets.UTF_8 ) );
+         }
       } catch ( final IOException exception ) {
-         throw new CommandException( "Could not generate OpenAPI YAML specification.", exception );
-      }
-   }
-
-   private void saveJson( final JsonNode spec ) {
-      try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
-         OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, spec );
-      } catch ( final IOException exception ) {
-         throw new CommandException( "Could not format OpenApi JSON specification.", exception );
+         throw new CommandException( "Could not generate OpenAPI specification.", exception );
       }
    }
 
