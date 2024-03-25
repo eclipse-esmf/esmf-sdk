@@ -42,11 +42,10 @@ public class GenerateJsonSchema {
             AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
       // tag::generate[]
 
-      final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
       final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
             .locale( Locale.ENGLISH )
             .build();
-      final JsonNode jsonSchema = generator.apply( aspect, config ).getContent();
+      final JsonNode jsonSchema = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspect, config ).getContent();
 
       // If needed, print or pretty print it into a string
       final ByteArrayOutputStream out = new ByteArrayOutputStream();

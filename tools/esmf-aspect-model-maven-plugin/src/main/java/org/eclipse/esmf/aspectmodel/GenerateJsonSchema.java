@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 public class GenerateJsonSchema extends AspectModelMojo {
 
    private final Logger logger = LoggerFactory.getLogger( GenerateJsonSchema.class );
-   private final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
 
    @Parameter( defaultValue = "en" )
    private String language;
@@ -54,7 +53,7 @@ public class GenerateJsonSchema extends AspectModelMojo {
             final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
                   .locale( locale )
                   .build();
-            final JsonNode schema = generator.apply( context.aspect(), config ).getContent();
+            final JsonNode schema = AspectModelJsonSchemaGenerator.INSTANCE.apply( context.aspect(), config ).getContent();
             final OutputStream out = getOutputStreamForFile( context.aspect().getName() + ".schema.json", outputDirectory );
             final ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, schema );

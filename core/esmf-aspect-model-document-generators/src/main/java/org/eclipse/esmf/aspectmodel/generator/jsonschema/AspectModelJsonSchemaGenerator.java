@@ -25,6 +25,14 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class AspectModelJsonSchemaGenerator implements
       ArtifactGenerator<String, JsonNode, Aspect, JsonSchemaGenerationConfig, JsonSchemaArtifact> {
+   public static final AspectModelJsonSchemaGenerator INSTANCE = new AspectModelJsonSchemaGenerator();
+
+   /**
+    * @deprecated Use {@link #INSTANCE} instead
+    */
+   @Deprecated( forRemoval = true )
+   public AspectModelJsonSchemaGenerator() {
+   }
 
    /**
     * @deprecated Use {@link #apply(Aspect, JsonSchemaGenerationConfig)} instead

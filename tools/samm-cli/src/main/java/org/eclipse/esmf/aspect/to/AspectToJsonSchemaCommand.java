@@ -59,13 +59,12 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
       final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
             .locale( locale )
             .build();
-      final JsonNode schema = generator.apply( aspect, config ).getContent();
+      final JsonNode schema = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspect, config ).getContent();
 
       withOutputStream( outputFilePath, outputStream -> {
          final ObjectMapper objectMapper = new ObjectMapper();
