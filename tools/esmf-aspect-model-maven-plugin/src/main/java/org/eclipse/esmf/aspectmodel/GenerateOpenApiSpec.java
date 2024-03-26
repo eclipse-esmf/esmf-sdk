@@ -17,11 +17,14 @@ import static java.lang.String.format;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -83,6 +86,9 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
    @Parameter( defaultValue = "false" )
    private boolean aspectTimeBasedPaging;
 
+   @Parameter( defaultValue = "false" )
+   private boolean separateFiles;
+
    @Parameter( required = true )
    private String outputFormat = "";
 
@@ -111,17 +117,44 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
                .build();
 
          final OpenApiSchemaArtifact openApiSpec = generator.apply( aspect, config );
-         try ( final OutputStream out = getOutputStreamForFile( aspect.getName() + ".oai." + format.toString().toLowerCase(),
-               outputDirectory ) ) {
-            if ( isJson ) {
-               OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, openApiSpec.getContent() );
+         try {
+            if ( separateFiles ) {
+               writeSchemaWithSeparateFiles( format, openApiSpec );
             } else {
-               out.write( openApiSpec.getContentAsYaml().getBytes( StandardCharsets.UTF_8 ) );
+               writeSchemaWithInOneFile( aspect.getName() + ".oai." + format.toString().toLowerCase(), format, openApiSpec );
             }
          } catch ( final IOException exception ) {
-            throw new RuntimeException( exception );
+            throw new MojoExecutionException( "Could not generate OpenAPI specification.", exception );
          }
-         LOG.info( "Successfully generated OpenAPI specification for Aspect Models." );
+      }
+      LOG.info( "Successfully generated OpenAPI specification for Aspect Models." );
+   }
+
+   private void writeSchemaWithInOneFile( final String schemaFileName, final OpenApiFormat format, final OpenApiSchemaArtifact openApiSpec )
+         throws IOException {
+      try ( final OutputStream out = getOutputStreamForFile( schemaFileName, outputDirectory ) ) {
+         if ( format == OpenApiFormat.JSON ) {
+            OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, openApiSpec.getContent() );
+         } else {
+            out.write( openApiSpec.getContentAsYaml().getBytes( StandardCharsets.UTF_8 ) );
+         }
+      }
+   }
+
+   private void writeSchemaWithSeparateFiles( final OpenApiFormat format, final OpenApiSchemaArtifact openApiSpec ) throws IOException {
+      final Path root = Path.of( outputDirectory );
+      if ( format == OpenApiFormat.JSON ) {
+         for ( final Map.Entry<Path, JsonNode> entry : openApiSpec.getContentWithSeparateSchemasAsJson().entrySet() ) {
+            try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
+               OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, entry.getValue() );
+            }
+         }
+      } else {
+         for ( final Map.Entry<Path, String> entry : openApiSpec.getContentWithSeparateSchemasAsYaml().entrySet() ) {
+            try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
+               out.write( entry.getValue().getBytes( StandardCharsets.UTF_8 ) );
+            }
+         }
       }
    }
 
