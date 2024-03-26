@@ -103,15 +103,8 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final OpenApiFormat format = Try.of( () -> OpenApiFormat.valueOf( outputFormat.toUpperCase() ) )
             .getOrElseThrow( () -> new MojoExecutionException( "Invalid output format." ) );
-      final boolean isJson = OpenApiFormat.JSON.equals( format );
       for ( final AspectContext context : aspectModels ) {
          final Aspect aspect = context.aspect();
-         final Optional<String> aspectParameterDefinitions = getFileAsString( aspectParameterFile );
-         final Optional<JsonNode> jsonProperties = format == OpenApiFormat.JSON && aspectParameterDefinitions.isPresent()
-               ? Try.of( () -> Optional.of( objectMapper.readTree( aspectParameterDefinitions.get() ) ) )
-               .getOrElseThrow( exeception -> new MojoExecutionException( "Could not parse the file to JSON.", exeception ) )
-               : Optional.empty();
-
          final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
                .useSemanticVersion( useSemanticApiVersion )
                .baseUrl( aspectApiBaseUrl )
