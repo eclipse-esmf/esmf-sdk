@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
-
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -81,7 +80,7 @@ class AspectModelAasGeneratorTest {
                               .asList()
                               .hasSize( 2 )
                               .allSatisfy( langString ->
-                                    assertThat( List.of( "en", "de" ) ).contains( ((AbstractLangString) langString).getLanguage() ) ) ) );
+                                    assertThat( List.of( "en", "de" ) ).contains( ( (AbstractLangString) langString ).getLanguage() ) ) ) );
    }
 
    @Test
@@ -218,7 +217,7 @@ class AspectModelAasGeneratorTest {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       assertThat( env.getSubmodels() ).hasSize( 1 );
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final SubmodelElementList elementCollection = ((SubmodelElementList) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ));
+      final SubmodelElementList elementCollection = ( (SubmodelElementList) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ) );
       final Set<String> testValues = Set.of( "RightEntity", "LeftEntity" );
       assertThat( elementCollection.getValue() ).as( "Neither left nor right entity contained." )
             .anyMatch( x -> testValues.contains( x.getIdShort() ) );
@@ -241,7 +240,7 @@ class AspectModelAasGeneratorTest {
       final DataSpecificationContent dataSpecificationContent = getDataSpecificationIec61360(
             "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
 
-      assertThat( ((DataSpecificationIec61360) dataSpecificationContent).getUnit() ).isEqualTo( "percent" );
+      assertThat( ( (DataSpecificationIec61360) dataSpecificationContent ).getUnit() ).isEqualTo( "percent" );
    }
 
    @Test

@@ -26,7 +26,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * (jsonProperties) or the YAML representation (yamlProperties).
  *
  * @param locale the locale for choosing the preferred language for description and preferred name.
- * @param generateCommentForSeeAttributes
+ * @param generateCommentForSeeAttributes generate $comment OpenAPI element for samm:see attributes in the model
  * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
  * @param baseUrl the base URL for the Aspect API
  * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived

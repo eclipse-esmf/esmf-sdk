@@ -200,7 +200,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    /**
-    * @deprecated Use {@link AspectModelJsonSchemaVisitor()} instead
+    * @deprecated Use {@link AspectModelJsonSchemaVisitor#AspectModelJsonSchemaVisitor(JsonSchemaGenerationConfig)} instead
     */
    @Deprecated( forRemoval = true )
    public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes, final Locale locale ) {
@@ -211,7 +211,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    /**
-    * @deprecated Use {@link AspectModelJsonSchemaVisitor()} instead
+    * @deprecated Use {@link AspectModelJsonSchemaVisitor#AspectModelJsonSchemaVisitor(JsonSchemaGenerationConfig)} instead
     */
    @Deprecated( forRemoval = true )
    public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes ) {
