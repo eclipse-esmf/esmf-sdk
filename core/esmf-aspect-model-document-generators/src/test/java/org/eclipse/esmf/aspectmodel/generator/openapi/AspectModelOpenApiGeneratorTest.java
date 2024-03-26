@@ -20,9 +20,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -48,6 +51,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.google.common.collect.Streams;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -90,12 +94,33 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH )
             .build();
-      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
-      showJson( json );
+      final OpenApiSchemaArtifact result = apiJsonGenerator.apply( aspect, config );
+      final JsonNode json = result.getContent();
       assertSpecificationIsValid( json, json.toString(), aspect );
       assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
       assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo(
             aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+
+      // Check that the map containing separate schema files contains the same information as the
+      // all-in-one JSON document
+      final Map<Path, JsonNode> jsonMap = result.getContentWithSeparateSchemasAsJson();
+      assertThat( jsonMap ).containsKey( Path.of( aspect.getName() + ".oai.json" ) );
+      for ( final Iterator<Map.Entry<String, JsonNode>> it = json.get( "components" ).get( "schemas" ).fields(); it.hasNext(); ) {
+         final Map.Entry<String, JsonNode> schema = it.next();
+         final Path keyForSchemaName = Path.of( schema.getKey() + ".json" );
+         assertThat( jsonMap.keySet() ).contains( keyForSchemaName );
+      }
+      final JsonNode rootDocument = jsonMap.get( Path.of( aspect.getName() + ".oai.json" ) );
+      assertThat( Streams.stream( rootDocument.get( "components" ).fieldNames() ).toList() ).doesNotContain( "schemas" );
+
+      // And the same thing for YAML format
+      final Map<Path, String> yamlMap = result.getContentWithSeparateSchemasAsYaml();
+      assertThat( yamlMap ).containsKey( Path.of( aspect.getName() + ".oai.yaml" ) );
+      for ( final Iterator<Map.Entry<String, JsonNode>> it = json.get( "components" ).get( "schemas" ).fields(); it.hasNext(); ) {
+         final Map.Entry<String, JsonNode> schema = it.next();
+         final Path keyForSchemaName = Path.of( schema.getKey() + ".yaml" );
+         assertThat( yamlMap.keySet() ).contains( keyForSchemaName );
+      }
    }
 
    private void showJson( final JsonNode node ) {
@@ -523,8 +548,6 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
       final OpenAPI openApi = result.getOpenAPI();
       validateOpenApiSpec( jsonNode, openApi, aspect );
-
-      System.out.println( prettyPrintJson( json ) );
 
       final DocumentContext context = JsonPath.parse( json );
       assertThat( context.<Object> read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();

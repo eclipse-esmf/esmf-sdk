@@ -25,8 +25,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
+import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfig;
@@ -35,8 +35,6 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,6 +44,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.CaseFormat;
+import io.vavr.control.Try;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
 public class AspectModelOpenApiGenerator
@@ -112,17 +114,11 @@ public class AspectModelOpenApiGenerator
    @Override
    public OpenApiSchemaArtifact apply( final Aspect aspect, final OpenApiSchemaGenerationConfig config ) {
       final Optional<JsonNode> additionalProperties =
-            config.jsonProperties().or( () ->
-                        config.yamlProperties().map( yamlProperties -> {
-                           try {
-                              return OBJECT_MAPPER.readTree(
-                                    OBJECT_MAPPER.writeValueAsString( YAML_MAPPER.readValue( yamlProperties, Object.class ) ) );
-                           } catch ( final JsonProcessingException exception ) {
-                              throw new RuntimeException( exception );
-                           }
-                        } ) )
+            config.jsonProperties().or( () -> config.yamlProperties().map( yamlProperties ->
+                        Try.of( () -> OBJECT_MAPPER.readTree(
+                                    OBJECT_MAPPER.writeValueAsString( YAML_MAPPER.readValue( yamlProperties, Object.class ) ) ) )
+                              .getOrElseThrow( () -> new DocumentGenerationException( "Provided YAML properties are invalid" ) ) ) )
                   .or( Optional::empty );
-
       try {
          final ObjectNode rootNode = getRootJsonNode( config.generateCommentForSeeAttributes() );
          final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );

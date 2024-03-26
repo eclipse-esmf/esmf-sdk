@@ -13,19 +13,42 @@
 
 package org.eclipse.esmf.aspectmodel.generator.openapi;
 
+import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
+import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Streams;
+import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The result of generating an OpenAPI specification from an Aspect Model. The result can be retrieved in JSON ({@link #getContent()}
+ * or YAML ({@link #getContentAsYaml()} formats as self-contained schemas, or as {@link #getContentWithSeparateSchemasAsJson()} and
+ * {@link #getContentWithSeparateSchemasAsYaml()} as a map with that contains separate schema documents.
+ */
 public class OpenApiSchemaArtifact implements Artifact<String, JsonNode> {
    private static final Logger LOG = LoggerFactory.getLogger( OpenApiSchemaArtifact.class );
-   protected final String id;
-   final JsonNode content;
+   private final String id;
+   private final JsonNode content;
 
    protected OpenApiSchemaArtifact( final String id, final JsonNode content ) {
       this.id = id;
@@ -37,18 +60,115 @@ public class OpenApiSchemaArtifact implements Artifact<String, JsonNode> {
       return id;
    }
 
+   /**
+    * Returns the OpenAPI schema as a single JSON object
+    *
+    * @return the OpenAPI schema
+    */
    @Override
    public JsonNode getContent() {
       return content;
    }
 
+   /**
+    * Returns the OpenAPI schema a single YAML string
+    *
+    * @return the OpenAPI schema
+    */
    public String getContentAsYaml() {
-      final JsonNode json = getContent();
+      return jsonToYaml( getContent() );
+   }
+
+   private String jsonToYaml( final JsonNode json ) {
       try {
          return new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES ).writeValueAsString( json );
-      } catch ( final JsonProcessingException e ) {
-         LOG.error( "YAML mapper couldn't write the given JSON as string.", e );
+      } catch ( final JsonProcessingException exception ) {
+         LOG.error( "JSON could not be converted to YAML", exception );
          return json.toString();
       }
+   }
+
+   /**
+    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the path
+    * that names a schema and the value is the corresponding JSON structure. The root schema will be called
+    * like the originating Aspect with a ".oai.json" suffix.
+    *
+    * @return the OpenAPI schema definition as separate files
+    */
+   public Map<Path, JsonNode> getContentWithSeparateSchemasAsJson() {
+      return getSeparateSchemas( "json" );
+   }
+
+   private Map<Path, JsonNode> getSeparateSchemas( final String fileExtension ) {
+      final ObjectMapper objectMapper = new ObjectMapper();
+      // Create a copy of the content, because we change the root node in-place
+      final JsonNode json = Try.of( () ->
+                  objectMapper.readTree( objectMapper.writer().writeValueAsString( getContent() ) ) )
+            .getOrElseThrow( DocumentGenerationException::new );
+      final ImmutableMap.Builder<Path, JsonNode> builder = ImmutableMap.builder();
+
+      final JsonNode schemas = json.get( "components" ).get( "schemas" );
+      final Function<String, String> newSchemaReference = schemaName -> schemaName + "." + fileExtension;
+
+      // Add separate entry in result map for each schema
+      for ( final Iterator<Map.Entry<String, JsonNode>> it = schemas.fields(); it.hasNext(); ) {
+         final Map.Entry<String, JsonNode> schema = it.next();
+         builder.put( Path.of( newSchemaReference.apply( schema.getKey() ) ), schema.getValue() );
+      }
+
+      // Update each $ref in root schema
+      final Map<String, String> oldToNew = Streams.stream( schemas.fieldNames() ).collect(
+            Collectors.toMap( schemaName -> "#/components/schemas/" + schemaName, newSchemaReference ) );
+      final String aspectName = AspectModelUrn.fromUrn(
+            json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).getName();
+      final JsonNode updatedRoot = updateRefValues( json, oldToNew );
+      builder.put( Path.of( aspectName + ".oai." + fileExtension ), updatedRoot );
+
+      // Remove schema definitions from root schema
+      final ObjectNode components = (ObjectNode) json.get( "components" );
+      components.remove( "schemas" );
+
+      return builder.build();
+   }
+
+   /**
+    * Returns the OpenAPI schema with separate files for schemas. In the resulting map, the key is the path
+    * that names a schema and the value is the corresponding YAML structure. The root schema will be called
+    * like the originating Aspect with a ".oai.yaml" suffix.
+    *
+    * @return the OpenAPI schema definition as separate files
+    */
+   public Map<Path, String> getContentWithSeparateSchemasAsYaml() {
+      return getSeparateSchemas( "yaml" ).entrySet().stream().collect( Collectors.toMap(
+            Map.Entry::getKey, entry -> jsonToYaml( entry.getValue() ) ) );
+   }
+
+   /**
+    * Recursively updates the values of $ref nodes
+    *
+    * @param node the node to start the substitution with
+    * @param oldToNew the map that contains the mapping from old to new values
+    * @return the original node with the updated values
+    */
+   private JsonNode updateRefValues( final JsonNode node, final Map<String, String> oldToNew ) {
+      if ( node == null ) {
+         return null;
+      } else if ( node instanceof ArrayNode ) {
+         for ( final JsonNode child : node ) {
+            updateRefValues( child, oldToNew );
+         }
+      } else if ( node instanceof final ObjectNode objectNode ) {
+         for ( final Iterator<String> it = node.fieldNames(); it.hasNext(); ) {
+            final String fieldName = it.next();
+            final JsonNode updatedChild = updateRefValues( node.get( fieldName ), oldToNew );
+            if ( fieldName.equals( "$ref" ) && updatedChild instanceof final TextNode updatedTextNode ) {
+               objectNode.replace( "$ref", updatedTextNode );
+            }
+         }
+      } else if ( node instanceof final TextNode textNode ) {
+         return JsonNodeFactory.instance.textNode(
+               Optional.ofNullable( oldToNew.get( textNode.textValue() ) ).orElse( textNode.textValue() ) );
+      }
+      return node;
    }
 }
