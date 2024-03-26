@@ -97,7 +97,7 @@ The available options and their meaning can also be seen in the help text of the
                                        https://velocity.apache.org/[Velocity] macro library                                  |
                                    | _--static, -s_ : generate Java domain classes for a Static Meta Model                   |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.15+| aspect <model> to openapi    | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to openapi -j`
+.16+| aspect <model> to openapi    | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to openapi -j`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--api-base-url, -b_ : the base url for the Aspect API used in the
                                        https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to openapi -j -b \http://mysite.de`
@@ -122,6 +122,7 @@ The available options and their meaning can also be seen in the help text of the
                                        it must be time based paging                                                          |
                                    | _--language, -l_ : The language from the model for which an OpenAPI specification should
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to openapi -l de`
+                                   | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .3+| aspect <model> to json        | Generate example JSON payload data for an Aspect Model                                  | `samm aspect AspectModel.ttl to json`
                                    | _--output, -o_ : output file path (default: stdout)                                     |

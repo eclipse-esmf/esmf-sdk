@@ -17,11 +17,14 @@ import static java.lang.String.format;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.esmf.AbstractCommand;
@@ -63,12 +66,10 @@ public class AspectToOpenapiCommand extends AbstractCommand {
    private String aspectApiBaseUrl = "";
 
    @CommandLine.Option( names = { "--json", "-j" },
-         required = true,
          description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
    boolean generateJsonOpenApiSpec = false;
 
    @CommandLine.Option( names = { "--comment", "-c" },
-         required = false,
          description = "Generate $comment OpenAPI keyword for samm:see attributes in the model." )
    boolean generateCommentForSeeAttributes = false;
 
@@ -104,11 +105,15 @@ public class AspectToOpenapiCommand extends AbstractCommand {
          description = "In case there is more than one paging possibility, it has to be time based paging." )
    private boolean aspectTimeBasedPaging = false;
 
-   @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path" )
+   @CommandLine.Option( names = { "--separate-files", "-sf" },
+         description = "Write separate files for the root document and referenced schemas." )
+   private boolean writeSeparateFiles = false;
+
+   @CommandLine.Option( names = { "--output", "-o" }, description = "Output path; if --separate-files is given, this must be a directory." )
    private String outputFilePath = "-";
 
    @CommandLine.Option( names = { "--language", "-l" },
-         description = "The language from the model for which the OpenAPI specification should be generated (default: en)" )
+         description = "The language from the model for which the OpenAPI specification should be generated (default: en)." )
    private String language = "en";
 
    @CommandLine.ParentCommand
@@ -138,14 +143,42 @@ public class AspectToOpenapiCommand extends AbstractCommand {
             .build();
       final OpenApiSchemaArtifact openApiSpec = generator.apply( aspect, config );
 
+      try {
+         if ( writeSeparateFiles ) {
+            writeSchemaWithSeparateFiles( openApiSpec, objectMapper );
+         } else {
+            writeSchemaWithInOneFile( objectMapper, openApiSpec );
+         }
+      } catch ( final IOException exception ) {
+         throw new CommandException( "Could not generate OpenAPI specification.", exception );
+      }
+   }
+
+   private void writeSchemaWithInOneFile( final ObjectMapper objectMapper, final OpenApiSchemaArtifact openApiSpec ) throws IOException {
       try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
          if ( generateJsonOpenApiSpec ) {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, openApiSpec.getContent() );
          } else {
             out.write( openApiSpec.getContentAsYaml().getBytes( StandardCharsets.UTF_8 ) );
          }
-      } catch ( final IOException exception ) {
-         throw new CommandException( "Could not generate OpenAPI specification.", exception );
+      }
+   }
+
+   private void writeSchemaWithSeparateFiles( final OpenApiSchemaArtifact openApiSpec, final ObjectMapper objectMapper )
+         throws IOException {
+      final Path root = outputFilePath == null || outputFilePath.equals( "-" ) ? Path.of( "." ) : new File( outputFilePath ).toPath();
+      if ( generateJsonOpenApiSpec ) {
+         for ( final Map.Entry<Path, JsonNode> entry : openApiSpec.getContentWithSeparateSchemasAsJson().entrySet() ) {
+            try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
+               objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, entry.getValue() );
+            }
+         }
+      } else {
+         for ( final Map.Entry<Path, String> entry : openApiSpec.getContentWithSeparateSchemasAsYaml().entrySet() ) {
+            try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
+               out.write( entry.getValue().getBytes( StandardCharsets.UTF_8 ) );
+            }
+         }
       }
    }
 
