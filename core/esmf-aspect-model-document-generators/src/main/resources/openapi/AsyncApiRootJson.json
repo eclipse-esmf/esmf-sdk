@@ -1,0 +1,18 @@
+{
+  "asyncapi": "${AsyncApiVer}",
+  "id": "",
+  "info": {
+    "title": "MQTT API",
+    "version" : "",
+    "description": ""
+  },
+  "defaultContentType": "application/json",
+  "channels": {},
+  "operations": {},
+  "components": {
+    "messages": {},
+    "schemas": {}
+  }
+}
+
+
