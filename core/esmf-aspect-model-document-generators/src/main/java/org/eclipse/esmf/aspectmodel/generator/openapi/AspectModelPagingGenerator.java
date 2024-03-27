@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.characteristic.TimeSeries;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -32,15 +33,15 @@ import org.eclipse.esmf.metamodel.HasProperties;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.vavr.collection.Stream;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class AspectModelPagingGenerator {
 
@@ -55,9 +56,9 @@ class AspectModelPagingGenerator {
    /**
     * Sets the paging properties for an aspect to an given ObjectNode.
     *
-    * @param aspect The related aspect for the paging properties.
+    * @param aspect               The related aspect for the paging properties.
     * @param selectedPagingOption The selected paging option.
-    * @param objectNode The ObjectNode where the properties shall be inserted.
+    * @param objectNode           The ObjectNode where the properties shall be inserted.
     * @throws IOException In case the root property file can't be loaded.
     */
    public void setPagingProperties( final Aspect aspect, final Optional<PagingOption> selectedPagingOption, final ObjectNode objectNode )
@@ -80,9 +81,9 @@ class AspectModelPagingGenerator {
    /**
     * Sets the paging schema for an aspect to an given ObjectNode.
     *
-    * @param aspect The related aspect for the paging schema.
+    * @param aspect               The related aspect for the paging schema.
     * @param selectedPagingOption The selected paging option.
-    * @param schemaNode The ObjectNode where the schema shall be inserted.
+    * @param schemaNode           The ObjectNode where the schema shall be inserted.
     * @throws IOException In case the root schema file can't be loaded.
     */
    public void setSchemaInformationForPaging( final Aspect aspect, final ObjectNode schemaNode,
@@ -151,30 +152,22 @@ class AspectModelPagingGenerator {
    }
 
    private ObjectNode getPathRootNode( final PagingOption pagingOption ) throws IOException {
-      String fileName = "";
-      switch ( pagingOption ) {
-         case TIME_BASED_PAGING:
-            fileName = "TimeBasedPaging.json";
-            break;
-         case CURSOR_BASED_PAGING:
-            fileName = "CursorBasedPaging.json";
-            break;
-         case OFFSET_BASED_PAGING:
-            fileName = "OffsetBasedPaging.json";
-            break;
-         default:
-            throw new IllegalArgumentException( String.format( "There is no file defined for the chosen paging option %s", pagingOption ) );
+      String fileName = switch ( pagingOption ) {
+         case TIME_BASED_PAGING -> "TimeBasedPaging.json";
+         case CURSOR_BASED_PAGING -> "CursorBasedPaging.json";
+         case OFFSET_BASED_PAGING -> "OffsetBasedPaging.json";
+         default -> throw new IllegalArgumentException( String.format( "There is no file defined for the chosen paging option %s", pagingOption ) );
+      };
+      try ( final InputStream inputStream = getClass().getResourceAsStream( "/openapi/" + fileName ) ) {
+         return (ObjectNode) OBJECT_MAPPER.readTree( IOUtils.toString( inputStream, StandardCharsets.UTF_8 ) );
       }
-      final InputStream inputStream = getClass().getResourceAsStream( "/openapi/" + fileName );
-      final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8 );
-      return (ObjectNode) OBJECT_MAPPER.readTree( string );
    }
 
    private Set<PagingOption> getPagingTypesForAspect( final Aspect aspect ) {
       return new AspectModelPagingVisitor().visitAspect( aspect, null );
    }
 
-   private class AspectModelPagingVisitor implements AspectVisitor<Set<PagingOption>, Object> {
+   private static class AspectModelPagingVisitor implements AspectVisitor<Set<PagingOption>, Object> {
       private final Map<Characteristic, Integer> characteristicCounter = new HashMap<>();
 
       @Override

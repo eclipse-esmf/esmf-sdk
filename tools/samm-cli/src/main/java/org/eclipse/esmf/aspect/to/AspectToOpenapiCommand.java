@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspect.to;
 
+import static java.lang.String.format;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
@@ -31,11 +35,12 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import org.apache.commons.io.IOUtils;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+
+import io.vavr.control.Try;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToOpenapiCommand.COMMAND_NAME,
@@ -47,6 +52,8 @@ import picocli.CommandLine;
 )
 public class AspectToOpenapiCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "openapi";
+   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+   private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
 
    @CommandLine.Option( names = { "--api-base-url",
          "-b" }, description = "The base url for the Aspect API used in the OpenAPI specification.",
@@ -118,48 +125,52 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
       final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
-      if ( jsonCommandGroup != null && jsonCommandGroup.generateJsonOpenApiSpec ) {
-         generateJson( generator, aspect, locale );
-      } else {
-         generateYaml( generator, aspect, locale );
-      }
-   }
 
-   private void generateYaml( final AspectModelOpenApiGenerator generator, final Aspect aspect, final Locale locale ) {
-      try {
-         final String yamlSpec = generator.applyForYaml( aspect, useSemanticApiVersion, aspectApiBaseUrl,
-               Optional.ofNullable( aspectResourcePath ),
-               getFileAsString( aspectParameterFile ), includeQueryApi, getPaging(), locale );
-         final OutputStream out = getStreamForFile( outputFilePath );
-         out.write( yamlSpec.getBytes() );
-         out.close();
-      } catch ( final IOException exception ) {
-         throw new CommandException( "Could not generate OpenAPI yaml specification.", exception );
-      }
-   }
-
-   private void generateJson( final AspectModelOpenApiGenerator generator, final Aspect aspect, final Locale locale ) {
-      JsonNode result = JsonNodeFactory.instance.objectNode();
-      final Optional<String> res = getFileAsString( aspectParameterFile );
-      final ObjectMapper objectMapper = new ObjectMapper();
-      if ( res.isPresent() ) {
-         try {
-            result = objectMapper.readTree( res.get() );
-         } catch ( final JsonProcessingException e ) {
-            throw new CommandException( "Could not parse the file to JSON.", e );
-         }
-      }
-      final JsonNode jsonSpec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl,
+      final JsonNode spec = generator.applyForJson( aspect, useSemanticApiVersion, aspectApiBaseUrl,
             Optional.ofNullable( aspectResourcePath ),
-            Optional.of( result ), includeQueryApi, getPaging(), locale, jsonCommandGroup.generateCommentForSeeAttributes );
+            readAspectParameterFile(), includeQueryApi, getPaging(), locale );
 
-      final OutputStream out = getStreamForFile( outputFilePath );
-      try {
-         objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, jsonSpec );
-         out.close();
-      } catch ( final IOException exception ) {
-         throw new CommandException( "Could not format OpenApi Json.", exception );
+      if ( jsonCommandGroup != null && jsonCommandGroup.generateJsonOpenApiSpec ) {
+         saveJson( spec );
+      } else {
+         saveYaml( spec );
       }
+   }
+
+   private void saveYaml( final JsonNode spec ) {
+
+      try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
+         YAML_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, spec );
+      } catch ( final IOException exception ) {
+         throw new CommandException( "Could not generate OpenAPI YAML specification.", exception );
+      }
+   }
+
+   private void saveJson( final JsonNode spec ) {
+      try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
+         OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, spec );
+      } catch ( final IOException exception ) {
+         throw new CommandException( "Could not format OpenApi JSON specification.", exception );
+      }
+   }
+
+   private Optional<JsonNode> readAspectParameterFile() {
+      if ( aspectParameterFile == null || aspectParameterFile.isEmpty() ) {
+         return Optional.empty();
+      }
+      final String extension = FilenameUtils.getExtension( aspectParameterFile ).toUpperCase();
+      final Try<String> fileData = Try.of( () -> getFileAsString( aspectParameterFile ) ).mapTry( Optional::get );
+      return switch ( extension ) {
+         case "YAML", "YML" -> fileData
+               .mapTry( data -> YAML_MAPPER.readValue( data, Object.class ) )
+               .mapTry( OBJECT_MAPPER::writeValueAsString )
+               .mapTry( OBJECT_MAPPER::readTree )
+               .toJavaOptional();
+         case "JSON" -> fileData
+               .mapTry( OBJECT_MAPPER::readTree )
+               .toJavaOptional();
+         default -> throw new CommandException( format( "File extension [%s] not supported.", extension ) );
+      };
    }
 
    private Optional<String> getFileAsString( final String filePath ) {
@@ -168,14 +179,13 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       }
       final File f = new File( filePath );
       if ( f.exists() && !f.isDirectory() ) {
-         try {
-            final InputStream inputStream = new FileInputStream( filePath );
-            return Optional.of( IOUtils.toString( inputStream, StandardCharsets.UTF_8.name() ) );
+         try ( final InputStream inputStream = new FileInputStream( filePath ) ) {
+            return Optional.of( IOUtils.toString( inputStream, StandardCharsets.UTF_8 ) );
          } catch ( final IOException e ) {
-            throw new CommandException( String.format( "Could not load file %s.", filePath ), e );
+            throw new CommandException( format( "Could not load file %s.", filePath ), e );
          }
       }
-      throw new CommandException( String.format( "File does not exist %s.", filePath ) );
+      throw new CommandException( format( "File does not exist %s.", filePath ) );
    }
 
    private Optional<PagingOption> getPaging() {
