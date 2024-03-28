@@ -74,6 +74,12 @@ jobs:
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
         shell: bash
 
+      - name: Create convenience batch file
+        if: matrix.os == 'windows-latest'
+        run: |
+          echo "start cmd /k samm.exe help" > tools/samm-cli/target/start-samm-cli.bat
+        shell: bash
+
       - name: Switch to Temurin JDK
         uses: actions/setup-java@v4
         with:
@@ -103,6 +109,7 @@ jobs:
           path: |
             tools/samm-cli/target/samm.exe
             tools/samm-cli/target/*.dll
+            tools/samm-cli/target/*.bat
             tools/samm-cli/target/lib/
 
       - name: Upload binary (Linux/Mac)
