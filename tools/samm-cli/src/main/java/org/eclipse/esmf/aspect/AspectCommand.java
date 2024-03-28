@@ -13,10 +13,16 @@
 
 package org.eclipse.esmf.aspect;
 
+import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
+
+import java.io.File;
+import java.net.URI;
+
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.exception.SubCommandException;
 
+import io.vavr.control.Try;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectCommand.COMMAND_NAME,
@@ -40,11 +46,23 @@ public class AspectCommand extends AbstractCommand {
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
 
-   @CommandLine.Parameters( paramLabel = "INPUT", description = "Input file name of the Aspect Model .ttl file", arity = "1", index = "0" )
+   @CommandLine.Parameters( paramLabel = "INPUT", description = "Input file name of the Aspect Model .ttl file or URI", arity = "1", index = "0" )
    private String input;
+   private URI inputUri;
 
-   public String getInput() {
-      return input;
+   public URI getInput() {
+      if ( inputUri == null ) {
+         inputUri = Try.success( input )
+               .map( File::new )
+               .filter( File::exists )
+               .map( File::toURI )
+               .orElse( Try.success( input ).map( in -> IS_OS_WINDOWS ? in.replaceAll( "\\\\", "/" ) : in )
+                     .map( URI::create ) )
+               .recoverWith( e -> Try.failure( new SubCommandException( "The file does not exist or invalid input URI: " + input, e ) ) )
+               .get();
+      }
+
+      return inputUri;
    }
 
    @Override

@@ -19,6 +19,10 @@ public class SubCommandException extends RuntimeException {
    public SubCommandException( final String subCommandName ) {
       this.subCommandName = subCommandName;
    }
+   public SubCommandException( final String subCommandName , final Throwable cause ) {
+      super( cause );
+      this.subCommandName = subCommandName;
+   }
 
    public String getSubCommandName() {
       return subCommandName;

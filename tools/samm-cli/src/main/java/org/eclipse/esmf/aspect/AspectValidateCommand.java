@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.aspect;
 
-import java.io.File;
 import java.util.List;
 
 import org.eclipse.esmf.AbstractCommand;
@@ -26,10 +25,10 @@ import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationRustLikeFormatter;
-
-import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vavr.control.Try;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectValidateCommand.COMMAND_NAME,
@@ -58,7 +57,7 @@ public class AspectValidateCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( parentCommand.getInput() ), customResolver );
+      final Try<VersionedModel> versionedModel = loadAndResolveModel( parentCommand.getInput(), customResolver );
       final AspectModelValidator validator = new AspectModelValidator();
 
       final List<Violation> violations = validator.validateModel( versionedModel );

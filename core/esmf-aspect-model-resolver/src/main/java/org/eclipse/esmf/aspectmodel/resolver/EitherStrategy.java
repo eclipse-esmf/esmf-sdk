@@ -13,10 +13,13 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import java.io.InputStream;
+import java.net.URI;
+
+import org.apache.jena.rdf.model.Model;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 
 /**
  * A Resolution strategy that supports two types of inputs and wraps two dedicated sub-resolution strategies
@@ -33,11 +36,16 @@ public class EitherStrategy implements ResolutionStrategy {
 
    @Override
    public Try<Model> apply( final AspectModelUrn input ) {
-      final Try<Model> result = strategy1.apply( input );
-      if ( result.isSuccess() ) {
-         return result;
-      }
-      return strategy2.apply( input );
+      return strategy1.apply( input ).orElse( () -> strategy2.apply( input ) );
+   }
+
+   @Override
+   public Try<Model> applyUri( URI uri ) {
+      return strategy1.applyUri( uri ).orElse( () -> strategy2.applyUri( uri ) );
+   }
+
+   public InputStream read( URI uri ) {
+      return Try.of( () -> strategy1.read( uri ) ).getOrElseTry( () -> strategy2.read( uri ) );
    }
 
    @Override
