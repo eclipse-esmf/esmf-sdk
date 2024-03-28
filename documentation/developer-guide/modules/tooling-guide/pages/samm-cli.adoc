@@ -35,9 +35,8 @@ alias samm='java -jar /location/to/samm-cli-{esmf-sdk-version}.jar'
 . *For the Windows native executable:*
 * *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Windows.
 * *Extract*: extract it to a location of your choice.
-* *Open Command Prompt*: Launch the Command Prompt and navigate to the directory (samm-cli-windows) containing our application.
+* *Open* the provided `start-samm-cli.bat`: This will open a command prompt in this directory, where you can enter further `samm` commands.
 * *Input*: Make sure to read the below documentation and provide model files in the correct xref:models-directory-structure[directory structure].
-* *Run*: In the command prompt, execute the command `samm` to start the application. See the below table for details.
 
 . *For the Linux native executable:*
 * *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Linux.
@@ -97,7 +96,7 @@ The available options and their meaning can also be seen in the help text of the
                                        https://velocity.apache.org/[Velocity] macro library                                  |
                                    | _--static, -s_ : generate Java domain classes for a Static Meta Model                   |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.15+| aspect <model> to openapi    | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to openapi -j`
+.16+| aspect <model> to openapi    | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to openapi -j`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--api-base-url, -b_ : the base url for the Aspect API used in the
                                        https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to openapi -j -b \http://mysite.de`
@@ -122,6 +121,7 @@ The available options and their meaning can also be seen in the help text of the
                                        it must be time based paging                                                          |
                                    | _--language, -l_ : The language from the model for which an OpenAPI specification should
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to openapi -l de`
+                                   | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .3+| aspect <model> to json        | Generate example JSON payload data for an Aspect Model                                  | `samm aspect AspectModel.ttl to json`
                                    | _--output, -o_ : output file path (default: stdout)                                     |

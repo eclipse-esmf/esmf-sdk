@@ -310,8 +310,8 @@ public class AspectModelJacksonModuleTest extends MetaModelVersions {
       mapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
       try {
          return mapper.readValue( json, targetClass );
-      } catch ( final JsonProcessingException exeception ) {
-         throw new EnumAttributeNotFoundException( exeception );
+      } catch ( final JsonProcessingException exception ) {
+         throw new EnumAttributeNotFoundException( exception );
       }
    }
 

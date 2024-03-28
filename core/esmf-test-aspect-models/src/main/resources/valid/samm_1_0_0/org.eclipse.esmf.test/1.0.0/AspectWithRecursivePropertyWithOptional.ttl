@@ -23,9 +23,9 @@
 
 :testProperty a samm:Property ;
     samm:name "testProperty" ;
-    samm:characteristic :testItemCharacteristic .
+    samm:characteristic :TestItemCharacteristic .
 
-:testItemCharacteristic a samm-c:SingleEntity ;
+:TestItemCharacteristic a samm-c:SingleEntity ;
     samm:name "testItemCharacteristic" ;
     samm:dataType :TestEntity .
 

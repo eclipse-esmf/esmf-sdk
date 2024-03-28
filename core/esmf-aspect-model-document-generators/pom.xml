@@ -85,6 +85,15 @@
          <groupId>com.fasterxml.jackson.dataformat</groupId>
          <artifactId>jackson-dataformat-yaml</artifactId>
       </dependency>
+      <dependency>
+         <groupId>io.soabase.record-builder</groupId>
+         <artifactId>record-builder-processor</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.google.guava</groupId>
+         <artifactId>guava</artifactId>
+      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
@@ -146,6 +155,24 @@
 
    <build>
       <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+               <annotationProcessorPaths>
+                  <path>
+                     <groupId>org.projectlombok</groupId>
+                     <artifactId>lombok</artifactId>
+                     <version>${lombok-version}</version>
+                  </path>
+                  <path>
+                     <groupId>io.soabase.record-builder</groupId>
+                     <artifactId>record-builder-processor</artifactId>
+                     <version>${record-builder-version}</version>
+                  </path>
+               </annotationProcessorPaths>
+            </configuration>
+         </plugin>
          <!-- Disable surefire report plugin. The report is created in the esmf-sdk-test-report module -->
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
