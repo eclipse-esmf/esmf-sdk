@@ -13,16 +13,17 @@
 
 package org.eclipse.esmf.aspectmodel.generator.diagram;
 
-record Context(
+public record Context(
       Diagram.Box parent,
       String prototype,
-      String edgeLabel
+      String edgeLabel,
+      Diagram.Color background
 ) {
    Context( final Diagram.Box parent ) {
-      this( parent, "", "" );
+      this( parent, "", "", Diagram.Color.FALLBACK );
    }
 
-   Context( final Diagram.Box parent, final String prototype ) {
-      this( parent, prototype, "" );
+   Context( final Diagram.Box parent, final String prototype, final Diagram.Color background ) {
+      this( parent, prototype, "", background );
    }
 }

@@ -90,7 +90,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
    @Override
    public Diagram visitStructureElement( final StructureElement element, final Optional<Context> context ) {
-      final Diagram result = defaultBox( element, context.orElseThrow().prototype() );
+      final Diagram result = defaultBox( element, context.orElseThrow().prototype(), context.orElseThrow().background() );
       final Diagram.Box box = result.getFocusBox();
       for ( final Property property : element.getProperties() ) {
          final StringBuilder labelBuilder = new StringBuilder();
@@ -114,7 +114,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( aspect ) );
       }
 
-      final Diagram result = visitStructureElement( aspect, Optional.of( new Context( null, "Aspect" ) ) );
+      final Diagram result = visitStructureElement( aspect, Optional.of( new Context( null, "Aspect", Diagram.Color.ASPECT ) ) );
       final Diagram.Box box = result.getFocusBox();
       aspect.getEvents().stream().map( event -> childElementDiagram( box, event, "event" ) ).forEach( result::add );
       aspect.getOperations().stream().map( operation -> childElementDiagram( box, operation, "operation" ) ).forEach( result::add );
@@ -128,7 +128,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       }
 
       final Diagram result = visitStructureElement( entity,
-            context.map( oldContext -> new Context( oldContext.parent(), "Entity" ) ) );
+            context.map( oldContext -> new Context( oldContext.parent(), "Entity", Diagram.Color.ENTITY ) ) );
       final Diagram.Box box = result.getFocusBox();
       entity.getExtends().stream().map( superType -> childElementDiagram( box, superType, "extends" ) ).forEach( result::add );
       return result;
@@ -140,11 +140,11 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( property ) );
       }
 
-      final Diagram result = defaultBox( property, (property.isAbstract() ? "Abstract" : "") + "Property" );
+      final Diagram result = defaultBox( property, ( property.isAbstract() ? "Abstract" : "" ) + "Property", Diagram.Color.PROPERTY );
       final Diagram.Box box = result.getFocusBox();
       property.getCharacteristic()
-            .filter( characteristic -> !(characteristic.getAspectModelUrn().isEmpty() && characteristic.getName()
-                  .equals( "UnnamedCharacteristic" )) )
+            .filter( characteristic -> !( characteristic.getAspectModelUrn().isEmpty() && characteristic.getName()
+                  .equals( "UnnamedCharacteristic" ) ) )
             .map( characteristic ->
                   childElementDiagram( box, characteristic, "characteristic" ) )
             .ifPresent( result::add );
@@ -158,7 +158,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( characteristic ) );
       }
 
-      final Diagram result = defaultBox( characteristic, "Characteristic" );
+      final Diagram result = defaultBox( characteristic, "Characteristic", Diagram.Color.CHARACTERISTIC );
       final Diagram.Box box = result.getFocusBox();
       characteristic.getDataType().ifPresent( type -> {
          if ( type.isScalar() ) {
@@ -179,7 +179,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( operation ) );
       }
 
-      final Diagram result = defaultBox( operation, "Operation" );
+      final Diagram result = defaultBox( operation, "Operation", Diagram.Color.OPERATION );
       final Diagram.Box box = result.getFocusBox();
 
       for ( final Property property : operation.getInput() ) {
@@ -196,7 +196,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       }
 
       final Diagram result =
-            visitStructureElement( abstractEntity, context.map( oldContext -> new Context( oldContext.parent(), "AbstractEntity" ) ) );
+            visitStructureElement( abstractEntity, context.map( oldContext -> new Context( oldContext.parent(), "AbstractEntity",
+                  Diagram.Color.ABSTRACT_ENTITY ) ) );
       final Diagram.Box box = result.getFocusBox();
       abstractEntity.getExtends().stream().map( superType -> childElementDiagram( box, superType, "extends" ) ).forEach( result::add );
       return result;
@@ -207,7 +208,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       if ( seenElements.containsKey( event ) ) {
          return new Diagram( seenElements.get( event ) );
       }
-      return visitStructureElement( event, context.map( oldContext -> new Context( oldContext.parent(), "Event" ) ) );
+      return visitStructureElement( event, context.map( oldContext -> new Context( oldContext.parent(), "Event", Diagram.Color.EVENT ) ) );
    }
 
    @Override
@@ -216,7 +217,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( unit ) );
       }
 
-      final Diagram result = defaultBox( unit, "Unit" );
+      final Diagram result = defaultBox( unit, "Unit", Diagram.Color.UNIT );
       final Diagram.Box box = result.getFocusBox();
       unit.getSymbol().ifPresent( symbol -> box.addEntry( attribute( "symbol", String.class, () -> symbol ) ) );
       unit.getReferenceUnit().ifPresent( referenceUnit ->
@@ -233,7 +234,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( trait ) );
       }
 
-      final Diagram result = defaultBox( trait, "Trait" );
+      final Diagram result = defaultBox( trait, "Trait", Diagram.Color.TRAIT );
       final Diagram.Box box = result.getFocusBox();
       result.add( childElementDiagram( box, trait.getBaseCharacteristic(), "baseCharacteristic" ) );
       for ( final Constraint constraint : trait.getConstraints() ) {
@@ -248,7 +249,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( lengthConstraint ) );
       }
 
-      final Diagram result = defaultBox( lengthConstraint, "LengthConstraint" );
+      final Diagram result = defaultBox( lengthConstraint, "LengthConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
       lengthConstraint.getMinValue().ifPresent( minValue -> box.addEntry( attribute( "minValue", BigInteger.class, () -> minValue ) ) );
       lengthConstraint.getMinValue().ifPresent( maxValue -> box.addEntry( attribute( "maxValue", BigInteger.class, () -> maxValue ) ) );
@@ -261,7 +262,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( rangeConstraint ) );
       }
 
-      final Diagram result = defaultBox( rangeConstraint, "RangeConstraint" );
+      final Diagram result = defaultBox( rangeConstraint, "RangeConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
       rangeConstraint.getMinValue().ifPresent( minValue -> box.addEntry( attribute( "minValue", ScalarValue.class, () -> minValue ) ) );
       rangeConstraint.getMaxValue().ifPresent( maxValue -> box.addEntry( attribute( "maxValue", ScalarValue.class, () -> maxValue ) ) );
@@ -285,7 +286,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( fixedPointConstraint ) );
       }
 
-      final Diagram result = defaultBox( fixedPointConstraint, "FixedPointConstraint" );
+      final Diagram result = defaultBox( fixedPointConstraint, "FixedPointConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
       box.addEntry( attribute( "integer", Integer.class, fixedPointConstraint::getInteger ) );
       box.addEntry( attribute( "scale", Integer.class, fixedPointConstraint::getScale ) );
@@ -298,7 +299,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( encodingConstraint ) );
       }
 
-      final Diagram result = defaultBox( encodingConstraint, "EncodingConstraint" );
+      final Diagram result = defaultBox( encodingConstraint, "EncodingConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
       box.addEntry( attribute( "charset", Charset.class, encodingConstraint::getValue ) );
       return result;
@@ -310,7 +311,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( languageConstraint ) );
       }
 
-      final Diagram result = defaultBox( languageConstraint, "LanguageConstraint" );
+      final Diagram result = defaultBox( languageConstraint, "LanguageConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
       box.addEntry( attribute( "charset", String.class, () -> languageConstraint.getLanguageCode().toLanguageTag() ) );
       return result;
@@ -323,7 +324,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( regularExpressionConstraint ) );
       }
 
-      final Diagram result = defaultBox( regularExpressionConstraint, "RegularExpressionConstraint" );
+      final Diagram result = defaultBox( regularExpressionConstraint, "RegularExpressionConstraint", Diagram.Color.CONSTRAINT );
       final Diagram.Box box = result.getFocusBox();
       box.addEntry( attribute( "value", String.class, regularExpressionConstraint::getValue ) );
       return result;
@@ -374,7 +375,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       final Diagram result;
       if ( collection.getElementCharacteristic().isPresent() ) {
          // If the collection has an elementCharacteristic, don't use visitCharacteristic to prevent additional dataType edge
-         result = defaultBox( collection, "Collection" );
+         result = defaultBox( collection, "Collection", Diagram.Color.COLLECTION );
       } else {
          result = visitCharacteristic( (Characteristic) collection, context );
          result.getFocusBox().setPrototype( "Collection" );
@@ -454,7 +455,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
 
    @Override
    public Diagram visitEither( final Either either, final Optional<Context> context ) {
-      final Diagram result = defaultBox( either, "Either" );
+      final Diagram result = defaultBox( either, "Either", Diagram.Color.CHARACTERISTIC );
       final Diagram.Box box = result.getFocusBox();
       result.add( childElementDiagram( box, either.getLeft(), "left" ) );
       result.add( childElementDiagram( box, either.getRight(), "right" ) );
@@ -537,14 +538,15 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          return new Diagram( seenElements.get( instance ) );
       }
 
-      final Diagram result = defaultBox( instance, instance.getEntityType().getName() );
+      final Diagram result = defaultBox( instance, instance.getEntityType().getName(), Diagram.Color.ENTITY_INSTANCE );
       final Diagram.Box box = result.getFocusBox();
       result.add( childElementDiagram( box, instance.getEntityType(), "type" ) );
       for ( final Map.Entry<Property, Value> assertion : instance.getAssertions().entrySet() ) {
          final Property property = assertion.getKey();
          final String propertyName = property.getName()
-               + (property.getPayloadName().equals( property.getName() ) ? "" : " (%s)".formatted( property.getPayloadName() ));
-         final Diagram valueDiagram = assertion.getValue().accept( this, Optional.of( new Context( box, "", propertyName ) ) );
+               + ( property.getPayloadName().equals( property.getName() ) ? "" : " (%s)".formatted( property.getPayloadName() ) );
+         final Diagram valueDiagram = assertion.getValue().accept( this, Optional.of( new Context( box, "", propertyName,
+               Diagram.Color.PROPERTY ) ) );
          if ( valueDiagram.getScalarValue() == null ) {
             // If the value's diagram representation's scalar value is not set, the value is itself a box
             result.add( valueDiagram );
@@ -589,8 +591,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       return result;
    }
 
-   private Diagram defaultBox( final NamedElement element, final String prototype ) {
-      final Diagram.Box box = new Diagram.Box( prototype, element.getAspectModelUrn().isPresent() ? element.getName() : "" );
+   private Diagram defaultBox( final NamedElement element, final String prototype, final Diagram.Color background ) {
+      final Diagram.Box box = new Diagram.Box( prototype, element.getAspectModelUrn().isPresent() ? element.getName() : "", background );
       final ImmutableList.Builder<String> standardAttributes = ImmutableList.builder();
       element.getPreferredNames().stream()
             .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )
@@ -615,7 +617,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
    private <T> List<String> attribute( final String attributeName, final Class<T> type, final Supplier<T> attribute ) {
       final String value;
       if ( type.equals( ScalarValue.class ) ) {
-         value = ((ScalarValue) attribute.get()).getValue().toString();
+         value = ( (ScalarValue) attribute.get() ).getValue().toString();
       } else {
          value = attribute.get().toString();
       }
