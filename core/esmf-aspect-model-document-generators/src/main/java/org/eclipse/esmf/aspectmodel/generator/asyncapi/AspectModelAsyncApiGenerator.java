@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
-import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public class AspectModelAsyncApiGenerator {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
    public JsonNode applyForJson( final Aspect aspect, final boolean useSemanticVersion, final String baseUrl,
-         final Optional<JsonNode> jsonProperties, final String tenantId, final String twinId, final Locale locale ) {
+         final String tenantId, final String twinId, final Locale locale ) {
       try {
          final ObjectNode rootNode = getRootJsonNode();
          final String apiVersion = getApiVersion( aspect, useSemanticVersion );
@@ -62,7 +62,6 @@ public class AspectModelAsyncApiGenerator {
       final ObjectNode messagesNode = FACTORY.objectNode();
       final ObjectNode schemasNode = FACTORY.objectNode();
 
-      final String aspectName = aspect.getName();
       aspect.getEvents().forEach( event -> generateComponentsMessageAndSchemaEvent( messagesNode, schemasNode, event, locale ) );
       aspect.getOperations().forEach( operation -> {
 
@@ -101,7 +100,7 @@ public class AspectModelAsyncApiGenerator {
          event.getProperties().forEach( property -> {
             final ObjectNode propertyNode = FACTORY.objectNode();
             propertyNode.put( "title", property.getName() );
-            propertyNode.put( "type", property.getDataType().get().toString() );
+            propertyNode.put( "type", getType( property.getDataType().get() ) );
             propertyNode.put( "description",property.getDescription( locale ) );
 
             propertiesNode.set( property.getName(), propertyNode );
@@ -128,7 +127,7 @@ public class AspectModelAsyncApiGenerator {
       messagesNode.set( property.getName(), messageNode );
 
       final ObjectNode schemaNode = FACTORY.objectNode();
-      schemaNode.put( "type", property.getDataType().get().toString() );
+      schemaNode.put( "type", getType( property.getDataType().get() ) );
       schemaNode.put( "description", property.getDescription( locale ) );
 
       schemasNode.set( property.getName(), schemaNode );
@@ -244,4 +243,8 @@ public class AspectModelAsyncApiGenerator {
       return (ObjectNode) OBJECT_MAPPER.readTree( string );
    }
 
+   private String getType( final Type type ) {
+      String currentTypeString = type.getUrn().split( "#" )[1];
+      return currentTypeString.contains( "Entity" ) ? "object" : currentTypeString;
+   }
 }
