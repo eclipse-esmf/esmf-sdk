@@ -119,3 +119,4 @@ jobs:
           name: samm-cli-binary-${{ matrix.os }}
           path: |
             tools/samm-cli/target/samm
+            tools/samm-cli/target/*.so

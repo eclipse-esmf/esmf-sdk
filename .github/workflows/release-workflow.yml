@@ -110,7 +110,7 @@ jobs:
           # Create .tar.gz of samm-cli
           pushd tools/samm-cli/target
           chmod a+x samm
-          tar cfvz samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz samm
+          tar cfvz samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz samm *.so
           popd
           mv tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz .
           cp tools/samm-cli/target/samm-cli-*.jar .
