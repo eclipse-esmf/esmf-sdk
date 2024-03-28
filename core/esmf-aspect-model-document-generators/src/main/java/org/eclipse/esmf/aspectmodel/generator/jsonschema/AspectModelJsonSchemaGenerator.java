@@ -14,8 +14,8 @@
 package org.eclipse.esmf.aspectmodel.generator.jsonschema;
 
 import java.util.Locale;
-import java.util.function.BiFunction;
 
+import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,15 +23,45 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * Generator that generates a JSON Schema for payloads corresponding to a given Aspect model.
  */
-public class AspectModelJsonSchemaGenerator implements BiFunction<Aspect, Locale, JsonNode> {
-   @Override
-   public JsonNode apply( final Aspect aspect, final Locale locale ) {
-      final AspectModelJsonSchemaVisitor visitor = new AspectModelJsonSchemaVisitor( true, locale );
-      return visitor.visitAspect( aspect, null );
+public class AspectModelJsonSchemaGenerator implements
+      ArtifactGenerator<String, JsonNode, Aspect, JsonSchemaGenerationConfig, JsonSchemaArtifact> {
+   public static final AspectModelJsonSchemaGenerator INSTANCE = new AspectModelJsonSchemaGenerator();
+
+   /**
+    * @deprecated Use {@link #INSTANCE} instead
+    */
+   @Deprecated( forRemoval = true )
+   public AspectModelJsonSchemaGenerator() {
    }
 
+   /**
+    * @deprecated Use {@link #apply(Aspect, JsonSchemaGenerationConfig)} instead
+    */
+   @Deprecated( forRemoval = true )
+   public JsonNode apply( final Aspect aspect, final Locale locale ) {
+      final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
+            .locale( locale )
+            .build();
+      return apply( aspect, config ).getContent();
+   }
+
+   /**
+    * @deprecated Use {@link #apply(Aspect, JsonSchemaGenerationConfig)} instead
+    */
+   @Deprecated( forRemoval = true )
    public JsonNode applyForOpenApi( final Aspect aspect, final Locale locale, final boolean generateCommentForSeeAttributes ) {
-      final AspectModelJsonSchemaVisitor visitor = new AspectModelJsonSchemaVisitor( false, locale, generateCommentForSeeAttributes );
-      return visitor.visitAspectForOpenApi( aspect );
+      final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
+            .locale( locale )
+            .generateForOpenApi( true )
+            .generateCommentForSeeAttributes( generateCommentForSeeAttributes )
+            .build();
+      return apply( aspect, config ).getContent();
+   }
+
+   @Override
+   public JsonSchemaArtifact apply( final Aspect aspect, final JsonSchemaGenerationConfig config ) {
+      final AspectModelJsonSchemaVisitor visitor = new AspectModelJsonSchemaVisitor( config );
+      final JsonNode result = aspect.accept( visitor, null );
+      return new JsonSchemaArtifact( aspect.getName(), result );
    }
 }

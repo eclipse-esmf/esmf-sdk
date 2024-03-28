@@ -53,6 +53,26 @@ public class GenerateOpenApiSpecTest extends AspectModelMojoTest {
    }
 
    @Test
+   public void testGenerateOpenApiSpecJsonWithSeparateSchemaFiles() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-openapi-spec-json-pom-separate-schema-files.xml" );
+      final Mojo generateOpenApiSpec = lookupMojo( "generateOpenApiSpec", testPom );
+      assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
+      assertThat( generatedFilePath( "AspectWithEntity.oai.json" ) ).exists();
+      assertThat( generatedFilePath( "AspectWithEntity.json" ) ).exists();
+      assertThat( generatedFilePath( "TestEntity.json" ) ).exists();
+   }
+
+   @Test
+   public void testGenerateOpenApiSpecYamlWithSeparateSchemaFiles() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/generate-openapi-spec-yaml-pom-separate-schema-files.xml" );
+      final Mojo generateOpenApiSpec = lookupMojo( "generateOpenApiSpec", testPom );
+      assertThatCode( generateOpenApiSpec::execute ).doesNotThrowAnyException();
+      assertThat( generatedFilePath( "AspectWithEntity.oai.yaml" ) ).exists();
+      assertThat( generatedFilePath( "AspectWithEntity.yaml" ) ).exists();
+      assertThat( generatedFilePath( "TestEntity.yaml" ) ).exists();
+   }
+
+   @Test
    public void testGenerateOpenApiSpecInvalidOutputFormat() throws Exception {
       final File testPom = getTestFile( "src/test/resources/generate-openapi-spec-pom-invalid-format.xml" );
       final Mojo generateOpenApiSpec = lookupMojo( "generateOpenApiSpec", testPom );
