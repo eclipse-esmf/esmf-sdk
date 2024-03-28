@@ -89,12 +89,14 @@ public class Diagram {
     */
    public static class Box {
       private String prototype;
+      private final Color background;
       private final String title;
       private final List<String> entries = new ArrayList<>();
 
-      public Box( final String prototype, final String title ) {
+      public Box( final String prototype, final String title, final Color background ) {
          this.prototype = prototype;
          this.title = title;
+         this.background = background;
       }
 
       public void addEntry( final List<String> entry ) {
@@ -113,6 +115,10 @@ public class Diagram {
          return title;
       }
 
+      public Color getBackground() {
+         return background;
+      }
+
       public List<String> getEntries() {
          return entries;
       }
@@ -126,5 +132,31 @@ public class Diagram {
     * @param label the label on the edge
     */
    public record Edge( Box from, Box to, String label ) {
+   }
+
+   public enum Color {
+      FALLBACK( "#ffffff" ),
+      ASPECT( "#7589c8" ),
+      PROPERTY( "#c5c8d4" ),
+      OPERATION( "#d5bfda" ),
+      EVENT( "#b9d8fa" ),
+      CHARACTERISTIC( "#d6e2a6" ),
+      COLLECTION( "#d6e2a6" ),
+      ENTITY( "#aeade0" ),
+      ABSTRACT_ENTITY( "#aeade0" ),
+      CONSTRAINT( "#74aeaf" ),
+      TRAIT( "#74aeaf" ),
+      UNIT( "#b9ab50" ),
+      ENTITY_INSTANCE( "#aeade0" );
+
+      private final String color;
+
+      Color( final String color ) {
+         this.color = color;
+      }
+
+      public String getColor() {
+         return color;
+      }
    }
 }

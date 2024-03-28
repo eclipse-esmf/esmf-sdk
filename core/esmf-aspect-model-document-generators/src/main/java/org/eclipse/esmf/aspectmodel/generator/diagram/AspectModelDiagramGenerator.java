@@ -282,7 +282,8 @@ public class AspectModelDiagramGenerator {
             .stream()
             .map( box -> {
                final Html.Table table = table()
-                     .color( Color.BLACK ).bgColor( bgColor ).cellBorder( 0 ).border( 1 ).cellSpacing( 0 ).cellPadding( 4 )
+                     .color( Color.BLACK ).bgColor( Color.ofRGB( box.getBackground().getColor() ) )
+                     .cellBorder( 0 ).border( 1 ).cellSpacing( 0 ).cellPadding( 4 )
                      .tr( td().text( "«" + box.getPrototype() + "»" ).fontName( fontName ).align( Labeljust.CENTER ) );
                if ( !box.getTitle().isEmpty() ) {
                   table.tr( td().text( box.getTitle() ).fontName( fontName ).align( Labeljust.CENTER ) );
