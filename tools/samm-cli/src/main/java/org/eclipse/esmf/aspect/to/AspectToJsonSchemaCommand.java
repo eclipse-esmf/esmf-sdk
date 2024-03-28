@@ -22,6 +22,8 @@ import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 
@@ -57,10 +59,12 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final AspectModelJsonSchemaGenerator generator = new AspectModelJsonSchemaGenerator();
       final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
-      final JsonNode schema = generator.apply( aspect, locale );
+      final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
+            .locale( locale )
+            .build();
+      final JsonNode schema = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspect, config ).getContent();
 
       withOutputStream( outputFilePath, outputStream -> {
          final ObjectMapper objectMapper = new ObjectMapper();

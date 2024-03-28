@@ -733,6 +733,30 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
+   public void testAspectToOpenApiWithSeparateJsonFiles() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json",
+            "--api-base-url", "https://test.example.com", "--separate-files", "--output", outputDirectory.toString() );
+
+      assertThat( outputDirectory.resolve( testModel.getName() + ".oai.json" ) ).exists();
+      assertThat( outputDirectory.resolve( "TestEntity.json" ) ).exists();
+      assertThat( outputDirectory.resolve( "TestEntity.json" ).toFile() ).content().contains( "This is a test entity" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   public void testAspectToOpenApiWithSeparateYamlFiles() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi",
+            "--api-base-url", "https://test.example.com", "--separate-files", "--output", outputDirectory.toString() );
+
+      assertThat( outputDirectory.resolve( testModel.getName() + ".oai.yaml" ) ).exists();
+      assertThat( outputDirectory.resolve( "TestEntity.yaml" ) ).exists();
+      assertThat( outputDirectory.resolve( "TestEntity.yaml" ).toFile() ).content().contains( "This is a test entity" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    public void testAspectToPngWithDefaultLanguage() {
       final File targetFile = outputFile( "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",

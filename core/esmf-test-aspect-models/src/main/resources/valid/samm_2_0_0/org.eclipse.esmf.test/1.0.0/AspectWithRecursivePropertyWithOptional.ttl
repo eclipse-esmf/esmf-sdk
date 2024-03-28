@@ -21,9 +21,9 @@
     samm:operations ( ) .
 
 :testProperty a samm:Property ;
-    samm:characteristic :testItemCharacteristic .
+    samm:characteristic :TestItemCharacteristic .
 
-:testItemCharacteristic a samm-c:SingleEntity ;
+:TestItemCharacteristic a samm-c:SingleEntity ;
     samm:dataType :TestEntity .
 
 :TestEntity a samm:Entity ;
