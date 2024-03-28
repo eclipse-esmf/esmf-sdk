@@ -28,19 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
-import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaArtifact;
-import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfig;
-import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfigBuilder;
-import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import io.vavr.control.Try;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -48,8 +35,23 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
+import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaArtifact;
+import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfigBuilder;
+import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+
+import io.vavr.control.Try;
 
 @Mojo( name = "generateOpenApiSpec", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateOpenApiSpec extends AspectModelMojo {
@@ -108,8 +110,8 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
          final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
                .useSemanticVersion( useSemanticApiVersion )
                .baseUrl( aspectApiBaseUrl )
-               .resourcePath( Optional.ofNullable( aspectResourcePath ) )
-               .jsonProperties( readAspectParameterFile() )
+               .resourcePath( aspectResourcePath )
+               .properties( readAspectParameterFile() )
                .includeQueryApi( includeQueryApi )
                .pagingOption( getPagingFromArgs() )
                .locale( locale )
@@ -168,21 +170,21 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       super.validateParameters();
    }
 
-   private Optional<JsonNode> readAspectParameterFile() throws MojoExecutionException {
+   private ObjectNode readAspectParameterFile() throws MojoExecutionException {
       if ( aspectParameterFile == null || aspectParameterFile.isEmpty() ) {
-         return Optional.empty();
+         return null;
       }
       final String extension = FilenameUtils.getExtension( aspectParameterFile ).toUpperCase();
       final Try<String> fileData = Try.of( () -> getFileAsString( aspectParameterFile ) ).mapTry( Optional::get );
       return switch ( extension ) {
-         case "YAML", "YML" -> fileData
+         case "YAML", "YML" -> (ObjectNode) fileData
                .mapTry( data -> YAML_MAPPER.readValue( data, Object.class ) )
                .mapTry( OBJECT_MAPPER::writeValueAsString )
                .mapTry( OBJECT_MAPPER::readTree )
-               .toJavaOptional();
-         case "JSON" -> fileData
+               .get();
+         case "JSON" -> (ObjectNode) fileData
                .mapTry( OBJECT_MAPPER::readTree )
-               .toJavaOptional();
+               .get();
          default -> throw new MojoExecutionException( format( "File extension [%s] not supported.", extension ) );
       };
    }
@@ -202,19 +204,19 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       throw new MojoExecutionException( format( "File does not exist %s.", filePath ) );
    }
 
-   private Optional<PagingOption> getPagingFromArgs() {
+   private PagingOption getPagingFromArgs() {
       if ( excludePaging ) {
-         return Optional.of( PagingOption.NO_PAGING );
+         return PagingOption.NO_PAGING;
       }
       if ( aspectCursorBasedPaging ) {
-         return Optional.of( PagingOption.CURSOR_BASED_PAGING );
+         return PagingOption.CURSOR_BASED_PAGING;
       }
       if ( aspectOffsetBasedPaging ) {
-         return Optional.of( PagingOption.OFFSET_BASED_PAGING );
+         return PagingOption.OFFSET_BASED_PAGING;
       }
       if ( aspectTimeBasedPaging ) {
-         return Optional.of( PagingOption.TIME_BASED_PAGING );
+         return PagingOption.TIME_BASED_PAGING;
       }
-      return Optional.empty();
+      return null;
    }
 }
