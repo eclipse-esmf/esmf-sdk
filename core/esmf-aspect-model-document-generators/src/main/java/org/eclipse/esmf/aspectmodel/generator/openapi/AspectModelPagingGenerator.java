@@ -19,11 +19,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.characteristic.TimeSeries;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -32,15 +33,15 @@ import org.eclipse.esmf.metamodel.HasProperties;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.vavr.collection.Stream;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class AspectModelPagingGenerator {
 
@@ -55,22 +56,22 @@ class AspectModelPagingGenerator {
    /**
     * Sets the paging properties for an aspect to an given ObjectNode.
     *
-    * @param aspect The related aspect for the paging properties.
+    * @param aspect               The related aspect for the paging properties.
     * @param selectedPagingOption The selected paging option.
-    * @param objectNode The ObjectNode where the properties shall be inserted.
+    * @param objectNode           The ObjectNode where the properties shall be inserted.
     * @throws IOException In case the root property file can't be loaded.
     */
-   public void setPagingProperties( final Aspect aspect, final Optional<PagingOption> selectedPagingOption, final ObjectNode objectNode )
+   public void setPagingProperties( final Aspect aspect, final PagingOption selectedPagingOption, final ObjectNode objectNode )
          throws IOException {
       final Set<PagingOption> possiblePagingOptions = getPagingTypesForAspect( aspect );
       validatePaging( selectedPagingOption, possiblePagingOptions );
 
-      if ( selectedPagingOption.isPresent() && possiblePagingOptions.contains( selectedPagingOption.get() ) ) {
-         setPagingTypeToPath( selectedPagingOption.get(), objectNode );
+      if ( selectedPagingOption != null && possiblePagingOptions.contains( selectedPagingOption ) ) {
+         setPagingTypeToPath( selectedPagingOption, objectNode );
          return;
       }
       final PagingOption pagingOption = pickOneOfManyPagingOptions( possiblePagingOptions );
-      if ( possiblePagingOptions.size() > 1 && selectedPagingOption.isEmpty() ) {
+      if ( possiblePagingOptions.size() > 1 && selectedPagingOption == null ) {
          final String message = String.format( UNSPECIFIC_PAGING_TYPE, pagingOption );
          LOG.info( message );
       }
@@ -80,22 +81,22 @@ class AspectModelPagingGenerator {
    /**
     * Sets the paging schema for an aspect to an given ObjectNode.
     *
-    * @param aspect The related aspect for the paging schema.
+    * @param aspect               The related aspect for the paging schema.
     * @param selectedPagingOption The selected paging option.
-    * @param schemaNode The ObjectNode where the schema shall be inserted.
+    * @param schemaNode           The ObjectNode where the schema shall be inserted.
     * @throws IOException In case the root schema file can't be loaded.
     */
    public void setSchemaInformationForPaging( final Aspect aspect, final ObjectNode schemaNode,
-         final Optional<PagingOption> selectedPagingOption ) throws IOException {
+         final PagingOption selectedPagingOption ) throws IOException {
       final Set<PagingOption> possiblePagingOptions = getPagingTypesForAspect( aspect );
       validatePaging( selectedPagingOption, possiblePagingOptions );
 
-      if ( selectedPagingOption.isPresent() && possiblePagingOptions.contains( selectedPagingOption.get() ) ) {
-         setSchemaInformation( aspect, selectedPagingOption.get(), schemaNode );
+      if ( selectedPagingOption != null && possiblePagingOptions.contains( selectedPagingOption ) ) {
+         setSchemaInformation( aspect, selectedPagingOption, schemaNode );
          return;
       }
       final PagingOption pagingOption = pickOneOfManyPagingOptions( possiblePagingOptions );
-      if ( possiblePagingOptions.size() > 1 && selectedPagingOption.isEmpty() ) {
+      if ( possiblePagingOptions.size() > 1 && selectedPagingOption == null ) {
          final String message = String.format( UNSPECIFIC_PAGING_TYPE, pagingOption );
          LOG.info( message );
       }
@@ -138,9 +139,9 @@ class AspectModelPagingGenerator {
       itemNode.set( "items", FACTORY.objectNode().put( "$ref", "#/components/schemas/" + aspect.getName() ) );
    }
 
-   private void validatePaging( final Optional<PagingOption> definedPagingOption, final Set<PagingOption> possiblePagingOptions ) {
-      if ( definedPagingOption.isPresent() && !possiblePagingOptions.contains( definedPagingOption.get() ) ) {
-         final String errorMessage = String.format( WRONG_TYPE_CHOSEN, definedPagingOption.get() );
+   private void validatePaging( final PagingOption definedPagingOption, final Set<PagingOption> possiblePagingOptions ) {
+      if ( definedPagingOption != null && !possiblePagingOptions.contains( definedPagingOption ) ) {
+         final String errorMessage = String.format( WRONG_TYPE_CHOSEN, definedPagingOption );
          LOG.error( errorMessage );
          throw new IllegalArgumentException( errorMessage );
       }
@@ -159,6 +160,7 @@ class AspectModelPagingGenerator {
                String.format( "There is no file defined for the chosen paging option %s", pagingOption ) );
       };
       try ( final InputStream inputStream = getClass().getResourceAsStream( "/openapi/" + fileName ) ) {
+         Objects.requireNonNull( inputStream, "The file " + fileName + " could not be found." );
          return (ObjectNode) OBJECT_MAPPER.readTree( IOUtils.toString( inputStream, StandardCharsets.UTF_8 ) );
       }
    }
