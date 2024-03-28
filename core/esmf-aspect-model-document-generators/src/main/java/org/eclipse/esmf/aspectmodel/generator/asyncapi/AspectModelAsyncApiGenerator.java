@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 
 public class AspectModelAsyncApiGenerator {
 
@@ -28,12 +33,54 @@ public class AspectModelAsyncApiGenerator {
    private static final String CHANNELS = "#/channels";
    private static final String COMPONENTS_SCHEMAS = "#/components/schemas";
    private static final String COMPONENTS_MESSAGES = "#/components/messages/";
-
+   private static final String ACTION_RECEIVE = "receive";
+   private static final String ACTION_SEND = "send";
    private static final String V30 = "3.0.0";
 
    private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelAsyncApiGenerator.class );
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+   private enum JsonType {
+      NUMBER,
+      BOOLEAN,
+      STRING,
+      OBJECT;
+
+      private JsonNode toJsonNode() {
+         switch ( this ) {
+         case NUMBER:
+            return JsonNodeFactory.instance.textNode( "number" );
+         case BOOLEAN:
+            return JsonNodeFactory.instance.textNode( "boolean" );
+         case OBJECT:
+            return JsonNodeFactory.instance.textNode( "object" );
+         default:
+            return JsonNodeFactory.instance.textNode( "string" );
+         }
+      }
+   }
+
+   private static final Map<Resource, JsonType> TYPE_MAP = ImmutableMap.<Resource, JsonType> builder()
+         .put( XSD.xboolean, JsonType.BOOLEAN )
+         .put( XSD.decimal, JsonType.NUMBER )
+         .put( XSD.integer, JsonType.NUMBER )
+         .put( XSD.xfloat, JsonType.STRING )
+         .put( XSD.xdouble, JsonType.NUMBER )
+         .put( XSD.xbyte, JsonType.NUMBER )
+         .put( XSD.xshort, JsonType.NUMBER )
+         .put( XSD.xint, JsonType.NUMBER )
+         .put( XSD.xlong, JsonType.NUMBER )
+         .put( XSD.unsignedByte, JsonType.NUMBER )
+         .put( XSD.unsignedShort, JsonType.NUMBER )
+         .put( XSD.unsignedInt, JsonType.NUMBER )
+         .put( XSD.unsignedLong, JsonType.NUMBER )
+         .put( XSD.positiveInteger, JsonType.NUMBER )
+         .put( XSD.nonPositiveInteger, JsonType.NUMBER )
+         .put( XSD.negativeInteger, JsonType.NUMBER )
+         .put( XSD.nonNegativeInteger, JsonType.NUMBER )
+         .put( RDF.langString, JsonType.STRING )
+         .build();
 
    public JsonNode applyForJson( final Aspect aspect, final boolean useSemanticVersion, final String baseUrl,
          final String tenantId, final String twinId, final Locale locale ) {
@@ -100,7 +147,7 @@ public class AspectModelAsyncApiGenerator {
          event.getProperties().forEach( property -> {
             final ObjectNode propertyNode = FACTORY.objectNode();
             propertyNode.put( "title", property.getName() );
-            propertyNode.put( "type", getType( property.getDataType().get() ) );
+            propertyNode.put( "type", getType( ResourceFactory.createResource( property.getDataType().get().getUrn() ) ).toJsonNode() );
             propertyNode.put( "description",property.getDescription( locale ) );
 
             propertiesNode.set( property.getName(), propertyNode );
@@ -127,7 +174,7 @@ public class AspectModelAsyncApiGenerator {
       messagesNode.set( property.getName(), messageNode );
 
       final ObjectNode schemaNode = FACTORY.objectNode();
-      schemaNode.put( "type", getType( property.getDataType().get() ) );
+      schemaNode.put( "type", getType( ResourceFactory.createResource( property.getDataType().get().getUrn() ) ).toJsonNode() );
       schemaNode.put( "description", property.getDescription( locale ) );
 
       schemasNode.set( property.getName(), schemaNode );
@@ -136,13 +183,13 @@ public class AspectModelAsyncApiGenerator {
    private void setOperations( final Aspect aspect, final ObjectNode rootNode ) {
       final ObjectNode operationsNode = FACTORY.objectNode();
       final String aspectName = aspect.getName();
-      aspect.getEvents().forEach( event -> generateOperation( operationsNode, aspectName, event.getName(), "receive" ) );
+      aspect.getEvents().forEach( event -> generateOperation( operationsNode, aspectName, event.getName(), ACTION_RECEIVE ) );
       aspect.getOperations().forEach( operation -> {
 
-         operation.getInput().forEach( input -> generateOperation( operationsNode, aspectName, input.getName(), "receive" ) );
+         operation.getInput().forEach( input -> generateOperation( operationsNode, aspectName, input.getName(), ACTION_RECEIVE ) );
 
          if ( operation.getOutput().isPresent() ) {
-            generateOperation( operationsNode, aspectName, operation.getOutput().get().getName(), "send" );
+            generateOperation( operationsNode, aspectName, operation.getOutput().get().getName(), ACTION_SEND );
          }
       } );
 
@@ -243,8 +290,7 @@ public class AspectModelAsyncApiGenerator {
       return (ObjectNode) OBJECT_MAPPER.readTree( string );
    }
 
-   private String getType( final Type type ) {
-      String currentTypeString = type.getUrn().split( "#" )[1];
-      return currentTypeString.contains( "Entity" ) ? "object" : currentTypeString;
+   private AspectModelAsyncApiGenerator.JsonType getType( final Resource type ) {
+      return TYPE_MAP.getOrDefault( type, JsonType.STRING );
    }
 }

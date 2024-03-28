@@ -69,7 +69,7 @@ class AsyncApiTest extends MetaModelVersions {
       final String expectedComponentsSchemaOutput = "{\"type\":\"string\",\"description\":null}";
 
       assertThat( json.get( "info" ).get( "title" ).asText() ).isEqualTo( "AspectWithOperation MQTT API" );
-      assertThat( json.get( "info" ).get( "description" ).asText() ).isNull();
+      assertThat( json.get( "info" ).get( "description" ).asText() ).isEqualTo("null");
       assertThat( json.get( "channels").toString() ).contains( expectedChannels );
       assertThat( json.get( "components").get( "messsages" ).get( "input" ).toString() ).contains( expectedComponentsMessageInput );
       assertThat( json.get( "components").get( "messsages" ).get( "output" ).toString() ).contains( expectedComponentsMessageOutput );
