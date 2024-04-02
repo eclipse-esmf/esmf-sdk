@@ -14,10 +14,10 @@
 package examples;
 
 // tag::imports[]
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
 import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfig;
@@ -26,12 +26,13 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-// end::imports[]
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
 public class GenerateOpenApi {
    @Test
@@ -46,17 +47,18 @@ public class GenerateOpenApi {
             AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
       // tag::generateYaml[]
 
+      //language=yaml
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             // Server URL
             .baseUrl( "http://www.example.com" )
             // The resource path which shall be added
-            .resourcePath( Optional.of( "/testPath/{parameter}" ) )
+            .resourcePath( "/testPath/{parameter}" )
             // Determines whether semantic versioning should be used for the API
             // i.e., true = v1.2.3, false = v1
             .useSemanticVersion( false )
             // A String containing all the information for dynamic properties mentioned in the resource path.
             // The string must be syntactically valid YAML.
-            .yamlProperties( Optional.of( """
+            .properties( readYaml( """
                   parameter:
                     name: parameter
                     in: path
@@ -70,7 +72,7 @@ public class GenerateOpenApi {
             // The paging Option to be chosen. In case paging is possible:
             // The default for a time related collection is time-based paging.
             // Otherwise the default is offset-based paging.
-            .pagingOption( Optional.of( PagingOption.OFFSET_BASED_PAGING ) )
+            .pagingOption( PagingOption.OFFSET_BASED_PAGING )
             .build();
 
       // Generate pretty-printed YAML
@@ -95,13 +97,13 @@ public class GenerateOpenApi {
             // Server URL
             .baseUrl( "http://www.example.com" )
             // The resource path which shall be added
-            .resourcePath( Optional.of( "/testPath/{parameter}" ) )
+            .resourcePath( "/testPath/{parameter}" )
             // Determines whether semantic versioning should be used for the API
             // i.e., true = v1.2.3, false = v1
             .useSemanticVersion( false )
             // A JsonNode containing all the information for variable properties mentioned
             // in the resource path .
-            .jsonProperties( Optional.of( objectMapper.readTree( """
+            .properties( readYaml( """
                      {
                        "test-Id": {
                          "name": "test-Id",
@@ -113,13 +115,13 @@ public class GenerateOpenApi {
                          }
                        }
                      }
-                  """ ) ) )
+                  """ ) )
             // Should the query API be added to the generated specification?
             .includeQueryApi( true )
             // The paging Option to be chosen. In case paging is possible:
             // The default for a time related collection is time-based paging.
             // Otherwise the default is offset-based paging.
-            .pagingOption( Optional.of( PagingOption.OFFSET_BASED_PAGING ) )
+            .pagingOption( PagingOption.OFFSET_BASED_PAGING )
             .build();
 
       // Generate the JSON
@@ -132,5 +134,9 @@ public class GenerateOpenApi {
       objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, json );
       final String result = out.toString();
       // end::generateJson[]
+   }
+
+   private static ObjectNode readYaml( String content ) throws JsonProcessingException {
+      return (ObjectNode) new YAMLMapper().readTree( content );
    }
 }

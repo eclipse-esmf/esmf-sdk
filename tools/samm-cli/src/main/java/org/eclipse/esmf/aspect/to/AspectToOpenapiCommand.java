@@ -27,6 +27,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
@@ -41,11 +43,11 @@ import org.eclipse.esmf.metamodel.Aspect;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+
 import io.vavr.control.Try;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToOpenapiCommand.COMMAND_NAME,
@@ -75,7 +77,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
 
    @CommandLine.Option( names = { "--parameter-file", "-p" },
          description = "The path to a file including the parameter for the Aspect API endpoints. When --json is given, this file "
-               + "should contain the parameter definition in JSON, otherwise it should contain the definition in YAML." )
+                       + "should contain the parameter definition in JSON, otherwise it should contain the definition in YAML." )
    private String aspectParameterFile;
 
    @CommandLine.Option( names = { "--semantic-version", "-sv" },
@@ -134,8 +136,8 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
             .baseUrl( aspectApiBaseUrl )
-            .resourcePath( Optional.ofNullable( aspectResourcePath ) )
-            .jsonProperties( readAspectParameterFile() )
+            .resourcePath( aspectResourcePath )
+            .properties( readAspectParameterFile() )
             .includeQueryApi( includeQueryApi )
             .pagingOption( getPaging() )
             .locale( locale )
@@ -182,21 +184,21 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       }
    }
 
-   private Optional<JsonNode> readAspectParameterFile() {
+   private ObjectNode readAspectParameterFile() {
       if ( aspectParameterFile == null || aspectParameterFile.isEmpty() ) {
-         return Optional.empty();
+         return null;
       }
       final String extension = FilenameUtils.getExtension( aspectParameterFile ).toUpperCase();
       final Try<String> fileData = Try.of( () -> getFileAsString( aspectParameterFile ) ).mapTry( Optional::get );
       return switch ( extension ) {
-         case "YAML", "YML" -> fileData
+         case "YAML", "YML" -> (ObjectNode) fileData
                .mapTry( data -> YAML_MAPPER.readValue( data, Object.class ) )
                .mapTry( OBJECT_MAPPER::writeValueAsString )
                .mapTry( OBJECT_MAPPER::readTree )
-               .toJavaOptional();
-         case "JSON" -> fileData
+               .get();
+         case "JSON" -> (ObjectNode) fileData
                .mapTry( OBJECT_MAPPER::readTree )
-               .toJavaOptional();
+               .get();
          default -> throw new CommandException( format( "File extension [%s] not supported.", extension ) );
       };
    }
@@ -216,19 +218,19 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       throw new CommandException( format( "File does not exist %s.", filePath ) );
    }
 
-   private Optional<PagingOption> getPaging() {
+   private PagingOption getPaging() {
       if ( excludePaging ) {
-         return Optional.of( PagingOption.NO_PAGING );
+         return PagingOption.NO_PAGING;
       }
       if ( aspectCursorBasedPaging ) {
-         return Optional.of( PagingOption.CURSOR_BASED_PAGING );
+         return PagingOption.CURSOR_BASED_PAGING;
       }
       if ( aspectOffsetBasedPaging ) {
-         return Optional.of( PagingOption.OFFSET_BASED_PAGING );
+         return PagingOption.OFFSET_BASED_PAGING;
       }
       if ( aspectTimeBasedPaging ) {
-         return Optional.of( PagingOption.TIME_BASED_PAGING );
+         return PagingOption.TIME_BASED_PAGING;
       }
-      return Optional.empty();
+      return null;
    }
 }
