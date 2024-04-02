@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
+ *
+ * See the AUTHORS file(s) distributed with this work for additional
+ * information regarding authorship.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * SPDX-License-Identifier: MPL-2.0
+ */
+
+package org.eclipse.esmf.aspect.to;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Locale;
+import java.util.Optional;
+
+import org.eclipse.esmf.AbstractCommand;
+import org.eclipse.esmf.ExternalResolverMixin;
+import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.aspect.AspectToCommand;
+import org.eclipse.esmf.aspectmodel.generator.asyncapi.AspectModelAsyncApiGenerator;
+import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaArtifact;
+import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfigBuilder;
+import org.eclipse.esmf.exception.CommandException;
+import org.eclipse.esmf.metamodel.Aspect;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import picocli.CommandLine;
+
+@CommandLine.Command( name = AspectToAsyncapiCommand.COMMAND_NAME,
+      description = "Generate AsyncAPI specification for an Aspect Model",
+      descriptionHeading = "%n@|bold Description|@:%n%n",
+      parameterListHeading = "%n@|bold Parameters|@:%n",
+      optionListHeading = "%n@|bold Options|@:%n",
+      mixinStandardHelpOptions = true
+)
+public class AspectToAsyncapiCommand extends AbstractCommand {
+
+   public static final String COMMAND_NAME = "asyncapi";
+
+   @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path" )
+   private String outputFilePath = "-";
+
+   @CommandLine.Option( names = { "--application-id", "-ai" }, description = "Use this param for provide application id." )
+   private String applicationId;
+
+   @CommandLine.Option( names = { "--channel-address", "-ca" }, description = "Use this param make possible provide channel address." )
+   private String channelAddress;
+
+   @CommandLine.Option( names = { "--semantic-version", "-sv" },
+         description = "Use the full semantic version from the Aspect Model as the version for the Aspect API." )
+   private boolean useSemanticApiVersion = false;
+
+   @CommandLine.Option( names = { "--language", "-l" },
+         description = "The language from the model for which the OpenAPI specification should be generated (default: en)" )
+   private String language = "en";
+
+   @CommandLine.ParentCommand
+   private AspectToCommand parentCommand;
+
+   @CommandLine.Mixin
+   private LoggingMixin loggingMixin;
+
+   @CommandLine.Mixin
+   private ExternalResolverMixin customResolver;
+
+   @Override
+   public void run() {
+      final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
+      final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
+      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
+      final ObjectMapper objectMapper = new ObjectMapper();
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( useSemanticApiVersion )
+            .applicationId( applicationId )
+            .channelAddress( channelAddress )
+            .locale( locale)
+            .build();
+      final AsyncApiSchemaArtifact asyncApiSpec = generator.apply( aspect, config );
+
+      try {
+         writeSchemaWithInOneFile( objectMapper, asyncApiSpec );
+      } catch ( final IOException exception ) {
+         throw new CommandException( "Could not generate AsyncAPI specification.", exception );
+      }
+   }
+
+   private void writeSchemaWithInOneFile( final ObjectMapper objectMapper, final AsyncApiSchemaArtifact asyncApiSpec ) throws IOException {
+      try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
+         objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, asyncApiSpec.getContent() );
+      }
+   }
+}

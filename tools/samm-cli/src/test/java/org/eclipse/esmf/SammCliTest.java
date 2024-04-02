@@ -757,6 +757,58 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
+   public void testAspectToAsyncapiWithoutApplicationId() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
+      assertThat( result.exitStatus() ).isZero();
+      assertThat( result.stdout() ).isNotEmpty();
+      assertThat( result.stdout() ).contains( "\"asyncapi\" : \"3.0.0\"," );
+      assertThat( result.stdout() ).contains( "\"id\" : \"\"," );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   public void testAspectToAsyncapiWithApplicationId() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi", "-ai", "test:serve" );
+      assertThat( result.exitStatus() ).isZero();
+      assertThat( result.stdout() ).isNotEmpty();
+      assertThat( result.stdout() ).contains( "\"asyncapi\" : \"3.0.0\"," );
+      assertThat( result.stdout() ).contains( "\"id\" : \"test:serve\"," );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   public void testAspectToAsyncapiWithoutChannelAddress() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
+      assertThat( result.exitStatus() ).isZero();
+      assertThat( result.stdout() ).isNotEmpty();
+      assertThat( result.stdout() ).contains( "\"asyncapi\" : \"3.0.0\"," );
+      assertThat( result.stdout() ).contains( "\"address\" : \"/org.eclipse.esmf.test/1.0.0/AspectWithEntity\"," );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   public void testAspectToAsyncapiWithChannelAddress() {
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi",
+            "-ca", "test/address/aspect/1.0.0/TestAspect");
+      assertThat( result.exitStatus() ).isZero();
+      assertThat( result.stdout() ).isNotEmpty();
+      assertThat( result.stdout() ).contains( "\"asyncapi\" : \"3.0.0\"," );
+      assertThat( result.stdout() ).contains( "\"address\" : \"test/address/aspect/1.0.0/TestAspect\"," );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   public void testAspectToAsyncapiWithOutputParam() {
+      final File outputAsyncApiSpecFile = outputFile( testModel.getName() + ".json" );
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi", "-ai", "test:serve",
+            "-ca", "test/address/aspect/1.0.0/TestAspect", "-o", outputAsyncApiSpecFile.getAbsolutePath() );
+      assertThat( result.exitStatus() ).isZero();
+      assertThat( outputAsyncApiSpecFile ).exists();
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    public void testAspectToPngWithDefaultLanguage() {
       final File targetFile = outputFile( "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
