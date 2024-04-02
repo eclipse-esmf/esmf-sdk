@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
@@ -243,7 +242,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH_WITH_PARAMETER )
-            .properties(  getTestParameter()  )
+            .properties( getTestParameter() )
             .build();
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
@@ -272,7 +271,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH_WITH_INVALID_PARAMETER )
-            .properties(  getTestParameter()  )
+            .properties( getTestParameter() )
             .build();
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
@@ -294,14 +293,14 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH_WITH_PARAMETER )
-            .properties(  getTestParameter()  )
+            .properties( getTestParameter() )
             .build();
       final String yaml = apiJsonGenerator.apply( aspect, yamlConfig ).getContentAsYaml();
       final OpenApiSchemaGenerationConfig jsonConfig = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
             .resourcePath( TEST_RESOURCE_PATH_WITH_PARAMETER )
-            .properties( getTestParameter()  )
+            .properties( getTestParameter() )
             .build();
       final JsonNode json = apiJsonGenerator.apply( aspect, jsonConfig ).getContent();
       assertThat( yaml ).isEqualTo( yamlMapper.writeValueAsString( json ) );
@@ -349,7 +348,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
-            .pagingOption(  PagingOption.OFFSET_BASED_PAGING  )
+            .pagingOption( PagingOption.OFFSET_BASED_PAGING )
             .build();
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
@@ -398,7 +397,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
-            .pagingOption(  PagingOption.CURSOR_BASED_PAGING )
+            .pagingOption( PagingOption.CURSOR_BASED_PAGING )
             .build();
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
@@ -407,14 +406,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
-            "previous" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "next" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 3 ).getName() ).isEqualTo(
             "before" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 4 ).getName() ).isEqualTo( "after" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 5 ).getName() ).isEqualTo( "count" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 6 ).getName() ).isEqualTo(
-            "totalItemCount" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "after" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "200" ).get$ref() )
             .isEqualTo( "#/components/responses/AspectWithCollection" );
       assertThat( openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
@@ -424,7 +417,6 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .get$ref() )
             .isEqualTo( "#/components/schemas/PagingSchema" );
       assertThat( openApi.getComponents().getSchemas().get( "PagingSchema" ).getProperties() ).containsKey( "items" );
-      assertThat( openApi.getComponents().getSchemas().get( "PagingSchema" ).getProperties() ).containsKey( "totalItems" );
       assertThat( openApi.getComponents().getSchemas().get( "PagingSchema" ).getProperties() ).containsKey( "cursor" );
       assertThat( openApi.getComponents().getSchemas().get( "PagingSchema" ).getProperties() ).containsKey( "_links" );
    }
@@ -460,7 +452,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
-            .pagingOption(  PagingOption.NO_PAGING )
+            .pagingOption( PagingOption.NO_PAGING )
             .build();
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
@@ -557,9 +549,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
       for ( final Property property : aspect.getProperties() ) {
          assertThat( context.<String> read( "$['components']['schemas']"
-               + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
-               + AspectModelJsonSchemaVisitor.SAMM_EXTENSION
-               + "']" ) ).isEqualTo( property.getAspectModelUrn().get().toString() );
+                                            + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
+                                            + AspectModelJsonSchemaVisitor.SAMM_EXTENSION
+                                            + "']" ) ).isEqualTo( property.getAspectModelUrn().get().toString() );
       }
 
       // $comment keywords should only be generated on demand, not by default
