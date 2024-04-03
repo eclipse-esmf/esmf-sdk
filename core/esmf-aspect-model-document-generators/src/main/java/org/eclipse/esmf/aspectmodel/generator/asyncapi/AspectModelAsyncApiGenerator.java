@@ -3,13 +3,16 @@ package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
+import org.eclipse.esmf.aspectmodel.generator.GeneratorHelper;
 import org.eclipse.esmf.aspectmodel.generator.XsdToJsonTypeMapping;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -45,7 +48,7 @@ public class AspectModelAsyncApiGenerator
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
    @Override
-   public AsyncApiSchemaArtifact apply( Aspect aspect, AsyncApiSchemaGenerationConfig config ) {
+   public AsyncApiSchemaArtifact apply( final Aspect aspect, final AsyncApiSchemaGenerationConfig config ) {
       try {
          final ObjectNode rootNode = getRootJsonNode();
          final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );
@@ -68,6 +71,10 @@ public class AspectModelAsyncApiGenerator
          LOG.error( "There was an exception during the read of the root or the validation.", e );
       }
       return new AsyncApiSchemaArtifact( aspect.getName(), FACTORY.objectNode() );
+   }
+
+   public Map<Path, JsonNode> getContentWithSeparateSchemas( final JsonNode content, final String fileExtension, final String aspectName ) {
+      return GeneratorHelper.getSeparateSchemas( content, fileExtension, aspectName,"aai" );
    }
 
    private void setComponents( final Aspect aspect, final ObjectNode rootNode, final Locale locale ) {
