@@ -58,6 +58,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
 
    private static final Logger LOG = LoggerFactory.getLogger( AspectToAsyncapiCommand.class );
    private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
+   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
    @CommandLine.Option( names = { "--json", "-j" },
          description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
@@ -97,7 +98,6 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
       final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
-      final ObjectMapper objectMapper = new ObjectMapper();
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
             .applicationId( applicationId )
@@ -108,29 +108,33 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
 
       try {
          if ( writeSeparateFiles ) {
-            writeSchemaWithSeparateFiles( asyncApiSpec, objectMapper, generator, aspect.getName() );
+            writeSchemaWithSeparateFiles( asyncApiSpec, generator, aspect.getName() );
          } else {
-            writeSchemaWithInOneFile( asyncApiSpec, objectMapper );
+            writeSchemaWithInOneFile( asyncApiSpec );
          }
       } catch ( final IOException exception ) {
          throw new CommandException( "Could not generate AsyncAPI specification.", exception );
       }
    }
 
-   private void writeSchemaWithInOneFile( final AsyncApiSchemaArtifact asyncApiSpec, final ObjectMapper objectMapper ) throws IOException {
+   private void writeSchemaWithInOneFile( final AsyncApiSchemaArtifact asyncApiSpec ) throws IOException {
       try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
-         objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, asyncApiSpec.getContent() );
+         if ( generateJsonOpenApiSpec ) {
+            OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, asyncApiSpec.getContent() );
+         } else {
+            out.write( jsonToYaml( asyncApiSpec.getContent() ).getBytes( StandardCharsets.UTF_8 ) );
+         }
       }
    }
 
-   private void writeSchemaWithSeparateFiles( final AsyncApiSchemaArtifact asyncApiSpec, final ObjectMapper objectMapper, final AspectModelAsyncApiGenerator generator, final String aspectName )
+   private void writeSchemaWithSeparateFiles( final AsyncApiSchemaArtifact asyncApiSpec, final AspectModelAsyncApiGenerator generator, final String aspectName )
          throws IOException {
       final Path root = outputFilePath == null || outputFilePath.equals( "-" ) ? Path.of( "." ) : new File( outputFilePath ).toPath();
       if ( generateJsonOpenApiSpec ) {
          final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "json", aspectName );
          for ( final Map.Entry<Path, JsonNode> entry : separateFilesContent.entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
-               objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, entry.getValue() );
+               OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, entry.getValue() );
             }
          }
       } else {
