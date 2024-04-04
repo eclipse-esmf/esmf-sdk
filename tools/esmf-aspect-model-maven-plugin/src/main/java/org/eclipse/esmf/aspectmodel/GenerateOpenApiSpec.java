@@ -103,7 +103,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
 
       final Set<AspectContext> aspectModels = loadModelsOrFail();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
-      final OpenApiFormat format = Try.of( () -> OpenApiFormat.valueOf( outputFormat.toUpperCase() ) )
+      final ApiFormat format = Try.of( () -> ApiFormat.valueOf( outputFormat.toUpperCase() ) )
             .getOrElseThrow( () -> new MojoExecutionException( "Invalid output format." ) );
       for ( final AspectContext context : aspectModels ) {
          final Aspect aspect = context.aspect();
@@ -131,10 +131,10 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       LOG.info( "Successfully generated OpenAPI specification for Aspect Models." );
    }
 
-   private void writeSchemaWithInOneFile( final String schemaFileName, final OpenApiFormat format, final OpenApiSchemaArtifact openApiSpec )
+   private void writeSchemaWithInOneFile( final String schemaFileName, final ApiFormat format, final OpenApiSchemaArtifact openApiSpec )
          throws IOException {
       try ( final OutputStream out = getOutputStreamForFile( schemaFileName, outputDirectory ) ) {
-         if ( format == OpenApiFormat.JSON ) {
+         if ( format == ApiFormat.JSON ) {
             OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, openApiSpec.getContent() );
          } else {
             out.write( openApiSpec.getContentAsYaml().getBytes( StandardCharsets.UTF_8 ) );
@@ -142,9 +142,9 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       }
    }
 
-   private void writeSchemaWithSeparateFiles( final OpenApiFormat format, final OpenApiSchemaArtifact openApiSpec ) throws IOException {
+   private void writeSchemaWithSeparateFiles( final ApiFormat format, final OpenApiSchemaArtifact openApiSpec ) throws IOException {
       final Path root = Path.of( outputDirectory );
-      if ( format == OpenApiFormat.JSON ) {
+      if ( format == ApiFormat.JSON ) {
          for ( final Map.Entry<Path, JsonNode> entry : openApiSpec.getContentWithSeparateSchemasAsJson().entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
                OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, entry.getValue() );
