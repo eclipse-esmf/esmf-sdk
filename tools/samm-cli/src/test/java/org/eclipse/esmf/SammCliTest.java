@@ -809,6 +809,20 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
+   public void testAspectToAsyncApiWithSeparateJsonFiles() {
+      final TestAspect testAspect = TestAspect.ASPECT_WITH_EVENT;
+      final String inputFile = inputFile( testAspect ).getAbsolutePath();
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile, "to", "asyncapi", "-ai", "test:serve",
+            "-ca", "test/address/aspect/1.0.0/TestAspect", "--separate-files", "--output", outputDirectory.toString() );
+
+      assertThat( outputDirectory.resolve( testAspect.getName() + ".aai.json" ) ).exists();
+      assertThat( outputDirectory.resolve( "SomeEvent.json" ) ).exists();
+      assertThat( outputDirectory.resolve( "SomeEvent.json" ).toFile() ).content().contains( "This is a test property." );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    public void testAspectToPngWithDefaultLanguage() {
       final File targetFile = outputFile( "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
