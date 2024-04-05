@@ -320,9 +320,9 @@ Configuration Properties:
 | `applicationId` | Use this param for provide application id. | `String` | none | {nok}
 | `channelAddress` | Use this param make possible provide channel address. | `String` | none | {nok}
 | `useSemanticApiVersion` | Use the complete semantic version of the Aspect Model as the version of the Aspect API. | `Boolean` | `false` | {nok}
-| `outputFormat` | The format of the resulting OpenAPI Specification. May be either JSON or YAML. | `String` | none | {ok}
+| `outputFormat` | The format of the resulting AsyncAPI Specification. May be either JSON or YAML. | `String` | none | {ok}
 | `separateFiles` | Create separate files for each schema. | `Boolean` | `false` | {nok}
-| `language` | The language from the model for which an OpenAPI specification should be generated. | `String` | en | {nok}
+| `language` | The language from the model for which an AsyncAPI specification should be generated. | `String` | en | {nok}
 |===
 
 == Generate Documentation for an Aspect Model
