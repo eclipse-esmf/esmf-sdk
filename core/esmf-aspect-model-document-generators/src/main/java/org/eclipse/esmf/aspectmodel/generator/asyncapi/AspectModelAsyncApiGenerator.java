@@ -250,7 +250,7 @@ public class AspectModelAsyncApiGenerator
    }
 
    private ObjectNode getRootJsonNode() throws IOException {
-      final InputStream inputStream = getClass().getResourceAsStream( "/openapi/AsyncApiRootJson.json" );
+      final InputStream inputStream = getClass().getResourceAsStream( "/asyncapi/AsyncApiRootJson.json" );
       final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8 )
             .replace( "${AsyncApiVer}", V30 );
       return (ObjectNode) OBJECT_MAPPER.readTree( string );

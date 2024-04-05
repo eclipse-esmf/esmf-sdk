@@ -61,8 +61,8 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
    @CommandLine.Option( names = { "--json", "-j" },
-         description = "Generate OpenAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
-   boolean generateJsonOpenApiSpec = true;
+         description = "Generate AsyncAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
+   boolean generateJsonAsyncApiSpec = true;
    @CommandLine.Option( names = { "--separate-files", "-sf" },
          description = "Write separate files for the root document and referenced schemas." )
    private boolean writeSeparateFiles = false;
@@ -81,7 +81,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
    private boolean useSemanticApiVersion = false;
 
    @CommandLine.Option( names = { "--language", "-l" },
-         description = "The language from the model for which the OpenAPI specification should be generated (default: en)" )
+         description = "The language from the model for which the AsyncAPI specification should be generated (default: en)" )
    private String language = "en";
 
    @CommandLine.ParentCommand
@@ -119,7 +119,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
 
    private void writeSchemaWithInOneFile( final AsyncApiSchemaArtifact asyncApiSpec ) throws IOException {
       try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
-         if ( generateJsonOpenApiSpec ) {
+         if ( generateJsonAsyncApiSpec ) {
             OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, asyncApiSpec.getContent() );
          } else {
             out.write( jsonToYaml( asyncApiSpec.getContent() ).getBytes( StandardCharsets.UTF_8 ) );
@@ -130,7 +130,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
    private void writeSchemaWithSeparateFiles( final AsyncApiSchemaArtifact asyncApiSpec, final AspectModelAsyncApiGenerator generator, final String aspectName )
          throws IOException {
       final Path root = outputFilePath == null || outputFilePath.equals( "-" ) ? Path.of( "." ) : new File( outputFilePath ).toPath();
-      if ( generateJsonOpenApiSpec ) {
+      if ( generateJsonAsyncApiSpec ) {
          final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "json", aspectName );
          for ( final Map.Entry<Path, JsonNode> entry : separateFilesContent.entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
