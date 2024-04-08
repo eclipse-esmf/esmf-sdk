@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -28,7 +26,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  * format as self-contained schemas.
  */
 public class AsyncApiSchemaArtifact extends AbstractSchemaArtifact<JsonNode> {
-   private static final Logger LOG = LoggerFactory.getLogger( AsyncApiSchemaArtifact.class );
    private final String id;
    private final JsonNode content;
 

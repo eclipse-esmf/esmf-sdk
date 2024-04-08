@@ -44,6 +44,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.vavr.control.Try;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -108,6 +109,9 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
    @Parameter( defaultValue = "en" )
    private String language;
 
+   @Parameter
+   private String templateFilePath;
+
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
@@ -122,7 +126,8 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
                .useSemanticVersion( useSemanticApiVersion )
                .baseUrl( aspectApiBaseUrl )
                .resourcePath( aspectResourcePath )
-               .properties( readAspectParameterFile() )
+               .properties( readFile( aspectParameterFile ) )
+               .template( readFile( templateFilePath ) )
                .includeQueryApi( includeQueryApi )
                .includeCrud( includeFullCrud )
                .includePost( includePost )
@@ -185,12 +190,12 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
       super.validateParameters();
    }
 
-   private ObjectNode readAspectParameterFile() throws MojoExecutionException {
-      if ( aspectParameterFile == null || aspectParameterFile.isEmpty() ) {
+   private ObjectNode readFile( final String file ) throws MojoExecutionException {
+      if ( StringUtils.isBlank( file ) ) {
          return null;
       }
-      final String extension = FilenameUtils.getExtension( aspectParameterFile ).toUpperCase();
-      final Try<String> fileData = Try.of( () -> getFileAsString( aspectParameterFile ) ).mapTry( Optional::get );
+      final String extension = FilenameUtils.getExtension( file ).toUpperCase();
+      final Try<String> fileData = Try.of( () -> getFileAsString( file ) ).mapTry( Optional::get );
       return switch ( extension ) {
          case "YAML", "YML" -> (ObjectNode) fileData
                .mapTry( data -> YAML_MAPPER.readValue( data, Object.class ) )

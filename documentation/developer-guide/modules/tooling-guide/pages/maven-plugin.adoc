@@ -278,6 +278,7 @@ Configuration Properties:
 | `outputFormat` | The format of the resulting OpenAPI Specification. May be either JSON or YAML. | `String` | none | {ok}
 | `separateFiles` | Create separate files for each schema. | `Boolean` | `false` | {nok}
 | `language` | The language from the model for which an OpenAPI specification should be generated. | `String` | en | {nok}
+| `templateFilePath` | The path to the file with a template for the resulting specification, including values undefined by the aspect's OpenAPI specification. The template can be in JSON or YAML format. | `String` | none | {nok}
 |===
 
 == Generate an AsyncAPI Specification from an Aspect Model

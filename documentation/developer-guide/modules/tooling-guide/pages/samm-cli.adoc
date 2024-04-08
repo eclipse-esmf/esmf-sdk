@@ -126,6 +126,8 @@ The available options and their meaning can also be seen in the help text of the
                                        it must be time based paging                                                          |
                                    | _--language, -l_ : The language from the model for which an OpenAPI specification should
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to openapi -l de`
+                                   | _--template-file, -t_ : the path to a file including a template for
+                                       the resulting specification, can be in JSON or YAML                                   | For detailed description, see the section bellow
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .8+| [[aspect-to-asyncapi]] aspect <model> to asyncapi | Generate https://www.asyncapi.com/docs/reference/specification/v3.0.0[AsyncAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to asyncapi`
@@ -216,6 +218,12 @@ resourceId:
   schema:
     type: string
 ----
+Definitions of the parameters must correspond to the specification of the OpenAPI _Parameter Object_.
+
+A template can be used for more specific customization - parameter `--template-file`.
+The template is a document in the OpenAPI format, with one crucial difference - the presence of a templated Paths Object `paths.$$__DEFAULT_QUERIES_TEMPLATE__$$`.
+All values not defined by the generator will be taken from the template.
+For generator-defined aspect model resources, the values can be taken from the corresponding _Operation Object_ template `paths.$$__DEFAULT_QUERIES_TEMPLATE__$$`.
 
 The full command for the native executable samm-cli would be:
 [source,shell,subs="attributes+,+quotes"]

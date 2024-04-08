@@ -13,13 +13,15 @@
 
 package org.eclipse.esmf.aspect.to;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.Predicates.instanceOf;
 import static java.lang.String.format;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -27,8 +29,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
@@ -46,8 +46,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-
 import io.vavr.control.Try;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToOpenapiCommand.COMMAND_NAME,
@@ -77,7 +79,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
 
    @CommandLine.Option( names = { "--parameter-file", "-p" },
          description = "The path to a file including the parameter for the Aspect API endpoints. When --json is given, this file "
-                       + "should contain the parameter definition in JSON, otherwise it should contain the definition in YAML." )
+               + "should contain the parameter definition in JSON, otherwise it should contain the definition in YAML." )
    private String aspectParameterFile;
 
    @CommandLine.Option( names = { "--semantic-version", "-sv" },
@@ -134,6 +136,13 @@ public class AspectToOpenapiCommand extends AbstractCommand {
          description = "The language from the model for which the OpenAPI specification should be generated (default: en)." )
    private String language = "en";
 
+   @CommandLine.Option( names = { "--template-file", "-t" },
+         description =
+               "The path to the file with a template for the resulting specification, "
+                     + "including values undefined by the aspect's OpenAPI specification. "
+                     + "The template can be in JSON or YAML format." )
+   private String templateFilePath;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -153,7 +162,8 @@ public class AspectToOpenapiCommand extends AbstractCommand {
             .useSemanticVersion( useSemanticApiVersion )
             .baseUrl( aspectApiBaseUrl )
             .resourcePath( aspectResourcePath )
-            .properties( readAspectParameterFile() )
+            .properties( readFile( aspectParameterFile ) )
+            .template( readFile( templateFilePath ) )
             .includeQueryApi( includeQueryApi )
             .includeCrud( includeFullCrud )
             .includePost( includePost )
@@ -204,12 +214,12 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       }
    }
 
-   private ObjectNode readAspectParameterFile() {
-      if ( aspectParameterFile == null || aspectParameterFile.isEmpty() ) {
+   private ObjectNode readFile( String file ) throws CommandException {
+      if ( StringUtils.isBlank( file ) ) {
          return null;
       }
-      final String extension = FilenameUtils.getExtension( aspectParameterFile ).toUpperCase();
-      final Try<String> fileData = Try.of( () -> getFileAsString( aspectParameterFile ) ).mapTry( Optional::get );
+      final String extension = FilenameUtils.getExtension( file ).toUpperCase();
+      final Try<String> fileData = getFileAsString( file );
       return switch ( extension ) {
          case "YAML", "YML" -> (ObjectNode) fileData
                .mapTry( data -> YAML_MAPPER.readValue( data, Object.class ) )
@@ -223,19 +233,18 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       };
    }
 
-   private Optional<String> getFileAsString( final String filePath ) {
-      if ( filePath == null || filePath.isEmpty() ) {
-         return Optional.empty();
-      }
+   private Try<String> getFileAsString( final String filePath ) {
       final File f = new File( filePath );
-      if ( f.exists() && !f.isDirectory() ) {
-         try ( final InputStream inputStream = new FileInputStream( filePath ) ) {
-            return Optional.of( IOUtils.toString( inputStream, StandardCharsets.UTF_8 ) );
-         } catch ( final IOException e ) {
-            throw new CommandException( format( "Could not load file %s.", filePath ), e );
-         }
+      if ( !f.exists() || f.isDirectory() ) {
+         return Try.failure( new CommandException( format( "File does not exist %s.", filePath ) ) );
+      } else {
+         return Try.withResources( () -> new FileInputStream( filePath ) )
+               .of( stream -> IOUtils.toString( stream, StandardCharsets.UTF_8 ) )
+               .mapFailure( Case(
+                     $( instanceOf( IOException.class ) ),
+                     e -> new CommandException( format( "Could not load file %s.", filePath ), e ) ) )
+               ;
       }
-      throw new CommandException( format( "File does not exist %s.", filePath ) );
    }
 
    private PagingOption getPaging() {
