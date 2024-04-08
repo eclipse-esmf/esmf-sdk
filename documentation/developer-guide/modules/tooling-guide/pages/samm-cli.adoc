@@ -123,6 +123,17 @@ The available options and their meaning can also be seen in the help text of the
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to openapi -l de`
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.6+| aspect <model> to asyncapi    | Generate https://www.asyncapi.com/docs/reference/specification/v3.0.0[AsyncAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to asyncapi`
+                                   | _--output, -o_ : output file path (default: stdout)                                     |
+                                   | _--channel-address, -ca_ : Use this param make possible provide channel address.
+                                       https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to asyncapi -ca \123-456/789-012/namespace/1.0.0/Aspect`
+                                   | _--application-id, -ai_ : Use this param for provide application id.                    |
+                                   | _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the
+                                       version for the Aspect API                                                            |
+                                   | _--language, -l_ : The language from the model for which an AsyncAPI specification should
+                                       be generated (default: en)                                                            | `samm aspect AspectModel.ttl to asyncapi -l de`
+                                   | _--separate-files, -sf_ : Create separate files for each schema                         |
+                                   | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
 .3+| aspect <model> to json        | Generate example JSON payload data for an Aspect Model                                  | `samm aspect AspectModel.ttl to json`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
@@ -156,6 +167,7 @@ The resolved model definition is expected to be output to the stdout in Turtle f
 From there, it is read by the samm-cli and passed on to the internal processing pipeline.
 In this way the extension can be flexibly done in any programming language/script language, including complex logic if necessary.
 
+[[using-the-cli-to-create-a-json-openapi-specification]]
 == Using the CLI to create a JSON OpenAPI Specification
 
 Every specification is based on one Aspect, which needs a separately defined server URL where the given aspect will be.
@@ -573,6 +585,339 @@ And finally for the time based paging:
   }
 }
 ----
+
+== Using the CLI to create a JSON AsyncAPI Specification
+
+As xref:using-the-cli-to-create-a-json-openapi-specification[OpenAPI], every AsyncAPI specification is based on one Aspect.
+which needs a separately defined https://www.asyncapi.com/docs/reference/specification/v3.0.0#channelObject[channel address], this is not required.
+The channel address will be defined as string with the `-ca` option, i.e.: /123-456/789-012/test/1.0.0/Aspect. The default channel address, using the above
+defined `--channel-address`, would result in /{namespace}/\{version}/<aspectName>.
+
+
+The full command for the native executable samm-cli would be:
+[source,shell,subs="attributes+,+quotes"]
+----
+samm aspect _AspectModel.ttl_ to asyncapi -ca "/123-456/789-012/test/1.0.0/Aspect"
+----
+
+For the Java version of samm-cli, the full command would result in:
+
+[source,shell,subs="attributes+,+quotes"]
+----
+java -jar samm-cli-{esmf-sdk-version}.jar aspect _AspectModel.ttl_ to asyncapi -ca "/123-456/789-012/test/1.0.0/Aspect"
+----
+
+=== Mapping between the Aspect Models and the AsyncAPI Specification
+
+In this section, a detailed description of the mapping between individual Aspect elements and the AsyncAPI specification is given.
+To make it easier to follow, the mapping is explained based on a concrete example, divided into logically coherent blocks.
+Please bear in mind that these blocks are snippets or fragments of a larger whole; viewed in isolation they do not necessarily form a valid or meaningful Aspect Model or OpenAPI specification.
+
+==== Naming and versioning
+
+Please consider the following model fragment, with the attention focused on the numbered elements:
+
+[source,turtle,subs="attributes+,+quotes"]
+----
+@prefix : <urn:samm:{example-ns}.myapplication:1.0.0#> . # <1>
+@prefix samm: <{samm}> .
+
+:Movement a samm:Aspect ; # <3>
+   samm:name "Movement" ;
+   samm:preferredName "MovementPrefferedName"@en ; # <2>
+   samm:description "Aspect for movement information"@en . # <4>
+----
+
+<1> prefix used to build the full URN of `:Movement` Aspect
+<2> the preferred name of the Aspect in language of user's choice
+<3> the name of the Aspect
+<4> the description of the Aspect
+
+For the generated AsyncAPI specification, the following mapping would apply:
+
+[source,JSON]
+----
+{
+  "asyncapi" : "3.0.0",
+  "info" : {
+    "title" : "MovementPrefferedName MQTT API", // <2>
+    "version" : "v2", // <1>
+    "description" : "Aspect for movement information" // <3>
+  }
+}
+----
+
+<1> depending on parameters used when generating the specification, this is either the major version of the full Aspect URN (*2*.0.0), or it can be the full version (`v2.0.0`), if using `-sv` (semantic version) command line switch
+<2> as `samm:preferredName` is used as the value for the `title` element of the specification (MQTT API defined automatically)
+<3> as `samm:description` is an optional element
+
+The name of the Aspect is used to generate several important AsyncAPI artifacts, like the channel definitions for the API:
+
+[source,JSON]
+----
+{
+ "channels" : {
+    "Movement" : { // <3>
+      "address" : "/movement/0.0.1/Movement", // <3>
+      "description" : "This channel for updating Movement Aspect.", // <3>
+      "parameters" : {
+        "namespace" : "movement",
+        "version" : "0.0.1",
+        "aspect-name" : "Movement" // <3>
+      },
+      "massages" : {}
+    }
+  }
+}
+----
+
+==== Mapping of Aspect's operations
+
+AsyncAPI specification is generated using operations and events.
+This section describe only operations.
+If the Aspect also has a non-empty list of operations defined, like the one in the following example:
+
+[source,turtle]
+----
+:Movement a samm:Aspect ;
+   samm:preferredName "movement"@en ;
+   samm:description "Aspect for movement information"@en ;
+   samm:properties ( ) ;
+   samm:operations ( :GetSpeed ) ;
+   samm:events ( ) .
+
+:GetSpeed a samm:Operation ;
+   samm:preferredName "GetSpeedPrefName"@en ;
+   samm:description "GetSpeed summary"@en ;
+   samm:input ( :GetSpeedInput ) ; <1>
+   samm:output :GetSpeedOutput . <2>
+
+:GetSpeedOutput a samm:Property ;
+   samm:preferredName "GetSpeedOutputPrefferedName"@en ;
+   samm:description "GetSpeedOutput desc"@en ;
+   samm:characteristic :OutputCharacteristic .
+
+:OutputCharacteristic a samm:Characteristic ;
+   samm:preferredName "OutputCharacteristicPrefferedName"@en ;
+   samm:description "OutputCharacteristic desc"@en ;
+   samm:dataType :OutputEntity .
+
+:OutputEntity a samm:Entity ;
+   samm:name "GetSpeedOutput" ;
+   samm:preferredName "GetSpeedOutputPrefferedName"@en ;
+   samm:description "GetSpeedOutput desc"@en ;
+   samm:properties ( :OutputEntityMessage ) .
+
+:OutputEntityMessage a samm:Property ;
+   samm:characteristic samm-c:Text . <3>
+
+:GetSpeedInput a samm:Property ;
+   samm:name "getSpeedInput" ;
+   samm:preferredName "getSpeedInputPrefferedName"@en ;
+   samm:description "getSpeedInput desc"@en ;
+   samm:characteristic samm-c:Text . <4>
+----
+
+operations will be generated in some places of AsyncAPI specification:
+https://www.asyncapi.com/docs/reference/specification/v3.0.0#operationObject[operations] section,
+channel
+https://www.asyncapi.com/docs/reference/specification/v3.0.0#messagesObject[messages] section and
+https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schemas] section:
+
+[source,JSON]
+----
+{
+"channels" : {
+    "Movement" : {
+      "address" : "/movement/0.0.1/Movement",
+      "description" : "This channel for updating Movement Aspect.",
+      "parameters" : {
+        "namespace" : "movement",
+        "version" : "0.0.1",
+        "aspect-name" : "Movement"
+      },
+      "massages" : {
+        "GetSpeedInput" : { // <1>
+          "$ref" : "#/components/messages/GetSpeedInput" // <1>
+        },
+        "GetSpeedOutput" : { // <2>
+          "$ref" : "#/components/messages/GetSpeedOutput" // <2>
+        }
+      }
+    }
+  },
+  "operations" : {
+    "GetSpeedInput" : {
+      "action" : "receive", // <5>
+      "channel" : {
+        "$ref" : "#/channels/Movement"
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/Movement/messages/GetSpeedInput" // <1>
+      } ]
+    },
+    "GetSpeedOutput" : { // <2>
+      "action" : "send", // <5>
+      "channel" : {
+        "$ref" : "#/channels/Movement"
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/Movement/messages/GetSpeedOutput" // <2>
+      } ]
+    }
+  },
+  "components" : {
+    "messages" : {
+      "GetSpeedInput" : { // <1> <4>
+        "name" : "GetSpeedInput", // <1>
+        "title" : "getSpeedInputPrefferedName",
+        "summary" : "getSpeedInput desc",
+        "content-type" : "application/json",
+        "payload" : {
+          "$ref" : "#/components/schemas/GetSpeedInput" // <1>
+        }
+      },
+      "GetSpeedOutput" : { // <2> <4>
+        "name" : "GetSpeedOutput", // <2>
+        "title" : "GetSpeedOutputPrefferedName",
+        "summary" : "GetSpeedOutput desc",
+        "content-type" : "application/json",
+        "payload" : {
+          "$ref" : "#/components/schemas/GetSpeedOutput" // <2>
+        }
+      }
+    },
+    "schemas" : {
+      "GetSpeedInput" : { // <1> <3>
+        "type" : "string",
+        "description" : "getSpeedInput desc"
+      },
+      "GetSpeedOutput" : { // <2> <3>
+        "type" : "string",
+        "description" : "GetSpeedOutput desc"
+      }
+    }
+  }
+}
+----
+
+<1> the names of the input
+<2> the names of the output
+<3> the characteristics are generated
+<4> the meta information of input/output
+<5> 'send' (for output) action: map to a publish operation in AsyncAPI, 'receive' (for input) action: map to a subscribe operation
+
+==== Mapping of Aspect's events
+
+This section describe mapping between Aspect Events and AsyncAPI spec.
+If the Aspect also has a non-empty list of events defined, like the one in the following example:
+
+[source,turtle]
+----
+:Movement a samm:Aspect ;
+   samm:preferredName "movement"@en ;
+   samm:description "Aspect for movement information"@en ;
+   samm:properties ( ) ;
+   samm:operations ( ) ;
+   samm:events ( :SpeedUpdateEvent ) .
+
+:SpeedUpdateEvent a samm:Event ;
+   samm:preferredName "speedUpdate"@en ;
+   samm:description "This is event for update speed property"@en ;
+   samm:parameters ( :updatedSpeed :propertyName ) .
+
+:updatedSpeed a samm:Property ;
+   samm:preferredName "updatedSpeedPreferredName"@en ;
+   samm:description "Updated Property Desc."@en ;
+   samm:see <http://example.com/> ;
+   samm:see <http://example.com/me> ;
+   samm:exampleValue "1234567890" ;
+   samm:characteristic samm-c:Text .
+
+:propertyName a samm:Property ;
+   samm:preferredName "propertyNamePreferredName"@en ;
+   samm:description "PropertyName Desc"@en ;
+   samm:see <http://example.com/> ;
+   samm:see <http://example.com/me> ;
+   samm:exampleValue "1234567890" ;
+   samm:characteristic samm-c:Text .
+----
+
+events will be generated in some places of AsyncAPI specification:
+https://www.asyncapi.com/docs/reference/specification/v3.0.0#operationObject[operations] section,
+channel
+https://www.asyncapi.com/docs/reference/specification/v3.0.0#messagesObject[messages] section and
+https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schemas] section:
+
+[source,JSON]
+----
+{
+"channels" : {
+    "Movement" : {
+      "address" : "/movement/0.0.1/Movement",
+      "description" : "This channel for updating Movement Aspect.",
+      "parameters" : {
+        "namespace" : "movement",
+        "version" : "0.0.1",
+        "aspect-name" : "Movement"
+      },
+      "massages" : {
+        "SpeedUpdateEvent" : {
+          "$ref" : "#/components/messages/SpeedUpdateEvent" // <1>
+        },
+      }
+    }
+  },
+  "operations" : {
+    "SpeedUpdateEvent" : {
+      "action" : "receive", // <5>
+      "channel" : {
+        "$ref" : "#/channels/Movement"
+      },
+      "messages" : [ {
+        "$ref" : "#/channels/Movement/messages/SpeedUpdateEvent" // <1>
+      } ]
+    },
+  },
+  "components" : {
+    "messages" : {
+      "SpeedUpdateEvent" : { // <1> <2>
+        "name" : "SpeedUpdateEvent", // <1>
+        "title" : "speedUpdate",
+        "summary" : "This is event for update speed property",
+        "content-type" : "application/json",
+        "payload" : {
+          "$ref" : "#/components/schemas/SpeedUpdateEvent" // <1>
+        }
+      }
+    },
+    "schemas" : {
+      "SpeedUpdateEvent" : { // <1>
+        "type" : "object",
+        "properties" : {
+          "updatedSpeed" : { // <3> <4>
+            "title" : "updatedSpeed",
+            "type" : "string",
+            "description" : "Updated Property Desc."
+          },
+          "propertyName" : { // <3> <4>
+            "title" : "propertyName",
+            "type" : "string",
+            "description" : "PropertyName Desc"
+          }
+        }
+      }
+    }
+  }
+}
+----
+
+<1> the names of the event
+<2> the meta information of event
+<3> property of event
+<4> the characteristics are generated
+<5> for events available only 'receive' action: map to a subscribe operation
+
 
 [[models-directory-structure]]
 == Understanding the models directory structure
