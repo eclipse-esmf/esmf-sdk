@@ -24,11 +24,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.stream.Streams;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
@@ -38,6 +44,8 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,6 +54,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.CaseFormat;
+
 import io.vavr.CheckedFunction1;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -53,7 +62,7 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
 public class AspectModelOpenApiGenerator
-      implements ArtifactGenerator<String, JsonNode, Aspect, OpenApiSchemaGenerationConfig, OpenApiSchemaArtifact> {
+      implements ArtifactGenerator<String, ObjectNode, Aspect, OpenApiSchemaGenerationConfig, OpenApiSchemaArtifact> {
    private static final String APPLICATION_JSON = "application/json";
    private static final String CLIENT_ERROR = "ClientError";
    private static final String COMPONENTS_RESPONSES = "#/components/responses/";
@@ -143,16 +152,16 @@ public class AspectModelOpenApiGenerator
    /**
     * Generates an OpenAPI specification for the given Aspect Model in JSON.
     *
-    * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
+    * @param aspect             the Aspect Model for which the OpenAPI specification will be generated.
     * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
-    * Otherwise only the major part of the Aspect Version is used as the version of the API.
-    * @param baseUrl the base URL for the Aspect API
-    * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
-    * from the Aspect name
-    * @param jsonProperties A string containing the needed properties for the resource path, defined in JSON.
-    * @param includeQueryApi if set to true, a path section for the Query API Endpoint of the Aspect API will be included in the
-    * specification
-    * @param pagingOption if defined, the chosen paging type will be in the JSON.
+    *                           Otherwise only the major part of the Aspect Version is used as the version of the API.
+    * @param baseUrl            the base URL for the Aspect API
+    * @param resourcePath       the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
+    *                           from the Aspect name
+    * @param jsonProperties     A string containing the needed properties for the resource path, defined in JSON.
+    * @param includeQueryApi    if set to true, a path section for the Query API Endpoint of the Aspect API will be included in the
+    *                           specification
+    * @param pagingOption       if defined, the chosen paging type will be in the JSON.
     * @return a JsonNode containing the JSON for the given Aspect.
     * @deprecated Use {@link #apply(Aspect, OpenApiSchemaGenerationConfig)} instead
     */
@@ -174,17 +183,17 @@ public class AspectModelOpenApiGenerator
    /**
     * Generates an OpenAPI specification for the given Aspect Model in JSON.
     *
-    * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
+    * @param aspect             the Aspect Model for which the OpenAPI specification will be generated.
     * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
-    * Otherwise only the major part of the Aspect Version is used as the version of the API.
-    * @param baseUrl the base URL for the Aspect API
-    * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
-    * from the Aspect name.
-    * @param jsonProperties A string containing the needed properties for the resource path, defined in JSON.
-    * @param includeQueryApi if set to true, a path section for the Query API Endpoint of the Aspect API will be included in the
-    * specification
-    * @param pagingOption if defined, the chosen paging type will be in the JSON.
-    * @param locale the locale for choosing the preferred language for description and preferred name.
+    *                           Otherwise only the major part of the Aspect Version is used as the version of the API.
+    * @param baseUrl            the base URL for the Aspect API
+    * @param resourcePath       the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
+    *                           from the Aspect name.
+    * @param jsonProperties     A string containing the needed properties for the resource path, defined in JSON.
+    * @param includeQueryApi    if set to true, a path section for the Query API Endpoint of the Aspect API will be included in the
+    *                           specification
+    * @param pagingOption       if defined, the chosen paging type will be in the JSON.
+    * @param locale             the locale for choosing the preferred language for description and preferred name.
     * @return a JsonNode containing the JSON for the given Aspect.
     * @deprecated Use {@link #apply(Aspect, OpenApiSchemaGenerationConfig)} instead
     */
@@ -207,17 +216,17 @@ public class AspectModelOpenApiGenerator
    /**
     * Generates an OpenAPI specification for the given Aspect Model in JSON.
     *
-    * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
-    * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
-    * Otherwise only the major part of the Aspect Version is used as the version of the API.
-    * @param baseUrl the base URL for the Aspect API
-    * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
-    * from the Aspect name
-    * @param jsonProperties A string containing the needed properties for the resource path, defined in JSON.
-    * @param includeQueryApi if set to true, a path section for the Query API Endpoint of the Aspect API will be included in the
-    * specification
-    * @param pagingOption if defined, the chosen paging type will be in the JSON.
-    * @param locale the locale for choosing the preferred language for description and preferred name.
+    * @param aspect                          the Aspect Model for which the OpenAPI specification will be generated.
+    * @param useSemanticVersion              if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
+    *                                        Otherwise only the major part of the Aspect Version is used as the version of the API.
+    * @param baseUrl                         the base URL for the Aspect API
+    * @param resourcePath                    the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
+    *                                        from the Aspect name
+    * @param jsonProperties                  A string containing the needed properties for the resource path, defined in JSON.
+    * @param includeQueryApi                 if set to true, a path section for the Query API Endpoint of the Aspect API will be included in the
+    *                                        specification
+    * @param pagingOption                    if defined, the chosen paging type will be in the JSON.
+    * @param locale                          the locale for choosing the preferred language for description and preferred name.
     * @param generateCommentForSeeAttributes generate $comment OpenAPI element for samm:see attributes in the model
     * @return a JsonNode containing the JSON for the given Aspect.
     * @deprecated Use {@link #apply(Aspect, OpenApiSchemaGenerationConfig)} instead
@@ -251,7 +260,7 @@ public class AspectModelOpenApiGenerator
 
    private boolean includePaging( final Aspect aspect, final PagingOption pagingType ) {
       return pagingType != PagingOption.NO_PAGING
-            && PAGING_GENERATOR.isPagingPossible( aspect );
+             && PAGING_GENERATOR.isPagingPossible( aspect );
    }
 
    private ObjectNode getPropertiesNode( final String resourcePath, final ObjectNode properties ) {
@@ -412,8 +421,7 @@ public class AspectModelOpenApiGenerator
 
    private ObjectNode getRootJsonNode( final boolean generateCommentForSeeAttributes ) throws IOException {
       try ( final InputStream inputStream = getClass().getResourceAsStream( "/openapi/OpenApiRootJson.json" ) ) {
-         // at least one important OpenAPI tool (swagger-ui) still does not support v3.1, so for the time being we stay with the version
-         // 3.0.3;
+         // at least one important OpenAPI tool (swagger-ui) still does not support v3.1, so for the time being we stay with the version 3.0.3;
          // only when $comment is explicitly requested (a v3.1 feature) we switch to 3.1.0
          Objects.requireNonNull( inputStream, "OpenApiRootJson.json not found" );
          final String string = IOUtils.toString( inputStream, StandardCharsets.UTF_8 )
@@ -425,16 +433,16 @@ public class AspectModelOpenApiGenerator
    /**
     * Generates an OpenAPI specification for the given Aspect Model in YAML.
     *
-    * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
+    * @param aspect             the Aspect Model for which the OpenAPI specification will be generated.
     * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
-    * Otherwise only the major part of the Aspect Version is used as the version of the API.
-    * @param baseUrl the base URL for the Aspect API
-    * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
-    * from the Aspect name
-    * @param yamlProperties the properties for the resource. Needs to be defined as YAML.
-    * @param includeQueryApi if set to true, a path section for the Query API Endpoint of the Aspect API will be included in the
-    * specification
-    * @param pagingOption if defined, the chosen paging type will be in the YAML.
+    *                           Otherwise only the major part of the Aspect Version is used as the version of the API.
+    * @param baseUrl            the base URL for the Aspect API
+    * @param resourcePath       the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
+    *                           from the Aspect name
+    * @param yamlProperties     the properties for the resource. Needs to be defined as YAML.
+    * @param includeQueryApi    if set to true, a path section for the Query API Endpoint of the Aspect API will be included in the
+    *                           specification
+    * @param pagingOption       if defined, the chosen paging type will be in the YAML.
     * @return a string containing the YAML for the given aspect.
     * @deprecated Use {@link #apply(Aspect, OpenApiSchemaGenerationConfig)} instead
     */
@@ -447,8 +455,7 @@ public class AspectModelOpenApiGenerator
             .baseUrl( baseUrl )
             .resourcePath( resourcePath.orElse( null ) )
             .properties(
-                  (ObjectNode) yamlProperties.map(
-                        CheckedFunction1.of( ( String content ) -> YAML_MAPPER.readTree( content ) ).unchecked() ).orElse( null ) )
+                  (ObjectNode) yamlProperties.map( CheckedFunction1.of( ( String content ) -> YAML_MAPPER.readTree( content ) ).unchecked() ).orElse( null ) )
             .includeQueryApi( includeQueryApi )
             .pagingOption( pagingOption.orElse( null ) )
             .build();
@@ -458,17 +465,17 @@ public class AspectModelOpenApiGenerator
    /**
     * Generates an OpenAPI specification for the given Aspect Model in YAML.
     *
-    * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
+    * @param aspect             the Aspect Model for which the OpenAPI specification will be generated.
     * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
-    * Otherwise only the major part of the Aspect Version is used as the version of the API.
-    * @param baseUrl the base URL for the Aspect API
-    * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
-    * from the Aspect name
-    * @param yamlProperties the properties for the resource. Needs to be defined as YAML.
-    * @param includeQueryApi if set to true, a path section for the Query API Endpoint of the Aspect API will be included in the
-    * specification
-    * @param pagingOption if defined, the chosen paging type will be in the YAML.
-    * @param locale the locale for choosing the preferred language for description and preferred name.
+    *                           Otherwise only the major part of the Aspect Version is used as the version of the API.
+    * @param baseUrl            the base URL for the Aspect API
+    * @param resourcePath       the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
+    *                           from the Aspect name
+    * @param yamlProperties     the properties for the resource. Needs to be defined as YAML.
+    * @param includeQueryApi    if set to true, a path section for the Query API Endpoint of the Aspect API will be included in the
+    *                           specification
+    * @param pagingOption       if defined, the chosen paging type will be in the YAML.
+    * @param locale             the locale for choosing the preferred language for description and preferred name.
     * @return a string containing the YAML for the given aspect.
     * @deprecated Use {@link #apply(Aspect, OpenApiSchemaGenerationConfig)} instead
     */
@@ -482,8 +489,7 @@ public class AspectModelOpenApiGenerator
             .baseUrl( baseUrl )
             .resourcePath( resourcePath.orElse( null ) )
             .properties(
-                  (ObjectNode) yamlProperties.map(
-                        CheckedFunction1.of( ( String content ) -> YAML_MAPPER.readTree( content ) ).unchecked() ).orElse( null ) )
+                  (ObjectNode) yamlProperties.map( CheckedFunction1.of( ( String content ) -> YAML_MAPPER.readTree( content ) ).unchecked() ).orElse( null ) )
             .includeQueryApi( includeQueryApi )
             .pagingOption( pagingOption.orElse( null ) )
             .locale( locale )

@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The result of a schema generation where the schema is represented as a JSON document
  */
-public abstract class AbstractSchemaArtifact implements Artifact<String, JsonNode> {
+public abstract class AbstractSchemaArtifact<T extends JsonNode> implements Artifact<String, T> {
    private static final Logger LOG = LoggerFactory.getLogger( AbstractSchemaArtifact.class );
 
    /**
