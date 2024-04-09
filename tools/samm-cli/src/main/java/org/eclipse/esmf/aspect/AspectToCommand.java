@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspect;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.to.AspectToAasCommand;
+import org.eclipse.esmf.aspect.to.AspectToAsyncapiCommand;
 import org.eclipse.esmf.aspect.to.AspectToHtmlCommand;
 import org.eclipse.esmf.aspect.to.AspectToJavaCommand;
 import org.eclipse.esmf.aspect.to.AspectToJsonCommand;
@@ -34,6 +35,7 @@ import picocli.CommandLine;
             AspectToJavaCommand.class,
             AspectToJsonCommand.class,
             AspectToOpenapiCommand.class,
+            AspectToAsyncapiCommand.class,
             AspectToPngCommand.class,
             AspectToJsonSchemaCommand.class,
             AspectToSvgCommand.class,

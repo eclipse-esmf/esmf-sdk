@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.generator.jsonschema;
 
+import static org.eclipse.esmf.aspectmodel.generator.XsdToJsonTypeMapping.TYPE_MAP;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,6 +26,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
+import org.eclipse.esmf.aspectmodel.generator.XsdToJsonTypeMapping;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammDataType;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.characteristic.Collection;
@@ -148,50 +151,9 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
          .putAll( OPEN_API_TYPE_DATA )
          .put( RDF.langString,
                Map.of( "patternProperties",
-                     FACTORY.objectNode().set( "^.*$", FACTORY.objectNode().set( "type", JsonType.STRING.toJsonNode() ) ) ) )
+                     FACTORY.objectNode()
+                           .set( "^.*$", FACTORY.objectNode().set( "type", XsdToJsonTypeMapping.JsonType.STRING.toJsonNode() ) ) ) )
          .put( XSD.base64Binary, Map.of( "contentEncoding", FACTORY.textNode( "base64" ) ) )
-         .build();
-
-   private enum JsonType {
-      NUMBER,
-      BOOLEAN,
-      STRING,
-      OBJECT;
-
-      private JsonNode toJsonNode() {
-         return switch ( this ) {
-            case NUMBER -> JsonNodeFactory.instance.textNode( "number" );
-            case BOOLEAN -> JsonNodeFactory.instance.textNode( "boolean" );
-            case OBJECT -> JsonNodeFactory.instance.textNode( "object" );
-            default -> JsonNodeFactory.instance.textNode( "string" );
-         };
-      }
-   }
-
-   /**
-    * Maps Aspect types to JSON Schema types, with no explicit mapping defaulting to string
-    *
-    * @see AspectModelJsonSchemaVisitor#getSchemaTypeForAspectType(Resource)
-    */
-   private static final Map<Resource, JsonType> TYPE_MAP = ImmutableMap.<Resource, JsonType> builder()
-         .put( XSD.xboolean, JsonType.BOOLEAN )
-         .put( XSD.decimal, JsonType.NUMBER )
-         .put( XSD.integer, JsonType.NUMBER )
-         .put( XSD.xfloat, JsonType.NUMBER )
-         .put( XSD.xdouble, JsonType.NUMBER )
-         .put( XSD.xbyte, JsonType.NUMBER )
-         .put( XSD.xshort, JsonType.NUMBER )
-         .put( XSD.xint, JsonType.NUMBER )
-         .put( XSD.xlong, JsonType.NUMBER )
-         .put( XSD.unsignedByte, JsonType.NUMBER )
-         .put( XSD.unsignedShort, JsonType.NUMBER )
-         .put( XSD.unsignedInt, JsonType.NUMBER )
-         .put( XSD.unsignedLong, JsonType.NUMBER )
-         .put( XSD.positiveInteger, JsonType.NUMBER )
-         .put( XSD.nonPositiveInteger, JsonType.NUMBER )
-         .put( XSD.negativeInteger, JsonType.NUMBER )
-         .put( XSD.nonNegativeInteger, JsonType.NUMBER )
-         .put( RDF.langString, JsonType.OBJECT )
          .build();
 
    public AspectModelJsonSchemaVisitor( final JsonSchemaGenerationConfig config ) {
@@ -344,8 +306,8 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       return characteristicNode;
    }
 
-   private AspectModelJsonSchemaVisitor.JsonType getSchemaTypeForAspectType( final Resource type ) {
-      return TYPE_MAP.getOrDefault( type, AspectModelJsonSchemaVisitor.JsonType.STRING );
+   private XsdToJsonTypeMapping.JsonType getSchemaTypeForAspectType( final Resource type ) {
+      return TYPE_MAP.getOrDefault( type, XsdToJsonTypeMapping.JsonType.STRING );
    }
 
    private Map<String, JsonNode> getAdditionalFieldsForType( final Resource type, final KnownVersion metaModelVersion ) {
@@ -403,7 +365,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       addDescription( characteristicNode, trait, config.locale() );
       addSammExtensionAttribute( characteristicNode, trait );
       return io.vavr.collection.Stream.ofAll( trait.getConstraints() )
-            .foldLeft( characteristicNode, ( node, constraint ) -> ( (ObjectNode) ( constraint.accept( this, node ) ) ) );
+            .foldLeft( characteristicNode, ( node, constraint ) -> ((ObjectNode) (constraint.accept( this, node ))) );
    }
 
    @Override
@@ -458,7 +420,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    @Override
    public JsonNode visitScalar( final Scalar scalar, final ObjectNode context ) {
       final ObjectNode propertyNode = FACTORY.objectNode();
-      final AspectModelJsonSchemaVisitor.JsonType value = getSchemaTypeForAspectType( ResourceFactory.createResource( scalar.getUrn() ) );
+      final XsdToJsonTypeMapping.JsonType value = getSchemaTypeForAspectType( ResourceFactory.createResource( scalar.getUrn() ) );
       propertyNode.set( "type", value.toJsonNode() );
       getAdditionalFieldsForType( ResourceFactory.createResource( scalar.getUrn() ), scalar.getMetaModelVersion() ).forEach(
             propertyNode::set );
@@ -660,9 +622,9 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final Type type = property.getDataType().orElseThrow( () ->
             new DocumentGenerationException( "Characteristic " + characteristic + " has no data type" ) );
       final Value valueForProperty = entityInstance.getAssertions().get( property );
-      final AspectModelJsonSchemaVisitor.JsonType schemaType = type.is( Scalar.class )
+      final XsdToJsonTypeMapping.JsonType schemaType = type.is( Scalar.class )
             ? getSchemaTypeForAspectType( ResourceFactory.createResource( type.getUrn() ) )
-            : JsonType.OBJECT;
+            : XsdToJsonTypeMapping.JsonType.OBJECT;
 
       if ( characteristic.is( SingleEntity.class ) ) {
          return createNodeForEnumEntityInstance( valueForProperty.as( EntityInstance.class ), samm );
