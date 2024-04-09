@@ -1,9 +1,9 @@
 package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.util.Locale;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -12,11 +12,11 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
 
@@ -138,7 +138,8 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
       assertThat( json.get( "info" ).get( "description" ).asText() ).isEqualTo( "This is a test description" );
       assertThat( json.get( "channels" ) ).isEqualTo( expectedChannels );
       assertThat( json.get( "components" ).get( "messages" ) ).isEqualTo( expectedComponentsMessages );
-      assertThat( json.get( "components" ).get( "schemas" ).get( aspect.getEvents().get( 0 ).getName() ) ).isEqualTo( expectedComponentsSchemas );
+      assertThat( json.get( "components" ).get( "schemas" ).get( aspect.getEvents().get( 0 ).getName() ) ).isEqualTo(
+            expectedComponentsSchemas );
    }
 
    @ParameterizedTest
