@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check code style
-        if: matrix.os == 'linux-latest'
+        if: matrix.os == 'ubuntu-20.04'
         uses: dbelyaev/action-checkstyle@e89baf0f8b488b946345b7de8e975be1e3606387 # v1.5.6
         with:
           github_token: ${{ secrets.github_token }}
