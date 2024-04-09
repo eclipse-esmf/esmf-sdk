@@ -789,7 +789,7 @@ public class SammCliTest extends MetaModelVersions {
    @Test
    public void testAspectToAsyncapiWithChannelAddress() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi",
-            "-ca", "test/address/aspect/1.0.0/TestAspect");
+            "-ca", "test/address/aspect/1.0.0/TestAspect" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
       assertThat( result.stdout() ).contains( "\"asyncapi\" : \"3.0.0\"," );
@@ -812,7 +812,8 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToAsyncApiWithSeparateJsonFiles() {
       final TestAspect testAspect = TestAspect.ASPECT_WITH_EVENT;
       final String inputFile = inputFile( testAspect ).getAbsolutePath();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile, "to", "asyncapi", "-ai", "test:serve",
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile, "to", "asyncapi", "-ai",
+            "test:serve",
             "-ca", "test/address/aspect/1.0.0/TestAspect", "--separate-files", "--output", outputDirectory.toString() );
 
       assertThat( outputDirectory.resolve( testAspect.getName() + ".aai.json" ) ).exists();
@@ -923,7 +924,7 @@ public class SammCliTest extends MetaModelVersions {
     */
    private File inputFile( final TestModel testModel ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
-      final boolean isValid = !( testModel instanceof InvalidTestAspect );
+      final boolean isValid = !(testModel instanceof InvalidTestAspect);
       final String resourcePath = String.format(
             "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
             System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", metaModelVersion.toString().toLowerCase(),
@@ -975,8 +976,8 @@ public class SammCliTest extends MetaModelVersions {
       // are not resolved to the file system but to the jar)
       try {
          final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh" ) ).getCanonicalPath();
+               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + (OS.WINDOWS.isCurrentOs()
+                     ? ".bat" : ".sh") ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
          return resolverScript + " " + modelsRoot + " " + metaModelVersion;
