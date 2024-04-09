@@ -7,9 +7,6 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.GeneratorHelper;
@@ -18,8 +15,6 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Property;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.apicatalog.jsonld.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,9 +22,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.io.IOUtils;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AspectModelAsyncApiGenerator
-      implements ArtifactGenerator<String, JsonNode, Aspect, AsyncApiSchemaGenerationConfig, AsyncApiSchemaArtifact> {
+      implements ArtifactGenerator<String, JsonNode, Aspect, AsyncApiSchemaGenerationConfig, AsyncApiSchemaArtifact>, GeneratorHelper {
 
    private static final String APPLICATION_JSON = "application/json";
    private static final String CHANNELS = "#/channels";
@@ -57,11 +57,12 @@ public class AspectModelAsyncApiGenerator
             rootNode.put( "id", config.applicationId() );
          }
 
-         ( (ObjectNode) rootNode.get( "info" ) ).put( TITLE_FIELD, aspect.getPreferredName( config.locale() ) + " MQTT API" );
-         ( (ObjectNode) rootNode.get( "info" ) ).put( "version", apiVersion );
-         ( (ObjectNode) rootNode.get( "info" ) ).put( DESCRIPTION_FIELD, getDescription( aspect.getDescription( config.locale() ) ) );
+         final ObjectNode info = (ObjectNode) rootNode.get( "info" );
+         info.put( TITLE_FIELD, aspect.getPreferredName( config.locale() ) + " MQTT API" );
+         info.put( "version", apiVersion );
+         info.put( DESCRIPTION_FIELD, getDescription( aspect.getDescription( config.locale() ) ) );
 
-         rootNode.set( "channels", getChannelNode( aspect, config ));
+         rootNode.set( "channels", getChannelNode( aspect, config ) );
          if ( !aspect.getEvents().isEmpty() || !aspect.getOperations().isEmpty() ) {
             setOperations( aspect, rootNode );
             setComponents( aspect, rootNode, config.locale() );
@@ -74,7 +75,7 @@ public class AspectModelAsyncApiGenerator
    }
 
    public Map<Path, JsonNode> getContentWithSeparateSchemas( final JsonNode content, final String fileExtension, final String aspectName ) {
-      return GeneratorHelper.getSeparateSchemas( content, fileExtension, aspectName,"aai" );
+      return getSeparateSchemas( content, fileExtension, aspectName, "aai" );
    }
 
    private void setComponents( final Aspect aspect, final ObjectNode rootNode, final Locale locale ) {
@@ -98,7 +99,8 @@ public class AspectModelAsyncApiGenerator
       rootNode.set( "components", componentsNode );
    }
 
-   private void generateComponentsMessageAndSchemaEvent( final ObjectNode messagesNode, final ObjectNode schemasNode, final Event event, final Locale locale ) {
+   private void generateComponentsMessageAndSchemaEvent( final ObjectNode messagesNode, final ObjectNode schemasNode, final Event event,
+         final Locale locale ) {
       final ObjectNode messageNode = FACTORY.objectNode();
       messageNode.put( "name", event.getName() );
       messageNode.put( TITLE_FIELD, event.getPreferredName( locale ) );
@@ -121,7 +123,7 @@ public class AspectModelAsyncApiGenerator
             final ObjectNode propertyNode = FACTORY.objectNode();
             propertyNode.put( TITLE_FIELD, property.getName() );
             propertyNode.set( TYPE_FIELD, getType( ResourceFactory.createResource( property.getDataType().get().getUrn() ) ).toJsonNode() );
-            propertyNode.put( DESCRIPTION_FIELD,property.getDescription( locale ) );
+            propertyNode.put( DESCRIPTION_FIELD, property.getDescription( locale ) );
 
             propertiesNode.set( property.getName(), propertyNode );
          } );
@@ -132,7 +134,8 @@ public class AspectModelAsyncApiGenerator
       schemasNode.set( event.getName(), schemaNode );
    }
 
-   private void generateComponentsMessageAndSchemaOperation( final ObjectNode messagesNode, final ObjectNode schemasNode, final Property property, final Locale locale ) {
+   private void generateComponentsMessageAndSchemaOperation( final ObjectNode messagesNode, final ObjectNode schemasNode,
+         final Property property, final Locale locale ) {
       final ObjectNode messageNode = FACTORY.objectNode();
       messageNode.put( "name", property.getName() );
       messageNode.put( TITLE_FIELD, property.getPreferredName( locale ) );
@@ -173,15 +176,16 @@ public class AspectModelAsyncApiGenerator
       rootNode.set( "operations", operationsNode );
    }
 
-   private void generateOperation( final ObjectNode operationsNode, final String aspectName, final String operationName, final String action ) {
+   private void generateOperation( final ObjectNode operationsNode, final String aspectName, final String operationName,
+         final String action ) {
       final ObjectNode operationNode = FACTORY.objectNode();
 
-      operationNode.put( "action", action);
+      operationNode.put( "action", action );
 
       final ObjectNode channelNode = FACTORY.objectNode();
       channelNode.put( "$ref", String.format( "%s/%s", CHANNELS, aspectName ) );
 
-      operationNode.set( "channel",  channelNode);
+      operationNode.set( "channel", channelNode );
 
       final ArrayNode messagesNode = operationNode.putArray( "messages" );
       final ObjectNode objectNode = FACTORY.objectNode();
@@ -198,7 +202,7 @@ public class AspectModelAsyncApiGenerator
       endpointPathsNode.set( aspect.getName(), pathNode );
 
       setChannelNodeMeta( pathNode, aspect, config );
-      setNodeMessages( pathNode, aspect);
+      setNodeMessages( pathNode, aspect );
 
       return endpointPathsNode;
    }
@@ -206,7 +210,9 @@ public class AspectModelAsyncApiGenerator
    private void setChannelNodeMeta( final ObjectNode channelNode, final Aspect aspect, final AsyncApiSchemaGenerationConfig config ) {
       final AspectModelUrn aspectModelUrn = aspect.getAspectModelUrn().get();
 
-      channelNode.put( "address", StringUtils.isNotBlank( config.channelAddress() ) ? config.channelAddress() : String.format( "/%s/%s/%s", aspectModelUrn.getNamespace(), aspectModelUrn.getVersion(), aspect.getName() ) );
+      channelNode.put( "address", StringUtils.isNotBlank( config.channelAddress() )
+            ? config.channelAddress() :
+            String.format( "/%s/%s/%s", aspectModelUrn.getNamespace(), aspectModelUrn.getVersion(), aspect.getName() ) );
       channelNode.put( DESCRIPTION_FIELD, "This channel for updating " + aspect.getName() + " Aspect." );
 
       final ObjectNode parametersNode = FACTORY.objectNode();
@@ -214,7 +220,7 @@ public class AspectModelAsyncApiGenerator
       parametersNode.put( "version", aspectModelUrn.getVersion() );
       parametersNode.put( "aspect-name", aspect.getName() );
 
-      channelNode.set( "parameters", parametersNode);
+      channelNode.set( "parameters", parametersNode );
    }
 
    private void setNodeMessages( final ObjectNode rootNode, final Aspect aspect ) {
@@ -241,12 +247,12 @@ public class AspectModelAsyncApiGenerator
    }
 
    private String generateRef( final String path, final String name ) {
-      return String.format( "%s/%s", path, name);
+      return String.format( "%s/%s", path, name );
    }
 
    private String getApiVersion( final Aspect aspect, final boolean useSemanticVersion ) {
       final String aspectVersion = aspect.getAspectModelUrn().get().getVersion();
-      return "v" + ( useSemanticVersion ? aspectVersion : VersionNumber.parse( aspectVersion ).getMajor() );
+      return "v" + (useSemanticVersion ? aspectVersion : VersionNumber.parse( aspectVersion ).getMajor());
    }
 
    private ObjectNode getRootJsonNode() throws IOException {

@@ -15,14 +15,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
-
 import io.vavr.control.Try;
 
-public class GeneratorHelper {
+public interface GeneratorHelper {
 
-   private GeneratorHelper() {}
-
-   public static Map<Path, JsonNode> getSeparateSchemas( final JsonNode content, final String fileExtension, final String aspectName, final String mainSpecName ) {
+   public default Map<Path, JsonNode> getSeparateSchemas( final JsonNode content, final String fileExtension, final String aspectName,
+         final String mainSpecName ) {
       final ObjectMapper objectMapper = new ObjectMapper();
       // Create a copy of the content, because we change the root node in-place
       final JsonNode json = Try.of( () ->

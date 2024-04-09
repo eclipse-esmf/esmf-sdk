@@ -34,15 +34,14 @@ import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationC
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToAsyncapiCommand.COMMAND_NAME,
@@ -102,7 +101,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
             .useSemanticVersion( useSemanticApiVersion )
             .applicationId( applicationId )
             .channelAddress( channelAddress )
-            .locale( locale)
+            .locale( locale )
             .build();
       final AsyncApiSchemaArtifact asyncApiSpec = generator.apply( aspect, config );
 
@@ -127,18 +126,21 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
       }
    }
 
-   private void writeSchemaWithSeparateFiles( final AsyncApiSchemaArtifact asyncApiSpec, final AspectModelAsyncApiGenerator generator, final String aspectName )
+   private void writeSchemaWithSeparateFiles( final AsyncApiSchemaArtifact asyncApiSpec, final AspectModelAsyncApiGenerator generator,
+         final String aspectName )
          throws IOException {
       final Path root = outputFilePath == null || outputFilePath.equals( "-" ) ? Path.of( "." ) : new File( outputFilePath ).toPath();
       if ( generateJsonAsyncApiSpec ) {
-         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "json", aspectName );
+         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "json",
+               aspectName );
          for ( final Map.Entry<Path, JsonNode> entry : separateFilesContent.entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
                OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, entry.getValue() );
             }
          }
       } else {
-         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "yaml", aspectName );
+         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "yaml",
+               aspectName );
          final Map<Path, String> separateFilesContentAsYaml = separateFilesContent.entrySet().stream().collect( Collectors.toMap(
                Map.Entry::getKey, entry -> jsonToYaml( entry.getValue() ) ) );
          for ( final Map.Entry<Path, String> entry : separateFilesContentAsYaml.entrySet() ) {

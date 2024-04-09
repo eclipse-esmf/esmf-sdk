@@ -151,7 +151,8 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
          .putAll( OPEN_API_TYPE_DATA )
          .put( RDF.langString,
                Map.of( "patternProperties",
-                     FACTORY.objectNode().set( "^.*$", FACTORY.objectNode().set( "type", XsdToJsonTypeMapping.JsonType.STRING.toJsonNode() ) ) ) )
+                     FACTORY.objectNode()
+                           .set( "^.*$", FACTORY.objectNode().set( "type", XsdToJsonTypeMapping.JsonType.STRING.toJsonNode() ) ) ) )
          .put( XSD.base64Binary, Map.of( "contentEncoding", FACTORY.textNode( "base64" ) ) )
          .build();
 
@@ -364,7 +365,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       addDescription( characteristicNode, trait, config.locale() );
       addSammExtensionAttribute( characteristicNode, trait );
       return io.vavr.collection.Stream.ofAll( trait.getConstraints() )
-            .foldLeft( characteristicNode, ( node, constraint ) -> ( (ObjectNode) ( constraint.accept( this, node ) ) ) );
+            .foldLeft( characteristicNode, ( node, constraint ) -> ((ObjectNode) (constraint.accept( this, node ))) );
    }
 
    @Override

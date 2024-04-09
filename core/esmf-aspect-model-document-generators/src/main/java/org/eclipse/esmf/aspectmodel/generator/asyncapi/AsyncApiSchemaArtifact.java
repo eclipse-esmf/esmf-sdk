@@ -14,10 +14,10 @@
 package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The result of generating an AsyncAPI specification from an Aspect Model. The result can be retrieved in JSON ({@link #getContent()}

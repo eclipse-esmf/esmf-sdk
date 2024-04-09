@@ -26,7 +26,6 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
  * @param applicationId for setup id parameter in the spec.
  * @param channelAddress the channel address for providing channel address.
- * specification
  */
 @RecordBuilder
 public record AsyncApiSchemaGenerationConfig(
