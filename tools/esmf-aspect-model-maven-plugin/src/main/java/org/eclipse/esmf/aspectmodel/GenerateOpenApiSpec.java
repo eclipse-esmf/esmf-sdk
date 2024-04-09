@@ -28,13 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
 import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfig;
@@ -42,16 +35,22 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationCon
 import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-
 import io.vavr.control.Try;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateOpenApiSpec", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateOpenApiSpec extends AspectModelMojo {

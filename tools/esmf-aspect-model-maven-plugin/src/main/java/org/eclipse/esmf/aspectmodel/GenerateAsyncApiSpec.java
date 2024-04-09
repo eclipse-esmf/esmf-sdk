@@ -11,27 +11,26 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AspectModelAsyncApiGenerator;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-
 import io.vavr.control.Try;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateAsyncApiSpec", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateAsyncApiSpec extends AspectModelMojo {
@@ -66,7 +65,7 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
                .useSemanticVersion( useSemanticApiVersion )
                .applicationId( applicationId )
                .channelAddress( channelAddress )
-               .locale( locale)
+               .locale( locale )
                .build();
 
          final AsyncApiSchemaArtifact asyncApiSpec = generator.apply( aspect, config );
@@ -82,7 +81,8 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
       }
    }
 
-   private void writeSchemaWithInOneFile( final String schemaFileName, final ApiFormat format, final AsyncApiSchemaArtifact asyncApiSpec ) throws IOException {
+   private void writeSchemaWithInOneFile( final String schemaFileName, final ApiFormat format, final AsyncApiSchemaArtifact asyncApiSpec )
+         throws IOException {
       try ( final OutputStream out = getOutputStreamForFile( schemaFileName, outputDirectory ) ) {
          if ( format == ApiFormat.JSON ) {
             OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, asyncApiSpec.getContent() );
@@ -92,18 +92,21 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
       }
    }
 
-   private void writeSchemaWithSeparateFiles( final ApiFormat format, final AsyncApiSchemaArtifact asyncApiSpec, final AspectModelAsyncApiGenerator generator, final String aspectName )
+   private void writeSchemaWithSeparateFiles( final ApiFormat format, final AsyncApiSchemaArtifact asyncApiSpec,
+         final AspectModelAsyncApiGenerator generator, final String aspectName )
          throws IOException {
       final Path root = Path.of( outputDirectory );
       if ( format == ApiFormat.JSON ) {
-         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "json", aspectName );
+         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "json",
+               aspectName );
          for ( final Map.Entry<Path, JsonNode> entry : separateFilesContent.entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
                OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, entry.getValue() );
             }
          }
       } else {
-         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "yaml", aspectName );
+         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "yaml",
+               aspectName );
          final Map<Path, String> separateFilesContentAsYaml = separateFilesContent.entrySet().stream().collect( Collectors.toMap(
                Map.Entry::getKey, entry -> jsonToYaml( entry.getValue() ) ) );
          for ( final Map.Entry<Path, String> entry : separateFilesContentAsYaml.entrySet() ) {
