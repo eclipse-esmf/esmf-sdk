@@ -627,7 +627,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       }
 
       private Object getRandomValue( final RegularExpressionConstraint rangeConstraint ) {
-         final RgxGen rgxGen = new RgxGen( rangeConstraint.getValue() );
+         final RgxGen rgxGen = RgxGen.parse( rangeConstraint.getValue() );
          return rgxGen.generate();
       }
 

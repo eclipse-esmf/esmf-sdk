@@ -31,6 +31,7 @@ public class LogbackFeature extends AbstractSammCliFeature {
       initializeAtBuildTime( ch.qos.logback.core.status.StatusBase.class );
       initializeAtBuildTime( ch.qos.logback.core.util.Loader.class );
       initializeAtBuildTime( ch.qos.logback.core.util.StatusPrinter.class );
+      initializeAtBuildTime( ch.qos.logback.core.util.StatusPrinter2.class );
 
       initializeAtBuildTime( org.slf4j.LoggerFactory.class );
    }
