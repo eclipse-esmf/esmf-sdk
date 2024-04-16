@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.characteristic.TimeSeries;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -33,18 +32,17 @@ import org.eclipse.esmf.metamodel.HasProperties;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.vavr.collection.Stream;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class AspectModelPagingGenerator {
-
    private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelPagingGenerator.class );
 

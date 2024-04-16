@@ -13,7 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.generator.openapi;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,8 +28,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -38,12 +37,10 @@ import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -59,10 +56,6 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
-
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
@@ -71,6 +64,13 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
+import org.apache.commons.io.IOUtils;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.LoggerFactory;
 
 public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -549,9 +549,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
       for ( final Property property : aspect.getProperties() ) {
          assertThat( context.<String> read( "$['components']['schemas']"
-                                            + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
-                                            + AspectModelJsonSchemaVisitor.SAMM_EXTENSION
-                                            + "']" ) ).isEqualTo( property.getAspectModelUrn().get().toString() );
+               + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
+               + AspectModelJsonSchemaVisitor.SAMM_EXTENSION
+               + "']" ) ).isEqualTo( property.getAspectModelUrn().get().toString() );
       }
 
       // $comment keywords should only be generated on demand, not by default
@@ -610,7 +610,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
          final String[] text = node.asText().split( "/" );
          final DocumentContext context = JsonPath.using( config ).parse( rootNode.toString() );
          final LinkedHashMap<String, Object> read = context
-               .<LinkedHashMap<String, Object>> read( String.format( "$['%s']['%s']['%s']", text[ 1 ], text[ 2 ], text[ 3 ] ) );
+               .<LinkedHashMap<String, Object>> read( String.format( "$['%s']['%s']['%s']", text[1], text[2], text[3] ) );
          assertThat( read ).isNotNull();
       } );
    }
