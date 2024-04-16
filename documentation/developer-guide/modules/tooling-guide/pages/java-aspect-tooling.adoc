@@ -481,6 +481,37 @@ Enumerations] for more information). In case the Entity instances contain Proper
 data type, the order of the values of said collection in the Entity instances is not preserved in the generated OpenAPI
 specification. Preserving this order in OpenAPI is not possible at this point.
 
+=== Generating AsyncAPI Specification
+
+The AsyncAPI specification generator creates either a https://json-schema.org/[JSON Schema] or a https://yaml.org/[Yaml Spec]
+that specifies an Aspect regarding to the https://www.asyncapi.com/en[AsyncApi specification].
+The currently used versions correspond to https://json-schema.org/specification-links.html#draft-4[Draft 4] of the JSON Schema specification,
+and https://github.com/asyncapi/spec/blob/master/spec/asyncapi.md[3.0.0] of the AsyncAPI specification.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateAsyncApi.java[tags=imports]
+----
+++++
+</details>
+++++
+
+.Generate AsyncAPI YAML
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateAsyncApi.java[tags=generateYaml]
+----
+
+.Generate AsyncAPI JSON
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateAsyncApi.java[tags=generateJson]
+----
+
 [[generating-java-code]]
 == Generating Java Code for Aspect Models
 
