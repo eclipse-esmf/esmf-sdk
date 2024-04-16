@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AspectModelAsyncApiGenerator;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaArtifact;
@@ -42,14 +41,19 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
 
    @Parameter( required = true )
    private String outputFormat = "";
+
    @Parameter( defaultValue = "false" )
    private boolean separateFiles;
+
    @Parameter
    private String applicationId;
+
    @Parameter
    private String channelAddress;
+
    @Parameter( defaultValue = "false" )
    private boolean useSemanticApiVersion;
+
    @Parameter( defaultValue = "en" )
    private String language;
 
@@ -71,7 +75,7 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
          final AsyncApiSchemaArtifact asyncApiSpec = generator.apply( aspect, config );
          try {
             if ( separateFiles ) {
-               writeSchemaWithSeparateFiles( format, asyncApiSpec, generator, aspect.getName() );
+               writeSchemaWithSeparateFiles( format, asyncApiSpec );
             } else {
                writeSchemaWithInOneFile( aspect.getName() + ".aai." + format.toString().toLowerCase(), format, asyncApiSpec );
             }
@@ -92,23 +96,17 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
       }
    }
 
-   private void writeSchemaWithSeparateFiles( final ApiFormat format, final AsyncApiSchemaArtifact asyncApiSpec,
-         final AspectModelAsyncApiGenerator generator, final String aspectName )
-         throws IOException {
+   private void writeSchemaWithSeparateFiles( final ApiFormat format, final AsyncApiSchemaArtifact asyncApiSpec ) throws IOException {
       final Path root = Path.of( outputDirectory );
       if ( format == ApiFormat.JSON ) {
-         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "json",
-               aspectName );
+         final Map<Path, JsonNode> separateFilesContent = asyncApiSpec.getContentWithSeparateSchemasAsJson();
          for ( final Map.Entry<Path, JsonNode> entry : separateFilesContent.entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
                OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, entry.getValue() );
             }
          }
       } else {
-         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "yaml",
-               aspectName );
-         final Map<Path, String> separateFilesContentAsYaml = separateFilesContent.entrySet().stream().collect( Collectors.toMap(
-               Map.Entry::getKey, entry -> jsonToYaml( entry.getValue() ) ) );
+         final Map<Path, String> separateFilesContentAsYaml = asyncApiSpec.getContentWithSeparateSchemasAsYaml();
          for ( final Map.Entry<Path, String> entry : separateFilesContentAsYaml.entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
                out.write( entry.getValue().getBytes( StandardCharsets.UTF_8 ) );

@@ -13,11 +13,16 @@
 
 package org.eclipse.esmf.aspectmodel.generator.jsonschema;
 
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Optional;
+
+import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class JsonSchemaArtifact implements Artifact<String, JsonNode> {
+public class JsonSchemaArtifact extends AbstractSchemaArtifact implements Artifact<String, JsonNode> {
    private final String id;
    private final JsonNode content;
 
@@ -34,5 +39,15 @@ public class JsonSchemaArtifact implements Artifact<String, JsonNode> {
    @Override
    public JsonNode getContent() {
       return content;
+   }
+
+   @Override
+   public Map<Path, JsonNode> getContentWithSeparateSchemasAsJson() {
+      return getContentWithSeparateSchemasAsJson( Optional.empty() );
+   }
+
+   @Override
+   public Map<Path, String> getContentWithSeparateSchemasAsYaml() {
+      return getContentWithSeparateSchemasAsYaml( Optional.empty() );
    }
 }

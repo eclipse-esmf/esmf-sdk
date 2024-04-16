@@ -22,7 +22,6 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
@@ -107,7 +106,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
 
       try {
          if ( writeSeparateFiles ) {
-            writeSchemaWithSeparateFiles( asyncApiSpec, generator, aspect.getName() );
+            writeSchemaWithSeparateFiles( asyncApiSpec );
          } else {
             writeSchemaWithInOneFile( asyncApiSpec );
          }
@@ -126,23 +125,17 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
       }
    }
 
-   private void writeSchemaWithSeparateFiles( final AsyncApiSchemaArtifact asyncApiSpec, final AspectModelAsyncApiGenerator generator,
-         final String aspectName )
-         throws IOException {
+   private void writeSchemaWithSeparateFiles( final AsyncApiSchemaArtifact asyncApiSpec ) throws IOException {
       final Path root = outputFilePath == null || outputFilePath.equals( "-" ) ? Path.of( "." ) : new File( outputFilePath ).toPath();
       if ( generateJsonAsyncApiSpec ) {
-         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "json",
-               aspectName );
+         final Map<Path, JsonNode> separateFilesContent = asyncApiSpec.getContentWithSeparateSchemasAsJson();
          for ( final Map.Entry<Path, JsonNode> entry : separateFilesContent.entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
                OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, entry.getValue() );
             }
          }
       } else {
-         final Map<Path, JsonNode> separateFilesContent = generator.getContentWithSeparateSchemas( asyncApiSpec.getContent(), "yaml",
-               aspectName );
-         final Map<Path, String> separateFilesContentAsYaml = separateFilesContent.entrySet().stream().collect( Collectors.toMap(
-               Map.Entry::getKey, entry -> jsonToYaml( entry.getValue() ) ) );
+         final Map<Path, String> separateFilesContentAsYaml = asyncApiSpec.getContentWithSeparateSchemasAsYaml();
          for ( final Map.Entry<Path, String> entry : separateFilesContentAsYaml.entrySet() ) {
             try ( final OutputStream out = new FileOutputStream( root.resolve( entry.getKey() ).toFile() ) ) {
                out.write( entry.getValue().getBytes( StandardCharsets.UTF_8 ) );
