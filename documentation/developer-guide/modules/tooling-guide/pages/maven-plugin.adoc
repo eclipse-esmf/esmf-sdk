@@ -276,6 +276,55 @@ Configuration Properties:
 | `language` | The language from the model for which an OpenAPI specification should be generated. | `String` | en | {nok}
 |===
 
+== Generate an AsyncAPI Specification from an Aspect Model
+
+The `generateAsyncApiSpec` goal generates an AsyncAPI Specification for a given Aspect Model. The
+default life cycle phase for the goal is `generate-resources`.
+
+Usage:
+
+[source,xml,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-asyncapi-spec</id>
+              <goals>
+                 <goal>generateAsyncApiSpec</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+           <outputFormat>json</outputFormat>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `outputDirectory` | The path to the directory where the generated AsyncAPI Specification will be written to. | `String` | none | {ok}
+| `applicationId` | Sets the application id, e.g. an identifying URL | `String` | none | {nok}
+| `channelAddress` | Sets the channel address (i.e., for MQTT, the topic's name) | `String` | none | {nok}
+| `useSemanticApiVersion` | Use the complete semantic version of the Aspect Model as the version of the Aspect API. | `Boolean` | `false` | {nok}
+| `outputFormat` | The format of the resulting AsyncAPI Specification. May be either JSON or YAML. | `String` | none | {ok}
+| `separateFiles` | Create separate files for each schema. | `Boolean` | `false` | {nok}
+| `language` | The language from the model for which an AsyncAPI specification should be generated. | `String` | en | {nok}
+|===
+
 == Generate Documentation for an Aspect Model
 
 === Generating HTML Documentation
