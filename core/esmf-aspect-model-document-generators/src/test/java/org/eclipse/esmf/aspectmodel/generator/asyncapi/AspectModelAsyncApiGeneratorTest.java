@@ -47,7 +47,8 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
                         "info": {
                            "title": "Test Aspect MQTT API",
                            "version": "v1",
-                           "description": "This is a test description"
+                           "description": "This is a test description",
+                           "x-samm-aspect-model-urn":"urn:samm:org.eclipse.esmf.test:1.0.0#Aspect"
                         },
                         "defaultContentType": "application/json",
                         "channels": {
@@ -59,7 +60,7 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
                                  "version": "1.0.0",
                                  "aspect-name": "Aspect"
                               },
-                              "massages": {}
+                              "messages": {}
                            }
                         },
                         "operations": {},
@@ -98,7 +99,7 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
                               "version": "1.0.0",
                               "aspect-name": "AspectWithEvent"
                            },
-                           "massages": {
+                           "messages": {
                               "SomeEvent": {
                                  "$ref": "#/components/messages/SomeEvent"
                               }
@@ -166,7 +167,7 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
                               "version": "1.0.0",
                               "aspect-name": "AspectWithOperation"
                            },
-                           "massages": {
+                           "messages": {
                               "input": {
                                  "$ref": "#/components/messages/input"
                               },

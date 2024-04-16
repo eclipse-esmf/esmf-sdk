@@ -13,6 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel.generator.asyncapi;
 
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.Optional;
+
+import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * The result of generating an AsyncAPI specification from an Aspect Model. The result can be retrieved in JSON ({@link #getContent()}
  * format as self-contained schemas.
  */
-public class AsyncApiSchemaArtifact implements Artifact<String, JsonNode> {
+public class AsyncApiSchemaArtifact extends AbstractSchemaArtifact implements Artifact<String, JsonNode> {
    private static final Logger LOG = LoggerFactory.getLogger( AsyncApiSchemaArtifact.class );
    private final String id;
    private final JsonNode content;
@@ -46,5 +51,15 @@ public class AsyncApiSchemaArtifact implements Artifact<String, JsonNode> {
    @Override
    public JsonNode getContent() {
       return content;
+   }
+
+   @Override
+   public Map<Path, JsonNode> getContentWithSeparateSchemasAsJson() {
+      return getContentWithSeparateSchemasAsJson( Optional.of( "aai" ) );
+   }
+
+   @Override
+   public Map<Path, String> getContentWithSeparateSchemasAsYaml() {
+      return getContentWithSeparateSchemasAsYaml( Optional.of( "aai" ) );
    }
 }

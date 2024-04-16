@@ -27,8 +27,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
@@ -46,8 +44,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-
 import io.vavr.control.Try;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectToOpenapiCommand.COMMAND_NAME,
@@ -77,7 +76,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
 
    @CommandLine.Option( names = { "--parameter-file", "-p" },
          description = "The path to a file including the parameter for the Aspect API endpoints. When --json is given, this file "
-                       + "should contain the parameter definition in JSON, otherwise it should contain the definition in YAML." )
+               + "should contain the parameter definition in JSON, otherwise it should contain the definition in YAML." )
    private String aspectParameterFile;
 
    @CommandLine.Option( names = { "--semantic-version", "-sv" },
