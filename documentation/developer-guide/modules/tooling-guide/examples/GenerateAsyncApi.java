@@ -14,7 +14,6 @@
 package examples;
 
 // tag::imports[]
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -26,17 +25,18 @@ import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationC
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+// end::imports[]
+import org.junit.jupiter.api.Test;
 
 public class GenerateAsyncApi {
    @Test
-   public void generateYaml() throws JsonProcessingException {
+   public void generateYaml() throws IOException {
       final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
 
       // tag::generateYaml[]
@@ -47,8 +47,8 @@ public class GenerateAsyncApi {
             AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
       // tag::generateYaml[]
 
-      ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
-      //language=yaml
+      final ObjectMapper yamlMapper = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
+
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             // i.e., true = v1.2.3, false = v1
             .useSemanticVersion( false )
@@ -60,15 +60,11 @@ public class GenerateAsyncApi {
       // Generate pretty-printed YAML
       final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
       final JsonNode json = generator.apply( aspect, config ).getContent();
-      final String yaml = YAML_MAPPER.writeValueAsString( json );
+      final String yaml = yamlMapper.writeValueAsString( json );
 
       final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-      try {
-         out.write( yaml.getBytes( StandardCharsets.UTF_8 ) );
-      } catch ( IOException e ) {
-         throw new RuntimeException( e );
-      }
+      out.write( yaml.getBytes( StandardCharsets.UTF_8 ) );
 
       final String result = out.toString();
       // end::generateYaml[]
@@ -100,7 +96,6 @@ public class GenerateAsyncApi {
 
       // If needed, print or pretty print it into a string
       final ByteArrayOutputStream out = new ByteArrayOutputStream();
-
       objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, json );
       final String result = out.toString();
       // end::generateJson[]

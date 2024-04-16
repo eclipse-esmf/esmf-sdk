@@ -123,11 +123,11 @@ The available options and their meaning can also be seen in the help text of the
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to openapi -l de`
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.6+| aspect <model> to asyncapi    | Generate https://www.asyncapi.com/docs/reference/specification/v3.0.0[AsyncAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to asyncapi`
+.8+| aspect <model> to asyncapi    | Generate https://www.asyncapi.com/docs/reference/specification/v3.0.0[AsyncAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to asyncapi`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
-                                   | _--channel-address, -ca_ : Use this param make possible provide channel address.
-                                       https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to asyncapi -ca \123-456/789-012/namespace/1.0.0/Aspect`
-                                   | _--application-id, -ai_ : Use this param for provide application id.                    |
+                                   | _--channel-address, -ca_ : Sets the channel address (i.e., for MQTT, the topic's name).
+                                       https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to asyncapi -ca 123-456/789-012/namespace/1.0.0/Aspect`
+                                   | _--application-id, -ai_ : Sets the application id, e.g. an identifying URL.                    |
                                    | _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the
                                        version for the Aspect API                                                            |
                                    | _--language, -l_ : The language from the model for which an AsyncAPI specification should
@@ -588,30 +588,30 @@ And finally for the time based paging:
 
 == Using the CLI to create a JSON AsyncAPI Specification
 
-As xref:using-the-cli-to-create-a-json-openapi-specification[OpenAPI], every AsyncAPI specification is based on one Aspect.
-which needs a separately defined https://www.asyncapi.com/docs/reference/specification/v3.0.0#channelObject[channel address], this is not required.
-The channel address will be defined as string with the `-ca` option, i.e.: /123-456/789-012/test/1.0.0/Aspect. The default channel address, using the above
-defined `--channel-address`, would result in /{namespace}/\{version}/<aspectName>.
+As with xref:using-the-cli-to-create-a-json-openapi-specification[OpenAPI], every AsyncAPI specification is based on one Aspect.
+Each Aspect is associated with one https://www.asyncapi.com/docs/reference/specification/v3.0.0#channelObject[channel address].
+The channel address is set as string using with`--channel-address` or `-ca` option, e.g.: `-ca 123-456/789-012/test/1.0.0/Aspect`. The default channel address
+is derived from the Aspect's URN and is constructed using the pattern `{namespace}/\{version}/{aspectName}`.
 
 
 The full command for the native executable samm-cli would be:
 [source,shell,subs="attributes+,+quotes"]
 ----
-samm aspect _AspectModel.ttl_ to asyncapi -ca "/123-456/789-012/test/1.0.0/Aspect"
+samm aspect _AspectModel.ttl_ to asyncapi -ca "123-456/789-012/test/1.0.0/Aspect"
 ----
 
-For the Java version of samm-cli, the full command would result in:
+For the Java version of samm-cli, the corresponding full command is:
 
 [source,shell,subs="attributes+,+quotes"]
 ----
-java -jar samm-cli-{esmf-sdk-version}.jar aspect _AspectModel.ttl_ to asyncapi -ca "/123-456/789-012/test/1.0.0/Aspect"
+java -jar samm-cli-{esmf-sdk-version}.jar aspect _AspectModel.ttl_ to asyncapi -ca "123-456/789-012/test/1.0.0/Aspect"
 ----
 
 === Mapping between the Aspect Models and the AsyncAPI Specification
 
 In this section, a detailed description of the mapping between individual Aspect elements and the AsyncAPI specification is given.
 To make it easier to follow, the mapping is explained based on a concrete example, divided into logically coherent blocks.
-Please bear in mind that these blocks are snippets or fragments of a larger whole; viewed in isolation they do not necessarily form a valid or meaningful Aspect Model or OpenAPI specification.
+Please bear in mind that these blocks are snippets or fragments of a larger whole; viewed in isolation they do not necessarily form a valid or meaningful Aspect Model or AsyncAPI specification.
 
 ==== Naming and versioning
 
@@ -624,12 +624,12 @@ Please consider the following model fragment, with the attention focused on the 
 
 :Movement a samm:Aspect ; # <3>
    samm:name "Movement" ;
-   samm:preferredName "MovementPrefferedName"@en ; # <2>
+   samm:preferredName "My Movement Aspect"@en ; # <2>
    samm:description "Aspect for movement information"@en . # <4>
 ----
 
 <1> prefix used to build the full URN of `:Movement` Aspect
-<2> the preferred name of the Aspect in language of user's choice
+<2> the preferred name of the Aspect in the language of the user's choice
 <3> the name of the Aspect
 <4> the description of the Aspect
 
@@ -640,7 +640,7 @@ For the generated AsyncAPI specification, the following mapping would apply:
 {
   "asyncapi" : "3.0.0",
   "info" : {
-    "title" : "MovementPrefferedName MQTT API", // <2>
+    "title" : "My Movement Aspect MQTT API", // <2>
     "version" : "v2", // <1>
     "description" : "Aspect for movement information" // <3>
   }
@@ -651,21 +651,21 @@ For the generated AsyncAPI specification, the following mapping would apply:
 <2> as `samm:preferredName` is used as the value for the `title` element of the specification (MQTT API defined automatically)
 <3> as `samm:description` is an optional element
 
-The name of the Aspect is used to generate several important AsyncAPI artifacts, like the channel definitions for the API:
+The name of the Aspect is used to generate parts of the AsyncAPI specification, such as the channel definitions for the API:
 
 [source,JSON]
 ----
 {
  "channels" : {
     "Movement" : { // <3>
-      "address" : "/movement/0.0.1/Movement", // <3>
+      "address" : "movement/0.0.1/Movement", // <3>
       "description" : "This channel for updating Movement Aspect.", // <3>
       "parameters" : {
         "namespace" : "movement",
         "version" : "0.0.1",
         "aspect-name" : "Movement" // <3>
       },
-      "massages" : {}
+      "messages" : {}
     }
   }
 }
@@ -673,9 +673,9 @@ The name of the Aspect is used to generate several important AsyncAPI artifacts,
 
 ==== Mapping of Aspect's operations
 
-AsyncAPI specification is generated using operations and events.
-This section describe only operations.
-If the Aspect also has a non-empty list of operations defined, like the one in the following example:
+The AsyncAPI specification is generated based on SAMM Operations and Events.
+his section describes how specification parts are generated for Operations.
+If the Aspect also has a non-empty list of Operations defined, such as the one in the following example:
 
 [source,turtle]
 ----
@@ -683,39 +683,37 @@ If the Aspect also has a non-empty list of operations defined, like the one in t
    samm:preferredName "movement"@en ;
    samm:description "Aspect for movement information"@en ;
    samm:properties ( ) ;
-   samm:operations ( :GetSpeed ) ;
+   samm:operations ( :getSpeed ) ;
    samm:events ( ) .
 
-:GetSpeed a samm:Operation ;
-   samm:preferredName "GetSpeedPrefName"@en ;
-   samm:description "GetSpeed summary"@en ;
-   samm:input ( :GetSpeedInput ) ; <1>
-   samm:output :GetSpeedOutput . <2>
+:getSpeed a samm:Operation ;
+   samm:preferredName "Get speed"@en ;
+   samm:description "Returns the current speed"@en ;
+   samm:input ( :getSpeedInput ) ; # <1>
+   samm:output :getSpeedOutput . # <2>
 
-:GetSpeedOutput a samm:Property ;
-   samm:preferredName "GetSpeedOutputPrefferedName"@en ;
-   samm:description "GetSpeedOutput desc"@en ;
+:getSpeedOutput a samm:Property ;
+   samm:preferredName "getSpeed output"@en ;
+   samm:description "Return value of the getSpeed operation"@en ;
    samm:characteristic :OutputCharacteristic .
 
 :OutputCharacteristic a samm:Characteristic ;
-   samm:preferredName "OutputCharacteristicPrefferedName"@en ;
-   samm:description "OutputCharacteristic desc"@en ;
+   samm:preferredName "Output"@en ;
+   samm:description "Describes the output of the getSpeed operation"@en ;
    samm:dataType :OutputEntity .
 
 :OutputEntity a samm:Entity ;
-   samm:name "GetSpeedOutput" ;
-   samm:preferredName "GetSpeedOutputPrefferedName"@en ;
-   samm:description "GetSpeedOutput desc"@en ;
-   samm:properties ( :OutputEntityMessage ) .
+   samm:preferredName "Output entity"@en ;
+   samm:description "The structured response of getSpeed"@en ;
+   samm:properties ( :outputEntityMessage ) .
 
-:OutputEntityMessage a samm:Property ;
-   samm:characteristic samm-c:Text . <3>
+:outputEntityMessage a samm:Property ;
+   samm:characteristic samm-c:Text . # <3>
 
-:GetSpeedInput a samm:Property ;
-   samm:name "getSpeedInput" ;
-   samm:preferredName "getSpeedInputPrefferedName"@en ;
-   samm:description "getSpeedInput desc"@en ;
-   samm:characteristic samm-c:Text . <4>
+:getSpeedInput a samm:Property ;
+   samm:preferredName "getSpeed input"@en ;
+   samm:description "The input to the getSpeed operation"@en ;
+   samm:characteristic samm-c:Text . # <4>
 ----
 
 operations will be generated in some places of AsyncAPI specification:
@@ -727,74 +725,74 @@ https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schema
 [source,JSON]
 ----
 {
-"channels" : {
+  "channels" : {
     "Movement" : {
-      "address" : "/movement/0.0.1/Movement",
+      "address" : "movement/0.0.1/Movement",
       "description" : "This channel for updating Movement Aspect.",
       "parameters" : {
         "namespace" : "movement",
         "version" : "0.0.1",
         "aspect-name" : "Movement"
       },
-      "massages" : {
-        "GetSpeedInput" : { // <1>
-          "$ref" : "#/components/messages/GetSpeedInput" // <1>
+      "messages" : {
+        "getSpeedInput" : { // <1>
+          "$ref" : "#/components/messages/getSpeedInput" // <1>
         },
-        "GetSpeedOutput" : { // <2>
-          "$ref" : "#/components/messages/GetSpeedOutput" // <2>
+        "getSpeedOutput" : { // <2>
+          "$ref" : "#/components/messages/getSpeedOutput" // <2>
         }
       }
     }
   },
   "operations" : {
-    "GetSpeedInput" : {
+    "getSpeedInput" : {
       "action" : "receive", // <5>
       "channel" : {
         "$ref" : "#/channels/Movement"
       },
       "messages" : [ {
-        "$ref" : "#/channels/Movement/messages/GetSpeedInput" // <1>
+        "$ref" : "#/channels/Movement/messages/getSpeedInput" // <1>
       } ]
     },
-    "GetSpeedOutput" : { // <2>
+    "getSpeedOutput" : { // <2>
       "action" : "send", // <5>
       "channel" : {
         "$ref" : "#/channels/Movement"
       },
       "messages" : [ {
-        "$ref" : "#/channels/Movement/messages/GetSpeedOutput" // <2>
+        "$ref" : "#/channels/Movement/messages/getSpeedOutput" // <2>
       } ]
     }
   },
   "components" : {
     "messages" : {
-      "GetSpeedInput" : { // <1> <4>
-        "name" : "GetSpeedInput", // <1>
-        "title" : "getSpeedInputPrefferedName",
-        "summary" : "getSpeedInput desc",
+      "getSpeedInput" : { // <1> <4>
+        "name" : "getSpeedInput", // <1>
+        "title" : "getSpeed input",
+        "summary" : "The input to the getSpeed operation",
         "content-type" : "application/json",
         "payload" : {
-          "$ref" : "#/components/schemas/GetSpeedInput" // <1>
+          "$ref" : "#/components/schemas/getSpeedInput" // <1>
         }
       },
-      "GetSpeedOutput" : { // <2> <4>
-        "name" : "GetSpeedOutput", // <2>
-        "title" : "GetSpeedOutputPrefferedName",
-        "summary" : "GetSpeedOutput desc",
+      "getSpeedOutput" : { // <2> <4>
+        "name" : "getSpeedOutput", // <2>
+        "title" : "getSpeed output",
+        "summary" : "Return value of the getSpeed operation",
         "content-type" : "application/json",
         "payload" : {
-          "$ref" : "#/components/schemas/GetSpeedOutput" // <2>
+          "$ref" : "#/components/schemas/getSpeedOutput" // <2>
         }
       }
     },
     "schemas" : {
-      "GetSpeedInput" : { // <1> <3>
+      "getSpeedInput" : { // <1> <3>
         "type" : "string",
-        "description" : "getSpeedInput desc"
+        "description" : "The input to the getSpeed operation"
       },
-      "GetSpeedOutput" : { // <2> <3>
+      "getSpeedOutput" : { // <2> <3>
         "type" : "string",
-        "description" : "GetSpeedOutput desc"
+        "description" : "Return value of the getSpeed operation"
       }
     }
   }
@@ -809,7 +807,7 @@ https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schema
 
 ==== Mapping of Aspect's events
 
-This section describe mapping between Aspect Events and AsyncAPI spec.
+This section describes the mapping between SAMM Events and the AsyncAPI specification.
 If the Aspect also has a non-empty list of events defined, like the one in the following example:
 
 [source,turtle]
@@ -822,24 +820,18 @@ If the Aspect also has a non-empty list of events defined, like the one in the f
    samm:events ( :SpeedUpdateEvent ) .
 
 :SpeedUpdateEvent a samm:Event ;
-   samm:preferredName "speedUpdate"@en ;
+   samm:preferredName "Speed Update"@en ;
    samm:description "This is event for update speed property"@en ;
-   samm:parameters ( :updatedSpeed :propertyName ) .
+   samm:parameters ( :updatedSpeed :updateAcceleration ) .
 
 :updatedSpeed a samm:Property ;
-   samm:preferredName "updatedSpeedPreferredName"@en ;
-   samm:description "Updated Property Desc."@en ;
-   samm:see <http://example.com/> ;
-   samm:see <http://example.com/me> ;
-   samm:exampleValue "1234567890" ;
+   samm:preferredName "updated speed"@en ;
+   samm:description "the updated speed value"@en ;
    samm:characteristic samm-c:Text .
 
-:propertyName a samm:Property ;
-   samm:preferredName "propertyNamePreferredName"@en ;
-   samm:description "PropertyName Desc"@en ;
-   samm:see <http://example.com/> ;
-   samm:see <http://example.com/me> ;
-   samm:exampleValue "1234567890" ;
+:updateAcceleration a samm:Property ;
+   samm:preferredName "update acceleration"@en ;
+   samm:description "the updated acceleration value"@en ;
    samm:characteristic samm-c:Text .
 ----
 
@@ -854,7 +846,7 @@ https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schema
 {
 "channels" : {
     "Movement" : {
-      "address" : "/movement/0.0.1/Movement",
+      "address" : "movement/0.0.1/Movement",
       "description" : "This channel for updating Movement Aspect.",
       "parameters" : {
         "namespace" : "movement",
@@ -883,7 +875,7 @@ https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schema
     "messages" : {
       "SpeedUpdateEvent" : { // <1> <2>
         "name" : "SpeedUpdateEvent", // <1>
-        "title" : "speedUpdate",
+        "title" : "Speed Update",
         "summary" : "This is event for update speed property",
         "content-type" : "application/json",
         "payload" : {
@@ -896,14 +888,14 @@ https://www.asyncapi.com/docs/reference/specification/v3.0.0#schemaObject[schema
         "type" : "object",
         "properties" : {
           "updatedSpeed" : { // <3> <4>
-            "title" : "updatedSpeed",
+            "title" : "updated speed",
             "type" : "string",
-            "description" : "Updated Property Desc."
+            "description" : "the updated speed value"
           },
-          "propertyName" : { // <3> <4>
-            "title" : "propertyName",
+          "updateAcceleration" : { // <3> <4>
+            "title" : "updated acceleration",
             "type" : "string",
-            "description" : "PropertyName Desc"
+            "description" : "the updated acceleration value"
           }
         }
       }
