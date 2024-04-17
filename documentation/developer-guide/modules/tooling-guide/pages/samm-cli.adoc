@@ -35,7 +35,7 @@ alias samm='java -jar /location/to/samm-cli-{esmf-sdk-version}.jar'
 . *For the Windows native executable:*
 * *Download*: Download via above link or visit the repository of the Java SDK which contains the SAMM CLI at the Github https://github.com/eclipse-esmf/esmf-sdk/releases[releases page] and download executable file for Windows.
 * *Extract*: extract it to a location of your choice.
-* *Open* the provided `start-samm-cli.bat`: This will open a command prompt in this directory, where you can enter further `samm` commands.
+* *Open* `samm.exe`: This will open a command prompt in this directory, where you can enter further `samm` commands.
 * *Input*: Make sure to read the below documentation and provide model files in the correct xref:models-directory-structure[directory structure].
 
 . *For the Linux native executable:*

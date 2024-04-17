@@ -18,6 +18,7 @@ import java.util.Properties;
 
 import org.eclipse.esmf.aas.AasCommand;
 import org.eclipse.esmf.aspect.AspectCommand;
+import org.eclipse.esmf.substitution.IsWindows;
 
 import org.fusesource.jansi.AnsiConsole;
 import picocli.CommandLine;
@@ -87,6 +88,19 @@ public class SammCli extends AbstractCommand {
    }
 
    public static void main( final String[] argv ) {
+      // Check if the .exe was started from the desktop/explorer.
+      // If yes, open a command prompt to continue working instead.
+      if ( new IsWindows().getAsBoolean() && System.console() == null ) {
+         ProcessHandle.current().info().command().ifPresent( executable -> {
+            try {
+               Runtime.getRuntime().exec( "cmd /k " + executable + " help" );
+               System.exit( 0 );
+            } catch ( final IOException e ) {
+               // Ignore, continue as usual
+            }
+         } );
+      }
+
       NativeImageHelpers.ensureRequiredEnvironment();
 
       // The disabling color switch needs to be checked before PicoCLI initialization
