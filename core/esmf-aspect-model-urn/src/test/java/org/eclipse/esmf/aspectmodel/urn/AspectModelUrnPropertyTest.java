@@ -17,10 +17,10 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 import net.jqwik.api.ForAll;
+import net.jqwik.api.From;
 import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 import net.jqwik.api.constraints.AlphaChars;
-import net.jqwik.api.constraints.Chars;
 import net.jqwik.api.constraints.StringLength;
 
 /**
@@ -55,19 +55,40 @@ public class AspectModelUrnPropertyTest {
             .as( ( i1, i2, i3 ) -> String.format( "%d.%d.%d", i1, i2, i3 ) );
    }
 
+   @Provide
+   Arbitrary<String> firstLetter() {
+      return Arbitraries.strings().withCharRange( 'a', 'z' ).withCharRange( 'A', 'Z' ).ofLength( 1 );
+   }
+
+   @Provide
+   Arbitrary<String> subsequentChars() {
+      return Arbitraries.strings().alpha().numeric().ofMinLength( 1 ).ofMaxLength( 62 );
+   }
+
+   @Provide
+   Arbitrary<String> secondPartOfNamespace() {
+      return Arbitraries.strings().withChars( '-' ).alpha().numeric().ofMinLength( 1 ).ofMaxLength( 61 );
+   }
+
    @Property
    public boolean allValidModelStringsAreValidModelUrns(
-         @ForAll @AlphaChars @Chars( { '.' } ) @StringLength( min = 1, max = 100 ) final String namespace,
+         @ForAll @From( "firstLetter" ) final String firstLetter,
+         @ForAll @From( "subsequentChars" ) final String subsequentChars,
+         @ForAll @From( "secondPartOfNamespace" ) final String secondPartOfNamespace,
          @ForAll( "validModelUrnType" ) final String urnType,
          @ForAll @AlphaChars @StringLength( min = 1, max = 100 ) final String elementName,
          @ForAll( "validVersion" ) final String version ) {
+      final String namespace = firstLetter + subsequentChars + "." + secondPartOfNamespace;
       return isValidUrn( String.format( "urn:samm:%s:%s:%s:%s", namespace, urnType, elementName, version ) );
    }
 
    @Property
    public boolean allValidMetaModelStringsAreValidMetaModelUrns(
-         @ForAll @AlphaChars @Chars( { '.' } ) @StringLength( min = 1, max = 100 ) final String namespace,
+         @ForAll @From( "firstLetter" ) final String firstLetter,
+         @ForAll @From( "subsequentChars" ) final String subsequentChars,
+         @ForAll @From( "secondPartOfNamespace" ) final String secondPartOfNamespace,
          @ForAll( "validVersion" ) final String version ) {
+      final String namespace = firstLetter + subsequentChars + "." + secondPartOfNamespace;
       return isValidUrn( String.format( "urn:samm:%s:meta-model:%s#Foo", namespace, version ) );
    }
 }
