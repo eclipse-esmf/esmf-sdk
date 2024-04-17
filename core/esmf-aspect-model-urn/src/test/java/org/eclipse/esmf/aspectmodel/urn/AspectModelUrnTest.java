@@ -60,12 +60,12 @@ class AspectModelUrnTest {
 
    @Test
    void createFromValidUrnMaxLength() throws URISyntaxException {
-      final String namespace = Strings.repeat( "x", 221 );
+      final String namespace = Strings.repeat( "x", 62 );
       final URI validUrn = new URI(
-            "urn:samm:" + namespace + ":aspect-model:Errors:1.0.0" );
+            "urn:samm:" + namespace + ".test:aspect-model:Errors:1.0.0" );
       final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( validUrn );
 
-      assertAspectModelUrn( aspectModelUrn, "Errors", namespace );
+      assertAspectModelUrn( aspectModelUrn, "Errors", namespace + ".test" );
    }
 
    @Test
@@ -374,7 +374,7 @@ class AspectModelUrnTest {
    }
 
    @Test
-   void validNamespaceTest() throws URISyntaxException  {
+   void validNamespaceTest() throws URISyntaxException {
       final URI validNamespaceUrnUnderscore = new URI( "urn:samm:org.eclipse.esmf_test:0.0.1#TestAspect" );
       final AspectModelUrn elementUrnWithUnderscore = AspectModelUrn.fromUrn( validNamespaceUrnUnderscore );
       assertThat( elementUrnWithUnderscore.getNamespace() ).isNotEmpty();
