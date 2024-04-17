@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
  */
 public class AspectModelUrn implements Comparable<AspectModelUrn> {
    public static final String NAMESPACE_REGEX = "[a-zA-Z][a-zA-Z0-9]{1,62}\\.[a-zA-Z0-9-]{1,63}(\\.[a-zA-Z0-9_-]{1,63})*";
+
+   public static final String NAMESPACE_REGEX_PART = "[a-zA-Z][a-zA-Z0-9]{1,62}(\\.[a-zA-Z0-9_-]{1,63})*";
    public static final Pattern NAMESPACE_PATTERN = Pattern.compile( NAMESPACE_REGEX );
    public static final String MODEL_ELEMENT_NAME_REGEX = "\\p{Alpha}\\p{Alnum}*";
    public static final String VERSION_REGEX = "^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$";
