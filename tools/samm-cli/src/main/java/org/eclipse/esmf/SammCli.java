@@ -90,7 +90,7 @@ public class SammCli extends AbstractCommand {
    public static void main( final String[] argv ) {
       // Check if the .exe was started from the desktop/explorer.
       // If yes, open a command prompt to continue working instead.
-      if ( new IsWindows().getAsBoolean() && System.console() == null ) {
+      if ( new IsWindows().getAsBoolean() && System.console() == null && argv.length == 0 ) {
          ProcessHandle.current().info().command().ifPresent( executable -> {
             try {
                Runtime.getRuntime().exec( "cmd /k " + executable + " help" );
