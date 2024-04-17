@@ -161,10 +161,4 @@ public class SammCli extends AbstractCommand {
       System.out.println( commandLine.getHelp().fullSynopsis() );
       System.out.println( format( "Run @|bold " + commandLine.getCommandName() + " help|@ for help." ) );
    }
-
-   void testProgrammaticConfiguration() {
-      final CommandLine.Model.CommandSpec spec = CommandLine.Model.CommandSpec.create();
-      spec.usageMessage().footer( "asdf" ).description( "asdf" );
-      spec.addOption( CommandLine.Model.OptionSpec.builder( "-c" ).type( int.class ).build() );
-   }
 }
