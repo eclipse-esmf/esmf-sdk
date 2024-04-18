@@ -12,6 +12,7 @@
  */
 package org.eclipse.esmf;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -92,11 +93,17 @@ public class SammCli extends AbstractCommand {
       // If yes, open a command prompt to continue working instead.
       if ( new IsWindows().getAsBoolean() && System.console() == null && argv.length == 0 ) {
          ProcessHandle.current().info().command().ifPresent( executable -> {
-            try {
-               Runtime.getRuntime().exec( "cmd /k start cmd /k " + executable + " help" );
-               System.exit( 0 );
-            } catch ( final IOException e ) {
-               // Ignore, continue as usual
+            // Only spawn terminals for native executable
+            if ( !executable.endsWith( "java.exe" ) ) {
+               try {
+                  final File exeFile = new File( executable );
+                  final String directory = exeFile.getParent();
+                  final String exeFileName = exeFile.getName();
+                  Runtime.getRuntime().exec( "cmd /k cd /d \"" + directory + "\" & start cmd /k " + exeFileName + " help" );
+                  System.exit( 0 );
+               } catch ( final Exception e ) {
+                  // Ignore, continue as usual
+               }
             }
          } );
       }
