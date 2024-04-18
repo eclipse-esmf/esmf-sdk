@@ -93,7 +93,7 @@ public class SammCli extends AbstractCommand {
       if ( new IsWindows().getAsBoolean() && System.console() == null && argv.length == 0 ) {
          ProcessHandle.current().info().command().ifPresent( executable -> {
             try {
-               Runtime.getRuntime().exec( "cmd /k " + executable + " help" );
+               Runtime.getRuntime().exec( "cmd /k start cmd /k " + executable + " help" );
                System.exit( 0 );
             } catch ( final IOException e ) {
                // Ignore, continue as usual
