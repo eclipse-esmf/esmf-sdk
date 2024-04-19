@@ -12,12 +12,14 @@
  */
 package org.eclipse.esmf;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 import org.eclipse.esmf.aas.AasCommand;
 import org.eclipse.esmf.aspect.AspectCommand;
+import org.eclipse.esmf.substitution.IsWindows;
 
 import org.fusesource.jansi.AnsiConsole;
 import picocli.CommandLine;
@@ -87,6 +89,25 @@ public class SammCli extends AbstractCommand {
    }
 
    public static void main( final String[] argv ) {
+      // Check if the .exe was started on Windows without arguments: Most likely opened from Explorer or Desktop.
+      // If yes, open a command prompt to continue working instead.
+      if ( new IsWindows().getAsBoolean() && argv.length == 0 ) {
+         ProcessHandle.current().info().command().ifPresent( executable -> {
+            // Only spawn terminals for native executable
+            if ( !executable.endsWith( "java.exe" ) ) {
+               try {
+                  final File exeFile = new File( executable );
+                  final String directory = exeFile.getParent();
+                  final String exeFileName = exeFile.getName();
+                  Runtime.getRuntime().exec( "cmd /k cd /d \"" + directory + "\" & start cmd /k " + exeFileName + " help" );
+                  System.exit( 0 );
+               } catch ( final Exception e ) {
+                  // Ignore, continue as usual
+               }
+            }
+         } );
+      }
+
       NativeImageHelpers.ensureRequiredEnvironment();
 
       // The disabling color switch needs to be checked before PicoCLI initialization
@@ -146,11 +167,5 @@ public class SammCli extends AbstractCommand {
       }
       System.out.println( commandLine.getHelp().fullSynopsis() );
       System.out.println( format( "Run @|bold " + commandLine.getCommandName() + " help|@ for help." ) );
-   }
-
-   void testProgrammaticConfiguration() {
-      final CommandLine.Model.CommandSpec spec = CommandLine.Model.CommandSpec.create();
-      spec.usageMessage().footer( "asdf" ).description( "asdf" );
-      spec.addOption( CommandLine.Model.OptionSpec.builder( "-c" ).type( int.class ).build() );
    }
 }

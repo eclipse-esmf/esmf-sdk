@@ -195,8 +195,6 @@ jobs:
           unset JAVA_TOOL_OPTIONS
           mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
           mvn -B verify -Pnative -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
-
-          echo "start cmd /k samm.exe help" > tools/samm-cli/target/start-samm-cli.bat
         shell: bash
 
       - name: Upload Windows binary
@@ -205,7 +203,6 @@ jobs:
           name: windows-artifacts
           path: |
             tools/samm-cli/target/samm.exe
-            tools/samm-cli/target/*.bat
             tools/samm-cli/target/*.dll
             tools/samm-cli/target/lib/
 
@@ -254,7 +251,7 @@ jobs:
       - name: Prepare release
         run: |
           # Create Windows CLI zip
-          zip -9 -r samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip samm.exe *.bat *.dll
+          zip -9 -r samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip samm.exe *.dll
 
       # Full release: Maven Central
       # The (apparently) only way to retrieve the staging profile id
