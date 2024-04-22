@@ -60,7 +60,8 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
 
    @CommandLine.Option( names = { "--json", "-j" },
          description = "Generate AsyncAPI JSON specification for an Aspect Model (when not given, YAML is generated as default format)" )
-   boolean generateJsonAsyncApiSpec = true;
+   private boolean generateJsonAsyncApiSpec = false;
+
    @CommandLine.Option( names = { "--separate-files", "-sf" },
          description = "Write separate files for the root document and referenced schemas." )
    private boolean writeSeparateFiles = false;
