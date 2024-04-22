@@ -88,10 +88,10 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    /**
-    * Creates a {@link AspectModelUrn} from a URN.
+    * Creates an instance from a URN.
     *
-    * @param urn the urn which will be parsed to create the {@link AspectModelUrn} instance
-    * @return {@link AspectModelUrn} containing the individual parts from the urn
+    * @param urn the urn which will be parsed to create the instance
+    * @return The AspectModelUrn instance
     * @throws UrnSyntaxException if {@code urn} is not valid
     */
    @SuppressWarnings( { "squid:S1166" } )
@@ -105,10 +105,10 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    /**
-    * Creates a {@link AspectModelUrn} from a URN.
+    * Creates an instance from a URN.
     *
-    * @param urn the urn which will be parsed to create the {@link AspectModelUrn} instance
-    * @return {@link AspectModelUrn} containing the individual parts from the urn
+    * @param urn the urn which will be parsed to create the instance
+    * @return the instance containing the individual parts from the urn
     * @throws UrnSyntaxException if {@code urn} is not valid
     */
    public static AspectModelUrn fromUrn( final URI urn ) {

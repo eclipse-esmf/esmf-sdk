@@ -19,12 +19,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammDataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMME;
@@ -58,12 +56,11 @@ import net.jqwik.api.Provide;
 import net.jqwik.api.Tuple;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.rdf.model.Resource;
 
 /**
  * Provides {@link Arbitrary}s for Aspect model elements.
  */
-public interface SammArbitraries extends UriArbitraries, XsdArbitraries {
+public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitraries, XsdArbitraries {
    SAMM samm( KnownVersion metaModelVersion );
 
    SAMMC sammc( KnownVersion metaModelVersion );
@@ -83,76 +80,27 @@ public interface SammArbitraries extends UriArbitraries, XsdArbitraries {
    }
 
    @Provide
-   default Arbitrary<String> anyModelElementVersion() {
-      final Arbitrary<Integer> major = Arbitraries.integers().greaterOrEqual( 0 );
-      final Arbitrary<Integer> minor = Arbitraries.integers().greaterOrEqual( 0 );
-      final Arbitrary<Integer> maintenance = Arbitraries.integers().greaterOrEqual( 0 );
-      return Combinators.combine( major, minor, maintenance )
-            .as( ( i1, i2, i3 ) -> String.format( "%d.%d.%d", i1, i2, i3 ) );
-   }
-
-   @Provide
-   default Arbitrary<String> anyNamespace() {
-      return anyHostname().map( hostname -> {
-         final String[] parts = hostname.split( "\\." );
-         return IntStream.range( 0, parts.length )
-               .mapToObj( index -> parts[parts.length - index - 1] )
-               .map( part -> part.replace( "-", "_" ) )
-               .collect( Collectors.joining( "." ) );
-      } );
-   }
-
-   @Provide
    default Arbitrary<String> anyUpperCaseElementName() {
-      return anyLowerCaseElementName().map( StringUtils::capitalize );
+      return anyModelElementName().map( StringUtils::capitalize );
+   }
+
+   private String decapitalize( final String string ) {
+      if ( string == null || string.isEmpty() ) {
+         return string;
+      }
+      final char[] c = string.toCharArray();
+      c[0] = Character.toLowerCase( c[0] );
+      return new String( c );
    }
 
    @Provide
    default Arbitrary<String> anyLowerCaseElementName() {
-      final Arbitrary<String> firstCharacter =
-            Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 1 ).alpha().map( String::toLowerCase );
-      final Arbitrary<String> rest = Arbitraries.strings().ofMinLength( 3 ).ofMaxLength( 10 ).alpha().numeric();
-      return Combinators.combine( firstCharacter, rest ).as( ( f, r ) -> String.format( "%s%s", f, r ) );
-   }
-
-   @Provide
-   default Arbitrary<AspectModelUrn> anyEntityUrnInMetaModelScope() {
-      return anyMetaModelVersion().flatMap( metaModelVersion ->
-            Arbitraries.of( samme( metaModelVersion ).allEntities()
-                  .map( Resource::getURI )
-                  .map( AspectModelUrn::fromUrn )
-                  .collect( Collectors.toList() ) ) );
-   }
-
-   @Provide
-   default Arbitrary<AspectModelUrn> anyCharacteristicUrnInMetaModelScope() {
-      return anyMetaModelVersion().flatMap( metaModelVersion ->
-            Arbitraries.of( sammc( metaModelVersion ).allCharacteristics()
-                  .map( Resource::getURI )
-                  .map( AspectModelUrn::fromUrn )
-                  .collect( Collectors.toList() ) ) );
+      return anyModelElementName().map( this::decapitalize );
    }
 
    @Provide
    default Arbitrary<String> anyPayloadName() {
       return Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 5 ).alpha().numeric().withChars( '_', '-' );
-   }
-
-   enum TopLevelElementType {
-      ASPECT_MODEL( ElementType.ASPECT_MODEL ),
-      ENTITY( ElementType.ENTITY ),
-      CHARACTERISTIC( ElementType.CHARACTERISTIC );
-
-      TopLevelElementType( final ElementType elementType ) {
-         this.elementType = elementType;
-      }
-
-      ElementType elementType;
-   }
-
-   @Provide
-   default Arbitrary<ElementType> anyTopLevelElementType() {
-      return Arbitraries.of( TopLevelElementType.values() ).map( type -> type.elementType );
    }
 
    @Provide
@@ -161,79 +109,33 @@ public interface SammArbitraries extends UriArbitraries, XsdArbitraries {
    }
 
    @Provide
-   default Arbitrary<AspectModelUrn> anyTopLevelElementUrnInItsOwnScope( final TopLevelElementType type ) {
-      return Combinators.combine( anyNamespace(), anyTopLevelElementName(), anyModelElementVersion() )
-            .as( ( namespace, entityName, version ) ->
-                  String.format( "urn:samm:%s:%s:%s:%s", namespace, type.elementType.getValue(), entityName, version ) )
-            .map( AspectModelUrn::fromUrn );
-   }
-
-   @Provide
-   default Arbitrary<AspectModelUrn> anyEntityUrnInItsOwnScope() {
-      return anyTopLevelElementUrnInItsOwnScope( TopLevelElementType.ENTITY );
-   }
-
-   @Provide
-   default Arbitrary<AspectModelUrn> anyCharacteristicUrnInItsOwnScope() {
-      return anyTopLevelElementUrnInItsOwnScope( TopLevelElementType.CHARACTERISTIC );
-   }
-
-   @Provide
    default Arbitrary<AspectModelUrn> anyAspectUrn() {
-      return anyTopLevelElementUrnInItsOwnScope( TopLevelElementType.ASPECT_MODEL );
+      return anyModelElementUrn().map( AspectModelUrn::fromUrn );
    }
 
    @Provide
    default Arbitrary<AspectModelUrn> anyPropertyUrn() {
-      return anyLowerCaseModelElementUrnInTopLevelElementScope();
+      return anyLowerCaseElementName().flatMap( this::anyModelElementUrnForElementName ).map( AspectModelUrn::fromUrn );
    }
 
    @Provide
    default Arbitrary<AspectModelUrn> anyOperationUrn() {
-      return anyLowerCaseModelElementUrnInTopLevelElementScope();
+      return anyLowerCaseElementName().flatMap( this::anyModelElementUrnForElementName ).map( AspectModelUrn::fromUrn );
    }
 
    @Provide
    default Arbitrary<AspectModelUrn> anyEventUrn() {
-      return anyUpperCaseModelElementUrnInTopLevelElementScope();
+      return anyLowerCaseElementName().flatMap( this::anyModelElementUrnForElementName ).map( AspectModelUrn::fromUrn );
    }
 
    @Provide
    default Arbitrary<AspectModelUrn> anyCharacteristicUrn() {
-      return Arbitraries.oneOf(
-            anyCharacteristicUrnInMetaModelScope(),
-            anyUpperCaseModelElementUrnInTopLevelElementScope(),
-            anyCharacteristicUrnInItsOwnScope() );
+      return anyUpperCaseElementName().flatMap( this::anyModelElementUrnForElementName ).map( AspectModelUrn::fromUrn );
    }
 
    @Provide
    default Arbitrary<AspectModelUrn> anyEntityUrn() {
-      return Arbitraries.oneOf(
-            anyEntityUrnInMetaModelScope(),
-            anyUpperCaseModelElementUrnInTopLevelElementScope(),
-            anyEntityUrnInItsOwnScope() );
-   }
-
-   @Provide
-   default Arbitrary<AspectModelUrn> anyModelElementUrnInTopLevelElementScope(
-         final Arbitrary<String> anyElementName ) {
-      return Combinators
-            .combine( anyNamespace(), anyTopLevelElementType(), anyTopLevelElementName(),
-                  anyModelElementVersion(), anyElementName )
-            .as( ( namespace, containingElementType, containingElementName, version, elementName ) ->
-                  String.format( "urn:samm:%s:%s:%s:%s#%s", namespace, containingElementType.getValue(), containingElementName, version,
-                        elementName ) )
-            .map( AspectModelUrn::fromUrn );
-   }
-
-   @Provide
-   default Arbitrary<AspectModelUrn> anyLowerCaseModelElementUrnInTopLevelElementScope() {
-      return anyModelElementUrnInTopLevelElementScope( anyLowerCaseElementName() );
-   }
-
-   @Provide
-   default Arbitrary<AspectModelUrn> anyUpperCaseModelElementUrnInTopLevelElementScope() {
-      return anyModelElementUrnInTopLevelElementScope( anyUpperCaseElementName() );
+      return anyUpperCaseElementName().flatMap( this::anyModelElementUrnForElementName ).map( AspectModelUrn::fromUrn );
    }
 
    @Provide
@@ -310,8 +212,7 @@ public interface SammArbitraries extends UriArbitraries, XsdArbitraries {
 
    @Provide
    default Arbitrary<Property> anyProperty() {
-      return Combinators
-            .combine( anyMetaModelVersion(), anyPropertyUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
+      return Combinators.combine( anyMetaModelVersion(), anyPropertyUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
                   anyCharacteristic(), anyPayloadName() )
             .as( ( metaModelVersion, propertyUrn, preferredNames, descriptions, see, characteristic, payloadName ) -> {
                final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
@@ -324,8 +225,7 @@ public interface SammArbitraries extends UriArbitraries, XsdArbitraries {
 
    @Provide
    default Arbitrary<Entity> anyEntity() {
-      return Combinators
-            .combine( anyMetaModelVersion(), anyEntityUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
+      return Combinators.combine( anyMetaModelVersion(), anyEntityUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
                   anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ) )
             .as( ( metaModelVersion, entityUrn, preferredNames, descriptions, see, properties ) -> {
                final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(

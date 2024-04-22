@@ -22,13 +22,12 @@ import net.jqwik.api.Provide;
  * Provides {@link Arbitrary}s for URI/URL/URN-related values.
  */
 public interface UriArbitraries {
-
    @Provide
    default Arbitrary<String> anyIpV4Address() {
       final Arbitrary<Integer> numericPart = Arbitraries.integers().between( 0, 255 );
       return Combinators.combine( numericPart, numericPart, numericPart, numericPart )
-                        .as( ( part1, part2, part3, part4 ) ->
-                              String.format( "%d.%d.%d.%d", part1, part2, part3, part3 ) );
+            .as( ( part1, part2, part3, part4 ) ->
+                  String.format( "%d.%d.%d.%d", part1, part2, part3, part3 ) );
    }
 
    @Provide
@@ -44,8 +43,8 @@ public interface UriArbitraries {
    @Provide
    default Arbitrary<String> anyHostname() {
       final Arbitrary<String> anyPart = Arbitraries.strings().alpha().withChars( '-' )
-                                                   .ofMinLength( 3 ).ofMaxLength( 8 )
-                                                   .filter( part -> !part.startsWith( "-" ) && !part.endsWith( "-" ) );
+            .ofMinLength( 3 ).ofMaxLength( 8 )
+            .filter( part -> !part.startsWith( "-" ) && !part.endsWith( "-" ) );
       return anyPart.list().ofMinSize( 1 ).ofMaxSize( 4 ).map( list -> String.join( ".", list ) );
    }
 
@@ -56,27 +55,27 @@ public interface UriArbitraries {
 
    @Provide
    default Arbitrary<String> anyUrlScheme() {
-      return Arbitraries.of( "http", "https" );
+      return Arbitraries.of( "http", "https", "file" );
    }
 
    @Provide
    default Arbitrary<String> anyUrlPath() {
       return Arbitraries.strings().alpha().numeric().ofMinLength( 1 ).ofMaxLength( 5 )
-                        .map( part -> '/' + part ).list().ofMinSize( 0 ).ofMaxSize( 5 )
-                        .map( partsList -> String.join( "", partsList ) );
+            .map( part -> '/' + part ).list().ofMinSize( 0 ).ofMaxSize( 5 )
+            .map( partsList -> String.join( "", partsList ) );
    }
 
    @Provide
    default Arbitrary<String> anyUrlFragment() {
       return Arbitraries.strings().alpha().numeric().withChars( '-', '_' ).ofMinLength( 0 )
-                        .ofMaxLength( 5 ).map( anchor -> !anchor.isEmpty() ? '#' + anchor : anchor );
+            .ofMaxLength( 5 ).map( anchor -> !anchor.isEmpty() ? '#' + anchor : anchor );
    }
 
    @Provide
    default Arbitrary<String> anyUrl() {
       return Combinators.combine( anyUrlScheme(), anyHost(), anyUrlPath(), anyUrlFragment() )
-                        .as( ( protocol, hostname, path, fragment ) ->
-                              String.format( "%s://%s%s%s", protocol, hostname, path, fragment ) );
+            .as( ( protocol, hostname, path, fragment ) ->
+                  String.format( "%s://%s%s%s", protocol, hostname, path, fragment ) );
    }
 
    @Provide
@@ -84,7 +83,7 @@ public interface UriArbitraries {
       final Arbitrary<String> anyIdentifier = Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 5 ).alpha();
       final Arbitrary<String> anySpecificPart = Arbitraries.strings();
       return Combinators.combine( anyIdentifier, anySpecificPart )
-                        .as( ( identifier, specificPart ) -> String.format( "urn:%s:%s", identifier, specificPart ) );
+            .as( ( identifier, specificPart ) -> String.format( "urn:%s:%s", identifier, specificPart ) );
    }
 
    @Provide

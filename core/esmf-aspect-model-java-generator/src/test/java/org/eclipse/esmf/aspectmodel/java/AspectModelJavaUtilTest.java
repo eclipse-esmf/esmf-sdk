@@ -25,7 +25,7 @@ import net.jqwik.api.Tuple;
 
 public class AspectModelJavaUtilTest extends PropertyBasedTest {
    private boolean isValidJavaIdentifier( final String value ) {
-      if ( value == null || value.length() == 0 ) {
+      if ( value == null || value.isEmpty() ) {
          return false;
       }
       final boolean firstCharacterValid = Character.isJavaIdentifierStart( value.charAt( 0 ) );
