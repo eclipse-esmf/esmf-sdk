@@ -28,9 +28,9 @@ jobs:
           fail_on_error: true
 
       - name: Setup JDK
-        uses: graalvm/setup-graalvm@b8dc5fccfbc65b21dd26e8341e7b21c86547f61b # v1
+        uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
         with:
-          java-version: '17.0.8'
+          java-version: '17.0.10'
           distribution: 'graalvm'
           components: 'native-image,js'
           github-token: ${{ secrets.GITHUB_TOKEN }}
