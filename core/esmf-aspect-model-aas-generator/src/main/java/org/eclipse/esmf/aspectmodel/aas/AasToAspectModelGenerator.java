@@ -175,7 +175,7 @@ public class AasToAspectModelGenerator {
    }
 
    protected String escapeUrnNamespacePart( final String namespacePart ) {
-      if ( namespacePart.matches( AspectModelUrn.NAMESPACE_REGEX ) ) {
+      if ( namespacePart.matches( AspectModelUrn.NAMESPACE_REGEX_PART ) ) {
          return namespacePart;
       }
       throw new AspectModelGenerationException( "Encountered URI with invalid namespace part: " + namespacePart );

@@ -20,7 +20,11 @@
     {"pattern":"\\Qorg/apache/batik/bridge/resources/help.gif\\E"},
     {"pattern":"\\Qorg/apache/batik/util/resources/XMLResourceDescriptor.properties\\E"},
     {"pattern":"\\Qorg/slf4j/impl/StaticLoggerBinder.class\\E"},
-    {"pattern":"\\Qfontconfig.bfc\\E"}
+    {"pattern":"\\Qfontconfig.bfc\\E"},
+    {"pattern":"\\Qopenapi/*.json\\E"},
+    {"pattern":"\\Qdocu/static/*.*\\E"},
+    {"pattern":"\\Qdocu/styles/*.*\\E"},
+    {"pattern":"\\Qdocu/aspect-model.properties\\E"}
   ],
     "bundles":[
       {"name":"org.apache.jena.ext.xerces.impl.xpath.regex.message"},

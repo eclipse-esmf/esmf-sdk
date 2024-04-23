@@ -761,8 +761,8 @@ public class SammCliTest extends MetaModelVersions {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
-      assertThat( result.stdout() ).contains( "\"asyncapi\" : \"3.0.0\"," );
-      assertThat( result.stdout() ).contains( "\"id\" : \"\"," );
+      assertThat( result.stdout() ).contains( "asyncapi: 3.0.0" );
+      assertThat( result.stdout() ).contains( "id:" );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -771,8 +771,8 @@ public class SammCliTest extends MetaModelVersions {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi", "-ai", "test:serve" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
-      assertThat( result.stdout() ).contains( "\"asyncapi\" : \"3.0.0\"," );
-      assertThat( result.stdout() ).contains( "\"id\" : \"test:serve\"," );
+      assertThat( result.stdout() ).contains( "asyncapi: 3.0.0" );
+      assertThat( result.stdout() ).contains( "id: test:serve" );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -781,8 +781,8 @@ public class SammCliTest extends MetaModelVersions {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
-      assertThat( result.stdout() ).contains( "\"asyncapi\" : \"3.0.0\"," );
-      assertThat( result.stdout() ).contains( "\"address\" : \"/org.eclipse.esmf.test/1.0.0/AspectWithEntity\"," );
+      assertThat( result.stdout() ).contains( "asyncapi: 3.0.0" );
+      assertThat( result.stdout() ).contains( "address: /org.eclipse.esmf.test/1.0.0/AspectWithEntity" );
       assertThat( result.stderr() ).isEmpty();
    }
 
@@ -792,16 +792,16 @@ public class SammCliTest extends MetaModelVersions {
             "-ca", "test/address/aspect/1.0.0/TestAspect" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
-      assertThat( result.stdout() ).contains( "\"asyncapi\" : \"3.0.0\"," );
-      assertThat( result.stdout() ).contains( "\"address\" : \"test/address/aspect/1.0.0/TestAspect\"," );
+      assertThat( result.stdout() ).contains( "asyncapi: 3.0.0" );
+      assertThat( result.stdout() ).contains( "address: test/address/aspect/1.0.0/TestAspect" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
    public void testAspectToAsyncapiWithOutputParam() {
       final File outputAsyncApiSpecFile = outputFile( testModel.getName() + ".json" );
-      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi", "-ai", "test:serve",
-            "-ca", "test/address/aspect/1.0.0/TestAspect", "-o", outputAsyncApiSpecFile.getAbsolutePath() );
+      final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi", "--json", "-ai",
+            "test:serve", "-ca", "test/address/aspect/1.0.0/TestAspect", "-o", outputAsyncApiSpecFile.getAbsolutePath() );
       assertThat( result.exitStatus() ).isZero();
       assertThat( outputAsyncApiSpecFile ).exists();
       assertThat( result.stdout() ).isEmpty();
@@ -812,9 +812,8 @@ public class SammCliTest extends MetaModelVersions {
    public void testAspectToAsyncApiWithSeparateJsonFiles() {
       final TestAspect testAspect = TestAspect.ASPECT_WITH_EVENT;
       final String inputFile = inputFile( testAspect ).getAbsolutePath();
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile, "to", "asyncapi", "-ai",
-            "test:serve",
-            "-ca", "test/address/aspect/1.0.0/TestAspect", "--separate-files", "--output", outputDirectory.toString() );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile, "to", "asyncapi", "--json", "-ai",
+            "test:serve", "-ca", "test/address/aspect/1.0.0/TestAspect", "--separate-files", "--output", outputDirectory.toString() );
 
       assertThat( outputDirectory.resolve( testAspect.getName() + ".aai.json" ) ).exists();
       assertThat( outputDirectory.resolve( "SomeEvent.json" ) ).exists();
@@ -924,7 +923,7 @@ public class SammCliTest extends MetaModelVersions {
     */
    private File inputFile( final TestModel testModel ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
-      final boolean isValid = !(testModel instanceof InvalidTestAspect);
+      final boolean isValid = !( testModel instanceof InvalidTestAspect );
       final String resourcePath = String.format(
             "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
             System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", metaModelVersion.toString().toLowerCase(),
@@ -976,8 +975,8 @@ public class SammCliTest extends MetaModelVersions {
       // are not resolved to the file system but to the jar)
       try {
          final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + (OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh") ).getCanonicalPath();
+               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
+                     ? ".bat" : ".sh" ) ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
          return resolverScript + " " + modelsRoot + " " + metaModelVersion;

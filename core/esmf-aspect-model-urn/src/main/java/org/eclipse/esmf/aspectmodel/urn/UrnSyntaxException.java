@@ -21,7 +21,7 @@ public class UrnSyntaxException extends RuntimeException {
 
    public static final String URN_IS_NULL_MESSAGE = "The URN may not be null.";
    public static final String URN_IS_MISSING_SECTIONS_MESSAGE = "The URN must consist of at least 5 sections adhering to the following "
-         + "schema: urn:samm:<organisation>:<optional>:<version>:<model-name>.";
+         + "schema: urn:samm:<organisation>:<optional>:<version>#<element-name>.";
    public static final String URN_IS_TOO_LONG = "The length of the URN is limited to {0} characters";
    public static final String URN_INVALID_PROTOCOL_MESSAGE = "The protocol must be equal to {0}.";
    public static final String URN_INVALID_NAMESPACE_IDENTIFIER_MESSAGE = "The namespace identifier must be equal to {0}.";

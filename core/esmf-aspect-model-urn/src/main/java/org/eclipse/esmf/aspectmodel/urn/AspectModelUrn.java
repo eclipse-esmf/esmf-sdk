@@ -34,7 +34,9 @@ import org.slf4j.LoggerFactory;
  * @see <a href="https://eclipse-esmf.github.io/samm-specification/2.0.0/namespaces.html">Definition of the URN</a>
  */
 public class AspectModelUrn implements Comparable<AspectModelUrn> {
-   public static final String NAMESPACE_REGEX = "([a-zA-Z0-9()+,\\-.:=@;$_!*']|%[0-9a-fA-F]{2})+";
+   public static final String NAMESPACE_REGEX = "[a-zA-Z][a-zA-Z0-9]{1,62}\\.[a-zA-Z0-9-]{1,63}(\\.[a-zA-Z0-9_-]{1,63})*";
+
+   public static final String NAMESPACE_REGEX_PART = "[a-zA-Z][a-zA-Z0-9]{1,62}(\\.[a-zA-Z0-9_-]{1,63})*";
    public static final Pattern NAMESPACE_PATTERN = Pattern.compile( NAMESPACE_REGEX );
    public static final String MODEL_ELEMENT_NAME_REGEX = "\\p{Alpha}\\p{Alnum}*";
    public static final String VERSION_REGEX = "^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$";
@@ -86,10 +88,10 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    /**
-    * Creates a {@link AspectModelUrn} from a URN.
+    * Creates an instance from a URN.
     *
-    * @param urn the urn which will be parsed to create the {@link AspectModelUrn} instance
-    * @return {@link AspectModelUrn} containing the individual parts from the urn
+    * @param urn the urn which will be parsed to create the instance
+    * @return The AspectModelUrn instance
     * @throws UrnSyntaxException if {@code urn} is not valid
     */
    @SuppressWarnings( { "squid:S1166" } )
@@ -103,10 +105,10 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    /**
-    * Creates a {@link AspectModelUrn} from a URN.
+    * Creates an instance from a URN.
     *
-    * @param urn the urn which will be parsed to create the {@link AspectModelUrn} instance
-    * @return {@link AspectModelUrn} containing the individual parts from the urn
+    * @param urn the urn which will be parsed to create the instance
+    * @return the instance containing the individual parts from the urn
     * @throws UrnSyntaxException if {@code urn} is not valid
     */
    public static AspectModelUrn fromUrn( final URI urn ) {
