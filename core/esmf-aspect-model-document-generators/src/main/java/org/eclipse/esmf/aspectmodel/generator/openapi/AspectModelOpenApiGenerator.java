@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
@@ -536,7 +537,7 @@ public class AspectModelOpenApiGenerator
       if ( config.includeQueryApi() ) {
          final ObjectNode includeQueryPathNode = FACTORY.objectNode();
          includeQueryPathNode.set( FIELD_POST,
-               merge( getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ) ,
+               merge( getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ),
                      queriesTemplate, FIELD_POST ) );
          endpointPathsNode.set( config.baseUrl() + String.format( QUERY_SERVER_PATH, apiVersion ) + finalResourcePath,
                includeQueryPathNode );

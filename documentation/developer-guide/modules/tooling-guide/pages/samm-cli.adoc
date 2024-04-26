@@ -223,7 +223,71 @@ Definitions of the parameters must correspond to the specification of the OpenAP
 A template can be used for more specific customization - parameter `--template-file`.
 The template is a document in the OpenAPI format, with one crucial difference - the presence of a templated Paths Object `paths.$$__DEFAULT_QUERIES_TEMPLATE__$$`.
 All values not defined by the generator will be taken from the template.
-For generator-defined aspect model resources, the values can be taken from the corresponding _Operation Object_ template `paths.$$__DEFAULT_QUERIES_TEMPLATE__$$`.
+For generator-defined Aspect Model resources, the values can be taken from the corresponding _Operation Object_ template `paths.$$__DEFAULT_QUERIES_TEMPLATE__$$`.
+
+For example, the template file could look like this:
+
+[source,yaml]
+----
+info:
+  termsOfService: 'https://example.com/terms-of-service'
+
+servers:
+  - url: https://{environment}.example.com/api/v1
+    variables:
+      environment:
+        default: api
+        enum:
+          - api
+          - sandbox-api
+
+components:
+    responses:
+      InternalServerError:
+        description: An error occurred while processing the request.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  /status:
+    get:
+      tags:
+        - Maintenance
+      operationId: getHealthStatus
+      description: Check the health status of the service.
+      responses:
+        "200":
+          description: The service is up and running.
+        "503":
+            description: The service is down.
+
+  __DEFAULT_QUERIES_TEMPLATE__:
+    get:
+      parameters:
+        - name: request-id
+          in: header
+          description: The unique identifier for the request. If it isn't provided, it will be auto-generated.
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      parameters:
+        - name: request-id
+          in: header
+          description: The unique identifier for the request. If it isn't provided, it will be auto-generated.
+          required: false
+          schema:
+            type: string
+            format: uuid
+
+
+----
 
 The full command for the native executable samm-cli would be:
 [source,shell,subs="attributes+,+quotes"]
@@ -236,6 +300,38 @@ For the Java version of samm-cli, the full command would result in:
 [source,shell,subs="attributes+,+quotes"]
 ----
 java -jar samm-cli-{esmf-sdk-version}.jar aspect _AspectModel.ttl_ to openapi -b "https://www.example.org" -r "/resources/\{resourceId}" -p _fileLocation_
+----
+
+=== Configuration of security schemas
+
+For example, to configure OAuth2 authentication the template could look like this:
+
+[source,yaml]
+----
+security:
+  - OAuth2:
+      - read:aspects
+
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://{environment}.example.com/oauth2/authorize
+          tokenUrl: https://{environment}.example.com/oauth2/token
+          scopes:
+            read:aspects: Read access to aspects
+            write:aspects: Write access to aspects
+
+paths:
+  __DEFAULT_QUERIES_TEMPLATE__:
+    post:
+      security:
+        - OAuth2:
+            - read:aspects
+            - write:aspects
+
 ----
 
 === Mapping between the Aspect Models and the OpenAPI Specification
