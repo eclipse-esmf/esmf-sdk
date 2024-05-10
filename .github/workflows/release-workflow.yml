@@ -244,14 +244,48 @@ jobs:
           name: linux-artifacts
 
       - name: Fetch Windows Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-artifacts
-
-      - name: Prepare release
+      # Sign SAML-CLI Windows executable
+      - name: Get Artifact ID (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
         run: |
-          # Create Windows CLI zip
-          zip -9 -r samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip samm.exe *.dll
+          # Get the list of artifacts for the specified workflow run
+          response=$(curl -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${{ github.repository_owner }}/$(echo '${{ github.repository }}' | cut -d'/' -f2)/actions/runs/${{ github.run_id }}/artifacts")
+
+          # Filter out the ID of the artifact with a name that contains "windows"
+          artifact_id=$(echo "$response" | jq -r '.artifacts[] | select(.name | contains("windows-artifacts")) | .id')
+
+          # Save the artifact ID in an environment variable
+          echo "ARTIFACT_ID=$artifact_id" >> $GITHUB_ENV
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit Artifact url and version changes and push to pre release branch for jenkins (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          ARTIFACT_URL_WIN="https://api.github.com/repos/eclipse-esmf/esmf-sdk/actions/artifacts/$ARTIFACT_ID/zip"
+          BRANCH_NAME="pre_release_configuration"
+
+          echo "artifact_url_win=$ARTIFACT_URL_WIN" > parameters.txt
+          echo "version=${{ github.event.inputs.release_version }}" >> parameters.txt
+
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          git checkout -b $BRANCH_NAME
+          git add parameters.txt
+          git commit -m "Add parameters.txt with artifact_url_win and version"
+          git push origin $BRANCH_NAME
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger Jenkins Job, for signing executable
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          DATA='{"repository": {"url": "https://github.com/eclipse-esmf/esmf-sdk", "html_url": "https://github.com/eclipse-esmf/esmf-sdk", "owner": { "name": "ESMF"}}, "pusher": { "name": "GitHub Action", "email": "esmf-dev@eclipse.org"}}'
+          SHA1="$(echo -n "${DATA}" | openssl dgst -sha1 -hmac "${WEBHOOK_SECRET}" | sed 's/SHA1(stdin)= //')"
+          curl -X POST https://ci.eclipse.org/esmf/github-webhook/ -H "Content-Type: application/json" -H "X-GitHub-Event: push" -H "X-Hub-Signature: sha1=${SHA1}" -d "${DATA}"
 
       # Full release: Maven Central
       # The (apparently) only way to retrieve the staging profile id
@@ -293,11 +327,11 @@ jobs:
       - name: Commit version changes and push to upstream repository
         uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d # v5
         with:
-           branch: ${{ env.release_branch_name }}
-           commit_user_name: github-actions
-           commit_user_email: github-actions@github.com
-           commit_author: Author <actions@github.com>
-           file_pattern: 'documentation/developer-guide/antora.yml pom.xml */pom.xml */*/pom.xml'
+          branch: ${{ env.release_branch_name }}
+          commit_user_name: github-actions
+          commit_user_email: github-actions@github.com
+          commit_author: Author <actions@github.com>
+          file_pattern: 'documentation/developer-guide/antora.yml pom.xml */pom.xml */*/pom.xml'
 
       # Full release: Github
       - name: "Create Github release (full)"
@@ -310,7 +344,6 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip
             samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
             samm-cli-*.jar
         env:
@@ -374,7 +407,6 @@ jobs:
           draft: false
           prerelease: true
           files: |
-            samm-cli-${{ github.event.inputs.release_version }}-windows-x86_64.zip
             samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
             samm-cli-*.jar
         env:
