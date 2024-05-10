@@ -87,7 +87,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
-   public void testGeneration( final TestAspect testAspect ) throws IOException {
+   void testGeneration( final TestAspect testAspect ) throws IOException {
       final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( false )
@@ -108,7 +108,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       for ( final Iterator<Map.Entry<String, JsonNode>> it = json.get( "components" ).get( "schemas" ).fields(); it.hasNext(); ) {
          final Map.Entry<String, JsonNode> schema = it.next();
          final Path keyForSchemaName = Path.of( schema.getKey() + ".json" );
-         assertThat( jsonMap.keySet() ).contains( keyForSchemaName );
+         assertThat( jsonMap ).containsKey( keyForSchemaName );
       }
       final JsonNode rootDocument = jsonMap.get( Path.of( aspect.getName() + ".oai.json" ) );
       assertThat( Streams.stream( rootDocument.get( "components" ).fieldNames() ).toList() ).doesNotContain( "schemas" );
@@ -119,7 +119,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       for ( final Iterator<Map.Entry<String, JsonNode>> it = json.get( "components" ).get( "schemas" ).fields(); it.hasNext(); ) {
          final Map.Entry<String, JsonNode> schema = it.next();
          final Path keyForSchemaName = Path.of( schema.getKey() + ".yaml" );
-         assertThat( yamlMap.keySet() ).contains( keyForSchemaName );
+         assertThat( yamlMap ).containsKey( keyForSchemaName );
       }
    }
 
@@ -136,7 +136,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testUseSemanticVersion( final KnownVersion metaModelVersion ) {
+   void testUseSemanticVersion( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_PROPERTY, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -157,7 +157,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testIncludeQueryApiWithSemanticVersion( final KnownVersion metaModelVersion ) {
+   void testIncludeQueryApiWithSemanticVersion( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -174,7 +174,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testDefaultResourcePath( final KnownVersion metaModelVersion ) {
+   void testDefaultResourcePath( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -191,7 +191,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testInvalidResourcePath( final KnownVersion metaModelVersion ) {
+   void testInvalidResourcePath( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -205,7 +205,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testWithValidResourcePath( final KnownVersion metaModelVersion ) {
+   void testWithValidResourcePath( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -223,7 +223,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testInvalidJsonParameter( final KnownVersion metaModelVersion ) {
+   void testInvalidJsonParameter( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -238,7 +238,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testValidParameter( final KnownVersion metaModelVersion ) throws IOException {
+   void testValidParameter( final KnownVersion metaModelVersion ) throws IOException {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -248,11 +248,11 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .build();
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
-      assertThat( result.getMessages().size() ).isZero();
+      assertThat( result.getMessages() ).isEmpty();
 
       final OpenAPI openApi = result.getOpenAPI();
       assertThat( openApi.getPaths() ).hasSize( 1 );
-      assertThat( openApi.getPaths().keySet() ).contains( "/my-test-aspect/{test-Id}" );
+      assertThat( openApi.getPaths() ).containsKey( "/my-test-aspect/{test-Id}" );
       openApi.getPaths().forEach( ( key, value ) -> {
          final List<String> params = value.getGet().getParameters().stream().map( Parameter::getName )
                .collect( Collectors.toList() );
@@ -263,7 +263,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testInValidParameterName( final KnownVersion metaModelVersion ) throws IOException {
+   void testInValidParameterName( final KnownVersion metaModelVersion ) throws IOException {
       final ListAppender<ILoggingEvent> logAppender = new ListAppender<>();
       final Logger logger = (Logger) LoggerFactory.getLogger( AspectModelOpenApiGenerator.class );
       logger.addAppender( logAppender );
@@ -288,7 +288,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testYamlGenerator( final KnownVersion metaModelVersion ) throws IOException {
+   void testYamlGenerator( final KnownVersion metaModelVersion ) throws IOException {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       final YAMLMapper yamlMapper = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
       final OpenApiSchemaGenerationConfig yamlConfig = OpenApiSchemaGenerationConfigBuilder.builder()
@@ -312,7 +312,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testHasQuerySchema( final KnownVersion metaModelVersion ) {
+   void testHasQuerySchema( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -323,13 +323,13 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
-      assertThat( openApi.getComponents().getSchemas().keySet() ).contains( "Filter" );
-      assertThat( openApi.getComponents().getRequestBodies().keySet() ).contains( "Filter" );
+      assertThat( openApi.getComponents().getSchemas() ).containsKey( "Filter" );
+      assertThat( openApi.getComponents().getRequestBodies() ).containsKey( "Filter" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testHasNoQuerySchema( final KnownVersion metaModelVersion ) {
+   void testHasNoQuerySchema( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -345,7 +345,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testHasPagingWithChosenPaging( final KnownVersion metaModelVersion ) {
+   void testHasPagingWithChosenPaging( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -355,7 +355,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
-      assertThat( openApi.getPaths().keySet() ).contains( "/{tenant-id}/aspect-with-collection" );
+      assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo( "start" );
@@ -371,7 +371,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testHasPagingWithoutChosenPaging( final KnownVersion metaModelVersion ) {
+   void testHasPagingWithoutChosenPaging( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_TIME_SERIES, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -380,7 +380,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
-      assertThat( openApi.getPaths().keySet() ).contains( "/{tenant-id}/aspect-with-time-series" );
+      assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-time-series" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo( "since" );
@@ -394,7 +394,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testHasPagingWitChosenCursorBasedPaging( final KnownVersion metaModelVersion ) {
+   void testHasPagingWitChosenCursorBasedPaging( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -404,7 +404,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
-      assertThat( openApi.getPaths().keySet() ).contains( "/{tenant-id}/aspect-with-collection" );
+      assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
@@ -425,7 +425,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testHasPagingWithWithDefaultChosenPaging( final KnownVersion metaModelVersion ) {
+   void testHasPagingWithWithDefaultChosenPaging( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -434,7 +434,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
-      assertThat( openApi.getPaths().keySet() ).contains( "/{tenant-id}/aspect-with-collection" );
+      assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo( "start" );
@@ -449,7 +449,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testHasNoPagination( final KnownVersion metaModelVersion ) throws ProcessingException {
+   void testHasNoPagination( final KnownVersion metaModelVersion ) throws ProcessingException {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -459,7 +459,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
-      assertThat( openApi.getPaths().keySet() ).contains( "/{tenant-id}/aspect-with-collection" );
+      assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses()
             .get( "200" ).get$ref() ).isEqualTo( "#/components/responses/AspectWithCollection" );
       assertThat( openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent()
@@ -468,7 +468,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectWithOperation( final KnownVersion metaModelVersion ) throws ProcessingException {
+   void testAspectWithOperation( final KnownVersion metaModelVersion ) throws ProcessingException {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_OPERATION, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -485,13 +485,13 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "testOperationResponse" );
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "testOperationTwo" );
       assertThat( openApi.getComponents().getSchemas() ).containsKey( "testOperationTwoResponse" );
-      assertThat( openApi.getComponents().getSchemas().get( "Operation" ).getOneOf().size() ).isEqualTo( 2 );
-      assertThat( openApi.getComponents().getSchemas().get( "OperationResponse" ).getOneOf().size() ).isEqualTo( 2 );
+      assertThat( openApi.getComponents().getSchemas().get( "Operation" ).getOneOf() ).hasSize( 2 );
+      assertThat( openApi.getComponents().getSchemas().get( "OperationResponse" ).getOneOf() ).hasSize( 2 );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectWithOperationWithSeeAttribute( final KnownVersion metaModelVersion ) {
+   void testAspectWithOperationWithSeeAttribute( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_OPERATION_WITH_SEE_ATTRIBUTE, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -502,16 +502,16 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat(
-            ( (Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
-                  .get( 1 ) ).getProperties() ).doesNotContainKey(
+            ((Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
+                  .get( 1 )).getProperties() ).doesNotContainKey(
             "params" );
-      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
-            .get( 1 ) ).getProperties() ).doesNotContainKey( "params" );
+      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
+            .get( 1 )).getProperties() ).doesNotContainKey( "params" );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
-   public void testAspectWithCommentForSeeAttributes( final KnownVersion metaModelVersion ) {
+   void testAspectWithCommentForSeeAttributes( final KnownVersion metaModelVersion ) {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -527,8 +527,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getSpecVersion() ).isEqualTo( SpecVersion.V31 );
       assertThat( openApi.getComponents().getSchemas().get( "AspectWithCollection" ).get$comment() ).isEqualTo(
             "See: http://example.com/" );
-      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
-            .get( "testProperty" ) ).get$comment() )
+      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
+            .get( "testProperty" )).get$comment() )
             .isEqualTo( "See: http://example.com/, http://example.com/me" );
       assertThat( openApi.getComponents().getSchemas().get( "TestCollection" ).get$comment() )
             .isEqualTo( "See: http://example.com/" );
@@ -593,9 +593,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
                      .forEach( operation -> validateSuccessfulResponse( aspect.getName(), operation ) );
             } );
 
-      assertThat( openApi.getComponents().getSchemas().keySet() ).contains( aspect.getName() );
-      assertThat( openApi.getComponents().getResponses().keySet() ).contains( aspect.getName() );
-      assertThat( openApi.getComponents().getRequestBodies().keySet() ).contains( aspect.getName() );
+      assertThat( openApi.getComponents().getSchemas() ).containsKey( aspect.getName() );
+      assertThat( openApi.getComponents().getResponses() ).containsKey( aspect.getName() );
+      assertThat( openApi.getComponents().getRequestBodies() ).containsKey( aspect.getName() );
       assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
             .get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
       assertThat(
@@ -641,11 +641,11 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
    }
 
    private void validateOperation( final OpenAPI openApi ) {
-      assertThat( openApi.getComponents().getSchemas().keySet() ).contains( "JsonRpc" );
-      assertThat( openApi.getComponents().getSchemas().keySet() ).contains( "Operation" );
-      assertThat( openApi.getComponents().getSchemas().keySet() ).contains( "OperationResponse" );
-      assertThat( openApi.getComponents().getResponses().keySet() ).contains( "OperationResponse" );
-      assertThat( openApi.getComponents().getRequestBodies().keySet() ).contains( "Operation" );
+      assertThat( openApi.getComponents().getSchemas() ).containsKey( "JsonRpc" );
+      assertThat( openApi.getComponents().getSchemas() ).containsKey( "Operation" );
+      assertThat( openApi.getComponents().getSchemas() ).containsKey( "OperationResponse" );
+      assertThat( openApi.getComponents().getResponses() ).containsKey( "OperationResponse" );
+      assertThat( openApi.getComponents().getRequestBodies() ).containsKey( "Operation" );
    }
 
    private void validateYaml( final Aspect aspect ) {

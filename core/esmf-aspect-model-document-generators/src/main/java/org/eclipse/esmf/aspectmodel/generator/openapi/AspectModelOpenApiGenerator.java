@@ -120,9 +120,9 @@ public class AspectModelOpenApiGenerator
          final ObjectNode rootNode = getRootJsonNode( config.generateCommentForSeeAttributes() );
          final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );
 
-         ( (ObjectNode) rootNode.get( "info" ) ).put( "title", aspect.getPreferredName( config.locale() ) );
-         ( (ObjectNode) rootNode.get( "info" ) ).put( "version", apiVersion );
-         ( (ObjectNode) rootNode.get( "info" ) ).put( AspectModelJsonSchemaVisitor.SAMM_EXTENSION,
+         ((ObjectNode) rootNode.get( "info" )).put( "title", aspect.getPreferredName( config.locale() ) );
+         ((ObjectNode) rootNode.get( "info" )).put( "version", apiVersion );
+         ((ObjectNode) rootNode.get( "info" )).put( AspectModelJsonSchemaVisitor.SAMM_EXTENSION,
                aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
          setServers( rootNode, config.baseUrl(), apiVersion, READ_SERVER_PATH );
          final boolean includePaging = includePaging( aspect, config.pagingOption() );
@@ -334,7 +334,7 @@ public class AspectModelOpenApiGenerator
    private void setResponseBodies( final Aspect aspect, final ObjectNode jsonNode, final boolean includePaging ) {
       final ObjectNode componentsResponseNode = (ObjectNode) jsonNode.get( FIELD_COMPONENTS ).get( FIELD_RESPONSES );
       final ObjectNode referenceNode = FACTORY.objectNode()
-            .put( REF, COMPONENTS_SCHEMAS + ( includePaging ? FIELD_PAGING_SCHEMA : aspect.getName() ) );
+            .put( REF, COMPONENTS_SCHEMAS + (includePaging ? FIELD_PAGING_SCHEMA : aspect.getName()) );
       final ObjectNode contentNode = getApplicationNode( referenceNode );
       componentsResponseNode.set( aspect.getName(), contentNode );
       contentNode.put( FIELD_DESCRIPTION, "The request was successful." );
@@ -518,7 +518,7 @@ public class AspectModelOpenApiGenerator
          final ObjectNode includeQueryPathNode = FACTORY.objectNode();
          includeQueryPathNode.set( FIELD_POST,
                getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ) );
-         endpointPathsNode.set( config.baseUrl() + String.format( QUERY_SERVER_PATH, apiVersion ),  includeQueryPathNode );
+         endpointPathsNode.set( config.baseUrl() + String.format( QUERY_SERVER_PATH, apiVersion ), includeQueryPathNode );
       }
 
       final Optional<ObjectNode> operationsNode = getRequestEndpointOperations( aspect, propertiesNode, config.baseUrl(), apiVersion,
@@ -640,7 +640,8 @@ public class AspectModelOpenApiGenerator
       return objectNode;
    }
 
-   private ObjectNode getRequestEndpointsUpdate( final Aspect aspect, final ObjectNode parameterNode, final String resourcePath, final boolean isPut ) {
+   private ObjectNode getRequestEndpointsUpdate( final Aspect aspect, final ObjectNode parameterNode, final String resourcePath,
+         final boolean isPut ) {
       final ObjectNode objectNode = FACTORY.objectNode();
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, isPut ? FIELD_PUT : FIELD_PATCH + aspect.getName() );
