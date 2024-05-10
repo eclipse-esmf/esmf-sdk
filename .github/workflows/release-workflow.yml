@@ -243,7 +243,6 @@ jobs:
         with:
           name: linux-artifacts
 
-      - name: Fetch Windows Artifacts
       # Sign SAML-CLI Windows executable
       - name: Get Artifact ID (Windows)
         if: matrix.os == 'windows-latest'
