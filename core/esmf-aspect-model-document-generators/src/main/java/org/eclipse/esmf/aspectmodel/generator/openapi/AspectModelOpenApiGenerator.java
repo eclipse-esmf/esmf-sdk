@@ -63,13 +63,15 @@ public class AspectModelOpenApiGenerator
    private static final String FIELD_DESCRIPTION = "description";
    private static final String FIELD_FILTER = "Filter";
    private static final String FIELD_GET = "get";
+   private static final String FIELD_POST = "post";
+   private static final String FIELD_PUT = "put";
+   private static final String FIELD_PATCH = "patch";
    private static final String FIELD_OBJECT = "object";
    private static final String FIELD_OPERATION = "Operation";
    private static final String FIELD_OPERATION_ID = "operationId";
    private static final String FIELD_OPERATION_RESPONSE = "OperationResponse";
    protected static final String FIELD_PAGING_SCHEMA = "PagingSchema";
    private static final String FIELD_PARAMETERS = "parameters";
-   private static final String FIELD_POST = "post";
    private static final String FIELD_PROPERTIES = "properties";
    private static final String FIELD_RPC = "JsonRpc";
    private static final String FIELD_REQUEST_BODIES = "requestBodies";
@@ -506,9 +508,17 @@ public class AspectModelOpenApiGenerator
 
       pathNode.set( FIELD_GET, getRequestEndpointsRead( aspect, propertiesNode, config.resourcePath() ) );
 
+      if ( config.includeCrud() ) {
+         pathNode.set( FIELD_POST, getRequestEndpointsCreate( aspect, propertiesNode, config.resourcePath() ) );
+         pathNode.set( FIELD_PUT, getRequestEndpointsUpdate( aspect, propertiesNode, config.resourcePath(), true ) );
+         pathNode.set( FIELD_PATCH, getRequestEndpointsUpdate( aspect, propertiesNode, config.resourcePath(), false ) );
+      }
+
       if ( config.includeQueryApi() ) {
-         pathNode.set( FIELD_POST,
+         final ObjectNode includeQueryPathNode = FACTORY.objectNode();
+         includeQueryPathNode.set( FIELD_POST,
                getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ) );
+         endpointPathsNode.set( config.baseUrl() + String.format( QUERY_SERVER_PATH, apiVersion ),  includeQueryPathNode );
       }
 
       final Optional<ObjectNode> operationsNode = getRequestEndpointOperations( aspect, propertiesNode, config.baseUrl(), apiVersion,
@@ -616,6 +626,24 @@ public class AspectModelOpenApiGenerator
       final ObjectNode objectNode = FACTORY.objectNode();
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, FIELD_GET + aspect.getName() );
+      objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
+      objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
+      return objectNode;
+   }
+
+   private ObjectNode getRequestEndpointsCreate( final Aspect aspect, final ObjectNode parameterNode, final String resourcePath ) {
+      final ObjectNode objectNode = FACTORY.objectNode();
+      objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
+      objectNode.put( FIELD_OPERATION_ID, FIELD_POST + aspect.getName() );
+      objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
+      objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
+      return objectNode;
+   }
+
+   private ObjectNode getRequestEndpointsUpdate( final Aspect aspect, final ObjectNode parameterNode, final String resourcePath, final boolean isPut ) {
+      final ObjectNode objectNode = FACTORY.objectNode();
+      objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
+      objectNode.put( FIELD_OPERATION_ID, isPut ? FIELD_PUT : FIELD_PATCH + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;

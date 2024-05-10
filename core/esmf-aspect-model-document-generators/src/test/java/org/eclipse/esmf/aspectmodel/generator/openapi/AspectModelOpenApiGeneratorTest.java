@@ -168,7 +168,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
-      assertThat( openApi.getPaths().get( "/" + TEST_RESOURCE_PATH ).getPost().getServers().get( 0 ).getUrl() )
+      assertThat( openApi.getPaths().get( "https://test-aspect.example.com/query-api/v1.0.0" ).getPost().getServers().get( 0 ).getUrl() )
             .isEqualTo( "https://test-aspect.example.com/query-api/v1.0.0" );
    }
 
@@ -185,7 +185,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
-      assertThat( openApi.getPaths().keySet() ).allMatch( path -> path.equals( "/{tenant-id}/aspect-without-see-attribute" ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "/{tenant-id}/aspect-without-see-attribute" ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
    }
 
    @ParameterizedTest
@@ -216,7 +217,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
-      assertThat( openApi.getPaths().keySet() ).allMatch( path -> path.equals( "/" + TEST_RESOURCE_PATH ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "/" + TEST_RESOURCE_PATH ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
    }
 
    @ParameterizedTest

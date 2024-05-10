@@ -44,7 +44,8 @@ public record OpenApiSchemaGenerationConfig(
       String resourcePath,
       ObjectNode properties,
       PagingOption pagingOption,
-      boolean includeQueryApi
+      boolean includeQueryApi,
+      boolean includeCrud
 ) implements GenerationConfig {
    public OpenApiSchemaGenerationConfig {
       if ( locale == null ) {

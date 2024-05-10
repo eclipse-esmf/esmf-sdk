@@ -90,6 +90,10 @@ public class AspectToOpenapiCommand extends AbstractCommand {
          description = "Include the path for the Query Aspect API Endpoint in the OpenAPI specification." )
    private boolean includeQueryApi = false;
 
+   @CommandLine.Option( names = { "--include-crud", "-cr" },
+         description = "Include all CRUD operations in the OpenAPI specification." )
+   private boolean includeFullCrud = false;
+
    @CommandLine.Option( names = { "--paging-none", "-pn" },
          description = "Exclude paging information for the Aspect API Endpoint in the OpenAPI specification." )
    private boolean excludePaging = false;
@@ -138,6 +142,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
             .resourcePath( aspectResourcePath )
             .properties( readAspectParameterFile() )
             .includeQueryApi( includeQueryApi )
+            .includeCrud( includeFullCrud )
             .pagingOption( getPaging() )
             .locale( locale )
             .generateCommentForSeeAttributes( generateCommentForSeeAttributes )
