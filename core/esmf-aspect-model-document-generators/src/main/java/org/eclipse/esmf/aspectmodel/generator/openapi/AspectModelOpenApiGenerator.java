@@ -75,6 +75,7 @@ public class AspectModelOpenApiGenerator
    private static final String FIELD_PROPERTIES = "properties";
    private static final String FIELD_RPC = "JsonRpc";
    private static final String FIELD_REQUEST_BODIES = "requestBodies";
+   private static final String FIELD_REQUEST_BODY = "requestBody";
    private static final String FIELD_REQUIRED = "required";
    private static final String FIELD_RESPONSES = "responses";
    private static final String FIELD_SCHEMA = "schema";
@@ -542,7 +543,7 @@ public class AspectModelOpenApiGenerator
          objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
          objectNode.put( FIELD_OPERATION_ID, FIELD_POST + FIELD_OPERATION + aspect.getName() );
          objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
-         objectNode.set( "requestBody", FACTORY.objectNode().put( REF, COMPONENTS_REQUESTS + FIELD_OPERATION ) );
+         objectNode.set( FIELD_REQUEST_BODY, FACTORY.objectNode().put( REF, COMPONENTS_REQUESTS + FIELD_OPERATION ) );
          final ObjectNode responseNode = FACTORY.objectNode();
          objectNode.set( FIELD_RESPONSES, responseNode );
          responseNode.set( "200", FACTORY.objectNode().put( REF, COMPONENTS_RESPONSES + FIELD_OPERATION_RESPONSE ) );
@@ -613,7 +614,7 @@ public class AspectModelOpenApiGenerator
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, FIELD_POST + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
-      objectNode.set( "requestBody", getRequestBodyForFilter() );
+      objectNode.set( FIELD_REQUEST_BODY, getRequestBodyForFilter() );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
    }
@@ -636,6 +637,7 @@ public class AspectModelOpenApiGenerator
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, FIELD_POST + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
+      objectNode.set( FIELD_REQUEST_BODY, FACTORY.objectNode() );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
    }
@@ -646,6 +648,7 @@ public class AspectModelOpenApiGenerator
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, isPut ? FIELD_PUT : FIELD_PATCH + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
+      objectNode.set( FIELD_REQUEST_BODY, FACTORY.objectNode() );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
    }
