@@ -76,6 +76,9 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
    private boolean includeQueryApi;
 
    @Parameter( defaultValue = "false" )
+   private boolean includeFullCrud;
+
+   @Parameter( defaultValue = "false" )
    private boolean excludePaging;
 
    @Parameter( defaultValue = "false" )
@@ -112,6 +115,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
                .resourcePath( aspectResourcePath )
                .properties( readAspectParameterFile() )
                .includeQueryApi( includeQueryApi )
+               .includeCrud( includeFullCrud )
                .pagingOption( getPagingFromArgs() )
                .locale( locale )
                .build();
