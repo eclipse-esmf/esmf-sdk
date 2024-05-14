@@ -1,0 +1,116 @@
+pipeline {
+    agent any
+
+    environment {
+        GITHUB_BOT_TOKEN = credentials('github-bot-token')
+    }
+
+    stages {
+        stage('Read parameters file') {
+            steps {
+                script {
+                    if (fileExists('parameters.txt')) {
+                        // Read the file
+                        def fileContent = readFile('parameters.txt').trim()
+
+                        // Split the file content into lines
+                        def lines = fileContent.split("\n")
+
+                        // Iterate over the lines and set the environment variables
+                        lines.each { line ->
+                            def parts = line.split('=')
+                            if (parts.size() == 2) {
+                                env[parts[0]] = parts[1]
+                            }
+                        }
+
+                        echo "Artifact URL: ${env.artifact_url_win}"
+                        echo "Version: ${env.version}"
+                    } else {
+                        echo "Error: parameters.txt does not exist."
+                    }
+                }
+            }
+        }
+
+        stage('Download and unpack artifact') {
+            steps {
+                script {
+                    sh "curl -L -H 'Accept: application/vnd.github.v3+json' \
+                        -H 'Authorization: Bearer ${GITHUB_BOT_TOKEN}' \
+                        '${env.artifact_url_win}' \
+                        --output 'samm-cli-${env.version}-windows-x86_64.zip'"
+                    sh "mkdir -p unpack_dir"
+                    sh "unzip -o samm-cli-${env.version}-windows-x86_64.zip -d unpack_dir"
+                    sh "ls -a unpack_dir"
+                }
+            }
+        }
+
+        stage('Sign Applications') {
+            steps {
+                script {
+                    sh "mkdir -p signed_dir"
+                    sh "find unpack_dir -name '*.dll' -exec mv {} signed_dir \\;"
+                    sh "curl -o signed_dir/samm.exe -F file=@unpack_dir/samm.exe https://cbi.eclipse.org/authenticode/sign"
+                    sh "cd signed_dir"
+                    sh "zip -r ../samm-cli-${env.version}-windows-x86_64.zip *"
+                }
+            }
+        }
+
+        stage('Release signed WINDOWS artifact to GitHub Releases') {
+            steps {
+                script {
+                    def repo = "eclipse-esmf/esmf-sdk"
+                    def tagName = "v${env.version}"
+                    def fileName = "samm-cli-${env.version}-windows-x86_64.zip"
+                    def releaseId = ""
+
+                    def tagExists = sh(script: """
+                        curl -s -L \\
+                             -H "Accept: application/vnd.github+json" \\
+                             -H "Authorization: Bearer \$GITHUB_BOT_TOKEN" \\
+                             https://api.github.com/repos/${repo}/git/refs/tags/${tagName} | jq -r '.ref'
+                    """, returnStdout: true).trim()
+
+                    if (tagExists == "null") {
+                        // Tag does not exist, create a new one
+                        releaseId = sh(script: """
+                            curl -s -L \\
+                                 -H "Accept: application/vnd.github+json" \\
+                                 -H "Authorization: Bearer \$GITHUB_BOT_TOKEN" \\
+                                 -X POST \\
+                                 -d '{ "tag_name": "${tagName}", "name": "${tagName}", "body": "Release ${tagName}" }' \\
+                                 https://api.github.com/repos/${repo}/releases | jq -r '.id'
+                        """, returnStdout: true).trim()
+                    } else {
+                        // Tag exists, use the existing one
+                        releaseId = sh(script: """
+                            curl -s -L \\
+                                 -H "Accept: application/vnd.github+json" \\
+                                 -H "Authorization: Bearer \$GITHUB_BOT_TOKEN" \\
+                                 https://api.github.com/repos/${repo}/releases/tags/${tagName} | jq -r '.id'
+                        """, returnStdout: true).trim()
+                    }
+
+                    sh """
+                    curl -L \
+                         -X POST \
+                         -H "Accept: application/vnd.github+json" \\
+                         -H "Authorization: Bearer \$GITHUB_BOT_TOKEN" \
+                         -H "Content-Type: application/octet-stream" \
+                         --data-binary @${fileName} \
+                         "https://uploads.github.com/repos/${repo}/releases/${releaseId}/assets?name=${fileName}"
+                    """
+
+                    sh """
+                    curl -X DELETE \
+                         -H "Authorization: Bearer \$GITHUB_BOT_TOKEN" \
+                         "https://api.github.com/repos/eclipse-esmf/esmf-sdk/git/refs/heads/pre_release_configuration"
+                    """
+                }
+            }
+        }
+    }
+}
