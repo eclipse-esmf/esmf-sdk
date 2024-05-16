@@ -141,6 +141,77 @@ jobs:
             samm-cli-${{ github.event.inputs.release_version }}-sources.jar
             samm-cli-${{ github.event.inputs.release_version }}-tests.jar
 
+  build-macos:
+    name: Mac build
+    needs: [check-preconditions]
+    runs-on: macos-13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
+        with:
+          java-version: '17.0.8'
+          distribution: 'graalvm'
+          components: 'native-image,js'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Build and run tests
+        run: |
+          export MAVEN_OPTS="-Xmx4096m"
+          export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+          # Required for reactor dependencies
+          mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+          mvn versions:set -DnewVersion=${{ github.event.inputs.release_version }}
+          mvn versions:commit
+          # Actual build of core SDK
+          mvn -B -pl '!org.eclipse.esmf:samm-cli' clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+          # Build of CLI
+          cd tools/samm-cli
+          unset JAVA_TOOL_OPTIONS
+          mvn -B clean verify -Dmaven.wagon.httpconnectionManager.ttlSeconds=60
+        shell: bash
+
+      - name: Build native executable
+        run: |
+          mkdir samm-bundle
+          curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.3_9.tar.gz
+          tar -xvf jre.tar.gz 
+          cp -r ./jdk-21.0.3+9-jre/Contents/Home ./samm-bundle/jre
+          cp tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}-for-native.jar ./samm-bundle/
+          
+          cat <<EOF > ./samm-bundle/run.sh
+          #!/usr/bin/env bash
+          
+          HERE=\${BASH_SOURCE%/*}
+          
+          "\$HERE/jre/bin/java" -jar "\$HERE/samm-cli-${{ github.event.inputs.release_version }}-for-native.jar" "\$@"
+          EOF
+          chmod +x ./samm-bundle/run.sh 
+          
+          curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/macos-x64.warp-packer
+          chmod +x warp-packer
+          ./warp-packer --arch macos-x64 --input_dir samm-bundle --exec run.sh --output samm
+          chmod a+x samm
+          tar cfvz samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz samm
+        shell: bash
+
+      - name: Upload Mac binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-artifacts
+          path: |
+            samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz
+
   # The Windows build will build the Windows-specific samm-cli
   # and upload the binary to the build artifacts
   build-windows:
@@ -243,6 +314,11 @@ jobs:
         with:
           name: linux-artifacts
 
+      - name: Fetch Mac Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: mac-artifacts
+
       # Sign SAML-CLI Windows executable
       - name: Get Artifact ID (Windows)
         if: matrix.os == 'windows-latest'
@@ -344,6 +420,7 @@ jobs:
           prerelease: false
           files: |
             samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
+            samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz
             samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
@@ -407,6 +484,7 @@ jobs:
           prerelease: true
           files: |
             samm-cli-${{ github.event.inputs.release_version }}-linux-x86_64.tar.gz
+            samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz
             samm-cli-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
