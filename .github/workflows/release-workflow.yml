@@ -183,24 +183,25 @@ jobs:
 
       - name: Build native executable
         run: |
-          mkdir samm-bundle
+          bundle="samm-bundle-$(date +%s)"
+          mkdir ${bundle}
           curl -Lo jre.tar.gz https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_x64_mac_hotspot_21.0.3_9.tar.gz
           tar -xvf jre.tar.gz 
-          cp -r ./jdk-21.0.3+9-jre/Contents/Home ./samm-bundle/jre
-          cp tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}-for-native.jar ./samm-bundle/
+          cp -r ./jdk-21.0.3+9-jre/Contents/Home ./${bundle}/jre
+          cp tools/samm-cli/target/samm-cli-${{ github.event.inputs.release_version }}.jar ./${bundle}/
           
-          cat <<EOF > ./samm-bundle/run.sh
+          cat <<EOF > ./${bundle}/run.sh
           #!/usr/bin/env bash
           
           HERE=\${BASH_SOURCE%/*}
           
-          "\$HERE/jre/bin/java" -jar "\$HERE/samm-cli-${{ github.event.inputs.release_version }}-for-native.jar" "\$@"
+          "\$HERE/jre/bin/java" -jar "\$HERE/samm-cli-${{ github.event.inputs.release_version }}.jar" "\$@"
           EOF
-          chmod +x ./samm-bundle/run.sh 
+          chmod +x ./${bundle}/run.sh 
           
           curl -Lo warp-packer https://github.com/dgiagio/warp/releases/download/v0.3.0/macos-x64.warp-packer
           chmod +x warp-packer
-          ./warp-packer --arch macos-x64 --input_dir samm-bundle --exec run.sh --output samm
+          ./warp-packer --arch macos-x64 --input_dir ${bundle} --exec run.sh --output samm
           chmod a+x samm
           tar cfvz samm-cli-${{ github.event.inputs.release_version }}-macos-x86_64.tar.gz samm
         shell: bash
