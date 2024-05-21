@@ -509,9 +509,17 @@ public class AspectModelOpenApiGenerator
 
       pathNode.set( FIELD_GET, getRequestEndpointsRead( aspect, propertiesNode, config.resourcePath() ) );
 
-      if ( config.includeCrud() ) {
+      boolean includeCrud = config.includeCrud();
+
+      if ( includeCrud || config.includePost() ) {
          pathNode.set( FIELD_POST, getRequestEndpointsCreate( aspect, propertiesNode, config.resourcePath() ) );
+      }
+
+      if ( includeCrud || config.includePut() ) {
          pathNode.set( FIELD_PUT, getRequestEndpointsUpdate( aspect, propertiesNode, config.resourcePath(), true ) );
+      }
+
+      if ( includeCrud || config.includePatch() ) {
          pathNode.set( FIELD_PATCH, getRequestEndpointsUpdate( aspect, propertiesNode, config.resourcePath(), false ) );
       }
 
@@ -646,7 +654,7 @@ public class AspectModelOpenApiGenerator
          final boolean isPut ) {
       final ObjectNode objectNode = FACTORY.objectNode();
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
-      objectNode.put( FIELD_OPERATION_ID, isPut ? FIELD_PUT : FIELD_PATCH + aspect.getName() );
+      objectNode.put( FIELD_OPERATION_ID, (isPut ? FIELD_PUT : FIELD_PATCH) + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
       objectNode.set( FIELD_REQUEST_BODY, FACTORY.objectNode() );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );

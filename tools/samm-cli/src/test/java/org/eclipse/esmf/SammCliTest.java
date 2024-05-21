@@ -61,7 +61,7 @@ import org.junit.jupiter.params.provider.EnumSource;
  */
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
-public class SammCliTest extends MetaModelVersions {
+class SammCliTest extends MetaModelVersions {
    protected ProcessLauncher sammCli;
    private final TestModel testModel = TestAspect.ASPECT_WITH_ENTITY;
    private final String defaultInputFile = inputFile( testModel ).getAbsolutePath();
@@ -69,13 +69,13 @@ public class SammCliTest extends MetaModelVersions {
    Path outputDirectory = null;
 
    @BeforeEach
-   public void beforeEach() throws IOException {
+   void beforeEach() throws IOException {
       sammCli = new MainClassProcessLauncher( SammCli.class );
       outputDirectory = Files.createTempDirectory( "junit" );
    }
 
    @AfterEach
-   public void afterEach() {
+   void afterEach() {
       if ( outputDirectory != null ) {
          final File outputDir = outputDirectory.toFile();
          if ( outputDir.exists() && outputDir.isDirectory() ) {
@@ -96,14 +96,14 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testNoArgs() {
+   void testNoArgs() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color" );
       assertThat( result.stdout() ).contains( "Usage:" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
-   public void testAspectWithoutSubcommand() {
+   void testAspectWithoutSubcommand() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect" );
       assertThat( result.exitStatus() ).isEqualTo( 2 );
       assertThat( result.stdout() ).isEmpty();
@@ -111,7 +111,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testWrongArgs() {
+   void testWrongArgs() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "-i", "doesnotexist" );
       assertThat( result.exitStatus() ).isEqualTo( 2 );
       assertThat( result.stdout() ).isEmpty();
@@ -119,21 +119,21 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testHelp() {
+   void testHelp() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "help" );
       assertThat( result.stdout() ).contains( "Usage:" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
-   public void testVerboseOutput() {
+   void testVerboseOutput() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "-vvv" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).contains( "DEBUG " + AspectValidateCommand.class.getName() );
    }
 
    @Test
-   public void testAspectMigrateToFile() {
+   void testAspectMigrateToFile() {
       final File targetFile = outputFile( "output.ttl" );
       final ExecutionResult result =
             sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "migrate", "-o", targetFile.getAbsolutePath() );
@@ -144,14 +144,14 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectMigrateToStdout() {
+   void testAspectMigrateToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "migrate" );
       assertThat( result.stdout() ).contains( "@prefix" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
-   public void testAspectPrettyPrintToFile() {
+   void testAspectPrettyPrintToFile() {
       final File targetFile = outputFile( "output.ttl" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "prettyprint", "-o",
             targetFile.getAbsolutePath() );
@@ -162,14 +162,14 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectPrettyPrintToStdout() {
+   void testAspectPrettyPrintToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "prettyprint" );
       assertThat( result.stdout() ).contains( "@prefix" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
-   public void testAspectValidateValidModel() {
+   void testAspectValidateValidModel() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
@@ -178,7 +178,7 @@ public class SammCliTest extends MetaModelVersions {
    @ParameterizedTest
    @EnumSource( TestAspect.class )
    @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   public void testAspectValidateValidModelAllTestFiles( final TestModel aspect ) {
+   void testAspectValidateValidModelAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "validate" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
@@ -186,7 +186,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectValidateWithRelativePath() {
+   void testAspectValidateWithRelativePath() {
       final File workingDirectory = new File( defaultInputFile ).getParentFile();
       final String relativeFileName = "." + File.separator + new File( defaultInputFile ).getName();
       final ProcessLauncher.ExecutionContext executionContext = new ProcessLauncher.ExecutionContext(
@@ -199,7 +199,7 @@ public class SammCliTest extends MetaModelVersions {
 
    @Test
    @DisabledOnOs( OS.WINDOWS )
-   public void testAspectValidateInvalidModel() {
+   void testAspectValidateInvalidModel() {
       final File invalidModel = inputFile( InvalidTestAspect.INVALID_SYNTAX );
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", invalidModel.getAbsolutePath(), "validate" );
       assertThat( result.exitStatus() ).isEqualTo( 1 );
@@ -208,7 +208,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectValidateWithDetails() {
+   void testAspectValidateWithDetails() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "--details" );
       assertThat( result.stdout() ).contains( "Input model is valid" );
       assertThat( result.stderr() ).isEmpty();
@@ -221,7 +221,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectValidateWithCustomResolver() {
+   void testAspectValidateWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate",
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "Input model is valid" );
@@ -229,7 +229,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAasXmlToFile() {
+   void testAspectToAasXmlToFile() {
       final File targetFile = outputFile( "output.xml" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
             "xml", "-o", targetFile.getAbsolutePath() );
@@ -242,7 +242,7 @@ public class SammCliTest extends MetaModelVersions {
    @ParameterizedTest
    @EnumSource( TestAspect.class )
    @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   public void testAspectToAasXmlToFileAllTestFiles( final TestModel aspect ) {
+   void testAspectToAasXmlToFileAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final File targetFile = outputFile( "output.xml" );
       assertThat( targetFile ).doesNotExist();
@@ -255,7 +255,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAasXmlToStdout() {
+   void testAspectToAasXmlToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
             "xml" );
       assertThat( result.stdout() ).startsWith( "<?xml" );
@@ -265,7 +265,7 @@ public class SammCliTest extends MetaModelVersions {
    @ParameterizedTest
    @EnumSource( TestAspect.class )
    @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   public void testAspectToAasXmlToStdoutAllTestFiles( final TestModel aspect ) {
+   void testAspectToAasXmlToStdoutAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
             "xml" );
@@ -274,7 +274,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAasAasxToFile() {
+   void testAspectToAasAasxToFile() {
       final File targetFile = outputFile( "output.aasx" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
             "aasx", "-o", targetFile.getAbsolutePath() );
@@ -287,7 +287,7 @@ public class SammCliTest extends MetaModelVersions {
    @ParameterizedTest
    @EnumSource( TestAspect.class )
    @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   public void testAspectToAasAasxToFileAllTestFiles( final TestModel aspect ) {
+   void testAspectToAasAasxToFileAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final File targetFile = outputFile( "output.aasx" );
       assertThat( targetFile ).doesNotExist();
@@ -300,7 +300,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAasAasxToStdout() {
+   void testAspectToAasAasxToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
             "aasx" );
       assertThat( result.stderr() ).isEmpty();
@@ -308,7 +308,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAasJsonToFile() {
+   void testAspectToAasJsonToFile() {
       final File targetFile = outputFile( "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
             "json", "-o",
@@ -322,7 +322,7 @@ public class SammCliTest extends MetaModelVersions {
    @ParameterizedTest
    @EnumSource( TestAspect.class )
    @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   public void testAspectToAasJsonToFileAllTestFiles( final TestModel aspect ) {
+   void testAspectToAasJsonToFileAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final File targetFile = outputFile( "output.json" );
       assertThat( targetFile ).doesNotExist();
@@ -336,7 +336,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAasJsonToStdout() {
+   void testAspectToAasJsonToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas", "--format",
             "json" );
       assertThat( result.stderr() ).isEmpty();
@@ -346,7 +346,7 @@ public class SammCliTest extends MetaModelVersions {
    @ParameterizedTest
    @EnumSource( TestAspect.class )
    @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
-   public void testAspectToAasJsonToStdoutAllTestFiles( final TestModel aspect ) {
+   void testAspectToAasJsonToStdoutAllTestFiles( final TestModel aspect ) {
       final String input = inputFile( aspect ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", input, "to", "aas", "--format",
             "json" );
@@ -355,7 +355,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAasToAspectModel() {
+   void testAasToAspectModel() {
       // First create the AAS XML file we want to read
       final File aasXmlFile = outputFile( "output.xml" );
       final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
@@ -382,7 +382,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAasListSubmodels() {
+   void testAasListSubmodels() {
       final File aasXmlFile = outputFile( "output.xml" );
       final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
             "--format", "xml", "-o", aasXmlFile.getAbsolutePath() );
@@ -395,7 +395,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAasToAspectModelWithSelectedSubmodels() {
+   void testAasToAspectModelWithSelectedSubmodels() {
       // First create the AAS XML file we want to read
       final File aasXmlFile = outputFile( "output.xml" );
       final ExecutionResult generateAasXmlResult = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "aas",
@@ -422,7 +422,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToHtmlWithDefaultLanguageToFile() {
+   void testAspectToHtmlWithDefaultLanguageToFile() {
       final File targetFile = outputFile( "output.html" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "-o",
             targetFile.getAbsolutePath() );
@@ -433,7 +433,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToHtmlWithGivenLanguageToFile() {
+   void testAspectToHtmlWithGivenLanguageToFile() {
       final File targetFile = outputFile( "output.html" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html", "-o",
             targetFile.getAbsolutePath(), "--language",
@@ -445,7 +445,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToHtmlToStdout() {
+   void testAspectToHtmlToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "html" );
       assertThat( result.stdout() ).contains( "<html" );
       assertThat( result.stdout() ).doesNotContainPattern( "$[a-zA-Z]" );
@@ -453,7 +453,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToHtmlWithCustomCss() {
+   void testAspectToHtmlWithCustomCss() {
       final String customCss = "h1 { color: #123456; }";
       final File customCssFile = outputFile( "custom.css" );
       writeToFile( customCssFile, customCss );
@@ -466,7 +466,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJavaWithDefaultPackageName() {
+   void testAspectToJavaWithDefaultPackageName() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory",
@@ -485,7 +485,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJavaWithCustomPackageName() {
+   void testAspectToJavaWithCustomPackageName() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory",
@@ -500,7 +500,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJavaWithoutJacksonAnnotations() {
+   void testAspectToJavaWithoutJacksonAnnotations() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory",
@@ -519,7 +519,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJavaWithDefaultPackageNameWithCustomResolver() {
+   void testAspectToJavaWithDefaultPackageNameWithCustomResolver() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--custom-resolver", resolverCommand() );
@@ -537,7 +537,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJavaWithCustomFileHeader() {
+   void testAspectToJavaWithCustomFileHeader() {
       final File outputDir = outputDirectory.toFile();
       final File templateLibraryFile = new File(
             System.getProperty( "user.dir" ) + "/../../core/esmf-aspect-model-java-generator/templates/test-macro-lib.vm" );
@@ -559,7 +559,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJavaCustomMacroLibraryValidation() {
+   void testAspectToJavaCustomMacroLibraryValidation() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "java", "--output-directory",
             outputDir.getAbsolutePath(), "--execute-library-macros" );
@@ -569,7 +569,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJavaStaticWithDefaultPackageName() {
+   void testAspectToJavaStaticWithDefaultPackageName() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--static" );
@@ -587,7 +587,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJavaStaticWithCustomPackageName() {
+   void testAspectToJavaStaticWithCustomPackageName() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--static", "--package-name", "com.example.foo" );
@@ -605,7 +605,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJavaStaticWithDefaultPackageNameWithCustomResolver() {
+   void testAspectToJavaStaticWithDefaultPackageNameWithCustomResolver() {
       final File outputDir = outputDirectory.toFile();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "java",
             "--output-directory", outputDir.getAbsolutePath(), "--static", "--custom-resolver", resolverCommand() );
@@ -623,7 +623,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJavaStaticWithCustomFileHeader() {
+   void testAspectToJavaStaticWithCustomFileHeader() {
       final File outputDir = outputDirectory.toFile();
       final File templateLibraryFile = new File(
             System.getProperty( "user.dir" ) + "/../../core/esmf-aspect-model-java-generator/templates/test-macro-lib.vm" );
@@ -644,7 +644,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJsonToFile() {
+   void testAspectToJsonToFile() {
       final File targetFile = outputFile( "output.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json", "-o",
             targetFile.getAbsolutePath() );
@@ -655,14 +655,14 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJsonToStdout() {
+   void testAspectToJsonToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json" );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
-   public void testAspectToJsonToStdoutWithCustomResolver() {
+   void testAspectToJsonToStdoutWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "json",
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "\"entityProperty\" :" );
@@ -670,7 +670,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJsonSchemaToFile() {
+   void testAspectToJsonSchemaToFile() {
       final File targetFile = outputFile( "output.schema.json" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "schema", "-o",
             targetFile.getAbsolutePath() );
@@ -681,14 +681,14 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToJsonSchemaToStdout() {
+   void testAspectToJsonSchemaToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "schema" );
       assertThat( result.stdout() ).contains( "$schema" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
-   public void testAspectToJsonSchemaToFileWithCustomResolver() {
+   void testAspectToJsonSchemaToFileWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "schema",
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "$schema" );
@@ -696,7 +696,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToOpenapiWithoutBaseUrl() {
+   void testAspectToOpenapiWithoutBaseUrl() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json" );
       assertThat( result.exitStatus() ).isEqualTo( 2 );
       assertThat( result.stdout() ).isEmpty();
@@ -704,7 +704,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToOpenapiWithoutResourcePath() {
+   void testAspectToOpenapiWithoutResourcePath() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json",
             "--api-base-url", "https://test.example.com" );
       assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
@@ -713,7 +713,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToOpenApiWithResourcePath() {
+   void testAspectToOpenApiWithResourcePath() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json",
             "--api-base-url", "https://test.example.com", "--resource-path", "my-aspect" );
       assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
@@ -723,7 +723,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToOpenApiWithResourcePathAndCustomResolver() {
+   void testAspectToOpenApiWithResourcePathAndCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json",
             "--api-base-url", "https://test.example.com", "--resource-path", "my-aspect", "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "\"openapi\" : \"3.0.3\"" );
@@ -733,7 +733,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToOpenApiWithSeparateJsonFiles() {
+   void testAspectToOpenApiWithSeparateJsonFiles() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi", "--json",
             "--api-base-url", "https://test.example.com", "--separate-files", "--output", outputDirectory.toString() );
 
@@ -745,7 +745,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToOpenApiWithSeparateYamlFiles() {
+   void testAspectToOpenApiWithSeparateYamlFiles() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi",
             "--api-base-url", "https://test.example.com", "--separate-files", "--output", outputDirectory.toString() );
 
@@ -757,7 +757,141 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAsyncapiWithoutApplicationId() {
+   void testAspectToOpenApiWithCrudOperations() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi",
+            "--api-base-url", "https://test.example.com", "--include-crud" );
+
+      assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
+      assertThat( result.stdout() ).contains(
+            """
+                  post:
+                        tags:
+                        - AspectWithEntity
+                        operationId: postAspectWithEntity
+                  """
+      );
+      assertThat( result.stdout() ).contains(
+            """
+                  put:
+                        tags:
+                        - AspectWithEntity
+                        operationId: putAspectWithEntity
+                  """
+      );
+      assertThat( result.stdout() ).contains(
+            """
+                  patch:
+                        tags:
+                        - AspectWithEntity
+                        operationId: patchAspectWithEntity
+                  """
+      );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToOpenApiWithIncludedPostMethod() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi",
+            "--api-base-url", "https://test.example.com", "--include-post" );
+
+      assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
+      assertThat( result.stdout() ).contains(
+            """
+                  post:
+                        tags:
+                        - AspectWithEntity
+                        operationId: postAspectWithEntity
+                  """
+      );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToOpenApiWithIncludedPutMethod() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi",
+            "--api-base-url", "https://test.example.com", "--include-put" );
+
+      assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
+      assertThat( result.stdout() ).contains(
+            """
+                  put:
+                        tags:
+                        - AspectWithEntity
+                        operationId: putAspectWithEntity
+                  """
+      );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToOpenApiWithIncludedPatchMethod() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi",
+            "--api-base-url", "https://test.example.com", "--include-patch" );
+
+      assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
+      assertThat( result.stdout() ).contains(
+            """
+                  patch:
+                        tags:
+                        - AspectWithEntity
+                        operationId: patchAspectWithEntity
+                  """
+      );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToOpenApiWithIncludedPatchAndPutMethod() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi",
+            "--api-base-url", "https://test.example.com", "--include-patch", "--include-put" );
+
+      assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
+      assertThat( result.stdout() ).contains(
+            """
+                  patch:
+                        tags:
+                        - AspectWithEntity
+                        operationId: patchAspectWithEntity
+                  """
+      );
+      assertThat( result.stdout() ).contains(
+            """
+                  put:
+                        tags:
+                        - AspectWithEntity
+                        operationId: putAspectWithEntity
+                  """
+      );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToOpenApiWithIncludedPutAndPostMethod() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "openapi",
+            "--api-base-url", "https://test.example.com", "--include-put", "--include-post" );
+
+      assertThat( result.stdout() ).contains( "/{tenant-id}/aspect-with-entity:" );
+      assertThat( result.stdout() ).contains(
+            """
+                  post:
+                        tags:
+                        - AspectWithEntity
+                        operationId: postAspectWithEntity
+                  """
+      );
+      assertThat( result.stdout() ).contains(
+            """
+                  put:
+                        tags:
+                        - AspectWithEntity
+                        operationId: putAspectWithEntity
+                  """
+      );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectToAsyncapiWithoutApplicationId() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
@@ -767,7 +901,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAsyncapiWithApplicationId() {
+   void testAspectToAsyncapiWithApplicationId() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi", "-ai", "test:serve" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
@@ -777,7 +911,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAsyncapiWithoutChannelAddress() {
+   void testAspectToAsyncapiWithoutChannelAddress() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi" );
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
@@ -787,7 +921,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAsyncapiWithChannelAddress() {
+   void testAspectToAsyncapiWithChannelAddress() {
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi",
             "-ca", "test/address/aspect/1.0.0/TestAspect" );
       assertThat( result.exitStatus() ).isZero();
@@ -798,7 +932,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAsyncapiWithOutputParam() {
+   void testAspectToAsyncapiWithOutputParam() {
       final File outputAsyncApiSpecFile = outputFile( testModel.getName() + ".json" );
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "asyncapi", "--json", "-ai",
             "test:serve", "-ca", "test/address/aspect/1.0.0/TestAspect", "-o", outputAsyncApiSpecFile.getAbsolutePath() );
@@ -809,7 +943,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToAsyncApiWithSeparateJsonFiles() {
+   void testAspectToAsyncApiWithSeparateJsonFiles() {
       final TestAspect testAspect = TestAspect.ASPECT_WITH_EVENT;
       final String inputFile = inputFile( testAspect ).getAbsolutePath();
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile, "to", "asyncapi", "--json", "-ai",
@@ -823,7 +957,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToPngWithDefaultLanguage() {
+   void testAspectToPngWithDefaultLanguage() {
       final File targetFile = outputFile( "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
             targetFile.getAbsolutePath() );
@@ -834,7 +968,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToPngWithGivenLanguage() {
+   void testAspectToPngWithGivenLanguage() {
       final File targetFile = outputFile( "output.png" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
             targetFile.getAbsolutePath(), "--language", "en" );
@@ -845,7 +979,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToPngWithNonExistentLanguage() {
+   void testAspectToPngWithNonExistentLanguage() {
       final File targetFile = outputFile( "output.png" );
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "png", "-o",
             targetFile.getAbsolutePath(), "--language", "de" );
@@ -856,14 +990,14 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToPngToStdout() {
+   void testAspectToPngToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png" );
       assertThat( result.stderr() ).isEmpty();
       assertThat( contentType( result.stdoutRaw() ) ).isEqualTo( MediaType.image( "png" ) );
    }
 
    @Test
-   public void testAspectToPngWithCustomResolver() {
+   void testAspectToPngWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "png",
             "--custom-resolver", resolverCommand() );
       assertThat( result.stderr() ).isEmpty();
@@ -871,7 +1005,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToSvgWithDefaultLanguage() {
+   void testAspectToSvgWithDefaultLanguage() {
       final File targetFile = outputFile( "output.svg" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg", "-o",
             targetFile.getAbsolutePath() );
@@ -882,7 +1016,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToSvgWithGivenLanguage() {
+   void testAspectToSvgWithGivenLanguage() {
       final File targetFile = outputFile( "output.svg" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg", "-o",
             targetFile.getAbsolutePath(), "--language", "en" );
@@ -893,7 +1027,7 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToSvgWithNonExistentLanguage() {
+   void testAspectToSvgWithNonExistentLanguage() {
       final File targetFile = outputFile( "output.svg" );
       final ExecutionResult result = sammCli.apply( "--disable-color", "aspect", defaultInputFile, "to", "svg", "-o",
             targetFile.getAbsolutePath(), "--language", "de" );
@@ -904,14 +1038,14 @@ public class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   public void testAspectToSvgToStdout() {
+   void testAspectToSvgToStdout() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg" );
       assertThat( result.stdout() ).contains( "<svg" );
       assertThat( result.stderr() ).isEmpty();
    }
 
    @Test
-   public void testAspectToSvgWithCustomResolver() {
+   void testAspectToSvgWithCustomResolver() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "svg",
             "--custom-resolver", resolverCommand() );
       assertThat( result.stdout() ).contains( "<svg" );
@@ -923,7 +1057,7 @@ public class SammCliTest extends MetaModelVersions {
     */
    private File inputFile( final TestModel testModel ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
-      final boolean isValid = !( testModel instanceof InvalidTestAspect );
+      final boolean isValid = !(testModel instanceof InvalidTestAspect);
       final String resourcePath = String.format(
             "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
             System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", metaModelVersion.toString().toLowerCase(),
@@ -975,8 +1109,8 @@ public class SammCliTest extends MetaModelVersions {
       // are not resolved to the file system but to the jar)
       try {
          final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh" ) ).getCanonicalPath();
+               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + (OS.WINDOWS.isCurrentOs()
+                     ? ".bat" : ".sh") ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
          return resolverScript + " " + modelsRoot + " " + metaModelVersion;

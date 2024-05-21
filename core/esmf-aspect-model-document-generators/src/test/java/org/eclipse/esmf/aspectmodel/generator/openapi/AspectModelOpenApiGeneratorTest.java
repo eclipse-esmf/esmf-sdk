@@ -526,10 +526,105 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
-      assertThat( openApi.getPaths().get( "/{tenant-id}/aspect-without-see-attribute" ).getGet() ).isNotNull();
-      assertThat( openApi.getPaths().get( "/{tenant-id}/aspect-without-see-attribute" ).getPost() ).isNotNull();
-      assertThat( openApi.getPaths().get( "/{tenant-id}/aspect-without-see-attribute" ).getPut() ).isNotNull();
-      assertThat( openApi.getPaths().get( "/{tenant-id}/aspect-without-see-attribute" ).getPatch() ).isNotNull();
+      final String apiEndpoint = "/{tenant-id}/aspect-without-see-attribute";
+
+      assertThat( openApi.getPaths().get( apiEndpoint ).getGet() ).isNotNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNotNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNotNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
+      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testAspectWithPostOperation( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .includeQueryApi( true )
+            .includePost( true )
+            .build();
+      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      final String apiEndpoint = "/{tenant-id}/aspect-without-see-attribute";
+
+      assertThat( openApi.getPaths().get( apiEndpoint ).getGet() ).isNotNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNotNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNull();
+      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testAspectWithPutOperation( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .includeQueryApi( true )
+            .includePut( true )
+            .build();
+      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      final String apiEndpoint = "/{tenant-id}/aspect-without-see-attribute";
+
+      assertThat( openApi.getPaths().get( apiEndpoint ).getGet() ).isNotNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNotNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNull();
+      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testAspectWithPatchOperation( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .includeQueryApi( true )
+            .includePatch( true )
+            .build();
+      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      final String apiEndpoint = "/{tenant-id}/aspect-without-see-attribute";
+
+      assertThat( openApi.getPaths().get( apiEndpoint ).getGet() ).isNotNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
+      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+   }
+
+   @ParameterizedTest
+   @MethodSource( value = "allVersions" )
+   void testAspectWithPatchAndPostOperation( final KnownVersion metaModelVersion ) {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .includeQueryApi( true )
+            .includePatch( true )
+            .includePost( true )
+            .build();
+      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      final OpenAPI openApi = result.getOpenAPI();
+
+      final String apiEndpoint = "/{tenant-id}/aspect-without-see-attribute";
+
+      assertThat( openApi.getPaths().get( apiEndpoint ).getGet() ).isNotNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNotNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
       assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
    }
 

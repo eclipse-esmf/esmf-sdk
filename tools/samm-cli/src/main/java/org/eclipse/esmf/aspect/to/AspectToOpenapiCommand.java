@@ -91,8 +91,20 @@ public class AspectToOpenapiCommand extends AbstractCommand {
    private boolean includeQueryApi = false;
 
    @CommandLine.Option( names = { "--include-crud", "-cr" },
-         description = "Include all CRUD operations in the OpenAPI specification." )
+         description = "Include all CRUD operations (POST/PUT/PATCH) in the OpenAPI specification." )
    private boolean includeFullCrud = false;
+
+   @CommandLine.Option( names = { "--include-post", "-post" },
+         description = "Include POST operation in the OpenAPI specification." )
+   private boolean includePost = false;
+
+   @CommandLine.Option( names = { "--include-put", "-put" },
+         description = "Include PUT operation in the OpenAPI specification." )
+   private boolean includePut = false;
+
+   @CommandLine.Option( names = { "--include-patch", "-patch" },
+         description = "Include PATCH operation in the OpenAPI specification." )
+   private boolean includePatch = false;
 
    @CommandLine.Option( names = { "--paging-none", "-pn" },
          description = "Exclude paging information for the Aspect API Endpoint in the OpenAPI specification." )
@@ -143,6 +155,9 @@ public class AspectToOpenapiCommand extends AbstractCommand {
             .properties( readAspectParameterFile() )
             .includeQueryApi( includeQueryApi )
             .includeCrud( includeFullCrud )
+            .includePost( includePost )
+            .includePut( includePut )
+            .includePatch( includePatch )
             .pagingOption( getPaging() )
             .locale( locale )
             .generateCommentForSeeAttributes( generateCommentForSeeAttributes )
