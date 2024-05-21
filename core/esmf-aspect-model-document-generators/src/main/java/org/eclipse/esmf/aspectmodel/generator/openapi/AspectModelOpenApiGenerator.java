@@ -63,16 +63,19 @@ public class AspectModelOpenApiGenerator
    private static final String FIELD_DESCRIPTION = "description";
    private static final String FIELD_FILTER = "Filter";
    private static final String FIELD_GET = "get";
+   private static final String FIELD_POST = "post";
+   private static final String FIELD_PUT = "put";
+   private static final String FIELD_PATCH = "patch";
    private static final String FIELD_OBJECT = "object";
    private static final String FIELD_OPERATION = "Operation";
    private static final String FIELD_OPERATION_ID = "operationId";
    private static final String FIELD_OPERATION_RESPONSE = "OperationResponse";
    protected static final String FIELD_PAGING_SCHEMA = "PagingSchema";
    private static final String FIELD_PARAMETERS = "parameters";
-   private static final String FIELD_POST = "post";
    private static final String FIELD_PROPERTIES = "properties";
    private static final String FIELD_RPC = "JsonRpc";
    private static final String FIELD_REQUEST_BODIES = "requestBodies";
+   private static final String FIELD_REQUEST_BODY = "requestBody";
    private static final String FIELD_REQUIRED = "required";
    private static final String FIELD_RESPONSES = "responses";
    private static final String FIELD_SCHEMA = "schema";
@@ -118,9 +121,9 @@ public class AspectModelOpenApiGenerator
          final ObjectNode rootNode = getRootJsonNode( config.generateCommentForSeeAttributes() );
          final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );
 
-         ( (ObjectNode) rootNode.get( "info" ) ).put( "title", aspect.getPreferredName( config.locale() ) );
-         ( (ObjectNode) rootNode.get( "info" ) ).put( "version", apiVersion );
-         ( (ObjectNode) rootNode.get( "info" ) ).put( AspectModelJsonSchemaVisitor.SAMM_EXTENSION,
+         ((ObjectNode) rootNode.get( "info" )).put( "title", aspect.getPreferredName( config.locale() ) );
+         ((ObjectNode) rootNode.get( "info" )).put( "version", apiVersion );
+         ((ObjectNode) rootNode.get( "info" )).put( AspectModelJsonSchemaVisitor.SAMM_EXTENSION,
                aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
          setServers( rootNode, config.baseUrl(), apiVersion, READ_SERVER_PATH );
          final boolean includePaging = includePaging( aspect, config.pagingOption() );
@@ -332,7 +335,7 @@ public class AspectModelOpenApiGenerator
    private void setResponseBodies( final Aspect aspect, final ObjectNode jsonNode, final boolean includePaging ) {
       final ObjectNode componentsResponseNode = (ObjectNode) jsonNode.get( FIELD_COMPONENTS ).get( FIELD_RESPONSES );
       final ObjectNode referenceNode = FACTORY.objectNode()
-            .put( REF, COMPONENTS_SCHEMAS + ( includePaging ? FIELD_PAGING_SCHEMA : aspect.getName() ) );
+            .put( REF, COMPONENTS_SCHEMAS + (includePaging ? FIELD_PAGING_SCHEMA : aspect.getName()) );
       final ObjectNode contentNode = getApplicationNode( referenceNode );
       componentsResponseNode.set( aspect.getName(), contentNode );
       contentNode.put( FIELD_DESCRIPTION, "The request was successful." );
@@ -506,9 +509,25 @@ public class AspectModelOpenApiGenerator
 
       pathNode.set( FIELD_GET, getRequestEndpointsRead( aspect, propertiesNode, config.resourcePath() ) );
 
+      boolean includeCrud = config.includeCrud();
+
+      if ( includeCrud || config.includePost() ) {
+         pathNode.set( FIELD_POST, getRequestEndpointsCreate( aspect, propertiesNode, config.resourcePath() ) );
+      }
+
+      if ( includeCrud || config.includePut() ) {
+         pathNode.set( FIELD_PUT, getRequestEndpointsUpdate( aspect, propertiesNode, config.resourcePath(), true ) );
+      }
+
+      if ( includeCrud || config.includePatch() ) {
+         pathNode.set( FIELD_PATCH, getRequestEndpointsUpdate( aspect, propertiesNode, config.resourcePath(), false ) );
+      }
+
       if ( config.includeQueryApi() ) {
-         pathNode.set( FIELD_POST,
+         final ObjectNode includeQueryPathNode = FACTORY.objectNode();
+         includeQueryPathNode.set( FIELD_POST,
                getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ) );
+         endpointPathsNode.set( config.baseUrl() + String.format( QUERY_SERVER_PATH, apiVersion ), includeQueryPathNode );
       }
 
       final Optional<ObjectNode> operationsNode = getRequestEndpointOperations( aspect, propertiesNode, config.baseUrl(), apiVersion,
@@ -532,7 +551,7 @@ public class AspectModelOpenApiGenerator
          objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
          objectNode.put( FIELD_OPERATION_ID, FIELD_POST + FIELD_OPERATION + aspect.getName() );
          objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
-         objectNode.set( "requestBody", FACTORY.objectNode().put( REF, COMPONENTS_REQUESTS + FIELD_OPERATION ) );
+         objectNode.set( FIELD_REQUEST_BODY, FACTORY.objectNode().put( REF, COMPONENTS_REQUESTS + FIELD_OPERATION ) );
          final ObjectNode responseNode = FACTORY.objectNode();
          objectNode.set( FIELD_RESPONSES, responseNode );
          responseNode.set( "200", FACTORY.objectNode().put( REF, COMPONENTS_RESPONSES + FIELD_OPERATION_RESPONSE ) );
@@ -603,7 +622,7 @@ public class AspectModelOpenApiGenerator
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, FIELD_POST + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
-      objectNode.set( "requestBody", getRequestBodyForFilter() );
+      objectNode.set( FIELD_REQUEST_BODY, getRequestBodyForFilter() );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
    }
@@ -617,6 +636,27 @@ public class AspectModelOpenApiGenerator
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
       objectNode.put( FIELD_OPERATION_ID, FIELD_GET + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
+      objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
+      return objectNode;
+   }
+
+   private ObjectNode getRequestEndpointsCreate( final Aspect aspect, final ObjectNode parameterNode, final String resourcePath ) {
+      final ObjectNode objectNode = FACTORY.objectNode();
+      objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
+      objectNode.put( FIELD_OPERATION_ID, FIELD_POST + aspect.getName() );
+      objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
+      objectNode.set( FIELD_REQUEST_BODY, FACTORY.objectNode() );
+      objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
+      return objectNode;
+   }
+
+   private ObjectNode getRequestEndpointsUpdate( final Aspect aspect, final ObjectNode parameterNode, final String resourcePath,
+         final boolean isPut ) {
+      final ObjectNode objectNode = FACTORY.objectNode();
+      objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
+      objectNode.put( FIELD_OPERATION_ID, (isPut ? FIELD_PUT : FIELD_PATCH) + aspect.getName() );
+      objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
+      objectNode.set( FIELD_REQUEST_BODY, FACTORY.objectNode() );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
       return objectNode;
    }
