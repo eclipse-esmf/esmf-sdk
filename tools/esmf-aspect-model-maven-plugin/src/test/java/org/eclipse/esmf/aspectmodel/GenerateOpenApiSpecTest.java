@@ -58,9 +58,9 @@ public class GenerateOpenApiSpecTest extends AspectModelMojoTest {
       final String yamlContent = new String( Files.readAllBytes( generatedFile ) );
 
       assertThat( yamlContent ).isNotEmpty();
-      assertThat( yamlContent ).contains("\"post\":");
-      assertThat( yamlContent ).contains("\"put\":");
-      assertThat( yamlContent ).contains("\"patch\":");
+      assertThat( yamlContent ).contains( "\"post\":" );
+      assertThat( yamlContent ).contains( "\"put\":" );
+      assertThat( yamlContent ).contains( "\"patch\":" );
    }
 
    @Test
