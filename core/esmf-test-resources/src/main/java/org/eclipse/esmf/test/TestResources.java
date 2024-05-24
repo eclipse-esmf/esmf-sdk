@@ -43,6 +43,10 @@ public class TestResources {
                   .mergeMetaModelIntoRawModel( rawModel, VersionNumber.parse( knownVersion.toVersionString() ) ) ).get();
    }
 
+   public static Try<VersionedModel> getModel( final TestModel model ) {
+      return getModel( model, KnownVersion.getLatest() );
+   }
+
    public static Try<VersionedModel> getModel( final TestModel model, final KnownVersion knownVersion ) {
       final String baseDirectory = model instanceof InvalidTestAspect ? "invalid" : "valid";
       final String modelsRoot = baseDirectory + "/" + knownVersion.toString().toLowerCase();
@@ -53,6 +57,10 @@ public class TestResources {
       final String baseDirectory = "payloads/" + ( model instanceof InvalidTestAspect ? "invalid" : "valid" );
       final String modelsRoot = baseDirectory + "/" + knownVersion.toString().toLowerCase();
       return Try.of( () -> new ObjectMapper().readTree( Resources.getResource( modelsRoot + "/" + model.getName() + ".json" ) ) );
+   }
+
+   public static Try<VersionedModel> getModel( final TestSharedModel model ) {
+      return getModel( model, KnownVersion.getLatest() );
    }
 
    public static Try<VersionedModel> getModel( final TestSharedModel model, final KnownVersion knownVersion ) {

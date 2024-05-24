@@ -46,7 +46,7 @@
     <div class="border-b flex flex-row pt-2 w-full px-4">
         <div class="left-0">
             <h1 id="$aspectModel.getName()">Aspect Model $aspectModel.getPreferredName($i18n.getLocale())</h1>
-            <div class='pb-4'>$aspectModel.getAspectModelUrn().get()</div>
+            <div class='pb-4'>$aspectModel.urn()</div>
         </div>
         <div class="right-0">
             <div class="logo-header absolute top-1/2 transform -translate-y-2/4"></div>

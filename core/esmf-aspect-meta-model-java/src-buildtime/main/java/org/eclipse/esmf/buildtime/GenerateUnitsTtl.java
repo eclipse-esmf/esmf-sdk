@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Lists;
@@ -76,10 +77,8 @@ public class GenerateUnitsTtl {
          import java.util.stream.Collectors;
 
          import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-         import org.eclipse.esmf.metamodel.QuantityKind;
-         import org.eclipse.esmf.metamodel.Unit;
+         import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
          import org.eclipse.esmf.metamodel.impl.DefaultUnit;
-         import org.eclipse.esmf.samm.KnownVersion;
          import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
          import org.eclipse.esmf.metamodel.datatypes.LangString;
 
@@ -169,9 +168,8 @@ public class GenerateUnitsTtl {
          import java.util.Optional;
 
          import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-         import org.eclipse.esmf.metamodel.QuantityKind;
+         import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
          import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
-         import org.eclipse.esmf.samm.KnownVersion;
 
          /**
           * Enumeration of Quantity Kinds as defined in <a href="http://tfig.unece.org/contents/recommendation-20.htm">Recommendation 20</a>
@@ -186,6 +184,16 @@ public class GenerateUnitsTtl {
             QuantityKinds( final String name, final String label ) {
                this.name = name;
                this.label = label;
+            }
+             
+            @Override
+            public AspectModelUrn urn() {
+               return AspectModelUrn.fromUrn( SammNs.UNIT.urn( name ) );
+            }
+            
+            @Override
+            public Optional<ModelFile> getSourceFile() {
+               return Optional.of( MetaModelFiles.UNITS );
             }
 
             /**
@@ -210,17 +218,6 @@ public class GenerateUnitsTtl {
             @Override
             public String toString() {
                return getLabel();
-            }
-
-            @Override
-            public Optional<AspectModelUrn> getAspectModelUrn() {
-               return Optional.of( AspectModelUrn.fromUrn(
-                     String.format( "urn:samm:org.eclipse.esmf.samm:unit:%s#%s", KnownVersion.getLatest().toVersionString(), name ) ) );
-            }
-
-            @Override
-            public KnownVersion getMetaModelVersion() {
-               return KnownVersion.getLatest();
             }
 
             @Override
@@ -316,7 +313,7 @@ public class GenerateUnitsTtl {
    }
 
    private List<String> unitDeclarations() {
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
 
       final Function<Optional<String>, String> buildDeclaration = optionalValue ->
             optionalValue.map( StringEscapeUtils::escapeJava ).map( "Optional.of(\"%s\")"::formatted ).orElse( "Optional.empty()" );
@@ -336,20 +333,25 @@ public class GenerateUnitsTtl {
                optionalAttributeValue( unit, samm.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ) );
          final String conversionFactorDeclaration = buildDeclaration.apply(
                optionalAttributeValue( unit, samm.conversionFactor() ).map( Statement::getString ) );
-         final String preferredNames = attributeValues( unit, samm.preferredName() ).stream().flatMap( buildLangString )
-               .collect( Collectors.joining( ", ", "Set.of(", ")" ) );
-         final String descriptions = attributeValues( unit, samm.description() ).stream().flatMap( buildLangString )
-               .collect( Collectors.joining( ", ", "Set.of(", ")" ) );
-         final String see = attributeValues( unit, samm.see() ).stream().map( seeValue -> "\"" + seeValue + "\"" )
-               .collect( Collectors.joining( ", ", "List.of(", ")" ) );
+         final String preferredNames = attributeValues( unit, samm.preferredName() ).stream()
+               .map( statement -> ".withPreferredName( Locale.forLanguageTag( \"%s\" ), \"%s\" )".formatted( statement.getLanguage(),
+                     statement.getString() ) ).collect( Collectors.joining() );
          final String quantityKindDefs = attributeValues( unit, samm.quantityKind() ).stream()
                .map( quantityKind -> "QuantityKinds." + toUpperSnakeCase( quantityKind.getResource().getLocalName() ) )
                .collect( Collectors.joining( ", ", "new HashSet<>(Arrays.asList(", "))" ) );
          final String quantityKinds = quantityKindDefs.contains( "()" ) ? "Collections.emptySet()" : quantityKindDefs;
-
          final String metaModelBaseAttributes =
-               "new MetaModelBaseAttributes( AspectModelUrn.fromUrn( \"%s\" ), \"%s\", %s, %s, %s )".formatted(
-                     unit.getURI(), name, preferredNames, descriptions, see );
+               "MetaModelBaseAttributes.builder().withUrn( SammNs.UNIT.urn( \"%s\" ) )%s%s%s.build()".formatted(
+                     unit.getLocalName(),
+                     attributeValues( unit, samm.preferredName() ).stream()
+                           .map( statement -> ".withPreferredName( Locale.forLanguageTag( \"%s\" ), \"%s\" )".formatted(
+                                 statement.getLanguage(), statement.getString() ) ).collect( Collectors.joining() ),
+                     attributeValues( unit, samm.description() ).stream()
+                           .map( statement -> ".withDescription( Locale.forLanguageTag( \"%s\" ), \"%s\" )".formatted(
+                                 statement.getLanguage(), statement.getString() ) ).collect( Collectors.joining() ),
+                     attributeValues( unit, samm.see() ).stream().map( seeValue -> "withSee( \"" + seeValue + "\" )" )
+                           .collect( Collectors.joining() ) );
+
          final String unitDefinition = "new DefaultUnit( %s, %s, %s, %s, %s, %s )".formatted( metaModelBaseAttributes, symbolDeclaration,
                commonCodeDeclaration, referenceUnitDeclaration, conversionFactorDeclaration, quantityKinds );
          return "UNITS_BY_NAME.put( \"%s\", %s );".formatted( name, unitDefinition );
@@ -357,7 +359,7 @@ public class GenerateUnitsTtl {
    }
 
    private List<String> quantityKindDeclarations() {
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
 
       return Streams.stream( unitsModel.listStatements( null, RDF.type, samm.QuantityKind() ) ).map( Statement::getSubject )
             .map( quantityKind -> {

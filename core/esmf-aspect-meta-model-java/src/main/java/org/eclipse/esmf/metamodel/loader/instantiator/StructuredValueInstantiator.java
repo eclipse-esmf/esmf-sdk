@@ -16,6 +16,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.StructuredValue;
 import org.eclipse.esmf.characteristic.impl.DefaultStructuredValue;
 import org.eclipse.esmf.metamodel.Property;
@@ -36,8 +37,8 @@ public class StructuredValueInstantiator extends Instantiator<StructuredValue> {
    @Override
    public StructuredValue apply( final Resource structuredValue ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( structuredValue );
-      final String deconstructionRule = attributeValue( structuredValue, sammc.deconstructionRule() ).getString();
-      final List<Object> elements = getNodesFromList( structuredValue, sammc.elements() )
+      final String deconstructionRule = attributeValue( structuredValue, SammNs.SAMMC.deconstructionRule() ).getString();
+      final List<Object> elements = getNodesFromList( structuredValue, SammNs.SAMMC.elements() )
             .map( this::toElement )
             .collect( Collectors.toList() );
       final Type type = getType( structuredValue );
@@ -53,7 +54,7 @@ public class StructuredValueInstantiator extends Instantiator<StructuredValue> {
     */
    private Object toElement( final RDFNode node ) {
       if ( node.isLiteral() ) {
-         return ((Literal) node).getString();
+         return ( (Literal) node ).getString();
       }
       return modelElementFactory.create( Property.class, node.asResource() );
    }

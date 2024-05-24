@@ -25,7 +25,6 @@ import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
 
 public class AbstractEntityInstantiator extends ComplexTypeInstantiator<AbstractEntity> {
-
    public AbstractEntityInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, AbstractEntity.class );
    }
@@ -36,11 +35,6 @@ public class AbstractEntityInstantiator extends ComplexTypeInstantiator<Abstract
          final List<Property> properties,
          final Optional<ComplexType> extendedEntity,
          final List<AspectModelUrn> extendingComplexTypes ) {
-      return new DefaultAbstractEntity(
-            metaModelBaseAttributes,
-            properties,
-            extendedEntity,
-            extendingComplexTypes,
-            modelElementFactory );
+      return new DefaultAbstractEntity( metaModelBaseAttributes, properties, extendedEntity, extendingComplexTypes, modelElementFactory );
    }
 }

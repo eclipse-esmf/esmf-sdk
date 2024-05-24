@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFList;
@@ -40,12 +40,6 @@ import org.apache.jena.vocabulary.RDF;
  * </ul>
  */
 public class AttributeValueRetriever {
-   protected final SAMM samm;
-
-   public AttributeValueRetriever( final SAMM samm ) {
-      this.samm = samm;
-   }
-
    /**
     * Returns the value of an attribute on a model element (or its super elements)
     *
@@ -101,7 +95,7 @@ public class AttributeValueRetriever {
     * @param attribute the given attribute
     * @return the list of statements asserting values for the attribute
     */
-   protected List<Statement> attributeValues( final Resource modelElement, final Property attribute ) {
+   public List<Statement> attributeValues( final Resource modelElement, final Property attribute ) {
       // Attribute values defined directly on the resource go into the result
       final List<Statement> result = new ArrayList<>();
       for ( final StmtIterator iterator = modelElement.listProperties( attribute ); iterator.hasNext(); ) {
@@ -118,7 +112,7 @@ public class AttributeValueRetriever {
 
       // If the model element is a bnode with samm:property given, it's a Property reference. Follow it to retrieve the sought-for
       // attribute assertions.
-      final StmtIterator referenceIterator = modelElement.listProperties( samm.property() );
+      final StmtIterator referenceIterator = modelElement.listProperties( SammNs.SAMM.property() );
       if ( referenceIterator.hasNext() ) {
          final RDFNode referencedElement = referenceIterator.next().getObject();
          if ( !referencedElement.isResource() ) {
@@ -129,7 +123,7 @@ public class AttributeValueRetriever {
       }
 
       // If the model element is samm:extends another element, retrieve attribute assertions from this supertype as well.
-      final StmtIterator extendsIterator = modelElement.listProperties( samm._extends() );
+      final StmtIterator extendsIterator = modelElement.listProperties( SammNs.SAMM._extends() );
       if ( extendsIterator.hasNext() ) {
          final RDFNode superElementNode = extendsIterator.next().getObject();
          if ( !superElementNode.isResource() ) {

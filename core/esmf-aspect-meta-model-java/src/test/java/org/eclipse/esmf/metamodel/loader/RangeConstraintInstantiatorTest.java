@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
@@ -143,7 +143,7 @@ public class RangeConstraintInstantiatorTest extends MetaModelInstantiatorTest {
       assertThat( rangeConstraint.getUpperBoundDefinition() ).isEqualTo( BoundDefinition.AT_MOST );
    }
 
-   private void assertBaseAttributes( final NamedElement base ) {
+   private void assertBaseAttributes( final ModelElement base ) {
       assertBaseAttributes( base,
             "Test Range Constraint",
             "This is a test range constraint.",

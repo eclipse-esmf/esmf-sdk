@@ -15,7 +15,7 @@ package org.eclipse.esmf.metamodel;
 
 import java.util.Map;
 
-public interface EntityInstance extends NamedElement, Value {
+public interface EntityInstance extends ModelElement, Value {
    Map<Property, Value> getAssertions();
 
    default Entity getEntityType() {

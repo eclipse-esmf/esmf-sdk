@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.List;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -36,12 +37,12 @@ public class TraitInstantiator extends Instantiator<Trait> {
    public Trait apply( final Resource trait ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( trait );
       final Characteristic baseCharacteristic = modelElementFactory
-            .create( Characteristic.class, attributeValue( trait, sammc.baseCharacteristic() ).getResource() );
+            .create( Characteristic.class, attributeValue( trait, SammNs.SAMMC.baseCharacteristic() ).getResource() );
 
       final List<Constraint> constraints =
-            model.listStatements( trait, sammc.constraint(), (RDFNode) null ).mapWith( Statement::getResource )
-                 .mapWith( constraintResource -> modelElementFactory.create( Constraint.class, constraintResource ) )
-                 .toList();
+            model.listStatements( trait, SammNs.SAMMC.constraint(), (RDFNode) null ).mapWith( Statement::getResource )
+                  .mapWith( constraintResource -> modelElementFactory.create( Constraint.class, constraintResource ) )
+                  .toList();
       return new DefaultTrait( metaModelBaseAttributes, baseCharacteristic, constraints );
    }
 }

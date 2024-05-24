@@ -21,7 +21,7 @@ import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
@@ -42,23 +42,21 @@ public abstract class MetaModelInstantiatorTest extends MetaModelVersions {
       return aspect.getOrElseThrow( () -> new RuntimeException( aspect.getCause() ) );
    }
 
-   void assertBaseAttributes( final NamedElement base,
-         final AspectModelUrn expectedAspectModelUrn,
-         final String expectedName, final String expectedPreferredName, final String expectedDescription,
-         final String... expectedSee ) {
-
+   void assertBaseAttributes( final ModelElement base, final AspectModelUrn expectedAspectModelUrn, final String expectedName,
+         final String expectedPreferredName, final String expectedDescription, final String... expectedSee ) {
       assertThat( base.getName() ).isEqualTo( expectedName );
-      assertThat( base.getAspectModelUrn().get() ).isEqualTo( expectedAspectModelUrn );
+      assertThat( base.urn() ).isEqualTo( expectedAspectModelUrn );
       assertBaseAttributes( base, expectedPreferredName, expectedDescription, expectedSee );
    }
 
-   void assertBaseAttributes( final NamedElement base,
-         final String expectedPreferredName, final String expectedDescription,
+   void assertBaseAttributes( final ModelElement base, final String expectedPreferredName, final String expectedDescription,
          final String... expectedSee ) {
-
-      assertThat( base.getPreferredName( Locale.ENGLISH ) ).isEqualTo( expectedPreferredName );
-      assertThat( base.getDescription( Locale.ENGLISH ) ).isEqualTo( expectedDescription );
+      if ( expectedPreferredName != null ) {
+         assertThat( base.getPreferredName( Locale.ENGLISH ) ).isEqualTo( expectedPreferredName );
+      }
+      if ( expectedDescription != null ) {
+         assertThat( base.getDescription( Locale.ENGLISH ) ).isEqualTo( expectedDescription );
+      }
       assertThat( base.getSee() ).containsOnly( expectedSee );
-      assertThat( base.getMetaModelVersion() ).isEqualTo( KnownVersion.getLatest() );
    }
 }

@@ -41,11 +41,6 @@ public class DefaultScalarValue implements ScalarValue {
    }
 
    @Override
-   public KnownVersion getMetaModelVersion() {
-      return type.getMetaModelVersion();
-   }
-
-   @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
       return visitor.visitScalarValue( this, context );
    }

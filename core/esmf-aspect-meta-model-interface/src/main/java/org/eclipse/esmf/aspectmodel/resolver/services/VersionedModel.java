@@ -21,6 +21,7 @@ import org.apache.jena.rdf.model.Model;
 /**
  * Encapsulates an Aspect Model (as RDF model) and the Meta Model version it uses
  */
+// TODO: Remove use of this class throughout API, replace by ModelFile/AspectModel
 public class VersionedModel {
    /**
     * The model including its corresponding meta model

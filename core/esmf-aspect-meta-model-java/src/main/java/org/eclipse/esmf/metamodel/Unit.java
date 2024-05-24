@@ -21,7 +21,7 @@ import java.util.Set;
  *
  * @since SAMM 1.0.0
  */
-public interface Unit extends NamedElement {
+public interface Unit extends ModelElement {
    /**
     * Returns the unit's symbol
     */

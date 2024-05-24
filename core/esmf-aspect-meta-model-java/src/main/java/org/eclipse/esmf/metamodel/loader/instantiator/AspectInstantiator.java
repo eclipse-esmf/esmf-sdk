@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
@@ -37,11 +38,11 @@ public class AspectInstantiator extends Instantiator<Aspect> {
    @Override
    public Aspect apply( final Resource aspect ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( aspect );
-      final List<Property> properties = getPropertiesModels( aspect, samm.properties() );
-      final List<Operation> operations = getResourcesFromList( aspect, samm.operations() )
+      final List<Property> properties = getPropertiesModels( aspect, SammNs.SAMM.properties() );
+      final List<Operation> operations = getResourcesFromList( aspect, SammNs.SAMM.operations() )
             .map( operation -> modelElementFactory.create( Operation.class, operation ) )
             .collect( Collectors.toList() );
-      final List<Event> events = getResourcesFromList( aspect, samm.events() )
+      final List<Event> events = getResourcesFromList( aspect, SammNs.SAMM.events() )
             .map( event -> modelElementFactory.create( Event.class, event ) )
             .collect( Collectors.toList() );
       final boolean isCollectionAspect = properties.stream()

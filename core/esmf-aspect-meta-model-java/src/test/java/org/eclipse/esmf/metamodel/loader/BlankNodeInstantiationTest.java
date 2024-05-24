@@ -33,6 +33,7 @@ public class BlankNodeInstantiationTest extends MetaModelInstantiatorTest {
       assertThat( aspect.getProperties() ).hasSize( 1 );
       final List list = (List) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final Characteristic characteristic = list.getElementCharacteristic().get();
-      assertThat( characteristic.getName() ).isEqualTo( "NumberListTrait" );
+      assertThat( characteristic.isAnonymous() ).isTrue();
+      assertThat( characteristic.getName() ).startsWith( "x" );
    }
 }

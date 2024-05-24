@@ -13,17 +13,46 @@
 
 package org.eclipse.esmf.metamodel;
 
+import java.util.Optional;
+
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 import org.eclipse.esmf.samm.KnownVersion;
 
 /**
  * The Base interface provides all facilities that all Aspect Model elements have.
  */
-public interface ModelElement {
+public interface ModelElement extends HasDescription {
+   default AspectModelUrn urn() {
+      return AspectModelUrn.fromUrn( "urn:samm:anonymous.elements:0.0.0#" + "x%08X".formatted( hashCode() ) );
+   }
+
+   @Deprecated( forRemoval = true )
+   default Optional<AspectModelUrn> getAspectModelUrn() {
+      return Optional.of( urn() );
+   }
+
+   @Deprecated( forRemoval = true )
+   default KnownVersion getMetaModelVersion() {
+      return KnownVersion.getLatest();
+   }
+
+   default String getName() {
+      return urn().getName();
+   }
+
+   default Optional<ModelFile> getSourceFile() {
+      return Optional.empty();
+   }
+
    /**
-    * @return the version of the Aspect Meta Model on which the Aspect Model is based.
+    * Determines whether the model element is identified by a proper Aspect Model URN.
+    *
+    * @return true of the element is considered anonymous, otherwise it has a global identifying URN
     */
-   KnownVersion getMetaModelVersion();
+   default boolean isAnonymous() {
+      return true;
+   }
 
    <T, C> T accept( AspectVisitor<T, C> visitor, C context );
 

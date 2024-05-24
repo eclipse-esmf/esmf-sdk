@@ -30,12 +30,11 @@ import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidNamespaceExceptio
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidRootElementCountException;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelNamespace;
-import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.impl.DefaultModelNamespace;
 import org.eclipse.esmf.samm.KnownVersion;
 
@@ -70,11 +69,11 @@ public class AspectModelLoader {
    private AspectModelLoader() {
    }
 
-   private static void validateNamespaceOfCustomUnits( final SAMM samm, final Model rawModel ) {
+   private static void validateNamespaceOfCustomUnits( final Model rawModel ) {
       final List<String> customUnitsWithSammNamespace = new ArrayList<>();
-      rawModel.listStatements( null, RDF.type, samm.Unit() )
+      rawModel.listStatements( null, RDF.type, SammNs.SAMM.Unit() )
             .mapWith( Statement::getSubject )
-            .filterKeep( subject -> subject.getNameSpace().equals( samm.getNamespace() ) )
+            .filterKeep( subject -> subject.getNameSpace().equals( SammNs.SAMM.getNamespace() ) )
             .mapWith( Resource::getLocalName )
             .forEach( customUnitsWithSammNamespace::add );
 
@@ -97,14 +96,14 @@ public class AspectModelLoader {
    public static Try<List<ModelNamespace>> getNamespaces( final VersionedModel versionedModel ) {
       return getElements( versionedModel ).map( elements ->
             elements.stream()
-                  .filter( element -> element.is( NamedElement.class ) && element.as( NamedElement.class ).getAspectModelUrn().isPresent() )
+                  .filter( element -> element.is( ModelElement.class ) && !element.isAnonymous() )
                   .collect( Collectors.groupingBy( namedElement -> {
-                     final String urn = namedElement.as( NamedElement.class ).getAspectModelUrn().orElseThrow().toString();
+                     final String urn = namedElement.as( ModelElement.class ).urn().toString();
                      return urn.substring( 0, urn.indexOf( "#" ) );
                   } ) )
                   .entrySet()
                   .stream()
-                  .map( entry -> DefaultModelNamespace.from( entry.getKey(), entry.getValue() ) )
+                  .map( entry -> DefaultModelNamespace.from( entry.getKey(), entry.getValue(), Optional.empty() ) )
                   .toList()
       );
    }
@@ -128,17 +127,15 @@ public class AspectModelLoader {
          return Try.failure( updatedModel.getCause() );
       }
 
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
-
       try {
-         validateNamespaceOfCustomUnits( samm, versionedModel.getRawModel() );
+         validateNamespaceOfCustomUnits( versionedModel.getRawModel() );
       } catch ( final InvalidNamespaceException exception ) {
          return Try.failure( exception );
       }
 
       try {
          final VersionedModel model = updatedModel.get();
-         final ModelElementFactory modelElementFactory = new ModelElementFactory( KnownVersion.getLatest(), model.getModel(), Map.of() );
+         final ModelElementFactory modelElementFactory = new ModelElementFactory( model.getModel(), Map.of() );
          // List element definitions (... rdf:type ...) from the raw model (i.e. the actual aspect model to load)
          // but then load them from the resolved model, because it contains all necessary context (e.g. unit definitions)
          return Try.success( model.getRawModel().listStatements( null, RDF.type, (RDFNode) null ).toList().stream()

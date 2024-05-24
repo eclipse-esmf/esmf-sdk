@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.constraint.RangeConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.ScalarValue;
@@ -39,18 +40,16 @@ public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
    public RangeConstraint apply( final Resource rangeConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( rangeConstraint );
 
-      final Optional<ScalarValue> minValue = optionalAttributeValue( rangeConstraint, sammc.minValue() )
+      final Optional<ScalarValue> minValue = optionalAttributeValue( rangeConstraint, SammNs.SAMMC.minValue() )
             .map( Statement::getLiteral )
-            .map( literal -> new DefaultScalarValue( literal.getValue(),
-                  new DefaultScalar( literal.getDatatypeURI(), metaModelBaseAttributes.getMetaModelVersion() ) ) );
-      final Optional<ScalarValue> maxValue = optionalAttributeValue( rangeConstraint, sammc.maxValue() )
+            .map( literal -> new DefaultScalarValue( literal.getValue(), new DefaultScalar( literal.getDatatypeURI() ) ) );
+      final Optional<ScalarValue> maxValue = optionalAttributeValue( rangeConstraint, SammNs.SAMMC.maxValue() )
             .map( Statement::getLiteral )
-            .map( literal -> new DefaultScalarValue( literal.getValue(),
-                  new DefaultScalar( literal.getDatatypeURI(), metaModelBaseAttributes.getMetaModelVersion() ) ) );
+            .map( literal -> new DefaultScalarValue( literal.getValue(), new DefaultScalar( literal.getDatatypeURI() ) ) );
       final BoundDefinition lowerBoundDefinition = getBoundDefinitionForRangeValue( minValue,
-            sammc.lowerBoundDefinition(), rangeConstraint, BoundDefinition.AT_LEAST );
+            SammNs.SAMMC.lowerBoundDefinition(), rangeConstraint, BoundDefinition.AT_LEAST );
       final BoundDefinition upperBoundDefinition = getBoundDefinitionForRangeValue( maxValue,
-            sammc.upperBoundDefinition(), rangeConstraint, BoundDefinition.AT_MOST );
+            SammNs.SAMMC.upperBoundDefinition(), rangeConstraint, BoundDefinition.AT_MOST );
 
       return new DefaultRangeConstraint( metaModelBaseAttributes, minValue, maxValue, lowerBoundDefinition, upperBoundDefinition );
    }
@@ -63,11 +62,11 @@ public class RangeConstraintInstantiator extends Instantiator<RangeConstraint> {
     * @param rangeConstraint the characteristic being processed
     * @param defaultBoundDefinitionValue the default value for the bound definition property
     * @return in case no value was given for the provided upper or lower bound, the default {@link BoundDefinition#OPEN}
-    *       is returned.
-    *       In case a value is given for the provided upper or lower bound and the model does not contain a value for
-    *       the bound definition property, the provided default {@link BoundDefinition} is returned.
-    *       In case a value is given for the provided upper or lower bound and the model does provide a value for the
-    *       bound definition property, provided bound definition value is returned.
+    * is returned.
+    * In case a value is given for the provided upper or lower bound and the model does not contain a value for
+    * the bound definition property, the provided default {@link BoundDefinition} is returned.
+    * In case a value is given for the provided upper or lower bound and the model does provide a value for the
+    * bound definition property, provided bound definition value is returned.
     */
    private BoundDefinition getBoundDefinitionForRangeValue( final Optional<ScalarValue> rangeValue,
          final Property boundDefinitionProperty, final Resource rangeConstraint,

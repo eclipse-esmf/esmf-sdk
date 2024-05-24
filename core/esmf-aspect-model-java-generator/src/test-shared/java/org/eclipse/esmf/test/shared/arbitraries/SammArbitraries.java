@@ -23,9 +23,6 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammDataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMME;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Entity;
@@ -61,17 +58,10 @@ import org.apache.jena.datatypes.RDFDatatype;
  * Provides {@link Arbitrary}s for Aspect model elements.
  */
 public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitraries, XsdArbitraries {
-   SAMM samm( KnownVersion metaModelVersion );
-
-   SAMMC sammc( KnownVersion metaModelVersion );
-
-   SAMME samme( KnownVersion metaModelVersion );
-
    @Provide
    default Arbitrary<Scalar> anyScalar() {
-      final Arbitrary<String> uris = Arbitraries.of(
-            ExtendedXsdDataType.SUPPORTED_XSD_TYPES.stream().map( RDFDatatype::getURI ).collect( Collectors.toList() ) );
-      return Combinators.combine( uris, anyMetaModelVersion() ).as( DefaultScalar::new );
+      return Arbitraries.of( ExtendedXsdDataType.SUPPORTED_XSD_TYPES.stream().map( RDFDatatype::getURI ).collect( Collectors.toList() ) )
+            .map( DefaultScalar::new );
    }
 
    @Provide
@@ -170,8 +160,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
             .combine( anyMetaModelVersion(), anyCharacteristicUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
                   anyScalar() )
             .as( ( metaModelVersion, characteristicUrn, preferredNames, descriptions, see, dataType ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, characteristicUrn, characteristicUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( characteristicUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultCharacteristic( baseAttributes, Optional.of( dataType ) );
             } );
    }
@@ -182,8 +176,13 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
                   anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyOperation().list().ofMaxSize( 3 ),
                   anyEvent().list().ofMaxSize( 3 ) )
             .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, properties, operations, events ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, aspectUrn, aspectUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( aspectUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
+
                return new DefaultAspect( baseAttributes, properties, operations, events, false );
             } );
    }
@@ -193,8 +192,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
       return Combinators.combine( anyMetaModelVersion(), anyOperationUrn(), anyPreferredNames(), anyDescriptions(),
                   anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyProperty().optional() )
             .as( ( metaModelVersion, operationUrn, preferredNames, descriptions, see, inputs, output ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, operationUrn, operationUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( operationUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultOperation( baseAttributes, inputs, output );
             } );
    }
@@ -204,8 +207,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
       return Combinators.combine( anyMetaModelVersion(), anyEventUrn(), anyPreferredNames(), anyDescriptions(),
                   anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ) )
             .as( ( metaModelVersion, eventUrn, preferredNames, descriptions, see, properties ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, eventUrn, eventUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( eventUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultEvent( baseAttributes, properties );
             } );
    }
@@ -215,8 +222,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
       return Combinators.combine( anyMetaModelVersion(), anyPropertyUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
                   anyCharacteristic(), anyPayloadName() )
             .as( ( metaModelVersion, propertyUrn, preferredNames, descriptions, see, characteristic, payloadName ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, propertyUrn, propertyUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( propertyUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultProperty( baseAttributes, Optional.of( characteristic ), Optional.empty(), false, false,
                      Optional.of( payloadName ), false,
                      Optional.empty() );
@@ -228,8 +239,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
       return Combinators.combine( anyMetaModelVersion(), anyEntityUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
                   anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ) )
             .as( ( metaModelVersion, entityUrn, preferredNames, descriptions, see, properties ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, entityUrn, entityUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( entityUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultEntity( baseAttributes, properties );
             } );
    }
@@ -326,8 +341,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
       return Combinators.combine( anyMetaModelVersion(), anyAspectUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
                   entityAssertions )
             .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, assertions ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, aspectUrn, aspectUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( aspectUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultEntityInstance( baseAttributes, assertions, entity );
             } );
    }

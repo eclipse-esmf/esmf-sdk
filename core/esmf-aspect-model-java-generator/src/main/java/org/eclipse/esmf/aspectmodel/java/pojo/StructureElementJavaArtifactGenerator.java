@@ -64,7 +64,6 @@ import org.jboss.forge.roaster.Roaster;
  * @param <E> the element type
  */
 public class StructureElementJavaArtifactGenerator<E extends StructureElement> implements JavaArtifactGenerator<E> {
-
    private final Set<ComplexType> extendingEntities;
 
    public StructureElementJavaArtifactGenerator() {

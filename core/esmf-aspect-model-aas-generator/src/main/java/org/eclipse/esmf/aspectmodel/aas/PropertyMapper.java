@@ -12,8 +12,7 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Type;
 
@@ -90,14 +89,12 @@ public interface PropertyMapper<T extends SubmodelElement> extends Comparable<Pr
    }
 
    /**
-    * Determines the identifier for the given {@link NamedElement}.
+    * Determines the identifier for the given {@link ModelElement}.
     *
     * @param element the element to get the identifier for
     * @return the identifier
     */
-   default String determineIdentifierFor( final NamedElement element ) {
-      return element.getAspectModelUrn()
-            .map( AspectModelUrn::toString )
-            .orElseGet( element::getName );
+   default String determineIdentifierFor( final ModelElement element ) {
+      return element.urn().toString();
    }
 }

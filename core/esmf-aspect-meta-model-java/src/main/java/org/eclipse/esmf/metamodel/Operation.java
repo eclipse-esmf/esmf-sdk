@@ -22,7 +22,7 @@ import java.util.Optional;
  *
  * @since SAMM 1.0.0
  */
-public interface Operation extends NamedElement {
+public interface Operation extends ModelElement {
 
    /**
     * @return a {@link List} of {@link Property}(ies) which define the input parameters for the Operation.
