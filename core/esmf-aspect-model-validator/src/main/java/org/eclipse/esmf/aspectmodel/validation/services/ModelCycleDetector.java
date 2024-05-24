@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -85,9 +84,7 @@ public class ModelCycleDetector {
       cycleDetectionReport.clear();
 
       model = versionedModel.getModel();
-      final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() );
-      samm = new SAMM( metaModelVersion.get() );
-      initializeQuery( metaModelVersion.get() );
+      initializeQuery();
 
       // we only want to investigate properties that are directly reachable from an Aspect
       final StmtIterator aspects = model.listStatements( null, RDF.type, samm.Aspect() );
@@ -227,9 +224,8 @@ public class ModelCycleDetector {
    }
 
    @SuppressWarnings( "checkstyle:LineLength" )
-   private void initializeQuery( final KnownVersion metaModelVersion ) {
-      final String currentVersionPrefixes = String.format( PREFIXES, metaModelVersion.toVersionString(),
-            metaModelVersion.toVersionString() );
+   private void initializeQuery() {
+      final String currentVersionPrefixes = String.format( PREFIXES, KnownVersion.getLatest(), KnownVersion.getLatest() );
       //noinspection LongLine
       final String queryString = String.format( """
                   %s select ?reachableProperty ?viaEither

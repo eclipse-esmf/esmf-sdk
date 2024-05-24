@@ -18,5 +18,5 @@ package org.eclipse.esmf.metamodel;
  *
  * @since SAMM 1.0.0
  */
-public interface Constraint extends NamedElement {
+public interface Constraint extends ModelElement {
 }

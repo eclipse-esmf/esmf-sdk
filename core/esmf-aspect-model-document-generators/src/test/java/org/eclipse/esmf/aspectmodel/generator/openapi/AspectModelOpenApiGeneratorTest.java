@@ -98,8 +98,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final JsonNode json = result.getContent();
       assertSpecificationIsValid( json, json.toString(), aspect );
       assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo(
-            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       // Check that the map containing separate schema files contains the same information as the
       // all-in-one JSON document
@@ -149,8 +148,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( "v1.0.0" );
       assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo(
-            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       openApi.getServers().forEach( server -> assertThat( server.getUrl() ).contains( "v1.0.0" ) );
    }
@@ -666,13 +664,13 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( context.<Object> read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();
       assertThat( context.<String> read(
             "$['components']['schemas']['" + aspect.getName() + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) ).isEqualTo(
-            aspect.getAspectModelUrn().get().toString() );
+            aspect.urn().toString() );
 
       for ( final Property property : aspect.getProperties() ) {
          assertThat( context.<String> read( "$['components']['schemas']"
                + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
                + AspectModelJsonSchemaVisitor.SAMM_EXTENSION
-               + "']" ) ).isEqualTo( property.getAspectModelUrn().get().toString() );
+               + "']" ) ).isEqualTo( property.urn().toString() );
       }
 
       // $comment keywords should only be generated on demand, not by default
@@ -698,8 +696,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
 
       assertThat( node.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( node.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo(
-            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+      assertThat( node.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
       assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
@@ -719,8 +716,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
       assertThat(
             openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION )
-                  .toString() ).contains(
-            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+                  .toString() ).contains( aspect.urn().toString() );
 
       validateReferences( node );
    }
@@ -737,7 +733,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
    }
 
    private String getExpectedApiVersion( final Aspect aspect ) {
-      final String aspectVersion = aspect.getAspectModelUrn().get().getVersion();
+      final String aspectVersion = aspect.urn().getVersion();
       final int endIndexOfMajorVersion = aspectVersion.indexOf( "." );
       final String majorAspectVersion = aspectVersion.substring( 0, endIndexOfMajorVersion );
       return String.format( "v%s", majorAspectVersion );

@@ -29,7 +29,7 @@ import org.eclipse.esmf.aspectmodel.resolver.AspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.ImmutableMap;
@@ -85,7 +85,7 @@ public class SammAspectMetaModelResourceResolver implements AspectMetaModelResou
    public Try<Model> loadMetaModel( final KnownVersion metaModelVersion ) {
       return loadUrlSet( metaModelVersion, new ClassPathMetaModelUrnResolver() ).map( model -> {
          model.clearNsPrefixMap();
-         model.setNsPrefixes( Namespace.createPrefixMap( metaModelVersion ) );
+         model.setNsPrefixes( Namespace.createPrefixMap() );
          return model;
       } );
    }
@@ -124,19 +124,18 @@ public class SammAspectMetaModelResourceResolver implements AspectMetaModelResou
             .map( versionNumber -> KnownVersion.fromVersionString( versionNumber.toString() ).orElseThrow(
                   () -> new UnsupportedVersionException( versionNumber ) ) )
             .toJavaStream().flatMap( metaModelVersion -> {
-               final SAMM samm = new SAMM( metaModelVersion );
-               if ( !target.contains( null, RDF.type, samm.Aspect() ) ) {
+               if ( !target.contains( null, RDF.type, SammNs.SAMM.Aspect() ) ) {
                   return Streams.stream( modelToAdd.listStatements() );
                }
-               return getModelStatementsWithoutAspectAssertion( modelToAdd, samm );
+               return getModelStatementsWithoutAspectAssertion( modelToAdd );
             } );
    }
 
-   private Stream<Statement> getModelStatementsWithoutAspectAssertion( final Model model, final SAMM samm ) {
+   private Stream<Statement> getModelStatementsWithoutAspectAssertion( final Model model ) {
       return Streams.stream( model.listStatements() ).filter( statement ->
-            !(statement.getPredicate().equals( RDF.type )
+            !( statement.getPredicate().equals( RDF.type )
                   && statement.getObject().isURIResource()
-                  && statement.getObject().asResource().equals( samm.Aspect() )) );
+                  && statement.getObject().asResource().equals( SammNs.SAMM.Aspect() ) ) );
    }
 
    /**
@@ -211,7 +210,7 @@ public class SammAspectMetaModelResourceResolver implements AspectMetaModelResou
    @Override
    public Set<VersionNumber> getUsedMetaModelVersions( final Model model ) {
       final String sammUrnStart = String.format( "%s:%s", AspectModelUrn.VALID_PROTOCOL, AspectModelUrn.VALID_NAMESPACE_IDENTIFIER );
-      Set<VersionNumber> result = model.listObjects()
+      final Set<VersionNumber> result = model.listObjects()
             .toList()
             .stream()
             .filter( RDFNode::isURIResource )
@@ -219,8 +218,8 @@ public class SammAspectMetaModelResourceResolver implements AspectMetaModelResou
             .map( Resource::getURI )
             .filter( uri -> uri.startsWith( sammUrnStart ) )
             .flatMap( uri -> AspectModelUrn.from( uri ).toJavaStream() )
-            .filter( urn -> (urn.getElementType().equals( ElementType.META_MODEL ) || urn.getElementType()
-                  .equals( ElementType.CHARACTERISTIC )) )
+            .filter( urn -> ( urn.getElementType().equals( ElementType.META_MODEL ) || urn.getElementType()
+                  .equals( ElementType.CHARACTERISTIC ) ) )
             .map( AspectModelUrn::getVersion )
             .map( VersionNumber::parse )
             .collect( Collectors.toSet() );

@@ -23,7 +23,6 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
-import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.vocabulary.RDF;
@@ -33,11 +32,6 @@ import org.apache.jena.vocabulary.RDF;
  */
 public class ValueInstantiator {
    private final RDFDatatype curieDataType = new CurieRdfType();
-   private final KnownVersion metaModelVersion;
-
-   public ValueInstantiator( final KnownVersion metaModelVersion ) {
-      this.metaModelVersion = metaModelVersion;
-   }
 
    /**
     * Creates a new scalar value from a lexical value representation.
@@ -61,13 +55,13 @@ public class ValueInstantiator {
       return Stream.concat( ExtendedXsdDataType.SUPPORTED_XSD_TYPES.stream(), Stream.of( curieDataType ) )
             .filter( type -> type.getURI().equals( datatypeUri ) )
             .map( type -> type.parse( lexicalRepresentation ) )
-            .<ScalarValue> map( value -> new DefaultScalarValue( value, new DefaultScalar( datatypeUri, metaModelVersion ) ) )
+            .<ScalarValue> map( value -> new DefaultScalarValue( value, new DefaultScalar( datatypeUri ) ) )
             .findAny();
    }
 
    public ScalarValue buildLanguageString( final String lexicalRepresentation, final String languageTag ) {
       final LangString langString = new LangString( lexicalRepresentation, Locale.forLanguageTag( languageTag ) );
-      final Scalar type = new DefaultScalar( RDF.langString.getURI(), metaModelVersion );
+      final Scalar type = new DefaultScalar( RDF.langString.getURI() );
       return new DefaultScalarValue( langString, type );
    }
 }

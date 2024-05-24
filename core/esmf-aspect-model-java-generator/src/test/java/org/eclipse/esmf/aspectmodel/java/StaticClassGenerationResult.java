@@ -57,28 +57,23 @@ public class StaticClassGenerationResult extends GenerationResult {
       assertThat( compilationUnits ).containsKey( className );
 
       final List<FieldDeclaration> fields = compilationUnits.get( className ).findAll( FieldDeclaration.class );
+      for ( final FieldDeclaration field : fields ) {
+         final String fieldName = field.resolve().getName();
+         if ( !expectedBaseAttributeArguments.containsKey( fieldName ) ) {
+            continue;
+         }
+         final Set<String> expectedArguments = expectedBaseAttributeArguments.get( fieldName );
+         final NodeList<VariableDeclarator> declarators = field.getVariables();
+         assertThat( declarators ).hasSize( 1 );
 
-      fields.stream().filter( field -> expectedBaseAttributeArguments.containsKey( field.resolve().getName() ) )
-            .forEach( field -> {
-               final String fieldName = field.resolve().getName();
-               final Set<String> expectedArguments = expectedBaseAttributeArguments.get( fieldName );
-               final NodeList<VariableDeclarator> declarators = field.getVariables();
-               assertThat( declarators ).hasSize( 1 );
-
-               final VariableDeclarator declarator = declarators.get( 0 );
-               final Expression metaModelBaseAttributesDeclarationExpression = declarator.getInitializer().get()
-                     .asObjectCreationExpr()
-                     .getArguments().get( 0 );
-               final NodeList<Expression> metaModelBaseAttributesArguments = metaModelBaseAttributesDeclarationExpression
-                     .asMethodCallExpr()
-                     .getArguments();
-
-               assertThat( metaModelBaseAttributesArguments ).hasSize( expectedArguments.size() );
-
-               assertThat( metaModelBaseAttributesArguments ).allSatisfy( expression -> {
-                  assertThat( expectedArguments ).containsOnlyOnce( expression.toString() );
-               } );
-            } );
+         final VariableDeclarator declarator = declarators.get( 0 );
+         final Expression metaModelBaseAttributesDeclarationExpression = declarator.getInitializer().get()
+               .asObjectCreationExpr()
+               .getArguments().get( 0 );
+         for ( final String argument : expectedArguments ) {
+            assertThat( metaModelBaseAttributesDeclarationExpression.toString() ).contains( argument );
+         }
+      }
    }
 
    /**

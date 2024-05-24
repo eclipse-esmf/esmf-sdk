@@ -51,33 +51,33 @@ abstract class StaticMetaModelGeneratorTest extends MetaModelVersions {
             .enableJacksonAnnotations( false )
             .executeLibraryMacros( executeLibraryMacros )
             .templateLibFile( templateLibFile )
-            .packageName( aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ).get() )
+            .packageName( aspect.urn().getNamespace() )
             .build();
       final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( aspect, config );
       final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( aspect, config );
       return List.of( pojoGenerator, staticGenerator );
    }
 
-   Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion version ) {
-      final VersionedModel model = TestResources.getModel( testAspect, version ).get();
+   Collection<JavaGenerator> getGenerators( final TestAspect testAspect ) {
+      final VersionedModel model = TestResources.getModel( testAspect ).get();
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( false )
             .executeLibraryMacros( false )
-            .packageName( aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ).get() )
+            .packageName( aspect.urn().getNamespace() )
             .build();
       final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( aspect, config );
       final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( aspect, config );
       return List.of( pojoGenerator, staticGenerator );
    }
 
-   Collection<JavaGenerator> getGenerators( final TestSharedAspect testAspect, final KnownVersion version ) {
-      final VersionedModel model = TestResources.getModel( testAspect, version ).get();
+   Collection<JavaGenerator> getGenerators( final TestSharedAspect testAspect ) {
+      final VersionedModel model = TestResources.getModel( testAspect ).get();
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( false )
             .executeLibraryMacros( false )
-            .packageName( aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ).get() )
+            .packageName( aspect.urn().getNamespace() )
             .build();
       final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( aspect, config );
       final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( aspect, config );

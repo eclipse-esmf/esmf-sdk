@@ -70,11 +70,11 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
       final Try<Aspect> tryAspect = AspectModelLoader.getSingleAspect( versionedModel );
       final Aspect aspect = tryAspect.getOrElseThrow( () -> new RuntimeException( tryAspect.getCause() ) );
 
-      final Namespace namespace = () -> aspect.getAspectModelUrn().get().getUrnPrefix();
-      final RdfModelCreatorVisitor visitor = new RdfModelCreatorVisitor( aspect.getMetaModelVersion(), namespace );
+      final Namespace namespace = () -> aspect.urn().getUrnPrefix();
+      final RdfModelCreatorVisitor visitor = new RdfModelCreatorVisitor( namespace );
       final Model serializedModel = visitor.visitAspect( aspect, null ).getModel();
 
-      final Map<String, String> prefixMap = new HashMap<>( Namespace.createPrefixMap( knownVersion ) );
+      final Map<String, String> prefixMap = new HashMap<>( Namespace.createPrefixMap() );
       prefixMap.put( "", namespace.getNamespace() );
       serializedModel.setNsPrefixes( prefixMap );
 
@@ -106,7 +106,7 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
 
    /**
     * In some test models, lines with RDF lists appear, e.g.:
-    *   :property ( "foo" "bar" )
+    * :property ( "foo" "bar" )
     * However, for some serialized models, the order of elements is non-deterministic since the underlying collection is a Set.
     * In order to check that the line is present in the two models, we simply tokenize and sort both lines, so we can compare them.
     */

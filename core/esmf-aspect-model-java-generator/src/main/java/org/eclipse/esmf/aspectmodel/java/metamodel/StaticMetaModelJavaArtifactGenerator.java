@@ -36,7 +36,7 @@ import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.java.pojo.JavaArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.Code;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.characteristic.Duration;
@@ -133,10 +133,8 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
       importTracker.importExplicit( Locale.class );
 
       final CharMatcher matchHash = CharMatcher.is( '#' );
-      final String modelUrnPrefix = element.getAspectModelUrn().map( AspectModelUrn::getUrnPrefix ).orElseThrow( () -> {
-         throw new CodeGenerationException( "Aspect or Entity may not be declared as an anonymous node" );
-      } );
-      final String characteristicBaseUrn = matchHash.trimTrailingFrom( new SAMMC( element.getMetaModelVersion() ).getNamespace() );
+      final String modelUrnPrefix = element.urn().getUrnPrefix();
+      final String characteristicBaseUrn = matchHash.trimTrailingFrom( SammNs.SAMMC.getNamespace() );
 
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
             .put( "Arrays", java.util.Arrays.class )
@@ -197,7 +195,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "Measurement", Measurement.class )
             .put( "modelUrnPrefix", modelUrnPrefix )
             .put( "modelVisitor", new StaticMetaModelVisitor() )
-            .put( "nonNegativeInteger", new DefaultScalar( XSD.nonNegativeInteger.getURI(), element.getMetaModelVersion() ) )
+            .put( "nonNegativeInteger", new DefaultScalar( XSD.nonNegativeInteger.getURI() ) )
             .put( "Quantifiable", Quantifiable.class )
             .put( "RangeConstraint", RangeConstraint.class )
             .put( "RegularExpressionConstraint", RegularExpressionConstraint.class )

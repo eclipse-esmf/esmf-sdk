@@ -37,7 +37,7 @@ import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
-import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
 
@@ -178,7 +178,7 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
    private void generateHtmlDocu( final Function<String, OutputStream> nameMapper, final Format format, final Set<Locale> languages ) {
       final Map<String, Object> configuration = new HashMap<>();
       configuration.put( "aspectModel", context.aspect() );
-      configuration.put( "aspectModelHelper", new AspectModelHelper( context.aspect().getMetaModelVersion() ) );
+      configuration.put( "aspectModelHelper", new AspectModelHelper() );
 
       final Properties engineConfiguration = new Properties();
       engineConfiguration.put( RuntimeConstants.FILE_RESOURCE_LOADER_PATH, ".," + DOCU_TEMPLATE_ROOT_DIR + "/html" );
@@ -315,8 +315,8 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
 
    private void logMissingTranslations( final Aspect aspectMetaModel, final Locale locale ) {
       aspectMetaModel.accept( new AspectStreamTraversalVisitor(), null )
-            .filter( NamedElement.class::isInstance )
-            .map( NamedElement.class::cast )
+            .filter( ModelElement.class::isInstance )
+            .map( ModelElement.class::cast )
             .forEach( modelElement -> {
                final boolean hasPreferredNameWithLocale = modelElement.getPreferredNames().stream()
                      .anyMatch( preferredName -> preferredName.getLanguageTag().equals( locale ) );

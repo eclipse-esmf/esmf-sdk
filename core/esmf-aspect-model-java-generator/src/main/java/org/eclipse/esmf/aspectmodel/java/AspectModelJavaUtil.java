@@ -46,7 +46,6 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -218,8 +217,7 @@ public class AspectModelJavaUtil {
    }
 
    public static String generateAbstractEntityClassAnnotations( final ComplexType element,
-         final JavaCodeGenerationConfig codeGenerationConfig,
-         final Set<ComplexType> extendingEntities ) {
+         final JavaCodeGenerationConfig codeGenerationConfig, final Set<ComplexType> extendingEntities ) {
       final StringBuilder classAnnotationBuilder = new StringBuilder();
       if ( element.isAbstractEntity() || !element.getExtendingElements().isEmpty() ) {
          codeGenerationConfig.importTracker().importExplicit( JsonTypeInfo.class );
@@ -313,7 +311,7 @@ public class AspectModelJavaUtil {
                importTracker.importExplicit( LangString.class );
                return "LangString";
             }
-            final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource, actualDataType.getMetaModelVersion() );
+            final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource );
             importTracker.importExplicit( result );
             return result.getTypeName();
          }
@@ -332,7 +330,7 @@ public class AspectModelJavaUtil {
       if ( typeResource.getURI().equals( RDF.langString.getURI() ) ) {
          return Map.class;
       }
-      final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource, dataType.getMetaModelVersion() );
+      final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource );
       return result;
    }
 
@@ -442,10 +440,9 @@ public class AspectModelJavaUtil {
          final ValueInitializer valueInitializer ) {
       return property.getDataType().map( type -> {
          final Resource typeResource = ResourceFactory.createResource( type.getUrn() );
-         final KnownVersion metaModelVersion = property.getMetaModelVersion();
-         final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource, metaModelVersion );
+         final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource );
          codeGenerationConfig.importTracker().importExplicit( result );
-         return valueInitializer.apply( typeResource, value, metaModelVersion );
+         return valueInitializer.apply( typeResource, value );
       } ).orElseThrow( () -> new CodeGenerationException(
             "The Either Characteristic is not allowed for Properties used as elements in a StructuredValue" ) );
    }

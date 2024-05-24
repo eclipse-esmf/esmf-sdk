@@ -17,7 +17,6 @@ package examples;
 import java.io.File;
 import java.util.List;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import io.vavr.collection.Stream;
 // end::imports[]
@@ -32,10 +31,8 @@ public class LoadAspectModelObjects {
             .flatMap( AspectModelLoader::getElements )
             .toStream()
             .flatMap( Stream::ofAll )
-            .filter( element -> element.is( NamedElement.class ) )
-            .map( element -> element.as( NamedElement.class ) )
             .map( modelElement -> String.format( "Model element: %s has URN %s%n",
-                  modelElement.getName(), modelElement.getAspectModelUrn() ) )
+                  modelElement.getName(), modelElement.urn() ) )
             .toJavaList();
       // end::loadModel[]
    }

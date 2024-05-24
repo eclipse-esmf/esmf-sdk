@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.nio.charset.Charset;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.constraint.EncodingConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultEncodingConstraint;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
@@ -31,7 +32,7 @@ public class EncodingConstraintInstantiator extends Instantiator<EncodingConstra
    @Override
    public EncodingConstraint apply( final Resource encodingConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( encodingConstraint );
-      final String value = encodingConstraint.getProperty( samm.value() ).getObject().toString();
+      final String value = encodingConstraint.getProperty( SammNs.SAMM.value() ).getObject().toString();
       final String encoding = value.substring( value.indexOf( '#' ) + 1 );
       return new DefaultEncodingConstraint( metaModelBaseAttributes, Charset.forName( encoding ) );
    }

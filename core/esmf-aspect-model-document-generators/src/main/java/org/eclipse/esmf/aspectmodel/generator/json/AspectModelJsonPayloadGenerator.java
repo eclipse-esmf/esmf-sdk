@@ -98,7 +98,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private final Aspect aspect;
 
    public AspectModelJsonPayloadGenerator( final Aspect aspect ) {
-      this( aspect, new SAMM( aspect.getMetaModelVersion() ), new Random() );
+      this( aspect, new Random() );
    }
 
    public AspectModelJsonPayloadGenerator( final AspectContext context ) {
@@ -106,10 +106,6 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    }
 
    public AspectModelJsonPayloadGenerator( final Aspect aspect, final Random randomStrategy ) {
-      this( aspect, new SAMM( aspect.getMetaModelVersion() ), randomStrategy );
-   }
-
-   private AspectModelJsonPayloadGenerator( final Aspect aspect, final SAMM samm, final Random randomStrategy ) {
       this.aspect = aspect;
       exampleValueGenerator = new ExampleValueGenerator( randomStrategy );
       objectMapper = AspectModelJsonPayloadGenerator.createObjectMapper();
@@ -450,7 +446,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
          final Scalar scalar = dataType.as( Scalar.class );
          final Resource dataTypeResource = ResourceFactory.createResource( scalar.getUrn() );
-         final Class<?> exampleValueType = DataType.getJavaTypeForMetaModelType( dataTypeResource, characteristic.getMetaModelVersion() );
+         final Class<?> exampleValueType = DataType.getJavaTypeForMetaModelType( dataTypeResource );
          if ( Curie.class.equals( exampleValueType ) ) {
             return getRandomEntry( ExampleValueGenerator.CURIE_VALUES );
          }

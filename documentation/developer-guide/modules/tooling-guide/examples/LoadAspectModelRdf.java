@@ -22,13 +22,13 @@ import java.util.List;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
-import org.eclipse.esmf.samm.KnownVersion;
+
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
 import io.vavr.control.Try;
 // end::imports[]
 import org.junit.jupiter.api.Test;
@@ -42,9 +42,8 @@ public class LoadAspectModelRdf {
 
       // Let's do something with the loaded model on RDF level
       tryModel.forEach( versionedModel -> { // <3>
-         final SAMM samm = new SAMM( KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() ).get() );
          final Model rdfModel = versionedModel.getModel();
-         final List<Statement> result = rdfModel.listStatements( null, RDF.type, samm.Aspect() ).toList();// <4>
+         final List<Statement> result = rdfModel.listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).toList();// <4>
       } );
       // end::loadAndResolveFromFile[]
    }

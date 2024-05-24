@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.Measurement;
 import org.eclipse.esmf.characteristic.impl.DefaultMeasurement;
 import org.eclipse.esmf.metamodel.Type;
@@ -35,7 +36,7 @@ public class MeasurementInstantiator extends Instantiator<Measurement> {
    public Measurement apply( final Resource measurement ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( measurement );
       final Type type = getType( measurement );
-      final Optional<Unit> unit = optionalAttributeValue( measurement, sammc.unit() )
+      final Optional<Unit> unit = optionalAttributeValue( measurement, SammNs.SAMMC.unit() )
             .map( Statement::getResource )
             .map( modelElementFactory::findOrCreateUnit );
       return new DefaultMeasurement( metaModelBaseAttributes, type, unit );

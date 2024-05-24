@@ -18,7 +18,7 @@ package org.eclipse.esmf.metamodel;
  *
  * @since SAMM 1.0.0
  */
-public interface QuantityKind extends NamedElement {
+public interface QuantityKind extends ModelElement {
    /**
     * Returns the quantity kind's human-readable name
     */

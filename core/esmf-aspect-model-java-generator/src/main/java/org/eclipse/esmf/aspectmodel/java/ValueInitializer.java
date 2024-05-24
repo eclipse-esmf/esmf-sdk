@@ -20,8 +20,7 @@ import java.util.function.BiFunction;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -92,8 +91,7 @@ public class ValueInitializer {
    public boolean needInitializationToConstructor( final List<DeconstructionSet> deconstructionSets ) {
       return deconstructionSets.stream()
             .flatMap( deconstructionSet -> deconstructionSet.getElementProperties().stream().map( property -> property.getDataType()
-                  .map( type -> DataType.getJavaTypeForMetaModelType( ResourceFactory.createResource( type.getUrn() ),
-                        property.getMetaModelVersion() ) ) ) )
+                  .map( type -> DataType.getJavaTypeForMetaModelType( ResourceFactory.createResource( type.getUrn() ) ) ) ) )
             .anyMatch( dataType -> dataType.map( type -> type == XMLGregorianCalendar.class ).orElse( false ) );
    }
 
@@ -103,10 +101,9 @@ public class ValueInitializer {
     *
     * @param rdfType the type for which an instance should be created
     * @param valueExpression an expression that, when evaluated, will return the input value <b>as a string</b>.
-    * @param metaModelVersion the used meta model version
     */
-   public String apply( final Resource rdfType, final String valueExpression, final KnownVersion metaModelVersion ) {
-      return apply( rdfType, DataType.getJavaTypeForMetaModelType( rdfType, metaModelVersion ), valueExpression, metaModelVersion );
+   public String apply( final Resource rdfType, final String valueExpression ) {
+      return apply( rdfType, DataType.getJavaTypeForMetaModelType( rdfType ), valueExpression );
    }
 
    /**
@@ -116,12 +113,9 @@ public class ValueInitializer {
     * @param rdfType the type for which an instance should be created
     * @param javaType the corresponding Java type
     * @param valueExpression an expression that, when evaluated, will return the input value <b>as a string</b>.
-    * @param metaModelVersion the used meta model version
     */
-   public String apply( final Resource rdfType, final Class<?> javaType, final String valueExpression,
-         final KnownVersion metaModelVersion ) {
-      final SAMM samm = new SAMM( metaModelVersion );
-      if ( rdfType.equals( samm.curie() ) ) {
+   public String apply( final Resource rdfType, final Class<?> javaType, final String valueExpression ) {
+      if ( rdfType.equals( SammNs.SAMM.curie() ) ) {
          return String.format( "new Curie( %s )", valueExpression );
       }
       return INITIALIZERS.get( rdfType ).apply( javaType, valueExpression );

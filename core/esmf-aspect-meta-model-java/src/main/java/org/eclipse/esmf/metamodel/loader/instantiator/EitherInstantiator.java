@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.Either;
 import org.eclipse.esmf.characteristic.impl.DefaultEither;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -33,9 +34,9 @@ public class EitherInstantiator extends Instantiator<Either> {
    public Either apply( final Resource either ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( either );
       final Characteristic left = modelElementFactory
-            .create( Characteristic.class, attributeValue( either, sammc.left() ).getResource() );
+            .create( Characteristic.class, attributeValue( either, SammNs.SAMMC.left() ).getResource() );
       final Characteristic right = modelElementFactory
-            .create( Characteristic.class, attributeValue( either, sammc.right() ).getResource() );
+            .create( Characteristic.class, attributeValue( either, SammNs.SAMMC.right() ).getResource() );
       return new DefaultEither( metaModelBaseAttributes, Optional.empty(), left, right );
    }
 }

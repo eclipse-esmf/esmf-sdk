@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.List;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.impl.DefaultEvent;
@@ -32,7 +33,7 @@ public class EventInstantiator extends Instantiator<Event> {
    @Override
    public Event apply( final Resource event ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( event );
-      final List<Property> events = getPropertiesModels( event, samm.parameters() );
+      final List<Property> events = getPropertiesModels( event, SammNs.SAMM.parameters() );
       return new DefaultEvent( metaModelBaseAttributes, events );
    }
 }

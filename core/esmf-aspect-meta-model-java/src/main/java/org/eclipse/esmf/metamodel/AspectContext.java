@@ -22,5 +22,6 @@ import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
  * @param rdfModel the RDF model
  * @param aspect the Aspect
  */
+// TODO remove this class completely
 public record AspectContext( VersionedModel rdfModel, Aspect aspect ) {
 }

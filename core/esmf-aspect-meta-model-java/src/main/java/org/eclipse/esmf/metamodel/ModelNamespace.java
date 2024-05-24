@@ -13,14 +13,14 @@
 
 package org.eclipse.esmf.metamodel;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 
 /**
  * Represents the namespace the model elements are contained in
  */
-public interface ModelNamespace {
+public interface ModelNamespace extends ModelElementGroup, HasDescription {
    /**
     * The package part of the model namespace is an identifier given in
     * <a href="https://en.wikipedia.org/wiki/Reverse_domain_name_notation">reverse domain name notation</a>, e.g., com.example.myapp.
@@ -36,24 +36,7 @@ public interface ModelNamespace {
     */
    VersionNumber version();
 
-   /**
-    * The model elements contained in this namespace
-    *
-    * @return the model elements
-    */
-   List<ModelElement> elements();
-
-   /**
-    * Convenience method to get the Aspects in this namespace
-    *
-    * @return the list of aspects
-    */
-   default List<Aspect> aspects() {
-      return elements().stream()
-            .filter( element -> element.is( Aspect.class ) )
-            .map( element -> element.as( Aspect.class ) )
-            .toList();
-   }
+   Optional<ModelFile> source();
 
    /**
     * The identifier of the namespace, e.g. urn:samm:com.example.myapp:1.2.3

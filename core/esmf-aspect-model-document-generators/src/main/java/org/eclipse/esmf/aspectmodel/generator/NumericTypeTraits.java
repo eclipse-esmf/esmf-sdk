@@ -43,13 +43,13 @@ public class NumericTypeTraits {
    private static final List<Class<?>> UNBOUNDED_TYPES = List.of( BigDecimal.class, BigInteger.class );
 
    private static final Map<Class<?>, BiFunction<Number, Float, Number>> ADDERS = Map.of(
-         Byte.class, ( base, add ) -> (byte) (base.byteValue() + add.byteValue()),
-         Short.class, ( base, add ) -> (short) (base.shortValue() + add.shortValue()),
+         Byte.class, ( base, add ) -> (byte) ( base.byteValue() + add.byteValue() ),
+         Short.class, ( base, add ) -> (short) ( base.shortValue() + add.shortValue() ),
          Integer.class, ( base, add ) -> base.intValue() + add.intValue(),
          Long.class, ( base, add ) -> base.longValue() + add.longValue(),
          Float.class, ( base, add ) -> base.floatValue() + add,
          Double.class, ( base, add ) -> base.doubleValue() + add,
-         BigInteger.class, ( base, add ) -> ((BigInteger) base).add( BigInteger.valueOf( add.longValue() ) )
+         BigInteger.class, ( base, add ) -> ( (BigInteger) base ).add( BigInteger.valueOf( add.longValue() ) )
    );
 
    private static final Map<Class<?>, Function<Number, BigDecimal>> CONVERTERS = Map.of(
@@ -76,7 +76,7 @@ public class NumericTypeTraits {
     * @return result of the operation, has the same numeric type as the base
     */
    public static Number polymorphicAdd( final Number base, final float add ) {
-      return ADDERS.getOrDefault( base.getClass(), ( num, adder ) -> ((BigDecimal) num).add( BigDecimal.valueOf( adder ) ) )
+      return ADDERS.getOrDefault( base.getClass(), ( num, adder ) -> ( (BigDecimal) num ).add( BigDecimal.valueOf( adder ) ) )
             .apply( base, add );
    }
 
@@ -124,7 +124,7 @@ public class NumericTypeTraits {
     */
    public static Number getModelMinValue( final KnownVersion modelVersion, final Type dataType ) {
       final Resource dataTypeResource = ResourceFactory.createResource( dataType.getUrn() );
-      final Class<?> nativeType = DataType.getJavaTypeForMetaModelType( dataTypeResource, modelVersion );
+      final Class<?> nativeType = DataType.getJavaTypeForMetaModelType( dataTypeResource );
       return getModelMinValue( dataTypeResource, nativeType );
    }
 
@@ -150,7 +150,7 @@ public class NumericTypeTraits {
     */
    public static Number getModelMaxValue( final KnownVersion modelVersion, final Type dataType ) {
       final Resource dataTypeResource = ResourceFactory.createResource( dataType.getUrn() );
-      final Class<?> nativeType = DataType.getJavaTypeForMetaModelType( dataTypeResource, modelVersion );
+      final Class<?> nativeType = DataType.getJavaTypeForMetaModelType( dataTypeResource );
       return getModelMaxValue( dataTypeResource, nativeType );
    }
 

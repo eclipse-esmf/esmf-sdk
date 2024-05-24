@@ -25,6 +25,7 @@ import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 
@@ -58,7 +59,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       assertThat( result.isSuccess() ).isTrue();
 
       final Resource aspect = createResource( TEST_NAMESPACE + "Test" );
-      final Resource sammAspect = new SAMM( KnownVersion.getLatest() ).Aspect();
+      final Resource sammAspect = SammNs.SAMM.Aspect();
       assertThat( result.get().getModel().listStatements( aspect, RDF.type, sammAspect ).nextOptional() ).isNotEmpty();
    }
 
@@ -76,7 +77,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
       assertThat( result.isSuccess() ).isTrue();
 
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
       assertThat( result.get().getModel().listStatements( null, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
    }
 
@@ -94,7 +95,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
       assertThat( result.isSuccess() ).isTrue();
 
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
       assertThat( result.get().getModel().listStatements( null, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
    }
 
@@ -113,7 +114,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
       assertThat( result.isSuccess() ).isTrue();
 
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
       assertThat( result.get().getModel().listStatements( null, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
    }
 
@@ -133,7 +134,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       assertThat( result.isSuccess() ).isTrue();
 
       final Resource aspect = createResource( "urn:samm:org.eclipse.esmf.test:1.1.0#Test" );
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
       assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
    }
 
@@ -157,7 +158,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Try<VersionedModel> result = resolver.resolveAspectModel( inMemoryResolutionStrategy, inputUrn );
       assertThat( result.isSuccess() ).isTrue();
 
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
       final Resource aspect = createResource( TEST_NAMESPACE + "AnotherTest" );
       assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
 
@@ -181,7 +182,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       final Try<VersionedModel> result = resolver.resolveAspectModel( urnStrategy, testUrn );
       assertThat( result.isSuccess() ).isTrue();
 
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
       final Resource aspect = createResource( TEST_NAMESPACE + "AnotherTest" );
       assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
 
@@ -241,7 +242,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Resource aspect = createResource(
             TEST_NAMESPACE + "ReferenceCharacteristicTest" );
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
       assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
 
       final Resource referencedCharacteristic = createResource( TEST_NAMESPACE + "TestCharacteristic" );
@@ -294,7 +295,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       assertThat( result.isSuccess() ).isTrue();
 
       final Resource aspect = createResource( TEST_NAMESPACE + "ReferenceEntityTest" );
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
       assertThat( result.get().getModel().listStatements( aspect, RDF.type, samm.Aspect() ).nextOptional() ).isNotEmpty();
 
       final Resource referencedEntity = createResource( TEST_NAMESPACE + "TestEntity" );
@@ -316,7 +317,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       assertThat( result.isSuccess() ).isTrue();
 
       final Model model = result.get().getModel();
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
+      final SAMM samm = SammNs.SAMM;
       assertThat( Streams.stream( model.listStatements( null, RDF.type, samm.Aspect() ) ).count() ).isEqualTo( 2 );
    }
 
@@ -354,8 +355,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
 
       final Model model = result.get().getModel();
       final Resource primaryAspect = model.createResource( TEST_NAMESPACE + "PrimaryAspect" );
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
-      final List<Statement> propertiesAssertions = model.listStatements( primaryAspect, samm.properties(), (RDFNode) null ).toList();
+      final List<Statement> propertiesAssertions = model.listStatements( primaryAspect, SammNs.SAMM.properties(), (RDFNode) null ).toList();
       assertThat( propertiesAssertions.size() ).isEqualTo( 1 );
    }
 
@@ -376,8 +376,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
       // make sure the source file for the definitions of ModelYear and ModelCode (ModelDef.ttl) is only loaded once
       final Model model = result.get().getModel();
       final Resource entity = model.createResource( TEST_NAMESPACE + "SomeOtherNonRelatedEntity" );
-      final SAMM samm = new SAMM( KnownVersion.getLatest() );
-      final List<Statement> properties = model.listStatements( entity, samm.properties(), (RDFNode) null ).toList();
+      final List<Statement> properties = model.listStatements( entity, SammNs.SAMM.properties(), (RDFNode) null ).toList();
       assertThat( properties.size() ).isEqualTo( 1 );
    }
 }

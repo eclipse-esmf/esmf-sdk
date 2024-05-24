@@ -26,8 +26,6 @@ import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.java.JavaGenerator;
 import org.eclipse.esmf.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectContext;
 
@@ -90,8 +88,7 @@ public class AspectToJavaCommand extends AbstractCommand {
       final File templateLibFile = Path.of( templateLib ).toFile();
       final String pkgName = Optional.ofNullable( packageName )
             .flatMap( pkg -> pkg.isBlank() ? Optional.empty() : Optional.of( pkg ) )
-            .or( () -> aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ) )
-            .orElseThrow( () -> new CommandException( "Could not determine Aspect's namespace" ) );
+            .orElseGet( () -> aspect.urn().getNamespace() );
       return JavaCodeGenerationConfigBuilder.builder()
             .executeLibraryMacros( executeLibraryMacros )
             .templateLibFile( templateLibFile )

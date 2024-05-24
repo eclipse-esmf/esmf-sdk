@@ -16,9 +16,8 @@ package org.eclipse.esmf.metamodel.loader;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.TypedRdfDatatype;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
-import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.datatypes.DatatypeFormatException;
 import org.apache.jena.datatypes.RDFDatatype;
@@ -40,12 +39,12 @@ public class CurieRdfType implements TypedRdfDatatype<Curie> {
 
    @Override
    public String getURI() {
-      return new SAMM( KnownVersion.getLatest() ).curie().getURI();
+      return SammNs.SAMM.curie().getURI();
    }
 
    @Override
    public String unparse( final Object value ) {
-      if ( value instanceof Curie curie ) {
+      if ( value instanceof final Curie curie ) {
          return unparseTyped( curie );
       }
       throw new AspectLoadingException( "Value is no valid curie: " + value );
@@ -53,7 +52,7 @@ public class CurieRdfType implements TypedRdfDatatype<Curie> {
 
    @Override
    public Object parse( final String lexicalForm ) throws DatatypeFormatException {
-      return parseTyped( lexicalForm ).orElseThrow( () -> new DatatypeFormatException() );
+      return parseTyped( lexicalForm ).orElseThrow( DatatypeFormatException::new );
    }
 
    @Override

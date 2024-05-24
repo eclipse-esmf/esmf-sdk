@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,8 +26,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
-import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.ModelElement;
@@ -35,6 +35,7 @@ import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.metamodel.QuantityKinds;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.Units;
+import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.impl.DefaultQuantityKind;
 import org.eclipse.esmf.metamodel.impl.DefaultUnit;
 import org.eclipse.esmf.metamodel.loader.instantiator.AbstractEntityInstantiator;
@@ -68,7 +69,6 @@ import org.eclipse.esmf.metamodel.loader.instantiator.StateInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.StructuredValueInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.TimeSeriesInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.TraitInstantiator;
-import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Streams;
 import org.apache.jena.rdf.model.Model;
@@ -79,54 +79,46 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
 public class ModelElementFactory extends AttributeValueRetriever {
-   private final KnownVersion metaModelVersion;
    private final Model model;
-   private final SAMMC sammc;
-   private final UNIT unit;
    private final Map<Resource, Instantiator<?>> instantiators = new HashMap<>();
    private final Map<Resource, ModelElement> loadedElements = new HashMap<>();
    private Set<ModelNamespace> namespaces;
 
-   public ModelElementFactory( final KnownVersion metaModelVersion, final Model model,
-         final Map<Resource, Instantiator<?>> additionalInstantiators ) {
-      super( new SAMM( metaModelVersion ) );
-      this.metaModelVersion = metaModelVersion;
+   public ModelElementFactory( final Model model, final Map<Resource, Instantiator<?>> additionalInstantiators ) {
       this.model = model;
-      sammc = new SAMMC( metaModelVersion );
-      unit = new UNIT( metaModelVersion, samm );
 
-      registerInstantiator( samm.AbstractEntity(), new AbstractEntityInstantiator( this ) );
-      registerInstantiator( samm.AbstractProperty(), new PropertyInstantiator( this ) );
-      registerInstantiator( samm.Aspect(), new AspectInstantiator( this ) );
-      registerInstantiator( samm.Characteristic(), new CharacteristicInstantiator( this ) );
-      registerInstantiator( samm.Constraint(), new ConstraintInstantiator( this ) );
-      registerInstantiator( samm.Entity(), new EntityInstantiator( this ) );
-      registerInstantiator( samm.Event(), new EventInstantiator( this ) );
-      registerInstantiator( samm.Operation(), new OperationInstantiator( this ) );
-      registerInstantiator( samm.Property(), new PropertyInstantiator( this ) );
+      registerInstantiator( SammNs.SAMM.AbstractEntity(), new AbstractEntityInstantiator( this ) );
+      registerInstantiator( SammNs.SAMM.AbstractProperty(), new PropertyInstantiator( this ) );
+      registerInstantiator( SammNs.SAMM.Aspect(), new AspectInstantiator( this ) );
+      registerInstantiator( SammNs.SAMM.Characteristic(), new CharacteristicInstantiator( this ) );
+      registerInstantiator( SammNs.SAMM.Constraint(), new ConstraintInstantiator( this ) );
+      registerInstantiator( SammNs.SAMM.Entity(), new EntityInstantiator( this ) );
+      registerInstantiator( SammNs.SAMM.Event(), new EventInstantiator( this ) );
+      registerInstantiator( SammNs.SAMM.Operation(), new OperationInstantiator( this ) );
+      registerInstantiator( SammNs.SAMM.Property(), new PropertyInstantiator( this ) );
 
-      registerInstantiator( sammc.Code(), new CodeInstantiator( this ) );
-      registerInstantiator( sammc.Collection(), new CollectionInstantiator( this ) );
-      registerInstantiator( sammc.Duration(), new DurationInstantiator( this ) );
-      registerInstantiator( sammc.Either(), new EitherInstantiator( this ) );
-      registerInstantiator( sammc.EncodingConstraint(), new EncodingConstraintInstantiator( this ) );
-      registerInstantiator( sammc.Enumeration(), new EnumerationInstantiator( this ) );
-      registerInstantiator( sammc.FixedPointConstraint(), new FixedPointConstraintInstantiator( this ) );
-      registerInstantiator( sammc.LanguageConstraint(), new LanguageConstraintInstantiator( this ) );
-      registerInstantiator( sammc.LengthConstraint(), new LengthConstraintInstantiator( this ) );
-      registerInstantiator( sammc.List(), new ListInstantiator( this ) );
-      registerInstantiator( sammc.LocaleConstraint(), new LocaleConstraintInstantiator( this ) );
-      registerInstantiator( sammc.Measurement(), new MeasurementInstantiator( this ) );
-      registerInstantiator( sammc.Quantifiable(), new QuantifiableInstantiator( this ) );
-      registerInstantiator( sammc.RangeConstraint(), new RangeConstraintInstantiator( this ) );
-      registerInstantiator( sammc.RegularExpressionConstraint(), new RegularExpressionConstraintInstantiator( this ) );
-      registerInstantiator( sammc.Set(), new SetInstantiator( this ) );
-      registerInstantiator( sammc.SingleEntity(), new SingleEntityInstantiator( this ) );
-      registerInstantiator( sammc.SortedSet(), new SortedSetInstantiator( this ) );
-      registerInstantiator( sammc.State(), new StateInstantiator( this ) );
-      registerInstantiator( sammc.StructuredValue(), new StructuredValueInstantiator( this ) );
-      registerInstantiator( sammc.TimeSeries(), new TimeSeriesInstantiator( this ) );
-      registerInstantiator( sammc.Trait(), new TraitInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.Code(), new CodeInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.Collection(), new CollectionInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.Duration(), new DurationInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.Either(), new EitherInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.EncodingConstraint(), new EncodingConstraintInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.Enumeration(), new EnumerationInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.FixedPointConstraint(), new FixedPointConstraintInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.LanguageConstraint(), new LanguageConstraintInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.LengthConstraint(), new LengthConstraintInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.List(), new ListInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.LocaleConstraint(), new LocaleConstraintInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.Measurement(), new MeasurementInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.Quantifiable(), new QuantifiableInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.RangeConstraint(), new RangeConstraintInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.RegularExpressionConstraint(), new RegularExpressionConstraintInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.Set(), new SetInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.SingleEntity(), new SingleEntityInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.SortedSet(), new SortedSetInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.State(), new StateInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.StructuredValue(), new StructuredValueInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.TimeSeries(), new TimeSeriesInstantiator( this ) );
+      registerInstantiator( SammNs.SAMMC.Trait(), new TraitInstantiator( this ) );
 
       instantiators.putAll( additionalInstantiators );
    }
@@ -142,10 +134,10 @@ public class ModelElementFactory extends AttributeValueRetriever {
          return (T) element;
       }
       final Resource targetType = resourceType( modelElement );
-      if ( samm.Unit().equals( targetType ) ) {
+      if ( SammNs.SAMM.Unit().equals( targetType ) ) {
          return (T) findOrCreateUnit( modelElement );
       }
-      if ( samm.QuantityKind().equals( targetType ) ) {
+      if ( SammNs.SAMM.QuantityKind().equals( targetType ) ) {
          return (T) findOrCreateQuantityKind( modelElement );
       }
       final Instantiator<T> instantiator = (Instantiator<T>) instantiators.get( targetType );
@@ -169,26 +161,27 @@ public class ModelElementFactory extends AttributeValueRetriever {
    public QuantityKind findOrCreateQuantityKind( final Resource quantityKindResource ) {
       final Optional<QuantityKind> predefinedQuantityKind = QuantityKinds.fromName( quantityKindResource.getLocalName() );
       return predefinedQuantityKind.orElseGet( () -> new DefaultQuantityKind(
-            MetaModelBaseAttributes.fromModelElement( metaModelVersion, quantityKindResource, model, samm ),
-            attributeValue( quantityKindResource, samm.preferredName() ).getLiteral().getLexicalForm() ) );
+            createBaseAttributes( quantityKindResource ),
+            attributeValue( quantityKindResource, SammNs.SAMM.preferredName() ).getLiteral().getLexicalForm() ) );
    }
 
    public Unit findOrCreateUnit( final Resource unitResource ) {
-      if ( unit.getNamespace().equals( unitResource.getNameSpace() ) ) {
+      if ( SammNs.UNIT.getNamespace().equals( unitResource.getNameSpace() ) ) {
          final AspectModelUrn unitUrn = AspectModelUrn.fromUrn( unitResource.getURI() );
          return Units.fromName( unitUrn.getName() ).orElseThrow( () ->
                new AspectLoadingException( "Unit definition for " + unitUrn + " is invalid" ) );
       }
 
-      final Set<QuantityKind> quantityKinds = Streams.stream( model.listStatements( unitResource, samm.quantityKind(), (RDFNode) null ) )
+      final Set<QuantityKind> quantityKinds = Streams.stream(
+                  model.listStatements( unitResource, SammNs.SAMM.quantityKind(), (RDFNode) null ) )
             .map( quantityKindStatement -> findOrCreateQuantityKind( quantityKindStatement.getObject().asResource() ) )
             .collect( Collectors.toSet() );
       return new DefaultUnit(
-            MetaModelBaseAttributes.fromModelElement( metaModelVersion, unitResource, model, samm ),
-            optionalAttributeValue( unitResource, samm.symbol() ).map( Statement::getString ),
-            optionalAttributeValue( unitResource, samm.commonCode() ).map( Statement::getString ),
-            optionalAttributeValue( unitResource, samm.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
-            optionalAttributeValue( unitResource, samm.conversionFactor() ).map( Statement::getString ),
+            createBaseAttributes( unitResource ),
+            optionalAttributeValue( unitResource, SammNs.SAMM.symbol() ).map( Statement::getString ),
+            optionalAttributeValue( unitResource, SammNs.SAMM.commonCode() ).map( Statement::getString ),
+            optionalAttributeValue( unitResource, SammNs.SAMM.referenceUnit() ).map( Statement::getResource ).map( Resource::getLocalName ),
+            optionalAttributeValue( unitResource, SammNs.SAMM.conversionFactor() ).map( Statement::getString ),
             quantityKinds );
    }
 
@@ -196,11 +189,11 @@ public class ModelElementFactory extends AttributeValueRetriever {
       final Supplier<Optional<Resource>> directType = () ->
             optionalAttributeValue( resource, RDF.type ).map( Statement::getResource );
       final Supplier<Optional<Resource>> propertyUsageType = () ->
-            optionalAttributeValue( resource, samm.property() ).map( statement -> resourceType( statement.getResource() ) );
+            optionalAttributeValue( resource, SammNs.SAMM.property() ).map( statement -> resourceType( statement.getResource() ) );
       final Supplier<Optional<Resource>> subClassType = () ->
             optionalAttributeValue( resource, RDFS.subClassOf ).map( Statement::getResource ).map( this::resourceType );
       final Supplier<Optional<Resource>> extendsType = () ->
-            optionalAttributeValue( resource, samm._extends() ).map( Statement::getResource ).map( this::resourceType );
+            optionalAttributeValue( resource, SammNs.SAMM._extends() ).map( Statement::getResource ).map( this::resourceType );
 
       return Stream.of( directType, propertyUsageType, subClassType, extendsType )
             .map( Supplier::get )
@@ -210,31 +203,189 @@ public class ModelElementFactory extends AttributeValueRetriever {
             .orElseThrow( () -> new AspectLoadingException( "Resource " + resource + " has no type" ) );
    }
 
-   protected KnownVersion getMetaModelVersion() {
-      return metaModelVersion;
-   }
-
    protected Model getModel() {
       return model;
-   }
-
-   protected SAMM getSamm() {
-      return samm;
-   }
-
-   protected SAMMC getSammc() {
-      return sammc;
-   }
-
-   public UNIT getUnit() {
-      return unit;
    }
 
    public List<ComplexType> getExtendingElements( final List<AspectModelUrn> extendingElements ) {
       return extendingElements.stream().map( urn -> getModel().createResource( urn.toString() ) )
             .map( loadedElements::get )
             .filter( Objects::nonNull )
-            .map( modelElement -> (ComplexType) modelElement )
+            .map( ComplexType.class::cast )
             .collect( Collectors.toList() );
    }
+
+   /**
+    * Creates an instance for a specific Meta Model element.
+    *
+    * @param modelElement the Aspect model element to be processed.
+    * @return the newly created instance
+    */
+   public MetaModelBaseAttributes createBaseAttributes( final Resource modelElement ) {
+      final AttributeValueRetriever valueRetriever = new AttributeValueRetriever();
+
+      final Optional<AspectModelUrn> urn = getUrn( modelElement );
+      final Set<LangString> preferredNames = getLanguages( modelElement, SammNs.SAMM.preferredName(), valueRetriever );
+      final Set<LangString> descriptions = getLanguages( modelElement, SammNs.SAMM.description(), valueRetriever );
+      final List<String> seeValues = getSeeValues( modelElement, valueRetriever );
+      final MetaModelBaseAttributes.Builder builder = MetaModelBaseAttributes.builder();
+      if ( urn.isEmpty() ) {
+         builder.isAnonymous();
+      } else {
+         builder.withUrn( urn.get() );
+      }
+      builder.withPreferredNames( preferredNames );
+      builder.withDescriptions( descriptions );
+      builder.withSee( seeValues );
+      return builder.build();
+   }
+
+   private static Optional<AspectModelUrn> getUrn( final Resource modelElement ) {
+      if ( modelElement.isAnon() ) {
+         final Statement propertyStatement = modelElement.getProperty( SammNs.SAMM.property() );
+         if ( propertyStatement != null ) {
+            return getUrn( propertyStatement.getObject().asResource() );
+         }
+         return Optional.empty();
+      }
+      return Optional.of( AspectModelUrn.fromUrn( modelElement.getURI() ) );
+   }
+
+   /**
+    * @param modelElement the RDF {@link Resource} representing the Aspect Model element to be processed
+    * @param attribute the RDF {@link org.apache.jena.rdf.model.Property} for which the values will be retrieved
+    * @param valueRetriever the {@link AttributeValueRetriever} used to retrieve the attribute values
+    * @return a {@link List} containing all values for the given Property in the given Aspect Model element
+    */
+   private static Set<LangString> getLanguages( final Resource modelElement,
+         final org.apache.jena.rdf.model.Property attribute, final AttributeValueRetriever valueRetriever ) {
+      return valueRetriever.attributeValues( modelElement, attribute ).stream()
+            .filter( languageStatement -> !"und".equals( Locale.forLanguageTag( languageStatement.getLanguage() ).toLanguageTag() ) )
+            .map( statement -> new LangString( statement.getString(), Locale.forLanguageTag( statement.getLanguage() ) ) )
+            .collect( Collectors.toSet() );
+   }
+
+   /**
+    * @param resource the RDF {@link Resource} representing the Aspect Model element to be processed
+    * @param valueRetriever the {@link AttributeValueRetriever} used to retrieve the attribute values
+    * @return a {@link List} containing all {@link SAMM#see()} values for a Aspect Model element
+    */
+   private static List<String> getSeeValues( final Resource resource, final AttributeValueRetriever valueRetriever ) {
+      return valueRetriever.attributeValues( resource, SammNs.SAMM.see() ).stream()
+            .map( statement -> statement.getObject().toString() )
+            .sorted()
+            .collect( Collectors.toList() );
+   }
+
+   //   /**
+   //    * Returns a model element's name: If it's a named resource, the name is part of its URN; otherwise
+   //    * (e.g., [ samm:extends :foo ; ... ]) go up the inheritance tree recursively.
+   //    *
+   //    * @param modelElement the model element to retrieve the name for
+   //    * @param samm the meta model vocabulary
+   //    * @return the element's local name
+   //    */
+   //   private static Optional<String> getName( final Resource modelElement, final SAMM samm ) {
+   //      if ( !modelElement.isAnon() ) {
+   //         return Optional.of( AspectModelUrn.fromUrn( modelElement.getURI() ).getName() );
+   //      }
+   //
+   //      final Statement propertyStatement = modelElement.getProperty( samm.property() );
+   //      if ( propertyStatement != null ) {
+   //         return getName( propertyStatement.getObject().asResource(), samm );
+   //      }
+   //
+   //      final Optional<Statement> extendsStatement = Streams.stream(
+   //            modelElement.getModel().listStatements( modelElement, samm._extends(), (RDFNode) null ) ).findAny();
+   //      return extendsStatement.flatMap( statement -> getName( statement.getObject().asResource(), samm ) );
+   //   }
+   //
+   //   private static String getSyntheticName( final Resource modelElement, final Model model, final SAMM samm ) {
+   //      final Resource namedParent = getNamedParent( modelElement, model );
+   //      if ( namedParent == null ) {
+   //         throw new AspectLoadingException( "At least one anonymous node in the model does not have a parent with a regular name." );
+   //      }
+   //      final String parentModelElementUri = namedParent.getURI();
+   //      final String parentModelElementName = AspectModelUrn.from( parentModelElementUri )
+   //            .toJavaOptional()
+   //            .map( AspectModelUrn::getName )
+   //            .map( StringUtils::capitalize )
+   //            .orElse( "" );
+   //
+   //      final Resource modelElementType = getModelElementType( modelElement, samm );
+   //      final String modelElementTypeUri = modelElementType.getURI();
+   //      final String modelElementTypeName = AspectModelUrn.from( modelElementTypeUri )
+   //            .toJavaOptional()
+   //            .map( AspectModelUrn::getName )
+   //            .orElse( "" );
+   //
+   //      return parentModelElementName + modelElementTypeName;
+   //   }
+   //
+   // We have to be careful when searching for the parent nodes with a regular name - the "listStatements" API returns the matching nodes
+   // in no particular order; with some very specific models this could lead to non-deterministic behavior.
+   // In the following very simplified example we are looking for ":NumberList" as the parent of "_:blankNode", but could get the
+   // anonymous node [] instead.
+   // [
+   //  aux:contains _:blankNode ;
+   // ] .
+   // :NumberList a samm-c:List ;
+   //    samm-c:elementCharacteristic _:blankNode .
+   // _:blankNode a samm-c:Trait ;
+   //   private static Resource getNamedParent( final Resource modelElement, final Model model ) {
+   //      final StmtIterator elements = model.listStatements( null, null, modelElement );
+   //      while ( elements.hasNext() ) {
+   //         final Resource parentModelElement = elements.next().getSubject();
+   //         if ( parentModelElement.isAnon() ) {
+   //            final Resource grandParent = getNamedParent( parentModelElement, model );
+   //            if ( null != grandParent ) {
+   //               return grandParent;
+   //            }
+   //         } else {
+   //            return parentModelElement;
+   //         }
+   //      }
+   //      return null; // element has no named parent
+   //   }
+
+   //   private static Resource getModelElementType( final Resource modelElement, final SAMM samm ) {
+   //      final Statement typeStatement = modelElement.getProperty( RDF.type );
+   //      if ( typeStatement != null ) {
+   //         return typeStatement.getObject().asResource();
+   //      }
+   //
+   //      // If the model element is a Property reference, the actual type will be found when we follow samm:property
+   //      final Statement propertyStatement = modelElement.getProperty( samm.property() );
+   //      if ( propertyStatement != null ) {
+   //         return getModelElementType( propertyStatement.getObject().asResource(), samm );
+   //      }
+   //
+   //      // This model element has no type, but maybe it extends another element
+   //      final Statement extendsStatement = modelElement.getProperty( samm._extends() );
+   //      if ( extendsStatement == null ) {
+   //         throw new AspectLoadingException( "Model element has no type and does not extend another type: " + modelElement );
+   //      }
+   //
+   //      final Resource superElement = extendsStatement.getObject().asResource();
+   //      return getModelElementType( superElement, samm );
+   //   }
+   //
+   //   protected Statement propertyValueFromTypeTree( final Resource subject, final org.apache.jena.rdf.model.Property property ) {
+   //      final Optional<Statement> valueStatement = optionalAttributeValue( subject, property );
+   //      if ( valueStatement.isPresent() ) {
+   //         return valueStatement.get();
+   //      }
+   //
+   //      // Check if the subject is a Property reference, then we should continue to search the referenced Property
+   //      final Optional<Statement> propertyStatement = optionalAttributeValue( subject, samm.property() );
+   //      if ( propertyStatement.isPresent() ) {
+   //         return propertyValueFromTypeTree( propertyStatement.get().getObject().asResource(), property );
+   //      }
+   //
+   //      final Statement extendsStatement = optionalAttributeValue( subject, samm._extends() )
+   //            .orElseThrow( () -> new AspectLoadingException( "Property " + property + " not found on " + subject + " or its
+   //            supertypes" ) );
+   //      final Resource superType = extendsStatement.getObject().asResource();
+   //      return propertyValueFromTypeTree( superType, property );
+   //   }
 }

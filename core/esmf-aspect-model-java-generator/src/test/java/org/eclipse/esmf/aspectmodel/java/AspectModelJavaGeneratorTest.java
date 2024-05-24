@@ -34,9 +34,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
@@ -89,7 +87,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
             .enableJacksonAnnotations( enableJacksonAnnotations )
             .executeLibraryMacros( executeLibraryMacros )
             .templateLibFile( templateLibPath )
-            .packageName( aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ).get() )
+            .packageName( aspect.urn().getNamespace() )
             .build();
       return List.of( new AspectModelJavaGenerator( aspect, config ) );
    }
@@ -103,7 +101,7 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( true )
             .executeLibraryMacros( false )
-            .packageName( aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ).get() )
+            .packageName( aspect.urn().getNamespace() )
             .build();
       return List.of( new AspectModelJavaGenerator( aspect, config ) );
    }
@@ -120,8 +118,6 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
    } )
    public void testCodeGeneration( final TestAspect testAspect ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
-      final SAMM samm = new SAMM( metaModelVersion );
-      final SAMMC sammc = new SAMMC( metaModelVersion );
       assertThatCode( () -> {
                final VersionedModel versionedModel = TestResources.getModel( testAspect, metaModelVersion ).get();
                final GenerationResult result = TestContext.generateAspectCode().apply( getGenerators( versionedModel ) );
@@ -130,8 +126,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                            versionedModel.getRawModel().listStatements( null, RDF.type, (RDFNode) null ) )
                      .filter( statement -> {
                         final Resource type = statement.getObject().asResource();
-                        return type.equals( samm.Aspect() ) || type.equals( samm.Entity() ) || type.equals( samm.Event() )
-                              || type.equals( samm.AbstractEntity() ) || type.equals( sammc.Enumeration() );
+                        return type.equals( SammNs.SAMM.Aspect() ) || type.equals( SammNs.SAMM.Entity() ) || type.equals( SammNs.SAMM.Event() )
+                              || type.equals( SammNs.SAMM.AbstractEntity() ) || type.equals( SammNs.SAMMC.Enumeration() );
                      } )
                      .map( Statement::getSubject )
                      .toList();

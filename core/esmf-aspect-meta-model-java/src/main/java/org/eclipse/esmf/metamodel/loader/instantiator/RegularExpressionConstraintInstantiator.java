@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.metamodel.loader.instantiator;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultRegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
@@ -29,7 +30,7 @@ public class RegularExpressionConstraintInstantiator extends Instantiator<Regula
    @Override
    public RegularExpressionConstraint apply( final Resource regularExpressionConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( regularExpressionConstraint );
-      final String value = attributeValue( regularExpressionConstraint, samm.value() ).getString();
+      final String value = attributeValue( regularExpressionConstraint, SammNs.SAMM.value() ).getString();
       return new DefaultRegularExpressionConstraint( metaModelBaseAttributes, value );
    }
 }

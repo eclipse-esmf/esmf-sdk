@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.Code;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.characteristic.Duration;
@@ -54,7 +54,6 @@ import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
@@ -65,7 +64,6 @@ import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.impl.BoundDefinition;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.text.WordUtils;
@@ -143,10 +141,8 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       final Diagram result = defaultBox( property, ( property.isAbstract() ? "Abstract" : "" ) + "Property", Diagram.Color.PROPERTY );
       final Diagram.Box box = result.getFocusBox();
       property.getCharacteristic()
-            .filter( characteristic -> !( characteristic.getAspectModelUrn().isEmpty() && characteristic.getName()
-                  .equals( "UnnamedCharacteristic" ) ) )
-            .map( characteristic ->
-                  childElementDiagram( box, characteristic, "characteristic" ) )
+            .filter( characteristic -> !( characteristic.isAnonymous() && characteristic.getName().equals( "UnnamedCharacteristic" ) ) )
+            .map( characteristic -> childElementDiagram( box, characteristic, "characteristic" ) )
             .ifPresent( result::add );
       property.getExtends().ifPresent( superProperty -> result.add( childElementDiagram( box, superProperty, "extends" ) ) );
       return result;
@@ -164,7 +160,7 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
          if ( type.isScalar() ) {
             final Scalar scalar = type.as( Scalar.class );
             final String typeName = scalar.getUrn().replace( XSD.NS, "" ).replace( RDF.uri, "" )
-                  .replace( new SAMM( KnownVersion.getLatest() ).getNamespace(), "" );
+                  .replace( SammNs.SAMM.getNamespace(), "" );
             result.getFocusBox().addEntry( attribute( "dataType", String.class, () -> typeName ) );
          } else {
             result.add( childElementDiagram( box, type.as( ComplexType.class ), "dataType" ) );
@@ -591,8 +587,9 @@ public class DiagramVisitor implements AspectVisitor<Diagram, Optional<Context>>
       return result;
    }
 
-   private Diagram defaultBox( final NamedElement element, final String prototype, final Diagram.Color background ) {
-      final Diagram.Box box = new Diagram.Box( prototype, element.getAspectModelUrn().isPresent() ? element.getName() : "", background );
+   private Diagram defaultBox( final ModelElement element, final String prototype, final Diagram.Color background ) {
+      final String name = element.isAnonymous() ? "" : element.urn().getName();
+      final Diagram.Box box = new Diagram.Box( prototype, name, background );
       final ImmutableList.Builder<String> standardAttributes = ImmutableList.builder();
       element.getPreferredNames().stream()
             .filter( preferredName -> preferredName.getLanguageTag().equals( locale ) )

@@ -14,6 +14,7 @@ package org.eclipse.esmf.metamodel.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -25,7 +26,6 @@ import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultEntity extends DefaultComplexType implements Entity {
-
    public static DefaultEntity createDefaultEntity( final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<? extends Property> properties, @SuppressWarnings( "checkstyle:ParameterName" ) final Optional<ComplexType> extends_ ) {
       return new DefaultEntity( metaModelBaseAttributes, properties, extends_, Collections.emptyList(), null );
@@ -56,5 +56,24 @@ public class DefaultEntity extends DefaultComplexType implements Entity {
    @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
       return visitor.visitEntity( this, context );
+   }
+
+   @Override
+   public boolean equals( final Object o ) {
+      if ( this == o ) {
+         return true;
+      }
+      if ( o == null || getClass() != o.getClass() ) {
+         return false;
+      }
+      final DefaultEntity that = (DefaultEntity) o;
+      return Objects.equals( properties, that.properties ) && Objects.equals( extends_, that.extends_ )
+            && Objects.equals( extendingElements, that.extendingElements )
+            && Objects.equals( baseAttributes, that.baseAttributes );
+   }
+
+   @Override
+   public int hashCode() {
+      return Objects.hash( properties, extends_, extendingElements, baseAttributes );
    }
 }

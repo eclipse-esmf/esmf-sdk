@@ -20,10 +20,10 @@ import java.util.Optional;
  *
  * @since SAMM 1.0.0
  */
-public interface Characteristic extends NamedElement {
+public interface Characteristic extends ModelElement {
 
    /**
-    * The data type of the {@link Property} described by this {@link Characteristic}.
+    * The data type of the {@link Property} described by this Characteristic.
     *
     * @return the {@link Type}
     */
