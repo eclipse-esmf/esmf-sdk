@@ -43,7 +43,7 @@ public class LangStringPropertyMapper implements PropertyMapper<MultiLanguagePro
       return new DefaultMultiLanguageProperty.Builder().idShort( context.getPropertyShortId() )
             .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
             .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
-            .semanticId( buildReferenceToConceptDescription( property ) )
+            .semanticId( buildReferenceToGlobalReference( property ) )
             .value( extractLangStrings( property, context ) )
             .build();
    }
