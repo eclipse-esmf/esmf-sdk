@@ -556,9 +556,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementBuilder builder = property ->
             new DefaultSubmodelElementList.Builder()
                   .idShort( property.getName() )
-                  .semanticId( buildReferenceForCollection( collection.getAspectModelUrn().isEmpty() ?
-                        collection.getName() :
-                        collection.getAspectModelUrn().get().getUrn().toString() ) )
+                  .semanticId( buildReferenceForCollection( collection.getAspectModelUrn().isPresent()
+                        ? collection.getAspectModelUrn().get().getUrn().toString() : collection.getName() ) )
                   .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
