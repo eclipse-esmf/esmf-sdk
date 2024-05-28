@@ -267,6 +267,10 @@ Configuration Properties:
 | `useSemanticApiVersion` | Use the complete semantic version of the Aspect Model as the version of the Aspect API. | `Boolean` | `false` | {nok}
 | `aspectResourcePath` | The resource-path` for the Aspect API endpoints. | `String` | none | {nok}
 | `includeQueryApi` | Include the path for the Query Aspect API Endpoint in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `includeFullCrud` | Include the POST/PUT/PATCH methods in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `includePost` | Include the POST method in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `includePut` | Include the PUT method in the OpenAPI specification. | `Boolean` | `false` | {nok}
+| `includePatch` | Include the PATCH method in the OpenAPI specification. | `Boolean` | `false` | {nok}
 | `excludePaging` | Exclude paging information for the Aspect API Endpoint in the OpenAPI specification. | `Boolean` | `false` | {nok}
 | `aspectCursorBasedPaging` | Set the used paging strategy as cursor-based paging. | `Boolean` | `false` | {nok}
 | `aspectOffsetBasedPaging` | Set the used paging strategy as offset-based paging. | `Boolean` | `false` | {nok}

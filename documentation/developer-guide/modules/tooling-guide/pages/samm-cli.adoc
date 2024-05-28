@@ -96,7 +96,7 @@ The available options and their meaning can also be seen in the help text of the
                                        https://velocity.apache.org/[Velocity] macro library                                  |
                                    | _--static, -s_ : generate Java domain classes for a Static Meta Model                   |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.16+| aspect <model> to openapi    | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to openapi -j`
+.20+| aspect <model> to openapi    | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to openapi -j`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--api-base-url, -b_ : the base url for the Aspect API used in the
                                        https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to openapi -j -b \http://mysite.de`
@@ -111,6 +111,10 @@ The available options and their meaning can also be seen in the help text of the
                                    | _--resource-path, -r_ : the resource path for the Aspect API endpoints                  | For detailed description, see the section bellow
                                    | _--include-query-api, -q_ : include the path for the Query Aspect API Endpoint in the
                                        https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           |
+                                   | _--include-crud, -cr_ : include the POST/PUT/PATCH methods in the OpenAPI specification |
+                                   | _--include-post, -post_ : include the POST method in the OpenAPI specification          |
+                                   | _--include-put, -put_ : include the PUT method in the OpenAPI specification             |
+                                   | _--include-patch, -patch_ : include the PATCH method in the OpenAPI specification       |
                                    | _--paging-none, -pn_ : exclude paging information for the Aspect API Endpoint in the
                                        https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           |
                                    | _--paging-cursor-based, -pc_ : in case there is more than one paging possibility,

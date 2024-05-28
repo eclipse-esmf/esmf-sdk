@@ -33,7 +33,9 @@
                </includes>
                <aspectApiBaseUrl>http://example.com</aspectApiBaseUrl>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
-               <includeFullCrud>true</includeFullCrud>
+               <includePost>true</includePost>
+               <includePut>true</includePut>
+               <includePatch>true</includePatch>
                <outputFormat>json</outputFormat>
             </configuration>
          </plugin>
