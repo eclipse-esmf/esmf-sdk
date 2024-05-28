@@ -14,6 +14,10 @@
 package org.eclipse.esmf.aspectmodel.resolver;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
@@ -37,5 +41,16 @@ public class ExternalResolverStrategy implements ResolutionStrategy {
       final String commandWithParameters = command + " " + aspectModelUrn.toString();
       final String result = CommandExecutor.executeCommand( commandWithParameters );
       return TurtleLoader.loadTurtle( new ByteArrayInputStream( result.getBytes( StandardCharsets.UTF_8 ) ) );
+   }
+
+   @Override
+   public Try<Model> applyUri( URI uri ) {
+      final String commandWithParameters = command + uri.toString();
+      final String result = CommandExecutor.executeCommand( commandWithParameters );
+      return TurtleLoader.loadTurtle( new ByteArrayInputStream( result.getBytes( StandardCharsets.UTF_8 ) ) );
+   }
+
+   public InputStream read( URI uri ) throws Exception {
+      return new FileInputStream( new File( uri ) );
    }
 }

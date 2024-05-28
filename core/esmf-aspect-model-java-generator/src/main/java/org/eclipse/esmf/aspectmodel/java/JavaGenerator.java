@@ -22,7 +22,6 @@ import java.util.function.Function;
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
 import org.eclipse.esmf.aspectmodel.generator.Generator;
 import org.eclipse.esmf.metamodel.Aspect;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +40,9 @@ public abstract class JavaGenerator extends Generator<QualifiedName, String> {
    @Override
    public void write( final Artifact<QualifiedName, String> artifact, final Function<QualifiedName, OutputStream> nameMapper ) {
       final QualifiedName qualifiedName = artifact.getId();
-      final OutputStream outputStream = nameMapper.apply( qualifiedName );
-      final String content = artifact.getContent();
+      try ( final OutputStream outputStream = nameMapper.apply( qualifiedName ) ) {
+         final String content = artifact.getContent();
 
-      try {
          try ( final Writer writer = new OutputStreamWriter( outputStream, StandardCharsets.UTF_8 ) ) {
             for ( int i = 0; i < content.length(); i++ ) {
                writer.write( content.charAt( i ) );

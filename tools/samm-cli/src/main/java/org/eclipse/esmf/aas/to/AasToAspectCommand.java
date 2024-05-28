@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aas.AasToCommand;
@@ -70,7 +71,7 @@ public class AasToAspectCommand extends AbstractCommand {
 
       for ( final Aspect aspect : filteredAspects ) {
          final String aspectString = AspectSerializer.INSTANCE.apply( aspect );
-         final File targetFile = modelsRoot.determineAspectModelFile( aspect.getAspectModelUrn().get() );
+         final File targetFile = toFile( modelsRoot.determineAspectModelFile( aspect.getAspectModelUrn().get() ) );
          LOG.info( "Writing {}", targetFile.getAbsolutePath() );
          final File directory = targetFile.getParentFile();
          if ( !directory.exists() && !directory.mkdirs() ) {

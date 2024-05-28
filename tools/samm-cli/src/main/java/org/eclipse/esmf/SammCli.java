@@ -21,6 +21,7 @@ import org.eclipse.esmf.aas.AasCommand;
 import org.eclipse.esmf.aspect.AspectCommand;
 import org.eclipse.esmf.substitution.IsWindows;
 
+import org.eclipse.esmf.aspectmodel.resolver.github.GitHubResolutionStrategy;
 import org.fusesource.jansi.AnsiConsole;
 import picocli.CommandLine;
 
@@ -109,6 +110,7 @@ public class SammCli extends AbstractCommand {
       }
 
       NativeImageHelpers.ensureRequiredEnvironment();
+      GitHubResolutionStrategy.install();
 
       // The disabling color switch needs to be checked before PicoCLI initialization
       boolean disableColor = false;
