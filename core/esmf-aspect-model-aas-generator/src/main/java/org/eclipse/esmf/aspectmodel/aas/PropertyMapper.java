@@ -61,9 +61,9 @@ public interface PropertyMapper<T extends SubmodelElement> {
     * @param property the property to build the reference for
     * @return the newly created reference
     */
-   default Reference buildReferenceToConceptDescription( final Property property ) {
+   default Reference buildReferenceToGlobalReference( final Property property ) {
       final Key key = new DefaultKey.Builder()
-            .type( KeyTypes.CONCEPT_DESCRIPTION )
+            .type( KeyTypes.GLOBAL_REFERENCE )
             .value( determineIdentifierFor( property ) )
             .build();
       return new DefaultReference.Builder().type( ReferenceTypes.EXTERNAL_REFERENCE ).keys( key ).build();

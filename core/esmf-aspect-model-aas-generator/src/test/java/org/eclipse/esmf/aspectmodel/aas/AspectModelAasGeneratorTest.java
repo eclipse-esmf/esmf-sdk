@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -359,6 +360,19 @@ class AspectModelAasGeneratorTest {
 
       assertThat( dataSpecificationIec61360.getDefinition().get( 1 ).getText() ).isEqualTo( "Test Description" );
       assertThat( property.getDescription() ).isEmpty();
+   }
+
+   @Test
+   void testGeneratedAasxFromAspectModelSemanticIdsAreGlobalReferences() throws DeserializationException {
+      final Environment environment = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_DESCRIPTIONS );
+
+      final Property property = (Property) environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
+
+      assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
+      assertThat( environment.getConceptDescriptions() ).hasSize( 2 );
+      assertThat( environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications() ).hasSize( 1 );
+      assertThat( property.getDescription() ).isEmpty();
+      assertThat( property.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
    }
 
    private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {
