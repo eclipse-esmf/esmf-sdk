@@ -238,7 +238,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    private List<SubmodelElement> visitOperations(
          final List<org.eclipse.esmf.metamodel.Operation> elements, final Context context ) {
-      return elements.stream().map( i -> mapText( i, context ) ).collect( Collectors.toList());
+      return elements.stream().map( i -> mapText( i, context ) ).collect( Collectors.toList() );
    }
 
    private List<SubmodelElement> visitProperties( final List<Property> elements, final Context context ) {
@@ -556,7 +556,9 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final SubmodelElementBuilder builder = property ->
             new DefaultSubmodelElementList.Builder()
                   .idShort( property.getName() )
-                  .semanticId( buildReferenceForCollection( collection.getAspectModelUrn().isEmpty() ? collection.getName() : collection.getAspectModelUrn().get().getUrn().toString() ) )
+                  .semanticId( buildReferenceForCollection( collection.getAspectModelUrn().isEmpty() ?
+                        collection.getName() :
+                        collection.getAspectModelUrn().get().getUrn().toString() ) )
                   .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
