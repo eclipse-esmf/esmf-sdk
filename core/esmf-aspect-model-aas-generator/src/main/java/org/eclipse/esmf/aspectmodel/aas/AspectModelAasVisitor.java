@@ -387,11 +387,11 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    private Reference buildReferenceForCollection( final String submodelId ) {
       final Key key = new DefaultKey.Builder()
-            .type( KeyTypes.SUBMODEL_ELEMENT_COLLECTION )
+            .type( KeyTypes.GLOBAL_REFERENCE )
             .value( submodelId )
             .build();
       return new DefaultReference.Builder()
-            .type( ReferenceTypes.MODEL_REFERENCE )
+            .type( ReferenceTypes.EXTERNAL_REFERENCE )
             .keys( key )
             .build();
    }
@@ -557,7 +557,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             new DefaultSubmodelElementList.Builder()
                   .idShort( property.getName() )
                   .semanticId( buildReferenceForCollection( collection.getAspectModelUrn().isPresent()
-                        ? collection.getAspectModelUrn().get().getUrn().toString() : collection.getName() ) )
+                        ? collection.getAspectModelUrn().get().getUrn().toString() : property.getName() + "Characteristic" ) )
                   .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                   .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                   .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
