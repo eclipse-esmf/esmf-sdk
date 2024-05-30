@@ -17,6 +17,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+
 import org.apache.jena.rdf.model.Model;
 
 public class MetaModelFiles {
@@ -40,11 +43,10 @@ public class MetaModelFiles {
       }
 
       @Override
-      public ModelNamespace namespace() {
+      public Namespace namespace() {
          return null;
       }
 
-      @Override
       public List<ModelElement> elements() {
          return null;
       }

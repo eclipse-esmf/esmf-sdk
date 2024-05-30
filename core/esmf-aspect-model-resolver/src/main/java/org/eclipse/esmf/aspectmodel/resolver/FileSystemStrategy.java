@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.vavr.control.Try;
@@ -76,7 +77,7 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
     * {@link FileNotFoundException} if no file containing the element was found
     */
    @Override
-   public Try<Model> apply( final AspectModelUrn aspectModelUrn ) {
+   public Try<ModelFile> apply( final AspectModelUrn aspectModelUrn ) {
       final Path directory = modelsRoot.directoryForNamespace( aspectModelUrn );
       final File namedResourceFile = directory.resolve( aspectModelUrn.getName() + ".ttl" ).toFile();
       if ( namedResourceFile.exists() ) {
@@ -94,11 +95,11 @@ public class FileSystemStrategy extends AbstractResolutionStrategy {
             continue;
          }
          LOG.debug( "Looking for {} in {}", aspectModelUrn, file );
-         final Try<Model> tryModel = loadFromUri( file.toURI() );
+         final Try<ModelFile> tryModel = loadFromUri( file.toURI() );
          if ( tryModel.isFailure() ) {
             LOG.debug( "Could not load model from {}", file, tryModel.getCause() );
          } else {
-            final Model model = tryModel.get();
+            final ModelFile model = tryModel.get();
             if ( AspectModelResolver.containsDefinition( model, aspectModelUrn ) ) {
                return Try.success( model );
             } else {

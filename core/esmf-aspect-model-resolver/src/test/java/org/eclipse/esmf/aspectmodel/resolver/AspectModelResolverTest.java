@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.ModelFiles;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -152,7 +153,7 @@ public class AspectModelResolverTest extends MetaModelVersions {
             AspectModelResolverTest.class.getResourceAsStream(
                   "/" + metaModelVersion.toString().toLowerCase()
                         + "/org.eclipse.esmf.test/1.0.0/Test.ttl" ) ).get();
-      final ResolutionStrategy inMemoryStrategy = anyUrn -> Try.success( model );
+      final ResolutionStrategy inMemoryStrategy = anyUrn -> Try.success( ModelFiles.fromModel( model ) );
       final EitherStrategy inMemoryResolutionStrategy = new EitherStrategy( urnStrategy, inMemoryStrategy );
 
       final Try<VersionedModel> result = resolver.resolveAspectModel( inMemoryResolutionStrategy, inputUrn );

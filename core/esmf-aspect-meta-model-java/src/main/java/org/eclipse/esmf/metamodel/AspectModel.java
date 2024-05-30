@@ -15,15 +15,11 @@ package org.eclipse.esmf.metamodel;
 
 import java.util.List;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
+
 public interface AspectModel extends ModelElementGroup {
-   default List<ModelNamespace> namespaces() {
-      return files().stream().map( ModelFile::namespace ).toList();
-   }
+   List<ModelNamespace> namespaces();
 
    List<ModelFile> files();
 
-   @Override
-   default List<ModelElement> elements() {
-      return files().stream().flatMap( file -> file.elements().stream() ).toList();
-   }
 }

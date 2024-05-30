@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 import org.eclipse.esmf.samm.KnownVersion;

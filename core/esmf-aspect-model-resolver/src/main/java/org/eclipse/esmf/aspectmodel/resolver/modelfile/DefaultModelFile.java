@@ -11,43 +11,49 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.metamodel.impl;
+package org.eclipse.esmf.aspectmodel.resolver.modelfile;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.ModelFile;
-import org.eclipse.esmf.metamodel.ModelInput;
-import org.eclipse.esmf.metamodel.ModelNamespace;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 
-import io.vavr.control.Try;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 
-public class DefaultModelFile implements ModelFile {
+@SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
+public class DefaultModelFile extends AbstractModelFile {
    private final Model sourceModel;
    private final List<String> headerComment;
    private final Optional<URI> sourceLocation;
+   private final Namespace namespace;
 
    public DefaultModelFile( final Model sourceModel, final List<String> headerComment, final Optional<URI> sourceLocation ) {
+      Objects.requireNonNull( sourceModel, "" );
       this.sourceModel = sourceModel;
       this.headerComment = headerComment;
       this.sourceLocation = sourceLocation;
+      this.namespace = getNamespace( sourceModel );
    }
 
-   public static DefaultModelFile fromInput( final ModelInput modelInput ) {
-      final Try<Model> tryModel = TurtleLoader.loadTurtle( modelInput.contentProvider().get() );
-      final Model model = tryModel.getOrElseThrow( exception -> new RuntimeException( exception ) );
-      final List<String> comments = List.of(); // TODO load from input
-      return new DefaultModelFile( model, comments, modelInput.location() );
+   public DefaultModelFile( final ModelInput input ) {
+      final List<String> modelContent = loadContent( input );
+      this.headerComment = getHeader( modelContent );
+      final Model model = TurtleLoader.loadTurtle( StringUtils.join( modelContent, "\n" ) ).get();
+      this.namespace = getNamespace( model );
+      this.sourceModel = model;
+      this.sourceLocation = input.location();
    }
 
-   @Override
-   public List<ModelElement> elements() {
-      // TODO
-      return null;
+   public DefaultModelFile( final Model model ) {
+      this( model, List.of(), Optional.empty() );
+   }
+
+   public DefaultModelFile( final Model model, final URI sourceLocation ) {
+      this( model, List.of(), Optional.ofNullable( sourceLocation ) );
    }
 
    @Override
@@ -66,8 +72,7 @@ public class DefaultModelFile implements ModelFile {
    }
 
    @Override
-   public ModelNamespace namespace() {
-      // TODO
-      return null;
+   public Namespace namespace() {
+      return namespace;
    }
 }

@@ -766,8 +766,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    public ElementModel visitQuantityKind( final QuantityKind quantityKind, final ModelElement context ) {
       final Model model = ModelFactory.createDefaultModel();
       final Resource quantityKindResource = getElementResource( quantityKind );
-      if ( !quantityKindResource.getNameSpace().equals( SammNs.UNIT.getNamespace() ) ) {
-         if ( quantityKind.urn().getUrnPrefix().equals( SammNs.UNIT.getNamespace() ) ) {
+      if ( !SammNs.UNIT.getNamespace().equals( quantityKindResource.getNameSpace() ) ) {
+         if ( SammNs.UNIT.getNamespace().equals( quantityKind.urn().getUrnPrefix() ) ) {
             return new ElementModel( model, Optional.empty() );
          }
          model.add( quantityKindResource, RDF.type, SammNs.SAMM.QuantityKind() );

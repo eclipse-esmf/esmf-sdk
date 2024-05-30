@@ -28,7 +28,7 @@ public class SHACL implements Namespace {
    public static final String NS = "http://www.w3.org/ns/shacl#";
 
    @Override
-   public String getUri() {
+   public String uri() {
       return NS;
    }
 
