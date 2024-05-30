@@ -17,10 +17,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.ModelFiles;
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 
 /**
  * Abstract base class for the implementation of {@link ResolutionStrategy}s.
@@ -32,7 +33,7 @@ public abstract class AbstractResolutionStrategy implements ResolutionStrategy {
     * @param uri The URI
     * @return The model
     */
-   protected Try<Model> loadFromUri( final URI uri ) {
+   protected Try<ModelFile> loadFromUri( final URI uri ) {
       try {
          return loadFromUrl( uri.toURL() );
       } catch ( final MalformedURLException exception ) {
@@ -46,7 +47,8 @@ public abstract class AbstractResolutionStrategy implements ResolutionStrategy {
     * @param url The URL
     * @return The model
     */
-   protected Try<Model> loadFromUrl( final URL url ) {
-      return Try.ofSupplier( () -> TurtleLoader.openUrl( url ) ).flatMap( TurtleLoader::loadTurtle );
+   protected Try<ModelFile> loadFromUrl( final URL url ) {
+      return Try.ofSupplier( () -> TurtleLoader.openUrl( url ) ).flatMap( TurtleLoader::loadTurtle )
+            .mapTry( model -> ModelFiles.fromModel( model, url.toURI() ) );
    }
 }

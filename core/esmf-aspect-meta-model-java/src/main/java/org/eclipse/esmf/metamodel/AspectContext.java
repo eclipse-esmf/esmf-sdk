@@ -23,5 +23,6 @@ import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
  * @param aspect the Aspect
  */
 // TODO remove this class completely
+@Deprecated(forRemoval = true)
 public record AspectContext( VersionedModel rdfModel, Aspect aspect ) {
 }

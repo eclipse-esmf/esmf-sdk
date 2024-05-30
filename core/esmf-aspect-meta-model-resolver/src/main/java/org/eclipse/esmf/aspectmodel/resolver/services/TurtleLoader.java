@@ -19,7 +19,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
 import javax.annotation.Nullable;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
@@ -51,7 +53,6 @@ public final class TurtleLoader {
     * @return The model on success, a corresponding exception otherwise
     */
    public static Try<Model> loadTurtle( @Nullable final InputStream inputStream ) {
-      DataType.setupTypeMapping();
 
       if ( inputStream == null ) {
          return Try.failure( new IllegalArgumentException() );
@@ -62,6 +63,18 @@ public final class TurtleLoader {
             .lines()
             .collect( Collectors.joining( "\n" ) );
 
+      return loadTurtle( modelContent );
+   }
+
+   /**
+    * Loads a Turtle model from an input stream
+    *
+    * @param modelContent The model content
+    * @return The model on success, a corresponding exception otherwise
+    */
+   public static Try<Model> loadTurtle( @Nullable final String modelContent ) {
+      Objects.requireNonNull( modelContent, "Model content must not be null." );
+      DataType.setupTypeMapping();
       final Model streamModel = ModelFactory.createDefaultModel();
       registerTurtle();
       try ( final InputStream turtleInputStream = new ByteArrayInputStream( modelContent.getBytes( StandardCharsets.UTF_8 ) ) ) {

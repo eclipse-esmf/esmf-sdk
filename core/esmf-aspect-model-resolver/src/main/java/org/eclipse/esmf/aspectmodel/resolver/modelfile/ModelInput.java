@@ -11,20 +11,15 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.metamodel;
+package org.eclipse.esmf.aspectmodel.resolver.modelfile;
 
+import java.io.InputStream;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
-import org.apache.jena.rdf.model.Model;
+public interface ModelInput {
+   <T> T content(Function<InputStream, T> contentConsumer);
 
-public interface ModelFile extends ModelElementGroup {
-   Model sourceModel();
-
-   List<String> headerComment();
-
-   Optional<URI> sourceLocation();
-
-   ModelNamespace namespace();
+   Optional<URI> location();
 }

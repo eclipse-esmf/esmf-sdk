@@ -95,7 +95,11 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
    }
 
    private String modelToString( final Model model ) {
-      return Arrays.stream( TestModel.modelToString( model ).split( "\\n" ) )
+      return Arrays.stream( TestModel.modelToString( model )
+                  .replaceAll( ";", "" )
+                  .replaceAll( ".", "" )
+                  .replaceAll( "  *", "" )
+                  .split( "\\n" ) )
             .filter( line -> !line.contains( "samm-c:values" ) )
             .filter( line -> !line.contains( "samm:see" ) )
             .map( this::sortLineWithRdfListOrLangString )

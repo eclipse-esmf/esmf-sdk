@@ -11,15 +11,24 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.metamodel;
+package org.eclipse.esmf.aspectmodel.resolver.modelfile;
 
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public interface ModelInput {
-   Supplier<InputStream> contentProvider();
-
-   Optional<URI> location();
+public record DefaultModelInput(
+      Supplier<InputStream> contentProvider,
+      Optional<URI> location
+) implements ModelInput {
+   @Override
+   public <T> T content( final Function<InputStream, T> contentConsumer ) {
+      try ( final InputStream contentStream = contentProvider.get() ) {
+         return contentConsumer.apply( contentStream );
+      } catch ( final Exception e ) {
+         throw new RuntimeException( e );
+      }
+   }
 }

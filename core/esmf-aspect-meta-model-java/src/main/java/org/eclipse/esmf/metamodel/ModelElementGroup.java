@@ -25,8 +25,8 @@ public interface ModelElementGroup {
     */
    default List<Aspect> aspects() {
       return elements().stream()
-            .filter( element -> element.is( Aspect.class ) )
-            .map( element -> element.as( Aspect.class ) )
+            .filter( Aspect.class::isInstance )
+            .map( Aspect.class::cast )
             .toList();
    }
 }

@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel.resolver;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.Predicates.instanceOf;
+import static java.util.stream.Collectors.toSet;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -27,8 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +40,8 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.ModelFiles;
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
@@ -99,7 +101,7 @@ public class AspectModelResolver {
                .flatMap( Function.identity() )
                .map( AspectModelResolver::resolveSammUrn )
                .flatMap( Value::toJavaStream );
-      } ) ).flatMap( Function.identity() ).collect( Collectors.toSet() );
+      } ) ).flatMap( Function.identity() ).collect( toSet() );
    }
 
    /**
@@ -159,7 +161,7 @@ public class AspectModelResolver {
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final Model model ) {
-      return resolveAspectModel( model, resolutionStrategy, urnsToResolve( model, model ) );
+      return resolveAspectModel( ModelFiles.fromModel( model ), resolutionStrategy, urnsToResolve( model, model ) );
    }
 
    /**
@@ -171,7 +173,7 @@ public class AspectModelResolver {
     * @return the resolved model on success
     */
    public Try<VersionedModel> resolveAspectModel( final ResolutionStrategy resolutionStrategy, final List<AspectModelUrn> input ) {
-      return resolveAspectModel( ModelFactory.createDefaultModel(), resolutionStrategy, input );
+      return resolveAspectModel( ModelFiles.empty(), resolutionStrategy, input );
    }
 
    /**
@@ -183,71 +185,62 @@ public class AspectModelResolver {
     * @param input the input to resolved by the strategy
     * @return the resolved model on success
     */
-   public Try<VersionedModel> resolveAspectModel( final Model initialModel, final ResolutionStrategy resolutionStrategy,
+   public Try<VersionedModel> resolveAspectModel( final ModelFile initialModel, final ResolutionStrategy resolutionStrategy,
          final List<AspectModelUrn> input ) {
-      final Try<Model> mergedModel = resolve( initialModel, input, resolutionStrategy )
-            .map( bamm100UriRewriter::migrate )
-            .map( bamm200UriRewriter::migrate );
 
-      if ( mergedModel.isFailure() ) {
-         if ( mergedModel.getCause() instanceof final FileNotFoundException fileNotFoundException ) {
-            final String failedUrns = input.stream()
-                  .filter( urn -> !urn.getElementType().equals( ElementType.META_MODEL ) )
+      final Try<List<ModelFile>> mergedModels = resolve( initialModel, input, resolutionStrategy ).map( modelFiles -> modelFiles.stream()
+            .map( modelFile -> modelFile.withModel( bamm100UriRewriter.migrate( modelFile.sourceModel() ) ) )
+            .map( modelFile -> modelFile.withModel( bamm200UriRewriter.migrate( modelFile.sourceModel() ) ) ).toList() );
+
+      if ( mergedModels.isFailure() ) {
+         if ( mergedModels.getCause() instanceof final FileNotFoundException fileNotFoundException ) {
+            final String failedUrns = input.stream().filter( urn -> !urn.getElementType().equals( ElementType.META_MODEL ) )
                   .filter( urn -> !urn.getElementType().equals( ElementType.CHARACTERISTIC ) )
                   .filter( urn -> !urn.getElementType().equals( ElementType.ENTITY ) )
-                  .filter( urn -> !urn.getElementType().equals( ElementType.UNIT ) )
-                  .map( AspectModelUrn::toString )
+                  .filter( urn -> !urn.getElementType().equals( ElementType.UNIT ) ).map( AspectModelUrn::toString )
                   .collect( Collectors.joining( ", " ) );
             LOG.debug( "Could not resolve {}", failedUrns, fileNotFoundException );
             return Try.failure( new ModelResolutionException( "Could not resolve " + failedUrns, fileNotFoundException ) );
          }
-         return Try.failure( mergedModel.getCause() );
+         return mergedModels.map( __ -> null );
       }
 
-      final AspectMetaModelResourceResolver resourceResolver =
-            migratorService.getSdsMigratorFactory().createAspectMetaModelResourceResolver();
+      final AspectMetaModelResourceResolver resourceResolver = migratorService.getSdsMigratorFactory()
+            .createAspectMetaModelResourceResolver();
 
-      final Set<VersionNumber> usedMetaModelVersions =
-            mergedModel.map( resourceResolver::getUsedMetaModelVersions )
-                  .getOrElse( Collections.emptySet() );
+      final Set<VersionNumber> usedMetaModelVersions = mergedModels.toJavaStream().flatMap( List::stream ).map( ModelFile::sourceModel )
+            .map( resourceResolver::getUsedMetaModelVersions ).flatMap( Set::stream ).collect( toSet() );
 
       if ( usedMetaModelVersions.isEmpty() ) {
          return Try.failure( new ModelResolutionException( "Could not determine used meta model version" ) );
       }
 
-      if ( usedMetaModelVersions.size() == 1
-            && usedMetaModelVersions.iterator().next().toString().equals( KnownVersion.getLatest().toVersionString() )
-            && migratorService.getMigratorFactory().isEmpty()
-      ) {
-         return mergedModel.flatMap( model ->
-               migratorService.getSdsMigratorFactory().createAspectMetaModelResourceResolver()
-                     .mergeMetaModelIntoRawModel( model, usedMetaModelVersions.iterator().next() ) );
+      if ( usedMetaModelVersions.size() == 1 && usedMetaModelVersions.iterator().next().toString()
+            .equals( KnownVersion.getLatest().toVersionString() ) && migratorService.getMigratorFactory().isEmpty() ) {
+         return migratorService.getSdsMigratorFactory().createAspectMetaModelResourceResolver()
+               .mergeMetaModelIntoRawModel( mergeModels( mergedModels.get() ), usedMetaModelVersions.iterator().next() )
+               .map( versionedModel -> versionedModel.withSources( mergedModels.get() ) );
       }
 
-      final Try<VersionNumber> oldestVersion =
-            Option.ofOptional( usedMetaModelVersions.stream().sorted().findFirst() ).toTry();
+      final Try<VersionNumber> oldestVersion = Option.ofOptional( usedMetaModelVersions.stream().sorted().findFirst() ).toTry();
 
-      return mergedModel.flatMap( model ->
-            oldestVersion.flatMap( oldest ->
-                  migratorService.getSdsMigratorFactory()
-                        .createAspectMetaModelResourceResolver()
-                        .mergeMetaModelIntoRawModel( model, oldest )
-                        .orElse( () -> migratorService.getMigratorFactory()
-                              .map( MigratorFactory::createAspectMetaModelResourceResolver )
-                              .map( Try::success )
-                              .orElseThrow()
-                              .flatMap( metaResolver -> metaResolver.mergeMetaModelIntoRawModel( model, oldest ) ) )
-                        .flatMap( migratorService::updateMetaModelVersion ) ) );
+      return oldestVersion.flatMap( oldest -> migratorService.getSdsMigratorFactory().createAspectMetaModelResourceResolver()
+            .mergeMetaModelIntoRawModel( mergeModels( mergedModels.get() ), oldest ).orElse(
+                  () -> migratorService.getMigratorFactory().map( MigratorFactory::createAspectMetaModelResourceResolver )
+                        .map( Try::success ).orElseThrow()
+                        .flatMap( metaResolver -> metaResolver.mergeMetaModelIntoRawModel( mergeModels( mergedModels.get() ), oldest ) ) )
+            .flatMap( migratorService::updateMetaModelVersion ) ).map( versionedModel -> versionedModel.withSources( mergedModels.get() ) );
    }
 
    /**
     * Checks if a given model contains the definition of a model element.
     *
-    * @param model the model
+    * @param modelFile the model file
     * @param urn the URN of the model element
     * @return true if the model contains the definition of the model element
     */
-   public static boolean containsDefinition( final Model model, final AspectModelUrn urn ) {
+   public static boolean containsDefinition( final ModelFile modelFile, final AspectModelUrn urn ) {
+      final Model model = modelFile.sourceModel();
       if ( model.getNsPrefixMap().values().stream().anyMatch( prefixUri -> prefixUri.startsWith( "urn:bamm:" ) ) ) {
          final boolean result = model.contains( model.createResource( urn.toString().replace( "urn:samm:", "urn:bamm:" ) ), RDF.type,
                (RDFNode) null );
@@ -264,34 +257,39 @@ public class AspectModelResolver {
     * The strategy is applied to the URNs to load a model, and then repeated for all URNs in the loaded model that
     * have not yet been loaded.
     *
-    * @param result the (possibly pre-filled) model for which elements need to be resolved
+    * @param first the (possibly pre-filled) model for which elements need to be resolved
     * @param urns the Aspect Model element URNs
     * @param resolutionStrategy the resolution strategy that knowns how to turn a URN into a Model
     * @return the fully resolved model, or a failure if one of the transitively referenced elements can't be found
     */
-   private Try<Model> resolve( final Model result, final List<AspectModelUrn> urns, final ResolutionStrategy resolutionStrategy ) {
+   private Try<List<ModelFile>> resolve( final ModelFile first, final List<AspectModelUrn> urns,
+         final ResolutionStrategy resolutionStrategy ) {
       final Stack<String> unresolvedUrns = new Stack<>();
-      final Set<Model> mergedModels = new HashSet<>();
+      final List<ModelFile> result = new ArrayList<>();
+      final Model agregatedModel = ModelFactory.createDefaultModel();
+      if ( !( first instanceof ModelFiles.Empty ) ) {
+         result.add( first );
+      }
       for ( final AspectModelUrn urn : urns ) {
          unresolvedUrns.push( urn.toString() );
       }
 
       while ( !unresolvedUrns.isEmpty() ) {
          final String urnToResolve = unresolvedUrns.pop();
-         final Try<Model> resolvedModel = getModelForUrn( urnToResolve, resolutionStrategy );
+         final Try<ModelFile> resolvedModel = getModelForUrn( urnToResolve, resolutionStrategy );
          if ( resolvedModel.isFailure() ) {
             LOG.debug( "Tried to resolve {} using {}, but it failed", urnToResolve, resolutionStrategy );
-            return resolvedModel;
+            return resolvedModel.map( List::of );
          }
-         final Model model = resolvedModel.get();
+         final ModelFile model = resolvedModel.get();
 
          // Merge the resolved model into the target if it was not already merged before.
          // It could have been merged before when the model contains another model definition that was already resolved
-         if ( !modelAlreadyResolved( model, mergedModels ) ) {
-            mergeModels( result, model );
-            mergedModels.add( model );
+         if ( !modelAlreadyResolved( model.sourceModel(), result ) ) {
+            mergeModels( agregatedModel, model );
+            result.add( model );
 
-            for ( final AspectModelUrn element : urnsToResolve( model, result ) ) {
+            for ( final AspectModelUrn element : urnsToResolve( model.sourceModel(), agregatedModel ) ) {
                if ( !unresolvedUrns.contains( element.toString() ) ) {
                   unresolvedUrns.push( element.toString() );
                }
@@ -324,11 +322,9 @@ public class AspectModelResolver {
       return result;
    }
 
-   private boolean modelAlreadyResolved( final Model model, final Set<Model> resolvedModels ) {
-      return resolvedModels.stream().anyMatch( model::isIsomorphicWith );
+   private boolean modelAlreadyResolved( final Model model, final Collection<ModelFile> resolvedModels ) {
+      return resolvedModels.stream().map( ModelFile::sourceModel ).anyMatch( model::isIsomorphicWith );
    }
-
-   private final Model emptyModel = ModelFactory.createDefaultModel();
 
    /**
     * Applies a {@link ResolutionStrategy} to a URI to be resolved, but only if the URI is actually a valid {@link AspectModelUrn}.
@@ -339,27 +335,27 @@ public class AspectModelResolver {
     * @param resolutionStrategy the resolution strategy to apply
     * @return the model containing the defintion of the given model element
     */
-   private Try<Model> getModelForUrn( final String urn, final ResolutionStrategy resolutionStrategy ) {
+   private Try<ModelFile> getModelForUrn( final String urn, final ResolutionStrategy resolutionStrategy ) {
       if ( urn.startsWith( RDF.getURI() ) || urn.startsWith( XSD.getURI() ) ) {
-         return Try.success( emptyModel );
+         return Try.success( ModelFiles.empty() );
       }
 
       try {
          final AspectModelUrn aspectModelUrn = AspectModelUrn.fromUrn( replaceLegacyBammUrn( urn ) );
          if ( aspectModelUrn.getElementType() != ElementType.NONE ) {
-            return Try.success( emptyModel );
+            return Try.success( ModelFiles.empty() );
          }
-         return resolutionStrategy.apply( aspectModelUrn ).flatMap( model -> {
-            if ( !containsType( model, urn ) ) {
+         return resolutionStrategy.apply( aspectModelUrn ).flatMap( modelFile -> {
+            if ( !containsType( modelFile.sourceModel(), urn ) ) {
                return Try.failure( new ModelResolutionException(
                      "Resolution strategy returned a model which does not contain element definition for " + urn ) );
             }
-            return Try.success( model );
+            return Try.success( modelFile );
          } );
       } catch ( final UrnSyntaxException e ) {
          // If it's no valid Aspect Model URN but some other URI (e.g., a samm:see value), there is nothing
          // to resolve, so we return just an empty model
-         return Try.success( emptyModel );
+         return Try.success( ModelFiles.empty() );
       }
    }
 
@@ -401,14 +397,20 @@ public class AspectModelResolver {
     * @param target the model to merge into
     * @param other the model to be merged
     */
-   private void mergeModels( final Model target, final Model other ) {
-      for ( final Map.Entry<String, String> prefixEntry : other.getNsPrefixMap().entrySet() ) {
+   private void mergeModels( final Model target, final ModelFile other ) {
+      for ( final Map.Entry<String, String> prefixEntry : other.sourceModel().getNsPrefixMap().entrySet() ) {
          if ( !target.getNsPrefixMap().containsKey( prefixEntry.getKey() ) ) {
             target.setNsPrefix( prefixEntry.getKey(), prefixEntry.getValue() );
          }
       }
 
-      other.listStatements().forEach( target::add );
+      other.sourceModel().listStatements().forEach( target::add );
+   }
+
+   private Model mergeModels( final List<ModelFile> models ) {
+      final Model mergedModel = ModelFactory.createDefaultModel();
+      models.forEach( modelFile -> mergeModels( mergedModel, modelFile ) );
+      return mergedModel;
    }
 
    /**
@@ -503,9 +505,10 @@ public class AspectModelResolver {
    public static Try<VersionedModel> loadButNotResolveModel( final File inputFile ) {
       try ( final InputStream inputStream = new FileInputStream( inputFile ) ) {
          final SammAspectMetaModelResourceResolver metaModelResourceResolver = new SammAspectMetaModelResourceResolver();
-         return TurtleLoader.loadTurtle( inputStream ).flatMap( model ->
-               metaModelResourceResolver.getMetaModelVersion( model ).flatMap( metaModelVersion ->
-                     metaModelResourceResolver.mergeMetaModelIntoRawModel( model, metaModelVersion ) ) );
+         return TurtleLoader.loadTurtle( inputStream ).flatMap( model -> metaModelResourceResolver.getMetaModelVersion( model ).flatMap(
+               metaModelVersion -> metaModelResourceResolver.mergeMetaModelIntoRawModel( model, metaModelVersion )
+                     .map( versionedModel -> versionedModel.withSources(
+                           List.of( ModelFiles.fromModel( model, inputFile.toURI() ) ) ) ) ) );
       } catch ( final IOException exception ) {
          return Try.failure( exception );
       }

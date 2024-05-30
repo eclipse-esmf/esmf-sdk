@@ -13,10 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 
 /**
  * A Resolution strategy that supports two types of inputs and wraps two dedicated sub-resolution strategies
@@ -32,8 +32,8 @@ public class EitherStrategy implements ResolutionStrategy {
    }
 
    @Override
-   public Try<Model> apply( final AspectModelUrn input ) {
-      final Try<Model> result = strategy1.apply( input );
+   public Try<ModelFile> apply( final AspectModelUrn input ) {
+      final Try<ModelFile> result = strategy1.apply( input );
       if ( result.isSuccess() ) {
          return result;
       }

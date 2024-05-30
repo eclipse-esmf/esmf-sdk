@@ -11,24 +11,18 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.metamodel.impl;
+package org.eclipse.esmf.aspectmodel.resolver.modelfile;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.VersionNumber;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.ModelFile;
-import org.eclipse.esmf.metamodel.ModelNamespace;
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
+import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
 
 import org.apache.jena.rdf.model.Model;
 
 public class MetaModelBundledModelFile implements ModelFile {
-   @Override
-   public List<ModelElement> elements() {
-      return null;
-   }
 
    @Override
    public Model sourceModel() {
@@ -46,7 +40,7 @@ public class MetaModelBundledModelFile implements ModelFile {
    }
 
    @Override
-   public ModelNamespace namespace() {
+   public Namespace namespace() {
       return null;
    }
 }
