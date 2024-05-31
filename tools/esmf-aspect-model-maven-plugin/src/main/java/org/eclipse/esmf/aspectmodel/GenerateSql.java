@@ -63,7 +63,6 @@ public class GenerateSql extends AspectModelMojo {
 
       final Set<AspectContext> aspectModels = loadModelsOrFail();
       for ( final AspectContext context : aspectModels ) {
-         final AspectModelSqlGenerator generator = new AspectModelSqlGenerator();
          final DatabricksSqlGenerationConfig generatorConfig =
                DatabricksSqlGenerationConfigBuilder.builder()
                      .commentLanguage( Locale.forLanguageTag( language ) )
@@ -74,7 +73,7 @@ public class GenerateSql extends AspectModelMojo {
                      .build();
          final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() ),
                SqlGenerationConfig.MappingStrategy.valueOf( strategy.toUpperCase() ), generatorConfig );
-         final SqlArtifact result = generator.apply( context.aspect(), sqlConfig );
+         final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( context.aspect(), sqlConfig );
 
          try ( final OutputStream out = getOutputStreamForFile( context.aspect().getName() + ".sql", outputDirectory ) ) {
             out.write( result.getContent().getBytes() );

@@ -23,6 +23,11 @@ import org.eclipse.esmf.metamodel.Aspect;
  * Generates SQL scripts from an Aspect Model that set up tables to contain the data of the Aspect.
  */
 public class AspectModelSqlGenerator implements ArtifactGenerator<String, String, Aspect, SqlGenerationConfig, SqlArtifact> {
+   public static final AspectModelSqlGenerator INSTANCE = new AspectModelSqlGenerator();
+
+   private AspectModelSqlGenerator() {
+   }
+
    @Override
    public SqlArtifact apply( final Aspect aspect, final SqlGenerationConfig sqlGenerationConfig ) {
       final String content = switch ( sqlGenerationConfig.dialect() ) {

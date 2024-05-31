@@ -84,7 +84,6 @@ public class AspectToSqlCommand extends AbstractCommand {
    @Override
    public void run() {
       final AspectContext context = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
-      final AspectModelSqlGenerator generator = new AspectModelSqlGenerator();
       final DatabricksSqlGenerationConfig generatorConfig =
             DatabricksSqlGenerationConfigBuilder.builder()
                   .commentLanguage( Locale.forLanguageTag( language ) )
@@ -94,7 +93,7 @@ public class AspectToSqlCommand extends AbstractCommand {
                   .decimalPrecision( decimalPrecision )
                   .build();
       final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( dialect, strategy, generatorConfig );
-      final SqlArtifact result = generator.apply( context.aspect(), sqlConfig );
+      final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( context.aspect(), sqlConfig );
 
       try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
          out.write( result.getContent().getBytes() );

@@ -36,14 +36,13 @@ public class AspectModelSqlGeneratorTest {
    void testDatabricksGeneration( final TestAspect testAspect ) {
       final VersionedModel versionedModel = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
       final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
-      final AspectModelSqlGenerator sqlGenerator = new AspectModelSqlGenerator();
       assertThatCode( () -> {
          final DatabricksSqlGenerationConfig dialectSpecificConfig = DatabricksSqlGenerationConfigBuilder.builder()
                .includeTableComment( true )
                .includeColumnComments( true )
                .commentLanguage( Locale.ENGLISH )
                .build();
-         final SqlArtifact sqlArtifact = sqlGenerator.apply( aspect, SqlGenerationConfigBuilder.builder()
+         final SqlArtifact sqlArtifact = AspectModelSqlGenerator.INSTANCE.apply( aspect, SqlGenerationConfigBuilder.builder()
                .dialect( SqlGenerationConfig.Dialect.DATABRICKS )
                .dialectSpecificConfig( dialectSpecificConfig )
                .build() );
