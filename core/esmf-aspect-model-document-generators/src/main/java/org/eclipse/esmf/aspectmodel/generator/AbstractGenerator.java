@@ -30,4 +30,6 @@ public class AbstractGenerator {
          writer.flush();
       }
    }
+
+   public static final String SAMM_EXTENSION = "x-samm-aspect-model-urn";
 }
