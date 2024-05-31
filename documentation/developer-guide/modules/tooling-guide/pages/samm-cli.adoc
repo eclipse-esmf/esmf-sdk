@@ -59,32 +59,32 @@ The available options and their meaning can also be seen in the help text of the
 | help                             | Get overview of all commands                                                            | `samm help`
 | help <subcommand>                | Get help for a specific subcommand                                                      | `samm help aspect`
 | aspect help <aspect subcommand>  | Get help for `aspect` subcommands                                                       | `samm aspect help validate`
-.2+| aspect <model> validate       | Validate Aspect Model                                                                   | `samm aspect AspectModel.ttl validate`
+.2+| [[aspect-validate]] aspect <model> validate | Validate Aspect Model                                                     | `samm aspect AspectModel.ttl validate`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
-.2+| aspect <model> prettyprint    | Pretty-print Aspect Model                                                               | `samm aspect AspectModel.ttl prettyprint`
+.2+| [[aspect-prettyprint]] aspect <model> prettyprint | Pretty-print Aspect Model                                           | `samm aspect AspectModel.ttl prettyprint`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
-.2+| aspect <model> migrate        | Migrate Aspect Model to the latest SAMM version                                         | `samm aspect AspectModel.ttl migrate AspectModel.ttl`
+.2+| [[aspect-migrate]] aspect <model> migrate | Migrate Aspect Model to the latest SAMM version                             | `samm aspect AspectModel.ttl migrate AspectModel.ttl`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl migrate AspectModel.ttl -o c:\Results\MigratedModel.ttl`
-.5+| aspect <model> to html        | Generate HTML documentation for an Aspect Model                                         | `samm aspect AspectModel.ttl to html`
+.5+| [[aspect-to-html]] aspect <model> to html | Generate HTML documentation for an Aspect Model                             | `samm aspect AspectModel.ttl to html`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl to html -o c:\Model.html`
                                    | _--css, -c_ : CSS file with custom styles to be included in the generated HTML
                                        documentation                                                                         | `samm aspect AspectModel.ttl to html -c c:\styles.css`
                                    | _--language, -l_ : The language from the model for which the HTML should be generated
                                        (default: en)                                                                         | `samm aspect AspectModel.ttl to html -l de`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to html --custom-resolver myresolver.bat`
-.4+| aspect <model> to png         | Generate PNG diagram for Aspect Model                                                   | `samm aspect AspectModel.ttl to png`
+.4+| [[aspect-to-png]] aspect <model> to png | Generate PNG diagram for Aspect Model                                         | `samm aspect AspectModel.ttl to png`
                                    | _--output, -o_ : output file path (default: stdout); as PNG is a binary format, it is
                                        strongly recommended to output the result to a file by using the -o option or the
                                        console redirection operator '>')|
                                    | _--language, -l_ : the language from the model for which the diagram should be
                                        generated (default: en)                                                               |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to png --custom-resolver resolver.jar`
-.4+| aspect <model> to svg         | Generate SVG diagram for Aspect Model                                                   | `samm aspect AspectModel.ttl to svg`
+.4+| [[aspect-to-svg]] aspect <model> to svg | Generate SVG diagram for Aspect Model                                         | `samm aspect AspectModel.ttl to svg`
                                    | _--output, -o_ : the output will be saved to the given file                             |
                                    | _--language, -l_ : the language from the model for which the diagram should be
                                        generated (default: en)                                                               |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl to svg --custom-resolver "java -jar resolver.jar"`
-.8+| aspect <model> to java        | Generate Java classes from an Aspect Model                                              | `samm aspect AspectModel.ttl to java`
+.8+| [[asepct-to-java]] aspect <model> to java | Generate Java classes from an Aspect Model                                  | `samm aspect AspectModel.ttl to java`
                                    | _--output-directory, -d_ : output directory to write files to (default:
                                        current directory)                                                                    |
                                    | _--package-name, -pn_ : package to use for generated Java classes                       | `samm aspect AspectModel.ttl to java -pn org.company.product`
@@ -96,10 +96,11 @@ The available options and their meaning can also be seen in the help text of the
                                        https://velocity.apache.org/[Velocity] macro library                                  |
                                    | _--static, -s_ : generate Java domain classes for a Static Meta Model                   |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.20+| aspect <model> to openapi    | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to openapi -j`
+.20+| [[aspect-to-openapi]] aspect <model> to openapi | Generate https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification
+                                     for an Aspect Model                                                                     | `samm aspect AspectModel.ttl to openapi -j`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--api-base-url, -b_ : the base url for the Aspect API used in the
-                                       https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to openapi -j -b \http://mysite.de`
+                                       https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to openapi -j -b \http://example.org`
                                    | _--json, -j_ : generate a JSON specification for an Aspect Model (default format
                                        is YAML)                                                                              |
                                    | _--comment, -c_ : only in combination with --json; generates `$comment`
@@ -127,36 +128,39 @@ The available options and their meaning can also be seen in the help text of the
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to openapi -l de`
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.8+| aspect <model> to asyncapi    | Generate https://www.asyncapi.com/docs/reference/specification/v3.0.0[AsyncAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to asyncapi`
+.8+| [[aspect-to-asyncapi]] aspect <model> to asyncapi | Generate https://www.asyncapi.com/docs/reference/specification/v3.0.0[AsyncAPI] specification for an Aspect Model| `samm aspect AspectModel.ttl to asyncapi`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--channel-address, -ca_ : Sets the channel address (i.e., for MQTT, the topic's name).
                                        https://spec.openapis.org/oas/v3.0.3[OpenAPI] specification                           | `samm aspect AspectModel.ttl to asyncapi -ca 123-456/789-012/namespace/1.0.0/Aspect`
-                                   | _--application-id, -ai_ : Sets the application id, e.g. an identifying URL.                    |
+                                   | _--application-id, -ai_ : Sets the application id, e.g. an identifying URL.             |
                                    | _--semantic-version, -sv_ : use the full semantic version from the Aspect Model as the
                                        version for the Aspect API                                                            |
                                    | _--language, -l_ : The language from the model for which an AsyncAPI specification should
                                        be generated (default: en)                                                            | `samm aspect AspectModel.ttl to asyncapi -l de`
                                    | _--separate-files, -sf_ : Create separate files for each schema                         |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.3+| aspect <model> to json        | Generate example JSON payload data for an Aspect Model                                  | `samm aspect AspectModel.ttl to json`
+.3+| [[aspect-to-json]] aspect <model> to json | Generate example JSON payload data for an Aspect Model                      | `samm aspect AspectModel.ttl to json`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.4+| aspect <model> to schema      | Generate JSON schema for an Aspect Model                                                | `samm aspect AspectModel.ttl to schema`
+.4+| [[aspect-to-schema]] aspect <model> to schema | Generate JSON schema for an Aspect Model                                | `samm aspect AspectModel.ttl to schema`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--language, -l_ : The language from the model for which a JSON schema should be
                                        generated (default: en)                                                               | `samm aspect AspectModel.ttl to schema -l de`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-.5+| aspect <model> to aas         | Generate an Asset Administration Shell (AAS) submodel template from an Aspect Model     | `samm aspect AspectModel.ttl to aas`
+.5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
+                                     Aspect Model                                                                            | `samm aspect AspectModel.ttl to aas`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
                                    | _--format, -f_ : output file format (xml, json, or aasx, default: xml)                  |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
-                                   | _--aspect-data, -a_ : path to a JSON file containing aspect data corresponding to the Aspect Model |
-.3+| aas <aas file> to aspect      | Translate Asset Administration Shell (AAS) Submodel Templates to Aspect Models          | `samm aas AssetAdminShell.aasx to aspect`
+                                   | _--aspect-data, -a_ : path to a JSON file containing aspect data corresponding to the
+                                     Aspect Model                                                                            |
+.3+| [[aas-to-aspect]] aas <aas file> to aspect | Translate Asset Administration Shell (AAS) Submodel Templates to
+                                     Aspect Models                                                                           | `samm aas AssetAdminShell.aasx to aspect`
                                    | _--output-directory, -d_ : output directory to write files to (default:
                                        current directory)                                                                    |
                                    | _--submodel-template, -s_ : selected submodel template for generating;
                                        run `samm aas <aas file> list` to list them.                                          | `samm aas AssetAdminShell.aasx to aspect -s 1 -s 2`
-.1+| aas <aas file> list           | Retrieve a list of submodel templates contained within the provided
+.1+| [[aas-list]] aas <aas file> list | Retrieve a list of submodel templates contained within the provided
                                        Asset Administration Shell (AAS) file.                                                | `samm aas AssetAdminShell.aasx list`
 
 |===
@@ -258,7 +262,7 @@ The version information as described above is also used in the URL definitions o
 ----
 {
  "servers" : [ {
-    "url" : "http://mysite/api/v2", // <1>
+    "url" : "http://example.com/api/v2", // <1>
     "variables" : {
       "api-version" : {
         "default" : "v2" // <1>
