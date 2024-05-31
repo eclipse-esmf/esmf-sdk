@@ -256,7 +256,8 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
    }
 
    private DatabricksType.DatabricksStruct entityToStruct( final ComplexType entity ) {
-      return new DatabricksType.DatabricksStruct( entity.getAllProperties().stream().flatMap( property -> {
+      return new DatabricksType.DatabricksStruct( entity.getAllProperties().stream()
+            .flatMap( property -> {
                if ( property.getDataType().isEmpty() || property.isNotInPayload() ) {
                   return Stream.empty();
                }

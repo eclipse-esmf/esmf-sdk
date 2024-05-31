@@ -30,6 +30,7 @@ import org.eclipse.esmf.test.TestResources;
 
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings( "checkstyle:LineLength" )
 public class AspectModelDatabricksDenormalizedSqlVisitorTest {
    private String sql( final TestAspect testAspect, final DatabricksSqlGenerationConfig config ) {
       final VersionedModel versionedModel = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
@@ -50,7 +51,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest {
               test_property__entity_property STRING NOT NULL COMMENT 'This is a property for the test entity.'
             )
             COMMENT 'This is a test description'
-            TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithAbstractEntity'); 
+            TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithAbstractEntity');
             """ );
    }
 
