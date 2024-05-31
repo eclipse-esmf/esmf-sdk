@@ -57,7 +57,7 @@ public class AspectToSqlCommand extends AbstractCommand {
    private String language = DatabricksSqlGenerationConfig.DEFAULT_COMMENT_LANGUAGE.getLanguage();
 
    @CommandLine.Option( names = { "--include-table-comment", "-tc" },
-         description = "Include table comments in the generated SQL script (default: ${DEFAULT-VALUE})" )
+         description = "Include table comment in the generated SQL script (default: ${DEFAULT-VALUE})" )
    private boolean includeTableComment = DatabricksSqlGenerationConfig.DEFAULT_INCLUDE_TABLE_COMMENT;
 
    @CommandLine.Option( names = { "--include-column-comments", "-cc" },
@@ -69,7 +69,7 @@ public class AspectToSqlCommand extends AbstractCommand {
    private String tableCommandPrefix = DatabricksSqlGenerationConfig.DEFAULT_TABLE_COMMAND_PREFIX;
 
    @CommandLine.Option( names = { "--decimal-precision", "-dp" },
-         description = "The precision to use for Databricks decimal columns (default: ${DEFAULT-VALUE})" )
+         description = "The precision to use for Databricks decimal columns, between 1 and 38. (default: ${DEFAULT-VALUE})" )
    private int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
 
    @CommandLine.ParentCommand

@@ -15,6 +15,7 @@ package examples;
 
 // tag::imports[]
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Map;
 import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
 import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator.HtmlGenerationOption;
@@ -43,7 +44,7 @@ public class GenerateHtml extends AbstractGenerator {
             new AspectModelResolver().resolveAspectModel( strategy, targetAspect ).get();
       // tag::generate[]
       final Aspect aspect = AspectModelLoader.getAspects( model ).toJavaStream() // <1>
-            .flatMap( aspects -> aspects.stream() )
+            .flatMap( Collection::stream )
             .filter( theAspect -> theAspect.getAspectModelUrn().map( urn -> urn.equals( targetAspect ) ).orElse( false ) )
             .findFirst().orElseThrow();
       final AspectModelDocumentationGenerator generator = // <2>

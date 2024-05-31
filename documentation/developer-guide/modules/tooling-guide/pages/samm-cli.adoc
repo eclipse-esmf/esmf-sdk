@@ -147,6 +147,20 @@ The available options and their meaning can also be seen in the help text of the
                                    | _--language, -l_ : The language from the model for which a JSON schema should be
                                        generated (default: en)                                                               | `samm aspect AspectModel.ttl to schema -l de`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
+.9+| [[aspect-to-sql]] aspect <model> to sql | Generate SQL script that sets up a table for data for this Aspect             | `samm aspect AspectModel.ttl to sql`
+                                   | _--output, -o_ : output file path (default: stdout)                                     |
+                                   | _--language, -l_ : The language from the model to use for generated comments            |
+                                   | _--dialect, -d_ : The SQL dialect to generate for (default: `databricks`)               |
+                                   | _--mapping-strategy, -s_ : The mapping strategy to use (default: `denormalized`)        |
+                                   | _--include-table-comment, -tc_ : Include table comment in the generated SQL script
+                                     (default: `true`)                                                                       |
+                                   | _--include-column-comments, -cc_ : Include column comments in the generated SQL
+                                     script (default: `true`)                                                                |
+                                   | _--table-command-prefix, -tcp_ : The prefix to use for Databricks table creation
+                                     commands (default: `CREATE TABLE IF NOT EXISTS`)                                        |
+                                   | _--decimal-precision, -dp_ : The precision to use for Databricks decimal columns
+                                     (default: 10). See also notes in
+                                     the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping].     |
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
                                      Aspect Model                                                                            | `samm aspect AspectModel.ttl to aas`
                                    | _--output, -o_ : output file path (default: stdout)                                     |

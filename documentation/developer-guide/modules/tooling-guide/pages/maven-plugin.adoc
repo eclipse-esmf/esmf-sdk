@@ -329,6 +329,56 @@ Configuration Properties:
 | `language` | The language from the model for which an AsyncAPI specification should be generated. | `String` | en | {nok}
 |===
 
+== Generate an SQL script from an Aspect Model
+
+The `generateSql` goal generates an SQL table creation script for a given Aspect Model. The default
+life cycle phase for the goal is `generate-resources`.
+
+Usage:
+
+[source,xml,subs=attributes+]
+----
+<build>
+  <plugins>
+     <plugin>
+        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <id>generate-sql</id>
+              <goals>
+                 <goal>generateSql</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
+           <includes>
+              <include>$\{urn-of-aspect-model-to-be-included}</include>
+           </includes>
+           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
+        </configuration>
+     </plugin>
+  </plugins>
+</build>
+----
+
+Configuration Properties:
+
+[width="100%", options="header", cols="20,50,10,10,10"]
+|===
+| Property | Description | Type | Default Value | Required
+| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
+| `outputDirectory` | The path to the directory where the generated SQL script will be written to. | `String` | none | {ok}
+| `dialect` | The SQL dialect to generate for. | `String` | `databricks` | {nok}
+| `strategy` | The mapping strategy to use. | `String` | `denormalized` | {nok}
+| `language` | The language from the model to use for generated comments. | `String` | en | {nok}
+| `includeTableComment` | Include table comment in the generated SQL script. | `Boolean` | `true` | {nok}
+| `includeColumnComments` | Include column comments in the generated SQL script. | `Boolean` | `true` | {nok}
+| `tableCommandPrefix` | The prefix to use for Databricks table creation commands. | `String` | `CREATE TABLE IF NOT EXISTS` | {nok}
+| `decimalPrecision` | The precision to use for Databricks decimal columns, between 1 and 38. See also notes in
+  the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping]. | `Integer` | 10 | {nok}
+|===
+
 == Generate Documentation for an Aspect Model
 
 === Generating HTML Documentation
