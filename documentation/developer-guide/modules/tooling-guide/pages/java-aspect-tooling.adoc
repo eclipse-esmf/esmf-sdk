@@ -512,6 +512,78 @@ include::example$GenerateAsyncApi.java[tags=generateYaml]
 include::example$GenerateAsyncApi.java[tags=generateJson]
 ----
 
+[[generating-sql]]
+=== Generating SQL for Aspect Models
+
+Using the Aspect Model SQL generator, an SQL script can be generated that sets up a table for data
+corresponding to the Aspect. The current implementation provides support for the
+https://docs.databricks.com/en/sql/language-manual/index.html[Databricks SQL] dialect and a mapping
+strategy that uses a denormalized table, i.e., the table contains one column for each Property used
+in the Aspect Model (or any of its transitively referenced Entities).
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateSql.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$GenerateSql.java[tags=generate]
+----
+
+[[databricks-type-mapping]]
+==== Databricks Type Mapping
+
+xref:samm-specification:ROOT:datatypes.adoc#data-types[Data types] in the Aspect Model are mapped to Databricks types using the following correspondences:
+
+[width="100%", options="header", cols="33,33,33"]
+|===
+| Aspect model type | Databricks SQL type | Note
+| `xsd:string`  | `STRING` |
+| `xsd:boolean` | `BOOLEAN` |
+| `xsd:decimal` | `DECIMAL` | While xsd:decimal is by definition unbounded, DECIMAL's default
+  precision is 10 digits and can be up to 38. if we assume values larger than that can appear
+in the data, the Aspect Models using xsd:decimal should also use a xref:samm-specification:ROOT:characteristics.adoc#fixed-point-constraint[samm-c:FixedPointConstraint] accordingly.
+| `xsd:integer` | `DECIMAL` | As opposed to xsd:int, xsd:integer has arbitrary precision, i.e. DECIMAL is needed.
+| `xsd:double` | `DOUBLE` |
+| `xsd:float` | `FLOAT` |
+| `xsd:date` | `STRING` | `DATE` can not be used, because it does not retain timezone information.
+| `xsd:time` | `STRING` |
+| `xsd:dateTime` | `STRING` |
+| `xsd:dateTimeStamp` | `TIMESTAMP` |
+| `xsd:gYear` | `STRING` |
+| `xsd:gMonth` | `STRING` |
+| `xsd:gDay` | `STRING` |
+| `xsd:gYearMonth` | `STRING` |
+| `xsd:gMonthDay` | `STRING` |
+| `xsd:duration` | `STRING` |
+| `xsd:yearMonthDuration` | `STRING` |
+| `xsd:dayTimeDuration` | `STRING` |
+| `xsd:byte` | `TINYINT` |
+| `xsd:short` | `SMALLINT` |
+| `xsd:int` | `INT` |
+| `xsd:long` | `BIGINT` |
+| `xsd:unsignedByte` | `SMALLINT` |
+| `xsd:unsignedShort` | `INT` |
+| `xsd:unsignedInt` | `BIGINT` |
+| `xsd:unsignedLong` | `DECIMAL` |
+| `xsd:positiveInteger` | `DECIMAL` |
+| `xsd:nonNegativeInteger` | `DECIMAL` |
+| `xsd:negativeInteger` | `DECIMAL` |
+| `xsd:nonPositiveInteger` | `DECIMAL` |
+| `xsd:hexBinary` | `BINARY` |
+| `xsd:base64Binary` | `BINARY` |
+| `xsd:anyURI` | `STRING` |
+| `samm:curie` | `STRING` |
+|===
+
 [[generating-java-code]]
 == Generating Java Code for Aspect Models
 

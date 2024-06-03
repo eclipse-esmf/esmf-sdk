@@ -21,7 +21,7 @@
 
 :testProperty a samm:Property ;
    samm:characteristic :EntityCollectionCharacteristic ;
-   samm:description "This is an test property"@en .
+   samm:description "This is a test property"@en .
 
 :EntityCollectionCharacteristic a samm-c:Collection ;
    samm:dataType :AbstractTestEntity ;

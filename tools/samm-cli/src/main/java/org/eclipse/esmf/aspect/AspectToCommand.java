@@ -23,6 +23,7 @@ import org.eclipse.esmf.aspect.to.AspectToJsonCommand;
 import org.eclipse.esmf.aspect.to.AspectToJsonSchemaCommand;
 import org.eclipse.esmf.aspect.to.AspectToOpenapiCommand;
 import org.eclipse.esmf.aspect.to.AspectToPngCommand;
+import org.eclipse.esmf.aspect.to.AspectToSqlCommand;
 import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
 import org.eclipse.esmf.exception.SubCommandException;
 
@@ -39,7 +40,8 @@ import picocli.CommandLine;
             AspectToPngCommand.class,
             AspectToJsonSchemaCommand.class,
             AspectToSvgCommand.class,
-            AspectToAasCommand.class
+            AspectToAasCommand.class,
+            AspectToSqlCommand.class
       },
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",

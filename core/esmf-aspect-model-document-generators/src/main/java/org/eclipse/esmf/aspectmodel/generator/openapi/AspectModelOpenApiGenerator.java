@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
@@ -123,7 +124,7 @@ public class AspectModelOpenApiGenerator
 
          ((ObjectNode) rootNode.get( "info" )).put( "title", aspect.getPreferredName( config.locale() ) );
          ((ObjectNode) rootNode.get( "info" )).put( "version", apiVersion );
-         ((ObjectNode) rootNode.get( "info" )).put( AspectModelJsonSchemaVisitor.SAMM_EXTENSION,
+         ((ObjectNode) rootNode.get( "info" )).put( AbstractGenerator.SAMM_EXTENSION,
                aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
          setServers( rootNode, config.baseUrl(), apiVersion, READ_SERVER_PATH );
          final boolean includePaging = includePaging( aspect, config.pagingOption() );

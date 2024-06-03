@@ -28,7 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
+import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Property;
@@ -97,8 +97,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final OpenApiSchemaArtifact result = apiJsonGenerator.apply( aspect, config );
       final JsonNode json = result.getContent();
       assertSpecificationIsValid( json, json.toString(), aspect );
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo(
+      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo(
             aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
       // Check that the map containing separate schema files contains the same information as the
@@ -148,8 +148,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final OpenAPI openApi = result.getOpenAPI();
 
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( "v1.0.0" );
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo(
+      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo(
             aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
       openApi.getServers().forEach( server -> assertThat( server.getUrl() ).contains( "v1.0.0" ) );
@@ -675,13 +675,13 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final DocumentContext context = JsonPath.parse( json );
       assertThat( context.<Object> read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();
       assertThat( context.<String> read(
-            "$['components']['schemas']['" + aspect.getName() + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) ).isEqualTo(
+            "$['components']['schemas']['" + aspect.getName() + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) ).isEqualTo(
             aspect.getAspectModelUrn().get().toString() );
 
       for ( final Property property : aspect.getProperties() ) {
          assertThat( context.<String> read( "$['components']['schemas']"
                + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
-               + AspectModelJsonSchemaVisitor.SAMM_EXTENSION
+               + AbstractGenerator.SAMM_EXTENSION
                + "']" ) ).isEqualTo( property.getAspectModelUrn().get().toString() );
       }
 
@@ -707,8 +707,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final String expectedApiVersion = getExpectedApiVersion( aspect );
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
 
-      assertThat( node.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( node.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo(
+      assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo(
             aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
@@ -726,9 +726,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getResponses() ).containsKey( aspect.getName() );
       assertThat( openApi.getComponents().getRequestBodies() ).containsKey( aspect.getName() );
       assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
-            .get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
+            .get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
       assertThat(
-            openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION )
+            openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( AbstractGenerator.SAMM_EXTENSION )
                   .toString() ).contains(
             aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 

@@ -48,9 +48,9 @@ public abstract class CodeGenerationMojo extends AspectModelMojo {
    protected final Function<QualifiedName, OutputStream> nameMapper = artifact -> {
       final String path = artifact.getPackageName();
       final String fileName = artifact.getClassName();
-      final String outputDirectoryForArtefact = outputDirectory + File.separator + path.replace( '.', File.separatorChar );
-      final String artefactName = fileName + ".java";
-      return getOutputStreamForFile( artefactName, outputDirectoryForArtefact );
+      final String outputDirectoryForArtifact = outputDirectory + File.separator + path.replace( '.', File.separatorChar );
+      final String artifactName = fileName + ".java";
+      return getOutputStreamForFile( artifactName, outputDirectoryForArtifact );
    };
 
    protected String determinePackageName( final Aspect aspect ) {

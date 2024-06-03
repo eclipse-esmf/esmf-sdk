@@ -1052,6 +1052,13 @@ class SammCliTest extends MetaModelVersions {
       assertThat( result.stderr() ).isEmpty();
    }
 
+   @Test
+   void testAspectToSqlToStdout() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "sql" );
+      assertThat( result.stdout() ).contains( "CREATE TABLE" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
    /**
     * Returns the File object for a test model file
     */
