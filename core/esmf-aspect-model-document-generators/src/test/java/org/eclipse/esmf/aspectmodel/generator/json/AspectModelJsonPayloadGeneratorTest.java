@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -85,7 +86,6 @@ import org.eclipse.esmf.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.constraint.RangeConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
@@ -641,8 +641,7 @@ public class AspectModelJsonPayloadGeneratorTest extends MetaModelVersions {
    private String generateJsonForModel( final TestAspect model, final KnownVersion testedVersion ) {
       final VersionedModel versionedModel = TestResources.getModel( model, testedVersion ).get();
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( versionedModel );
-      final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator(
-            new AspectContext( versionedModel, aspect ) );
+      final AspectModelJsonPayloadGenerator jsonGenerator = new AspectModelJsonPayloadGenerator( aspect );
       try {
          return jsonGenerator.generateJson();
       } catch ( final IOException e ) {

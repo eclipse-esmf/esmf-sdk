@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -43,9 +43,9 @@ public class GenerateDocumentation extends AspectModelMojo {
       validateParameters();
 
       try {
-         final Set<AspectContext> aspectModels = loadModelsOrFail();
-         for ( final AspectContext context : aspectModels ) {
-            final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( context );
+         final Set<Aspect> aspects = loadModelsOrFail();
+         for ( final Aspect model : aspects ) {
+            final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( model );
             final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
             generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );
             //noinspection ConstantValue

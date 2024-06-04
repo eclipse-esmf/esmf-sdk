@@ -13,15 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import io.vavr.control.Try;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -39,13 +42,17 @@ public class Validate extends AspectModelMojo {
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
-      final Set<Try<AspectContext>> resolvedModels = loadAndResolveModels();
-      for ( final Try<AspectContext> context : resolvedModels ) {
-         final List<Violation> violations = validator.validateModel( context.map( AspectContext::rdfModel ) );
-         if ( !violations.isEmpty() ) {
-            throw new MojoFailureException( new ViolationFormatter().apply( violations ) );
-         }
+      final Set<Try<Pair<VersionedModel, Aspect>>> resolvedModels = loadAndResolveModels();
+      final List<Violation> violations = resolvedModels.stream()
+            .map( pair -> pair.map( Pair::getKey ) )
+            .map( validator::validateModel )
+            .flatMap( Collection::stream )
+            .toList();
+
+      if ( !violations.isEmpty() ) {
+         throw new MojoFailureException( new ViolationFormatter().apply( violations ) );
       }
+
       logger.info( "Aspect Models are valid." );
    }
 }

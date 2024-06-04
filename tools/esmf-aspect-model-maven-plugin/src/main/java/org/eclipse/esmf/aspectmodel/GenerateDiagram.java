@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -40,14 +40,14 @@ public class GenerateDiagram extends AspectModelMojo {
    public void execute() throws MojoExecutionException {
       validateParameters();
 
-      final Set<AspectContext> aspectModels = loadModelsOrFail();
+      final Set<Aspect> aspects = loadModelsOrFail();
       try {
          final Set<AspectModelDiagramGenerator.Format> formats = targetFormats.stream()
                .map( targetFormat -> AspectModelDiagramGenerator.Format.valueOf( targetFormat.toUpperCase() ) )
                .collect( Collectors.toSet() );
 
-         for ( final AspectContext aspectModel : aspectModels ) {
-            final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspectModel );
+         for ( final Aspect aspect : aspects ) {
+            final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect );
             generator.generateDiagrams( formats, name -> getOutputStreamForFile( name, outputDirectory ) );
          }
       } catch ( final IOException exception ) {
