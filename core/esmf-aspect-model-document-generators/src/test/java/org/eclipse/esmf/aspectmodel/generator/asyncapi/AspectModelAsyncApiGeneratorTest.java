@@ -13,8 +13,10 @@ import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -73,6 +75,22 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
       );
 
       assertThat( json ).isEqualTo( expectedJson );
+   }
+
+   @Test
+   void testAsyncApiGeneratorWithoutApplicationIdDoesNotAddEmptyId() throws JsonProcessingException {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_EVENT, KnownVersion.getLatest() );
+      final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( false )
+            .channelAddress( CHANNEL_ADDRESS )
+            .locale( Locale.ENGLISH )
+            .build();
+
+      final AsyncApiSchemaArtifact asyncSpec = asyncApiGenerator.apply( aspect, config );
+      final JsonNode json = asyncSpec.getContent();
+      final String result = OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString( json );
+      assertThat( result ).doesNotContain( "\"id\" : \"\"" );
+      assertThat( asyncSpec.getContentAsYaml() ).doesNotContain( "id: \"\"" );
    }
 
    @ParameterizedTest
