@@ -35,6 +35,7 @@ import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
 import org.eclipse.digitaltwin.aas4j.v3.model.AasSubmodelElements;
@@ -77,7 +78,7 @@ class AspectModelAasGeneratorTest {
                   .satisfies( property ->
                         assertThat( property ).asInstanceOf( type( MultiLanguageProperty.class ) )
                               .extracting( MultiLanguageProperty::getValue )
-                              .asList()
+                              .asInstanceOf( InstanceOfAssertFactories.LIST )
                               .hasSize( 2 )
                               .allSatisfy( langString ->
                                     assertThat( List.of( "en", "de" ) ).contains( ((AbstractLangString) langString).getLanguage() ) ) ) );
@@ -92,11 +93,11 @@ class AspectModelAasGeneratorTest {
                   .anySatisfy( sme ->
                         assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
                               .extracting( SubmodelElementList::getValue )
-                              .asList()
+                              .asInstanceOf( InstanceOfAssertFactories.LIST )
                               .anySatisfy( entity ->
                                     assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
                                           .extracting( SubmodelElementCollection::getValue )
-                                          .asList()
+                                          .asInstanceOf( InstanceOfAssertFactories.LIST )
                                           .singleElement( type( Property.class ) )
                                           .extracting( Property::getValue )
                                           .isEqualTo( "The result" ) ) ) );
@@ -111,11 +112,11 @@ class AspectModelAasGeneratorTest {
                   .anySatisfy( sme ->
                         assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
                               .extracting( SubmodelElementList::getValue )
-                              .asList()
+                              .asInstanceOf( InstanceOfAssertFactories.LIST )
                               .anySatisfy( entity ->
                                     assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
                                           .extracting( SubmodelElementCollection::getValue )
-                                          .asList()
+                                          .asInstanceOf( InstanceOfAssertFactories.LIST )
                                           .anySatisfy( property ->
                                                 assertThat( property ).asInstanceOf( type( Property.class ) )
                                                       .extracting( Property::getValue )
@@ -223,7 +224,7 @@ class AspectModelAasGeneratorTest {
       final Environment env = getAssetAdministrationShellFromAspect( TestAspect.ASPECT_WITH_EITHER_WITH_COMPLEX_TYPES );
       assertThat( env.getSubmodels() ).hasSize( 1 );
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
-      final SubmodelElementList elementCollection = ( (SubmodelElementList) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ) );
+      final SubmodelElementList elementCollection = ((SubmodelElementList) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ));
       final Set<String> testValues = Set.of( "RightEntity", "LeftEntity" );
       assertThat( elementCollection.getValue() ).as( "Neither left nor right entity contained." )
             .anyMatch( x -> testValues.contains( x.getIdShort() ) );
@@ -246,7 +247,7 @@ class AspectModelAasGeneratorTest {
       final DataSpecificationContent dataSpecificationContent = getDataSpecificationIec61360(
             "urn:samm:org.eclipse.esmf.test:1.0.0#testProperty", env );
 
-      assertThat( ( (DataSpecificationIec61360) dataSpecificationContent ).getUnit() ).isEqualTo( "percent" );
+      assertThat( ((DataSpecificationIec61360) dataSpecificationContent).getUnit() ).isEqualTo( "percent" );
    }
 
    @Test
