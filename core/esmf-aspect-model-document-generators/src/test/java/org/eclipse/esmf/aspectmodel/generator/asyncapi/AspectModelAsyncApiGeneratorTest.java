@@ -114,7 +114,7 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
                            "name": "SomeEvent",
                            "title": "Some Event",
                            "summary": "This is some event",
-                           "content-type": "application/json",
+                           "contentType": "application/json",
                            "payload": {
                               "$ref": "#/components/schemas/SomeEvent"
                            }
@@ -184,7 +184,7 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
                      "name": "input",
                      "title": "input",
                      "summary": null,
-                     "content-type": "application/json",
+                     "contentType": "application/json",
                      "payload": {
                         "$ref": "#/components/schemas/input"
                      }
@@ -197,7 +197,7 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
                         "name": "output",
                         "title": "output",
                         "summary": null,
-                        "content-type": "application/json",
+                        "contentType": "application/json",
                         "payload": {
                            "$ref": "#/components/schemas/output"
                         }
