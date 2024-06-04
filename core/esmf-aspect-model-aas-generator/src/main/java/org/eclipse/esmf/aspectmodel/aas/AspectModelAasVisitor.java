@@ -195,13 +195,13 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    @Override
    public Environment visitAspect( final Aspect aspect, final Context context ) {
-      Context usedContext = context;
-      if ( usedContext == null ) {
+      final Context usedContext = Optional.ofNullable( context ).orElseGet( () -> {
          final Submodel submodel = new DefaultSubmodel.Builder().build();
          final Environment environment = new DefaultEnvironment.Builder().submodels( Collections.singletonList( submodel ) ).build();
-         usedContext = new Context( environment, submodel );
-         usedContext.setEnvironment( environment );
-      }
+         final Context result = new Context( environment, submodel );
+         result.setEnvironment( environment );
+         return result;
+      } );
 
       final String submodelId = aspect.getAspectModelUrn().get().getUrn().toString() + "/submodel";
 
@@ -238,11 +238,11 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    private List<SubmodelElement> visitOperations(
          final List<org.eclipse.esmf.metamodel.Operation> elements, final Context context ) {
-      return elements.stream().map( i -> mapText( i, context ) ).collect( Collectors.toList() );
+      return elements.stream().map( element -> mapText( element, context ) ).collect( Collectors.toList() );
    }
 
    private List<SubmodelElement> visitProperties( final List<Property> elements, final Context context ) {
-      return elements.stream().map( i -> mapText( i, context ) )
+      return elements.stream().map( element -> mapText( element, context ) )
             .filter( Optional::isPresent )
             .map( Optional::get )
             .collect( Collectors.toList() );
@@ -251,7 +251,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    private Optional<SubmodelElement> mapText( final Property property, final Context context ) {
       final Optional<SubmodelElement> defaultResultForProperty = context.getSubmodel()
             .getSubmodelElements().stream()
-            .filter( i -> i.getIdShort().equals( property.getName() ) )
+            .filter( submodelElement -> submodelElement.getIdShort().equals( property.getName() ) )
             .findFirst();
       if ( recursiveProperty.contains( property ) ) {
          // The guard checks for recursion in properties. If a recursion happens, the respective
@@ -299,20 +299,18 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    private SubmodelElement decideOnMapping( final Type type, final Property property, final Context context ) {
-      if ( type instanceof Entity ) {
-         return mapToAasSubModelElementCollection( (Entity) type, context );
-      } else {
-         return findPropertyMapper( property ).mapToAasProperty( type, property, context );
-      }
+      return type instanceof Entity ?
+            mapToAasSubModelElementCollection( (Entity) type, property, context ) :
+            findPropertyMapper( property ).mapToAasProperty( type, property, context );
    }
 
-   private SubmodelElementCollection mapToAasSubModelElementCollection( final Entity entity, final Context context ) {
-      final List<SubmodelElement> submodelElements =
-            visitProperties( entity.getAllProperties(), context );
+   private SubmodelElementCollection mapToAasSubModelElementCollection( final Entity entity, final Property property,
+         final Context context ) {
+      final List<SubmodelElement> submodelElements = visitProperties( entity.getAllProperties(), context );
       return new DefaultSubmodelElementCollection.Builder()
-            .idShort( entity.getName() )
-            .displayName( LangStringMapper.NAME.map( entity.getPreferredNames() ) )
-            .description( LangStringMapper.TEXT.map( entity.getDescriptions() ) )
+            .idShort( property.getName() )
+            .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
+            .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
             .value( submodelElements )
             .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( entity ) )
             .build();
@@ -326,10 +324,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .semanticId( buildReferenceToOperation( operation ) )
             .idShort( operation.getName() )
             .inputVariables( operation.getInput().stream()
-                  .map( i -> mapOperationVariable( i, context ) )
+                  .map( input -> mapOperationVariable( input, context ) )
                   .collect( Collectors.toList() ) )
             .outputVariables( operation.getOutput().stream()
-                  .map( i -> mapOperationVariable( i, context ) )
+                  .map( output -> mapOperationVariable( output, context ) )
                   .collect( Collectors.toList() ) )
             .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( operation ) )
             .build();
@@ -527,7 +525,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    @Override
    public Environment visitCharacteristic( final Characteristic characteristic, final Context context ) {
-      createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
+      createSubmodelElement( property -> decideOnMapping( property, context ), context );
       return context.getEnvironment();
    }
 
@@ -554,7 +552,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    private <T extends Collection> Environment visitCollectionProperty( final T collection, final Context context ) {
       final SubmodelElementBuilder builder = property -> {
-         DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
+         final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
                .idShort( property.getName() )
                .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
@@ -605,7 +603,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                         .getBytes( StandardCharsets.UTF_8 ) ).build() );
                } else {
                   final List<SubmodelElement> values = StreamSupport.stream( arrayNode.spliterator(), false )
-                        .map( n -> {
+                        .map( node -> {
                            context.iterate( property );
                            return decideOnMapping( property, context );
                         } )
@@ -682,7 +680,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    @Override
    public Environment visitQuantifiable( final Quantifiable quantifiable, final Context context ) {
-      createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
+      createSubmodelElement( property -> decideOnMapping( property, context ), context );
 
       if ( quantifiable.getUnit().isPresent() ) {
          final ConceptDescription conceptDescription =
@@ -712,7 +710,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    @Override
    public Environment visitEnumeration( final Enumeration enumeration, final Context context ) {
-      createSubmodelElement( ( property ) -> decideOnMapping( property, context ), context );
+      createSubmodelElement( property -> decideOnMapping( property, context ), context );
 
       final ConceptDescription conceptDescription =
             context.getConceptDescription( DEFAULT_MAPPER.determineIdentifierFor( context.getProperty() ) );

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -144,6 +145,8 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final Submodel submodel = env.getSubmodels().get( 0 );
       assertThat( submodel.getSubmodelElements().get( 0 ) ).isInstanceOfSatisfying( SubmodelElementCollection.class, collection -> {
+         assertThat( collection.getIdShort() ).isEqualTo( "testProperty" );
+
          final SubmodelElement property = collection.getValue().stream().findFirst().get();
          assertThat( property.getIdShort() ).isEqualTo( "entityProperty" );
          assertThat( submodel.getSupplementalSemanticIds() ).anySatisfy( ref -> {
@@ -382,14 +385,13 @@ class AspectModelAasGeneratorTest {
    }
 
    private void checkDataSpecificationIec61360( final Set<String> semanticIds, final Environment env ) {
-      semanticIds.forEach( x -> getDataSpecificationIec61360( x, env ) );
+      semanticIds.forEach( semanticId -> getDataSpecificationIec61360( semanticId, env ) );
    }
 
    private DataSpecificationContent getDataSpecificationIec61360( final String semanticId, final Environment env ) {
-      final List<ConceptDescription> conceptDescriptions = env.getConceptDescriptions();
       final List<ConceptDescription> filteredConceptDescriptions =
-            conceptDescriptions.stream()
-                  .filter( x -> x.getId().equals( semanticId ) )
+            env.getConceptDescriptions().stream()
+                  .filter( conceptDescription -> conceptDescription.getId().equals( semanticId ) )
                   .toList();
       assertThat( filteredConceptDescriptions ).hasSize( 1 );
 

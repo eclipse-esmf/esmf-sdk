@@ -176,8 +176,7 @@ public class Context {
     * @return the property value at the current property path
     */
    public String getPropertyValue( final String defaultValue ) {
-      return getRawPropertyValue().map( valueNode -> valueNode.asText( defaultValue ) )
-            .orElse( defaultValue );
+      return getRawPropertyValue().flatMap( valueNode -> Optional.ofNullable( valueNode.asText() ) ).orElse( defaultValue );
    }
 
    /**
