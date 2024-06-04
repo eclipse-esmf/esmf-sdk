@@ -299,9 +299,9 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    private SubmodelElement decideOnMapping( final Type type, final Property property, final Context context ) {
-      return type instanceof Entity ?
-            mapToAasSubModelElementCollection( (Entity) type, property, context ) :
-            findPropertyMapper( property ).mapToAasProperty( type, property, context );
+      return type instanceof Entity
+            ? mapToAasSubModelElementCollection( (Entity) type, property, context )
+            : findPropertyMapper( property ).mapToAasProperty( type, property, context );
    }
 
    private SubmodelElementCollection mapToAasSubModelElementCollection( final Entity entity, final Property property,
