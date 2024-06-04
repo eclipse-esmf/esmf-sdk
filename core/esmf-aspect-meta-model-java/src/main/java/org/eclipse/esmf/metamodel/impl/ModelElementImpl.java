@@ -40,7 +40,7 @@ public abstract class ModelElementImpl implements ModelElement, Comparable<Model
 
    @Override
    public AspectModelUrn urn() {
-      return baseAttributes.isAnonymous()
+      return baseAttributes.isAnonymous() && baseAttributes.urn() == null
             ? ModelElement.super.urn()
             : baseAttributes.urn();
    }

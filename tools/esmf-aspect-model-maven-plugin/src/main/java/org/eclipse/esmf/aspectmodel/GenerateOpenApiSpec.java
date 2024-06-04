@@ -34,7 +34,6 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationCon
 import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -112,26 +111,25 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
-      final Set<AspectContext> aspectModels = loadModelsOrFail();
+      final Set<Aspect> aspects = loadModelsOrFail();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final ApiFormat format = Try.of( () -> ApiFormat.valueOf( outputFormat.toUpperCase() ) )
             .getOrElseThrow( () -> new MojoExecutionException( "Invalid output format." ) );
-      for ( final AspectContext context : aspectModels ) {
-         final Aspect aspect = context.aspect();
-         final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
-               .useSemanticVersion( useSemanticApiVersion )
-               .baseUrl( aspectApiBaseUrl )
-               .resourcePath( aspectResourcePath )
-               .properties( readAspectParameterFile() )
-               .includeQueryApi( includeQueryApi )
-               .includeCrud( includeFullCrud )
-               .includePost( includePost )
-               .includePut( includePut )
-               .includePatch( includePatch )
-               .pagingOption( getPagingFromArgs() )
-               .locale( locale )
-               .build();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( useSemanticApiVersion )
+            .baseUrl( aspectApiBaseUrl )
+            .resourcePath( aspectResourcePath )
+            .properties( readAspectParameterFile() )
+            .includeQueryApi( includeQueryApi )
+            .includeCrud( includeFullCrud )
+            .includePost( includePost )
+            .includePut( includePut )
+            .includePatch( includePatch )
+            .pagingOption( getPagingFromArgs() )
+            .locale( locale )
+            .build();
 
+      for ( final Aspect aspect : aspects ) {
          final OpenApiSchemaArtifact openApiSpec = generator.apply( aspect, config );
          try {
             if ( separateFiles ) {

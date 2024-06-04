@@ -13,6 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.generator;
 
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
@@ -53,7 +56,11 @@ public class LanguageCollector {
             .flatMap( element -> Stream.concat(
                   element.getPreferredNames().stream().map( LangString::getLanguageTag ),
                   element.getDescriptions().stream().map( LangString::getLanguageTag ) ) );
-      return Stream.concat( fromModel, Stream.of( Locale.ENGLISH ) ).collect( Collectors.toSet() );
+      return Stream.concat( fromModel, Stream.of( Locale.ENGLISH ) ).collect( toSet() );
+   }
+
+   public static Set<Locale> collectUsedLanguages( final Collection<Aspect> aspects ) {
+      return aspects.stream().map( LanguageCollector::collectUsedLanguages ).flatMap( Set::stream ).collect( toSet() );
    }
 
    /**
@@ -76,7 +83,7 @@ public class LanguageCollector {
                .map( Statement::getLanguage )
                .filter( language -> !language.isEmpty() )
                .map( Locale::forLanguageTag )
-               .collect( Collectors.toSet() );
+               .collect( toSet() );
          if ( locales.isEmpty() ) {
             locales.add( Locale.ENGLISH );
          }

@@ -636,10 +636,11 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       Optional<SubmodelElement> result = Optional.empty();
       if ( context.getModelingKind().equals( ModellingKind.INSTANCE ) ) {
          final MetaModelBaseAttributes propertyAttributes = MetaModelBaseAttributes.builder()
-               .withUrn( eitherProperty.urn().getUrnPrefix() + eitherProperty.getPayloadName() + field.toUpperCase() ).build();
+               .withUrn( eitherProperty.urn().getUrnPrefix() + eitherProperty.getPayloadName() + field.toUpperCase() )
+               .build();
          final Property fieldProperty = new org.eclipse.esmf.metamodel.impl.DefaultProperty( propertyAttributes,
                Optional.of( fieldCharacteristic ), Optional.empty(), true,
-               false, Optional.empty(), false, Optional.empty() );
+               false, Optional.of(field), false, Optional.empty() );
          context.setProperty( fieldProperty );
          if ( context.getRawPropertyValue().isPresent() ) {
             result = fieldCharacteristic.getDataType().map( dataType -> decideOnMapping( dataType, context.getProperty(), context ) );

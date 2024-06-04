@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
@@ -39,10 +40,11 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 
 import io.vavr.control.Try;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -67,29 +69,30 @@ public abstract class AspectModelMojo extends AbstractMojo {
       }
    }
 
-   protected Set<Try<AspectContext>> loadAndResolveModels() {
+   protected Set<Try<Pair<VersionedModel, Aspect>>> loadAndResolveModels() {
       final Path modelsRoot = Path.of( modelsRootDirectory );
       return includes.stream().map( AspectModelUrn::fromUrn )
             .map( urn -> new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn )
                   .flatMap( versionedModel ->
                         AspectModelLoader.getSingleAspect( versionedModel, aspect -> aspect.getName().equals( urn.getName() ) )
-                              .map( aspect -> new AspectContext( versionedModel, aspect ) ) ) )
-            .collect( Collectors.toSet() );
+                              .map( aspectModel -> Pair.of( versionedModel, aspectModel ) ) )
+            )
+            .collect( toSet() );
    }
 
-   protected Set<AspectContext> loadModelsOrFail() throws MojoExecutionException {
-      final Set<AspectContext> result = new HashSet<>();
-      for ( final Try<AspectContext> context : loadAndResolveModels() ) {
-         if ( context.isFailure() ) {
-            handleFailedModelResolution( context );
+   protected Set<Aspect> loadModelsOrFail() throws MojoExecutionException {
+      final Set<Aspect> result = new HashSet<>();
+      for ( final Try<Pair<VersionedModel, Aspect>> model : loadAndResolveModels() ) {
+         if ( model.isFailure() ) {
+            handleFailedModelResolution( model );
          }
-         result.add( context.get() );
+         result.add( model.get().getValue() );
       }
       return result;
    }
 
-   private void handleFailedModelResolution( final Try<AspectContext> failedModel ) throws MojoExecutionException {
-      final Throwable loadModelFailureCause = failedModel.getCause();
+   private void handleFailedModelResolution( final Try<Pair<VersionedModel, Aspect>> failedContext ) throws MojoExecutionException {
+      final Throwable loadModelFailureCause = failedContext.getCause();
 
       // Model can not be loaded, root cause e.g. File not found
       if ( loadModelFailureCause instanceof IllegalArgumentException ) {
@@ -102,7 +105,7 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
       // Another exception, e.g. syntax error. Let the validator handle this
       final AspectModelValidator validator = new AspectModelValidator();
-      final List<Violation> violations = validator.validateModel( failedModel.map( AspectContext::rdfModel ) );
+      final List<Violation> violations = validator.validateModel( failedContext.map( Pair::getKey ) );
       final String errorMessage = detailedValidationMessages
             ? new DetailedViolationFormatter().apply( violations )
             : new ViolationFormatter().apply( violations );

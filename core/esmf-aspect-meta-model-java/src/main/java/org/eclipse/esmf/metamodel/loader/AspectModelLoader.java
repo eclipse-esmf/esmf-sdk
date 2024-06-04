@@ -32,8 +32,6 @@ import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;
 import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
-import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelNamespace;
 import org.eclipse.esmf.metamodel.impl.DefaultModelNamespace;
@@ -240,7 +238,7 @@ public class AspectModelLoader {
    }
 
    /**
-    * Convenience method to create an {@link AspectContext} directly from a model file. This method makes the following assumptions:
+    * Convenience method to create an {@link Aspect} directly from a model file. This method makes the following assumptions:
     * <ul>
     *    <li>The model file is located in a directory structure as required by the {@link FileSystemStrategy}</li>
     *    <li>The closure of the loaded model contains exactly one Aspect</li>
@@ -253,9 +251,9 @@ public class AspectModelLoader {
     * @param input the model file
     * @return the loaded Aspect Context
     */
-   public static Try<AspectContext> getAspectContext( final File input ) {
+   public static Try<Aspect> getAspectContext( final File input ) {
       return AspectModelResolver.loadAndResolveModel( input ).flatMap( versionedModel ->
             getSingleAspect( versionedModel, aspect -> input.getName().equals( aspect.getName() + ".ttl" ) )
-                  .map( aspect -> new AspectContext( versionedModel, aspect ) ) );
+      );
    }
 }

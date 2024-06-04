@@ -30,7 +30,6 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -41,7 +40,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
@@ -85,10 +84,10 @@ public class AspectModelDiagramGenerator {
    private static final String FONT_NAME = "Roboto Condensed";
    private static final String FONT_FILE = "diagram/RobotoCondensed-Regular.ttf";
 
-   private final AspectContext aspectContext;
+   private final Aspect aspect;
 
-   public AspectModelDiagramGenerator( final AspectContext aspectContext ) {
-      this.aspectContext = aspectContext;
+   public AspectModelDiagramGenerator( final Aspect aspect ) {
+      this.aspect = aspect;
    }
 
    InputStream getInputStream( final String resource ) {
@@ -152,7 +151,7 @@ public class AspectModelDiagramGenerator {
     */
    public void generateSvg( final Locale language, final OutputStream out ) throws IOException {
       final DiagramVisitor diagramVisitor = new DiagramVisitor( language );
-      final Diagram diagram = aspectContext.aspect().accept( diagramVisitor, Optional.empty() );
+      final Diagram diagram = aspect.accept( diagramVisitor, Optional.empty() );
       final Graphviz graphviz = render( diagram );
 
       try ( final InputStream fontStream = getInputStream( FONT_FILE ) ) {
@@ -215,9 +214,9 @@ public class AspectModelDiagramGenerator {
     */
    public void generateDiagrams( final Format outputFormat, final Function<String, OutputStream> nameMapper )
          throws IOException {
-      for ( final Locale language : LanguageCollector.collectUsedLanguages( aspectContext.aspect() ) ) {
+      for ( final Locale language : LanguageCollector.collectUsedLanguages( aspect ) ) {
          try ( final OutputStream outputStream = nameMapper
-               .apply( outputFormat.getArtifactFilename( aspectContext.aspect().getName(), language ) ) ) {
+               .apply( outputFormat.getArtifactFilename( aspect.getName(), language ) ) ) {
             generateDiagram( outputFormat, language, outputStream );
          }
       }
@@ -240,7 +239,7 @@ public class AspectModelDiagramGenerator {
       final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       generateSvg( language, buffer );
       final String svgDocument = buffer.toString( StandardCharsets.UTF_8 );
-      final String aspectName = aspectContext.aspect().getName();
+      final String aspectName = aspect.getName();
 
       for ( final Format format : targetFormats ) {
          try ( final OutputStream outputStream = nameMapper.apply( format.getArtifactFilename( aspectName, language ) ) ) {
@@ -264,15 +263,13 @@ public class AspectModelDiagramGenerator {
     * @throws IOException if a write error occurs
     */
    public void generateDiagrams( final Set<Format> targetFormats, final Function<String, OutputStream> nameMapper ) throws IOException {
-      for ( final Locale language : LanguageCollector.collectUsedLanguages( aspectContext.aspect() ) ) {
+      for ( final Locale language : LanguageCollector.collectUsedLanguages( aspect ) ) {
          generateDiagrams( targetFormats, language, nameMapper );
       }
    }
 
    private Graphviz render( final Diagram diagram ) {
-      final Color bgColor = Color.ofRGB( "#cfdbed" );
       final String fontName = "Roboto Condensed";
-      final Map<Diagram.Box, Node> nodes = new HashMap<>();
 
       final Graphviz.GraphvizBuilder graphvizBuilder = Graphviz.digraph()
             .fontSize( 12f )
