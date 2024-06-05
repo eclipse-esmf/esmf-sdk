@@ -227,7 +227,7 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels() ).hasSize( 1 );
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final SubmodelElementList elementCollection = ((SubmodelElementList) env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 ));
-      final Set<String> testValues = Set.of( "RightEntity", "LeftEntity" );
+      final Set<String> testValues = Set.of( "testProperty", "result" );
       assertThat( elementCollection.getValue() ).as( "Neither left nor right entity contained." )
             .anyMatch( x -> testValues.contains( x.getIdShort() ) );
 
