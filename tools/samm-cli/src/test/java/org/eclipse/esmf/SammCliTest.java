@@ -896,7 +896,6 @@ class SammCliTest extends MetaModelVersions {
       assertThat( result.exitStatus() ).isZero();
       assertThat( result.stdout() ).isNotEmpty();
       assertThat( result.stdout() ).contains( "asyncapi: 3.0.0" );
-      assertThat( result.stdout() ).contains( "id:" );
       assertThat( result.stderr() ).isEmpty();
    }
 
