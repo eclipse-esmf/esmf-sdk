@@ -101,7 +101,7 @@ public class AspectModelAsyncApiGenerator
       messageNode.put( "name", event.getName() );
       messageNode.put( TITLE_FIELD, event.getPreferredName( locale ) );
       messageNode.put( "summary", event.getDescription( locale ) );
-      messageNode.put( "content-type", APPLICATION_JSON );
+      messageNode.put( "contentType", APPLICATION_JSON );
 
       final ObjectNode payloadNode = FACTORY.objectNode();
       payloadNode.put( "$ref", generateRef( COMPONENTS_SCHEMAS_PATH, event.getName() ) );
@@ -136,7 +136,7 @@ public class AspectModelAsyncApiGenerator
       messageNode.put( "name", property.getName() );
       messageNode.put( TITLE_FIELD, property.getPreferredName( locale ) );
       messageNode.put( "summary", property.getDescription( locale ) );
-      messageNode.put( "content-type", APPLICATION_JSON );
+      messageNode.put( "contentType", APPLICATION_JSON );
 
       final ObjectNode payloadNode = FACTORY.objectNode();
       payloadNode.put( "$ref", generateRef( COMPONENTS_SCHEMAS_PATH, property.getName() ) );

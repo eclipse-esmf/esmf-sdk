@@ -696,7 +696,7 @@ The name of the Aspect is used to generate parts of the AsyncAPI specification, 
 ==== Mapping of Aspect's operations
 
 The AsyncAPI specification is generated based on SAMM Operations and Events.
-his section describes how specification parts are generated for Operations.
+This section describes how specification parts are generated for Operations.
 If the Aspect also has a non-empty list of Operations defined, such as the one in the following example:
 
 [source,turtle]
