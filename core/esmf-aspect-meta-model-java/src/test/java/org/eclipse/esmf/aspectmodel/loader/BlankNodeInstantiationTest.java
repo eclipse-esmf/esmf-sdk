@@ -30,6 +30,6 @@ public class BlankNodeInstantiationTest extends AbstractAspectModelInstantiatorT
       final List list = (List) aspect.getProperties().get( 0 ).getCharacteristic().get();
       final Characteristic characteristic = list.getElementCharacteristic().get();
       assertThat( characteristic.isAnonymous() ).isTrue();
-      assertThat( characteristic.getName() ).startsWith( "x" );
+      assertThat( characteristic.getName() ).isEqualTo( "NumberListTrait" );
    }
 }
