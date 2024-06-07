@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.metamodel;
 
+import static java.lang.System.identityHashCode;
+
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
@@ -25,7 +27,7 @@ import org.eclipse.esmf.samm.KnownVersion;
  */
 public interface ModelElement extends HasDescription {
    default AspectModelUrn urn() {
-      return AspectModelUrn.fromUrn( "urn:samm:anonymous.elements:0.0.0#" + "x%08X".formatted( hashCode() ) );
+      return AspectModelUrn.fromUrn( "urn:samm:anonymous.elements:0.0.0#" + "x%08X".formatted( identityHashCode( this ) ) );
    }
 
    @Deprecated( forRemoval = true )

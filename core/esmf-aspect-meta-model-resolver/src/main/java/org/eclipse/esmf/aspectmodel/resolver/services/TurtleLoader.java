@@ -57,13 +57,16 @@ public final class TurtleLoader {
       if ( inputStream == null ) {
          return Try.failure( new IllegalArgumentException() );
       }
+      try ( InputStream ignored = inputStream ) {
+         final String modelContent = new BufferedReader(
+               new InputStreamReader( inputStream, StandardCharsets.UTF_8 ) )
+               .lines()
+               .collect( Collectors.joining( "\n" ) );
 
-      final String modelContent = new BufferedReader(
-            new InputStreamReader( inputStream, StandardCharsets.UTF_8 ) )
-            .lines()
-            .collect( Collectors.joining( "\n" ) );
-
-      return loadTurtle( modelContent );
+         return loadTurtle( modelContent );
+      } catch ( IOException e ) {
+         throw new RuntimeException( e );
+      }
    }
 
    /**

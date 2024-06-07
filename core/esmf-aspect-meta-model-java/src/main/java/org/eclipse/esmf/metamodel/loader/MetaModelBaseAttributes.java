@@ -30,6 +30,7 @@ import org.eclipse.esmf.metamodel.datatypes.LangString;
  */
 public class MetaModelBaseAttributes implements HasDescription {
    private final AspectModelUrn urn;
+   private final String name;
    private final Set<LangString> preferredNames;
    private final Set<LangString> descriptions;
    private final List<String> see;
@@ -37,11 +38,13 @@ public class MetaModelBaseAttributes implements HasDescription {
 
    private MetaModelBaseAttributes(
          final AspectModelUrn urn,
+         final String name,
          final Set<LangString> preferredNames,
          final Set<LangString> descriptions,
          final List<String> see,
          final boolean isAnonymous ) {
       this.urn = urn;
+      this.name = name;
       this.preferredNames = preferredNames;
       this.descriptions = descriptions;
       this.see = see;
@@ -54,7 +57,7 @@ public class MetaModelBaseAttributes implements HasDescription {
 
    @Override
    public String getName() {
-      return urn().getName();
+      return name;
    }
 
    @Override
@@ -105,12 +108,13 @@ public class MetaModelBaseAttributes implements HasDescription {
     * @return the newly created instance
     */
    public static MetaModelBaseAttributes fromModelElement( final ModelElement modelElement ) {
-      return new MetaModelBaseAttributes( modelElement.urn(), modelElement.getPreferredNames(), modelElement.getDescriptions(),
-            modelElement.getSee(), modelElement.isAnonymous() );
+      return new MetaModelBaseAttributes( modelElement.urn(), modelElement.urn().getName(), modelElement.getPreferredNames(),
+            modelElement.getDescriptions(), modelElement.getSee(), modelElement.isAnonymous() );
    }
 
    public static class Builder {
       private AspectModelUrn urn;
+      private String name;
       private final Set<LangString> preferredNames = new HashSet<>();
       private final Set<LangString> descriptions = new HashSet<>();
       private final List<String> see = new ArrayList<>();
@@ -122,7 +126,12 @@ public class MetaModelBaseAttributes implements HasDescription {
 
       public Builder withUrn( final AspectModelUrn urn ) {
          isAnonymous = false;
-         this.urn = urn;
+         this.urn = Objects.requireNonNull( urn );
+         return this;
+      }
+
+      public Builder withName( final String name ) {
+         this.name = name;
          return this;
       }
 
@@ -167,7 +176,7 @@ public class MetaModelBaseAttributes implements HasDescription {
       }
 
       public MetaModelBaseAttributes build() {
-         return new MetaModelBaseAttributes( urn, preferredNames, descriptions, see, isAnonymous );
+         return new MetaModelBaseAttributes( urn, name, preferredNames, descriptions, see, isAnonymous );
       }
    }
 }

@@ -71,10 +71,12 @@ import org.eclipse.esmf.metamodel.loader.instantiator.TimeSeriesInstantiator;
 import org.eclipse.esmf.metamodel.loader.instantiator.TraitInstantiator;
 
 import com.google.common.collect.Streams;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 
@@ -230,9 +232,9 @@ public class ModelElementFactory extends AttributeValueRetriever {
       final List<String> seeValues = getSeeValues( modelElement, valueRetriever );
       final MetaModelBaseAttributes.Builder builder = MetaModelBaseAttributes.builder();
       if ( urn.isEmpty() ) {
-         builder.isAnonymous();
+         builder.isAnonymous().withName( getSyntheticName( modelElement ) );
       } else {
-         builder.withUrn( urn.get() );
+         builder.withUrn( urn.get() ).withName( urn.get().getName() );
       }
       builder.withPreferredNames( preferredNames );
       builder.withDescriptions( descriptions );
@@ -277,51 +279,28 @@ public class ModelElementFactory extends AttributeValueRetriever {
             .collect( Collectors.toList() );
    }
 
-   //   /**
-   //    * Returns a model element's name: If it's a named resource, the name is part of its URN; otherwise
-   //    * (e.g., [ samm:extends :foo ; ... ]) go up the inheritance tree recursively.
-   //    *
-   //    * @param modelElement the model element to retrieve the name for
-   //    * @param samm the meta model vocabulary
-   //    * @return the element's local name
-   //    */
-   //   private static Optional<String> getName( final Resource modelElement, final SAMM samm ) {
-   //      if ( !modelElement.isAnon() ) {
-   //         return Optional.of( AspectModelUrn.fromUrn( modelElement.getURI() ).getName() );
-   //      }
-   //
-   //      final Statement propertyStatement = modelElement.getProperty( samm.property() );
-   //      if ( propertyStatement != null ) {
-   //         return getName( propertyStatement.getObject().asResource(), samm );
-   //      }
-   //
-   //      final Optional<Statement> extendsStatement = Streams.stream(
-   //            modelElement.getModel().listStatements( modelElement, samm._extends(), (RDFNode) null ) ).findAny();
-   //      return extendsStatement.flatMap( statement -> getName( statement.getObject().asResource(), samm ) );
-   //   }
-   //
-   //   private static String getSyntheticName( final Resource modelElement, final Model model, final SAMM samm ) {
-   //      final Resource namedParent = getNamedParent( modelElement, model );
-   //      if ( namedParent == null ) {
-   //         throw new AspectLoadingException( "At least one anonymous node in the model does not have a parent with a regular name." );
-   //      }
-   //      final String parentModelElementUri = namedParent.getURI();
-   //      final String parentModelElementName = AspectModelUrn.from( parentModelElementUri )
-   //            .toJavaOptional()
-   //            .map( AspectModelUrn::getName )
-   //            .map( StringUtils::capitalize )
-   //            .orElse( "" );
-   //
-   //      final Resource modelElementType = getModelElementType( modelElement, samm );
-   //      final String modelElementTypeUri = modelElementType.getURI();
-   //      final String modelElementTypeName = AspectModelUrn.from( modelElementTypeUri )
-   //            .toJavaOptional()
-   //            .map( AspectModelUrn::getName )
-   //            .orElse( "" );
-   //
-   //      return parentModelElementName + modelElementTypeName;
-   //   }
-   //
+   private static String getSyntheticName( final Resource modelElement ) {
+      final Resource namedParent = getNamedParent( modelElement, modelElement.getModel() );
+      if ( namedParent == null ) {
+         throw new AspectLoadingException( "At least one anonymous node in the model does not have a parent with a regular name." );
+      }
+      final String parentModelElementUri = namedParent.getURI();
+      final String parentModelElementName = AspectModelUrn.from( parentModelElementUri )
+            .toJavaOptional()
+            .map( AspectModelUrn::getName )
+            .map( StringUtils::capitalize )
+            .orElse( "" );
+
+      final Resource modelElementType = getModelElementType( modelElement );
+      final String modelElementTypeUri = modelElementType.getURI();
+      final String modelElementTypeName = AspectModelUrn.from( modelElementTypeUri )
+            .toJavaOptional()
+            .map( AspectModelUrn::getName )
+            .orElse( "" );
+
+      return parentModelElementName + modelElementTypeName;
+   }
+
    // We have to be careful when searching for the parent nodes with a regular name - the "listStatements" API returns the matching nodes
    // in no particular order; with some very specific models this could lead to non-deterministic behavior.
    // In the following very simplified example we are looking for ":NumberList" as the parent of "_:blankNode", but could get the
@@ -332,60 +311,42 @@ public class ModelElementFactory extends AttributeValueRetriever {
    // :NumberList a samm-c:List ;
    //    samm-c:elementCharacteristic _:blankNode .
    // _:blankNode a samm-c:Trait ;
-   //   private static Resource getNamedParent( final Resource modelElement, final Model model ) {
-   //      final StmtIterator elements = model.listStatements( null, null, modelElement );
-   //      while ( elements.hasNext() ) {
-   //         final Resource parentModelElement = elements.next().getSubject();
-   //         if ( parentModelElement.isAnon() ) {
-   //            final Resource grandParent = getNamedParent( parentModelElement, model );
-   //            if ( null != grandParent ) {
-   //               return grandParent;
-   //            }
-   //         } else {
-   //            return parentModelElement;
-   //         }
-   //      }
-   //      return null; // element has no named parent
-   //   }
+   private static Resource getNamedParent( final Resource modelElement, final Model model ) {
+      final StmtIterator elements = model.listStatements( null, null, modelElement );
+      while ( elements.hasNext() ) {
+         final Resource parentModelElement = elements.next().getSubject();
+         if ( parentModelElement.isAnon() ) {
+            final Resource grandParent = getNamedParent( parentModelElement, model );
+            if ( null != grandParent ) {
+               return grandParent;
+            }
+         } else {
+            return parentModelElement;
+         }
+      }
+      return null; // element has no named parent
+   }
 
-   //   private static Resource getModelElementType( final Resource modelElement, final SAMM samm ) {
-   //      final Statement typeStatement = modelElement.getProperty( RDF.type );
-   //      if ( typeStatement != null ) {
-   //         return typeStatement.getObject().asResource();
-   //      }
-   //
-   //      // If the model element is a Property reference, the actual type will be found when we follow samm:property
-   //      final Statement propertyStatement = modelElement.getProperty( samm.property() );
-   //      if ( propertyStatement != null ) {
-   //         return getModelElementType( propertyStatement.getObject().asResource(), samm );
-   //      }
-   //
-   //      // This model element has no type, but maybe it extends another element
-   //      final Statement extendsStatement = modelElement.getProperty( samm._extends() );
-   //      if ( extendsStatement == null ) {
-   //         throw new AspectLoadingException( "Model element has no type and does not extend another type: " + modelElement );
-   //      }
-   //
-   //      final Resource superElement = extendsStatement.getObject().asResource();
-   //      return getModelElementType( superElement, samm );
-   //   }
-   //
-   //   protected Statement propertyValueFromTypeTree( final Resource subject, final org.apache.jena.rdf.model.Property property ) {
-   //      final Optional<Statement> valueStatement = optionalAttributeValue( subject, property );
-   //      if ( valueStatement.isPresent() ) {
-   //         return valueStatement.get();
-   //      }
-   //
-   //      // Check if the subject is a Property reference, then we should continue to search the referenced Property
-   //      final Optional<Statement> propertyStatement = optionalAttributeValue( subject, samm.property() );
-   //      if ( propertyStatement.isPresent() ) {
-   //         return propertyValueFromTypeTree( propertyStatement.get().getObject().asResource(), property );
-   //      }
-   //
-   //      final Statement extendsStatement = optionalAttributeValue( subject, samm._extends() )
-   //            .orElseThrow( () -> new AspectLoadingException( "Property " + property + " not found on " + subject + " or its
-   //            supertypes" ) );
-   //      final Resource superType = extendsStatement.getObject().asResource();
-   //      return propertyValueFromTypeTree( superType, property );
-   //   }
+   private static Resource getModelElementType( final Resource modelElement ) {
+      final Statement typeStatement = modelElement.getProperty( RDF.type );
+      if ( typeStatement != null ) {
+         return typeStatement.getObject().asResource();
+      }
+
+      // If the model element is a Property reference, the actual type will be found when we follow samm:property
+      final Statement propertyStatement = modelElement.getProperty( SammNs.SAMM.property() );
+      if ( propertyStatement != null ) {
+         return getModelElementType( propertyStatement.getObject().asResource() );
+      }
+
+      // This model element has no type, but maybe it extends another element
+      final Statement extendsStatement = modelElement.getProperty( SammNs.SAMM._extends() );
+      if ( extendsStatement == null ) {
+         throw new AspectLoadingException( "Model element has no type and does not extend another type: " + modelElement );
+      }
+
+      final Resource superElement = extendsStatement.getObject().asResource();
+      return getModelElementType( superElement );
+   }
+
 }
