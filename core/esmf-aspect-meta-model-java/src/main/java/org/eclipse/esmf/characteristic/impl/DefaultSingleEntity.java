@@ -43,6 +43,7 @@ public class DefaultSingleEntity extends DefaultCharacteristic implements Single
    @Override
    public String toString() {
       return new StringJoiner( ", ", DefaultSingleEntity.class.getSimpleName() + "[", "]" )
+            .add( getName() )
             .toString();
    }
 }

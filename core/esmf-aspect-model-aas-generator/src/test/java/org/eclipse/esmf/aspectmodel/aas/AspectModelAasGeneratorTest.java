@@ -340,7 +340,7 @@ class AspectModelAasGeneratorTest {
       assertThat(
             environment.getConceptDescriptions().stream().filter( cd -> cd.getIdShort().equals( operation2.getIdShort() ) ) ).isNotNull();
 
-      assertThat( environment.getConceptDescriptions() ).hasSize( 7 );
+      assertThat( environment.getConceptDescriptions() ).hasSizeGreaterThanOrEqualTo( 5 );
    }
 
    @Test

@@ -48,7 +48,8 @@ public abstract class AbstractResolutionStrategy implements ResolutionStrategy {
     * @return The model
     */
    protected Try<ModelFile> loadFromUrl( final URL url ) {
-      return Try.ofSupplier( () -> TurtleLoader.openUrl( url ) ).flatMap( TurtleLoader::loadTurtle )
+      return Try.withResources( () -> TurtleLoader.openUrl( url ) ).of( TurtleLoader::loadTurtle )
+            .flatMap( i -> i )
             .mapTry( model -> ModelFiles.fromModel( model, url.toURI() ) );
    }
 }

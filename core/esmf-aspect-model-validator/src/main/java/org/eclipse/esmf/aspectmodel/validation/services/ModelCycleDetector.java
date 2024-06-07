@@ -26,6 +26,7 @@ import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.query.Query;
@@ -61,8 +62,8 @@ public class ModelCycleDetector {
                + "json payload.";
 
    private static final String PREFIXES = """
-         prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#>
-         prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%s#>
+         prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%1$s#>
+         prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%1$s#>
          prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
          """;
 
@@ -72,7 +73,7 @@ public class ModelCycleDetector {
 
    private Query query;
 
-   private SAMM samm;
+   private final SAMM samm = SammNs.SAMM;
    private Model model;
 
    final List<Violation> cycleDetectionReport = new ArrayList<>();
@@ -225,7 +226,7 @@ public class ModelCycleDetector {
 
    @SuppressWarnings( "checkstyle:LineLength" )
    private void initializeQuery() {
-      final String currentVersionPrefixes = String.format( PREFIXES, KnownVersion.getLatest(), KnownVersion.getLatest() );
+      final String currentVersionPrefixes = PREFIXES.formatted( KnownVersion.getLatest().toVersionString() );
       //noinspection LongLine
       final String queryString = String.format( """
                   %s select ?reachableProperty ?viaEither

@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 
@@ -43,6 +43,11 @@ public abstract class ModelElementImpl implements ModelElement, Comparable<Model
       return baseAttributes.isAnonymous() && baseAttributes.urn() == null
             ? ModelElement.super.urn()
             : baseAttributes.urn();
+   }
+
+   @Override
+   public String getName() {
+      return baseAttributes.getName() != null ? baseAttributes.getName() : urn().getName();
    }
 
    @Override
@@ -83,5 +88,22 @@ public abstract class ModelElementImpl implements ModelElement, Comparable<Model
    @Override
    public int compareTo( final ModelElement o ) {
       return urn().compareTo( o.urn() );
+   }
+
+   @Override
+   public boolean equals( final Object obj ) {
+      if ( this == obj ) {
+         return true;
+      }
+      if ( obj == null || getClass() != obj.getClass() ) {
+         return false;
+      }
+      final ModelElementImpl that = (ModelElementImpl) obj;
+      return urn().equals( that.urn() );
+   }
+
+   @Override
+   public int hashCode() {
+      return urn().hashCode();
    }
 }

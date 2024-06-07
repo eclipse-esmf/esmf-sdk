@@ -305,8 +305,10 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return generateExampleValue( effectiveCharacteristics );
       }
 
-      return property.getExampleValue().map( exampleValue ->
-            exampleValue.as( ScalarValue.class ).getValue() ).orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
+      return property.getExampleValue()
+            .map( exampleValue -> exampleValue.as( ScalarValue.class ).getValue() )
+            .map( value -> value instanceof Curie ? ( (Curie) value ).getValue() : value )
+            .orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
    }
 
    private Map<String, Object> toMap( final String key, final Object value ) {

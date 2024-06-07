@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
@@ -48,52 +49,52 @@ public class JavaCompiler {
    public static Map<QualifiedName, Class<?>> compile( final List<QualifiedName> loadOrder,
          final Map<QualifiedName, String> sources, final List<String> predefinedClasses ) {
       final javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-      final InMemoryClassFileManager manager = new InMemoryClassFileManager(
-            compiler.getStandardFileManager( null, null, null ) );
+      try ( final InMemoryClassFileManager manager = new InMemoryClassFileManager(
+            compiler.getStandardFileManager( null, null, null ) ) ) {
 
-      final List<JavaFileObject> compilerInput = loadOrder.stream()
-            .map( key -> new CompilerInput( key.toString(), sources.get( key ) ) )
-            .collect( Collectors.toList() );
+         final List<JavaFileObject> compilerInput = loadOrder.stream()
+               .map( key -> new CompilerInput( key.toString(), sources.get( key ) ) )
+               .collect( Collectors.toList() );
 
-      if ( System.getProperty( WRITE_SOURCES_PROPERTY ) != null ) {
-         final String filepath = System.getProperty( "user.dir" ) + "/src/test/java/org/eclipse/esmf/test/";
-         final File outputdir = new File( filepath );
-         if ( !outputdir.exists() && !outputdir.mkdirs() ) {
-            throw new RuntimeException( "Could not create sources output directory " + outputdir );
-         }
-         for ( final Map.Entry<QualifiedName, String> entry : sources.entrySet() ) {
-            final String filename = entry.getKey().getClassName();
-            final File out = new File( filepath + filename + ".java" );
-            try {
-               final FileOutputStream outputStream = new FileOutputStream( out );
-               outputStream.write( entry.getValue().getBytes( StandardCharsets.UTF_8 ) );
-               outputStream.flush();
-               outputStream.close();
-            } catch ( final IOException e ) {
-               throw new RuntimeException( e );
+         if ( System.getProperty( WRITE_SOURCES_PROPERTY ) != null ) {
+            final String filepath = System.getProperty( "user.dir" ) + "/src/test/java/org/eclipse/esmf/test/";
+            final File outputdir = new File( filepath );
+            if ( !outputdir.exists() && !outputdir.mkdirs() ) {
+               throw new RuntimeException( "Could not create sources output directory " + outputdir );
+            }
+            for ( final Map.Entry<QualifiedName, String> entry : sources.entrySet() ) {
+               final String filename = entry.getKey().getClassName();
+               final File out = new File( filepath + filename + ".java" );
+               try ( final FileOutputStream outputStream = new FileOutputStream( out ) ) {
+                  outputStream.write( entry.getValue().getBytes( StandardCharsets.UTF_8 ) );
+                  outputStream.flush();
+               }
             }
          }
+
+         final DiagnosticListener diagnosticListener = new DiagnosticListener() {
+            @Override
+            public void report( final Diagnostic<? extends FileObject> diagnostic ) {
+               System.out.println( sources );
+               fail( "Compilation failed: " + diagnostic );
+            }
+         };
+
+         final List<String> compilerOptions = List.of( "-classpath", System.getProperty( "java.class.path" ) );
+         compiler.getTask( null, manager, diagnosticListener, compilerOptions, null, compilerInput ).call();
+         final ClassLoader classLoader = new ClassLoader() {
+            @Override
+            protected Class<?> findClass( final String name ) {
+               final byte[] classBytes = manager.getOutput( name ).getBytes();
+               return defineClass( name, classBytes, 0, classBytes.length );
+            }
+         };
+         return loadOrder.stream().collect( Collectors.toMap( Function.identity(), qualifiedName ->
+               defineAndLoad( qualifiedName, classLoader ) ) );
+
+      } catch ( final IOException e ) {
+         throw new RuntimeException( e );
       }
-
-      final DiagnosticListener diagnosticListener = new DiagnosticListener() {
-         @Override
-         public void report( final Diagnostic<? extends FileObject> diagnostic ) {
-            System.out.println( sources );
-            fail( "Compilation failed: " + diagnostic );
-         }
-      };
-
-      final List<String> compilerOptions = List.of( "-classpath", System.getProperty( "java.class.path" ) );
-      compiler.getTask( null, manager, diagnosticListener, compilerOptions, null, compilerInput ).call();
-      final ClassLoader classLoader = new ClassLoader() {
-         @Override
-         protected Class<?> findClass( final String name ) {
-            final byte[] classBytes = manager.getOutput( name ).getBytes();
-            return defineClass( name, classBytes, 0, classBytes.length );
-         }
-      };
-      return loadOrder.stream().collect( Collectors.toMap( Function.identity(), qualifiedName ->
-            defineAndLoad( qualifiedName, classLoader ) ) );
    }
 
    @SuppressWarnings( "unchecked" )
