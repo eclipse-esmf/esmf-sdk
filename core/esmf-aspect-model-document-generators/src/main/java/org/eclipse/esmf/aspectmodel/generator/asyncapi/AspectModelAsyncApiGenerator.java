@@ -6,9 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.aspectmodel.generator.XsdToJsonTypeMapping;
-import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
@@ -59,7 +59,7 @@ public class AspectModelAsyncApiGenerator
          info.put( TITLE_FIELD, aspect.getPreferredName( config.locale() ) + " MQTT API" );
          info.put( "version", apiVersion );
          info.put( DESCRIPTION_FIELD, getDescription( aspect.getDescription( config.locale() ) ) );
-         info.put( AspectModelJsonSchemaVisitor.SAMM_EXTENSION, aspect.urn().toString() );
+         info.put( AbstractGenerator.SAMM_EXTENSION, aspect.urn().toString() );
 
          rootNode.set( "channels", getChannelNode( aspect, config ) );
          if ( !aspect.getEvents().isEmpty() || !aspect.getOperations().isEmpty() ) {

@@ -380,6 +380,17 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .build();
    }
 
+   private Reference buildReferenceForCollection( final String submodelId ) {
+      final Key key = new DefaultKey.Builder()
+            .type( KeyTypes.GLOBAL_REFERENCE )
+            .value( submodelId )
+            .build();
+      return new DefaultReference.Builder()
+            .type( ReferenceTypes.EXTERNAL_REFERENCE )
+            .keys( key )
+            .build();
+   }
+
    private void createConceptDescription( final Property property, final Context context ) {
       if ( property.getCharacteristic().isEmpty() ) {
          return;
@@ -537,16 +548,23 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    private <T extends Collection> Environment visitCollectionProperty( final T collection, final Context context ) {
-      final SubmodelElementBuilder builder = property ->
-            new DefaultSubmodelElementList.Builder()
-                  .idShort( property.getName() )
-                  .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
-                  .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
-                  .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
-                  .value( List.of( decideOnMapping( property, context ) ) )
-                  .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
-                  .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) )
-                  .build();
+      final SubmodelElementBuilder builder = property -> {
+         DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
+               .idShort( property.getName() )
+               .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
+               .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
+               .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
+               .value( List.of( decideOnMapping( property, context ) ) )
+               .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
+               .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) );
+
+         if ( collection.getAspectModelUrn().isPresent() ) {
+            submodelBuilder.semanticId( buildReferenceForCollection( collection.getAspectModelUrn().get().getUrn().toString() ) );
+         }
+
+         return submodelBuilder.build();
+      };
+
       final Optional<JsonNode> rawValue = context.getRawPropertyValue();
       return rawValue.map( node -> {
          if ( node instanceof final ArrayNode arrayNode ) {

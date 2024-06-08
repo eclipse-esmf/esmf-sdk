@@ -28,7 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
+import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Property;
@@ -97,8 +97,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final OpenApiSchemaArtifact result = apiJsonGenerator.apply( aspect, config );
       final JsonNode json = result.getContent();
       assertSpecificationIsValid( json, json.toString(), aspect );
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       // Check that the map containing separate schema files contains the same information as the
       // all-in-one JSON document
@@ -147,8 +147,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final OpenAPI openApi = result.getOpenAPI();
 
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( "v1.0.0" );
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       openApi.getServers().forEach( server -> assertThat( server.getUrl() ).contains( "v1.0.0" ) );
    }
@@ -166,7 +166,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
-      assertThat( openApi.getPaths().get( "https://test-aspect.example.com/query-api/v1.0.0" ).getPost().getServers().get( 0 ).getUrl() )
+      assertThat( openApi.getPaths().get( "https://test-aspect.example.com/query-api/v1.0.0/" + TEST_RESOURCE_PATH ).getPost().getServers()
+            .get( 0 ).getUrl() )
             .isEqualTo( "https://test-aspect.example.com/query-api/v1.0.0" );
    }
 
@@ -183,11 +184,14 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
 
-      assertThat( openApi.getPaths().get( "/{tenant-id}/aspect-without-see-attribute" ).getPost() ).isNull();
-      assertThat( openApi.getPaths().get( "/{tenant-id}/aspect-without-see-attribute" ).getPut() ).isNull();
-      assertThat( openApi.getPaths().get( "/{tenant-id}/aspect-without-see-attribute" ).getPatch() ).isNull();
-      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "/{tenant-id}/aspect-without-see-attribute" ) );
-      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+      final String apiEndpoint = "/{tenant-id}/aspect-without-see-attribute";
+
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
+      assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNull();
+      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( apiEndpoint ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch(
+            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @ParameterizedTest
@@ -219,7 +223,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final OpenAPI openApi = result.getOpenAPI();
 
       assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "/" + TEST_RESOURCE_PATH ) );
-      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch(
+            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0/" + TEST_RESOURCE_PATH ) );
    }
 
    @ParameterizedTest
@@ -503,11 +508,11 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat(
-            ((Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
-                  .get( 1 )).getProperties() ).doesNotContainKey(
+            ( (Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
+                  .get( 1 ) ).getProperties() ).doesNotContainKey(
             "params" );
-      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
-            .get( 1 )).getProperties() ).doesNotContainKey( "params" );
+      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
+            .get( 1 ) ).getProperties() ).doesNotContainKey( "params" );
    }
 
    @ParameterizedTest
@@ -530,7 +535,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
-      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch(
+            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @ParameterizedTest
@@ -553,7 +559,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNull();
-      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch(
+            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @ParameterizedTest
@@ -576,7 +583,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNull();
-      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch(
+            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @ParameterizedTest
@@ -599,7 +607,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
-      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch(
+            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @ParameterizedTest
@@ -623,7 +632,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPost() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
-      assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" ) );
+      assertThat( openApi.getPaths().keySet() ).anyMatch(
+            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @ParameterizedTest
@@ -644,8 +654,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getSpecVersion() ).isEqualTo( SpecVersion.V31 );
       assertThat( openApi.getComponents().getSchemas().get( "AspectWithCollection" ).get$comment() ).isEqualTo(
             "See: http://example.com/" );
-      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
-            .get( "testProperty" )).get$comment() )
+      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
+            .get( "testProperty" ) ).get$comment() )
             .isEqualTo( "See: http://example.com/, http://example.com/me" );
       assertThat( openApi.getComponents().getSchemas().get( "TestCollection" ).get$comment() )
             .isEqualTo( "See: http://example.com/" );
@@ -663,13 +673,13 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final DocumentContext context = JsonPath.parse( json );
       assertThat( context.<Object> read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();
       assertThat( context.<String> read(
-            "$['components']['schemas']['" + aspect.getName() + "']['" + AspectModelJsonSchemaVisitor.SAMM_EXTENSION + "']" ) ).isEqualTo(
+            "$['components']['schemas']['" + aspect.getName() + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) ).isEqualTo(
             aspect.urn().toString() );
 
       for ( final Property property : aspect.getProperties() ) {
          assertThat( context.<String> read( "$['components']['schemas']"
                + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
-               + AspectModelJsonSchemaVisitor.SAMM_EXTENSION
+               + AbstractGenerator.SAMM_EXTENSION
                + "']" ) ).isEqualTo( property.urn().toString() );
       }
 
@@ -695,8 +705,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final String expectedApiVersion = getExpectedApiVersion( aspect );
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
 
-      assertThat( node.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( node.get( "info" ).get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
+      assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
+      assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
       assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
@@ -713,9 +723,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getResponses() ).containsKey( aspect.getName() );
       assertThat( openApi.getComponents().getRequestBodies() ).containsKey( aspect.getName() );
       assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
-            .get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION ) ).isNotNull();
+            .get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
       assertThat(
-            openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( AspectModelJsonSchemaVisitor.SAMM_EXTENSION )
+            openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( AbstractGenerator.SAMM_EXTENSION )
                   .toString() ).contains( aspect.urn().toString() );
 
       validateReferences( node );

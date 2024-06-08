@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.XsdToJsonTypeMapping;
 import org.eclipse.esmf.aspectmodel.resolver.services.SammDataType;
@@ -75,7 +76,6 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
 public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, ObjectNode> {
-   public static final String SAMM_EXTENSION = "x-samm-aspect-model-urn";
    private static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
    private final List<Property> processedProperties = new LinkedList<>();
    private final BiMap<ModelElement, String> schemaNameForElement = HashBiMap.create();
@@ -658,7 +658,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
 
    private void addSammExtensionAttribute( final ObjectNode node, final ModelElement describedElement ) {
       if ( !describedElement.isAnonymous() ) {
-         node.put( SAMM_EXTENSION, describedElement.urn().toString() );
+         node.put( AbstractGenerator.SAMM_EXTENSION, describedElement.urn().toString() );
       }
    }
 }
