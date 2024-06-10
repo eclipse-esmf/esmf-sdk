@@ -76,10 +76,11 @@ public sealed interface DatabricksType {
       }
    }
 
-   record DatabricksStructEntry( String name, DatabricksType type, boolean notNull, Optional<String> comment ) {
+   record DatabricksStructEntry( String name, DatabricksType type, boolean nullable, Optional<String> comment ) {
       @Override
       public String toString() {
-         return name + ": " + type + (notNull ? " NOT NULL" : "") + comment.map( c -> " COMMENT '" + c + "'" ).orElse( "" );
+         return name + ": " + type + (nullable ? "" : " NOT NULL")
+               + comment.map( c -> " COMMENT '%s'".formatted( c.replace( "'", "\\'" ) ) ).orElse( "" );
       }
    }
 

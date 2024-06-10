@@ -33,6 +33,9 @@
                </includes>
                <tableCommandPrefix>CREATE TABLE</tableCommandPrefix>
                <decimalPrecision>23</decimalPrecision>
+               <customColumns>
+                  <column>custom_column ARRAY&lt;STRING&gt; NOT NULL COMMENT 'Custom column'</column>
+               </customColumns>
                <outputDirectory>${basedir}/target/test-artifacts</outputDirectory>
             </configuration>
          </plugin>

@@ -377,6 +377,7 @@ Configuration Properties:
 | `tableCommandPrefix` | The prefix to use for Databricks table creation commands. | `String` | `CREATE TABLE IF NOT EXISTS` | {nok}
 | `decimalPrecision` | The precision to use for Databricks decimal columns, between 1 and 38. See also notes in
   the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping]. | `Integer` | 10 | {nok}
+| `customColumns` | Contains `<column>` elements, each of which defines a custom column to add. Column defintions follow the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. | `<column>`... | | {nok}
 |===
 
 == Generate Documentation for an Aspect Model

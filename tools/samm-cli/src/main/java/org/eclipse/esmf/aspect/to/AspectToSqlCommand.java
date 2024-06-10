@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspect.to;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.esmf.AbstractCommand;
@@ -24,6 +25,8 @@ import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.sql.AspectModelSqlGenerator;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlArtifact;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinition;
+import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinitionParser;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.exception.CommandException;
@@ -72,6 +75,12 @@ public class AspectToSqlCommand extends AbstractCommand {
          description = "The precision to use for Databricks decimal columns, between 1 and 38. (default: ${DEFAULT-VALUE})" )
    private int decimalPrecision = DatabricksSqlGenerationConfig.DECIMAL_DEFAULT_PRECISION;
 
+   @CommandLine.Option(
+         names = { "--custom-column", "-col" },
+         description = "Custom column to add to the table, can be repeated for multiple columns",
+         converter = DatabricksColumnDefinitionTypeConverter.class )
+   private List<DatabricksColumnDefinition> customColumns;
+
    @CommandLine.ParentCommand
    private AspectToCommand parentCommand;
 
@@ -80,6 +89,13 @@ public class AspectToSqlCommand extends AbstractCommand {
 
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
+
+   static class DatabricksColumnDefinitionTypeConverter implements CommandLine.ITypeConverter<DatabricksColumnDefinition> {
+      @Override
+      public DatabricksColumnDefinition convert( final String value ) throws Exception {
+         return new DatabricksColumnDefinitionParser( value ).get();
+      }
+   }
 
    @Override
    public void run() {
@@ -91,6 +107,7 @@ public class AspectToSqlCommand extends AbstractCommand {
                   .includeColumnComments( includeColumnComments )
                   .createTableCommandPrefix( tableCommandPrefix )
                   .decimalPrecision( decimalPrecision )
+                  .customColumns( customColumns )
                   .build();
       final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( dialect, strategy, generatorConfig );
       final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( context.aspect(), sqlConfig );
