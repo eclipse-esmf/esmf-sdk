@@ -288,11 +288,11 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksT
    void testAspectWithMultipleEntitiesOnMultipleLevels() {
       assertThat( sql( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_ON_MULTIPLE_LEVELS ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_multiple_entities_on_multiple_levels (
-              test_entity_one__test_local_date_time STRING NOT NULL,
+              test_entity_one__test_local_date_time TIMESTAMP NOT NULL,
               test_entity_one__random_value STRING NOT NULL,
               test_entity_one__test_third_entity__test_string STRING NOT NULL,
               test_entity_one__test_third_entity__test_float FLOAT NOT NULL,
-              test_entity_two__test_local_date_time STRING NOT NULL,
+              test_entity_two__test_local_date_time TIMESTAMP NOT NULL,
               test_entity_two__random_value STRING NOT NULL,
               test_entity_two__test_third_entity__test_string STRING NOT NULL,
               test_entity_two__test_third_entity__test_float FLOAT NOT NULL,
@@ -349,7 +349,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksT
       assertThat( sql( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_optional_properties (
               number_property DECIMAL,
-              timestamp_property STRING NOT NULL
+              timestamp_property TIMESTAMP NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOptionalProperties');
             """ );
@@ -422,7 +422,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksT
               byte_property TINYINT NOT NULL,
               curie_property STRING NOT NULL,
               date_property STRING NOT NULL,
-              date_time_property STRING NOT NULL,
+              date_time_property TIMESTAMP NOT NULL,
               date_time_stamp_property TIMESTAMP NOT NULL,
               day_time_duration STRING NOT NULL,
               decimal_property DECIMAL(10) NOT NULL,
@@ -471,7 +471,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksT
    void testAspectWithTimeSeries() {
       assertThat( sql( TestAspect.ASPECT_WITH_TIME_SERIES ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_time_series (
-              test_property ARRAY<STRUCT<value: STRING NOT NULL COMMENT 'The value that was recorded and is part of a time series.', timestamp: STRING NOT NULL COMMENT 'The specific point in time when the corresponding value was recorded.'>> NOT NULL COMMENT 'This is a test property.'
+              test_property ARRAY<STRUCT<value: STRING NOT NULL COMMENT 'The value that was recorded and is part of a time series.', timestamp: TIMESTAMP NOT NULL COMMENT 'The specific point in time when the corresponding value was recorded.'>> NOT NULL COMMENT 'This is a test property.'
             )
             COMMENT 'This is a test description'
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithTimeSeries');

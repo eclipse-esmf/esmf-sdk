@@ -93,7 +93,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .put( XSD.xfloat.getURI(), DatabricksType.FLOAT )
             .put( XSD.date.getURI(), DatabricksType.STRING )
             .put( XSD.time.getURI(), DatabricksType.STRING )
-            .put( XSD.dateTime.getURI(), DatabricksType.STRING )
+            .put( XSD.dateTime.getURI(), DatabricksType.TIMESTAMP )
             .put( XSD.dateTimeStamp.getURI(), DatabricksType.TIMESTAMP )
             .put( XSD.gYear.getURI(), DatabricksType.STRING )
             .put( XSD.gMonth.getURI(), DatabricksType.STRING )

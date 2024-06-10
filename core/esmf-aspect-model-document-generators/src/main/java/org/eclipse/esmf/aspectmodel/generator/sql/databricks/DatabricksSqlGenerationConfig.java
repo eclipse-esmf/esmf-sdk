@@ -67,5 +67,8 @@ public record DatabricksSqlGenerationConfig(
       if ( commentLanguage == null ) {
          commentLanguage = DEFAULT_COMMENT_LANGUAGE;
       }
+      if ( customColumns == null ) {
+         customColumns = List.of();
+      }
    }
 }
