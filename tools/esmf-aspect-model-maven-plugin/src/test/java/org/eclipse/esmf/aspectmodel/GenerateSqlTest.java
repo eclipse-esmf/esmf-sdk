@@ -46,6 +46,7 @@ public class GenerateSqlTest extends AspectModelMojoTest {
       final String sqlContent = new String( Files.readAllBytes( generatedFile ) );
 
       assertThat( sqlContent ).contains( "CREATE TABLE aspect_with_simple_types" );
+      assertThat( sqlContent ).contains( "custom_column ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
       assertThat( sqlContent ).contains( "DECIMAL(23)" );
    }
 }

@@ -15,7 +15,9 @@ package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.eclipse.esmf.test.TestAspect;
 
@@ -374,7 +376,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksT
               test STRING NOT NULL COMMENT 'This is a test property.'
             )
             COMMENT 'This is a test description'
-            TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithPropertyWithPayloadName'); 
+            TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithPropertyWithPayloadName');
             """ );
    }
 
@@ -484,6 +486,29 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksT
             )
             COMMENT 'This is a test description'
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithComplexSet');
+            """ );
+   }
+
+   @Test
+   void testAspectWithCustomColumn() {
+      final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder()
+            .includeTableComment( true )
+            .includeColumnComments( true )
+            .customColumns( List.of(
+                  DatabricksColumnDefinitionBuilder.builder()
+                        .name( "custom" )
+                        .type( new DatabricksType.DatabricksArray( DatabricksType.STRING ) )
+                        .nullable( false )
+                        .comment( Optional.of( "Custom column" ) )
+                        .build()
+            ) ).build();
+      assertThat( sql( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME, config ) ).isEqualTo( """
+            CREATE TABLE IF NOT EXISTS aspect_with_property_with_payload_name (
+              test STRING NOT NULL COMMENT 'This is a test property.',
+              custom ARRAY<STRING> NOT NULL COMMENT 'Custom column'
+            )
+            COMMENT 'This is a test description'
+            TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithPropertyWithPayloadName');
             """ );
    }
 }

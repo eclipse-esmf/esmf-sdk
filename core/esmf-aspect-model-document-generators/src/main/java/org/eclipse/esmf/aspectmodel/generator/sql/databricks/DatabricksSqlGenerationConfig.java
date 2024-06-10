@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
@@ -28,6 +29,7 @@ import io.soabase.recordbuilder.core.RecordBuilder;
  * @param commentLanguage the language to use for comments
  * @param decimalPrecision the precision to use for decimal columns, see <a
  * href="https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html">DECIMAL type</a> for more info.
+ * @param customColumns custom columns to add to the table
  */
 @RecordBuilder
 public record DatabricksSqlGenerationConfig(
@@ -35,7 +37,8 @@ public record DatabricksSqlGenerationConfig(
       boolean includeTableComment,
       boolean includeColumnComments,
       Locale commentLanguage,
-      int decimalPrecision
+      int decimalPrecision,
+      List<DatabricksColumnDefinition> customColumns
 ) implements SqlGenerationConfig.DialectSpecificConfig {
    public static final String DEFAULT_TABLE_COMMAND_PREFIX = "CREATE TABLE IF NOT EXISTS";
    // As defined in https://docs.databricks.com/en/sql/language-manual/data-types/decimal-type.html
@@ -48,7 +51,7 @@ public record DatabricksSqlGenerationConfig(
 
    public DatabricksSqlGenerationConfig() {
       this( DEFAULT_TABLE_COMMAND_PREFIX, DEFAULT_INCLUDE_TABLE_COMMENT, DEFAULT_INCLUDE_COLUMN_COMMENTS, DEFAULT_COMMENT_LANGUAGE,
-            DECIMAL_DEFAULT_PRECISION );
+            DECIMAL_DEFAULT_PRECISION, List.of() );
    }
 
    public DatabricksSqlGenerationConfig {
