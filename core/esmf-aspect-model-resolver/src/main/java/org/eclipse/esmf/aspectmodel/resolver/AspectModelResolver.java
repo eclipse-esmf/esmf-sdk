@@ -202,7 +202,7 @@ public class AspectModelResolver {
             LOG.debug( "Could not resolve {}", failedUrns, fileNotFoundException );
             return Try.failure( new ModelResolutionException( "Could not resolve " + failedUrns, fileNotFoundException ) );
          }
-         return mergedModels.map( __ -> null );
+         return mergedModels.map( ignored -> null );
       }
 
       final AspectMetaModelResourceResolver resourceResolver = migratorService.getSdsMigratorFactory()

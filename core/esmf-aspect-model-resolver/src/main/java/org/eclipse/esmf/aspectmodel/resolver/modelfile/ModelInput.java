@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public interface ModelInput {
-   <T> T content(Function<InputStream, T> contentConsumer);
+   <T> T content( Function<InputStream, T> contentConsumer );
 
    Optional<URI> location();
 }

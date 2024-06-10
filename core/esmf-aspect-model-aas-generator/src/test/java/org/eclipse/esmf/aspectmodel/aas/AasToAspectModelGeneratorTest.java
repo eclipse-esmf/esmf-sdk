@@ -39,9 +39,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 public class AasToAspectModelGeneratorTest {
+
+   // IDTA-provided sample files can currently not be read with AAS4J
    @Test
    @Disabled
-      // IDTA-provided sample files can currently not be read with AAS4J
    void testTranslateDigitalNameplate() {
       final InputStream aasx = AasToAspectModelGeneratorTest.class.getClassLoader()
             .getResourceAsStream( "Sample_ZVEI_Digital_Nameplate_V10.aasx" );
