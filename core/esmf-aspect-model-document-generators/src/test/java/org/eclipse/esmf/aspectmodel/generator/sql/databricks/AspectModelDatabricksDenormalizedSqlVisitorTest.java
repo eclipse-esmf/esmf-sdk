@@ -11,39 +11,18 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.generator.sql;
+package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Locale;
 
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelDatabricksDenormalizedSqlVisitor;
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelDatabricksDenormalizedSqlVisitorContextBuilder;
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
 
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings( "checkstyle:LineLength" )
-public class AspectModelDatabricksDenormalizedSqlVisitorTest {
-   private String sql( final TestAspect testAspect, final DatabricksSqlGenerationConfig config ) {
-      final VersionedModel versionedModel = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
-      final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
-      return aspect.accept( new AspectModelDatabricksDenormalizedSqlVisitor( config ),
-            AspectModelDatabricksDenormalizedSqlVisitorContextBuilder.builder().build() );
-   }
-
-   private String sql( final TestAspect testAspect ) {
-      final DatabricksSqlGenerationConfig config = new DatabricksSqlGenerationConfig();
-      return sql( testAspect, config );
-   }
-
+public class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase {
    @Test
    void testAspectWithAbstractEntity() {
       assertThat( sql( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY ) ).isEqualTo( """

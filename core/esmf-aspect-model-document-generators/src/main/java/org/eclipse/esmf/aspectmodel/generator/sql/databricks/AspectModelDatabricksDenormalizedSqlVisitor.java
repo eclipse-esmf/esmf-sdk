@@ -271,7 +271,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
                   return Stream.empty();
                }
                return Stream.of( new DatabricksType.DatabricksStructEntry( columnName( property ), databricksType,
-                     !property.isOptional(), Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) );
+                     property.isOptional(), Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) );
             } )
             .toList() );
    }
