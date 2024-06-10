@@ -1,6 +1,5 @@
 {
   "asyncapi": "${AsyncApiVer}",
-  "id": "",
   "info": {
     "title": "MQTT API",
     "version" : "",

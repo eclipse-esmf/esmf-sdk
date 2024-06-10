@@ -31,7 +31,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryExecutionDatasetBuilder;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -40,8 +40,6 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.engine.binding.Binding;
 import org.apache.jena.vocabulary.RDF;
 
 /**
@@ -189,7 +187,7 @@ public class ModelCycleDetector {
 
    private boolean isOptionalProperty( final Resource propertyNode ) {
       final Statement optional = propertyNode.getProperty( samm.optional() );
-      return ( optional != null ) && optional.getBoolean();
+      return (optional != null) && optional.getBoolean();
    }
 
    private String getUniqueName( final Resource property ) {
@@ -257,8 +255,11 @@ public class ModelCycleDetector {
 
    private List<NextHopProperty> getDirectlyReachableProperties( final Model model, final Resource currentProperty ) {
       final List<NextHopProperty> nextHopProperties = new ArrayList<>();
-      try ( final QueryExecution qexec = QueryExecutionFactory.create( query, model ) ) {
-         qexec.setInitialBinding( Binding.builder().add( Var.alloc( "currentProperty" ), currentProperty.asNode() ).build() );
+      try ( final QueryExecution qexec = new QueryExecutionDatasetBuilder()
+            .substitution( "currentProperty", currentProperty )
+            .query( query )
+            .model( model )
+            .build() ) {
          final ResultSet results = qexec.execSelect();
          while ( results.hasNext() ) {
             final QuerySolution solution = results.nextSolution();

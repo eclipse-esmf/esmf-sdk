@@ -121,7 +121,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
          if ( generateJsonAsyncApiSpec ) {
             OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue( out, asyncApiSpec.getContent() );
          } else {
-            out.write( jsonToYaml( asyncApiSpec.getContent() ).getBytes( StandardCharsets.UTF_8 ) );
+            out.write( asyncApiSpec.getContentAsYaml().getBytes( StandardCharsets.UTF_8 ) );
          }
       }
    }
@@ -142,15 +142,6 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
                out.write( entry.getValue().getBytes( StandardCharsets.UTF_8 ) );
             }
          }
-      }
-   }
-
-   private String jsonToYaml( final JsonNode json ) {
-      try {
-         return YAML_MAPPER.writeValueAsString( json );
-      } catch ( final JsonProcessingException exception ) {
-         LOG.error( "JSON could not be converted to YAML", exception );
-         return json.toString();
       }
    }
 }

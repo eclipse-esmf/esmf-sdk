@@ -53,6 +53,15 @@ public class AsyncApiSchemaArtifact extends AbstractSchemaArtifact implements Ar
       return content;
    }
 
+   /**
+    * Returns the AsyncAPI schema a single YAML string
+    *
+    * @return the AsyncAPI schema
+    */
+   public String getContentAsYaml() {
+      return jsonToYaml( getContent() );
+   }
+
    @Override
    public Map<Path, JsonNode> getContentWithSeparateSchemasAsJson() {
       return getContentWithSeparateSchemasAsJson( Optional.of( "aai" ) );
