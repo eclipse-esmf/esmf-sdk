@@ -20,11 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import java.util.Map;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
@@ -204,12 +203,11 @@ public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
    private String generateHtmlDocumentation( final TestAspect model, final KnownVersion testedVersion ) throws IOException {
       final VersionedModel versionedModel = TestResources.getModel( model, testedVersion ).get();
       final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
-      final AspectContext context = new AspectContext( versionedModel, aspect );
-      final AspectModelDocumentationGenerator aspectModelDocumentationGenerator = new AspectModelDocumentationGenerator( context );
+      final AspectModelDocumentationGenerator aspectModelDocumentationGenerator = new AspectModelDocumentationGenerator( aspect );
 
       try ( final ByteArrayOutputStream result = new ByteArrayOutputStream() ) {
-         aspectModelDocumentationGenerator.generate( name -> result, Collections.EMPTY_MAP );
-         return result.toString( StandardCharsets.UTF_8.name() );
+         aspectModelDocumentationGenerator.generate( name -> result, Map.of() );
+         return result.toString( StandardCharsets.UTF_8 );
       }
    }
 }

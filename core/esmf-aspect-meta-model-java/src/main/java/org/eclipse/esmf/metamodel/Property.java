@@ -23,7 +23,7 @@ import org.eclipse.esmf.characteristic.Trait;
  *
  * @since SAMM 1.0.0
  */
-public interface Property extends NamedElement {
+public interface Property extends ModelElement {
 
    /**
     * @return the {@link Characteristic} describing this Property. This can be empty when the Property is abstract.

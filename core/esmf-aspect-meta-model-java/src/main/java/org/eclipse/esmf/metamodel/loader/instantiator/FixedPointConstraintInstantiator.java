@@ -13,6 +13,7 @@
 
 package org.eclipse.esmf.metamodel.loader.instantiator;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.constraint.FixedPointConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultFixedPointConstraint;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
@@ -29,8 +30,8 @@ public class FixedPointConstraintInstantiator extends Instantiator<FixedPointCon
    @Override
    public FixedPointConstraint apply( final Resource fixedPointConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( fixedPointConstraint );
-      final Integer scale = attributeValue( fixedPointConstraint, sammc.scale() ).getLiteral().getInt();
-      final Integer integer = attributeValue( fixedPointConstraint, sammc.integer() ).getLiteral().getInt();
+      final Integer scale = attributeValue( fixedPointConstraint, SammNs.SAMMC.scale() ).getLiteral().getInt();
+      final Integer integer = attributeValue( fixedPointConstraint, SammNs.SAMMC.integer() ).getLiteral().getInt();
       return new DefaultFixedPointConstraint( metaModelBaseAttributes, scale, integer );
    }
 }

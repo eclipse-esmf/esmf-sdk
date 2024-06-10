@@ -35,7 +35,7 @@ import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVi
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 
@@ -122,10 +122,9 @@ public class AspectModelOpenApiGenerator
          final ObjectNode rootNode = getRootJsonNode( config.generateCommentForSeeAttributes() );
          final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );
 
-         ((ObjectNode) rootNode.get( "info" )).put( "title", aspect.getPreferredName( config.locale() ) );
-         ((ObjectNode) rootNode.get( "info" )).put( "version", apiVersion );
-         ((ObjectNode) rootNode.get( "info" )).put( AbstractGenerator.SAMM_EXTENSION,
-               aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+         ( (ObjectNode) rootNode.get( "info" ) ).put( "title", aspect.getPreferredName( config.locale() ) );
+         ( (ObjectNode) rootNode.get( "info" ) ).put( "version", apiVersion );
+         ( (ObjectNode) rootNode.get( "info" ) ).put( AbstractGenerator.SAMM_EXTENSION, aspect.urn().toString() );
          setServers( rootNode, config.baseUrl(), apiVersion, READ_SERVER_PATH );
          final boolean includePaging = includePaging( aspect, config.pagingOption() );
          setOptionalSchemas( aspect, config, includePaging, rootNode );
@@ -324,7 +323,7 @@ public class AspectModelOpenApiGenerator
 
    @SuppressWarnings( "squid:S3655" ) // An Aspect always has an URN
    private String getApiVersion( final Aspect aspect, final boolean useSemanticVersion ) {
-      @SuppressWarnings( "OptionalGetWithoutIsPresent" ) final String aspectVersion = aspect.getAspectModelUrn().get().getVersion();
+      final String aspectVersion = aspect.urn().getVersion();
       if ( useSemanticVersion ) {
          return String.format( "v%s", aspectVersion );
       }
@@ -336,7 +335,7 @@ public class AspectModelOpenApiGenerator
    private void setResponseBodies( final Aspect aspect, final ObjectNode jsonNode, final boolean includePaging ) {
       final ObjectNode componentsResponseNode = (ObjectNode) jsonNode.get( FIELD_COMPONENTS ).get( FIELD_RESPONSES );
       final ObjectNode referenceNode = FACTORY.objectNode()
-            .put( REF, COMPONENTS_SCHEMAS + (includePaging ? FIELD_PAGING_SCHEMA : aspect.getName()) );
+            .put( REF, COMPONENTS_SCHEMAS + ( includePaging ? FIELD_PAGING_SCHEMA : aspect.getName() ) );
       final ObjectNode contentNode = getApplicationNode( referenceNode );
       componentsResponseNode.set( aspect.getName(), contentNode );
       contentNode.put( FIELD_DESCRIPTION, "The request was successful." );
@@ -378,12 +377,12 @@ public class AspectModelOpenApiGenerator
       if ( !operations.isEmpty() ) {
          if ( operations.size() == 1 ) {
             aspect.getOperations().stream()
-                  .collect( Collectors.toMap( NamedElement::getName, Operation::getInput ) )
+                  .collect( Collectors.toMap( ModelElement::getName, Operation::getInput ) )
                   .entrySet().stream()
                   .findFirst()
                   .ifPresent( entry -> schemas.set( FIELD_OPERATION, getRequestBodyForPropertyList( entry ) ) );
             aspect.getOperations().stream()
-                  .collect( Collectors.toMap( NamedElement::getName, Operation::getOutput ) )
+                  .collect( Collectors.toMap( ModelElement::getName, Operation::getOutput ) )
                   .entrySet().stream()
                   .findFirst().ifPresent(
                         entry -> schemas.set( FIELD_OPERATION_RESPONSE, getResponseSchemaForOperation( entry.getValue() ) ) );
@@ -391,7 +390,7 @@ public class AspectModelOpenApiGenerator
             final ArrayNode arrayNode = FACTORY.arrayNode();
             schemas.set( FIELD_OPERATION, FACTORY.objectNode().set( "oneOf", arrayNode ) );
             aspect.getOperations().stream()
-                  .collect( Collectors.toMap( NamedElement::getName, Operation::getInput ) )
+                  .collect( Collectors.toMap( ModelElement::getName, Operation::getInput ) )
                   .entrySet().forEach( entry -> {
                      schemas.set( entry.getKey(), getRequestBodyForPropertyList( entry ) );
                      arrayNode.add( FACTORY.objectNode().put( REF, COMPONENTS_SCHEMAS + entry.getKey() ) );
@@ -399,7 +398,7 @@ public class AspectModelOpenApiGenerator
             final ArrayNode responseArrayNode = FACTORY.arrayNode();
             schemas.set( FIELD_OPERATION_RESPONSE, FACTORY.objectNode().set( "oneOf", responseArrayNode ) );
             aspect.getOperations().stream()
-                  .collect( Collectors.toMap( NamedElement::getName, Operation::getOutput ) )
+                  .collect( Collectors.toMap( ModelElement::getName, Operation::getOutput ) )
                   .forEach( ( key, value ) -> {
                      schemas.set( key + "Response", getResponseSchemaForOperation( value ) );
                      responseArrayNode.add( FACTORY.objectNode().put( REF, COMPONENTS_SCHEMAS + key + "Response" ) );
@@ -589,7 +588,7 @@ public class AspectModelOpenApiGenerator
       objectNode.put( FIELD_TYPE, FIELD_OBJECT );
       objectNode.set( FIELD_REQUIRED, requiredNode );
       objectNode.set( FIELD_PROPERTIES, propertyNode );
-      property.stream().map( NamedElement::getName ).distinct().forEach( requiredNode::add );
+      property.stream().map( ModelElement::getName ).distinct().forEach( requiredNode::add );
       property.forEach(
             prop -> propertyNode.set( prop.getName(), SCHEMA_VISITOR.visitProperty( prop, FACTORY.objectNode() ) ) );
       return objectNode;
@@ -656,7 +655,7 @@ public class AspectModelOpenApiGenerator
          final boolean isPut ) {
       final ObjectNode objectNode = FACTORY.objectNode();
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
-      objectNode.put( FIELD_OPERATION_ID, (isPut ? FIELD_PUT : FIELD_PATCH) + aspect.getName() );
+      objectNode.put( FIELD_OPERATION_ID, ( isPut ? FIELD_PUT : FIELD_PATCH ) + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
       objectNode.set( FIELD_REQUEST_BODY, FACTORY.objectNode().put( REF, COMPONENTS_REQUESTS + aspect.getName() ) );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );

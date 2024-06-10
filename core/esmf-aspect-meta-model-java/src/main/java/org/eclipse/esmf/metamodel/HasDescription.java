@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -16,34 +16,12 @@ package org.eclipse.esmf.metamodel;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 
-/**
- * Represents model elements that have human-readable names and descriptions
- */
-public interface NamedElement extends ModelElement {
-   /**
-    * @return the URN which identifies an Aspect Model element.
-    */
-   Optional<AspectModelUrn> getAspectModelUrn();
-
-   /**
-    * @return the name of the Aspect Model element.
-    */
+public interface HasDescription {
    String getName();
-
-   /**
-    * Determines whether this model element has a generated name
-    *
-    * @return true if the name is synthetic (generated at load time), false if it is given in the model
-    */
-   default boolean hasSyntheticName() {
-      return false;
-   }
 
    /**
     * @return a {@link java.util.List} of links to an external taxonomy/ontology.

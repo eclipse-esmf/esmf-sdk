@@ -49,7 +49,7 @@ public interface ComplexType extends Type, StructureElement {
 
    @Override
    default String getUrn() {
-      return getAspectModelUrn().get().toString();
+      return urn().toString();
    }
 
    /**

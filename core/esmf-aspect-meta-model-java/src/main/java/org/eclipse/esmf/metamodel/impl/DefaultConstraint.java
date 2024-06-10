@@ -19,7 +19,6 @@ import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultConstraint extends ModelElementImpl implements Constraint {
-
    public DefaultConstraint( final MetaModelBaseAttributes metaModelBaseAttributes ) {
       super( metaModelBaseAttributes );
    }

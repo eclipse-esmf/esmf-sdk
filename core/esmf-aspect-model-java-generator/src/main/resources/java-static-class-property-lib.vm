@@ -27,8 +27,7 @@
         #if ( $Entity.isAssignableFrom( $extendedComplexType.class ) )
             #set( $entityType = $util.castToEntity( $extendedComplexType ) )
             $codeGenerationConfig.importTracker().importExplicit( $DefaultEntity )
-            Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
-                $modelVisitor.elementUrn( $entityType, $context ), "$entityType.getName()" ),
+            Optional.of(DefaultEntity.createDefaultEntity(MetaModelBaseAttributes.builder().withUrn($modelVisitor.elementUrn( $entityType, $context )).build(),
             Meta${entityType.getName()}.INSTANCE.getProperties(),
             #extendsComplexType( $entityType )
             )
@@ -36,8 +35,7 @@
         #else
             #set( $abstractEntityType = $util.castToAbstractEntity( $extendedComplexType ) )
             $codeGenerationConfig.importTracker().importExplicit( $DefaultAbstractEntity )
-            Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.from(KnownVersion.$characteristic.getMetaModelVersion(),
-                $modelVisitor.elementUrn( $abstractEntityType, $context ), "$abstractEntityType.getName()" ),
+            Optional.of(DefaultAbstractEntity.createDefaultAbstractEntity(MetaModelBaseAttributes.builder().withUrn($modelVisitor.elementUrn( $abstractType, $context )).build(),
             Meta${abstractEntityType.name}.INSTANCE.getProperties(),
             #extendsComplexType( $abstractEntityType ),
             List.of(

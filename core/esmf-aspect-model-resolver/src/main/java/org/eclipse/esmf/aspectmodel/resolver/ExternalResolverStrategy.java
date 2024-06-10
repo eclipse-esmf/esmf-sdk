@@ -16,11 +16,12 @@ package org.eclipse.esmf.aspectmodel.resolver;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.ModelFiles;
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 
 /**
  * A ResolutionStrategy that executes an external command, which will be executed using a {@link CommandExecutor}.
@@ -33,9 +34,10 @@ public class ExternalResolverStrategy implements ResolutionStrategy {
    }
 
    @Override
-   public Try<Model> apply( final AspectModelUrn aspectModelUrn ) {
+   public Try<ModelFile> apply( final AspectModelUrn aspectModelUrn ) {
       final String commandWithParameters = command + " " + aspectModelUrn.toString();
       final String result = CommandExecutor.executeCommand( commandWithParameters );
-      return TurtleLoader.loadTurtle( new ByteArrayInputStream( result.getBytes( StandardCharsets.UTF_8 ) ) );
+      return TurtleLoader.loadTurtle( new ByteArrayInputStream( result.getBytes( StandardCharsets.UTF_8 ) ) )
+            .map( model -> ModelFiles.fromModel( model, aspectModelUrn.getUrn() ) );
    }
 }

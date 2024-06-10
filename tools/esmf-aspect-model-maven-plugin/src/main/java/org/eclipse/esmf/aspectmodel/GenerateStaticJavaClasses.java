@@ -21,7 +21,6 @@ import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -36,9 +35,8 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
 
    @Override
    public void execute() throws MojoExecutionException {
-      final Set<AspectContext> aspectModels = loadModelsOrFail();
-      for ( final AspectContext context : aspectModels ) {
-         final Aspect aspect = context.aspect();
+      final Set<Aspect> aspects = loadModelsOrFail();
+      for ( final Aspect aspect : aspects ) {
          final File templateLibFile = Path.of( templateFile ).toFile();
          validateParameters( templateLibFile );
          final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
@@ -46,7 +44,7 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
                .executeLibraryMacros( executeLibraryMacros )
                .templateLibFile( templateLibFile )
                .build();
-         new StaticMetaModelJavaGenerator( context.aspect(), config ).generate( nameMapper );
+         new StaticMetaModelJavaGenerator( aspect, config ).generate( nameMapper );
       }
       logger.info( "Successfully generated static Java classes for Aspect Models." );
    }

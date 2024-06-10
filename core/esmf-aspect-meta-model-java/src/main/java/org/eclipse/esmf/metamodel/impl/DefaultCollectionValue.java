@@ -51,11 +51,6 @@ public class DefaultCollectionValue implements CollectionValue {
    }
 
    @Override
-   public KnownVersion getMetaModelVersion() {
-      return elementType.getMetaModelVersion();
-   }
-
-   @Override
    public <T, C> T accept( final AspectVisitor<T, C> visitor, final C context ) {
       return visitor.visitCollectionValue( this, context );
    }

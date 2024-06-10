@@ -20,7 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.staticmetamodel.ComputedProperty;
 import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
 import org.eclipse.esmf.staticmetamodel.StaticProperty;
@@ -30,15 +29,13 @@ import org.eclipse.esmf.staticmetamodel.propertychain.PropertyChain;
 import org.eclipse.esmf.test.TestAspect;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGeneratorTest {
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testComputedProperties( final KnownVersion metaModelVersion ) throws IOException, ReflectiveOperationException {
+   @Test
+   void testComputedProperties() throws IOException, ReflectiveOperationException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_EXTENDED_ENUMS;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithExtendedEnums" );
       final Class<?> metaAspectClass = findGeneratedClass( result, "MetaAspectWithExtendedEnums" );
@@ -57,9 +54,9 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       final ComputedProperty<Object, Object> unwrapEnumValue = ComputedProperty.of( resultProperty, results -> {
          try {
             return getValueOfEvaluationResults.invoke( results );
-         } catch ( IllegalAccessException e ) {
+         } catch ( final IllegalAccessException e ) {
             throw new RuntimeException( e );
-         } catch ( InvocationTargetException e ) {
+         } catch ( final InvocationTargetException e ) {
             throw new RuntimeException( e );
          }
       } );
@@ -67,11 +64,10 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       assertThat( unwrapEnumValue.getValue( aspectInstance ) ).isEqualTo( resultGoodValue );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testPropertyChain( final KnownVersion metaModelVersion ) throws IOException, ReflectiveOperationException {
+   @Test
+   void testPropertyChain() throws IOException, ReflectiveOperationException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_NESTED_ENTITY;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithNestedEntity" );
       final Class<?> entityClass = findGeneratedClass( result, "Entity" );
@@ -115,11 +111,10 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
       assertThat( nestedEntityStringChain.getValue( aspectInstance ) ).isEqualTo( "nested-entity-string" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testCollectionPropertyChain( final KnownVersion metaModelVersion ) throws IOException, ReflectiveOperationException {
+   @Test
+   void testCollectionPropertyChain() throws IOException, ReflectiveOperationException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ENTITY_WITH_NESTED_ENTITY_LIST_PROPERTY;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithEntityWithNestedEntityListProperty" );
       final Class<?> entityClass = findGeneratedClass( result, "Entity" );
@@ -156,11 +151,10 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
             "nested-entity-string-2" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testSinglePropertyPredicates( final KnownVersion metaModelVersion ) throws IOException, ReflectiveOperationException {
+   @Test
+   void testSinglePropertyPredicates() throws IOException, ReflectiveOperationException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithNestedEntityList" );
       final Class<?> entityClass = findGeneratedClass( result, "TestFirstEntity" );
@@ -213,11 +207,10 @@ public class ExtendedStaticMetaModelFunctionalityTest extends StaticMetaModelGen
             .containsExactlyInAnyOrder( e2, e3 );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testCollectionPropertyPredicates( final KnownVersion metaModelVersion ) throws IOException, ReflectiveOperationException {
+   @Test
+   void testCollectionPropertyPredicates() throws IOException, ReflectiveOperationException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_NESTED_ENTITY_LIST;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
 
       final Class<?> aspectClass = findGeneratedClass( result, "AspectWithNestedEntityList" );
       final Class<?> entityClass = findGeneratedClass( result, "TestFirstEntity" );

@@ -42,6 +42,10 @@ public interface AspectMetaModelResourceResolver {
     */
    Try<VersionedModel> mergeMetaModelIntoRawModel( final Model rawModel, final VersionNumber version );
 
+   default Try<VersionedModel> mergeMetaModelIntoRawModel( final Model rawModel ) {
+      return mergeMetaModelIntoRawModel( rawModel, KnownVersion.getLatest() );
+   }
+
    default Try<VersionedModel> mergeMetaModelIntoRawModel( final Model rawModel, final KnownVersion version ) {
       return mergeMetaModelIntoRawModel( rawModel, VersionNumber.parse( version.toVersionString() ) );
    }

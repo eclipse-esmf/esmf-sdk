@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.Duration;
 import org.eclipse.esmf.characteristic.impl.DefaultDuration;
 import org.eclipse.esmf.metamodel.Type;
@@ -35,7 +36,7 @@ public class DurationInstantiator extends Instantiator<Duration> {
    public Duration apply( final Resource duration ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( duration );
       final Type type = getType( duration );
-      final Optional<Unit> unit = optionalAttributeValue( duration, sammc.unit() )
+      final Optional<Unit> unit = optionalAttributeValue( duration, SammNs.SAMMC.unit() )
             .map( Statement::getResource )
             .map( modelElementFactory::findOrCreateUnit );
       return new DefaultDuration( metaModelBaseAttributes, type, unit );

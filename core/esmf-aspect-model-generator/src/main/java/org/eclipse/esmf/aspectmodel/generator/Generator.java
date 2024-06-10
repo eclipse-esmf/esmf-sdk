@@ -16,12 +16,13 @@ package org.eclipse.esmf.aspectmodel.generator;
 import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
 
 /**
@@ -38,17 +39,10 @@ public abstract class Generator<I, T> {
       this.aspectModel = aspectModel;
    }
 
-   private static Comparator<NamedElement> uniqueByModelElementIdentifier() {
+   private static Comparator<ModelElement> uniqueByModelElementIdentifier() {
       return ( modelElementOne, modelElementTwo ) -> {
-         final String modelElementOneIdentifier = modelElementOne
-               .getAspectModelUrn()
-               .map( aspectModelUrn -> aspectModelUrn.getUrn().toString() )
-               .orElse( generateIdentifierForAnonymousModelElement( modelElementOne ) );
-         final String modelElementTwoIdentifier = modelElementTwo
-               .getAspectModelUrn()
-               .map( aspectModelUrn -> aspectModelUrn.getUrn().toString() )
-               .orElse( generateIdentifierForAnonymousModelElement( modelElementTwo ) );
-
+         final String modelElementOneIdentifier = modelElementOne.urn().toString();
+         final String modelElementTwoIdentifier = modelElementTwo.urn().toString();
          return modelElementOneIdentifier.compareTo( modelElementTwoIdentifier );
       };
    }
@@ -58,7 +52,7 @@ public abstract class Generator<I, T> {
             "GeneratedElementId_" + GENERATED_MODEL_ELEMENT_IDENTIFIERS.size() );
    }
 
-   protected <E extends NamedElement> Stream<E> elements( final Class<E> clazz ) {
+   protected <E extends ModelElement> Stream<E> elements( final Class<E> clazz ) {
       return aspectModel.accept( new AspectStreamTraversalVisitor(), null )
             .filter( clazz::isInstance )
             .map( clazz::cast )
@@ -66,7 +60,7 @@ public abstract class Generator<I, T> {
             .distinct();
    }
 
-   protected <E extends NamedElement, C extends GenerationConfig, R extends Artifact<I, T>> Stream<R> applyTemplate(
+   protected <E extends ModelElement, C extends GenerationConfig, R extends Artifact<I, T>> Stream<R> applyTemplate(
          final Class<E> clazz, final ArtifactGenerator<I, T, E, C, R> artifactGenerator, final C config ) {
       return elements( clazz ).map( element -> artifactGenerator.apply( element, config ) );
    }
@@ -79,7 +73,8 @@ public abstract class Generator<I, T> {
     * @param nameMapper the callback function that maps artifact identifiers to OutputStreams
     */
    public void generate( final Function<I, OutputStream> nameMapper ) {
-      generateArtifacts().forEach( generationResult -> write( generationResult, nameMapper ) );
+      final List<Artifact<I, T>> artifacts = generateArtifacts().toList();
+      artifacts.forEach( generationResult -> write( generationResult, nameMapper ) );
    }
 
    /**

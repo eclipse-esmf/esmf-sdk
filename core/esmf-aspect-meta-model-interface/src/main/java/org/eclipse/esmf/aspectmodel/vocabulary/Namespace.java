@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -36,29 +36,40 @@ public interface Namespace {
       return uri.endsWith( "#" ) ? uri : uri + "#";
    }
 
+   default String urn( final String element ) {
+      return getNamespace() + element;
+   }
+
    default Property property( final String name ) {
-      return ResourceFactory.createProperty( getNamespace() + name );
+      return ResourceFactory.createProperty( urn( name ) );
    }
 
    default Resource resource( final String name ) {
-      return ResourceFactory.createResource( getNamespace() + name );
+      return ResourceFactory.createResource( urn( name ) );
    }
 
    static Map<String, String> createPrefixMap( final KnownVersion metaModelVersion ) {
-      final SAMM samm = new SAMM( metaModelVersion );
-      final SAMMC sammc = new SAMMC( metaModelVersion );
-      final SAMME samme = new SAMME( metaModelVersion, samm );
-      final UNIT unit = new UNIT( metaModelVersion, samm );
-
       final Map<String, String> result = new LinkedHashMap<>();
-      result.put( "samm", samm.getUri() + "#" );
-      result.put( "samm-c", sammc.getUri() + "#" );
-      result.put( "samm-e", samme.getUri() + "#" );
-      result.put( "unit", unit.getUri() + "#" );
+      final SAMM samm = new SAMM( metaModelVersion );
+      result.put( "samm", samm.getNamespace() );
+      result.put( "samm-c", new SAMMC( metaModelVersion ).getNamespace() );
+      result.put( "samm-e", new SAMME( metaModelVersion, samm ).getNamespace() );
+      result.put( "unit", new UNIT( metaModelVersion, samm ).getNamespace() );
       result.put( "rdf", RDF.getURI() );
       result.put( "rdfs", RDFS.getURI() );
       result.put( "xsd", XSD.getURI() );
+      return result;
+   }
 
+   static Map<String, String> createPrefixMap() {
+      final Map<String, String> result = new LinkedHashMap<>();
+      result.put( "samm", SammNs.SAMM.getNamespace() );
+      result.put( "samm-c", SammNs.SAMMC.getNamespace() );
+      result.put( "samm-e", SammNs.SAMME.getNamespace() );
+      result.put( "unit", SammNs.UNIT.getNamespace() );
+      result.put( "rdf", RDF.getURI() );
+      result.put( "rdfs", RDFS.getURI() );
+      result.put( "xsd", XSD.getURI() );
       return result;
    }
 }

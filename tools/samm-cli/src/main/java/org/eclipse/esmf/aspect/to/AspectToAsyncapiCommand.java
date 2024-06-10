@@ -96,7 +96,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
    public void run() {
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
-      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
+      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
             .applicationId( applicationId )

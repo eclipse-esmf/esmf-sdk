@@ -24,7 +24,7 @@ import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
 import org.eclipse.esmf.exception.CommandException;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.commons.io.FileUtils;
 import picocli.CommandLine;
@@ -62,8 +62,8 @@ public class AspectToHtmlCommand extends AbstractCommand {
    @Override
    public void run() {
       try {
-         final AspectContext context = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
-         final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( context );
+         final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
+         final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( aspect );
          final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
          generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );
          if ( customCssFile != null ) {

@@ -28,16 +28,14 @@ import org.apache.jena.rdf.model.Resource;
 @SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "NewMethodNamingConvention" } )
 public class SAMMC implements Namespace {
    private final KnownVersion metaModelVersion;
-   private final SAMM samm;
 
    public SAMMC( final KnownVersion metaModelVersion ) {
       this.metaModelVersion = metaModelVersion;
-      samm = new SAMM( metaModelVersion );
    }
 
    @Override
    public String getUri() {
-      return samm.getBaseUri() + "characteristic:" + metaModelVersion.toVersionString();
+      return SammNs.SAMM.getBaseUri() + "characteristic:" + metaModelVersion.toVersionString();
    }
 
    /*

@@ -59,8 +59,7 @@ public class AspectModelAsyncApiGenerator
          info.put( TITLE_FIELD, aspect.getPreferredName( config.locale() ) + " MQTT API" );
          info.put( "version", apiVersion );
          info.put( DESCRIPTION_FIELD, getDescription( aspect.getDescription( config.locale() ) ) );
-         info.put( AbstractGenerator.SAMM_EXTENSION,
-               aspect.getAspectModelUrn().map( AspectModelUrn::toString ).orElseThrow() );
+         info.put( AbstractGenerator.SAMM_EXTENSION, aspect.urn().toString() );
 
          rootNode.set( "channels", getChannelNode( aspect, config ) );
          if ( !aspect.getEvents().isEmpty() || !aspect.getOperations().isEmpty() ) {
@@ -204,7 +203,7 @@ public class AspectModelAsyncApiGenerator
    }
 
    private void setChannelNodeMeta( final ObjectNode channelNode, final Aspect aspect, final AsyncApiSchemaGenerationConfig config ) {
-      final AspectModelUrn aspectModelUrn = aspect.getAspectModelUrn().get();
+      final AspectModelUrn aspectModelUrn = aspect.urn();
 
       channelNode.put( "address", StringUtils.isNotBlank( config.channelAddress() )
             ? config.channelAddress() :
@@ -247,7 +246,7 @@ public class AspectModelAsyncApiGenerator
    }
 
    private String getApiVersion( final Aspect aspect, final boolean useSemanticVersion ) {
-      final String aspectVersion = aspect.getAspectModelUrn().get().getVersion();
+      final String aspectVersion = aspect.urn().getVersion();
       return "v" + ( useSemanticVersion ? aspectVersion : VersionNumber.parse( aspectVersion ).getMajor() );
    }
 

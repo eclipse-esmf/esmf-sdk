@@ -16,6 +16,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.impl.DefaultOperation;
@@ -34,9 +35,9 @@ public class OperationInstantiator extends Instantiator<Operation> {
    @Override
    public Operation apply( final Resource operation ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( operation );
-      final List<Property> input = getPropertiesModels( operation, samm.input() );
+      final List<Property> input = getPropertiesModels( operation, SammNs.SAMM.input() );
       final Optional<Property> output =
-            optionalAttributeValue( operation, samm.output() )
+            optionalAttributeValue( operation, SammNs.SAMM.output() )
                   .map( Statement::getResource )
                   .map( outputPropertyResource -> modelElementFactory
                         .create( Property.class, outputPropertyResource ) );

@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Locale;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.constraint.LanguageConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultLanguageConstraint;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
@@ -31,7 +32,7 @@ public class LanguageConstraintInstantiator extends Instantiator<LanguageConstra
    @Override
    public LanguageConstraint apply( final Resource languageConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( languageConstraint );
-      final String languageCode = attributeValue( languageConstraint, sammc.languageCode() ).getString();
+      final String languageCode = attributeValue( languageConstraint, SammNs.SAMMC.languageCode() ).getString();
       return new DefaultLanguageConstraint( metaModelBaseAttributes, Locale.forLanguageTag( languageCode ) );
    }
 }

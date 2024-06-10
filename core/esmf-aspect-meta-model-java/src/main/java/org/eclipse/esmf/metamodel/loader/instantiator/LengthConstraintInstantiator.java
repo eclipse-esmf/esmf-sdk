@@ -16,6 +16,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 import java.math.BigInteger;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.constraint.LengthConstraint;
 import org.eclipse.esmf.constraint.impl.DefaultLengthConstraint;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
@@ -34,9 +35,9 @@ public class LengthConstraintInstantiator extends Instantiator<LengthConstraint>
    @Override
    public LengthConstraint apply( final Resource lengthConstraint ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( lengthConstraint );
-      final Optional<BigInteger> minValue = optionalAttributeValue( lengthConstraint, sammc.minValue() )
+      final Optional<BigInteger> minValue = optionalAttributeValue( lengthConstraint, SammNs.SAMMC.minValue() )
             .map( Statement::getLiteral ).map( Literal::getLong ).map( BigInteger::valueOf );
-      final Optional<BigInteger> maxValue = optionalAttributeValue( lengthConstraint, sammc.maxValue() )
+      final Optional<BigInteger> maxValue = optionalAttributeValue( lengthConstraint, SammNs.SAMMC.maxValue() )
             .map( Statement::getLiteral ).map( Literal::getLong ).map( BigInteger::valueOf );
       return new DefaultLengthConstraint( metaModelBaseAttributes, minValue, maxValue );
    }

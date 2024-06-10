@@ -69,7 +69,6 @@ import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.metamodel.QuantityKinds;
@@ -90,7 +89,6 @@ import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.impl.DefaultUnit;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.rdf.model.Resource;
@@ -376,16 +374,14 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    @Override
    public String visitLengthConstraint( final LengthConstraint lengthConstraint, final StaticCodeGenerationContext context ) {
       context.getCodeGenerationConfig().importTracker().importExplicit( DefaultLengthConstraint.class );
-      final Scalar nonNegativeInteger = new DefaultScalar( XSD.nonNegativeInteger.getURI(), lengthConstraint.getMetaModelVersion() );
+      final Scalar nonNegativeInteger = new DefaultScalar( XSD.nonNegativeInteger.getURI() );
       return "new DefaultLengthConstraint("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( lengthConstraint, context ) + ","
             // Optional<BigInteger> min
-            + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMinValue(), lengthConstraint.getMetaModelVersion(),
-            context ) + ","
+            + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMinValue(), context ) + ","
             // Optional<BigInteger> max
-            + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMaxValue(), lengthConstraint.getMetaModelVersion(),
-            context ) + ")";
+            + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMaxValue(), context ) + ")";
    }
 
    @Override
@@ -397,11 +393,9 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( rangeConstraint, context ) + ","
             // Optional<Object> minValue
-            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMinValue(), rangeConstraint.getMetaModelVersion(),
-            context ) + ","
+            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMinValue(), context ) + ","
             // Optional<Object> maxValue
-            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMaxValue(), rangeConstraint.getMetaModelVersion(),
-            context ) + ","
+            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMaxValue(), context ) + ","
             // BoundDefinition lowerBoundDefinition
             + "BoundDefinition." + rangeConstraint.getLowerBoundDefinition().name() + ","
             // BoundDefinition upperBoundDefinition
@@ -500,7 +494,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    @Override
    public String visitScalar( final Scalar scalar, final StaticCodeGenerationContext context ) {
       context.getCodeGenerationConfig().importTracker().importExplicit( DefaultScalar.class );
-      return "new DefaultScalar(\"" + scalar.getUrn() + "\", KnownVersion." + scalar.getMetaModelVersion() + ")";
+      return "new DefaultScalar(\"" + scalar.getUrn() + "\" )";
    }
 
    private String extendsComplexType( final ComplexType complexType, final StaticCodeGenerationContext context ) {
@@ -513,8 +507,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
          final Entity entity = type.as( Entity.class );
          context.getCodeGenerationConfig().importTracker().importExplicit( DefaultEntity.class );
          return "Optional.of(DefaultEntity.createDefaultEntity(" + getMetaModelBaseAttributes( complexType, context ) + "," + "Meta"
-               + entity.getName()
-               + ".INSTANCE.getProperties()," + extendsComplexType( entity, context ) + "))";
+               + entity.getName() + ".INSTANCE.getProperties()," + extendsComplexType( entity, context ) + "))";
       }
       // AbstractEntity
       final AbstractEntity abstractEntity = type.as( AbstractEntity.class );
@@ -528,7 +521,6 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    }
 
    private <T> String getOptionalStaticDeclarationValue( final Type type, final Optional<T> optionalValue,
-         final KnownVersion metaModelVersion,
          final StaticCodeGenerationContext context ) {
       if ( optionalValue.isEmpty() ) {
          return "Optional.empty()";
@@ -549,7 +541,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       } else {
          valueExpression = StringEscapeUtils.escapeJava( valueExpression );
       }
-      return "Optional.of(" + valueInitializer.apply( xsdType, valueExpression, metaModelVersion ) + ")";
+      return "Optional.of(" + valueInitializer.apply( xsdType, valueExpression ) + ")";
    }
 
    /*
@@ -559,18 +551,17 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       return getMetaModelBaseAttributes( property, context );
    }
 
-   public <T extends NamedElement & ModelElement> String getMetaModelBaseAttributes( final T element,
-         final StaticCodeGenerationContext context ) {
-      if ( element.getPreferredNames().isEmpty() && element.getDescriptions().isEmpty() && element.getSee().isEmpty() ) {
-         return "MetaModelBaseAttributes.from(" + "KnownVersion." + element.getMetaModelVersion().toString() + ", " + elementUrn( element,
-               context ) + ", "
-               + "\"" + element.getName() + "\" )";
+   public String getMetaModelBaseAttributes( final ModelElement element, final StaticCodeGenerationContext context ) {
+      final StringBuilder builder = new StringBuilder();
+      builder.append( "MetaModelBaseAttributes.builder()" );
+      if ( element.isAnonymous() ) {
+         builder.append( ".isAnonymous()" );
+      } else {
+         builder.append( ".withUrn(" );
+         builder.append( elementUrn( element, context ) );
+         builder.append( ")" );
       }
 
-      final StringBuilder builder = new StringBuilder();
-      builder.append( "MetaModelBaseAttributes.builderFor( \"" ).append( element.getName() ).append( "\" )" );
-      builder.append( ".withMetaModelVersion(KnownVersion." ).append( element.getMetaModelVersion().toString() ).append( ")" );
-      builder.append( ".withUrn(" ).append( elementUrn( element, context ) ).append( ")" );
       element.getPreferredNames().stream().sorted().forEach( preferredName -> {
          builder.append( ".withPreferredName(Locale.forLanguageTag(\"" ).append( preferredName.getLanguageTag().toLanguageTag() )
                .append( "\")," );
@@ -587,16 +578,13 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       return builder.toString();
    }
 
-   public String elementUrn( final NamedElement element, final StaticCodeGenerationContext context ) {
-      if ( element.getAspectModelUrn().isEmpty() ) {
-         return "null";
-      }
-      if ( element.getAspectModelUrn().get().toString().startsWith( context.getModelUrnPrefix() ) ) {
+   public String elementUrn( final ModelElement element, final StaticCodeGenerationContext context ) {
+      if ( element.urn().toString().startsWith( context.getModelUrnPrefix() ) ) {
          return "AspectModelUrn.fromUrn( NAMESPACE + \"" + element.getName() + "\" )";
       }
-      if ( element.getAspectModelUrn().get().toString().startsWith( context.getCharacteristicBaseUrn() ) ) {
+      if ( element.urn().toString().startsWith( context.getCharacteristicBaseUrn() ) ) {
          return "AspectModelUrn.fromUrn( CHARACTERISTIC_NAMESPACE + \"#" + element.getName() + "\" )";
       }
-      return "AspectModelUrn.fromUrn( \"" + element.getAspectModelUrn().get() + "\" )";
+      return "AspectModelUrn.fromUrn( \"" + element.urn() + "\" )";
    }
 }

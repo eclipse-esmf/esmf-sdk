@@ -23,7 +23,7 @@ import org.eclipse.esmf.aspectmodel.generator.sql.SqlArtifact;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -61,8 +61,8 @@ public class GenerateSql extends AspectModelMojo {
    public void execute() throws MojoExecutionException {
       validateParameters();
 
-      final Set<AspectContext> aspectModels = loadModelsOrFail();
-      for ( final AspectContext context : aspectModels ) {
+      final Set<Aspect> aspectModels = loadModelsOrFail();
+      for ( final Aspect aspect : aspectModels ) {
          final DatabricksSqlGenerationConfig generatorConfig =
                DatabricksSqlGenerationConfigBuilder.builder()
                      .commentLanguage( Locale.forLanguageTag( language ) )
@@ -73,9 +73,9 @@ public class GenerateSql extends AspectModelMojo {
                      .build();
          final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() ),
                SqlGenerationConfig.MappingStrategy.valueOf( strategy.toUpperCase() ), generatorConfig );
-         final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( context.aspect(), sqlConfig );
+         final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( aspect, sqlConfig );
 
-         try ( final OutputStream out = getOutputStreamForFile( context.aspect().getName() + ".sql", outputDirectory ) ) {
+         try ( final OutputStream out = getOutputStreamForFile( aspect.getName() + ".sql", outputDirectory ) ) {
             out.write( result.getContent().getBytes() );
          } catch ( final IOException exception ) {
             throw new MojoExecutionException( "Could not write SQL file.", exception );

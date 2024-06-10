@@ -118,6 +118,7 @@ public class DefaultProperty extends ModelElementImpl implements Property {
    @Override
    public String toString() {
       return new StringJoiner( ", ", DefaultProperty.class.getSimpleName() + "[", "]" )
+            .add( "urn=" + urn() )
             .add( "characteristic=" + characteristic )
             .add( "exampleValue=" + exampleValue )
             .add( "optional=" + optional )
@@ -141,7 +142,7 @@ public class DefaultProperty extends ModelElementImpl implements Property {
       }
       final DefaultProperty that = (DefaultProperty) o;
       return Objects.equals( getName(), that.getName() )
-            && Objects.equals( getAspectModelUrn(), that.getAspectModelUrn() )
+            && Objects.equals( urn(), that.urn() )
             && optional == that.optional
             && notInPayload == that.notInPayload
             && isAbstract == that.isAbstract

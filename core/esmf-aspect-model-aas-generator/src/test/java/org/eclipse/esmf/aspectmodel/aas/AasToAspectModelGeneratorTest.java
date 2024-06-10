@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -40,8 +39,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 public class AasToAspectModelGeneratorTest {
+
+   // IDTA-provided sample files can currently not be read with AAS4J
    @Test
-   @Disabled // IDTA-provided sample files can currently not be read with AAS4J
+   @Disabled
    void testTranslateDigitalNameplate() {
       final InputStream aasx = AasToAspectModelGeneratorTest.class.getClassLoader()
             .getResourceAsStream( "Sample_ZVEI_Digital_Nameplate_V10.aasx" );
@@ -58,7 +59,7 @@ public class AasToAspectModelGeneratorTest {
             assertThatCode( () -> {
                final List<Aspect> aspects = aspectModelGenerator.generateAspects();
                assertThat( aspects ).singleElement().satisfies( generatedAspect ->
-                     assertThat( generatedAspect.getAspectModelUrn().get() ).isEqualTo( aspect.getAspectModelUrn().get() ) );
+                     assertThat( generatedAspect.urn() ).isEqualTo( aspect.urn() ) );
             } ).doesNotThrowAnyException();
 
       final Environment aasEnvironmentFromXml = new XmlDeserializer().read(
@@ -77,7 +78,7 @@ public class AasToAspectModelGeneratorTest {
       final Environment aasEnvironment = loadEnvironment( "SMTWithAspectModelUrnId.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect ->
-            assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString ).contains( "urn:samm:com.example:1.0.0#Submodel1" ) );
+            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
    }
 
    @Test
@@ -86,7 +87,7 @@ public class AasToAspectModelGeneratorTest {
       final Environment aasEnvironment = loadEnvironment( "SMTWithAspectModelUrnInConceptDescription.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect ->
-            assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString ).contains( "urn:samm:com.example:1.0.0#Submodel1" ) );
+            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
    }
 
    @Test
@@ -96,8 +97,7 @@ public class AasToAspectModelGeneratorTest {
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction1.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect ->
-            assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString )
-                  .contains( "urn:samm:com.example.www:1.2.3#Submodel1" ) );
+            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example.www:1.2.3#Submodel1" ) );
    }
 
    @Test
@@ -107,7 +107,7 @@ public class AasToAspectModelGeneratorTest {
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction2.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect ->
-            assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString ).contains( "urn:samm:com.example:1.2.3#Submodel1" ) );
+            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.2.3#Submodel1" ) );
    }
 
    @Test
@@ -117,7 +117,7 @@ public class AasToAspectModelGeneratorTest {
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction3.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect ->
-            assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString ).contains( "urn:samm:com.example:1.0.0#Submodel1" ) );
+            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#Submodel1" ) );
    }
 
    @Test
@@ -127,8 +127,7 @@ public class AasToAspectModelGeneratorTest {
       final Environment aasEnvironment = loadEnvironment( "SMTAspectModelUrnInConstruction4.aas.xml" );
       final AasToAspectModelGenerator aspectModelGenerator = AasToAspectModelGenerator.fromEnvironment( aasEnvironment );
       assertThat( aspectModelGenerator.generateAspects() ).singleElement().satisfies( aspect ->
-            assertThat( aspect.getAspectModelUrn() ).map( AspectModelUrn::toString )
-                  .contains( "urn:samm:com.example:1.0.0#AAAAAA000abf2fd07" ) );
+            assertThat( aspect.urn().toString() ).isEqualTo( "urn:samm:com.example:1.0.0#AAAAAA000abf2fd07" ) );
    }
 
    private Environment loadEnvironment( final String name ) {

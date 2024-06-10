@@ -14,17 +14,18 @@
 package examples;
 
 // tag::imports[]
-import java.io.OutputStream;
-import java.util.Locale;
-import java.util.Set;
-import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
-import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator.Format;
-import org.eclipse.esmf.metamodel.AspectContext;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 
 import java.io.File;
 import java.io.IOException;
-// end::imports[]
+import java.io.OutputStream;
+import java.util.Locale;
+import java.util.Set;
+
+import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
+import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator.Format;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+
 import org.junit.jupiter.api.Test;
 
 public class GenerateDiagrams extends AbstractGenerator {
@@ -32,7 +33,7 @@ public class GenerateDiagrams extends AbstractGenerator {
    public void generateDiagram() throws IOException {
       // tag::generate[]
       // AspectContext as returned by the AspectModelLoader
-      final AspectContext model = // ...
+      final Aspect model = // ...
             // end::generate[]
             AspectModelLoader.getAspectContext(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) ).get();

@@ -12,6 +12,7 @@
  */
 package org.eclipse.esmf.aspectmodel.java.pojo;
 
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,13 +36,15 @@ public class AspectModelJavaGenerator extends JavaGenerator {
 
    @Override
    protected Stream<Artifact<QualifiedName, String>> generateArtifacts() {
+      final Set<ComplexType> structureElements = elements( ComplexType.class ).filter( element ->
+            element.getExtends().isPresent() ).collect( Collectors.toSet() );
       return Stream.of(
                   applyTemplate( Aspect.class, new StructureElementJavaArtifactGenerator<>(), config ),
-                  applyTemplate( ComplexType.class, new StructureElementJavaArtifactGenerator<>(
-                        elements( ComplexType.class ).filter( element ->
-                              element.getExtends().isPresent() ).collect( Collectors.toSet() ) ), config ),
+                  applyTemplate( ComplexType.class, new StructureElementJavaArtifactGenerator<>( structureElements ), config ),
                   applyTemplate( Event.class, new StructureElementJavaArtifactGenerator<>(), config ),
                   applyTemplate( Enumeration.class, new EnumerationJavaArtifactGenerator<>(), config ) )
-            .flatMap( Function.identity() );
+            .flatMap( Function.identity() )
+            .collect( Collectors.toSet() )
+            .stream();
    }
 }

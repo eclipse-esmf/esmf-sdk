@@ -20,10 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
@@ -45,8 +42,6 @@ public class AspectStreamTraversalVisitorTest {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
       final VersionedModel versionedModel = TestResources.getModelWithoutResolution( testAspect, metaModelVersion );
       final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( versionedModel );
-      final SAMM samm = new SAMM( metaModelVersion );
-      final SAMMC sammc = new SAMMC( metaModelVersion );
       final Model model = versionedModel.getModel();
 
       final Set<String> modelElementNames = Streams.stream( model.listStatements( null, RDF.type, (RDFNode) null ) )
@@ -58,12 +53,7 @@ public class AspectStreamTraversalVisitorTest {
             .collect( Collectors.toSet() );
 
       final Set<String> namesFromVisitor = aspect.accept( new AspectStreamTraversalVisitor(), null )
-            .flatMap( modelElement -> {
-               if ( modelElement instanceof final NamedElement namedElement ) {
-                  return namedElement.hasSyntheticName() ? Stream.empty() : Stream.of( namedElement.getName() );
-               }
-               return Stream.empty();
-            } )
+            .flatMap( modelElement -> modelElement.isAnonymous() ? Stream.empty() : Stream.of( modelElement.getName() ) )
             .filter( name -> !name.equals( "UnnamedCharacteristic" ) )
             .collect( Collectors.toSet() );
 

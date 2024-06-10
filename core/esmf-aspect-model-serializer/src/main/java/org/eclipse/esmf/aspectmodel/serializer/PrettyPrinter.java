@@ -33,8 +33,7 @@ import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.ImmutableList;
@@ -82,7 +81,6 @@ public class PrettyPrinter {
    private final AspectModelUrn rootElementUrn;
    private final PrintWriter writer;
    private final Map<String, String> prefixMap;
-   private final SAMM samm;
 
    private final PrintVisitor printVisitor;
 
@@ -90,13 +88,11 @@ public class PrettyPrinter {
     * Constructor that takes a raw RDF {@link Model}
     *
     * @param model the Aspect Model to write
-    * @param metaModelVersion the meta model version
     * @param rootElementUrn the URN of the root model element
     * @param writer the writer to write to
     */
-   public PrettyPrinter( final Model model, final KnownVersion metaModelVersion, final AspectModelUrn rootElementUrn,
-         final PrintWriter writer ) {
-      this( new VersionedModel( ModelFactory.createDefaultModel(), metaModelVersion, model ), rootElementUrn, writer );
+   public PrettyPrinter( final Model model, final AspectModelUrn rootElementUrn, final PrintWriter writer ) {
+      this( new VersionedModel( ModelFactory.createDefaultModel(), KnownVersion.getLatest(), model ), rootElementUrn, writer );
    }
 
    /**
@@ -108,60 +104,55 @@ public class PrettyPrinter {
     */
    public PrettyPrinter( final VersionedModel versionedModel, final AspectModelUrn rootElementUrn, final PrintWriter writer ) {
       model = versionedModel.getRawModel();
-      final KnownVersion metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() )
-            .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getMetaModelVersion() ) );
       this.writer = writer;
       this.rootElementUrn = rootElementUrn;
       printVisitor = new PrintVisitor( model );
 
-      samm = new SAMM( metaModelVersion );
-      final SAMMC sammc = new SAMMC( metaModelVersion );
-
-      prefixMap = new HashMap<>( Namespace.createPrefixMap( metaModelVersion ) );
+      prefixMap = new HashMap<>( Namespace.createPrefixMap() );
       prefixMap.putAll( versionedModel.getModel().getNsPrefixMap() );
       prefixMap.put( "", rootElementUrn.getUrnPrefix() );
       model.setNsPrefixes( prefixMap );
 
-      propertyOrder = createPredefinedPropertyOrder( sammc );
+      propertyOrder = createPredefinedPropertyOrder();
       prefixOrder = createPredefinedPrefixOrder();
    }
 
-   private Comparator<Property> createPredefinedPropertyOrder( final SAMMC sammc ) {
+   private Comparator<Property> createPredefinedPropertyOrder() {
       final List<Property> predefinedPropertyOrder = new ArrayList<>();
-      predefinedPropertyOrder.add( samm._extends() );
-      predefinedPropertyOrder.add( samm.preferredName() );
-      predefinedPropertyOrder.add( samm.description() );
-      predefinedPropertyOrder.add( samm.see() );
-      predefinedPropertyOrder.add( samm.characteristic() );
-      predefinedPropertyOrder.add( samm.properties() );
-      predefinedPropertyOrder.add( samm.operations() );
-      predefinedPropertyOrder.add( samm.events() );
-      predefinedPropertyOrder.add( samm.input() );
-      predefinedPropertyOrder.add( samm.output() );
-      predefinedPropertyOrder.add( samm.baseCharacteristic() );
-      predefinedPropertyOrder.add( samm.dataType() );
-      predefinedPropertyOrder.add( samm.exampleValue() );
-      predefinedPropertyOrder.add( samm.value() );
-      predefinedPropertyOrder.add( samm.property() );
-      predefinedPropertyOrder.add( samm.optional() );
+      predefinedPropertyOrder.add( SammNs.SAMM._extends() );
+      predefinedPropertyOrder.add( SammNs.SAMM.preferredName() );
+      predefinedPropertyOrder.add( SammNs.SAMM.description() );
+      predefinedPropertyOrder.add( SammNs.SAMM.see() );
+      predefinedPropertyOrder.add( SammNs.SAMM.characteristic() );
+      predefinedPropertyOrder.add( SammNs.SAMM.properties() );
+      predefinedPropertyOrder.add( SammNs.SAMM.operations() );
+      predefinedPropertyOrder.add( SammNs.SAMM.events() );
+      predefinedPropertyOrder.add( SammNs.SAMM.input() );
+      predefinedPropertyOrder.add( SammNs.SAMM.output() );
+      predefinedPropertyOrder.add( SammNs.SAMM.baseCharacteristic() );
+      predefinedPropertyOrder.add( SammNs.SAMM.dataType() );
+      predefinedPropertyOrder.add( SammNs.SAMM.exampleValue() );
+      predefinedPropertyOrder.add( SammNs.SAMM.value() );
+      predefinedPropertyOrder.add( SammNs.SAMM.property() );
+      predefinedPropertyOrder.add( SammNs.SAMM.optional() );
 
-      predefinedPropertyOrder.add( sammc.languageCode() );
-      predefinedPropertyOrder.add( sammc.localeCode() );
-      predefinedPropertyOrder.add( sammc.left() );
-      predefinedPropertyOrder.add( sammc.right() );
-      predefinedPropertyOrder.add( sammc.minValue() );
-      predefinedPropertyOrder.add( sammc.maxValue() );
-      predefinedPropertyOrder.add( sammc.lowerBoundDefinition() );
-      predefinedPropertyOrder.add( sammc.upperBoundDefinition() );
-      predefinedPropertyOrder.add( sammc.defaultValue() );
-      predefinedPropertyOrder.add( sammc.unit() );
-      predefinedPropertyOrder.add( sammc.left() );
-      predefinedPropertyOrder.add( sammc.right() );
-      predefinedPropertyOrder.add( sammc.deconstructionRule() );
-      predefinedPropertyOrder.add( sammc.elements() );
-      predefinedPropertyOrder.add( sammc.values() );
-      predefinedPropertyOrder.add( sammc.integer() );
-      predefinedPropertyOrder.add( sammc.scale() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.languageCode() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.localeCode() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.left() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.right() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.minValue() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.maxValue() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.lowerBoundDefinition() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.upperBoundDefinition() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.defaultValue() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.unit() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.left() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.right() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.deconstructionRule() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.elements() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.values() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.integer() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.scale() );
 
       return Comparator.<Property> comparingInt( property ->
                   predefinedPropertyOrder.contains( property )
@@ -304,9 +295,9 @@ public class PrettyPrinter {
       int index = 0;
       while ( index < chars.length ) {
          final boolean indexAtUnicodeEscapeSequence = chars[index] == '\\'
-               && (index + 1) < chars.length
+               && ( index + 1 ) < chars.length
                && chars[index + 1] == 'u'
-               && (index + 5) <= (chars.length - 1);
+               && ( index + 5 ) <= ( chars.length - 1 );
          if ( indexAtUnicodeEscapeSequence ) {
             final long codepoint = Long.parseLong( new String( chars, index + 2, 4 ), 16 );
             builder.append( (char) codepoint );
@@ -361,7 +352,7 @@ public class PrettyPrinter {
          return print( resource );
       }
 
-      if ( (resource.isURIResource() && resource.getURI().equals( RDF.nil.getURI() ))
+      if ( ( resource.isURIResource() && resource.getURI().equals( RDF.nil.getURI() ) )
             || statements( resource, RDF.first, null ).iterator().hasNext() ) {
          return serializeList( resource, indentationLevel );
       }
@@ -405,9 +396,9 @@ public class PrettyPrinter {
             .map( statement -> String.format( "%s%s %s", INDENT.repeat( indentationLevel + 1 ),
                   serialize( statement.getPredicate(), indentationLevel ),
                   serialize( statement.getObject(), indentationLevel ) ) )
-            .collect( Collectors.joining( String.format( " ;%n" ), "", (element.isAnon()
+            .collect( Collectors.joining( String.format( " ;%n" ), "", ( element.isAnon()
                   ? String.format( " %n%s]", INDENT.repeat( indentationLevel ) )
-                  : "") ) );
+                  : "" ) ) );
       if ( body.isEmpty() ) {
          return String.format( "%s .%n%n", firstLine );
       } else {
@@ -418,7 +409,7 @@ public class PrettyPrinter {
          if ( body.endsWith( "]" ) && indentationLevel >= 1 ) {
             return firstPart;
          }
-         return String.format( (indentationLevel >= 1 ? "%s ;%n" : "%s .%n%n"), firstPart );
+         return String.format( ( indentationLevel >= 1 ? "%s ;%n" : "%s .%n%n" ), firstPart );
       }
    }
 
@@ -449,7 +440,7 @@ public class PrettyPrinter {
             lf = lf.replace( singleQuote, "\\'" );
          }
          // RDF 1.1 : Print xsd:string without ^^xsd:string
-         return singleQuote + lf + singleQuote + (Util.isSimpleString( it ) ? "" : "^^" + it.getLiteralDatatypeURI());
+         return singleQuote + lf + singleQuote + ( Util.isSimpleString( it ) ? "" : "^^" + it.getLiteralDatatypeURI() );
       }
 
       @Override

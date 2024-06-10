@@ -14,7 +14,6 @@
 package org.eclipse.esmf.aspectmodel.validation.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +30,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.MetaModelVersions;
@@ -82,11 +81,9 @@ class AspectModelValidatorTest extends MetaModelVersions {
    @ParameterizedTest
    @MethodSource( "invalidTestModels" )
    void testValidateInvalidTestAspectModel( final InvalidTestAspect testModel ) {
-      assertThatCode( () -> {
-         final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, KnownVersion.SAMM_2_1_0 );
-         final List<Violation> violations = service.get( KnownVersion.SAMM_2_1_0 ).validateModel( invalidAspectModel );
-         assertThat( violations ).isNotEmpty();
-      } ).doesNotThrowAnyException();
+      final Try<VersionedModel> invalidAspectModel = TestResources.getModel( testModel, KnownVersion.SAMM_2_1_0 );
+      final List<Violation> violations = service.get( KnownVersion.SAMM_2_1_0 ).validateModel( invalidAspectModel );
+      assertThat( violations ).isNotEmpty();
    }
 
    @ParameterizedTest
@@ -105,8 +102,8 @@ class AspectModelValidatorTest extends MetaModelVersions {
    private static Stream<Arguments> invalidTestModels() {
       return Arrays.stream( InvalidTestAspect.values() )
             .filter( invalidTestAspect ->
-                  (!invalidTestAspect.equals( InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES )
-                        && !invalidTestAspect.equals( InvalidTestAspect.ASPECT_MISSING_PROPERTIES )) )
+                  ( !invalidTestAspect.equals( InvalidTestAspect.ASPECT_MISSING_NAME_AND_PROPERTIES )
+                        && !invalidTestAspect.equals( InvalidTestAspect.ASPECT_MISSING_PROPERTIES ) ) )
             .map( Arguments::of );
    }
 
@@ -127,9 +124,8 @@ class AspectModelValidatorTest extends MetaModelVersions {
       final List<Violation> violations = service.get( metaModelVersion ).validateElement( element );
       assertThat( violations ).hasSize( 1 );
       final SparqlConstraintViolation violation = (SparqlConstraintViolation) violations.get( 0 );
-      final SAMM samm = new SAMM( metaModelVersion );
       assertThat( violation.context().element() ).isEqualTo( element );
-      assertThat( violation.context().property() ).contains( samm.exampleValue() );
+      assertThat( violation.context().property() ).contains( SammNs.SAMM.exampleValue() );
       assertThat( violation.bindings().get( "value" ).asResource().getURI() ).isEqualTo( XSD.xint.getURI() );
    }
 

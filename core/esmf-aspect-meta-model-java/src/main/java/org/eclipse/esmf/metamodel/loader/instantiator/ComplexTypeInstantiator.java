@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.Collection;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -66,41 +67,35 @@ public abstract class ComplexTypeInstantiator<T extends ComplexType> extends Ins
       }
 
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( resource );
-      final List<Property> properties = getPropertiesModels( resource, samm.properties() );
-
+      final List<Property> properties = getPropertiesModels( resource, SammNs.SAMM.properties() );
       final Optional<ComplexType> extendedEntity = getExtendedEntity( resource );
-
       final List<AspectModelUrn> extending = new ArrayList<>();
-
       final T entity = createDefaultEntity( metaModelBaseAttributes, properties, extendedEntity, extending );
-
       creatingElements.put( resource, entity );
-
       extending.addAll( getExtending( resource ) );
-
       return entity;
    }
 
    private List<AspectModelUrn> getExtending( final Resource resource ) {
-      return model.listSubjectsWithProperty( samm._extends(), resource )
+      return model.listSubjectsWithProperty( SammNs.SAMM._extends(), resource )
             .mapWith( extendingComplexType -> attributeValue( extendingComplexType, RDF.type ) ).mapWith( statement -> {
                if ( processedExtendingElements.contains( statement.getSubject() ) ) {
                   return AspectModelUrn.fromUrn( statement.getSubject().getURI() );
                }
                processedExtendingElements.add( statement.getSubject() );
-               if ( samm.AbstractEntity().equals( statement.getObject().asResource() ) ) {
-                  return modelElementFactory.create( AbstractEntity.class, statement.getSubject() ).getAspectModelUrn().get();
+               if ( SammNs.SAMM.AbstractEntity().equals( statement.getObject().asResource() ) ) {
+                  return modelElementFactory.create( AbstractEntity.class, statement.getSubject() ).urn();
                }
-               return modelElementFactory.create( Entity.class, statement.getSubject() ).getAspectModelUrn().get();
+               return modelElementFactory.create( Entity.class, statement.getSubject() ).urn();
             } ).toList();
    }
 
    protected Optional<ComplexType> getExtendedEntity( final Resource resource ) {
-      return optionalAttributeValue( resource, samm._extends() )
+      return optionalAttributeValue( resource, SammNs.SAMM._extends() )
             .map( Statement::getResource )
             .map( extendedEntityResource -> attributeValue( extendedEntityResource, RDF.type ) )
             .map( entityStatement -> {
-               if ( samm.AbstractEntity().equals( entityStatement.getObject().asResource() ) ) {
+               if ( SammNs.SAMM.AbstractEntity().equals( entityStatement.getObject().asResource() ) ) {
                   return modelElementFactory.create( AbstractEntity.class, entityStatement.getSubject() );
                }
                return modelElementFactory.create( Entity.class, entityStatement.getSubject() );

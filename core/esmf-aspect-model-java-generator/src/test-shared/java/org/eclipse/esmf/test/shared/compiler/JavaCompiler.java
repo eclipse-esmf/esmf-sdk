@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
@@ -90,6 +91,7 @@ public class JavaCompiler {
          };
          return loadOrder.stream().collect( Collectors.toMap( Function.identity(), qualifiedName ->
                defineAndLoad( qualifiedName, classLoader ) ) );
+
       } catch ( final IOException e ) {
          throw new RuntimeException( e );
       }

@@ -15,6 +15,7 @@ package org.eclipse.esmf.metamodel.loader.instantiator;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.Quantifiable;
 import org.eclipse.esmf.characteristic.impl.DefaultQuantifiable;
 import org.eclipse.esmf.metamodel.Type;
@@ -35,7 +36,7 @@ public class QuantifiableInstantiator extends Instantiator<Quantifiable> {
    public Quantifiable apply( final Resource quantifiable ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( quantifiable );
       final Type type = getType( quantifiable );
-      final Optional<Unit> unit = optionalAttributeValue( quantifiable, sammc.unit() )
+      final Optional<Unit> unit = optionalAttributeValue( quantifiable, SammNs.SAMMC.unit() )
             .map( Statement::getResource )
             .map( modelElementFactory::findOrCreateUnit );
       return new DefaultQuantifiable( metaModelBaseAttributes, type, unit );

@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
@@ -29,7 +30,6 @@ import org.eclipse.esmf.metamodel.loader.DefaultPropertyWrapper;
 import org.eclipse.esmf.metamodel.loader.Instantiator;
 import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
-import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.rdf.model.Literal;
@@ -43,23 +43,27 @@ public class PropertyInstantiator extends Instantiator<Property> {
 
    public PropertyInstantiator( final ModelElementFactory modelElementFactory ) {
       super( modelElementFactory, Property.class );
-      final MetaModelBaseAttributes characteristicBaseAttributes = MetaModelBaseAttributes.builderFor( "UnnamedCharacteristic" )
-            .withMetaModelVersion( KnownVersion.getLatest() )
+      final MetaModelBaseAttributes characteristicBaseAttributes = MetaModelBaseAttributes.builder()
+            .isAnonymous()
             .build();
       fallbackCharacteristic = new DefaultCharacteristic( characteristicBaseAttributes, Optional.empty() );
    }
 
    @Override
    public Property apply( final Resource property ) {
-      final boolean isOptional = optionalAttributeValue( property, samm.optional() ).map( Statement::getBoolean ).orElse( false );
-      final boolean isNotInPayload = optionalAttributeValue( property, samm.notInPayload() ).map( Statement::getBoolean ).orElse( false );
-      final Optional<String> payloadName = optionalAttributeValue( property, samm.payloadName() ).map( Statement::getString );
-      final Optional<Property> extends_ = optionalAttributeValue( property, samm._extends() )
-            .map( Statement::getResource )
-            .map( superElementResource -> modelElementFactory.create( Property.class, superElementResource ) );
-      final boolean isAbstract = property.getModel().contains( property, RDF.type, samm.AbstractProperty() );
+      final boolean isOptional = optionalAttributeValue( property, SammNs.SAMM.optional() ).map( Statement::getBoolean ).orElse( false );
+      final boolean isNotInPayload = optionalAttributeValue( property, SammNs.SAMM.notInPayload() ).map( Statement::getBoolean )
+            .orElse( false );
+      final Optional<String> payloadName = optionalAttributeValue( property, SammNs.SAMM.payloadName() ).map( Statement::getString );
+      final Optional<Resource> extendsResource = optionalAttributeValue( property, SammNs.SAMM._extends() )
+            .map( Statement::getResource );
+      final Optional<Property> extends_ = extendsResource.map( superElementResource ->
+            modelElementFactory.create( Property.class, superElementResource ) );
+      final boolean isAbstract = !property.isAnon() && property.getModel().contains( property, RDF.type, SammNs.SAMM.AbstractProperty() );
 
-      final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( property );
+      final MetaModelBaseAttributes metaModelBaseAttributes = property.isAnon()
+            ? buildBaseAttributes( extendsResource.orElse( property ) )
+            : buildBaseAttributes( property );
       final DefaultPropertyWrapper defaultPropertyWrapper = new DefaultPropertyWrapper( metaModelBaseAttributes );
 
       if ( resourcePropertyMap.containsKey( property ) ) {
@@ -71,9 +75,9 @@ public class PropertyInstantiator extends Instantiator<Property> {
          defProperty = new DefaultProperty( metaModelBaseAttributes, Optional.of( fallbackCharacteristic ), Optional.empty(), isOptional,
                isNotInPayload, payloadName, isAbstract, extends_ );
       } else {
-         final Resource characteristicResource = attributeValue( property, samm.characteristic() ).getResource();
+         final Resource characteristicResource = attributeValue( property, SammNs.SAMM.characteristic() ).getResource();
          final Characteristic characteristic = modelElementFactory.create( Characteristic.class, characteristicResource );
-         final Optional<ScalarValue> exampleValue = optionalAttributeValue( property, samm.exampleValue() )
+         final Optional<ScalarValue> exampleValue = optionalAttributeValue( property, SammNs.SAMM.exampleValue() )
                .flatMap( statement -> characteristic.getDataType()
                      .map( type -> {
                         if ( !type.is( Scalar.class ) ) {

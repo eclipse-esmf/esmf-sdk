@@ -72,30 +72,17 @@ public class DataType {
     * @return the list of all supported types
     */
    public static List<RDFDatatype> getAllSupportedTypes() {
-      return getSupportedXsdTypes();
-   }
-
-   /**
-    * Returns the list of all supported DataTypes of a given meta model version, which is equivalent to the union
-    * of {@link #getSupportedXsdTypes()} and the DataType for samm:curie corresponding to the meta model version.
-    *
-    * @param metaModelVersion the given meta model version
-    * @return the list of all supported types in the meta model version
-    */
-   public static List<RDFDatatype> getAllSupportedTypesForMetaModelVersion( final KnownVersion metaModelVersion ) {
-      return ImmutableList
-            .copyOf( Iterables.concat( getAllSupportedTypes(), List.of( SammDataType.curie( metaModelVersion ) ) ) );
+      return ImmutableList.copyOf( Iterables.concat( getSupportedXsdTypes(), List.of( SammDataType.curie( KnownVersion.getLatest() ) ) ) );
    }
 
    /**
     * Returns the Java class corresponding to a XSD type in a given meta model version.
     *
     * @param type the resource of the data type
-    * @param metaModelVersion the given meta model version
     * @return the java class
     */
-   public static Class<?> getJavaTypeForMetaModelType( final Resource type, final KnownVersion metaModelVersion ) {
-      return DataType.getAllSupportedTypesForMetaModelVersion( metaModelVersion )
+   public static Class<?> getJavaTypeForMetaModelType( final Resource type ) {
+      return DataType.getAllSupportedTypes()
             .stream()
             .filter( xsdType -> xsdType.getURI().equals( type.getURI() ) )
             .map( RDFDatatype::getJavaClass )

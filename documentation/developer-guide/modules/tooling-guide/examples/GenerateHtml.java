@@ -25,7 +25,7 @@ import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
 import java.io.IOException;
 // end::imports[]
@@ -45,10 +45,10 @@ public class GenerateHtml extends AbstractGenerator {
       // tag::generate[]
       final Aspect aspect = AspectModelLoader.getAspects( model ).toJavaStream() // <1>
             .flatMap( Collection::stream )
-            .filter( theAspect -> theAspect.getAspectModelUrn().map( urn -> urn.equals( targetAspect ) ).orElse( false ) )
+            .filter( theAspect -> theAspect.urn().equals( targetAspect ) )
             .findFirst().orElseThrow();
       final AspectModelDocumentationGenerator generator = // <2>
-            new AspectModelDocumentationGenerator( new AspectContext( model, aspect ) );
+            new AspectModelDocumentationGenerator( aspect );
 
       final Map<HtmlGenerationOption, String> options = Map.of(); // <3>
       generator.generate( this::outputStreamForName, options );

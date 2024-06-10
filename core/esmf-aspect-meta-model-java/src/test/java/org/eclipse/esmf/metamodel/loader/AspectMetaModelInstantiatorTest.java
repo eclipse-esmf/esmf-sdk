@@ -199,7 +199,7 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
 
       final AbstractEntity abstractEntity = (AbstractEntity) aspect.getProperties().get( 0 ).getCharacteristic().get().getDataType().get();
       assertThat( abstractEntity.getExtends() ).isEmpty();
-      assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity", "AbstractTestEntity",
+      assertBaseAttributes( abstractEntity, expectedAspectModelUrn, "AbstractTestEntity", null,
             "This is an abstract test entity" );
       final List<ComplexType> extendingElements = abstractEntity.getExtendingElements();
       assertThat( extendingElements ).hasSize( 1 );
@@ -271,24 +271,22 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL, metaModelVersion );
       assertThat( aspect.getProperties().size() ).isEqualTo( 1 );
       final Property firstProperty = aspect.getProperties().get( 0 );
-      final Property secondProperty = ((DefaultEntity) firstProperty.getCharacteristic().get().getDataType().get()).getProperties()
+      final Property secondProperty = ( (DefaultEntity) firstProperty.getCharacteristic().get().getDataType().get() ).getProperties()
             .get( 0 );
-      final Property thirdProperty = ((DefaultEntity) secondProperty.getCharacteristic().get().getDataType().get()).getProperties()
+      final Property thirdProperty = ( (DefaultEntity) secondProperty.getCharacteristic().get().getDataType().get() ).getProperties()
             .get( 0 );
       assertThat( firstProperty ).isNotEqualTo( secondProperty );
       assertThat( secondProperty ).isEqualTo( thirdProperty );
-      assertThat( firstProperty.getCharacteristic() ).isEqualTo( secondProperty.getCharacteristic() );
-      assertThat( secondProperty.getCharacteristic() ).isEqualTo( thirdProperty.getCharacteristic() );
+      assertThat( firstProperty.getCharacteristic().get().urn() ).isEqualTo( secondProperty.getCharacteristic().get().urn() );
+      assertThat( secondProperty.getCharacteristic().get().urn() ).isEqualTo( thirdProperty.getCharacteristic().get().urn() );
    }
 
    @ParameterizedTest
    @MethodSource( value = "allVersions" )
    public void testMetaModelBaseAttributesFactoryMethod( final KnownVersion metaModelVersion ) {
       final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm:1.0.0#TestAspect" );
-      final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.from( metaModelVersion, urn, "someName" );
-
-      assertThat( baseAttributes.getUrn() ).contains( urn );
-      assertThat( baseAttributes.getName() ).isEqualTo( "someName" );
+      final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder().withUrn( urn ).build();
+      assertThat( baseAttributes.urn() ).isEqualTo( urn );
       assertThat( baseAttributes.getPreferredNames() ).isEmpty();
       assertThat( baseAttributes.getDescriptions() ).isEmpty();
       assertThat( baseAttributes.getSee() ).isEmpty();
@@ -298,16 +296,14 @@ public class AspectMetaModelInstantiatorTest extends MetaModelInstantiatorTest {
    @MethodSource( value = "allVersions" )
    public void testMetaModelBaseAttributesBuilder( final KnownVersion metaModelVersion ) {
       final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm:1.0.0#TestAspect" );
-      final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builderFor( "someName" )
-            .withMetaModelVersion( metaModelVersion )
+      final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
             .withUrn( urn )
             .withDescription( Locale.ENGLISH, "description" )
             .withPreferredName( Locale.ENGLISH, "preferredName" )
             .withSee( "see1" ).withSee( "see2" )
             .build();
 
-      assertThat( baseAttributes.getUrn() ).contains( urn );
-      assertThat( baseAttributes.getName() ).isEqualTo( "someName" );
+      assertThat( baseAttributes.urn() ).isEqualTo( urn );
       assertThat( baseAttributes.getPreferredNames() ).hasSize( 1 )
             .allMatch( preferredName -> preferredName.getLanguageTag().equals( Locale.ENGLISH ) );
       assertThat( baseAttributes.getDescriptions() ).hasSize( 1 )

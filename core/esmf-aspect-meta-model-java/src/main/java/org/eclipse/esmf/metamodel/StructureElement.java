@@ -16,7 +16,7 @@ package org.eclipse.esmf.metamodel;
 /**
  * Represents structural model elements, i.e. that are named and have {@link Property}s
  */
-public interface StructureElement extends NamedElement, HasProperties {
+public interface StructureElement extends ModelElement, HasProperties {
    default boolean isComplexType() {
       return false;
    }

@@ -27,46 +27,34 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
 
 public class AspectModelHelper {
-   private final KnownVersion metaModelVersion;
-
-   public AspectModelHelper( final KnownVersion metaModelVersion ) {
-      this.metaModelVersion = metaModelVersion;
-   }
-
-   public KnownVersion getMetaModelVersion() {
-      return metaModelVersion;
-   }
-
-   public static List<Property> sortPropertiesByPreferredName( final List<Property> properties, final Locale locale ) {
+   public List<Property> sortPropertiesByPreferredName( final List<Property> properties, final Locale locale ) {
       if ( properties != null ) {
          properties.sort( Comparator.comparing( property -> property.getPreferredName( locale ) ) );
       }
       return properties;
    }
 
-   public static List<ComplexType> sortEntitiesByPreferredName( final List<ComplexType> entities, final Locale locale ) {
+   public List<ComplexType> sortEntitiesByPreferredName( final List<ComplexType> entities, final Locale locale ) {
       if ( entities != null ) {
          entities.sort( Comparator.comparing( entity -> entity.getPreferredName( locale ) ) );
       }
       return entities;
    }
 
-   public static List<Operation> sortOperationsByPreferredName( final List<Operation> operations, final Locale locale ) {
+   public List<Operation> sortOperationsByPreferredName( final List<Operation> operations, final Locale locale ) {
       if ( operations != null ) {
          operations.sort( Comparator.comparing( operation -> operation.getPreferredName( locale ) ) );
       }
       return operations;
    }
 
-   public static List<ComplexType> getEntities( final Aspect aspectModel ) {
+   public List<ComplexType> getEntities( final Aspect aspectModel ) {
       return new AspectStreamTraversalVisitor()
             .visitAspect( aspectModel, null )
             .filter( base -> ComplexType.class.isAssignableFrom( base.getClass() ) )
@@ -75,7 +63,7 @@ public class AspectModelHelper {
             .collect( Collectors.toList() );
    }
 
-   public static Set<Constraint> getConstraints( final Property property ) {
+   public Set<Constraint> getConstraints( final Property property ) {
       final Set<Constraint> constraints = new HashSet<>();
       property.getCharacteristic().filter( characteristic -> characteristic.is( Trait.class ) )
             .map( characteristic -> characteristic.as( Trait.class ) )
@@ -83,7 +71,7 @@ public class AspectModelHelper {
       return constraints;
    }
 
-   public static ComplexType resolveEntity( final SingleEntity singleEntity, final List<ComplexType> entities ) {
+   public ComplexType resolveEntity( final SingleEntity singleEntity, final List<ComplexType> entities ) {
       return entities.stream()
             .filter( entity -> singleEntity.getDataType()
                   .map( Type::getUrn )
@@ -93,12 +81,12 @@ public class AspectModelHelper {
                   + " in list of entities: " + entities ) );
    }
 
-   public static String getNameFromUrn( final String urn ) {
+   public String getNameFromUrn( final String urn ) {
       final String[] parts = urn.split( "#" );
       return parts.length == 2 ? parts[1] : urn;
    }
 
-   public static Class<?> getClassForObject( final Object o ) {
+   public Class<?> getClassForObject( final Object o ) {
       final Class<?>[] interfaces = o.getClass().getInterfaces();
       if ( interfaces.length <= 0 ) {
          return Object.class;
@@ -106,27 +94,27 @@ public class AspectModelHelper {
       return interfaces[0];
    }
 
-   public static boolean isProperty( final Object object ) {
+   public boolean isProperty( final Object object ) {
       return object instanceof Property;
    }
 
-   public static int increment( final int number ) {
+   public int increment( final int number ) {
       return number + 1;
    }
 
-   private static String namespaceAnchorPart( final NamedElement modelElement ) {
+   private String namespaceAnchorPart( final ModelElement modelElement ) {
       return Optional.ofNullable( modelElement )
-            .flatMap( NamedElement::getAspectModelUrn )
+            .map( ModelElement::urn )
             .map( urn -> urn.getNamespace().replace( ".", "-" ) ).orElse( "" );
    }
 
-   public static String buildAnchor( final NamedElement modelElement, final NamedElement parentElement, final String suffix ) {
+   public String buildAnchor( final ModelElement modelElement, final ModelElement parentElement, final String suffix ) {
       final String parentNamespaceAnchorPart = namespaceAnchorPart( parentElement );
       final String parentPart = suffix.equals( "property" ) ? parentNamespaceAnchorPart + "-"
-            + Optional.ofNullable( parentElement ).map( NamedElement::getName ).orElse( "" ) + "-" : "";
+            + Optional.ofNullable( parentElement ).map( ModelElement::getName ).orElse( "" ) + "-" : "";
 
-      if ( ((ModelElement) modelElement).is( Property.class ) ) {
-         final Property property = ((ModelElement) modelElement).as( Property.class );
+      if ( modelElement.is( Property.class ) ) {
+         final Property property = modelElement.as( Property.class );
          if ( property.getExtends().isPresent() ) {
             // The Property actually extends another (possibly Abstract) Property, so it won't have an Aspect Model URN on its own.
             // Use the parent element's namespace for the anchor.

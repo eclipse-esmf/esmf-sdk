@@ -78,10 +78,9 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
       }
 
       final Resource typeResource = ResourceFactory.createResource( typeUri );
-      final Class<?> javaType = DataType.getJavaTypeForMetaModelType( typeResource, value.getMetaModelVersion() );
+      final Class<?> javaType = DataType.getJavaTypeForMetaModelType( typeResource );
       context.getCodeGenerationConfig().importTracker().importExplicit( javaType );
-      return valueInitializer.apply( typeResource, javaType, AspectModelJavaUtil.createLiteral( value.getValue().toString() ),
-            value.getMetaModelVersion() );
+      return valueInitializer.apply( typeResource, javaType, AspectModelJavaUtil.createLiteral( value.getValue().toString() ) );
    }
 
    @Override

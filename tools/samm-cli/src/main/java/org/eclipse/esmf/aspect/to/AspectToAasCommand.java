@@ -80,7 +80,7 @@ public class AspectToAasCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
+      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
       final JsonNode loadedAspectData = loadAspectData();
       // we intentionally override the name of the generated artifact here to the name explicitly
       // desired by the user (outputFilePath), as opposed to what the model thinks it should be

@@ -16,45 +16,36 @@ package org.eclipse.esmf.aspectmodel.java;
 import java.io.IOException;
 import java.util.Set;
 
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorTest {
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testMetaModelBaseAttributesOfGeneratedProperty( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   public void testMetaModelBaseAttributesOfGeneratedProperty() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect, metaModelVersion ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 2 );
 
       final ImmutableSet<String> expectedArguments = ImmutableSet.<String> builder()
-            .add( "KnownVersion." + KnownVersion.getLatest().toString() )
             .add( "AspectModelUrn.fromUrn(NAMESPACE + \"testBoolean\")" )
-            .add( "\"testBoolean\"" )
             .build();
       final ImmutableMap<String, Set<String>> expectedMetaModelBaseAttributeArguments = ImmutableMap.<String, Set<String>> builder()
             .put( "TEST_BOOLEAN", expectedArguments ).build();
 
-      result.assertMetaModelBaseAttributesForProperties( "MetaAspectWithBoolean",
-            expectedMetaModelBaseAttributeArguments );
+      result.assertMetaModelBaseAttributesForProperties( "MetaAspectWithBoolean", expectedMetaModelBaseAttributeArguments );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testMetaModelBaseAttributesOfGeneratedPropertyWithAllAttributes( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   public void testMetaModelBaseAttributesOfGeneratedPropertyWithAllAttributes() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_ALL_BASE_ATTRIBUTES;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 2 );
 
-      final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builderFor(\"testBoolean\")"
-            + ".withMetaModelVersion(KnownVersion." + KnownVersion.getLatest() + ")"
+      final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builder()"
             + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"testBoolean\"))"
             + ".withPreferredName(Locale.forLanguageTag(\"de\"), \"Test Boolean\")"
             + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Boolean\")"
@@ -68,16 +59,13 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             ImmutableMap.<String, String> builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testMetaModelBaseAttributesOfGeneratedPropertyWithPreferredNames( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   public void testMetaModelBaseAttributesOfGeneratedPropertyWithPreferredNames() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_PREFERRED_NAMES;
-      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion ) );
+      final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 2 );
 
-      final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builderFor(\"testBoolean\")"
-            + ".withMetaModelVersion(KnownVersion." + KnownVersion.getLatest() + ")"
+      final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builder()"
             + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"testBoolean\"))"
             + ".withPreferredName(Locale.forLanguageTag(\"de\"), \"Test Boolean\")"
             + ".withPreferredName(Locale.forLanguageTag(\"en\"), \"Test Boolean\")"
@@ -87,16 +75,14 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             ImmutableMap.<String, String> builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testMetaModelBaseAttributesOfGeneratedPropertyWithDescriptions( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   public void testMetaModelBaseAttributesOfGeneratedPropertyWithDescriptions() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_DESCRIPTIONS;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion ) );
+            .apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 2 );
 
-      final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builderFor(\"testBoolean\")"
-            + ".withMetaModelVersion(KnownVersion." + KnownVersion.getLatest() + ")"
+      final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builder()"
             + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"testBoolean\"))"
             + ".withDescription(Locale.forLanguageTag(\"de\"), \"Test Beschreibung\")"
             + ".withDescription(Locale.forLanguageTag(\"en\"), \"Test Description\")"
@@ -106,16 +92,14 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             ImmutableMap.<String, String> builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testMetaModelBaseAttributesOfGeneratedPropertyWithSee( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   public void testMetaModelBaseAttributesOfGeneratedPropertyWithSee() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_SEE;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion ) );
+            .apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 2 );
 
-      final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builderFor(\"testBoolean\")"
-            + ".withMetaModelVersion(KnownVersion." + KnownVersion.getLatest() + ")"
+      final String expectedMetaModelBaseAttributeBuilderCall = "MetaModelBaseAttributes.builder()"
             + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"testBoolean\"))"
             + ".withSee(\"http://example.com/\")"
             + ".withSee(\"http://example.com/me\")"
@@ -125,18 +109,17 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
             ImmutableMap.<String, String> builder().put( "TEST_BOOLEAN", expectedMetaModelBaseAttributeBuilderCall ).build(), 0 );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testGeneratedMetaModelContainsRequiredMethods( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   public void testGeneratedMetaModelContainsRequiredMethods() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_BOOLEAN;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion ) );
+            .apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 2 );
 
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
             .put( "getModelClass", "return AspectWithBoolean.class;" )
             .put( "getAspectModelUrn", "return AspectModelUrn.fromUrn(MODEL_ELEMENT_URN);" )
-            .put( "getMetaModelVersion", "return KnownVersion." + KnownVersion.getLatest().toString() + ";" )
+            .put( "getMetaModelVersion", "return KnownVersion.getLatest();" )
             .put( "getName", "return \"AspectWithBoolean\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
             .put( "getAllProperties", "return getProperties();" )
@@ -148,12 +131,11 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
       result.assertMethods( "MetaAspectWithBoolean", expectedMethodBodies );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testGeneratedMetaModelContainsOptionalMethods( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   public void testGeneratedMetaModelContainsOptionalMethods() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_ALL_BASE_ATTRIBUTES;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion ) );
+            .apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 2 );
 
       final String getPreferredNamesBody = "return new HashSet<>() {\n"
@@ -175,7 +157,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
             .put( "getModelClass", "return AspectWithAllBaseAttributes.class;" )
             .put( "getAspectModelUrn", "return AspectModelUrn.fromUrn(MODEL_ELEMENT_URN);" )
-            .put( "getMetaModelVersion", "return KnownVersion." + KnownVersion.getLatest().toString() + ";" )
+            .put( "getMetaModelVersion", "return KnownVersion.getLatest();" )
             .put( "getName", "return \"AspectWithAllBaseAttributes\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
             .put( "getAllProperties", "return getProperties();" )
@@ -190,12 +172,11 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
       result.assertMethods( "MetaAspectWithAllBaseAttributes", expectedMethodBodies );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testGeneratedMetaModelContainsGetPreferredNamesMethod( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   public void testGeneratedMetaModelContainsGetPreferredNamesMethod() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PREFERRED_NAMES;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion ) );
+            .apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 2 );
 
       final String getPreferredNamesBody = "return new HashSet<>() {\n"
@@ -209,7 +190,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
             .put( "getModelClass", "return AspectWithPreferredNames.class;" )
             .put( "getAspectModelUrn", "return AspectModelUrn.fromUrn(MODEL_ELEMENT_URN);" )
-            .put( "getMetaModelVersion", "return KnownVersion." + KnownVersion.getLatest().toString() + ";" )
+            .put( "getMetaModelVersion", "return KnownVersion.getLatest();" )
             .put( "getName", "return \"AspectWithPreferredNames\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
             .put( "getAllProperties", "return getProperties();" )
@@ -222,12 +203,11 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
       result.assertMethods( "MetaAspectWithPreferredNames", expectedMethodBodies );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testGeneratedMetaModelContainsGetDescriptionsMethod( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   public void testGeneratedMetaModelContainsGetDescriptionsMethod() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_DESCRIPTIONS;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion ) );
+            .apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 2 );
 
       final String getDescriptionsBody = "return new HashSet<>() {\n"
@@ -241,7 +221,7 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
             .put( "getModelClass", "return AspectWithDescriptions.class;" )
             .put( "getAspectModelUrn", "return AspectModelUrn.fromUrn(MODEL_ELEMENT_URN);" )
-            .put( "getMetaModelVersion", "return KnownVersion." + KnownVersion.getLatest().toString() + ";" )
+            .put( "getMetaModelVersion", "return KnownVersion.getLatest();" )
             .put( "getName", "return \"AspectWithDescriptions\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
             .put( "getAllProperties", "return getProperties();" )
@@ -254,18 +234,17 @@ public class StaticMetaModelBaseAttributesTest extends StaticMetaModelGeneratorT
       result.assertMethods( "MetaAspectWithDescriptions", expectedMethodBodies );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testGeneratedMetaModelContainsGetSeeMethod( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   public void testGeneratedMetaModelContainsGetSeeMethod() throws IOException {
       final TestAspect aspect = TestAspect.ASPECT_WITH_PROPERTY_WITH_SEE;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion ) );
+            .apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 2 );
 
       final ImmutableMap<String, String> expectedMethodBodies = ImmutableMap.<String, String> builder()
             .put( "getModelClass", "return AspectWithPropertyWithSee.class;" )
             .put( "getAspectModelUrn", "return AspectModelUrn.fromUrn(MODEL_ELEMENT_URN);" )
-            .put( "getMetaModelVersion", "return KnownVersion." + KnownVersion.getLatest().toString() + ";" )
+            .put( "getMetaModelVersion", "return KnownVersion.getLatest();" )
             .put( "getName", "return \"AspectWithPropertyWithSee\";" )
             .put( "getProperties", "return Arrays.asList(TEST_BOOLEAN);" )
             .put( "getAllProperties", "return getProperties();" )

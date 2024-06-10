@@ -29,12 +29,12 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import io.vavr.control.Try;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +151,7 @@ public class ClasspathStrategy extends AbstractResolutionStrategy {
    }
 
    @Override
-   public Try<Model> apply( final AspectModelUrn aspectModelUrn ) {
+   public Try<ModelFile> apply( final AspectModelUrn aspectModelUrn ) {
       final String modelsRootTrailingSlash = modelsRoot.isEmpty() ? "" : "/";
       final String directory = String.format( "%s%s%s/%s", modelsRoot, modelsRootTrailingSlash,
             aspectModelUrn.getNamespace(), aspectModelUrn.getVersion() );

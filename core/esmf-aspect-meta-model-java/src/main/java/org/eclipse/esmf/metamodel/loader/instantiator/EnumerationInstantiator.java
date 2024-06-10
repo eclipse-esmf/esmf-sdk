@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
 import org.eclipse.esmf.characteristic.Enumeration;
 import org.eclipse.esmf.characteristic.impl.DefaultEnumeration;
 import org.eclipse.esmf.metamodel.Type;
@@ -36,7 +37,7 @@ public class EnumerationInstantiator extends Instantiator<Enumeration> {
    public Enumeration apply( final Resource enumeration ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = buildBaseAttributes( enumeration );
       final Type type = getType( enumeration );
-      final List<Value> enumValues = getNodesFromList( enumeration, sammc.values() )
+      final List<Value> enumValues = getNodesFromList( enumeration, SammNs.SAMMC.values() )
             .map( node -> buildValue( node, Optional.of( enumeration ), type ) )
             .collect( Collectors.toList() );
       return new DefaultEnumeration( metaModelBaseAttributes, type, enumValues );

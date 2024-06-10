@@ -21,12 +21,10 @@ import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 import org.eclipse.esmf.samm.KnownVersion;
 
 public class DefaultScalar implements Scalar {
-   private final KnownVersion metaModelVersion;
    private final String urn;
 
-   public DefaultScalar( final String urn, final KnownVersion metaModelVersion ) {
+   public DefaultScalar( final String urn ) {
       this.urn = urn;
-      this.metaModelVersion = metaModelVersion;
    }
 
    @Override
@@ -36,13 +34,12 @@ public class DefaultScalar implements Scalar {
 
    @Override
    public KnownVersion getMetaModelVersion() {
-      return metaModelVersion;
+      return KnownVersion.getLatest();
    }
 
    @Override
    public String toString() {
       return new StringJoiner( ", ", DefaultScalar.class.getSimpleName() + "[", "]" )
-            .add( "metaModelVersion=" + metaModelVersion )
             .add( "urn='" + urn + "'" )
             .toString();
    }
@@ -68,12 +65,11 @@ public class DefaultScalar implements Scalar {
          return false;
       }
       final DefaultScalar that = (DefaultScalar) o;
-      return metaModelVersion == that.metaModelVersion
-            && Objects.equals( urn, that.urn );
+      return Objects.equals( urn, that.urn );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( metaModelVersion, urn );
+      return Objects.hash( urn );
    }
 }

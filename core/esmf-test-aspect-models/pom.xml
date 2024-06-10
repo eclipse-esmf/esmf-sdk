@@ -33,16 +33,16 @@
          <artifactId>esmf-aspect-model-urn</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-semantic-aspect-meta-model</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.apache.commons</groupId>
          <artifactId>commons-text</artifactId>
       </dependency>
       <dependency>
          <groupId>org.apache.jena</groupId>
          <artifactId>jena-core</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-semantic-aspect-meta-model</artifactId>
       </dependency>
    </dependencies>
 </project>

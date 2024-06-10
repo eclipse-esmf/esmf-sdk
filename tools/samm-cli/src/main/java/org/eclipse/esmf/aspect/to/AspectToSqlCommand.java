@@ -27,7 +27,7 @@ import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.exception.CommandException;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import picocli.CommandLine;
 
@@ -83,7 +83,7 @@ public class AspectToSqlCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final AspectContext context = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
+      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
       final DatabricksSqlGenerationConfig generatorConfig =
             DatabricksSqlGenerationConfigBuilder.builder()
                   .commentLanguage( Locale.forLanguageTag( language ) )
@@ -93,7 +93,7 @@ public class AspectToSqlCommand extends AbstractCommand {
                   .decimalPrecision( decimalPrecision )
                   .build();
       final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( dialect, strategy, generatorConfig );
-      final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( context.aspect(), sqlConfig );
+      final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( aspect, sqlConfig );
 
       try ( final OutputStream out = getStreamForFile( outputFilePath ) ) {
          out.write( result.getContent().getBytes() );
