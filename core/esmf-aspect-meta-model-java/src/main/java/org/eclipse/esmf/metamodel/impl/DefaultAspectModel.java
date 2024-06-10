@@ -15,15 +15,14 @@ package org.eclipse.esmf.metamodel.impl;
 
 import java.util.List;
 
-import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
+import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelNamespace;
 
 public class DefaultAspectModel implements AspectModel {
    private final List<ModelFile> files;
    private final List<ModelElement> elements;
-
 
    public DefaultAspectModel( final List<ModelFile> files, final List<ModelElement> elements ) {
       this.files = files;

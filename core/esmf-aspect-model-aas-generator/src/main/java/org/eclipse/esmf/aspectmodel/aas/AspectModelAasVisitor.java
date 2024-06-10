@@ -656,7 +656,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                .build();
          final Property fieldProperty = new org.eclipse.esmf.metamodel.impl.DefaultProperty( propertyAttributes,
                Optional.of( fieldCharacteristic ), Optional.empty(), true,
-               false, Optional.of(field), false, Optional.empty() );
+               false, Optional.of( field ), false, Optional.empty() );
          context.setProperty( fieldProperty );
          if ( context.getRawPropertyValue().isPresent() ) {
             result = fieldCharacteristic.getDataType().map( dataType -> decideOnMapping( dataType, context.getProperty(), context ) );

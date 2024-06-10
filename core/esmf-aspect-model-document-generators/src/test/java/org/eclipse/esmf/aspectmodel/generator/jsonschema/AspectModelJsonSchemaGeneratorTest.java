@@ -126,7 +126,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
          showJson( payload );
          System.out.println( "Schema:" );
          showJson( schema );
-         fail(throwable);
+         fail( throwable );
       }
    }
 

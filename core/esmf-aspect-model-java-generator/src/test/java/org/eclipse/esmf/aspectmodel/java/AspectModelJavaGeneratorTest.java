@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -126,8 +127,11 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
                            versionedModel.getRawModel().listStatements( null, RDF.type, (RDFNode) null ) )
                      .filter( statement -> {
                         final Resource type = statement.getObject().asResource();
-                        return type.equals( SammNs.SAMM.Aspect() ) || type.equals( SammNs.SAMM.Entity() ) || type.equals( SammNs.SAMM.Event() )
-                              || type.equals( SammNs.SAMM.AbstractEntity() ) || type.equals( SammNs.SAMMC.Enumeration() );
+                        return type.equals( SammNs.SAMM.Aspect() )
+                              || type.equals( SammNs.SAMM.Entity() )
+                              || type.equals( SammNs.SAMM.Event() )
+                              || type.equals( SammNs.SAMM.AbstractEntity() )
+                              || type.equals( SammNs.SAMMC.Enumeration() );
                      } )
                      .map( Statement::getSubject )
                      .toList();

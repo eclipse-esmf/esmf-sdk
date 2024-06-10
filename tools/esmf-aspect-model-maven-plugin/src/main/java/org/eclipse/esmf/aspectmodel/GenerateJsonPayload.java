@@ -37,7 +37,7 @@ public class GenerateJsonPayload extends AspectModelMojo {
 
       final Set<Aspect> aspects = loadModelsOrFail();
       try {
-         for ( final Aspect context : aspects) {
+         for ( final Aspect context : aspects ) {
             final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context );
             generator.generateJsonPretty( name -> getOutputStreamForFile( name + ".json", outputDirectory ) );
          }

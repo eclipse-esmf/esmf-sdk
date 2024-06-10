@@ -39,19 +39,19 @@ public abstract class AbstractModelFile implements ModelFile {
    }
 
    protected Namespace getNamespace( final Model model ) {
-      final String ns =  model.getNsPrefixURI( "" );
-      if(isNotBlank(ns)) {
-         return new ModelFileNamespace(ns);
+      final String ns = model.getNsPrefixURI( "" );
+      if ( isNotBlank( ns ) ) {
+         return new ModelFileNamespace( ns );
       }
-      List<Resource> selected = model.listSubjectsWithProperty( RDF.type).toList();//.get( 0 ).getURI();
-      if( !selected.isEmpty() ) {
+      List<Resource> selected = model.listSubjectsWithProperty( RDF.type ).toList();
+      if ( !selected.isEmpty() ) {
          return new ModelFileNamespace( selected.get( 0 ).getNameSpace() );
       }
       return null;
    }
 
    protected List<String> getHeader( final List<String> modelContent ) {
-      return modelContent.stream().takeWhile( line -> line.startsWith( "#" ) || isBlank( line )).toList();
+      return modelContent.stream().takeWhile( line -> line.startsWith( "#" ) || isBlank( line ) ).toList();
    }
 
    @Override
