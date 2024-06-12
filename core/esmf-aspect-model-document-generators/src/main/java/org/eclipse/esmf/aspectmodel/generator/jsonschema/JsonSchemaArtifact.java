@@ -18,11 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
-import org.eclipse.esmf.aspectmodel.generator.Artifact;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class JsonSchemaArtifact extends AbstractSchemaArtifact implements Artifact<String, JsonNode> {
+public class JsonSchemaArtifact extends AbstractSchemaArtifact<JsonNode> {
    private final String id;
    private final JsonNode content;
 
