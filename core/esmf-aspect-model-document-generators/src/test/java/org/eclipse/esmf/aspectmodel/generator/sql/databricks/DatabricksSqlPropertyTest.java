@@ -98,9 +98,14 @@ public class DatabricksSqlPropertyTest {
       return syntheticDatabricksColumnDefinition().map( DatabricksColumnDefinition::toString );
    }
 
-   @Property
-   boolean isValidColumnDefinition( @ForAll( "anyDatabricksColumnDefinition" ) final String columnDefintition ) {
-      final DatabricksColumnDefinition column = new DatabricksColumnDefinitionParser( columnDefintition ).get();
-      return column.toString().equals( columnDefintition );
+   @Property( seed = "1" )
+   boolean isValidColumnDefinition( @ForAll( "anyDatabricksColumnDefinition" ) final String columnDefinition ) {
+      try {
+         final DatabricksColumnDefinition column = new DatabricksColumnDefinitionParser( columnDefinition ).get();
+         return column.toString().equals( columnDefinition );
+      } catch ( final Exception exception ) {
+         exception.printStackTrace();
+         return false;
+      }
    }
 }

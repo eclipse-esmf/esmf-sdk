@@ -18,18 +18,14 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
-import org.eclipse.esmf.aspectmodel.generator.Artifact;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The result of generating an AsyncAPI specification from an Aspect Model. The result can be retrieved in JSON ({@link #getContent()}
  * format as self-contained schemas.
  */
-public class AsyncApiSchemaArtifact extends AbstractSchemaArtifact implements Artifact<String, JsonNode> {
-   private static final Logger LOG = LoggerFactory.getLogger( AsyncApiSchemaArtifact.class );
+public class AsyncApiSchemaArtifact extends AbstractSchemaArtifact<JsonNode> {
    private final String id;
    private final JsonNode content;
 

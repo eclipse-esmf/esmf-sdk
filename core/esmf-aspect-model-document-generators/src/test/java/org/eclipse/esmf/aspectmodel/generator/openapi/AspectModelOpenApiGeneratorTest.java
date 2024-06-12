@@ -366,14 +366,17 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo( "start" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "count" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
+            "start" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo(
+            "count" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 3 ).getName() ).isEqualTo(
             "totalItemCount" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "200" ).get$ref() )
             .isEqualTo( "#/components/responses/AspectWithCollection" );
-      assertThat( openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
-            .get$ref() )
+      assertThat(
+            openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
+                  .get$ref() )
             .isEqualTo( "#/components/schemas/PagingSchema" );
    }
 
@@ -391,9 +394,12 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-time-series" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo( "since" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "until" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 3 ).getName() ).isEqualTo( "limit" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
+            "since" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo(
+            "until" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 3 ).getName() ).isEqualTo(
+            "limit" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "200" ).get$ref() )
             .isEqualTo( "#/components/responses/AspectWithTimeSeries" );
       assertThat( openApi.getComponents().getResponses().get( "AspectWithTimeSeries" ).getContent()
@@ -417,14 +423,17 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
             "before" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "after" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo(
+            "after" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "200" ).get$ref() )
             .isEqualTo( "#/components/responses/AspectWithCollection" );
-      assertThat( openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
-            .get$ref() )
+      assertThat(
+            openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
+                  .get$ref() )
             .isEqualTo( "#/components/schemas/PagingSchema" );
-      assertThat( openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
-            .get$ref() )
+      assertThat(
+            openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
+                  .get$ref() )
             .isEqualTo( "#/components/schemas/PagingSchema" );
       assertThat( openApi.getComponents().getSchemas().get( "PagingSchema" ).getProperties() ).containsKey( "items" );
       assertThat( openApi.getComponents().getSchemas().get( "PagingSchema" ).getProperties() ).containsKey( "cursor" );
@@ -445,8 +454,10 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo( "start" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "count" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
+            "start" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo(
+            "count" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 3 ).getName() ).isEqualTo(
             "totalItemCount" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses()
@@ -728,7 +739,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
             .get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
       assertThat(
-            openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( AbstractGenerator.SAMM_EXTENSION )
+            openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
+                  .get( AbstractGenerator.SAMM_EXTENSION )
                   .toString() ).contains(
             aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
 
