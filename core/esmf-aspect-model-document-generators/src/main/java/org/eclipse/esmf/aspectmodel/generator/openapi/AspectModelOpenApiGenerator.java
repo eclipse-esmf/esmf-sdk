@@ -539,7 +539,7 @@ public class AspectModelOpenApiGenerator
          includeQueryPathNode.set( FIELD_POST,
                merge( getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ),
                      queriesTemplate, FIELD_POST ) );
-         endpointPathsNode.set( config.baseUrl() + String.format( QUERY_SERVER_PATH, apiVersion ) + finalResourcePath,
+         endpointPathsNode.set( String.format( QUERY_SERVER_PATH, apiVersion ) + finalResourcePath,
                includeQueryPathNode );
       }
 
