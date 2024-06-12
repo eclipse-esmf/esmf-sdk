@@ -537,7 +537,8 @@ public class AspectModelOpenApiGenerator
       if ( config.includeQueryApi() ) {
          final ObjectNode includeQueryPathNode = FACTORY.objectNode();
          includeQueryPathNode.set( FIELD_POST,
-               getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ) );
+               merge( getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ),
+                     queriesTemplate, FIELD_POST ) );
          endpointPathsNode.set( String.format( QUERY_SERVER_PATH, apiVersion ) + finalResourcePath,
                includeQueryPathNode );
       }
