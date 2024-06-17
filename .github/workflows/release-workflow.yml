@@ -280,7 +280,7 @@ jobs:
 
   release:
     name: Release
-    needs: [build-linux, build-windows]
+    needs: [build-linux, build-windows, build-macos]
     runs-on: ubuntu-latest
     steps:
       # Need to checkout here too, so that we have the pom.xml
