@@ -322,7 +322,6 @@ jobs:
 
       # Sign SAML-CLI Windows executable
       - name: Get Artifact ID (Windows)
-        if: matrix.os == 'windows-latest'
         shell: bash
         run: |
           # Get the list of artifacts for the specified workflow run
@@ -337,7 +336,6 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit Artifact url and version changes and push to pre release branch for jenkins (Windows)
-        if: matrix.os == 'windows-latest'
         shell: bash
         run: |
           ARTIFACT_URL_WIN="https://api.github.com/repos/eclipse-esmf/esmf-sdk/actions/artifacts/$ARTIFACT_ID/zip"
@@ -356,7 +354,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger Jenkins Job, for signing executable
-        if: matrix.os == 'windows-latest'
         shell: bash
         run: |
           DATA='{"repository": {"url": "https://github.com/eclipse-esmf/esmf-sdk", "html_url": "https://github.com/eclipse-esmf/esmf-sdk", "owner": { "name": "ESMF"}}, "pusher": { "name": "GitHub Action", "email": "esmf-dev@eclipse.org"}}'
