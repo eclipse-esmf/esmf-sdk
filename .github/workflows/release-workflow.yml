@@ -320,69 +320,6 @@ jobs:
         with:
           name: mac-artifacts
 
-      # Sign SAML-CLI Windows executable
-      - name: Get Artifact ID (Windows)
-        shell: bash
-        run: |
-          # Get the list of artifacts for the specified workflow run
-          response=$(curl -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${{ github.repository_owner }}/$(echo '${{ github.repository }}' | cut -d'/' -f2)/actions/runs/${{ github.run_id }}/artifacts")
-
-          # Filter out the ID of the artifact with a name that contains "windows"
-          artifact_id=$(echo "$response" | jq -r '.artifacts[] | select(.name | contains("windows-artifacts")) | .id')
-
-          # Save the artifact ID in an environment variable
-          echo "ARTIFACT_ID=$artifact_id" >> $GITHUB_ENV
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Commit Artifact url and version changes and push to pre release branch for jenkins (Windows)
-        shell: bash
-        run: |
-          ARTIFACT_URL_WIN="https://api.github.com/repos/eclipse-esmf/esmf-sdk/actions/artifacts/$ARTIFACT_ID/zip"
-          BRANCH_NAME="pre_release_configuration"
-
-          echo "artifact_url_win=$ARTIFACT_URL_WIN" > parameters.txt
-          echo "version=${{ github.event.inputs.release_version }}" >> parameters.txt
-
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "github-actions"
-          git checkout -b $BRANCH_NAME
-          git add parameters.txt
-          git commit -m "Add parameters.txt with artifact_url_win and version"
-          git push origin $BRANCH_NAME
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Trigger Jenkins Job, for signing executable
-        shell: bash
-        run: |
-          DATA='{"repository": {"url": "https://github.com/eclipse-esmf/esmf-sdk", "html_url": "https://github.com/eclipse-esmf/esmf-sdk", "owner": { "name": "ESMF"}}, "pusher": { "name": "GitHub Action", "email": "esmf-dev@eclipse.org"}}'
-          SHA1="$(echo -n "${DATA}" | openssl dgst -sha1 -hmac "${WEBHOOK_SECRET}" | sed 's/SHA1(stdin)= //')"
-          curl -X POST https://ci.eclipse.org/esmf/github-webhook/ -H "Content-Type: application/json" -H "X-GitHub-Event: push" -H "X-Hub-Signature: sha1=${SHA1}" -d "${DATA}"
-
-      # Full release: Maven Central
-      # The (apparently) only way to retrieve the staging profile id
-      # is the undocumented rc-list-profiles command of the
-      # nexus-staging-maven-plugin:
-      # mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:rc-list-profiles -DnexusUrl=https://oss.sonatype.org/ -DserverId=ossrh
-      - name: Release to OSSRH/Maven Central
-        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
-        run: |
-          mkdir deploy
-          mv nexus-staging deploy
-          cd deploy
-          mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
-            -DnexusUrl=https://oss.sonatype.org/ \
-            -DserverId=ossrh \
-            -DrepositoryDirectory=nexus-staging \
-            -DstagingProfileId=7e73217781f2e
-        env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-          # Workaround for https://issues.sonatype.org/browse/OSSRH-66257
-          # as described in https://stackoverflow.com/a/70157413
-          MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
-
       - name: Set versions
         continue-on-error: true
         run: |
@@ -430,6 +367,69 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           comment-template: |
             Release {release_link} addresses this.
+
+      # Sign SAML-CLI Windows executable
+      - name: Get Artifact ID (Windows)
+        shell: bash
+        run: |
+          # Get the list of artifacts for the specified workflow run
+          response=$(curl -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${{ github.repository_owner }}/$(echo '${{ github.repository }}' | cut -d'/' -f2)/actions/runs/${{ github.run_id }}/artifacts")
+
+          # Filter out the ID of the artifact with a name that contains "windows"
+          artifact_id=$(echo "$response" | jq -r '.artifacts[] | select(.name | contains("windows-artifacts")) | .id')
+
+          # Save the artifact ID in an environment variable
+          echo "ARTIFACT_ID=$artifact_id" >> $GITHUB_ENV
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit Artifact URL and version changes and push to pre release branch for Jenkins (Windows)
+        shell: bash
+        run: |
+          ARTIFACT_URL_WIN="https://api.github.com/repos/eclipse-esmf/esmf-sdk/actions/artifacts/$ARTIFACT_ID/zip"
+          BRANCH_NAME="pre_release_configuration"
+
+          echo "artifact_url_win=$ARTIFACT_URL_WIN" > parameters.txt
+          echo "version=${{ github.event.inputs.release_version }}" >> parameters.txt
+
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          git checkout -b $BRANCH_NAME
+          git add parameters.txt
+          git commit -m "Add parameters.txt with artifact_url_win and version"
+          git push origin $BRANCH_NAME
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger Jenkins Job, for signing executable
+        shell: bash
+        run: |
+          DATA='{"repository": {"url": "https://github.com/eclipse-esmf/esmf-sdk", "html_url": "https://github.com/eclipse-esmf/esmf-sdk", "owner": { "name": "ESMF"}}, "pusher": { "name": "GitHub Action", "email": "esmf-dev@eclipse.org"}}'
+          SHA1="$(echo -n "${DATA}" | openssl dgst -sha1 -hmac "${WEBHOOK_SECRET}" | sed 's/SHA1(stdin)= //')"
+          curl -X POST https://ci.eclipse.org/esmf/github-webhook/ -H "Content-Type: application/json" -H "X-GitHub-Event: push" -H "X-Hub-Signature: sha1=${SHA1}" -d "${DATA}"
+
+      # Full release: Maven Central
+      # The (apparently) only way to retrieve the staging profile id
+      # is the undocumented rc-list-profiles command of the
+      # nexus-staging-maven-plugin:
+      # mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:rc-list-profiles -DnexusUrl=https://oss.sonatype.org/ -DserverId=ossrh
+      - name: Release to OSSRH/Maven Central
+        if: ${{ !contains( github.event.inputs.release_version, '-M' ) }}
+        run: |
+          mkdir deploy
+          mv nexus-staging deploy
+          cd deploy
+          mvn org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
+            -DnexusUrl=https://oss.sonatype.org/ \
+            -DserverId=ossrh \
+            -DrepositoryDirectory=nexus-staging \
+            -DstagingProfileId=7e73217781f2e
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          # Workaround for https://issues.sonatype.org/browse/OSSRH-66257
+          # as described in https://stackoverflow.com/a/70157413
+          MAVEN_OPTS: --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED
 
       # Milestone release: Write settings to deploy to Github repo
       - name: Write settings.xml
