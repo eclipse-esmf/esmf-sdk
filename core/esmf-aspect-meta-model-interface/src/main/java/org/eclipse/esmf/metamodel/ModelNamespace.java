@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -16,7 +16,7 @@ package org.eclipse.esmf.metamodel;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
-import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
+import org.eclipse.esmf.aspectmodel.ModelFile;
 
 /**
  * Represents the namespace the model elements are contained in

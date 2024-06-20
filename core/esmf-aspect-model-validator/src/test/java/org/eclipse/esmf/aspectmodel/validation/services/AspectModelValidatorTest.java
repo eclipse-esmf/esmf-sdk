@@ -30,7 +30,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.SparqlConstraintViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.MetaModelVersions;

@@ -24,7 +24,7 @@ import java.util.Set;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator.Format;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 
 import org.junit.jupiter.api.Test;
 

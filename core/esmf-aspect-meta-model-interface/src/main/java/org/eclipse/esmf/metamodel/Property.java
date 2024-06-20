@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -15,7 +15,7 @@ package org.eclipse.esmf.metamodel;
 
 import java.util.Optional;
 
-import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
 
 /**
  * A Property has a name that is unique to its use in an Aspect or an Entity, and a Characteristic (i.e., the

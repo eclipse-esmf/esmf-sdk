@@ -17,7 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.ModelFiles;
-import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
+import org.eclipse.esmf.aspectmodel.ModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 

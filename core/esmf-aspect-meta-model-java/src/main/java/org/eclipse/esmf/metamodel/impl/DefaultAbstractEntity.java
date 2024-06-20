@@ -20,9 +20,9 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.loader.ModelElementFactory;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 public class DefaultAbstractEntity extends DefaultComplexType implements AbstractEntity {
    public static DefaultAbstractEntity createDefaultAbstractEntity(

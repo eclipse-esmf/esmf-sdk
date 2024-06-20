@@ -16,12 +16,12 @@ package org.eclipse.esmf.metamodel.loader;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.List;
-import org.eclipse.esmf.characteristic.Set;
-import org.eclipse.esmf.characteristic.SortedSet;
-import org.eclipse.esmf.characteristic.TimeSeries;
-import org.eclipse.esmf.characteristic.impl.DefaultTrait;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.List;
+import org.eclipse.esmf.metamodel.characteristic.Set;
+import org.eclipse.esmf.metamodel.characteristic.SortedSet;
+import org.eclipse.esmf.metamodel.characteristic.TimeSeries;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Entity;

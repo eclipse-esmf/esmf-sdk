@@ -22,7 +22,7 @@ import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenera
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;

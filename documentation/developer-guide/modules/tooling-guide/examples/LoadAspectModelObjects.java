@@ -17,7 +17,7 @@ package examples;
 import java.io.File;
 import java.util.List;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import io.vavr.collection.Stream;
 // end::imports[]
 import org.junit.jupiter.api.Test;

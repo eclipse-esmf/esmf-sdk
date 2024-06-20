@@ -21,7 +21,7 @@ import org.eclipse.esmf.aspectmodel.generator.Artifact;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.aspectmodel.java.JavaGenerator;
 import org.eclipse.esmf.aspectmodel.java.QualifiedName;
-import org.eclipse.esmf.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Event;

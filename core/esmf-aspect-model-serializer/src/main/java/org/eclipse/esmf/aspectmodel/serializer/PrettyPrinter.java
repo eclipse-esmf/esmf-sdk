@@ -29,11 +29,10 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
-import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
+import org.eclipse.esmf.metamodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.ImmutableList;

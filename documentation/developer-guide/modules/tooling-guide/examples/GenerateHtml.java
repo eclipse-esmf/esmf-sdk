@@ -25,8 +25,7 @@ import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import java.io.IOException;
 // end::imports[]
 import org.junit.jupiter.api.Test;

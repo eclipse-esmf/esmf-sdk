@@ -28,8 +28,8 @@ import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.AspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
-import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
+import org.eclipse.esmf.metamodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.ImmutableMap;

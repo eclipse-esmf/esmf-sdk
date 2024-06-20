@@ -25,7 +25,7 @@ import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationCon
 import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

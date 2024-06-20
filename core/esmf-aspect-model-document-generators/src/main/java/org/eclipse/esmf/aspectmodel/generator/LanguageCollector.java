@@ -19,11 +19,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
 import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;

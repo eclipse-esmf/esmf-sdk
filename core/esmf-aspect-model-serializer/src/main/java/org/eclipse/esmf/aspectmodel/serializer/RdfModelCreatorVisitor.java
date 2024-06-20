@@ -28,29 +28,29 @@ import java.util.function.Function;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
-import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
-import org.eclipse.esmf.characteristic.Code;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.Duration;
-import org.eclipse.esmf.characteristic.Either;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.characteristic.Measurement;
-import org.eclipse.esmf.characteristic.Quantifiable;
-import org.eclipse.esmf.characteristic.Set;
-import org.eclipse.esmf.characteristic.SingleEntity;
-import org.eclipse.esmf.characteristic.SortedSet;
-import org.eclipse.esmf.characteristic.State;
-import org.eclipse.esmf.characteristic.StructuredValue;
-import org.eclipse.esmf.characteristic.TimeSeries;
-import org.eclipse.esmf.characteristic.Trait;
-import org.eclipse.esmf.constraint.EncodingConstraint;
-import org.eclipse.esmf.constraint.FixedPointConstraint;
-import org.eclipse.esmf.constraint.LanguageConstraint;
-import org.eclipse.esmf.constraint.LengthConstraint;
-import org.eclipse.esmf.constraint.LocaleConstraint;
-import org.eclipse.esmf.constraint.RangeConstraint;
-import org.eclipse.esmf.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+import org.eclipse.esmf.metamodel.characteristic.Code;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Duration;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.Measurement;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.characteristic.Set;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.SortedSet;
+import org.eclipse.esmf.metamodel.characteristic.State;
+import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.characteristic.TimeSeries;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.constraint.EncodingConstraint;
+import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
+import org.eclipse.esmf.metamodel.constraint.LanguageConstraint;
+import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
+import org.eclipse.esmf.metamodel.constraint.LocaleConstraint;
+import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
+import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -69,8 +69,8 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.impl.BoundDefinition;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.BoundDefinition;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Literal;
@@ -276,7 +276,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    }
 
    @Override
-   public ElementModel visitList( final org.eclipse.esmf.characteristic.List list, final ModelElement context ) {
+   public ElementModel visitList( final org.eclipse.esmf.metamodel.characteristic.List list, final ModelElement context ) {
       final Model model = createCollectionModel( list );
       final Resource resource = getElementResource( list );
       model.add( resource, RDF.type, SammNs.SAMMC.List() );

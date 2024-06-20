@@ -15,8 +15,8 @@ package org.eclipse.esmf.metamodel.impl;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.metamodel.Constraint;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 public class DefaultConstraint extends ModelElementImpl implements Constraint {
    public DefaultConstraint( final MetaModelBaseAttributes metaModelBaseAttributes ) {

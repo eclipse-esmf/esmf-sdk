@@ -21,9 +21,9 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.characteristic.impl.DefaultSet;
-import org.eclipse.esmf.characteristic.impl.DefaultSingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSet;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSingleEntity;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Entity;

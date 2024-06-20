@@ -23,18 +23,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.eclipse.esmf.characteristic.Code;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.Duration;
-import org.eclipse.esmf.characteristic.Either;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.characteristic.Measurement;
-import org.eclipse.esmf.characteristic.Quantifiable;
-import org.eclipse.esmf.characteristic.SingleEntity;
-import org.eclipse.esmf.characteristic.SortedSet;
-import org.eclipse.esmf.characteristic.State;
-import org.eclipse.esmf.characteristic.StructuredValue;
-import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.metamodel.characteristic.Code;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Duration;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.Measurement;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.SortedSet;
+import org.eclipse.esmf.metamodel.characteristic.State;
+import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.CollectionValue;
@@ -45,8 +45,8 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -530,12 +530,12 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    @Override
-   public Environment visitList( final org.eclipse.esmf.characteristic.List list, final Context context ) {
+   public Environment visitList( final org.eclipse.esmf.metamodel.characteristic.List list, final Context context ) {
       return visitCollectionProperty( list, context );
    }
 
    @Override
-   public Environment visitSet( final org.eclipse.esmf.characteristic.Set set, final Context context ) {
+   public Environment visitSet( final org.eclipse.esmf.metamodel.characteristic.Set set, final Context context ) {
       return visitCollectionProperty( set, context );
       // this type is not available in AAS4J
    }

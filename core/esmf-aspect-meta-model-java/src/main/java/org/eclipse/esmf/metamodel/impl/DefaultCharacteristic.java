@@ -12,14 +12,13 @@
  */
 package org.eclipse.esmf.metamodel.impl;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 public class DefaultCharacteristic extends ModelElementImpl implements Characteristic {
    private final Optional<Type> dataType;

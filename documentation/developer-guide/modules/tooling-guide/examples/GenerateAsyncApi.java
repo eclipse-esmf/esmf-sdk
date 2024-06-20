@@ -24,9 +24,8 @@ import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationC
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;

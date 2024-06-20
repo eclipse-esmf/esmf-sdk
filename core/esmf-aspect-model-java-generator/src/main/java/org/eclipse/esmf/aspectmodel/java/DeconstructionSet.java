@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.java;
 
 import java.util.List;
 
-import org.eclipse.esmf.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
 import org.eclipse.esmf.metamodel.Property;
 
 /**

@@ -20,10 +20,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.characteristic.Code;
-import org.eclipse.esmf.characteristic.Either;
-import org.eclipse.esmf.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.Code;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ComplexType;

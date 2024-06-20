@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.UNIT;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.vocabulary.UNIT;
 import org.eclipse.esmf.samm.KnownVersion;
 
 /**

@@ -15,24 +15,15 @@ package org.eclipse.esmf.metamodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.characteristic.Duration;
-import org.eclipse.esmf.characteristic.Measurement;
-import org.eclipse.esmf.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.characteristic.Duration;
+import org.eclipse.esmf.metamodel.characteristic.Measurement;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.QuantityKinds;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.impl.DefaultUnit;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;

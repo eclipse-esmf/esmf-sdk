@@ -29,8 +29,8 @@ import java.util.regex.Pattern;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.eclipse.esmf.characteristic.impl.DefaultList;
-import org.eclipse.esmf.characteristic.impl.DefaultMeasurement;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultMeasurement;
 import org.eclipse.esmf.metamodel.datatypes.Curie;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.samm.KnownVersion;

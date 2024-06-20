@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.versionupdate.migrator;
 
 import java.util.Map;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.rdf.model.Model;

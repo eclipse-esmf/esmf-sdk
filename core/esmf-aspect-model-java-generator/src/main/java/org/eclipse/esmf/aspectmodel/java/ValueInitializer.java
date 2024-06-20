@@ -20,7 +20,7 @@ import java.util.function.BiFunction;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;

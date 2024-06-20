@@ -15,7 +15,7 @@ package org.eclipse.esmf.metamodel.impl;
 
 import java.util.List;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
+import org.eclipse.esmf.aspectmodel.ModelFile;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelNamespace;

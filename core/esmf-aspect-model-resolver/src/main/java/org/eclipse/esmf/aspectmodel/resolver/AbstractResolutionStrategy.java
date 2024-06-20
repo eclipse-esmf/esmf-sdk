@@ -18,7 +18,7 @@ import java.net.URI;
 import java.net.URL;
 
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.ModelFiles;
-import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
+import org.eclipse.esmf.aspectmodel.ModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 
 import io.vavr.control.Try;

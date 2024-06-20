@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidVersionException;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.vocabulary.Namespace;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Streams;

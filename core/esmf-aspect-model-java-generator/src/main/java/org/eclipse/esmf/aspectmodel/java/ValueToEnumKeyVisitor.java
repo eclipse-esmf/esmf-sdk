@@ -20,7 +20,7 @@ import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 /**
  * Creates a valid Java enumeration key for a {@link Value}

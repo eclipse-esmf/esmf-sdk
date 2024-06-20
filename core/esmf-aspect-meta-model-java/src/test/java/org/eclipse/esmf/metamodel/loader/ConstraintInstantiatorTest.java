@@ -19,11 +19,11 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-import org.eclipse.esmf.characteristic.Trait;
-import org.eclipse.esmf.constraint.EncodingConstraint;
-import org.eclipse.esmf.constraint.LanguageConstraint;
-import org.eclipse.esmf.constraint.LengthConstraint;
-import org.eclipse.esmf.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.constraint.EncodingConstraint;
+import org.eclipse.esmf.metamodel.constraint.LanguageConstraint;
+import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
+import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;

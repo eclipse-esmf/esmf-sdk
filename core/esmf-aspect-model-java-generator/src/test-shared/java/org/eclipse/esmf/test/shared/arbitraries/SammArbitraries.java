@@ -43,7 +43,7 @@ import org.eclipse.esmf.metamodel.impl.DefaultOperation;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import net.jqwik.api.Arbitraries;

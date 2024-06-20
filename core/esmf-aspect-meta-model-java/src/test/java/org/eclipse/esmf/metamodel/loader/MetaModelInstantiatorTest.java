@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Locale;
 
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.versionupdate.MigratorService;

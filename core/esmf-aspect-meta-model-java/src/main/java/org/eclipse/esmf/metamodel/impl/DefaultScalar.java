@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.samm.KnownVersion;
 
 public class DefaultScalar implements Scalar {

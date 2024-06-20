@@ -27,8 +27,8 @@ import org.eclipse.esmf.aspectmodel.java.JavaArtifact;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.java.exception.EnumAttributeNotFoundException;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.characteristic.State;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.State;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Scalar;
 

@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.java.rangeconstraint;
 
-import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+import org.eclipse.esmf.metamodel.BoundDefinition;
 
 public class ShortAnnotation extends ConstraintAnnotation implements AnnotationExpression {
 

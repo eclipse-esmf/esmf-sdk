@@ -26,7 +26,7 @@ import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import io.vavr.control.Try;

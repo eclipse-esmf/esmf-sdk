@@ -22,8 +22,8 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.aspectmodel.ModelFile;
+import org.eclipse.esmf.metamodel.vocabulary.Namespace;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;

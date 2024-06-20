@@ -21,8 +21,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.characteristic.SingleEntity;
-import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;

@@ -25,7 +25,7 @@ import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenera
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 // end::imports[]
 import org.junit.jupiter.api.Test;
 
