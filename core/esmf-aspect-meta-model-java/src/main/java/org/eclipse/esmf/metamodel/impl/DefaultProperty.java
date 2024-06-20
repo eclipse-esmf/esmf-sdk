@@ -19,8 +19,8 @@ import java.util.StringJoiner;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 public class DefaultProperty extends ModelElementImpl implements Property {
    private final Optional<Characteristic> characteristic;

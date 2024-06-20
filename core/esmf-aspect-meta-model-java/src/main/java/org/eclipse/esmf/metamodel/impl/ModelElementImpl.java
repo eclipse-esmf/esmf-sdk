@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
+import org.eclipse.esmf.aspectmodel.ModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 
 /**
  * The base implemenation of all model elements.

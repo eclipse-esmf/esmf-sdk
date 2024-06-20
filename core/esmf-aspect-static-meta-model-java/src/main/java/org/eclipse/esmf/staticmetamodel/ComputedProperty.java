@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 
 /**
  * Allows ad-hoc definitions of static properties that wrap another property and compute their value using a given function, taking the

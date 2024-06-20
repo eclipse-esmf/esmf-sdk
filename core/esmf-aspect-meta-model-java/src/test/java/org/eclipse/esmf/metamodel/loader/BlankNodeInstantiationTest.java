@@ -15,7 +15,7 @@ package org.eclipse.esmf.metamodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.eclipse.esmf.characteristic.List;
+import org.eclipse.esmf.metamodel.characteristic.List;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.samm.KnownVersion;

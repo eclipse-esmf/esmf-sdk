@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.vocabulary.Namespace;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Model;

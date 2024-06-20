@@ -18,7 +18,7 @@ import java.util.Optional;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 
 /**
  * Extends {@link StaticProperty} to represent container or wrapper types like {@code Collection} or {code @Optional}

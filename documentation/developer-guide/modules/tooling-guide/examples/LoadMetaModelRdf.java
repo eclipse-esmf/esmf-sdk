@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.Optional;
 import org.apache.jena.vocabulary.RDF;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
 // end::imports[]

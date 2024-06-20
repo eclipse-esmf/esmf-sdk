@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.vocabulary.Namespace;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;

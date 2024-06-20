@@ -19,8 +19,8 @@ import java.util.StringJoiner;
 
 import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 import com.google.common.base.Objects;
 

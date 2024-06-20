@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel.resolver.services;
 
 import java.util.List;
 
+import org.eclipse.esmf.aspectmodel.ModelFile;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.samm.KnownVersion;
 

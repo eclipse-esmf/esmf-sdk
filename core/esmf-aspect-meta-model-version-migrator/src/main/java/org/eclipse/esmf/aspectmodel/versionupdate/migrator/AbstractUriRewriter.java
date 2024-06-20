@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.vocabulary.Namespace;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.collect.Streams;

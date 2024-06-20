@@ -15,8 +15,8 @@ package org.eclipse.esmf.metamodel.loader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.eclipse.esmf.characteristic.Trait;
-import org.eclipse.esmf.constraint.FixedPointConstraint;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;

@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.shacl;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.vocabulary.Namespace;
 
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;

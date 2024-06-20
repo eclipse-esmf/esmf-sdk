@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;

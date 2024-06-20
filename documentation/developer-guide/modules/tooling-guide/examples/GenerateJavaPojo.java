@@ -19,7 +19,7 @@ import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import java.io.File;
 import org.apache.commons.io.output.NullOutputStream;
 // end::imports[]

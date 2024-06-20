@@ -28,12 +28,12 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.Either;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.characteristic.Quantifiable;
-import org.eclipse.esmf.characteristic.State;
-import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.characteristic.State;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;

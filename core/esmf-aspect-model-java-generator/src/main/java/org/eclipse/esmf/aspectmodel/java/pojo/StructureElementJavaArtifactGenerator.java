@@ -35,7 +35,7 @@ import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.Scalar;

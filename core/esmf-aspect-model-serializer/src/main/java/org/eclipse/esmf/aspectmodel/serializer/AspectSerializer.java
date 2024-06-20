@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
 import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.vocabulary.Namespace;
 import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.jena.rdf.model.Model;
