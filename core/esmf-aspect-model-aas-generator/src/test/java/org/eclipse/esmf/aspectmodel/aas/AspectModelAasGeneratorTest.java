@@ -12,6 +12,7 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -377,6 +378,7 @@ class AspectModelAasGeneratorTest {
       final Property property = (Property) environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
 
       assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
+      assertThat( environment.getSubmodels().get( 0 ).getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
       assertThat( environment.getConceptDescriptions() ).hasSize( 2 );
       assertThat( environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications() ).hasSize( 1 );
       assertThat( property.getDescription() ).isEmpty();

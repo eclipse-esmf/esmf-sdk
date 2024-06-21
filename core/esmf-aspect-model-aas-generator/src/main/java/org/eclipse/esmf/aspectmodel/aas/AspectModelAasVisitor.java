@@ -208,7 +208,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final Submodel submodel = usedContext.getSubmodel();
       submodel.setIdShort( aspect.getName() );
       submodel.setId( submodelId );
-      submodel.setSemanticId( buildReferenceToConceptDescription( aspect ) );
+      submodel.setSemanticId( buildAspectReferenceToGlobalReference( aspect ) );
       submodel.setSupplementalSemanticIds( buildGlobalReferenceForSeeReferences( aspect ) );
       submodel.setDescription( LangStringMapper.TEXT.map( aspect.getDescriptions() ) );
       submodel.setKind( usedContext.getModelingKind() );
@@ -353,12 +353,12 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
    }
 
-   private Reference buildReferenceToConceptDescription( final Aspect aspect ) {
+   private Reference buildAspectReferenceToGlobalReference( final Aspect aspect ) {
       final Key key = new DefaultKey.Builder()
-            .type( KeyTypes.CONCEPT_DESCRIPTION )
+            .type( KeyTypes.GLOBAL_REFERENCE )
             .value( DEFAULT_MAPPER.determineIdentifierFor( aspect ) )
             .build();
-      return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
+      return new DefaultReference.Builder().type( ReferenceTypes.EXTERNAL_REFERENCE ).keys( key ).build();
    }
 
    private Reference buildReferenceForSeeElement( final String seeReference ) {
