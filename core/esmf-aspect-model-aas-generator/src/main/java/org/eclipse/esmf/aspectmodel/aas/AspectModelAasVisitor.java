@@ -559,7 +559,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                .value( List.of( decideOnMapping( property, context ) ) )
                .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
-               .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) );
+               .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) )
+               .orderRelevant( false );
 
          if ( collection.getAspectModelUrn().isPresent() ) {
             submodelBuilder.semanticId( buildReferenceForCollection( collection.getAspectModelUrn().get().getUrn().toString() ) );
@@ -579,6 +580,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                      .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                      .value( values )
                      .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
+                     .orderRelevant( false )
                      .build();
             };
             createSubmodelElement( listBuilder, context );

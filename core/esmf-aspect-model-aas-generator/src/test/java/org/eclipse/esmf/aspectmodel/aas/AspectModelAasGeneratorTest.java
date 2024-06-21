@@ -110,18 +110,21 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels() )
             .singleElement()
             .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
-                  .anySatisfy( sme ->
-                        assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
-                              .extracting( SubmodelElementList::getValue )
-                              .asInstanceOf( InstanceOfAssertFactories.LIST )
-                              .anySatisfy( entity ->
-                                    assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
-                                          .extracting( SubmodelElementCollection::getValue )
-                                          .asInstanceOf( InstanceOfAssertFactories.LIST )
-                                          .anySatisfy( property ->
-                                                assertThat( property ).asInstanceOf( type( Property.class ) )
-                                                      .extracting( Property::getValue )
-                                                      .isEqualTo( "2.25" ) ) ) ) );
+                  .anySatisfy( sme -> {
+                           assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                                 .extracting( SubmodelElementList::getValue )
+                                 .asInstanceOf( InstanceOfAssertFactories.LIST )
+                                 .anySatisfy( entity ->
+                                       assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
+                                             .extracting( SubmodelElementCollection::getValue )
+                                             .asInstanceOf( InstanceOfAssertFactories.LIST )
+                                             .anySatisfy( property ->
+                                                   assertThat( property ).asInstanceOf( type( Property.class ) )
+                                                         .extracting( Property::getValue )
+                                                         .isEqualTo( "2.25" ) ) );
+                           assertThat( ( ( SubmodelElementList ) sme ).getOrderRelevant() ).isFalse();
+                        }
+                  ) );
    }
 
    @Test
@@ -169,6 +172,7 @@ class AspectModelAasGeneratorTest {
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
                assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
 
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
@@ -186,6 +190,7 @@ class AspectModelAasGeneratorTest {
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
                assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
 
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
@@ -203,6 +208,7 @@ class AspectModelAasGeneratorTest {
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
                assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
@@ -216,6 +222,7 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
+      assertThat( ( ( ( SubmodelElementList ) submodelElement ) ).getOrderRelevant() ).isFalse();
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
