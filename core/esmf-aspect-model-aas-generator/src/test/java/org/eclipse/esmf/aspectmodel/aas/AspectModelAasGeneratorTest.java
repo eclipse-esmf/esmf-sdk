@@ -171,7 +171,7 @@ class AspectModelAasGeneratorTest {
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
                assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
 
@@ -189,7 +189,7 @@ class AspectModelAasGeneratorTest {
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
                assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
 
@@ -207,7 +207,7 @@ class AspectModelAasGeneratorTest {
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
                assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );

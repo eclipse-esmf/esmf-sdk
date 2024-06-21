@@ -552,13 +552,14 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    private <T extends Collection> Environment visitCollectionProperty( final T collection, final Context context ) {
       final SubmodelElementBuilder builder = property -> {
+
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
                .idShort( property.getName() )
                .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                .value( List.of( decideOnMapping( property, context ) ) )
-               .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
+               .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION )
                .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) )
                .orderRelevant( false );
 
@@ -579,7 +580,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                      .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                      .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                      .value( values )
-                     .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
+                     .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION )
                      .orderRelevant( false )
                      .build();
             };
