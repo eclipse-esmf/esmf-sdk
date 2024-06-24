@@ -52,7 +52,6 @@ import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 import org.eclipse.esmf.samm.KnownVersion;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.collections4.CollectionUtils;
@@ -139,7 +138,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                .put( RDF.langString, DataTypeIec61360.STRING )
                .build();
 
-   private interface SubmodelElementBuilder {
+   interface SubmodelElementBuilder {
       SubmodelElement build( Property property );
    }
 
@@ -157,14 +156,18 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
 
    @SuppressWarnings( "unchecked" )
    protected <T extends SubmodelElement> PropertyMapper<T> findPropertyMapper( final Property property ) {
-      return (PropertyMapper<T>) getCustomPropertyMappers().stream()
+      return this.<T> tryFindPropertyMapper( property ).orElse( (PropertyMapper<T>) DEFAULT_MAPPER );
+   }
+
+   protected <T extends SubmodelElement> Optional<PropertyMapper<T>> tryFindPropertyMapper( final Property property ) {
+      return getCustomPropertyMappers().stream()
             .filter( mapper -> mapper.canHandle( property ) )
-            .findAny()
-            .orElse( DEFAULT_MAPPER );
+            .map( mapper -> (PropertyMapper<T>) mapper )
+            .findFirst();
    }
 
    protected List<PropertyMapper<?>> getCustomPropertyMappers() {
-      return customPropertyMappers;
+      return customPropertyMappers.stream().sorted().toList();
    }
 
    @Override
@@ -551,10 +554,9 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    private <T extends Collection> Environment visitCollectionProperty( final T collection, final Context context ) {
-      final SubmodelElementBuilder builder = property -> {
+      final SubmodelElementBuilder defaultBuilder = property -> {
          final DefaultSubmodelElementList.Builder submodelBuilder = new DefaultSubmodelElementList.Builder()
                .idShort( property.getName() )
-               .typeValueListElement( AasSubmodelElements.DATA_ELEMENT )
                .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                .value( List.of( decideOnMapping( property, context ) ) )
@@ -568,28 +570,29 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
          return submodelBuilder.build();
       };
 
-      final Optional<JsonNode> rawValue = context.getRawPropertyValue();
-      return rawValue.map( node -> {
-         if ( node instanceof final ArrayNode arrayNode ) {
-            final SubmodelElementBuilder listBuilder = property -> {
-               final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
-               return new DefaultSubmodelElementList.Builder()
-                     .idShort( property.getName() )
-                     .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
-                     .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
-                     .value( values )
-                     .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
-                     .build();
-            };
-            createSubmodelElement( listBuilder, context );
-            return context.getEnvironment();
-         }
-         createSubmodelElement( builder, context );
-         return context.getEnvironment();
-      } ).orElseGet( () -> {
-         createSubmodelElement( builder, context );
-         return context.getEnvironment();
-      } );
+      final SubmodelElementBuilder listBuilder =
+            tryFindPropertyMapper( context.getProperty() )
+                  .flatMap( mapper -> collection.getDataType()
+                        .map( type -> (SubmodelElementBuilder) ( Property property ) -> mapper.mapToAasProperty( type, property,
+                              context ) ) )
+                  .or( () -> context.getRawPropertyValue()
+                        .filter( ArrayNode.class::isInstance )
+                        .map( ArrayNode.class::cast )
+                        .map( arrayNode -> ( Property property ) -> {
+                           final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
+                           return new DefaultSubmodelElementList.Builder()
+                                 .idShort( property.getName() )
+                                 .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
+                                 .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
+                                 .value( values )
+                                 .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
+                                 .build();
+                        } ) )
+                  .orElse( defaultBuilder );
+
+      createSubmodelElement( listBuilder, context );
+
+      return context.getEnvironment();
    }
 
    private <T extends Collection> List<SubmodelElement> getValues( final T collection, final Property property, final Context context,
@@ -598,9 +601,10 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
             .map( dataType -> {
                if ( Scalar.class.isAssignableFrom( dataType.getClass() ) ) {
                   return List.of( (SubmodelElement) new DefaultBlob.Builder().value( StreamSupport.stream( arrayNode.spliterator(), false )
-                        .map( JsonNode::asText )
-                        .collect( Collectors.joining( "," ) )
-                        .getBytes( StandardCharsets.UTF_8 ) ).build() );
+                              .map( node -> node.isValueNode() ? node.asText() : node.toString() )
+                              .collect( Collectors.joining( "," ) )
+                              .getBytes( StandardCharsets.UTF_8 ) )
+                        .contentType( "text/plain" ).build() );
                } else {
                   final List<SubmodelElement> values = StreamSupport.stream( arrayNode.spliterator(), false )
                         .map( node -> {
