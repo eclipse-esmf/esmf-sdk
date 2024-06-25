@@ -16,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.function.Function;
-
 import javax.annotation.Nullable;
 
 import org.eclipse.esmf.functions.ThrowingBiConsumer;
