@@ -34,6 +34,16 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultSubmodel;
  * Generator that generates an AAS file containing an AAS submodel for a given Aspect model.
  */
 public class AspectModelAasGenerator {
+
+   private List<PropertyMapper<?>> propertyMappers = List.of();
+
+   public AspectModelAasGenerator() {
+   }
+
+   public AspectModelAasGenerator( final List<PropertyMapper<?>> propertyMappers ) {
+      this.propertyMappers = propertyMappers;
+   }
+
    /**
     * Generates an AAS file for a given Aspect.
     *
@@ -93,6 +103,7 @@ public class AspectModelAasGenerator {
          final Function<String, OutputStream> nameMapper ) {
       try ( final OutputStream output = nameMapper.apply( aspect.getName() ) ) {
          final AspectModelAasVisitor visitor = new AspectModelAasVisitor().withPropertyMapper( new LangStringPropertyMapper() );
+         propertyMappers.forEach( visitor::withPropertyMapper );
          final Context context;
          if ( aspectData != null ) {
             final Submodel submodel = new DefaultSubmodel.Builder().build();
