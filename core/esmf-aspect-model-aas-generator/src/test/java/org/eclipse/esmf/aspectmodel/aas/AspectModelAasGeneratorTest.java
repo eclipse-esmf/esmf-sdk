@@ -12,6 +12,7 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -109,18 +110,21 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels() )
             .singleElement()
             .satisfies( subModel -> assertThat( subModel.getSubmodelElements() )
-                  .anySatisfy( sme ->
-                        assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
-                              .extracting( SubmodelElementList::getValue )
-                              .asInstanceOf( InstanceOfAssertFactories.LIST )
-                              .anySatisfy( entity ->
-                                    assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
-                                          .extracting( SubmodelElementCollection::getValue )
-                                          .asInstanceOf( InstanceOfAssertFactories.LIST )
-                                          .anySatisfy( property ->
-                                                assertThat( property ).asInstanceOf( type( Property.class ) )
-                                                      .extracting( Property::getValue )
-                                                      .isEqualTo( "2.25" ) ) ) ) );
+                  .anySatisfy( sme -> {
+                           assertThat( sme ).asInstanceOf( type( SubmodelElementList.class ) )
+                                 .extracting( SubmodelElementList::getValue )
+                                 .asInstanceOf( InstanceOfAssertFactories.LIST )
+                                 .anySatisfy( entity ->
+                                       assertThat( entity ).asInstanceOf( type( SubmodelElementCollection.class ) )
+                                             .extracting( SubmodelElementCollection::getValue )
+                                             .asInstanceOf( InstanceOfAssertFactories.LIST )
+                                             .anySatisfy( property ->
+                                                   assertThat( property ).asInstanceOf( type( Property.class ) )
+                                                         .extracting( Property::getValue )
+                                                         .isEqualTo( "2.25" ) ) );
+                           assertThat( ( ( SubmodelElementList ) sme ).getOrderRelevant() ).isFalse();
+                        }
+                  ) );
    }
 
    @Test
@@ -167,7 +171,8 @@ class AspectModelAasGeneratorTest {
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
+               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
 
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
@@ -184,7 +189,8 @@ class AspectModelAasGeneratorTest {
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
+               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
 
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
@@ -201,7 +207,8 @@ class AspectModelAasGeneratorTest {
       assertThat( submodelElement ).asInstanceOf( type( SubmodelElementList.class ) )
             .satisfies( submodelElementList -> {
                assertThat( submodelElementList.getIdShort() ).isEqualTo( "testProperty" );
-               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT );
+               assertThat( submodelElementList.getTypeValueListElement() ).isEqualTo( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION );
+               assertThat( ( submodelElementList ).getOrderRelevant() ).isFalse();
             } );
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
@@ -215,6 +222,7 @@ class AspectModelAasGeneratorTest {
       assertThat( env.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
       final SubmodelElement submodelElement = env.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
       assertThat( submodelElement ).as( "SubmodelElement is not a SubmodelElementList" ).isInstanceOf( SubmodelElementList.class );
+      assertThat( ( ( ( SubmodelElementList ) submodelElement ) ).getOrderRelevant() ).isFalse();
       assertThat( submodelElement.getIdShort() ).isEqualTo( "testProperty" );
       assertThat( submodelElement.getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
 
@@ -377,6 +385,7 @@ class AspectModelAasGeneratorTest {
       final Property property = (Property) environment.getSubmodels().get( 0 ).getSubmodelElements().get( 0 );
 
       assertThat( environment.getSubmodels().get( 0 ).getSubmodelElements() ).hasSize( 1 );
+      assertThat( environment.getSubmodels().get( 0 ).getSemanticId().getKeys().get( 0 ).getType() ).isEqualTo( KeyTypes.GLOBAL_REFERENCE );
       assertThat( environment.getConceptDescriptions() ).hasSize( 2 );
       assertThat( environment.getConceptDescriptions().get( 1 ).getEmbeddedDataSpecifications() ).hasSize( 1 );
       assertThat( property.getDescription() ).isEmpty();
