@@ -13,6 +13,8 @@
 package org.eclipse.esmf.aspectmodel.aas;
 
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -110,6 +112,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    public static final String ADMIN_SHELL_NAME = "defaultAdminShell";
    public static final String DEFAULT_LOCALE = "en";
    public static final String CONCEPT_DESCRIPTION_CATEGORY = "APPLICATION_CLASS";
+   public static final String ALLOWS_ENUMERATION_VALUE_REGEX = "[^a-zA-Z0-9-_]";
    public static final String CONCEPT_DESCRIPTION_DATA_SPECIFICATION_URL =
          "https://admin-shell.io/DataSpecificationTemplates/DataSpecificationIec61360/3/0";
 
@@ -346,9 +349,15 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
    }
 
    private Reference buildReferenceToEnumValue( final Enumeration enumeration, final String value ) {
+      final String updatedValue;
+      try {
+         updatedValue = !value.matches( ALLOWS_ENUMERATION_VALUE_REGEX ) ? transformEnumerationValue( value ) : value;
+      } catch ( NoSuchAlgorithmException e ) {
+         throw new IllegalStateException( e );
+      }
       final Key key = new DefaultKey.Builder()
             .type( KeyTypes.DATA_ELEMENT )
-            .value( DEFAULT_MAPPER.determineIdentifierFor( enumeration ) + ":" + value )
+            .value( DEFAULT_MAPPER.determineIdentifierFor( enumeration ) + ":" + updatedValue )
             .build();
       return new DefaultReference.Builder().type( ReferenceTypes.MODEL_REFERENCE ).keys( key ).build();
    }
@@ -739,6 +748,32 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       }
 
       return context.environment;
+   }
+
+   /**
+    * Transforms a given enumValue string to a specific format.
+    * The transformation is done by removing spaces and special characters
+    * from the input string, then appending the first 8 characters of the
+    * sha256 hash of the cleaned string to the provided prefix.
+    *
+    * @param enumValue the input string to be transformed
+    * @return the transformed string in the format "_role[8_characters_of_hash]"
+    * @throws NoSuchAlgorithmException if the SHA-256 algorithm is not available
+    */
+   private String transformEnumerationValue( String enumValue ) throws NoSuchAlgorithmException {
+      String cleanedEnumValue = enumValue.replaceAll( ALLOWS_ENUMERATION_VALUE_REGEX, "" );
+
+      MessageDigest digest = MessageDigest.getInstance( "SHA-256" );
+      byte[] hashBytes = digest.digest( cleanedEnumValue.getBytes( StandardCharsets.UTF_8 ) );
+
+      StringBuilder hexString = new StringBuilder();
+      for ( byte b : hashBytes ) {
+         hexString.append( String.format( "%02x", b ) );
+      }
+
+      String hashPrefix = hexString.substring( 0, 8 );
+
+      return "_" + cleanedEnumValue + hashPrefix;
    }
 
    @Override
