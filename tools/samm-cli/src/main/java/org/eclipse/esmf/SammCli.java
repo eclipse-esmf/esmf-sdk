@@ -19,6 +19,7 @@ import java.util.Properties;
 
 import org.eclipse.esmf.aas.AasCommand;
 import org.eclipse.esmf.aspect.AspectCommand;
+import org.eclipse.esmf.search.AspectSearchCommand;
 import org.eclipse.esmf.substitution.IsWindows;
 
 import org.fusesource.jansi.AnsiConsole;
@@ -43,6 +44,7 @@ public class SammCli extends AbstractCommand {
    public SammCli() {
       final CommandLine initialCommandLine = new CommandLine( this )
             .addSubcommand( new AspectCommand() )
+            .addSubcommand( new AspectSearchCommand() )
             .addSubcommand( new AasCommand() )
             .setCaseInsensitiveEnumValuesAllowed( true )
             .setExecutionStrategy( LoggingMixin::executionStrategy );
