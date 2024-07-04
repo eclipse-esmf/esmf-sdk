@@ -66,37 +66,55 @@ public class AspectSearchCommand extends AbstractCommand {
    public void run() {
       final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( input ), customResolver );
 
-      if ( versionedModel.isSuccess() && !pathToModels.isEmpty() ) {
-         final Path directory = Paths.get( pathToModels );
+      if ( versionedModel.isFailure() || pathToModels.isEmpty() ) {
+         LOG.info( "Provided Aspect Model '{}' can't be loaded or doesn't exist", input );
+         return;
+      }
 
-         final File[] files = Arrays.stream( Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} ) )
-               .filter( file -> file.isFile() && file.getName().endsWith( ".ttl" ) )
-               .sorted()
-               .toArray( File[]::new );
+      final Path directory = Paths.get( pathToModels );
+      final File[] files = Arrays.stream( Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} ) )
+            .filter( file -> file.isFile() && file.getName().endsWith( ".ttl" ) && !file.getName()
+                  .equals( Paths.get( input ).getFileName().toString() ) )
+            .sorted()
+            .toArray( File[]::new );
 
-         final List<AspectModelUrn> modelUrns = AspectModelResolver.getAllUrnsInModel( versionedModel.get().getModel() ).stream()
-               .map( AspectModelUrn::fromUrn )
-               .toList();
+      if ( files.length == 0 ) {
+         LOG.info( "No .ttl files found in the directory '{}'", directory );
+         return;
+      }
 
-         for ( final File file : files ) {
-            final Try<VersionedModel> modelTry = loadAndResolveModel( file, customResolver );
+      final List<AspectModelUrn> modelUrns = AspectModelResolver.getAllUrnsInModel( versionedModel.get().getRawModel() ).stream()
+            .map( AspectModelUrn::fromUrn )
+            .toList();
 
-            if ( modelTry.isFailure() ) {
-               LOG.debug( "Could not load model from {}", file, modelTry.getCause() );
-            } else {
-               final Model model = modelTry.get().getModel();
+      String header = String.format( "| %-60s | %-100s | %-50s | %-60s |",
+            "URN of the element", "File location", "Model source", "Target element that it is referring to" );
+      String separator = new String( new char[header.length()] ).replace( "\0", "-" );
 
-               for ( final AspectModelUrn modelUrn : modelUrns ) {
-                  if ( AspectModelResolver.containsDefinition( model, modelUrn ) ) {
-                     LOG.info( "Contain Definition {} in Model {}", modelUrn, file.getName() );
-                  } else {
-                     LOG.debug( "File {} does not contain {}", file, modelUrn );
-                  }
-               }
-            }
+      // Print Table header
+      System.out.println( separator );
+      System.out.println( header );
+      System.out.println( separator );
+
+      for ( final File file : files ) {
+         processFile( file, modelUrns );
+      }
+   }
+
+   private void processFile( File file, List<AspectModelUrn> modelUrns ) {
+      final Try<VersionedModel> modelTry = loadAndResolveModel( file, customResolver );
+
+      if ( modelTry.isFailure() ) {
+         LOG.debug( "Could not load model from {}", file, modelTry.getCause() );
+         return;
+      }
+
+      final Model model = modelTry.get().getRawModel();
+
+      for ( final AspectModelUrn modelUrn : modelUrns ) {
+         if ( AspectModelResolver.containsDefinition( model, modelUrn ) ) {
+            System.out.printf( "| %-60s | %-100s | %-50s | %-60s |%n", modelUrn, file.getPath(), file.getName(), "" );
          }
-      } else {
-         LOG.info( "Provided Aspect Model '{}' can't be loaded or doesn't exists", input );
       }
    }
 }
