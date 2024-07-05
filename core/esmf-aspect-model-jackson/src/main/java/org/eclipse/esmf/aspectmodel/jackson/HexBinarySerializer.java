@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.jackson;
 
 import java.io.IOException;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -32,6 +32,6 @@ public class HexBinarySerializer extends StdSerializer<byte[]> {
    @Override
    public void serialize( final byte[] value, final JsonGenerator generator, final SerializerProvider provider )
          throws IOException {
-      generator.writeString( ExtendedXsdDataType.HEX_BINARY.unparseTyped( value ) );
+      generator.writeString( SammXsdType.HEX_BINARY.unparseTyped( value ) );
    }
 }

@@ -16,6 +16,7 @@ package org.eclipse.esmf.metamodel.impl;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -33,15 +34,19 @@ public class DefaultScalar implements Scalar {
    }
 
    @Override
-   public KnownVersion getMetaModelVersion() {
-      return KnownVersion.getLatest();
-   }
-
-   @Override
    public String toString() {
       return new StringJoiner( ", ", DefaultScalar.class.getSimpleName() + "[", "]" )
             .add( "urn='" + urn + "'" )
             .toString();
+   }
+
+   /**
+    * Scalars (e.g., xsd:string) are not defined in Aspect Model files, so this returns null.
+    * @return null
+    */
+   @Override
+   public AspectModelFile getSourceFile() {
+      return null;
    }
 
    /**

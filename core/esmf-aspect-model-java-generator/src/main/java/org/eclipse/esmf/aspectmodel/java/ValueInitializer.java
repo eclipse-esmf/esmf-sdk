@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Resource;
@@ -91,7 +91,7 @@ public class ValueInitializer {
    public boolean needInitializationToConstructor( final List<DeconstructionSet> deconstructionSets ) {
       return deconstructionSets.stream()
             .flatMap( deconstructionSet -> deconstructionSet.getElementProperties().stream().map( property -> property.getDataType()
-                  .map( type -> DataType.getJavaTypeForMetaModelType( ResourceFactory.createResource( type.getUrn() ) ) ) ) )
+                  .map( type -> SammXsdType.getJavaTypeForMetaModelType( ResourceFactory.createResource( type.getUrn() ) ) ) ) )
             .anyMatch( dataType -> dataType.map( type -> type == XMLGregorianCalendar.class ).orElse( false ) );
    }
 
@@ -103,7 +103,7 @@ public class ValueInitializer {
     * @param valueExpression an expression that, when evaluated, will return the input value <b>as a string</b>.
     */
    public String apply( final Resource rdfType, final String valueExpression ) {
-      return apply( rdfType, DataType.getJavaTypeForMetaModelType( rdfType ), valueExpression );
+      return apply( rdfType, SammXsdType.getJavaTypeForMetaModelType( rdfType ), valueExpression );
    }
 
    /**

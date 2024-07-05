@@ -83,7 +83,7 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.Units;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.impl.DefaultAbstractEntity;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;

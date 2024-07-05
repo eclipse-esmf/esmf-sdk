@@ -62,7 +62,7 @@ public class AspectToHtmlCommand extends AbstractCommand {
    @Override
    public void run() {
       try {
-         final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
+         final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), customResolver );
          final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( aspect );
          final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
          generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );

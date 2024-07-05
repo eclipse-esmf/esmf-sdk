@@ -72,7 +72,7 @@ public class AspectToJavaCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
+      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), customResolver );
       final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses
             ? getStaticModelGenerator( aspect )
             : getModelGenerator( aspect );

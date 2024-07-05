@@ -20,8 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
-import org.eclipse.esmf.aspectmodel.resolver.services.SammDataType;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -33,7 +32,8 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
@@ -43,7 +43,6 @@ import org.eclipse.esmf.metamodel.impl.DefaultOperation;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import net.jqwik.api.Arbitraries;
@@ -60,7 +59,7 @@ import org.apache.jena.datatypes.RDFDatatype;
 public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitraries, XsdArbitraries {
    @Provide
    default Arbitrary<Scalar> anyScalar() {
-      return Arbitraries.of( ExtendedXsdDataType.SUPPORTED_XSD_TYPES.stream().map( RDFDatatype::getURI ).collect( Collectors.toList() ) )
+      return Arbitraries.of( SammXsdType.ALL_TYPES.stream().map( RDFDatatype::getURI ).collect( Collectors.toList() ) )
             .map( DefaultScalar::new );
    }
 
@@ -262,73 +261,41 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
    default Arbitrary<Value> anyValueForRdfType( final RDFDatatype rdfDatatype, final Scalar type ) {
       final Arbitrary<String> anyString = Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 25 );
 
-      switch ( rdfDatatype.getURI().split( "#" )[1] ) {
-         case "boolean":
-            return anyBoolean().map( x -> buildScalarValue( x, type ) );
-         case "decimal":
-         case "integer":
-            return Arbitraries.bigIntegers().map( x -> buildScalarValue( x, type ) );
-         case "double":
-            return Arbitraries.doubles().map( x -> buildScalarValue( x, type ) );
-         case "float":
-            return Arbitraries.floats().map( x -> buildScalarValue( x, type ) );
-         case "date":
-            return anyDate().map( x -> buildScalarValue( x, type ) );
-         case "time":
-            return anyTime().map( x -> buildScalarValue( x, type ) );
-         case "anyDateTime":
-            return anyDateTime().map( x -> buildScalarValue( x, type ) );
-         case "anyDateTimeStamp":
-            return anyDateTimeStamp().map( x -> buildScalarValue( x, type ) );
-         case "gYear":
-            return anyGyear().map( x -> buildScalarValue( x, type ) );
-         case "gMonth":
-            return anyGmonth().map( x -> buildScalarValue( x, type ) );
-         case "gDay":
-            return anyGday().map( x -> buildScalarValue( x, type ) );
-         case "gYearMonth":
-            return anyGyearMonth().map( x -> buildScalarValue( x, type ) );
-         case "gMonthDay":
-            return anyGmonthDay().map( x -> buildScalarValue( x, type ) );
-         case "duration":
-            return anyDuration().map( x -> buildScalarValue( x, type ) );
-         case "yearMonthDuation":
-            return anyYearMonthDuration().map( x -> buildScalarValue( x, type ) );
-         case "dayTimeDuration":
-            return anyDayTimeDuration().map( x -> buildScalarValue( x, type ) );
-         case "byte":
-            return Arbitraries.bytes().map( x -> buildScalarValue( x, type ) );
-         case "short":
-            return Arbitraries.shorts().map( x -> buildScalarValue( x, type ) );
-         case "unsignedByte":
-            return anyUnsignedByte().map( x -> buildScalarValue( x, type ) );
-         case "int":
-            return Arbitraries.integers().map( x -> buildScalarValue( x, type ) );
-         case "unsignedShort":
-            return anyUnsignedShort().map( x -> buildScalarValue( x, type ) );
-         case "long":
-            return Arbitraries.longs().map( x -> buildScalarValue( x, type ) );
-         case "unsignedLong":
-            return anyUnsignedLong().map( x -> buildScalarValue( x, type ) );
-         case "positiveInteger":
-            return anyPositiveInteger().map( x -> buildScalarValue( x, type ) );
-         case "nonNegativeInteger":
-            return anyNonNegativeInteger().map( x -> buildScalarValue( x, type ) );
-         case "hexBinary":
-            return anyHexBinary().map( x -> buildScalarValue( x, type ) );
-         case "base64Binary":
-            return anyBase64Binary().map( x -> buildScalarValue( x, type ) );
-         case "anyURI":
-            return anyUri().map( x -> buildScalarValue( x, type ) );
-         case "curie":
-            return anyMetaModelVersion().map( SammDataType::curie ).map( x -> buildScalarValue( x, type ) );
-         case "langString":
-            return Combinators.combine( anyString, anyLocale() )
-                  .as( LangString::new )
-                  .map( x -> buildScalarValue( x, type ) );
-         default:
-            return anyString.map( x -> buildScalarValue( x, type ) );
-      }
+      return switch ( rdfDatatype.getURI().split( "#" )[1] ) {
+         case "boolean" -> anyBoolean().map( x -> buildScalarValue( x, type ) );
+         case "decimal", "integer" -> Arbitraries.bigIntegers().map( x -> buildScalarValue( x, type ) );
+         case "double" -> Arbitraries.doubles().map( x -> buildScalarValue( x, type ) );
+         case "float" -> Arbitraries.floats().map( x -> buildScalarValue( x, type ) );
+         case "date" -> anyDate().map( x -> buildScalarValue( x, type ) );
+         case "time" -> anyTime().map( x -> buildScalarValue( x, type ) );
+         case "anyDateTime" -> anyDateTime().map( x -> buildScalarValue( x, type ) );
+         case "anyDateTimeStamp" -> anyDateTimeStamp().map( x -> buildScalarValue( x, type ) );
+         case "gYear" -> anyGyear().map( x -> buildScalarValue( x, type ) );
+         case "gMonth" -> anyGmonth().map( x -> buildScalarValue( x, type ) );
+         case "gDay" -> anyGday().map( x -> buildScalarValue( x, type ) );
+         case "gYearMonth" -> anyGyearMonth().map( x -> buildScalarValue( x, type ) );
+         case "gMonthDay" -> anyGmonthDay().map( x -> buildScalarValue( x, type ) );
+         case "duration" -> anyDuration().map( x -> buildScalarValue( x, type ) );
+         case "yearMonthDuation" -> anyYearMonthDuration().map( x -> buildScalarValue( x, type ) );
+         case "dayTimeDuration" -> anyDayTimeDuration().map( x -> buildScalarValue( x, type ) );
+         case "byte" -> Arbitraries.bytes().map( x -> buildScalarValue( x, type ) );
+         case "short" -> Arbitraries.shorts().map( x -> buildScalarValue( x, type ) );
+         case "unsignedByte" -> anyUnsignedByte().map( x -> buildScalarValue( x, type ) );
+         case "int" -> Arbitraries.integers().map( x -> buildScalarValue( x, type ) );
+         case "unsignedShort" -> anyUnsignedShort().map( x -> buildScalarValue( x, type ) );
+         case "long" -> Arbitraries.longs().map( x -> buildScalarValue( x, type ) );
+         case "unsignedLong" -> anyUnsignedLong().map( x -> buildScalarValue( x, type ) );
+         case "positiveInteger" -> anyPositiveInteger().map( x -> buildScalarValue( x, type ) );
+         case "nonNegativeInteger" -> anyNonNegativeInteger().map( x -> buildScalarValue( x, type ) );
+         case "hexBinary" -> anyHexBinary().map( x -> buildScalarValue( x, type ) );
+         case "base64Binary" -> anyBase64Binary().map( x -> buildScalarValue( x, type ) );
+         case "anyURI" -> anyUri().map( x -> buildScalarValue( x, type ) );
+         case "curie" -> anyCurie().map( x -> buildScalarValue( x, type ) );
+         case "langString" -> Combinators.combine( anyString, anyLocale() )
+               .as( LangString::new )
+               .map( x -> buildScalarValue( x, type ) );
+         default -> anyString.map( x -> buildScalarValue( x, type ) );
+      };
    }
 
    @Provide
@@ -361,8 +328,8 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
 
    @Provide
    default Arbitrary<Value> anyValueForScalarType( final Scalar type ) {
-      return ExtendedXsdDataType
-            .SUPPORTED_XSD_TYPES.stream()
+      return SammXsdType
+            .ALL_TYPES.stream()
             .filter( dataType -> dataType.getURI().equals( type.getUrn() ) )
             .map( rdfDatatype -> anyValueForRdfType( rdfDatatype, type ) )
             .findFirst()

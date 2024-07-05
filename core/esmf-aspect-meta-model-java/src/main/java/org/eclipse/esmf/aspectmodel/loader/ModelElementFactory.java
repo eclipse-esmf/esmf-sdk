@@ -20,55 +20,58 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.AbstractEntityInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.AspectInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.CharacteristicInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.CodeInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.CollectionInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.ConstraintInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.DurationInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.EitherInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.EncodingConstraintInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.EntityInstanceInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.EntityInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.EnumerationInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.EventInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.FixedPointConstraintInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.LanguageConstraintInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.LengthConstraintInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.ListInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.LocaleConstraintInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.MeasurementInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.OperationInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.PropertyInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.QuantifiableInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.RangeConstraintInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.RegularExpressionConstraintInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.SetInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.SingleEntityInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.SortedSetInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.StateInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.StructuredValueInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.TimeSeriesInstantiator;
+import org.eclipse.esmf.aspectmodel.loader.instantiator.TraitInstantiator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.vocabulary.SAMM;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.ModelNamespace;
+import org.eclipse.esmf.metamodel.Namespace;
 import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.metamodel.QuantityKinds;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.Units;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.impl.DefaultQuantityKind;
 import org.eclipse.esmf.metamodel.impl.DefaultUnit;
-import org.eclipse.esmf.metamodel.loader.instantiator.AbstractEntityInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.AspectInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.CharacteristicInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.CodeInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.CollectionInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.ConstraintInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.DurationInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.EitherInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.EncodingConstraintInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.EntityInstanceInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.EntityInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.EnumerationInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.EventInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.FixedPointConstraintInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.LanguageConstraintInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.LengthConstraintInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.ListInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.LocaleConstraintInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.MeasurementInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.OperationInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.PropertyInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.QuantifiableInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.RangeConstraintInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.RegularExpressionConstraintInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.SetInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.SingleEntityInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.SortedSetInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.StateInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.StructuredValueInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.TimeSeriesInstantiator;
-import org.eclipse.esmf.metamodel.loader.instantiator.TraitInstantiator;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.Streams;
 import org.apache.commons.lang3.StringUtils;
@@ -84,10 +87,13 @@ public class ModelElementFactory extends AttributeValueRetriever {
    private final Model model;
    private final Map<Resource, Instantiator<?>> instantiators = new HashMap<>();
    private final Map<Resource, ModelElement> loadedElements = new HashMap<>();
-   private Set<ModelNamespace> namespaces;
+   private Set<Namespace> namespaces;
+   private final Function<Resource, AspectModelFile> sourceLocator;
 
-   public ModelElementFactory( final Model model, final Map<Resource, Instantiator<?>> additionalInstantiators ) {
+   public ModelElementFactory( final Model model, final Map<Resource, Instantiator<?>> additionalInstantiators,
+         final Function<Resource, AspectModelFile> sourceLocator ) {
       this.model = model;
+      this.sourceLocator = sourceLocator;
 
       registerInstantiator( SammNs.SAMM.AbstractEntity(), new AbstractEntityInstantiator( this ) );
       registerInstantiator( SammNs.SAMM.AbstractProperty(), new PropertyInstantiator( this ) );
@@ -225,21 +231,17 @@ public class ModelElementFactory extends AttributeValueRetriever {
     */
    public MetaModelBaseAttributes createBaseAttributes( final Resource modelElement ) {
       final AttributeValueRetriever valueRetriever = new AttributeValueRetriever();
-
       final Optional<AspectModelUrn> urn = getUrn( modelElement );
       final Set<LangString> preferredNames = getLanguages( modelElement, SammNs.SAMM.preferredName(), valueRetriever );
       final Set<LangString> descriptions = getLanguages( modelElement, SammNs.SAMM.description(), valueRetriever );
       final List<String> seeValues = getSeeValues( modelElement, valueRetriever );
-      final MetaModelBaseAttributes.Builder builder = MetaModelBaseAttributes.builder();
-      if ( urn.isEmpty() ) {
-         builder.isAnonymous().withName( getSyntheticName( modelElement ) );
-      } else {
-         builder.withUrn( urn.get() ).withName( urn.get().getName() );
-      }
-      builder.withPreferredNames( preferredNames );
-      builder.withDescriptions( descriptions );
-      builder.withSee( seeValues );
-      return builder.build();
+      return MetaModelBaseAttributes.builder()
+            .withOptionalUrn( urn )
+            .withPreferredNames( preferredNames )
+            .withDescriptions( descriptions )
+            .withSee( seeValues )
+            .withSourceFile( getSourceLocation( modelElement ) )
+            .build();
    }
 
    private static Optional<AspectModelUrn> getUrn( final Resource modelElement ) {
@@ -349,4 +351,7 @@ public class ModelElementFactory extends AttributeValueRetriever {
       return getModelElementType( superElement );
    }
 
+   public AspectModelFile getSourceLocation( Resource modelElement ) {
+      return sourceLocator.apply( modelElement );
+   }
 }

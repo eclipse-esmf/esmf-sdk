@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateJsonSchema", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonSchema extends AspectModelMojo {
-
-   private final Logger logger = LoggerFactory.getLogger( GenerateJsonSchema.class );
+   private static final Logger LOG = LoggerFactory.getLogger( GenerateJsonSchema.class );
 
    @Parameter( defaultValue = "en" )
    private String language;
@@ -46,7 +45,7 @@ public class GenerateJsonSchema extends AspectModelMojo {
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
-      final Set<Aspect> aspects = loadModelsOrFail();
+      final Set<Aspect> aspects = loadAspects();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       try {
          for ( final Aspect aspect : aspects ) {
@@ -62,6 +61,6 @@ public class GenerateJsonSchema extends AspectModelMojo {
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not format JSON Schema", exception );
       }
-      logger.info( "Successfully generated JSON Schema for Aspect Models." );
+      LOG.info( "Successfully generated JSON Schema for Aspect Models." );
    }
 }

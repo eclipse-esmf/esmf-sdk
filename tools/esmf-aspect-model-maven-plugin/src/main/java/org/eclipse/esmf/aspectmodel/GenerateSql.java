@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateSql", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateSql extends AspectModelMojo {
-   private final Logger logger = LoggerFactory.getLogger( GenerateSql.class );
+   private static final Logger LOG = LoggerFactory.getLogger( GenerateSql.class );
 
    @Parameter( defaultValue = "" + DatabricksSqlGenerationConfig.DEFAULT_INCLUDE_TABLE_COMMENT )
    private boolean includeTableComment;
@@ -61,7 +61,7 @@ public class GenerateSql extends AspectModelMojo {
    public void execute() throws MojoExecutionException {
       validateParameters();
 
-      final Set<Aspect> aspectModels = loadModelsOrFail();
+      final Set<Aspect> aspectModels = loadAspects();
       for ( final Aspect aspect : aspectModels ) {
          final DatabricksSqlGenerationConfig generatorConfig =
                DatabricksSqlGenerationConfigBuilder.builder()
@@ -81,6 +81,6 @@ public class GenerateSql extends AspectModelMojo {
             throw new MojoExecutionException( "Could not write SQL file.", exception );
          }
       }
-      logger.info( "Successfully generated SQL script." );
+      LOG.info( "Successfully generated SQL script." );
    }
 }

@@ -133,24 +133,6 @@ class SammCliTest extends MetaModelVersions {
    }
 
    @Test
-   void testAspectMigrateToFile() {
-      final File targetFile = outputFile( "output.ttl" );
-      final ExecutionResult result =
-            sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "migrate", "-o", targetFile.getAbsolutePath() );
-      assertThat( result.stdout() ).isEmpty();
-      assertThat( result.stderr() ).isEmpty();
-      assertThat( targetFile ).exists();
-      assertThat( targetFile ).content().contains( "@prefix" );
-   }
-
-   @Test
-   void testAspectMigrateToStdout() {
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "migrate" );
-      assertThat( result.stdout() ).contains( "@prefix" );
-      assertThat( result.stderr() ).isEmpty();
-   }
-
-   @Test
    void testAspectPrettyPrintToFile() {
       final File targetFile = outputFile( "output.ttl" );
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "prettyprint", "-o",

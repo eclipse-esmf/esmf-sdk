@@ -20,17 +20,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.metamodel.vocabulary.Namespace;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 
-import io.vavr.control.Try;
 import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -61,24 +59,33 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
          "ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND",
          "ASPECT_WITH_UMLAUT_DESCRIPTION",
          "MODEL_WITH_BROKEN_CYCLES",
-         "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES"
+         "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES",
+         "ASPECT_WITH_TIME_SERIES"
    } )
    public void testRdfModelCreatorVisitor( final TestAspect testAspect ) {
       final KnownVersion knownVersion = KnownVersion.getLatest();
-      final VersionedModel versionedModel = TestResources.getModel( testAspect, knownVersion ).get();
+      final AspectModel aspectModel = TestResources.load( testAspect );
+      final Aspect aspect = aspectModel.aspect();
 
-      final Try<Aspect> tryAspect = AspectModelLoader.getSingleAspect( versionedModel );
-      final Aspect aspect = tryAspect.getOrElseThrow( () -> new RuntimeException( tryAspect.getCause() ) );
+      final RdfNamespace namespace = new RdfNamespace() {
+         @Override
+         public String getShortForm() {
+            return "";
+         }
 
-      final Namespace namespace = () -> aspect.urn().getUrnPrefix();
+         @Override
+         public String getUri() {
+            return aspect.urn().getUrnPrefix();
+         }
+      };
       final RdfModelCreatorVisitor visitor = new RdfModelCreatorVisitor( namespace );
-      final Model serializedModel = visitor.visitAspect( aspect, null ).getModel();
+      final Model serializedModel = visitor.visitAspect( aspect, null ).model();
 
-      final Map<String, String> prefixMap = new HashMap<>( Namespace.createPrefixMap() );
+      final Map<String, String> prefixMap = new HashMap<>( RdfNamespace.createPrefixMap() );
       prefixMap.put( "", namespace.getNamespace() );
       serializedModel.setNsPrefixes( prefixMap );
 
-      final Model originalModel = TestResources.getModelWithoutResolution( testAspect, knownVersion ).getRawModel();
+      final Model originalModel = aspectModel.files().iterator().next().sourceModel();
 
       serializedModel.clearNsPrefixMap();
       originalModel.getNsPrefixMap().forEach( serializedModel::setNsPrefix );
@@ -97,15 +104,15 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
    private String modelToString( final Model model ) {
       return Arrays.stream( TestModel.modelToString( model )
                   .replaceAll( ";", "" )
-                  .replaceAll( ".", "" )
-                  .replaceAll( "  *", "" )
+                  .replaceAll( "\\.", "" )
+                  .replaceAll( " +", "" )
                   .split( "\\n" ) )
             .filter( line -> !line.contains( "samm-c:values" ) )
             .filter( line -> !line.contains( "samm:see" ) )
             .map( this::sortLineWithRdfListOrLangString )
             .sorted()
             .collect( Collectors.joining() )
-            .replaceAll( "  *", " " );
+            .replaceAll( " +", " " );
    }
 
    /**
@@ -116,7 +123,7 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
     */
    private String sortLineWithRdfListOrLangString( final String line ) {
       if ( line.contains( " ( " ) || line.contains( "@" ) ) {
-         return Arrays.stream( line.split( " " ) ).sorted().collect( Collectors.joining() );
+         return Arrays.stream( line.split( "[ ,\"]" ) ).sorted().collect( Collectors.joining() );
       }
       return line;
    }

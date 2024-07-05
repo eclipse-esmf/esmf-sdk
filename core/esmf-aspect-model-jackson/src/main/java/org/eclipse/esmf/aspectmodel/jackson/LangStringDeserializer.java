@@ -16,7 +16,7 @@ package org.eclipse.esmf.aspectmodel.jackson;
 import java.io.IOException;
 import java.util.Locale;
 
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;

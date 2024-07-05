@@ -23,12 +23,17 @@ import org.apache.jena.rdf.model.Resource;
 // Since the class is an RDF vocabulary, naming rules for the class and for several methods (which should be named identically
 // to the corresponding model elements) are suppressed.
 @SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "NewMethodNamingConvention" } )
-public class SAMM implements Namespace {
+public class SAMM implements RdfNamespace {
    final KnownVersion metaModelVersion;
    private static final String BASE_URI = "urn:samm:org.eclipse.esmf.samm:";
 
    public SAMM( final KnownVersion metaModelVersion ) {
       this.metaModelVersion = metaModelVersion;
+   }
+
+   @Override
+   public String getShortForm() {
+      return "samm";
    }
 
    public String getBaseUri() {
@@ -89,10 +94,6 @@ public class SAMM implements Namespace {
 
    public Property characteristic() {
       return property( "characteristic" );
-   }
-
-   public Property baseCharacteristic() {
-      return property( "baseCharacteristic" );
    }
 
    @SuppressWarnings( "checkstyle:MethodName" )

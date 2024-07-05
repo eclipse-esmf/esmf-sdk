@@ -76,11 +76,13 @@ public class GenerateUnitsTtl {
          import java.util.Collections;
          import java.util.stream.Collectors;
 
+         import org.eclipse.esmf.aspectmodel.AspectModelFile;
+         import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+         import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
          import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-         import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
+         import org.eclipse.esmf.metamodel.datatype.LangString;
          import org.eclipse.esmf.metamodel.impl.DefaultUnit;
-         import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-         import org.eclipse.esmf.metamodel.datatypes.LangString;
+         import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
          /**
           * Enumeration of Units as defined in <a href="https://tfig.unece.org/contents/recommendation-20.htm">Recommendation 20</a> by
@@ -93,6 +95,13 @@ public class GenerateUnitsTtl {
             }
 
             // ${initMethods}
+            
+            /**
+             * Returns the file that defines this unit
+             */
+            public AspectModelFile getSourceFile() {
+               return MetaModelFile.UNITS;
+            }
 
             /**
              * Returns the unit with a given name
@@ -167,10 +176,11 @@ public class GenerateUnitsTtl {
          import java.util.Arrays;
          import java.util.Optional;
 
-         import org.eclipse.esmf.aspectmodel.resolver.services.ModelFile;
+         import org.eclipse.esmf.aspectmodel.AspectModelFile;
+         import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
          import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-         import org.eclipse.esmf.aspectmodel.vocabulary.SammNs;
-         import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+         import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+         import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
          /**
           * Enumeration of Quantity Kinds as defined in <a href="http://tfig.unece.org/contents/recommendation-20.htm">Recommendation 20</a>
@@ -193,8 +203,8 @@ public class GenerateUnitsTtl {
             }
             
             @Override
-            public Optional<ModelFile> getSourceFile() {
-               return Optional.of( MetaModelFiles.UNITS );
+            public AspectModelFile getSourceFile() {
+               return MetaModelFile.UNITS;
             }
 
             /**

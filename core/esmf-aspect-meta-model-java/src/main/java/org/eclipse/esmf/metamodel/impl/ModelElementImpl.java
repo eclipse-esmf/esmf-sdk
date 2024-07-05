@@ -13,29 +13,22 @@
 package org.eclipse.esmf.metamodel.impl;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.esmf.aspectmodel.ModelFile;
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 /**
  * The base implemenation of all model elements.
  */
 public abstract class ModelElementImpl implements ModelElement, Comparable<ModelElement> {
    protected final MetaModelBaseAttributes baseAttributes;
-   protected final ModelFile sourceFile;
 
    ModelElementImpl( final MetaModelBaseAttributes baseAttributes ) {
-      this( baseAttributes, null );
-   }
-
-   ModelElementImpl( final MetaModelBaseAttributes baseAttributes, final ModelFile sourceFile ) {
       this.baseAttributes = baseAttributes;
-      this.sourceFile = sourceFile;
    }
 
    @Override
@@ -47,7 +40,9 @@ public abstract class ModelElementImpl implements ModelElement, Comparable<Model
 
    @Override
    public String getName() {
-      return baseAttributes.getName() != null ? baseAttributes.getName() : urn().getName();
+      return baseAttributes.isAnonymous() && baseAttributes.urn() == null
+            ? urn().getName()
+            : baseAttributes.getName();
    }
 
    @Override
@@ -56,8 +51,8 @@ public abstract class ModelElementImpl implements ModelElement, Comparable<Model
    }
 
    @Override
-   public Optional<ModelFile> getSourceFile() {
-      return Optional.of( sourceFile );
+   public AspectModelFile getSourceFile() {
+      return baseAttributes.getSourceFile();
    }
 
    /**

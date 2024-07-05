@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.metamodel.loader.instantiator;
+package org.eclipse.esmf.aspectmodel.loader.instantiator;
 
 public class MetaModelBaseAttributesFactory {
 

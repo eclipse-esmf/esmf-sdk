@@ -31,15 +31,14 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateJavaClasses", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateJavaClasses extends CodeGenerationMojo {
-
-   private final Logger logger = LoggerFactory.getLogger( GenerateJavaClasses.class );
+   private static final Logger LOG = LoggerFactory.getLogger( GenerateJavaClasses.class );
 
    @Parameter( defaultValue = "false" )
    private boolean disableJacksonAnnotations;
 
    @Override
    public void execute() throws MojoExecutionException {
-      final Set<Aspect> aspects = loadModelsOrFail();
+      final Set<Aspect> aspects = loadAspects();
       for ( final Aspect aspect : aspects ) {
          final File templateLibFile = Path.of( templateFile ).toFile();
          validateParameters( templateLibFile );
@@ -51,6 +50,6 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
                .build();
          new AspectModelJavaGenerator( aspect, config ).generate( nameMapper );
       }
-      logger.info( "Successfully generated Java classes for Aspect Models." );
+      LOG.info( "Successfully generated Java classes for Aspect Models." );
    }
 }

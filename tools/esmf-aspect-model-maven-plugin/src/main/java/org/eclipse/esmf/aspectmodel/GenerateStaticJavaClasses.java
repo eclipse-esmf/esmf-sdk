@@ -30,12 +30,11 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateStaticJavaClasses", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateStaticJavaClasses extends CodeGenerationMojo {
-
-   private final Logger logger = LoggerFactory.getLogger( GenerateStaticJavaClasses.class );
+   private static final Logger LOG = LoggerFactory.getLogger( GenerateStaticJavaClasses.class );
 
    @Override
    public void execute() throws MojoExecutionException {
-      final Set<Aspect> aspects = loadModelsOrFail();
+      final Set<Aspect> aspects = loadAspects();
       for ( final Aspect aspect : aspects ) {
          final File templateLibFile = Path.of( templateFile ).toFile();
          validateParameters( templateLibFile );
@@ -46,6 +45,6 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
                .build();
          new StaticMetaModelJavaGenerator( aspect, config ).generate( nameMapper );
       }
-      logger.info( "Successfully generated static Java classes for Aspect Models." );
+      LOG.info( "Successfully generated static Java classes for Aspect Models." );
    }
 }

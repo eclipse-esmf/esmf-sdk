@@ -21,7 +21,7 @@ import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
 import org.eclipse.esmf.metamodel.HasProperties;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
+import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 /**

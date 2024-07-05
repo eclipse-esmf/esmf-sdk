@@ -30,8 +30,7 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateDiagram", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDiagram extends AspectModelMojo {
-
-   private final Logger logger = LoggerFactory.getLogger( GenerateDiagram.class );
+   private static final Logger LOG = LoggerFactory.getLogger( GenerateDiagram.class );
 
    @Parameter( required = true, property = "targetFormat" )
    private Set<String> targetFormats;
@@ -40,7 +39,7 @@ public class GenerateDiagram extends AspectModelMojo {
    public void execute() throws MojoExecutionException {
       validateParameters();
 
-      final Set<Aspect> aspects = loadModelsOrFail();
+      final Set<Aspect> aspects = loadAspects();
       try {
          final Set<AspectModelDiagramGenerator.Format> formats = targetFormats.stream()
                .map( targetFormat -> AspectModelDiagramGenerator.Format.valueOf( targetFormat.toUpperCase() ) )
@@ -53,7 +52,7 @@ public class GenerateDiagram extends AspectModelMojo {
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not generate diagram.", exception );
       }
-      logger.info( "Successfully generated Aspect Model diagram(s)." );
+      LOG.info( "Successfully generated Aspect Model diagram(s)." );
    }
 
    @Override

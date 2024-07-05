@@ -14,16 +14,12 @@
 package examples;
 
 // tag::imports[]
-import static org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader.loadTurtle;
-import static org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader.openUrl;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Optional;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.vocabulary.RDF;
 
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.aspectmodel.resolver.services.MetaModelUrls;
 // end::imports[]
 import org.junit.jupiter.api.Test;
 
@@ -32,19 +28,13 @@ public class LoadMetaModelRdf {
    public void loadMetaModelRdf() {
       // tag::loadMetaModelRdf[]
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
-      final Optional<URL> characteristicDefinitionsUrl =
-            MetaModelUrls.url( "characteristic", metaModelVersion, "characteristic-instances.ttl" );
+      final Model characteristicDefinitions = MetaModelFile.CHARACTERISTIC_DEFINITIONS.sourceModel();
 
-      characteristicDefinitionsUrl.ifPresent( url -> {
-         final InputStream inputStream = openUrl( url );
-         loadTurtle( inputStream ).forEach( model -> {
-            // Do something with the org.apache.jena.org.rdf.model.Model
-            final int numberOfCharacteristicInstances =
-                  model.listStatements( null, RDF.type, SammNs.SAMM.Characteristic() ).toList().size();
-            final String result = String.format( "Meta Model Version " + metaModelVersion.toVersionString()
-                  + " defines " + numberOfCharacteristicInstances + " Characteristic instances" );
-         } );
-      } );
+      // Do something with the org.apache.jena.org.rdf.model.Model
+      final int numberOfCharacteristicInstances =
+            characteristicDefinitions.listStatements( null, RDF.type, SammNs.SAMM.Characteristic() ).toList().size();
+      final String result = String.format( "Meta Model Version " + metaModelVersion.toVersionString()
+            + " defines " + numberOfCharacteristicInstances + " Characteristic instances" );
       // end::loadMetaModelRdf[]
    }
 }

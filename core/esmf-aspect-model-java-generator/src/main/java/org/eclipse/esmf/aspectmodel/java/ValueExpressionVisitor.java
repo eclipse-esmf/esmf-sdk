@@ -17,7 +17,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
@@ -25,8 +24,9 @@ import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -78,7 +78,7 @@ public class ValueExpressionVisitor implements AspectVisitor<String, ValueExpres
       }
 
       final Resource typeResource = ResourceFactory.createResource( typeUri );
-      final Class<?> javaType = DataType.getJavaTypeForMetaModelType( typeResource );
+      final Class<?> javaType = SammXsdType.getJavaTypeForMetaModelType( typeResource );
       context.getCodeGenerationConfig().importTracker().importExplicit( javaType );
       return valueInitializer.apply( typeResource, javaType, AspectModelJavaUtil.createLiteral( value.getValue().toString() ) );
    }

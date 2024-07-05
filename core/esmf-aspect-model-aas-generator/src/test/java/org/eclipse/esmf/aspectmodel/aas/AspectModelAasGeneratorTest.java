@@ -21,20 +21,19 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.vavr.control.Try;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.core.DeserializationException;
 import org.eclipse.digitaltwin.aas4j.v3.dataformat.xml.XmlDeserializer;
@@ -403,18 +402,19 @@ class AspectModelAasGeneratorTest {
    }
 
    private Environment getAssetAdministrationShellFromAspect( final TestAspect testAspect ) throws DeserializationException {
-      final Aspect aspect = loadAspect( testAspect );
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
       return loadAasx( generator.generateAsByteArray( AasFileFormat.XML, aspect ) );
    }
 
    private Environment getAssetAdministrationShellFromAspectWithData( final TestAspect testAspect ) throws DeserializationException {
-      final Aspect aspect = loadAspect( testAspect );
-      final JsonNode aspectData = loadPayload( testAspect );
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
+      final Try<JsonNode> payload = TestResources.loadPayload( testAspect );
+      final JsonNode aspectData = payload.getOrElseThrow( () -> new RuntimeException( payload.getCause() ) );
       return loadAasx( generator.generateAsByteArray( AasFileFormat.XML, aspect, aspectData ) );
    }
 
    private String aspectToString( final TestAspect testAspect ) {
-      final Aspect aspect = loadAspect( testAspect );
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
       return new String( generator.generateAsByteArray( AasFileFormat.XML, aspect ), StandardCharsets.UTF_8 );
    }
 
@@ -427,15 +427,6 @@ class AspectModelAasGeneratorTest {
       } catch ( final SAXException | IOException e ) {
          fail( e );
       }
-   }
-
-   private Aspect loadAspect( final TestAspect testAspect ) {
-      final VersionedModel model = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
-      return AspectModelLoader.getSingleAspectUnchecked( model );
-   }
-
-   private JsonNode loadPayload( final TestAspect testAspect ) {
-      return TestResources.getPayload( testAspect, KnownVersion.getLatest() ).get();
    }
 
    private Environment loadAasx( final ByteArrayInputStream byteStream ) throws DeserializationException {

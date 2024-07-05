@@ -59,7 +59,7 @@ public class AspectToJsonSchemaCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
+      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), customResolver );
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
             .locale( locale )

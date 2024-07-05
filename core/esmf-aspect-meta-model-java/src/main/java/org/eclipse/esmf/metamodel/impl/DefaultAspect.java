@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 public class DefaultAspect extends ModelElementImpl implements Aspect {
    private final List<Property> properties;
@@ -30,7 +30,8 @@ public class DefaultAspect extends ModelElementImpl implements Aspect {
    private final List<Event> events;
    private final boolean isCollectionAspect;
 
-   public DefaultAspect( final MetaModelBaseAttributes metaModelBaseAttributes,
+   public DefaultAspect(
+         final MetaModelBaseAttributes metaModelBaseAttributes,
          final List<Property> properties,
          final List<Operation> operations,
          final List<Event> events,

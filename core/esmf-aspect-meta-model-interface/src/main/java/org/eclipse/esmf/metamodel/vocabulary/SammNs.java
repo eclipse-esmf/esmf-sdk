@@ -15,6 +15,9 @@ package org.eclipse.esmf.metamodel.vocabulary;
 
 import org.eclipse.esmf.samm.KnownVersion;
 
+/**
+ * RDF vocabularies of the SAMM meta model namespaces
+ */
 public class SammNs {
    public static final SAMM SAMM = new SAMM( KnownVersion.getLatest() );
    public static final SAMMC SAMMC = new SAMMC( KnownVersion.getLatest() );

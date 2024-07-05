@@ -83,7 +83,7 @@ public class AspectToSqlCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
+      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), customResolver );
       final DatabricksSqlGenerationConfig generatorConfig =
             DatabricksSqlGenerationConfigBuilder.builder()
                   .commentLanguage( Locale.forLanguageTag( language ) )

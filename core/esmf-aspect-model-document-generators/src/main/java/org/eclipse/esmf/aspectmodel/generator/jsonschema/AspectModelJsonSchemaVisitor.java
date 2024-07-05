@@ -28,20 +28,10 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.DocumentGenerationException;
 import org.eclipse.esmf.aspectmodel.generator.XsdToJsonTypeMapping;
-import org.eclipse.esmf.aspectmodel.resolver.services.SammDataType;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.metamodel.characteristic.Collection;
-import org.eclipse.esmf.metamodel.characteristic.Either;
-import org.eclipse.esmf.metamodel.characteristic.Enumeration;
-import org.eclipse.esmf.metamodel.characteristic.Set;
-import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
-import org.eclipse.esmf.metamodel.characteristic.SortedSet;
-import org.eclipse.esmf.metamodel.characteristic.Trait;
-import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
-import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
-import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -55,9 +45,19 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.BoundDefinition;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.Set;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.SortedSet;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
+import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
+import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.datatype.CurieType;
+import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -70,6 +70,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import io.vavr.control.Try;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
@@ -185,13 +186,25 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    }
 
    private String getSchemaNameForModelElement( final ModelElement element ) {
+      return getSchemaNameForModelElement( element, null );
+   }
+
+   private String getSchemaNameForModelElement( final ModelElement element, final ModelElement parent ) {
       final String existingSchemaName = schemaNameForElement.get( element );
       if ( existingSchemaName != null ) {
          return existingSchemaName;
       }
       // Check if the schema name is already used by another element
       final BiMap<String, ModelElement> elementBySchemaName = schemaNameForElement.inverse();
-      final String elementName = element instanceof final Property property ? property.getPayloadName() : element.getName();
+      final String elementName;
+      if ( element instanceof final Property property ) {
+         elementName = property.getPayloadName();
+      } else if ( element instanceof Characteristic && element.isAnonymous() ) {
+         elementName = StringUtils.capitalize( parent.getName() ) + "Characteristic";
+      } else {
+         elementName = element.getName();
+      }
+
       final String designatedSchemaName =
             Stream.concat( Stream.of( elementName ), IntStream.iterate( 0, i -> i + 1 ).mapToObj( i -> element.getName() + i ) )
                   .filter( schemaName -> elementBySchemaName.get( schemaName ) == null )
@@ -274,7 +287,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       final ObjectNode propertyNode = addDescription( FACTORY.objectNode(), property, config.locale() );
       addSammExtensionAttribute( propertyNode, property );
       final Characteristic characteristic = determineCharacteristic( property );
-      final String referenceNodeName = getSchemaNameForModelElement( characteristic );
+      final String referenceNodeName = getSchemaNameForModelElement( characteristic, property );
       if ( processedProperties.contains( property ) ) {
          return propertyNode.put( "$ref", "#/components/schemas/" + referenceNodeName );
       }
@@ -307,7 +320,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
    private Map<String, JsonNode> getAdditionalFieldsForType( final Resource type ) {
       final Map<Resource, Map<String, JsonNode>> typeDates = ImmutableMap.<Resource, Map<String, JsonNode>> builder()
             .putAll( typeData )
-            .put( SammNs.SAMM.curie(), Map.of( "pattern", FACTORY.textNode( SammDataType.CURIE_REGEX ) ) )
+            .put( SammNs.SAMM.curie(), Map.of( "pattern", FACTORY.textNode( CurieType.CURIE_REGEX ) ) )
             .build();
       return typeDates.getOrDefault( type, Map.of() );
    }
@@ -358,7 +371,7 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       addDescription( characteristicNode, trait, config.locale() );
       addSammExtensionAttribute( characteristicNode, trait );
       return io.vavr.collection.Stream.ofAll( trait.getConstraints() )
-            .foldLeft( characteristicNode, ( node, constraint ) -> ( (ObjectNode) ( constraint.accept( this, node ) ) ) );
+            .foldLeft( characteristicNode, ( node, constraint ) -> ((ObjectNode) (constraint.accept( this, node ))) );
    }
 
    @Override

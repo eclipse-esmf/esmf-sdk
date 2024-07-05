@@ -90,4 +90,12 @@ public interface UriArbitraries {
    default Arbitrary<String> anyUri() {
       return Arbitraries.oneOf( anyUrl(), anyUrn() );
    }
+
+   @Provide
+   default Arbitrary<String> anyCurie() {
+      final Arbitrary<String> frontPart = Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 3 ).alpha();
+      final Arbitrary<String> backPart = Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 5 ).alpha();
+      return Combinators.combine( frontPart, backPart )
+            .as( ( front, back ) -> front + ":" + back );
+   }
 }

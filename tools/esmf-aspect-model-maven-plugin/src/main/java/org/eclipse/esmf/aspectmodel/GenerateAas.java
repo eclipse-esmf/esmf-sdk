@@ -34,7 +34,7 @@ public class GenerateAas extends AspectModelMojo {
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
-      final Set<Aspect> aspects = loadModelsOrFail();
+      final Set<Aspect> aspects = loadAspects();
       final AspectModelAasGenerator generator = new AspectModelAasGenerator();
       for ( final Aspect aspect : aspects ) {
          generator.generate( AasFileFormat.valueOf( targetFormat.toUpperCase() ), aspect,

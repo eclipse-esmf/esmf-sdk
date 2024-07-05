@@ -30,7 +30,7 @@ import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
+import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 
 public class AspectModelHelper {
    public List<Property> sortPropertiesByPreferredName( final List<Property> properties, final Locale locale ) {

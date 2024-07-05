@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
+import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 
 /**
  * Base class for the generation of {@link Artifact}s.

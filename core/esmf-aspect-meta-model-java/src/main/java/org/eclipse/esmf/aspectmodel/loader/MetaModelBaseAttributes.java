@@ -18,37 +18,40 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.HasDescription;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 /**
  * Wrapper class for the attributes all Aspect Meta Model elements have.
  */
 public class MetaModelBaseAttributes implements HasDescription {
    private final AspectModelUrn urn;
-   private final String name;
    private final Set<LangString> preferredNames;
    private final Set<LangString> descriptions;
    private final List<String> see;
    private final boolean isAnonymous;
+   private final AspectModelFile sourceFile;
 
    private MetaModelBaseAttributes(
          final AspectModelUrn urn,
-         final String name,
          final Set<LangString> preferredNames,
          final Set<LangString> descriptions,
          final List<String> see,
-         final boolean isAnonymous ) {
+         final boolean isAnonymous,
+         final AspectModelFile sourceFile
+   ) {
       this.urn = urn;
-      this.name = name;
       this.preferredNames = preferredNames;
       this.descriptions = descriptions;
       this.see = see;
       this.isAnonymous = isAnonymous;
+      this.sourceFile = sourceFile;
    }
 
    public AspectModelUrn urn() {
@@ -57,7 +60,7 @@ public class MetaModelBaseAttributes implements HasDescription {
 
    @Override
    public String getName() {
-      return name;
+      return urn.getName();
    }
 
    @Override
@@ -77,6 +80,10 @@ public class MetaModelBaseAttributes implements HasDescription {
 
    public boolean isAnonymous() {
       return isAnonymous;
+   }
+
+   public AspectModelFile getSourceFile() {
+      return sourceFile;
    }
 
    public static Builder builder() {
@@ -108,30 +115,33 @@ public class MetaModelBaseAttributes implements HasDescription {
     * @return the newly created instance
     */
    public static MetaModelBaseAttributes fromModelElement( final ModelElement modelElement ) {
-      return new MetaModelBaseAttributes( modelElement.urn(), modelElement.urn().getName(), modelElement.getPreferredNames(),
-            modelElement.getDescriptions(), modelElement.getSee(), modelElement.isAnonymous() );
+      return new MetaModelBaseAttributes( modelElement.urn(), modelElement.getPreferredNames(),
+            modelElement.getDescriptions(), modelElement.getSee(), modelElement.isAnonymous(), modelElement.getSourceFile() );
    }
 
    public static class Builder {
       private AspectModelUrn urn;
-      private String name;
       private final Set<LangString> preferredNames = new HashSet<>();
       private final Set<LangString> descriptions = new HashSet<>();
       private final List<String> see = new ArrayList<>();
       private boolean isAnonymous = true;
+      private AspectModelFile sourceFile;
 
       public Builder withUrn( final String urn ) {
          return withUrn( AspectModelUrn.fromUrn( urn ) );
       }
 
+      public Builder withOptionalUrn( final Optional<AspectModelUrn> aspectModelUrn ) {
+         if ( aspectModelUrn.isPresent() ) {
+            return withUrn( aspectModelUrn.get() );
+         } else {
+            return isAnonymous();
+         }
+      }
+
       public Builder withUrn( final AspectModelUrn urn ) {
          isAnonymous = false;
          this.urn = Objects.requireNonNull( urn );
-         return this;
-      }
-
-      public Builder withName( final String name ) {
-         this.name = name;
          return this;
       }
 
@@ -170,13 +180,18 @@ public class MetaModelBaseAttributes implements HasDescription {
          return this;
       }
 
+      public Builder withSourceFile( final AspectModelFile sourceFile ) {
+         this.sourceFile = sourceFile;
+         return this;
+      }
+
       public Builder isAnonymous( final boolean isAnonymous ) {
          this.isAnonymous = isAnonymous;
          return this;
       }
 
       public MetaModelBaseAttributes build() {
-         return new MetaModelBaseAttributes( urn, name, preferredNames, descriptions, see, isAnonymous );
+         return new MetaModelBaseAttributes( urn, preferredNames, descriptions, see, isAnonymous, sourceFile );
       }
    }
 }

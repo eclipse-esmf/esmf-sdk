@@ -44,7 +44,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.Enumeration;
@@ -64,8 +63,9 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.datatypes.Curie;
+import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.BoundDefinition;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -307,7 +307,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
       return property.getExampleValue()
             .map( exampleValue -> exampleValue.as( ScalarValue.class ).getValue() )
-            .map( value -> value instanceof Curie ? ( (Curie) value ).getValue() : value )
+            .map( value -> value instanceof Curie ? ( (Curie) value ).value() : value )
             .orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
    }
 
@@ -443,7 +443,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
          final Scalar scalar = dataType.as( Scalar.class );
          final Resource dataTypeResource = ResourceFactory.createResource( scalar.getUrn() );
-         final Class<?> exampleValueType = DataType.getJavaTypeForMetaModelType( dataTypeResource );
+         final Class<?> exampleValueType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
          if ( Curie.class.equals( exampleValueType ) ) {
             return getRandomEntry( ExampleValueGenerator.CURIE_VALUES );
          }
