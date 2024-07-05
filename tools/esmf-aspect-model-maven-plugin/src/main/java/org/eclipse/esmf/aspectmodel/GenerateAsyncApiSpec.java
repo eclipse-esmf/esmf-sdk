@@ -58,7 +58,7 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
-      final Set<Aspect> aspects = loadModelsOrFail();
+      final Set<Aspect> aspects = loadAspects();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final ApiFormat format = Try.of( () -> ApiFormat.valueOf( outputFormat.toUpperCase() ) )
             .getOrElseThrow( () -> new MojoExecutionException( "Invalid output format." ) );

@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -69,15 +69,15 @@ public class NumericTypeTraitsTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    void testGetModelMinValue( final KnownVersion metaModelVersion ) {
       // int maps to normal integer, so native type range should apply
-      final Type intType = new DefaultScalar( ExtendedXsdDataType.INT.getURI() );
+      final Type intType = new DefaultScalar( SammXsdType.INT.getURI() );
       assertThat( NumericTypeTraits.getModelMinValue( metaModelVersion, intType ) ).isEqualTo( Integer.MIN_VALUE );
 
       // unsigned model types do not have native Java equivalents, so they map to the next wider type with model range set
-      final Type unsignedShort = new DefaultScalar( ExtendedXsdDataType.UNSIGNED_SHORT.getURI() );
+      final Type unsignedShort = new DefaultScalar( SammXsdType.UNSIGNED_SHORT.getURI() );
       assertThat( NumericTypeTraits.getModelMinValue( metaModelVersion, unsignedShort ) ).isEqualTo( 0 );
 
       // no lower bound
-      final Type negativeInteger = new DefaultScalar( ExtendedXsdDataType.NEGATIVE_INTEGER.getURI() );
+      final Type negativeInteger = new DefaultScalar( SammXsdType.NEGATIVE_INTEGER.getURI() );
       assertThat( NumericTypeTraits.getModelMinValue( metaModelVersion, negativeInteger ).doubleValue() )
             .isEqualTo( -Double.MAX_VALUE );
    }
@@ -86,14 +86,14 @@ public class NumericTypeTraitsTest extends MetaModelVersions {
    @MethodSource( value = "allVersions" )
    void testGetModelMaxValue( final KnownVersion metaModelVersion ) {
       // int maps to normal integer, so native type range should apply
-      final Type intType = new DefaultScalar( ExtendedXsdDataType.INT.getURI() );
+      final Type intType = new DefaultScalar( SammXsdType.INT.getURI() );
       assertThat( NumericTypeTraits.getModelMaxValue( metaModelVersion, intType ) ).isEqualTo( Integer.MAX_VALUE );
 
       // unsigned model types do not have native Java equivalents, so they map to the next wider type with model range set
-      final Type unsignedShort = new DefaultScalar( ExtendedXsdDataType.UNSIGNED_SHORT.getURI() );
+      final Type unsignedShort = new DefaultScalar( SammXsdType.UNSIGNED_SHORT.getURI() );
       assertThat( NumericTypeTraits.getModelMaxValue( metaModelVersion, unsignedShort ) ).isEqualTo( 65535 );
 
-      final Type negativeInteger = new DefaultScalar( ExtendedXsdDataType.NEGATIVE_INTEGER.getURI() );
+      final Type negativeInteger = new DefaultScalar( SammXsdType.NEGATIVE_INTEGER.getURI() );
       assertThat( NumericTypeTraits.getModelMaxValue( metaModelVersion, negativeInteger ) ).isEqualTo( -1 );
    }
 

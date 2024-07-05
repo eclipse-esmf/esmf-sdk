@@ -14,33 +14,42 @@
 package org.eclipse.esmf.metamodel.impl;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.ModelFile;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.ModelNamespace;
+import org.eclipse.esmf.metamodel.Namespace;
+
+import org.apache.jena.rdf.model.Model;
 
 public class DefaultAspectModel implements AspectModel {
-   private final List<ModelFile> files;
+   private final Model mergedModel;
    private final List<ModelElement> elements;
 
-   public DefaultAspectModel( final List<ModelFile> files, final List<ModelElement> elements ) {
-      this.files = files;
+   public DefaultAspectModel( final Model mergedModel, final List<ModelElement> elements ) {
+      this.mergedModel = mergedModel;
       this.elements = elements;
    }
 
    @Override
-   public List<ModelNamespace> namespaces() {
-      return List.of();
-   }
-
-   @Override
-   public List<ModelFile> files() {
-      return files;
+   public List<Namespace> namespaces() {
+      return elements().stream()
+            .filter( element -> !Namespace.ANONYMOUS.equals( element.urn().getUrnPrefix() ) )
+            .collect( Collectors.groupingBy( element -> element.urn().getUrnPrefix() ) )
+            .entrySet()
+            .stream()
+            .<Namespace> map( entry -> new DefaultNamespace( entry.getKey(), entry.getValue(), Optional.empty() ) )
+            .toList();
    }
 
    @Override
    public List<ModelElement> elements() {
       return elements;
+   }
+
+   @Override
+   public Model mergedModel() {
+      return mergedModel;
    }
 }

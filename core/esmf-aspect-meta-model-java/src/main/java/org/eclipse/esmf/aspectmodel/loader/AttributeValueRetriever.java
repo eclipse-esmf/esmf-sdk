@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Property;

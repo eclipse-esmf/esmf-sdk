@@ -61,7 +61,7 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 

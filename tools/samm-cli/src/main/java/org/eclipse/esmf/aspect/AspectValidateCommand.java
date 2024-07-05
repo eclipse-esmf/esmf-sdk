@@ -13,21 +13,18 @@
 
 package org.eclipse.esmf.aspect;
 
-import java.io.File;
 import java.util.List;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.JansiRdfSyntaxHighlighter;
 import org.eclipse.esmf.LoggingMixin;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
-import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationRustLikeFormatter;
+import org.eclipse.esmf.metamodel.AspectModel;
 
-import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -40,6 +37,7 @@ import picocli.CommandLine;
       optionListHeading = "%n@|bold Options|@:%n",
       mixinStandardHelpOptions = true
 )
+@SuppressWarnings( "UseOfSystemOutOrSystemErr" )
 public class AspectValidateCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "validate";
    private static final Logger LOG = LoggerFactory.getLogger( AspectValidateCommand.class );
@@ -53,23 +51,23 @@ public class AspectValidateCommand extends AbstractCommand {
    @CommandLine.Mixin
    private ExternalResolverMixin customResolver;
 
+   @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--details", "-d" }, description = "Print detailed reports about violations" )
    private boolean details = false;
 
    @Override
    public void run() {
-      final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( parentCommand.getInput() ), customResolver );
+      final AspectModel aspectModel = loadAspectModelOrFail( parentCommand.getInput(), customResolver, details );
       final AspectModelValidator validator = new AspectModelValidator();
 
-      final List<Violation> violations = validator.validateModel( versionedModel );
+      final List<Violation> violations = validator.validateModel( aspectModel );
       if ( details ) {
          LOG.debug( "Printing detailed validation results" );
          System.out.println( new DetailedViolationFormatter().apply( violations ) );
       } else {
          LOG.debug( "Printing regular validation results" );
-         final String message = versionedModel.map( model ->
-               new ViolationRustLikeFormatter( versionedModel.get().getRawModel(), new JansiRdfSyntaxHighlighter() ).apply(
-                     violations ) ).getOrElse( () -> new ViolationFormatter().apply( violations ) );
+         final String message = new ViolationRustLikeFormatter( aspectModel.mergedModel(), new JansiRdfSyntaxHighlighter() ).apply(
+               violations );
          System.out.println( message );
       }
 

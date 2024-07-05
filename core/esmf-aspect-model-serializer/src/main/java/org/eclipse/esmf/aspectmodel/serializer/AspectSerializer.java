@@ -17,10 +17,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.function.Function;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.metamodel.vocabulary.Namespace;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 
 import org.apache.jena.rdf.model.Model;
 
@@ -32,13 +30,22 @@ public class AspectSerializer implements Function<Aspect, String> {
 
    @Override
    public String apply( final Aspect aspect ) {
-      final Namespace aspectNamespace = () -> aspect.urn().getUrnPrefix();
+      final RdfNamespace aspectNamespace = new RdfNamespace() {
+         @Override
+         public String getShortForm() {
+            return "";
+         }
+
+         @Override
+         public String getUri() {
+            return aspect.urn().getUrnPrefix();
+         }
+      };
       final RdfModelCreatorVisitor rdfModelCreatorVisitor = new RdfModelCreatorVisitor( aspectNamespace );
       final StringWriter stringWriter = new StringWriter();
       try ( final PrintWriter printWriter = new PrintWriter( stringWriter ) ) {
-         final Model model = aspect.accept( rdfModelCreatorVisitor, null ).getModel();
-         final VersionedModel versionedModel = new SammAspectMetaModelResourceResolver().mergeMetaModelIntoRawModel( model ).get();
-         final PrettyPrinter prettyPrinter = new PrettyPrinter( versionedModel, aspect.urn(), printWriter );
+         final Model model = aspect.accept( rdfModelCreatorVisitor, null ).model();
+         final PrettyPrinter prettyPrinter = new PrettyPrinter( model, aspect.urn(), printWriter );
          prettyPrinter.print();
       }
       return stringWriter.toString();

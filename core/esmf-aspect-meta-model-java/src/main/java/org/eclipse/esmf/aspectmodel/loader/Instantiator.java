@@ -15,7 +15,6 @@ package org.eclipse.esmf.aspectmodel.loader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +23,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.AspectLoadingException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.vocabulary.SAMM;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.CollectionValue;
@@ -39,8 +37,9 @@ import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.impl.DefaultCollectionValue;
 import org.eclipse.esmf.metamodel.impl.DefaultEntityInstance;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
-import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFList;
@@ -54,7 +53,6 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
    protected final ModelElementFactory modelElementFactory;
    protected Class<T> targetClass;
    protected Model model;
-   protected final RDFDatatype curieDataType = new CurieRdfType();
    protected final ValueInstantiator valueInstantiator;
 
    public Instantiator( final ModelElementFactory modelElementFactory, final Class<T> targetClass ) {
@@ -116,7 +114,7 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
     * @return The statement describing the datatype
     */
    private Statement getDataType( final Resource resource ) {
-      return Optional.ofNullable( resource.getPropertyResourceValue( SammNs.SAMM.baseCharacteristic() ) )
+      return Optional.ofNullable( resource.getPropertyResourceValue( SammNs.SAMMC.baseCharacteristic() ) )
             .map( this::getDataType )
             .orElseGet( () -> resource.getProperty( SammNs.SAMM.dataType() ) );
    }
@@ -219,11 +217,8 @@ public abstract class Instantiator<T extends ModelElement> extends AttributeValu
    }
 
    private java.util.Collection<Value> createEmptyCollectionForType( final CollectionValue.CollectionType collectionType ) {
-      if ( collectionType == CollectionValue.CollectionType.SORTEDSET ) {
+      if ( collectionType == CollectionValue.CollectionType.SORTEDSET || collectionType == CollectionValue.CollectionType.SET ) {
          return new LinkedHashSet<>();
-      }
-      if ( collectionType == CollectionValue.CollectionType.SET ) {
-         return new HashSet<>();
       }
       return new ArrayList<>();
    }

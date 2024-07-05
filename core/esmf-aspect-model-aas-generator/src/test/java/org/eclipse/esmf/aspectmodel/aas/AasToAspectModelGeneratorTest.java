@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -53,8 +51,7 @@ public class AasToAspectModelGeneratorTest {
    @ParameterizedTest
    @EnumSource( TestAspect.class )
    void testRoundtripConversion( final TestAspect testAspect ) throws DeserializationException {
-      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked(
-            TestResources.getModel( testAspect, KnownVersion.getLatest() ).get() );
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
       final Consumer<AasToAspectModelGenerator> assertForValidator = aspectModelGenerator ->
             assertThatCode( () -> {
                final List<Aspect> aspects = aspectModelGenerator.generateAspects();

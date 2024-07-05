@@ -48,7 +48,7 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;

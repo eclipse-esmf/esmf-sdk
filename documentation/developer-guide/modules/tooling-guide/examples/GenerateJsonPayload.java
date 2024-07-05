@@ -14,30 +14,27 @@
 package examples;
 
 // tag::imports[]
+import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.metamodel.AspectModel;
+// end::imports[]
+
 import java.io.File;
 import java.io.IOException;
-
-import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-// end::imports[]
 import org.junit.jupiter.api.Test;
 
 public class GenerateJsonPayload extends AbstractGenerator {
    @Test
    public void generate() throws IOException {
-      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
-
       // tag::generate[]
-      // Aspect as created by the AspectModelLoader
-      final Aspect aspect = // ...
+      // AspectModel as returned by the AspectModelLoader
+      final AspectModel aspectModel = // ...
             // end::generate[]
-            // exclude the actual loading from the example to reduce noise
-            AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
+            new AspectModelLoader().load(
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generate[]
 
-      final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( aspect );
+      final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( aspectModel.aspect() );
 
       // Variant 1: Direct generation into a String
       final String jsonString = generator.generateJson();

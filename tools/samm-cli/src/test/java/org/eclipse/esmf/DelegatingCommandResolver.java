@@ -17,12 +17,10 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-
-import io.vavr.control.Try;
+import org.eclipse.esmf.metamodel.AspectModel;
 
 /**
  * Utility class to help test custom model resolution mechanism. It simply wraps the FileSystemStrategy, delegates the resolution to it,
@@ -33,7 +31,7 @@ public class DelegatingCommandResolver {
       final Path target = Paths.get( DelegatingCommandResolver.class.getResource( "/" ).toURI() ).getParent();
       final Path modelsRoot = Paths.get( target.toString(), "classes", "valid", args[0] );
       final AspectModelUrn urn = AspectModelUrn.fromUrn( args[1] );
-      final Try<VersionedModel> resolution = new AspectModelResolver().resolveAspectModel( new FileSystemStrategy( modelsRoot ), urn );
-      resolution.get().getModel().write( System.out );
+      final AspectModel aspectModel = new AspectModelLoader( new FileSystemStrategy( modelsRoot ) ).load( urn );
+      aspectModel.mergedModel().write( System.out );
    }
 }

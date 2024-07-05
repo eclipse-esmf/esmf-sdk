@@ -20,8 +20,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -124,7 +124,7 @@ public class NumericTypeTraits {
     */
    public static Number getModelMinValue( final KnownVersion modelVersion, final Type dataType ) {
       final Resource dataTypeResource = ResourceFactory.createResource( dataType.getUrn() );
-      final Class<?> nativeType = DataType.getJavaTypeForMetaModelType( dataTypeResource );
+      final Class<?> nativeType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
       return getModelMinValue( dataTypeResource, nativeType );
    }
 
@@ -150,7 +150,7 @@ public class NumericTypeTraits {
     */
    public static Number getModelMaxValue( final KnownVersion modelVersion, final Type dataType ) {
       final Resource dataTypeResource = ResourceFactory.createResource( dataType.getUrn() );
-      final Class<?> nativeType = DataType.getJavaTypeForMetaModelType( dataTypeResource );
+      final Class<?> nativeType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
       return getModelMaxValue( dataTypeResource, nativeType );
    }
 

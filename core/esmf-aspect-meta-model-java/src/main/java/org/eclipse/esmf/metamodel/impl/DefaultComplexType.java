@@ -18,12 +18,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.ComplexType;
-import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.ComplexType;
+import org.eclipse.esmf.metamodel.Property;
 
 public class DefaultComplexType extends ModelElementImpl implements ComplexType {
    protected final List<Property> properties;
@@ -37,7 +37,8 @@ public class DefaultComplexType extends ModelElementImpl implements ComplexType 
          final List<? extends Property> properties,
          @SuppressWarnings( "checkstyle:ParameterName" ) final Optional<ComplexType> extends_,
          final List<AspectModelUrn> extendingElements,
-         final ModelElementFactory loadedElements ) {
+         final ModelElementFactory loadedElements
+   ) {
       super( metaModelBaseAttributes );
       this.properties = new ArrayList<>( properties );
       this.extends_ = extends_;

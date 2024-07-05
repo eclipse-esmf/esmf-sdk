@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 public interface HasDescription {
    String getName();

@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.metamodel.vocabulary.SAMM;
@@ -76,13 +75,13 @@ public class ModelCycleDetector {
 
    final List<Violation> cycleDetectionReport = new ArrayList<>();
 
-   public List<Violation> validateModel( final VersionedModel versionedModel ) {
+   public List<Violation> validateModel( final Model rawModel ) {
       discovered.clear();
       discoveredOptionals.clear();
       finished.clear();
       cycleDetectionReport.clear();
 
-      model = versionedModel.getModel();
+      model = rawModel;
       initializeQuery();
 
       // we only want to investigate properties that are directly reachable from an Aspect

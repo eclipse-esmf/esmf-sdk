@@ -13,24 +13,14 @@
 
 package org.eclipse.esmf.test;
 
-import java.io.StringWriter;
-
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
-import org.apache.jena.rdf.model.Model;
-
-public interface TestSharedModel {
+public interface TestSharedModel extends TestModel {
    String TEST_NAMESPACE = "urn:samm:org.eclipse.esmf.test.shared:1.0.0#";
 
    String getName();
 
    default AspectModelUrn getUrn() {
       return AspectModelUrn.fromUrn( TEST_NAMESPACE + getName() );
-   }
-
-   static String modelToString( final Model model ) {
-      final StringWriter stringWriter = new StringWriter();
-      model.write( stringWriter, "TURTLE" );
-      return stringWriter.toString();
    }
 }

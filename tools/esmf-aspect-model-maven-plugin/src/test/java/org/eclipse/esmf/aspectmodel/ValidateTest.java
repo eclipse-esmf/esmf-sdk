@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import java.io.File;
 
 import org.apache.maven.plugin.Mojo;
-import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 
 public class ValidateTest extends AspectModelMojoTest {
@@ -35,7 +35,7 @@ public class ValidateTest extends AspectModelMojoTest {
       final File testPom = getTestFile( "src/test/resources/validate-pom-invalid-aspect-model.xml" );
       final Mojo validate = lookupMojo( "validate", testPom );
       assertThatCode( validate::execute )
-            .isInstanceOf( MojoFailureException.class )
+            .isInstanceOf( MojoExecutionException.class )
             .hasMessageContaining( "Syntax error in line 17, column 2" );
    }
 }

@@ -18,13 +18,18 @@ import org.eclipse.esmf.samm.KnownVersion;
 // Since the class is an RDF vocabulary, naming rules for the class and for several methods (which should be named identically
 // to the corresponding model elements) are suppressed.
 @SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "CheckStyle" } )
-public class UNIT implements Namespace {
+public class UNIT implements RdfNamespace {
    private final KnownVersion metaModelVersion;
    private final SAMM samm;
 
    public UNIT( final KnownVersion metaModelVersion, final SAMM samm ) {
       this.metaModelVersion = metaModelVersion;
       this.samm = samm;
+   }
+
+   @Override
+   public String getShortForm() {
+      return "unit";
    }
 
    @Override

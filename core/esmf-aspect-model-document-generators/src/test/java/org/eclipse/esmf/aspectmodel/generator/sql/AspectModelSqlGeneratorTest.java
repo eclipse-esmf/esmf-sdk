@@ -20,10 +20,7 @@ import java.util.Locale;
 
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -34,8 +31,7 @@ public class AspectModelSqlGeneratorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
    void testDatabricksGeneration( final TestAspect testAspect ) {
-      final VersionedModel versionedModel = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
-      final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
       assertThatCode( () -> {
          final DatabricksSqlGenerationConfig dialectSpecificConfig = DatabricksSqlGenerationConfigBuilder.builder()
                .includeTableComment( true )

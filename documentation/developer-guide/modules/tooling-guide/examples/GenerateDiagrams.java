@@ -14,32 +14,32 @@
 package examples;
 
 // tag::imports[]
-
-import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator.Format;
-import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.metamodel.AspectModel;
+// end::imports[]
 
+import java.io.File;
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 public class GenerateDiagrams extends AbstractGenerator {
    @Test
    public void generateDiagram() throws IOException {
       // tag::generate[]
-      // AspectContext as returned by the AspectModelLoader
-      final Aspect model = // ...
+      // AspectModel as returned by the AspectModelLoader
+      final AspectModel aspectModel = // ...
             // end::generate[]
-            AspectModelLoader.getAspectContext(
-                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) ).get();
+            new AspectModelLoader().load(
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generate[]
 
-      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( model ); // <1>
+      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspectModel.aspect() ); // <1>
 
       // Variant 1: Generate a diagram in SVG format using @en descriptions and preferredNames from the model
       final OutputStream output = outputStreamForName( "diagram.svg" );

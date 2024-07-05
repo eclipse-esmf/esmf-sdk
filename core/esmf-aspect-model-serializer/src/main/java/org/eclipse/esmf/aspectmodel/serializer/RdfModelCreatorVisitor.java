@@ -25,11 +25,26 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.vocabulary.Namespace;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.AbstractEntity;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.BoundDefinition;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.CollectionValue;
+import org.eclipse.esmf.metamodel.ComplexType;
+import org.eclipse.esmf.metamodel.Constraint;
+import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.Event;
+import org.eclipse.esmf.metamodel.HasProperties;
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Operation;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.QuantityKind;
+import org.eclipse.esmf.metamodel.Scalar;
+import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.characteristic.Code;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Duration;
@@ -51,26 +66,10 @@ import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
 import org.eclipse.esmf.metamodel.constraint.LocaleConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
-import org.eclipse.esmf.metamodel.AbstractEntity;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.CollectionValue;
-import org.eclipse.esmf.metamodel.ComplexType;
-import org.eclipse.esmf.metamodel.Constraint;
-import org.eclipse.esmf.metamodel.EntityInstance;
-import org.eclipse.esmf.metamodel.Event;
-import org.eclipse.esmf.metamodel.HasProperties;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.Operation;
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.QuantityKind;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.BoundDefinition;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.rdf.model.Literal;
@@ -92,7 +91,7 @@ import org.apache.jena.vocabulary.XSD;
  */
 @SuppressWarnings( "squid:S3655" ) // Optional<AspectModelUrn> is checked with isEmpty()
 public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisitor.ElementModel, ModelElement>, Function<Aspect, Model> {
-   private final Namespace namespace;
+   private final RdfNamespace namespace;
    private final Map<ModelElement, Resource> anonymousResources = new HashMap<>();
    private final List<Resource> resourceList = new LinkedList<>();
    private final List<ComplexType> hasVisited = new LinkedList<>();
@@ -102,10 +101,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
     * E.g., a (Jena) Model that describes an (Aspect) Model element, the focus element is the resource
     * of the described element while the rest of the model are the corresponding assertions.
     */
-   @lombok.Value
-   public static class ElementModel {
-      Model model;
-      Optional<RDFNode> focusElement;
+   public record ElementModel( Model model, Optional<RDFNode> focusElement ) {
    }
 
    /**
@@ -113,7 +109,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
     *
     * @param namespace The namespace the model root element itself uses for its child elements
     */
-   public RdfModelCreatorVisitor( final Namespace namespace ) {
+   public RdfModelCreatorVisitor( final RdfNamespace namespace ) {
       this.namespace = namespace;
    }
 
@@ -172,8 +168,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
             .map( property -> {
                final Model propertyModel = ModelFactory.createDefaultModel();
                final ElementModel propertyResult = property.accept( this, element );
-               propertyModel.add( propertyResult.getModel() );
-               final Resource propertyResource = propertyResult.getFocusElement()
+               propertyModel.add( propertyResult.model() );
+               final Resource propertyResource = propertyResult.focusElement()
                      .map( RDFNode::asResource )
                      .orElseGet( () -> getElementResource( property ) );
 
@@ -230,7 +226,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
          final Type type = characteristic.getDataType().get();
          model.add( resource, SammNs.SAMM.dataType(), createResource( type.getUrn() ) );
          if ( type.is( ComplexType.class ) ) {
-            model.add( type.accept( this, characteristic ).getModel() );
+            model.add( type.accept( this, characteristic ).model() );
          }
       }
 
@@ -254,12 +250,12 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       if ( collection.getElementCharacteristic().isPresent() ) {
          final Characteristic elementCharacteristic = collection.getElementCharacteristic().get();
          model.add( resource, SammNs.SAMMC.elementCharacteristic(), getElementResource( elementCharacteristic ) );
-         model.add( elementCharacteristic.accept( this, collection ).getModel() );
+         model.add( elementCharacteristic.accept( this, collection ).model() );
       } else if ( collection.getDataType().isPresent() ) {
          final Type type = collection.getDataType().get();
          model.add( resource, SammNs.SAMM.dataType(), createResource( type.getUrn() ) );
          if ( !type.is( Scalar.class ) ) {
-            model.add( type.accept( this, collection ).getModel() );
+            model.add( type.accept( this, collection ).model() );
          }
       }
 
@@ -320,7 +316,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitEncodingConstraint( final EncodingConstraint encodingConstraint, final ModelElement context ) {
-      final Model model = visitConstraint( encodingConstraint, null ).getModel();
+      final Model model = visitConstraint( encodingConstraint, null ).model();
       final Resource resource = getElementResource( encodingConstraint );
       model.add( resource, RDF.type, SammNs.SAMMC.EncodingConstraint() );
       final Resource encoding = SammNs.SAMM.resource( encodingConstraint.getValue().name() );
@@ -330,7 +326,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitLanguageConstraint( final LanguageConstraint languageConstraint, final ModelElement context ) {
-      final Model model = visitConstraint( languageConstraint, null ).getModel();
+      final Model model = visitConstraint( languageConstraint, null ).model();
       final Resource resource = getElementResource( languageConstraint );
       model.add( resource, RDF.type, SammNs.SAMMC.LanguageConstraint() );
       model.add( resource, SammNs.SAMMC.languageCode(), serializePlainString( languageConstraint.getLanguageCode().toLanguageTag() ) );
@@ -339,7 +335,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitLocaleConstraint( final LocaleConstraint localeConstraint, final ModelElement context ) {
-      final Model model = visitConstraint( localeConstraint, null ).getModel();
+      final Model model = visitConstraint( localeConstraint, null ).model();
       final Resource resource = getElementResource( localeConstraint );
       model.add( resource, RDF.type, SammNs.SAMMC.LocaleConstraint() );
       model.add( resource, SammNs.SAMMC.localeCode(), serializePlainString( localeConstraint.getLocaleCode().toLanguageTag() ) );
@@ -348,15 +344,15 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitLengthConstraint( final LengthConstraint lengthConstraint, final ModelElement context ) {
-      final Model model = visitConstraint( lengthConstraint, null ).getModel();
+      final Model model = visitConstraint( lengthConstraint, null ).model();
       final Resource resource = getElementResource( lengthConstraint );
       lengthConstraint.getMinValue().stream().map( minValue ->
                   createStatement( resource, SammNs.SAMMC.minValue(),
-                        serializeTypedValue( minValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
+                        serializeTypedValue( minValue.toString(), SammXsdType.NON_NEGATIVE_INTEGER ) ) )
             .forEach( model::add );
       lengthConstraint.getMaxValue().stream().map( maxValue ->
                   createStatement( resource, SammNs.SAMMC.maxValue(),
-                        serializeTypedValue( maxValue.toString(), ExtendedXsdDataType.NON_NEGATIVE_INTEGER ) ) )
+                        serializeTypedValue( maxValue.toString(), SammXsdType.NON_NEGATIVE_INTEGER ) ) )
             .forEach( model::add );
       model.add( resource, RDF.type, SammNs.SAMMC.LengthConstraint() );
       return new ElementModel( model, Optional.of( resource ) );
@@ -364,24 +360,24 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitRangeConstraint( final RangeConstraint rangeConstraint, final ModelElement context ) {
-      final Model model = visitConstraint( rangeConstraint, null ).getModel();
+      final Model model = visitConstraint( rangeConstraint, null ).model();
       final Resource resource = getElementResource( rangeConstraint );
       model.add( resource, RDF.type, SammNs.SAMMC.RangeConstraint() );
       rangeConstraint.getMinValue().stream()
-            .flatMap( minValue -> minValue.accept( this, rangeConstraint ).getFocusElement().stream() )
+            .flatMap( minValue -> minValue.accept( this, rangeConstraint ).focusElement().stream() )
             .map( literal -> createStatement( resource, SammNs.SAMMC.minValue(), literal ) )
             .forEach( model::add );
       rangeConstraint.getMaxValue().stream()
-            .flatMap( maxValue -> maxValue.accept( this, rangeConstraint ).getFocusElement().stream() )
+            .flatMap( maxValue -> maxValue.accept( this, rangeConstraint ).focusElement().stream() )
             .map( literal -> createStatement( resource, SammNs.SAMMC.maxValue(), literal ) )
             .forEach( model::add );
       if ( rangeConstraint.getLowerBoundDefinition() != BoundDefinition.OPEN ) {
          model.add( resource, SammNs.SAMMC.lowerBoundDefinition(),
-               SammNs.SAMM.resource( rangeConstraint.getLowerBoundDefinition().toString().replace( " ", "_" ).toUpperCase() ) );
+               SammNs.SAMMC.resource( rangeConstraint.getLowerBoundDefinition().toString().replace( " ", "_" ).toUpperCase() ) );
       }
       if ( rangeConstraint.getUpperBoundDefinition() != BoundDefinition.OPEN ) {
          model.add( resource, SammNs.SAMMC.upperBoundDefinition(),
-               SammNs.SAMM.resource( rangeConstraint.getUpperBoundDefinition().toString().replace( " ", "_" ).toUpperCase() ) );
+               SammNs.SAMMC.resource( rangeConstraint.getUpperBoundDefinition().toString().replace( " ", "_" ).toUpperCase() ) );
       }
       return new ElementModel( model, Optional.of( resource ) );
    }
@@ -389,7 +385,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    @Override
    public ElementModel visitRegularExpressionConstraint( final RegularExpressionConstraint regularExpressionConstraint,
          final ModelElement context ) {
-      final Model model = visitConstraint( regularExpressionConstraint, null ).getModel();
+      final Model model = visitConstraint( regularExpressionConstraint, null ).model();
       final Resource resource = getElementResource( regularExpressionConstraint );
       model.add( resource, RDF.type, SammNs.SAMMC.RegularExpressionConstraint() );
       model.add( resource, SammNs.SAMM.value(), serializePlainString( regularExpressionConstraint.getValue() ) );
@@ -398,13 +394,13 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitFixedPointConstraint( final FixedPointConstraint fixedPointConstraint, final ModelElement context ) {
-      final Model model = visitConstraint( fixedPointConstraint, null ).getModel();
+      final Model model = visitConstraint( fixedPointConstraint, null ).model();
       final Resource resource = getElementResource( fixedPointConstraint );
       model.add( resource, RDF.type, SammNs.SAMMC.FixedPointConstraint() );
       model.add( resource, SammNs.SAMMC.integer(),
-            serializeTypedValue( fixedPointConstraint.getInteger().toString(), ExtendedXsdDataType.POSITIVE_INTEGER ) );
+            serializeTypedValue( fixedPointConstraint.getInteger().toString(), SammXsdType.POSITIVE_INTEGER ) );
       model.add( resource, SammNs.SAMMC.scale(),
-            serializeTypedValue( fixedPointConstraint.getScale().toString(), ExtendedXsdDataType.POSITIVE_INTEGER ) );
+            serializeTypedValue( fixedPointConstraint.getScale().toString(), SammXsdType.POSITIVE_INTEGER ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
@@ -423,7 +419,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       model.add( resource, RDF.type, SammNs.SAMMC.Duration() );
 
       getUnitStatement( duration, resource ).ifPresent( model::add );
-      duration.getUnit().map( unit -> unit.accept( this, duration ) ).ifPresent( elementModel -> model.add( elementModel.getModel() ) );
+      duration.getUnit().map( unit -> unit.accept( this, duration ) ).ifPresent( elementModel -> model.add( elementModel.model() ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
@@ -433,11 +429,11 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Resource resource = getElementResource( either );
       model.add( resource, RDF.type, SammNs.SAMMC.Either() );
       final ElementModel left = either.getLeft().accept( this, either );
-      left.getFocusElement().ifPresent( leftCharacteristic -> model.add( resource, SammNs.SAMMC.left(), leftCharacteristic ) );
-      model.add( left.getModel() );
+      left.focusElement().ifPresent( leftCharacteristic -> model.add( resource, SammNs.SAMMC.left(), leftCharacteristic ) );
+      model.add( left.model() );
       final ElementModel right = either.getRight().accept( this, either );
-      right.getFocusElement().ifPresent( rightCharacteristic -> model.add( resource, SammNs.SAMMC.right(), rightCharacteristic ) );
-      model.add( right.getModel() );
+      right.focusElement().ifPresent( rightCharacteristic -> model.add( resource, SammNs.SAMMC.right(), rightCharacteristic ) );
+      model.add( right.model() );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
@@ -445,14 +441,14 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
    public ElementModel visitEnumeration( final Enumeration enumeration, final ModelElement context ) {
       final Model model = createCharacteristicsModel( enumeration );
       final Resource resource = getElementResource( enumeration );
-      if ( !( enumeration.is( State.class ) ) ) {
+      if ( !(enumeration.is( State.class )) ) {
          model.add( resource, RDF.type, SammNs.SAMMC.Enumeration() );
       }
 
       final List<RDFNode> elements = enumeration.getValues().stream().flatMap( value -> {
          final ElementModel valueElementModel = value.accept( this, enumeration );
-         model.add( valueElementModel.getModel() );
-         return valueElementModel.getFocusElement().stream();
+         model.add( valueElementModel.model() );
+         return valueElementModel.focusElement().stream();
       } ).toList();
       model.add( resource, SammNs.SAMMC.values(), model.createList( elements.iterator() ) );
       return new ElementModel( model, Optional.of( resource ) );
@@ -466,8 +462,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       instance.getAssertions().forEach( ( key, value ) -> {
          final org.apache.jena.rdf.model.Property property = ResourceFactory.createProperty( key.urn().toString() );
          final ElementModel valueElementModel = value.accept( this, instance );
-         model.add( valueElementModel.getModel() );
-         valueElementModel.getFocusElement().ifPresent( elementValue -> model.add( resource, property, elementValue ) );
+         model.add( valueElementModel.model() );
+         valueElementModel.focusElement().ifPresent( elementValue -> model.add( resource, property, elementValue ) );
       } );
       return new ElementModel( model, Optional.of( resource ) );
    }
@@ -482,7 +478,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
          return new ElementModel( model, Optional.of( literal ) );
       }
 
-      final Optional<RDFDatatype> targetType = DataType.getAllSupportedTypes().stream()
+      final Optional<RDFDatatype> targetType = SammXsdType.ALL_TYPES.stream()
             .filter( dataType -> dataType.getURI().equals( type.getUrn() ) ).findAny();
       if ( targetType.isEmpty() || type.getUrn().equals( XSD.xstring.getURI() ) ) {
          return new ElementModel( model, Optional.of( ResourceFactory.createStringLiteral( value.getValue().toString() ) ) );
@@ -496,8 +492,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Model model = ModelFactory.createDefaultModel();
       final List<RDFNode> elements = collection.getValues().stream().flatMap( value -> {
          final ElementModel valueElementModel = value.accept( this, collection );
-         model.add( valueElementModel.getModel() );
-         return valueElementModel.getFocusElement().stream();
+         model.add( valueElementModel.model() );
+         return valueElementModel.focusElement().stream();
       } ).toList();
       final RDFNode rdfList = model.createList( elements.iterator() );
       return new ElementModel( model, Optional.of( rdfList ) );
@@ -505,12 +501,12 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public ElementModel visitState( final State state, final ModelElement context ) {
-      final Model model = visitEnumeration( state, null ).getModel();
+      final Model model = visitEnumeration( state, null ).model();
       final Resource resource = getElementResource( state );
       model.add( resource, RDF.type, SammNs.SAMMC.State() );
       final ElementModel defaultValueElementModel = state.getDefaultValue().accept( this, state );
-      model.add( defaultValueElementModel.getModel() );
-      defaultValueElementModel.getFocusElement()
+      model.add( defaultValueElementModel.model() );
+      defaultValueElementModel.focusElement()
             .ifPresent( defaultValue -> model.add( resource, SammNs.SAMMC.defaultValue(), defaultValue ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
@@ -531,8 +527,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
       measurement.getUnit().ifPresent( unit -> {
          final ElementModel unitModel = unit.accept( this, measurement );
-         model.add( unitModel.getModel() );
-         unitModel.getFocusElement().ifPresent( unitResource -> model.add( resource, SammNs.SAMMC.unit(), unitResource ) );
+         model.add( unitModel.model() );
+         unitModel.focusElement().ifPresent( unitResource -> model.add( resource, SammNs.SAMMC.unit(), unitResource ) );
       } );
       return new ElementModel( model, Optional.of( resource ) );
    }
@@ -545,8 +541,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
       quantifiable.getUnit().ifPresent( unit -> {
          final ElementModel unitModel = unit.accept( this, quantifiable );
-         model.add( unitModel.getModel() );
-         unitModel.getFocusElement().ifPresent( unitResource -> model.add( resource, SammNs.SAMMC.unit(), unitResource ) );
+         model.add( unitModel.model() );
+         unitModel.focusElement().ifPresent( unitResource -> model.add( resource, SammNs.SAMMC.unit(), unitResource ) );
       } );
       return new ElementModel( model, Optional.of( resource ) );
    }
@@ -576,7 +572,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
             .filter( Property.class::isInstance )
             .map( Property.class::cast )
             .map( property -> property.accept( this, structuredValue ) )
-            .forEach( elementModel -> model.add( elementModel.getModel() ) );
+            .forEach( elementModel -> model.add( elementModel.model() ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
@@ -587,13 +583,13 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       model.add( resource, RDF.type, SammNs.SAMMC.Trait() );
 
       final Resource baseCharacteristicResource = getElementResource( trait.getBaseCharacteristic() );
-      model.add( resource, SammNs.SAMM.baseCharacteristic(), baseCharacteristicResource );
-      model.add( trait.getBaseCharacteristic().accept( this, trait ).getModel() );
+      model.add( resource, SammNs.SAMMC.baseCharacteristic(), baseCharacteristicResource );
+      model.add( trait.getBaseCharacteristic().accept( this, trait ).model() );
 
       trait.getConstraints().forEach( constraint -> {
          final Resource constraintResource = getElementResource( constraint );
          model.add( resource, SammNs.SAMMC.constraint(), constraintResource );
-         model.add( constraint.accept( this, trait ).getModel() );
+         model.add( constraint.accept( this, trait ).model() );
       } );
       return new ElementModel( model, Optional.of( resource ) );
    }
@@ -608,12 +604,12 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       model.add( resource, SammNs.SAMM.operations(), model.createList(
             aspect.getOperations().stream().map( this::getElementResource ).iterator() ) );
       aspect.getOperations().stream().map( operation -> operation.accept( this, aspect ) )
-            .forEach( elementModel -> model.add( elementModel.getModel() ) );
+            .forEach( elementModel -> model.add( elementModel.model() ) );
       if ( !aspect.getEvents().isEmpty() ) {
          model.add( resource, SammNs.SAMM.events(), model.createList(
                aspect.getEvents().stream().map( this::getElementResource ).iterator() ) );
          aspect.getEvents().stream().map( event -> event.accept( this, aspect ) )
-               .forEach( elementModel -> model.add( elementModel.getModel() ) );
+               .forEach( elementModel -> model.add( elementModel.model() ) );
       }
       return new ElementModel( model, Optional.of( resource ) );
    }
@@ -630,10 +626,10 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
             final Resource propertyResource = createResource();
             final Resource superPropertyResource = getElementResource( superProperty );
             final ElementModel superPropertyElementModel = superProperty.accept( this, context );
-            model.add( superPropertyElementModel.getModel() );
+            model.add( superPropertyElementModel.model() );
             property.getCharacteristic().ifPresent( characteristic -> {
                final Resource characteristicResource = getElementResource( characteristic );
-               model.add( characteristic.accept( this, property ).getModel() );
+               model.add( characteristic.accept( this, property ).model() );
                model.add( propertyResource, SammNs.SAMM.characteristic(), characteristicResource );
                model.add( propertyResource, SammNs.SAMM._extends(), superPropertyResource );
             } );
@@ -651,14 +647,14 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
       property.getExampleValue().ifPresent( exampleValue -> {
          final ElementModel exampleValueElementModel = exampleValue.accept( this, property );
-         model.add( exampleValueElementModel.getModel() );
-         exampleValueElementModel.getFocusElement().ifPresent( exampleValueNode ->
+         model.add( exampleValueElementModel.model() );
+         exampleValueElementModel.focusElement().ifPresent( exampleValueNode ->
                model.add( resource, SammNs.SAMM.exampleValue(), exampleValueNode ) );
       } );
 
       property.getCharacteristic().ifPresent( characteristic -> {
          final Resource characteristicResource = getElementResource( characteristic );
-         model.add( characteristic.accept( this, property ).getModel() );
+         model.add( characteristic.accept( this, property ).model() );
          model.add( resource, SammNs.SAMM.characteristic(), characteristicResource );
       } );
 
@@ -674,11 +670,11 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final List<Resource> inputProperties = operation.getInput().stream().map( this::getElementResource ).toList();
       model.add( resource, SammNs.SAMM.input(), model.createList( inputProperties.iterator() ) );
       operation.getInput().stream().map( property -> property.accept( this, operation ) )
-            .forEach( elementModel -> model.add( elementModel.getModel() ) );
+            .forEach( elementModel -> model.add( elementModel.model() ) );
       operation.getOutput()
             .ifPresent( outputProperty -> model.add( resource, SammNs.SAMM.output(), getElementResource( outputProperty ) ) );
       operation.getOutput().map( outputProperty -> outputProperty.accept( this, operation ) )
-            .ifPresent( elementModel -> model.add( elementModel.getModel() ) );
+            .ifPresent( elementModel -> model.add( elementModel.model() ) );
       return new ElementModel( model, Optional.of( resource ) );
    }
 
@@ -715,7 +711,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
       final Resource resource = getElementResource( complexType );
       if ( complexType.getExtends().isPresent() ) {
          final ComplexType extendedComplexType = complexType.getExtends().get();
-         model.add( extendedComplexType.accept( this, extendedComplexType ).getModel() );
+         model.add( extendedComplexType.accept( this, extendedComplexType ).model() );
 
          final Resource extendedTypeResource = createResource( extendedComplexType.getUrn() );
          model.add( createStatement( resource, SammNs.SAMM._extends(), extendedTypeResource ) );
@@ -737,8 +733,8 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
          return new ElementModel( ModelFactory.createDefaultModel(),
                abstractEntity.isAnonymous() ? Optional.empty() : Optional.of( createResource( abstractEntity.getUrn() ) ) );
       }
-      final Model model = visitComplexType( abstractEntity, context ).getModel();
-      abstractEntity.getExtendingElements().forEach( complexType -> model.add( complexType.accept( this, complexType ).getModel() ) );
+      final Model model = visitComplexType( abstractEntity, context ).model();
+      abstractEntity.getExtendingElements().forEach( complexType -> model.add( complexType.accept( this, complexType ).model() ) );
       return new ElementModel( model, Optional.empty() );
    }
 
@@ -751,9 +747,10 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
          model.add( unitResource, RDF.type, SammNs.SAMM.Unit() );
          unit.getQuantityKinds().forEach( quantityKind -> {
             final ElementModel quantityKindModel = quantityKind.accept( this, context );
-            model.add( quantityKindModel.getModel() );
-            quantityKindModel.getFocusElement().ifPresent( quantityKindResource ->
-                  model.add( unitResource, SammNs.SAMM.quantityKind(), quantityKindResource ) );
+            model.add( quantityKindModel.model() );
+            final RDFNode quantityKindResource = quantityKindModel.focusElement()
+                  .orElseGet( () -> model.createResource( quantityKind.urn().toString() ) );
+            model.add( unitResource, SammNs.SAMM.quantityKind(), quantityKindResource );
          } );
          model.add( serializeDescriptions( unitResource, unit ) );
          unit.getSymbol().ifPresent( symbol -> model.add( unitResource, SammNs.SAMM.symbol(), serializePlainString( symbol ) ) );
@@ -778,6 +775,6 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    @Override
    public Model apply( final Aspect aspect ) {
-      return visitAspect( aspect, null ).getModel();
+      return visitAspect( aspect, null ).model();
    }
 }

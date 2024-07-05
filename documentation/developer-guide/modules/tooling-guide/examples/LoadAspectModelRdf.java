@@ -17,35 +17,35 @@ package examples;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.vocabulary.RDF;
-
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import io.vavr.control.Try;
+import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
+
+import org.apache.jena.vocabulary.RDF;
 // end::imports[]
+
 import org.junit.jupiter.api.Test;
 
 public class LoadAspectModelRdf {
    @Test
    public void loadAndResolveFromFile() {
-      // tag::loadAndResolveFromFile[]
-      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ); // <1>
-      final Try<VersionedModel> tryModel = AspectModelResolver.loadAndResolveModel( modelFile ); // <2>
+      // tag::loadModel[]
+      final AspectModel aspectModel = new AspectModelLoader().load(
+            // a File, InputStream or AspectModelUrn
+            // end::generate[]
+            new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" )
+            // tag::loadModel[]
+      );
 
-      // Let's do something with the loaded model on RDF level
-      tryModel.forEach( versionedModel -> { // <3>
-         final Model rdfModel = versionedModel.getModel();
-         final List<Statement> result = rdfModel.listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).toList();// <4>
-      } );
-      // end::loadAndResolveFromFile[]
+      // Do something with the Aspect Model on the RDF level.
+      // Example: List the URNs of all samm:Entitys
+      aspectModel.mergedModel().listStatements( null, RDF.type, SammNs.SAMM.Entity() )
+            .forEachRemaining( statement -> System.out.println( statement.getSubject().getURI() ) );
+      // end::loadModel[]
    }
 
    @Test
@@ -55,8 +55,8 @@ public class LoadAspectModelRdf {
       // see [.underline]#xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory structure]#
       final Path modelsRoot = Paths.get( "aspect-models" );
       final ResolutionStrategy fileSystemStrategy = new FileSystemStrategy( modelsRoot );
-      final Try<VersionedModel> tryModel = new AspectModelResolver().resolveAspectModel( fileSystemStrategy,
-            AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.examples.movement:1.0.0#Movement" ) );
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.examples.movement:1.0.0#Movement" );
+      final AspectModel result = new AspectModelLoader( fileSystemStrategy ).load( urn );
       // end::loadAndResolveFromUrn[]
    }
 }

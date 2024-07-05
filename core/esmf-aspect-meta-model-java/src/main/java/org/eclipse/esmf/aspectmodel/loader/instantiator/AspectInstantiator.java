@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -11,22 +11,22 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.metamodel.loader.instantiator;
+package org.eclipse.esmf.aspectmodel.loader.instantiator;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.aspectmodel.loader.Instantiator;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Event;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
-import org.eclipse.esmf.aspectmodel.loader.Instantiator;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Resource;
 

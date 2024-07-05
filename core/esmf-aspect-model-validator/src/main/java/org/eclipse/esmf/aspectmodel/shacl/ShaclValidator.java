@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.Constraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.SparqlConstraint;
@@ -118,13 +117,12 @@ public class ShaclValidator {
     * @param model the model to be validated
     * @return the list of {@link Violation}s if there are violations
     */
-   @SuppressWarnings( "UnstableApiUsage" ) // Usage of Streams.stream is deemed ok
-   public List<Violation> validateModel( final VersionedModel model ) {
-      final Map<Resource, List<Shape.Node>> sparqlTargetsWithShapes = findSparqlTargets( model.getRawModel() );
-      return Streams.stream( model.getRawModel().listStatements( null, RDF.type, (RDFNode) null ) )
+   public List<Violation> validateModel( final Model model ) {
+      final Map<Resource, List<Shape.Node>> sparqlTargetsWithShapes = findSparqlTargets( model );
+      return Streams.stream( model.listStatements( null, RDF.type, (RDFNode) null ) )
             .map( Statement::getSubject )
             .filter( Resource::isURIResource )
-            .flatMap( element -> validateElement( element, sparqlTargetsWithShapes, model.getModel() ).stream() )
+            .flatMap( element -> validateElement( element, sparqlTargetsWithShapes, model ).stream() )
             .toList();
    }
 

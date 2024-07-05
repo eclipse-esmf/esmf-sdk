@@ -27,7 +27,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Either;
 import org.eclipse.esmf.metamodel.characteristic.Enumeration;
@@ -44,8 +43,9 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
+import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -311,7 +311,7 @@ public class AspectModelJavaUtil {
                importTracker.importExplicit( LangString.class );
                return "LangString";
             }
-            final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource );
+            final Class<?> result = SammXsdType.getJavaTypeForMetaModelType( typeResource );
             importTracker.importExplicit( result );
             return result.getTypeName();
          }
@@ -330,7 +330,7 @@ public class AspectModelJavaUtil {
       if ( typeResource.getURI().equals( RDF.langString.getURI() ) ) {
          return Map.class;
       }
-      final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource );
+      final Class<?> result = SammXsdType.getJavaTypeForMetaModelType( typeResource );
       return result;
    }
 
@@ -440,7 +440,7 @@ public class AspectModelJavaUtil {
          final ValueInitializer valueInitializer ) {
       return property.getDataType().map( type -> {
          final Resource typeResource = ResourceFactory.createResource( type.getUrn() );
-         final Class<?> result = DataType.getJavaTypeForMetaModelType( typeResource );
+         final Class<?> result = SammXsdType.getJavaTypeForMetaModelType( typeResource );
          codeGenerationConfig.importTracker().importExplicit( result );
          return valueInitializer.apply( typeResource, value );
       } ).orElseThrow( () -> new CodeGenerationException(

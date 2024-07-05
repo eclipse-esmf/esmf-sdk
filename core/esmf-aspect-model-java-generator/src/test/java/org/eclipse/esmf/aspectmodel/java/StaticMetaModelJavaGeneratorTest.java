@@ -26,14 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
 import org.eclipse.esmf.metamodel.characteristic.impl.DefaultMeasurement;
-import org.eclipse.esmf.metamodel.datatypes.Curie;
+import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestSharedAspect;
 
@@ -42,7 +42,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
 
@@ -441,21 +440,16 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 3 );
 
-      final String latestMetaModelVersion = KnownVersion.getLatest().toString();
       final String expectedTestPropertyCharacteristicConstructorCall =
-            "new DefaultEnumeration(MetaModelBaseAttributes.builder().withUrn(AspectModelUrn.fromUrn(NAMESPACE + "
-                  + "\"TestEnumeration\")).build(), new DefaultScalar(\"http://www.w3.org/2001/XMLSchema#integer\"), new "
-                  + "ArrayList<Value>() {\n"
-                  + "\n"
-                  + "    {\n"
-                  + "        add(new DefaultScalarValue(new BigInteger(\"1\"), new DefaultScalar(\"http://www.w3"
-                  + ".org/2001/XMLSchema#integer\")));\n"
-                  + "        add(new DefaultScalarValue(new BigInteger(\"2\"), new DefaultScalar(\"http://www.w3"
-                  + ".org/2001/XMLSchema#integer\")));\n"
-                  + "        add(new DefaultScalarValue(new BigInteger(\"3\"), new DefaultScalar(\"http://www.w3"
-                  + ".org/2001/XMLSchema#integer\")));\n"
-                  + "    }\n"
-                  + "})";
+            """
+                  new DefaultEnumeration(MetaModelBaseAttributes.builder().withUrn(AspectModelUrn.fromUrn(NAMESPACE + "TestEnumeration")).build(), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer"), new ArrayList<Value>() {
+
+                      {
+                          add(new DefaultScalarValue(new BigInteger("1"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
+                          add(new DefaultScalarValue(new BigInteger("2"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
+                          add(new DefaultScalarValue(new BigInteger("3"), new DefaultScalar("http://www.w3.org/2001/XMLSchema#integer")));
+                      }
+                  })""";
 
       result.assertConstructorArgumentForProperties( "MetaAspectWithEnumAndOptionalEnumProperties",
             ImmutableMap.<String, String> builder().put( "TEST_PROPERTY", expectedTestPropertyCharacteristicConstructorCall )
@@ -526,7 +520,6 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 6 );
 
-      final String latestMetaModelVersion = KnownVersion.getLatest().toString();
       final String expectedTestPropertyCharacteristicConstructorCall =
             "new DefaultSingleEntity(MetaModelBaseAttributes.builder()"
                   + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCharacteristic\"))"
@@ -559,7 +552,6 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode().apply( getGenerators( aspect ) );
       result.assertNumberOfFiles( 6 );
 
-      final String latestMetaModelVersion = KnownVersion.getLatest().toString();
       final String expectedTestPropertyCharacteristicConstructorCall =
             "new DefaultCollection(MetaModelBaseAttributes.builder()"
                   + ".withUrn(AspectModelUrn.fromUrn(NAMESPACE + \"EntityCollectionCharacteristic\")).withDescription(Locale"
@@ -592,15 +584,14 @@ class StaticMetaModelJavaGeneratorTest extends StaticMetaModelGeneratorTest {
       assertThat( staticEntity.getComment() ).isEmpty();
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "versionsStartingWith2_0_0" )
-   void testGenerateAspectWithFileHeader( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   void testGenerateAspectWithFileHeader() throws IOException {
       final String currentWorkingDirectory = System.getProperty( "user.dir" );
       final File templateLibFile = Path.of( currentWorkingDirectory, "/templates", "/test-macro-lib.vm" ).toFile();
 
       final TestAspect aspect = TestAspect.ASPECT_WITH_COMPLEX_ENUM;
       final StaticClassGenerationResult result = TestContext.generateStaticAspectCode()
-            .apply( getGenerators( aspect, metaModelVersion, true, templateLibFile ) );
+            .apply( getGenerators( aspect, true, templateLibFile ) );
 
       final int currentYear = LocalDate.now().getYear();
       final String expectedCopyright = String.format( "Copyright (c) %s Test Inc. All rights reserved", currentYear );

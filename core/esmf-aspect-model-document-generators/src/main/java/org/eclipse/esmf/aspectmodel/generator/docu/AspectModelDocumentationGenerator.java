@@ -38,7 +38,7 @@ import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerato
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.visitor.AspectStreamTraversalVisitor;
+import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 
 import com.google.common.io.CharStreams;
 import org.apache.velocity.runtime.RuntimeConstants;

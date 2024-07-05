@@ -18,7 +18,6 @@
 #* @vtlvariable name="DatatypeConfigurationException" type="java.lang.Class<javax.xml.datatype.DatatypeConfigurationException>" *#
 #* @vtlvariable name="DatatypeConstants" type="java.lang.Class<javax.xml.datatype.DatatypeConstants>" *#
 #* @vtlvariable name="DatatypeFactory" type="java.lang.Class<javax.xml.datatype.DatatypeFactory>" *#
-#* @vtlvariable name="DataType" type="org.eclipse.esmf.aspectmodel.resolver.services.DataType" *#
 #* @vtlvariable name="dataType" type="java.lang.String" *#
 #* @vtlvariable name="deconstructor" type="org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor" *#
 #* @vtlvariable name="DefaultCharacteristic" type="java.lang.Class<org.eclipse.esmf.metamodel.impl.DefaultCharacteristic>" *#
@@ -63,7 +62,7 @@
 #* @vtlvariable name="JsonSerialize" type="java.lang.Class<com.fasterxml.jackson.databind.annotation.JsonSerialize>" *#
 #* @vtlvariable name="JsonValue" type="java.lang.Class<com.fasterxml.jackson.annotation.JsonValue>" *#
 #* @vtlvariable name="KnownVersion" type="java.lang.Class<org.eclipse.esmf.samm.KnownVersion>" *#
-#* @vtlvariable name="LangString" type="java.lang.Class<org.eclipse.esmf.metamodel.datatypes.LangString>)" *#
+#* @vtlvariable name="LangString" type="java.lang.Class<org.eclipse.esmf.metamodel.datatype.LangString>)" *#
 #* @vtlvariable name="LanguageConstraint" type="java.lang.Class<org.eclipse.esmf.metamodel.constraint.LanguageConstraint>" *#
 #* @vtlvariable name="LocaleConstraint" type="java.lang.Class<org.eclipse.esmf.metamodel.constraint.LocaleConstraint>" *#
 #* @vtlvariable name="LengthConstraint" type="java.lang.Class<org.eclipse.esmf.metamodel.constraint.LengthConstraint>" *#
@@ -85,6 +84,7 @@
 #* @vtlvariable name="RangeConstraint" type="java.lang.Class<org.eclipse.esmf.metamodel.constraint.RangeConstraint>" *#
 #* @vtlvariable name="RegularExpressionConstraint" type="java.lang.Class<org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint>" *#
 #* @vtlvariable name="ResourceFactory" type="org.apache.jena.rdf.model.ResourceFactory" *#
+#* @vtlvariable name="SammType" type="org.eclipse.esmf.metamodel.datatype.SammXsdType" *#
 #* @vtlvariable name="Scalar" type="java.lang.Class<org.eclipse.esmf.metamodel.Scalar>" *#
 #* @vtlvariable name="Set" type="java.lang.Class<org.eclipse.esmf.metamodel.characteristic.Set>" *#
 #* @vtlvariable name="SingleEntity" type="java.lang.Class<org.eclipse.esmf.metamodel.characteristic.SingleEntity>" *#

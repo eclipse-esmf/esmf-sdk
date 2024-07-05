@@ -26,11 +26,16 @@ import org.apache.jena.rdf.model.Resource;
 // Since the class is an RDF vocabulary, naming rules for the class and for several methods (which should be named identically
 // to the corresponding model elements) are suppressed.
 @SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "NewMethodNamingConvention" } )
-public class SAMMC implements Namespace {
+public class SAMMC implements RdfNamespace {
    private final KnownVersion metaModelVersion;
 
    public SAMMC( final KnownVersion metaModelVersion ) {
       this.metaModelVersion = metaModelVersion;
+   }
+
+   @Override
+   public String getShortForm() {
+      return "samm-c";
    }
 
    @Override

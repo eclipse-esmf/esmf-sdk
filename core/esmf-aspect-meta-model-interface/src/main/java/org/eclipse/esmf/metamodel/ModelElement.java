@@ -14,10 +14,11 @@
 package org.eclipse.esmf.metamodel;
 
 import static java.lang.System.identityHashCode;
+import static org.eclipse.esmf.metamodel.Namespace.ANONYMOUS;
 
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.ModelFile;
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -27,7 +28,7 @@ import org.eclipse.esmf.samm.KnownVersion;
  */
 public interface ModelElement extends HasDescription {
    default AspectModelUrn urn() {
-      return AspectModelUrn.fromUrn( "urn:samm:anonymous.elements:0.0.0#" + "x%08X".formatted( identityHashCode( this ) ) );
+      return AspectModelUrn.fromUrn( ANONYMOUS + "x%08X".formatted( identityHashCode( this ) ) );
    }
 
    @Deprecated( forRemoval = true )
@@ -40,13 +41,12 @@ public interface ModelElement extends HasDescription {
       return KnownVersion.getLatest();
    }
 
+   @Override
    default String getName() {
       return urn().getName();
    }
 
-   default Optional<ModelFile> getSourceFile() {
-      return Optional.empty();
-   }
+   AspectModelFile getSourceFile();
 
    /**
     * Determines whether the model element is identified by a proper Aspect Model URN.

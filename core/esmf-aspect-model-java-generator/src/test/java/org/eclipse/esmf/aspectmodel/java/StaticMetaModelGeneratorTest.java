@@ -22,11 +22,9 @@ import java.util.Optional;
 import org.eclipse.esmf.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.java.types.Either;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
 import org.eclipse.esmf.staticmetamodel.StaticProperty;
 import org.eclipse.esmf.staticmetamodel.StaticUnitProperty;
@@ -42,10 +40,9 @@ import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 
 abstract class StaticMetaModelGeneratorTest extends MetaModelVersions {
-   Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final KnownVersion version, final boolean executeLibraryMacros,
-         final File templateLibFile ) {
-      final VersionedModel model = TestResources.getModel( testAspect, version ).get();
-      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
+   Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final boolean executeLibraryMacros, final File templateLibFile ) {
+      final AspectModel aspectModel = TestResources.load( testAspect );
+      final Aspect aspect = aspectModel.aspect();
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( false )
             .executeLibraryMacros( executeLibraryMacros )
@@ -58,8 +55,8 @@ abstract class StaticMetaModelGeneratorTest extends MetaModelVersions {
    }
 
    Collection<JavaGenerator> getGenerators( final TestAspect testAspect ) {
-      final VersionedModel model = TestResources.getModel( testAspect ).get();
-      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
+      final AspectModel aspectModel = TestResources.load( testAspect );
+      final Aspect aspect = aspectModel.aspect();
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( false )
             .executeLibraryMacros( false )
@@ -71,8 +68,8 @@ abstract class StaticMetaModelGeneratorTest extends MetaModelVersions {
    }
 
    Collection<JavaGenerator> getGenerators( final TestSharedAspect testAspect ) {
-      final VersionedModel model = TestResources.getModel( testAspect ).get();
-      final Aspect aspect = AspectModelLoader.getSingleAspectUnchecked( model );
+      final AspectModel aspectModel = TestResources.load( testAspect );
+      final Aspect aspect = aspectModel.aspect();
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( false )
             .executeLibraryMacros( false )

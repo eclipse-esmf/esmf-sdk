@@ -15,24 +15,20 @@ package org.eclipse.esmf.aspectmodel.loader;
 
 import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 
-import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.vocabulary.RDF;
 
 /**
  * Creates new instances of {@link ScalarValue} from the value representation in RDF
  */
 public class ValueInstantiator {
-   private final RDFDatatype curieDataType = new CurieRdfType();
-
    /**
     * Creates a new scalar value from a lexical value representation.
     *
@@ -52,7 +48,7 @@ public class ValueInstantiator {
          return Optional.of( buildLanguageString( lexicalRepresentation, languageTag ) );
       }
 
-      return Stream.concat( ExtendedXsdDataType.SUPPORTED_XSD_TYPES.stream(), Stream.of( curieDataType ) )
+      return SammXsdType.ALL_TYPES.stream()
             .filter( type -> type.getURI().equals( datatypeUri ) )
             .map( type -> type.parse( lexicalRepresentation ) )
             .<ScalarValue> map( value -> new DefaultScalarValue( value, new DefaultScalar( datatypeUri ) ) )
