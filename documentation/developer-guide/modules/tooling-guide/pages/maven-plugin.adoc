@@ -522,55 +522,13 @@ Configuration Properties:
 | `outputDirectory` | The path to the directory where the generated JSON payload will be written to. | `String` | none | {ok}
 |===
 
-== Aspect Model Migration
-
-The `migrate` goal migrates the given Aspect Model to the latest version of the meta model. The
-default life cycle phase for the goal is `initialize`.
-
-Usage:
-
-[source,xml,subs=attributes+]
-----
-<build>
-  <plugins>
-     <plugin>
-        <artifactId>esmf-aspect-model-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <id>migrate-aspect-model</id>
-              <goals>
-                 <goal>migrate</goal>
-              </goals>
-           </execution>
-        </executions>
-        <configuration>
-           <modelsRootDirectory>$\{path-to-models-root}</modelsRootDirectory>
-           <includes>
-              <include>$\{urn-of-aspect-model-to-be-included}</include>
-           </includes>
-           <outputDirectory>$\{directory-for-generated-source-files}</outputDirectory>
-        </configuration>
-     </plugin>
-  </plugins>
-</build>
-----
-
-Configuration Properties:
-
-[width="100%", options="header", cols="20,50,10,10,10"]
-|===
-| Property | Description | Type | Default Value | Required
-| `detailedValidationMessages` | Detailed validation messages if the model can not be loaded | `Boolean` | `false` | {nok}
-| `modelsRootDirectory` | The path to the root directory containing the Aspect Model file(s). | `String` | `$\{basedir}/src/main/resources/aspects` | {nok}
-| `includes` | A list of Aspect Model URNs identifying the Aspect Models to be included in the plugin execution. | `String` | none | {ok}
-| `outputDirectory` | The path to the directory where the updated Aspect Model will be written to. | `String` | none | {ok}
-|===
-
 == Pretty Print
 
 The `prettyPrint` goal formats the given Aspect Model. The formatted file is written to the location
 specified in the `outputDirectory` property. The default life cycle phase for the goal is
-`generate-resources`.
+`generate-resources`. Note that the `prettyPrint` goal can also be used as a substitute of the
+now-removed `migrate` goal, since it implies loading and automatically migrating a model to the
+latest meta model version before it is pretty-printed.
 
 Usage:
 
