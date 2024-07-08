@@ -36,10 +36,10 @@ public class GenerateHtml extends AbstractGenerator {
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generate[]
-      final AspectModelDocumentationGenerator generator = // <2>
+      final AspectModelDocumentationGenerator generator = // <1>
             new AspectModelDocumentationGenerator( aspectModel.aspect() );
 
-      final Map<HtmlGenerationOption, String> options = Map.of(); // <3>
+      final Map<HtmlGenerationOption, String> options = Map.of(); // <2>
       generator.generate( this::outputStreamForName, options );
       // end::generate[]
    }
