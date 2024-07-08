@@ -15,10 +15,10 @@ package org.eclipse.esmf.metamodel.constraint.impl;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
-import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 
 public class DefaultRegularExpressionConstraint extends DefaultConstraint implements RegularExpressionConstraint {
    private final String value;

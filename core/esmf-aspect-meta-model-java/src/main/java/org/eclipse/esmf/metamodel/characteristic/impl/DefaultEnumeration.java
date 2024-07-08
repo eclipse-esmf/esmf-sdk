@@ -17,12 +17,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import org.eclipse.esmf.metamodel.characteristic.Enumeration;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.Value;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 
 @SuppressWarnings( "squid:S1150" ) // Sonar thinks this implements java.util.Enumeration, which it does not
 public class DefaultEnumeration extends DefaultCharacteristic implements Enumeration {

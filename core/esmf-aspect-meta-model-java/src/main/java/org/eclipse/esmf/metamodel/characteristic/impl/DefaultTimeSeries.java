@@ -16,11 +16,11 @@ package org.eclipse.esmf.metamodel.characteristic.impl;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import org.eclipse.esmf.metamodel.characteristic.TimeSeries;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.characteristic.TimeSeries;
 
 public class DefaultTimeSeries extends DefaultSortedSet implements TimeSeries {
 

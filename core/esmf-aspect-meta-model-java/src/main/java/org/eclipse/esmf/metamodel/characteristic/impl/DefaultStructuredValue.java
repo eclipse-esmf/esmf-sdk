@@ -18,11 +18,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 
 public class DefaultStructuredValue extends DefaultCharacteristic implements StructuredValue {
    private final String deconstructionRule;

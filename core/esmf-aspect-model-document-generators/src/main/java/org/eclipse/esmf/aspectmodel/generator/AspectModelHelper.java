@@ -21,8 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
-import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
@@ -30,7 +29,8 @@ import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
 
 public class AspectModelHelper {
    public List<Property> sortPropertiesByPreferredName( final List<Property> properties, final Locale locale ) {

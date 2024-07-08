@@ -15,12 +15,12 @@ package org.eclipse.esmf.aspectmodel.loader.instantiator;
 
 import java.nio.charset.Charset;
 
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.metamodel.constraint.EncodingConstraint;
-import org.eclipse.esmf.metamodel.constraint.impl.DefaultEncodingConstraint;
 import org.eclipse.esmf.aspectmodel.loader.Instantiator;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
+import org.eclipse.esmf.metamodel.constraint.EncodingConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultEncodingConstraint;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Resource;
 

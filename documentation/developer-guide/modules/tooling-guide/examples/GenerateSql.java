@@ -14,6 +14,9 @@
 package examples;
 
 // tag::imports[]
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -24,9 +27,8 @@ import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDef
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksType;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.metamodel.AspectModel;
 // end::imports[]
 
 import org.junit.jupiter.api.Test;

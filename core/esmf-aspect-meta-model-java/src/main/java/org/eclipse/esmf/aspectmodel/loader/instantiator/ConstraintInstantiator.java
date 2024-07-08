@@ -13,11 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel.loader.instantiator;
 
-import org.eclipse.esmf.metamodel.Constraint;
-import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 import org.eclipse.esmf.aspectmodel.loader.Instantiator;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
+import org.eclipse.esmf.metamodel.Constraint;
+import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 
 import org.apache.jena.rdf.model.Resource;
 

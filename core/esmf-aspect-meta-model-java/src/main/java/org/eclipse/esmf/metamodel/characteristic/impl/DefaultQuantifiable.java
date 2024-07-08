@@ -16,12 +16,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 
 public class DefaultQuantifiable extends DefaultCharacteristic implements Quantifiable {
    private final Optional<Unit> unit;

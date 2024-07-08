@@ -74,10 +74,10 @@ public final class DefaultAspectModelFile implements AspectModelFile {
          return false;
       }
       final DefaultAspectModelFile that = (DefaultAspectModelFile) obj;
-      return Objects.equals( sourceModel, that.sourceModel ) &&
-            Objects.equals( headerComment, that.headerComment ) &&
-            Objects.equals( sourceLocation, that.sourceLocation ) &&
-            Objects.equals( elements, that.elements );
+      return Objects.equals( sourceModel, that.sourceModel )
+            && Objects.equals( headerComment, that.headerComment )
+            && Objects.equals( sourceLocation, that.sourceLocation )
+            && Objects.equals( elements, that.elements );
    }
 
    @Override
@@ -87,10 +87,10 @@ public final class DefaultAspectModelFile implements AspectModelFile {
 
    @Override
    public String toString() {
-      return "DefaultAspectModelFile[" +
-            "sourceModel=" + sourceModel + ", " +
-            "headerComment=" + headerComment + ", " +
-            "sourceLocation=" + sourceLocation + ", " +
-            "elements=" + elements + ']';
+      return "DefaultAspectModelFile["
+            + "sourceModel=" + sourceModel + ", "
+            + "headerComment=" + headerComment + ", "
+            + "sourceLocation=" + sourceLocation + ", "
+            + "elements=" + elements + ']';
    }
 }

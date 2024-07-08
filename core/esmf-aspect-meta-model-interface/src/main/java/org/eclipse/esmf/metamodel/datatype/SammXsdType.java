@@ -20,13 +20,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import jakarta.xml.bind.DatatypeConverter;
 import org.apache.jena.datatypes.RDFDatatype;

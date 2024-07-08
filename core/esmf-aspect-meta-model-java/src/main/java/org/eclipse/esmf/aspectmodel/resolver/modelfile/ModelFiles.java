@@ -13,12 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.modelfile;
 
-import java.net.URI;
-
-import org.eclipse.esmf.aspectmodel.AspectModelFile;
-
-import org.apache.jena.rdf.model.Model;
-
 public final class ModelFiles {
    private ModelFiles() {
    }

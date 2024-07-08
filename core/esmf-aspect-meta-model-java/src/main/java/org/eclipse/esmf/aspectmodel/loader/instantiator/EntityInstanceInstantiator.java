@@ -13,10 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.loader.instantiator;
 
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.aspectmodel.loader.Instantiator;
 import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
+import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.EntityInstance;
 
 import org.apache.jena.rdf.model.Resource;
 

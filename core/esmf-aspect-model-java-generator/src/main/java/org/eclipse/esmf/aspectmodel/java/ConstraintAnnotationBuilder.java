@@ -19,13 +19,13 @@ import java.util.Optional;
 import org.eclipse.esmf.aspectmodel.java.rangeconstraint.AnnotationExpression;
 import org.eclipse.esmf.aspectmodel.java.rangeconstraint.AnnotationFactory;
 import org.eclipse.esmf.aspectmodel.java.rangeconstraint.AnnotationTypeMapping;
+import org.eclipse.esmf.metamodel.BoundDefinition;
+import org.eclipse.esmf.metamodel.Constraint;
+import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
 import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
-import org.eclipse.esmf.metamodel.Constraint;
-import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.BoundDefinition;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Pattern;

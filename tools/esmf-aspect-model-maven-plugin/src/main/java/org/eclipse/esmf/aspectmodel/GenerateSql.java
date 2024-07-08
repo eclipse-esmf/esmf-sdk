@@ -68,8 +68,8 @@ public class GenerateSql extends AspectModelMojo {
       validateParameters();
 
       final List<DatabricksColumnDefinition> customColumnDefinitions = customColumns.stream()
-         .map( columnDefintion -> new DatabricksColumnDefinitionParser( columnDefintion ).get() )
-         .toList();
+            .map( columnDefintion -> new DatabricksColumnDefinitionParser( columnDefintion ).get() )
+            .toList();
 
       final Set<Aspect> aspectModels = loadAspects();
       for ( final Aspect aspect : aspectModels ) {

@@ -16,10 +16,10 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.eclipse.esmf.metamodel.constraint.LanguageConstraint;
-import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.constraint.LanguageConstraint;
+import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 
 public class DefaultLanguageConstraint extends DefaultConstraint implements LanguageConstraint {
    private final Locale languageCode;

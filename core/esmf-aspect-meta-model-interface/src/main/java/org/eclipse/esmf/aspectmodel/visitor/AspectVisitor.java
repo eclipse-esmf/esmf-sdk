@@ -12,6 +12,26 @@
  */
 package org.eclipse.esmf.aspectmodel.visitor;
 
+import org.eclipse.esmf.metamodel.AbstractEntity;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.CollectionValue;
+import org.eclipse.esmf.metamodel.ComplexType;
+import org.eclipse.esmf.metamodel.Constraint;
+import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.EntityInstance;
+import org.eclipse.esmf.metamodel.Event;
+import org.eclipse.esmf.metamodel.HasProperties;
+import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Operation;
+import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.QuantityKind;
+import org.eclipse.esmf.metamodel.Scalar;
+import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.StructureElement;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.characteristic.Code;
 import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.characteristic.Duration;
@@ -34,26 +54,6 @@ import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
 import org.eclipse.esmf.metamodel.constraint.LocaleConstraint;
 import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
 import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
-import org.eclipse.esmf.metamodel.AbstractEntity;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.CollectionValue;
-import org.eclipse.esmf.metamodel.ComplexType;
-import org.eclipse.esmf.metamodel.Constraint;
-import org.eclipse.esmf.metamodel.Entity;
-import org.eclipse.esmf.metamodel.EntityInstance;
-import org.eclipse.esmf.metamodel.Event;
-import org.eclipse.esmf.metamodel.HasProperties;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.Operation;
-import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.QuantityKind;
-import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.StructureElement;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.metamodel.Value;
 
 /**
  * Visitor interface for the traversal of Aspect Meta Model instances

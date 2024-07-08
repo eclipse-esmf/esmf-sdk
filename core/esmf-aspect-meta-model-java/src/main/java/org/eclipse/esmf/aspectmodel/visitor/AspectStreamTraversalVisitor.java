@@ -19,12 +19,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
-import org.eclipse.esmf.metamodel.characteristic.Either;
-import org.eclipse.esmf.metamodel.characteristic.Enumeration;
-import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
-import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
-import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
@@ -37,6 +31,11 @@ import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Unit;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
 
 /**
  * Aspect Meta Model visitor that recursively traverses all elements of the model
@@ -175,7 +174,8 @@ public class AspectStreamTraversalVisitor implements AspectVisitor<Stream<ModelE
    }
 
    @Override
-   public Stream<ModelElement> visitCollection( final org.eclipse.esmf.metamodel.characteristic.Collection collection, final Void context ) {
+   public Stream<ModelElement> visitCollection( final org.eclipse.esmf.metamodel.characteristic.Collection collection,
+         final Void context ) {
       return Stream.concat(
             visitCharacteristic( (Characteristic) collection, null ),
             visit( collection.getElementCharacteristic() ) );

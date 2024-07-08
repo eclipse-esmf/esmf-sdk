@@ -17,8 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.loader.DefaultPropertyWrapper;
+import org.eclipse.esmf.aspectmodel.loader.Instantiator;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
 import org.eclipse.esmf.aspectmodel.resolver.exceptions.InvalidModelException;
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
@@ -26,10 +29,7 @@ import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
-import org.eclipse.esmf.aspectmodel.loader.DefaultPropertyWrapper;
-import org.eclipse.esmf.aspectmodel.loader.Instantiator;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.datatypes.BaseDatatype;
 import org.apache.jena.rdf.model.Literal;
