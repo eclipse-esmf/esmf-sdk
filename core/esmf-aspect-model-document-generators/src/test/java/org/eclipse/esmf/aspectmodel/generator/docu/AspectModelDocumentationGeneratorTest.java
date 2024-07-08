@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -31,8 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class AspectModelDocumentationGeneratorTest extends MetaModelVersions {
-
+public class AspectModelDocumentationGeneratorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
    public void testGeneration( final TestAspect testAspect ) {

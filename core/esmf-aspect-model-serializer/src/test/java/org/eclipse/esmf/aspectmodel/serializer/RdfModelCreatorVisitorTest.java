@@ -24,7 +24,6 @@ import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
@@ -33,9 +32,7 @@ import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class RdfModelCreatorVisitorTest extends MetaModelVersions {
-
-   @ParameterizedTest
+public class RdfModelCreatorVisitorTest {
    /*
     * Exclude the test models that contain unused elements; the resulting serialized models can
     * never be identical to the original because the unused elements are ignored when loading the
@@ -45,6 +42,7 @@ public class RdfModelCreatorVisitorTest extends MetaModelVersions {
     * an empty list as value) for now, so here the serialization will differ from the source model
     * as well.
     */
+   @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          "ASPECT_WITH_USED_AND_UNUSED_CHARACTERISTIC",
          "ASPECT_WITH_USED_AND_UNUSED_COLLECTION",

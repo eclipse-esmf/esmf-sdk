@@ -37,7 +37,8 @@ public class SerializeAspectModel {
       // tag::serialize[]
 
       // A String that contains the pretty printed Aspect Model
-      String aspectString = AspectSerializer.INSTANCE.apply( aspectModel.aspect() );
+      final String aspectString =
+          AspectSerializer.INSTANCE.apply( aspectModel.aspect() );
       // end::serialize[]
       assertThat( aspectString ).contains( ":Movement a samm:Aspect" );
       assertThat( aspectString ).contains( ":isMoving a samm:Property" );

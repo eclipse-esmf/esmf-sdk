@@ -27,7 +27,6 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestModel;
 
 import org.apache.jena.rdf.model.Model;
@@ -35,7 +34,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
 
-public class AspectModelResolverTest extends MetaModelVersions {
+public class AspectModelResolverTest {
    @Test
    public void testLoadDataModelExpectSuccess() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(

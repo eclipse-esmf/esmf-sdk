@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -33,8 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class LanguageCollectorTest extends MetaModelVersions {
-
+public class LanguageCollectorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class,
          mode = EnumSource.Mode.EXCLUDE,
