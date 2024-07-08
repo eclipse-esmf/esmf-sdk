@@ -278,6 +278,7 @@ Configuration Properties:
 | `outputFormat` | The format of the resulting OpenAPI Specification. May be either JSON or YAML. | `String` | none | {ok}
 | `separateFiles` | Create separate files for each schema. | `Boolean` | `false` | {nok}
 | `language` | The language from the model for which an OpenAPI specification should be generated. | `String` | en | {nok}
+| `templateFilePath` | The path to the file with a template for the resulting specification, including values undefined by the aspect's OpenAPI specification. The template can be in JSON or YAML format. | `String` | none | {nok}
 |===
 
 == Generate an AsyncAPI Specification from an Aspect Model
@@ -377,6 +378,7 @@ Configuration Properties:
 | `tableCommandPrefix` | The prefix to use for Databricks table creation commands. | `String` | `CREATE TABLE IF NOT EXISTS` | {nok}
 | `decimalPrecision` | The precision to use for Databricks decimal columns, between 1 and 38. See also notes in
   the xref:java-aspect-tooling.adoc#databricks-type-mapping[Databricks type mapping]. | `Integer` | 10 | {nok}
+| `customColumns` | Contains `<column>` elements, each of which defines a custom column to add. Column defintions follow the pattern `column_name DATATYPE [NOT NULL] [COMMENT 'custom']`. | `<column>`... | | {nok}
 |===
 
 == Generate Documentation for an Aspect Model

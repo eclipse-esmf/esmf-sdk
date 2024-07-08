@@ -46,8 +46,6 @@ public class AspectModelSqlGeneratorTest {
 
          assertThat( result ).contains( "TBLPROPERTIES ('x-samm-aspect-model-urn'='" );
          assertThat( result ).doesNotContain( "ARRAY<ARRAY" );
-
-         System.out.println( sqlArtifact.getContent() );
       } ).doesNotThrowAnyException();
    }
 }

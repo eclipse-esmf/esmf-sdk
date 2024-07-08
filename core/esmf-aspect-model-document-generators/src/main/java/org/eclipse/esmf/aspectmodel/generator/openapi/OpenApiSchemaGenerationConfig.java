@@ -13,7 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.generator.openapi;
 
+import static org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator.ObjectNodeExtension.getter;
+
 import java.util.Locale;
+import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.generator.GenerationConfig;
 
@@ -51,11 +54,34 @@ public record OpenApiSchemaGenerationConfig(
 
       boolean includePut,
 
-      boolean includePatch
+      boolean includePatch,
+      ObjectNode template
 ) implements GenerationConfig {
+
+   private static final String QUERIES_TEMPLATE_PATH = "__DEFAULT_QUERIES_TEMPLATE__";
+
    public OpenApiSchemaGenerationConfig {
       if ( locale == null ) {
          locale = Locale.ENGLISH;
       }
+   }
+
+   public ObjectNode queriesTemplate() {
+      return Optional.ofNullable( template )
+            .map( getter( "paths" ) )
+            .map( getter( QUERIES_TEMPLATE_PATH ) )
+            .orElse( null );
+   }
+
+   public ObjectNode documentTemplate() {
+      return Optional.ofNullable( template )
+            .map( ObjectNode::deepCopy )
+            .map( doc -> {
+               Optional.of( doc ).map( getter( "paths" ) ).ifPresent(
+                     paths -> paths.remove( QUERIES_TEMPLATE_PATH )
+               );
+               return doc;
+            } )
+            .orElse( null );
    }
 }

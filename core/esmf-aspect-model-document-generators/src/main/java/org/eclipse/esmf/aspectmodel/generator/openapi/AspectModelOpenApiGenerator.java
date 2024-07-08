@@ -13,7 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel.generator.openapi;
 
+import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator.ObjectNodeExtension.merge;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +28,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,13 +54,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.CaseFormat;
 import io.vavr.CheckedFunction1;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.stream.Streams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
 public class AspectModelOpenApiGenerator
-      implements ArtifactGenerator<String, JsonNode, Aspect, OpenApiSchemaGenerationConfig, OpenApiSchemaArtifact> {
+      implements ArtifactGenerator<String, ObjectNode, Aspect, OpenApiSchemaGenerationConfig, OpenApiSchemaArtifact> {
    private static final String APPLICATION_JSON = "application/json";
    private static final String CLIENT_ERROR = "ClientError";
    private static final String COMPONENTS_RESPONSES = "#/components/responses/";
@@ -122,17 +131,18 @@ public class AspectModelOpenApiGenerator
          final ObjectNode rootNode = getRootJsonNode( config.generateCommentForSeeAttributes() );
          final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );
 
-         ( (ObjectNode) rootNode.get( "info" ) ).put( "title", aspect.getPreferredName( config.locale() ) );
-         ( (ObjectNode) rootNode.get( "info" ) ).put( "version", apiVersion );
-         ( (ObjectNode) rootNode.get( "info" ) ).put( AbstractGenerator.SAMM_EXTENSION, aspect.urn().toString() );
+         ( (ObjectNode) rootNode.get( "info" ) )
+               .put( "title", aspect.getPreferredName( config.locale() ) )
+               .put( "version", apiVersion )
+               .put( AbstractGenerator.SAMM_EXTENSION, aspect.urn().toString() );
          setServers( rootNode, config.baseUrl(), apiVersion, READ_SERVER_PATH );
          final boolean includePaging = includePaging( aspect, config.pagingOption() );
          setOptionalSchemas( aspect, config, includePaging, rootNode );
          setAspectSchemas( aspect, config, rootNode );
          setRequestBodies( aspect, config, rootNode );
          setResponseBodies( aspect, rootNode, includePaging );
-         rootNode.set( "paths", getPathsNode( aspect, config, apiVersion, config.properties() ) );
-         return new OpenApiSchemaArtifact( aspect.getName(), rootNode );
+         rootNode.set( "paths", getPathsNode( aspect, config, apiVersion, config.properties(), config.queriesTemplate() ) );
+         return new OpenApiSchemaArtifact( aspect.getName(), merge( rootNode, config.documentTemplate() ) );
       } catch ( final Exception exception ) {
          LOG.error( "There was an exception during the read of the root or the validation.", exception );
       }
@@ -144,7 +154,7 @@ public class AspectModelOpenApiGenerator
     *
     * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
     * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
-    * Otherwise only the major part of the Aspect Version is used as the version of the API.
+    * Otherwise, only the major part of the Aspect Version is used as the version of the API.
     * @param baseUrl the base URL for the Aspect API
     * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
     * from the Aspect name
@@ -175,7 +185,7 @@ public class AspectModelOpenApiGenerator
     *
     * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
     * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
-    * Otherwise only the major part of the Aspect Version is used as the version of the API.
+    * Otherwise, only the major part of the Aspect Version is used as the version of the API.
     * @param baseUrl the base URL for the Aspect API
     * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
     * from the Aspect name.
@@ -208,7 +218,7 @@ public class AspectModelOpenApiGenerator
     *
     * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
     * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
-    * Otherwise only the major part of the Aspect Version is used as the version of the API.
+    * Otherwise, only the major part of the Aspect Version is used as the version of the API.
     * @param baseUrl the base URL for the Aspect API
     * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
     * from the Aspect name
@@ -242,7 +252,7 @@ public class AspectModelOpenApiGenerator
       final ArrayNode arrayNode = objectNode.putArray( "servers" );
       final ObjectNode node = FACTORY.objectNode();
       final ObjectNode variables = FACTORY.objectNode();
-      node.put( "url", baseUrl + String.format( endPointPath, apiVersion ) );
+      node.put( "url", baseUrl + format( endPointPath, apiVersion ) );
       node.set( "variables", variables );
       variables.set( "api-version", FACTORY.objectNode().put( "default", apiVersion ) );
       arrayNode.add( node );
@@ -263,8 +273,7 @@ public class AspectModelOpenApiGenerator
          final List<String> dynamicParameters = Pattern.compile( "[{]\\S+?[}]" ).matcher( resourcePath ).results()
                .map( match -> match.group( 0 ) ).toList();
          if ( !dynamicParameters.isEmpty() && properties == null ) {
-            final String errorString = String
-                  .format( "Resource path contains properties %s, but has no properties map.", dynamicParameters );
+            final String errorString = format( "Resource path contains properties %s, but has no properties map.", dynamicParameters );
             LOG.error( errorString );
             throw new IllegalArgumentException( errorString );
          }
@@ -274,8 +283,8 @@ public class AspectModelOpenApiGenerator
                validateParameterName( nodeName );
                final JsonNode node = properties.get( nodeName );
                if ( node == null ) {
-                  final String errorString = String
-                        .format( "Resource path contains property %s, but can't be found in properties map.%s", nodeName, properties );
+                  final String errorString = format( "Resource path contains property %s, but can't be found in properties map.%s",
+                        nodeName, properties );
                   LOG.error( errorString );
                   throw new IllegalArgumentException( errorString );
                }
@@ -289,9 +298,8 @@ public class AspectModelOpenApiGenerator
    private void validateParameterName( final String nodeName ) {
       final Matcher a = Pattern.compile( PARAMETER_CONVENTION ).matcher( nodeName );
       if ( !a.matches() ) {
-         final String errorString = String
-               .format( "The parameter name %s is not in the correct form. A valid form is described as: %s", nodeName,
-                     PARAMETER_CONVENTION );
+         final String errorString = format( "The parameter name %s is not in the correct form. A valid form is described as: %s", nodeName,
+               PARAMETER_CONVENTION );
          LOG.error( errorString );
          throw new IllegalArgumentException( errorString );
       }
@@ -321,15 +329,15 @@ public class AspectModelOpenApiGenerator
       }
    }
 
-   @SuppressWarnings( "squid:S3655" ) // An Aspect always has an URN
+   @SuppressWarnings( "squid:S3655" ) // An Aspect always has a URN
    private String getApiVersion( final Aspect aspect, final boolean useSemanticVersion ) {
       final String aspectVersion = aspect.urn().getVersion();
       if ( useSemanticVersion ) {
-         return String.format( "v%s", aspectVersion );
+         return format( "v%s", aspectVersion );
       }
       final int endIndexOfMajorVersion = aspectVersion.indexOf( '.' );
       final String majorAspectVersion = aspectVersion.substring( 0, endIndexOfMajorVersion );
-      return String.format( "v%s", majorAspectVersion );
+      return format( "v%s", majorAspectVersion );
    }
 
    private void setResponseBodies( final Aspect aspect, final ObjectNode jsonNode, final boolean includePaging ) {
@@ -426,7 +434,7 @@ public class AspectModelOpenApiGenerator
     *
     * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
     * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
-    * Otherwise only the major part of the Aspect Version is used as the version of the API.
+    * Otherwise, only the major part of the Aspect Version is used as the version of the API.
     * @param baseUrl the base URL for the Aspect API
     * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
     * from the Aspect name
@@ -459,7 +467,7 @@ public class AspectModelOpenApiGenerator
     *
     * @param aspect the Aspect Model for which the OpenAPI specification will be generated.
     * @param useSemanticVersion if set to true, the complete semantic version of the Aspect Model will be used as the version of the API.
-    * Otherwise only the major part of the Aspect Version is used as the version of the API.
+    * Otherwise, only the major part of the Aspect Version is used as the version of the API.
     * @param baseUrl the base URL for the Aspect API
     * @param resourcePath the resource path for the Aspect API endpoints. If no resource path is given, the resource path will be derived
     * from the Aspect name
@@ -491,7 +499,7 @@ public class AspectModelOpenApiGenerator
    }
 
    private ObjectNode getPathsNode( final Aspect aspect, final OpenApiSchemaGenerationConfig config, final String apiVersion,
-         final ObjectNode properties ) throws IOException {
+         final ObjectNode properties, final ObjectNode queriesTemplate ) throws IOException {
       final ObjectNode endpointPathsNode = FACTORY.objectNode();
       final ObjectNode pathNode = FACTORY.objectNode();
       final ObjectNode propertiesNode = getPropertiesNode( config.resourcePath(), properties );
@@ -507,7 +515,9 @@ public class AspectModelOpenApiGenerator
          PAGING_GENERATOR.setPagingProperties( aspect, config.pagingOption(), propertiesNode );
       }
 
-      pathNode.set( FIELD_GET, getRequestEndpointsRead( aspect, propertiesNode, config.resourcePath() ) );
+      pathNode.set( FIELD_GET,
+            merge( getRequestEndpointsRead( aspect, propertiesNode, config.resourcePath() ),
+                  queriesTemplate, FIELD_GET ) );
 
       boolean includeCrud = config.includeCrud();
 
@@ -526,16 +536,15 @@ public class AspectModelOpenApiGenerator
       if ( config.includeQueryApi() ) {
          final ObjectNode includeQueryPathNode = FACTORY.objectNode();
          includeQueryPathNode.set( FIELD_POST,
-               getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ) );
-         endpointPathsNode.set( config.baseUrl() + String.format( QUERY_SERVER_PATH, apiVersion ) + finalResourcePath,
+               merge( getRequestEndpointFilter( aspect, propertiesNode, config.baseUrl(), apiVersion, config.resourcePath() ),
+                     queriesTemplate, FIELD_POST ) );
+         endpointPathsNode.set( String.format( QUERY_SERVER_PATH, apiVersion ) + finalResourcePath,
                includeQueryPathNode );
       }
 
       final Optional<ObjectNode> operationsNode = getRequestEndpointOperations( aspect, propertiesNode, config.baseUrl(), apiVersion,
-            config.resourcePath() );
-      operationsNode.ifPresent(
-            jsonNodes -> endpointPathsNode
-                  .set( String.format( OPERATIONS_ENDPOINT_PATH, finalResourcePath ), jsonNodes ) );
+            config.resourcePath(), queriesTemplate );
+      operationsNode.ifPresent( ops -> endpointPathsNode.set( format( OPERATIONS_ENDPOINT_PATH, finalResourcePath ), ops ) );
       return endpointPathsNode;
    }
 
@@ -544,9 +553,9 @@ public class AspectModelOpenApiGenerator
    }
 
    private Optional<ObjectNode> getRequestEndpointOperations( final Aspect aspect, final ObjectNode parameterNode, final String baseUrl,
-         final String apiVersion, final String resourcePath ) {
+         final String apiVersion, final String resourcePath, ObjectNode queriesTemplate ) {
       if ( !aspect.getOperations().isEmpty() ) {
-         final ObjectNode postNode = FACTORY.objectNode();
+
          final ObjectNode objectNode = FACTORY.objectNode();
          setServers( objectNode, baseUrl, apiVersion, OPERATIONS_SERVER_PATH );
          objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
@@ -557,7 +566,9 @@ public class AspectModelOpenApiGenerator
          objectNode.set( FIELD_RESPONSES, responseNode );
          responseNode.set( "200", FACTORY.objectNode().put( REF, COMPONENTS_RESPONSES + FIELD_OPERATION_RESPONSE ) );
          setErrorResponses( responseNode );
-         postNode.set( FIELD_POST, objectNode );
+
+         final ObjectNode postNode = FACTORY.objectNode();
+         postNode.set( FIELD_POST, merge( objectNode, queriesTemplate, FIELD_POST ) );
          return Optional.of( postNode );
       }
       return Optional.empty();
@@ -738,6 +749,99 @@ public class AspectModelOpenApiGenerator
             final JsonNode node = definitionsNode.get( nodeName );
             rootSchemaNode.set( nodeName, node );
          }
+      }
+   }
+
+   static final class ObjectNodeExtension {
+
+      static Function<ObjectNode, ObjectNode> getter( final String propName ) {
+         return node -> (ObjectNode) node.get( propName );
+      }
+
+      static ObjectNode merge( final ObjectNode node, final ObjectNode extension ) {
+         if ( extension == null || extension.isEmpty() ) {
+            return node;
+         }
+         final ObjectNode result = node.deepCopy();
+
+         return mergeObjectNode( result, extension );
+      }
+
+      public static ObjectNode merge( final ObjectNode node, final ObjectNode extension, final String field ) {
+         return ofNullable( extension ).map( getter( field ) ).map( ext -> merge( node.deepCopy(), ext ) ).orElse( node );
+      }
+
+      private static ObjectNode mergeObjectNode( final ObjectNode node, final ObjectNode extension ) {
+         if ( extension == null || extension.isEmpty() ) {
+            return node;
+         }
+         //  cycle for result.fields()
+         extension.fields().forEachRemaining( entry -> {
+            final String key = entry.getKey();
+            final JsonNode value = entry.getValue();
+
+            if ( node.has( key ) ) {
+               final JsonNode resultValue = node.get( key );
+               if ( resultValue.isObject() && value.isObject() ) {
+                  node.set( key, mergeObjectNode( (ObjectNode) resultValue, (ObjectNode) value ) );
+               } else if ( resultValue.isArray() && value.isArray() ) {
+                  node.set( key, mergeArrayNode( (ArrayNode) resultValue, (ArrayNode) value ) );
+               }
+            } else {
+               node.set( key, value );
+            }
+         } );
+         return node;
+      }
+
+      private static ArrayNode mergeArrayNode( final ArrayNode node, final ArrayNode extension ) {
+         ArrayNode result = node;
+         result = mergeValueNodeArray( result, extension );
+         result = mergeObjectNodeArray( result, extension );
+         return result;
+      }
+
+      private static ArrayNode mergeValueNodeArray( final ArrayNode node, final ArrayNode extension ) {
+         if ( IterableUtils.matchesAny( node, nd -> !nd.isValueNode() )
+               || IterableUtils.matchesAny( extension, nd -> !nd.isValueNode() ) ) {
+            return node;
+         }
+         final Set<JsonNode> original = Streams.of( node ).collect( toSet() );
+         final ArrayNode result = node.deepCopy();
+         extension.forEach( nd -> {
+            if ( !original.contains( nd ) ) {
+               result.add( nd );
+            }
+         } );
+         return result;
+      }
+
+      private static ArrayNode mergeObjectNodeArray( final ArrayNode node, final ArrayNode extension ) {
+         if ( IterableUtils.matchesAny( node, nd -> !nd.isObject() )
+               || IterableUtils.matchesAny( extension, nd -> !nd.isObject() ) ) {
+            return node;
+         }
+
+         final Function<String, Function<JsonNode, String>> getText = fieldName -> objNode ->
+               ofNullable( objNode.get( fieldName ) )
+                     .filter( Predicate.not( JsonNode::isNull ) )
+                     .map( JsonNode::asText )
+                     .orElse( null );
+
+         final Set<JsonNode> original = Streams.of( node ).collect( toSet() );
+         final Set<String> originalNames = original.stream().map( getText.apply( "name" ) ).filter( Objects::nonNull ).collect( toSet() );
+         final Set<String> originalUrls = original.stream().map( getText.apply( "url" ) ).filter( Objects::nonNull ).collect( toSet() );
+
+         final ArrayNode result = node.deepCopy();
+         extension.forEach( nd -> {
+            if ( !original.contains( nd )
+                  && !originalNames.contains( getText.apply( "name" ).apply( nd ) )
+                  && !originalUrls.contains( getText.apply( "url" ).apply( nd ) )
+            ) {
+               result.add( nd );
+            }
+         } );
+         return result;
       }
    }
 }

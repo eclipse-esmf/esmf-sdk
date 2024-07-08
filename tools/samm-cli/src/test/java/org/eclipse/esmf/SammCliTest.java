@@ -1040,6 +1040,15 @@ class SammCliTest extends MetaModelVersions {
       assertThat( result.stderr() ).isEmpty();
    }
 
+   @Test
+   void testAspectToSqlWithCustomColumnToStdout() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "to", "sql",
+            "--custom-column", "custom ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
+      assertThat( result.stdout() ).contains( "CREATE TABLE" );
+      assertThat( result.stdout() ).contains( "custom ARRAY<STRING> NOT NULL COMMENT 'Custom column'" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
    /**
     * Returns the File object for a test model file
     */

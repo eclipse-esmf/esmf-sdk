@@ -15,12 +15,15 @@ package org.eclipse.esmf.aspectmodel;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.sql.AspectModelSqlGenerator;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlArtifact;
 import org.eclipse.esmf.aspectmodel.generator.sql.SqlGenerationConfig;
+import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinition;
+import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinitionParser;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -57,9 +60,16 @@ public class GenerateSql extends AspectModelMojo {
    @Parameter( defaultValue = "denormalized" )
    private String strategy = SqlGenerationConfig.MappingStrategy.DENORMALIZED.toString().toLowerCase();
 
+   @Parameter( property = "column" )
+   private List<String> customColumns = List.of();
+
    @Override
    public void execute() throws MojoExecutionException {
       validateParameters();
+
+      final List<DatabricksColumnDefinition> customColumnDefinitions = customColumns.stream()
+         .map( columnDefintion -> new DatabricksColumnDefinitionParser( columnDefintion ).get() )
+         .toList();
 
       final Set<Aspect> aspectModels = loadAspects();
       for ( final Aspect aspect : aspectModels ) {
@@ -70,6 +80,7 @@ public class GenerateSql extends AspectModelMojo {
                      .includeColumnComments( includeColumnComments )
                      .createTableCommandPrefix( tableCommandPrefix )
                      .decimalPrecision( decimalPrecision )
+                     .customColumns( customColumnDefinitions )
                      .build();
          final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() ),
                SqlGenerationConfig.MappingStrategy.valueOf( strategy.toUpperCase() ), generatorConfig );

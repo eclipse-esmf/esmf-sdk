@@ -53,8 +53,9 @@ pipeline {
                     sh "mkdir -p signed_dir"
                     sh "find unpack_dir -name '*.dll' -exec mv {} signed_dir \\;"
                     sh "curl -o signed_dir/samm.exe -F file=@unpack_dir/samm.exe https://cbi.eclipse.org/authenticode/sign"
-                    sh "cd signed_dir"
-                    sh "zip -r ../samm-cli-${env.version}-windows-x86_64.zip *"
+                    dir('signed_dir') {
+                        sh "zip -r ../samm-cli-${env.version}-windows-x86_64.zip *"
+                    }
                 }
             }
         }

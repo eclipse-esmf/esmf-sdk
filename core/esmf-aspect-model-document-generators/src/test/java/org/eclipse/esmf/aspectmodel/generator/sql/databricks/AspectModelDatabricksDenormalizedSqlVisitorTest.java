@@ -11,35 +11,20 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.generator.sql;
+package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelDatabricksDenormalizedSqlVisitor;
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelDatabricksDenormalizedSqlVisitorContextBuilder;
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
-import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
-import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.test.TestAspect;
-import org.eclipse.esmf.test.TestResources;
 
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings( "checkstyle:LineLength" )
-public class AspectModelDatabricksDenormalizedSqlVisitorTest {
-   private String sql( final TestAspect testAspect, final DatabricksSqlGenerationConfig config ) {
-      final Aspect aspect = TestResources.load( testAspect ).aspect();
-      return aspect.accept( new AspectModelDatabricksDenormalizedSqlVisitor( config ),
-            AspectModelDatabricksDenormalizedSqlVisitorContextBuilder.builder().build() );
-   }
-
-   private String sql( final TestAspect testAspect ) {
-      final DatabricksSqlGenerationConfig config = new DatabricksSqlGenerationConfig();
-      return sql( testAspect, config );
-   }
-
+public class AspectModelDatabricksDenormalizedSqlVisitorTest extends DatabricksTestBase {
    @Test
    void testAspectWithAbstractEntity() {
       assertThat( sql( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY ) ).isEqualTo( """
@@ -303,11 +288,11 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest {
    void testAspectWithMultipleEntitiesOnMultipleLevels() {
       assertThat( sql( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_ON_MULTIPLE_LEVELS ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_multiple_entities_on_multiple_levels (
-              test_entity_one__test_local_date_time STRING NOT NULL,
+              test_entity_one__test_local_date_time TIMESTAMP NOT NULL,
               test_entity_one__random_value STRING NOT NULL,
               test_entity_one__test_third_entity__test_string STRING NOT NULL,
               test_entity_one__test_third_entity__test_float FLOAT NOT NULL,
-              test_entity_two__test_local_date_time STRING NOT NULL,
+              test_entity_two__test_local_date_time TIMESTAMP NOT NULL,
               test_entity_two__random_value STRING NOT NULL,
               test_entity_two__test_third_entity__test_string STRING NOT NULL,
               test_entity_two__test_third_entity__test_float FLOAT NOT NULL,
@@ -364,7 +349,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest {
       assertThat( sql( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTIES ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_optional_properties (
               number_property DECIMAL,
-              timestamp_property STRING NOT NULL
+              timestamp_property TIMESTAMP NOT NULL
             )
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithOptionalProperties');
             """ );
@@ -391,7 +376,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest {
               test STRING NOT NULL COMMENT 'This is a test property.'
             )
             COMMENT 'This is a test description'
-            TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithPropertyWithPayloadName'); 
+            TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithPropertyWithPayloadName');
             """ );
    }
 
@@ -437,7 +422,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest {
               byte_property TINYINT NOT NULL,
               curie_property STRING NOT NULL,
               date_property STRING NOT NULL,
-              date_time_property STRING NOT NULL,
+              date_time_property TIMESTAMP NOT NULL,
               date_time_stamp_property TIMESTAMP NOT NULL,
               day_time_duration STRING NOT NULL,
               decimal_property DECIMAL(10) NOT NULL,
@@ -486,7 +471,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest {
    void testAspectWithTimeSeries() {
       assertThat( sql( TestAspect.ASPECT_WITH_TIME_SERIES ) ).isEqualTo( """
             CREATE TABLE IF NOT EXISTS aspect_with_time_series (
-              test_property ARRAY<STRUCT<value: STRING NOT NULL COMMENT 'The value that was recorded and is part of a time series.', timestamp: STRING NOT NULL COMMENT 'The specific point in time when the corresponding value was recorded.'>> NOT NULL COMMENT 'This is a test property.'
+              test_property ARRAY<STRUCT<value: STRING NOT NULL COMMENT 'The value that was recorded and is part of a time series.', timestamp: TIMESTAMP NOT NULL COMMENT 'The specific point in time when the corresponding value was recorded.'>> NOT NULL COMMENT 'This is a test property.'
             )
             COMMENT 'This is a test description'
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithTimeSeries');
@@ -501,6 +486,29 @@ public class AspectModelDatabricksDenormalizedSqlVisitorTest {
             )
             COMMENT 'This is a test description'
             TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithComplexSet');
+            """ );
+   }
+
+   @Test
+   void testAspectWithCustomColumn() {
+      final DatabricksSqlGenerationConfig config = DatabricksSqlGenerationConfigBuilder.builder()
+            .includeTableComment( true )
+            .includeColumnComments( true )
+            .customColumns( List.of(
+                  DatabricksColumnDefinitionBuilder.builder()
+                        .name( "custom" )
+                        .type( new DatabricksType.DatabricksArray( DatabricksType.STRING ) )
+                        .nullable( false )
+                        .comment( Optional.of( "Custom column" ) )
+                        .build()
+            ) ).build();
+      assertThat( sql( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME, config ) ).isEqualTo( """
+            CREATE TABLE IF NOT EXISTS aspect_with_property_with_payload_name (
+              test STRING NOT NULL COMMENT 'This is a test property.',
+              custom ARRAY<STRING> NOT NULL COMMENT 'Custom column'
+            )
+            COMMENT 'This is a test description'
+            TBLPROPERTIES ('x-samm-aspect-model-urn'='urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithPropertyWithPayloadName');
             """ );
    }
 }

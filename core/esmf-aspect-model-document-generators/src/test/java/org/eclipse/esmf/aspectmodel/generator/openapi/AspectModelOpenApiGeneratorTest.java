@@ -160,7 +160,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
-      assertThat( openApi.getPaths().get( "https://test-aspect.example.com/query-api/v1.0.0/" + TEST_RESOURCE_PATH ).getPost().getServers()
+      assertThat( openApi.getPaths().get( "/query-api/v1.0.0/" + TEST_RESOURCE_PATH ).getPost().getServers()
             .get( 0 ).getUrl() )
             .isEqualTo( "https://test-aspect.example.com/query-api/v1.0.0" );
    }
@@ -184,7 +184,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNull();
       assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( apiEndpoint ) );
       assertThat( openApi.getPaths().keySet() ).anyMatch(
-            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
+            path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @Test
@@ -215,7 +215,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
       assertThat( openApi.getPaths().keySet() ).anyMatch( path -> path.equals( "/" + TEST_RESOURCE_PATH ) );
       assertThat( openApi.getPaths().keySet() ).anyMatch(
-            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0/" + TEST_RESOURCE_PATH ) );
+            path -> path.equals( "/query-api/v1.0.0/" + TEST_RESOURCE_PATH ) );
    }
 
    @Test
@@ -348,14 +348,17 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo( "start" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "count" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
+            "start" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo(
+            "count" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 3 ).getName() ).isEqualTo(
             "totalItemCount" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "200" ).get$ref() )
             .isEqualTo( "#/components/responses/AspectWithCollection" );
-      assertThat( openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
-            .get$ref() )
+      assertThat(
+            openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
+                  .get$ref() )
             .isEqualTo( "#/components/schemas/PagingSchema" );
    }
 
@@ -372,9 +375,12 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-time-series" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo( "since" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "until" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 3 ).getName() ).isEqualTo( "limit" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
+            "since" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo(
+            "until" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 3 ).getName() ).isEqualTo(
+            "limit" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "200" ).get$ref() )
             .isEqualTo( "#/components/responses/AspectWithTimeSeries" );
       assertThat( openApi.getComponents().getResponses().get( "AspectWithTimeSeries" ).getContent()
@@ -397,14 +403,17 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             "tenant-id" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
             "before" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "after" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo(
+            "after" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "200" ).get$ref() )
             .isEqualTo( "#/components/responses/AspectWithCollection" );
-      assertThat( openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
-            .get$ref() )
+      assertThat(
+            openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
+                  .get$ref() )
             .isEqualTo( "#/components/schemas/PagingSchema" );
-      assertThat( openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
-            .get$ref() )
+      assertThat(
+            openApi.getComponents().getResponses().get( "AspectWithCollection" ).getContent().get( "application/json" ).getSchema()
+                  .get$ref() )
             .isEqualTo( "#/components/schemas/PagingSchema" );
       assertThat( openApi.getComponents().getSchemas().get( "PagingSchema" ).getProperties() ).containsKey( "items" );
       assertThat( openApi.getComponents().getSchemas().get( "PagingSchema" ).getProperties() ).containsKey( "cursor" );
@@ -424,8 +433,10 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths() ).containsKey( "/{tenant-id}/aspect-with-collection" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 0 ).getName() ).isEqualTo(
             "tenant-id" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo( "start" );
-      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo( "count" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 1 ).getName() ).isEqualTo(
+            "start" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 2 ).getName() ).isEqualTo(
+            "count" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getParameters().get( 3 ).getName() ).isEqualTo(
             "totalItemCount" );
       assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses()
@@ -513,7 +524,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
       assertThat( openApi.getPaths().keySet() ).anyMatch(
-            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
+            path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @Test
@@ -536,7 +547,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNull();
       assertThat( openApi.getPaths().keySet() ).anyMatch(
-            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
+            path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @Test
@@ -559,7 +570,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNotNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNull();
       assertThat( openApi.getPaths().keySet() ).anyMatch(
-            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
+            path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @Test
@@ -582,7 +593,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
       assertThat( openApi.getPaths().keySet() ).anyMatch(
-            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
+            path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @Test
@@ -606,7 +617,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getPaths().get( apiEndpoint ).getPut() ).isNull();
       assertThat( openApi.getPaths().get( apiEndpoint ).getPatch() ).isNotNull();
       assertThat( openApi.getPaths().keySet() ).anyMatch(
-            path -> path.equals( "https://test-aspect.example.com/query-api/v1.0.0" + apiEndpoint ) );
+            path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
    @Test
@@ -692,7 +703,8 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
             .get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
       assertThat(
-            openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions().get( AbstractGenerator.SAMM_EXTENSION )
+            openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
+                  .get( AbstractGenerator.SAMM_EXTENSION )
                   .toString() ).contains( aspect.urn().toString() );
 
       validateReferences( node );

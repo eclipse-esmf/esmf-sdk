@@ -18,20 +18,20 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractSchemaArtifact;
-import org.eclipse.esmf.aspectmodel.generator.Artifact;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * The result of generating an OpenAPI specification from an Aspect Model. The result can be retrieved in JSON ({@link #getContent()}
  * or YAML ({@link #getContentAsYaml()} formats as self-contained schemas, or as {@link #getContentWithSeparateSchemasAsJson()} and
  * {@link #getContentWithSeparateSchemasAsYaml()} as a map with that contains separate schema documents.
  */
-public class OpenApiSchemaArtifact extends AbstractSchemaArtifact implements Artifact<String, JsonNode> {
+public class OpenApiSchemaArtifact extends AbstractSchemaArtifact<ObjectNode> {
    private final String id;
-   private final JsonNode content;
+   private final ObjectNode content;
 
-   protected OpenApiSchemaArtifact( final String id, final JsonNode content ) {
+   protected OpenApiSchemaArtifact( final String id, final ObjectNode content ) {
       this.id = id;
       this.content = content;
    }
@@ -47,7 +47,7 @@ public class OpenApiSchemaArtifact extends AbstractSchemaArtifact implements Art
     * @return the OpenAPI schema
     */
    @Override
-   public JsonNode getContent() {
+   public ObjectNode getContent() {
       return content;
    }
 

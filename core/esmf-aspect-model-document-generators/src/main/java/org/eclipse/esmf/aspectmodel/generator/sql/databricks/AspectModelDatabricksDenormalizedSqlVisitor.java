@@ -18,6 +18,7 @@ import static org.eclipse.esmf.aspectmodel.generator.sql.databricks.AspectModelD
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
@@ -91,7 +92,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .put( XSD.xfloat.getURI(), DatabricksType.FLOAT )
             .put( XSD.date.getURI(), DatabricksType.STRING )
             .put( XSD.time.getURI(), DatabricksType.STRING )
-            .put( XSD.dateTime.getURI(), DatabricksType.STRING )
+            .put( XSD.dateTime.getURI(), DatabricksType.TIMESTAMP )
             .put( XSD.dateTimeStamp.getURI(), DatabricksType.TIMESTAMP )
             .put( XSD.gYear.getURI(), DatabricksType.STRING )
             .put( XSD.gMonth.getURI(), DatabricksType.STRING )
@@ -137,19 +138,27 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
    @Override
    public String visitStructureElement( final StructureElement structureElement, final Context context ) {
       final StringBuilder result = new StringBuilder();
+      final Consumer<String> appendLine = line -> {
+         if ( !line.isBlank() ) {
+            if ( !result.isEmpty() ) {
+               result.append( ",\n" );
+            }
+            if ( !line.startsWith( "  " ) ) {
+               result.append( "  " );
+            }
+            result.append( line );
+         }
+      };
       for ( final Property property : structureElement.getProperties() ) {
          if ( property.isNotInPayload() ) {
             continue;
          }
          final String propertyResult = property.accept( this, context );
-         if ( !propertyResult.isBlank() ) {
-            if ( !result.isEmpty() ) {
-               result.append( ",\n" );
-            }
-            if ( !propertyResult.startsWith( "  " ) ) {
-               result.append( "  " );
-            }
-            result.append( propertyResult );
+         appendLine.accept( propertyResult );
+      }
+      if ( structureElement instanceof Aspect ) {
+         for ( final DatabricksColumnDefinition columnDefinition : config.customColumns() ) {
+            appendLine.accept( columnDefinition.toString() );
          }
       }
       return result.toString();
@@ -270,7 +279,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
                   return Stream.empty();
                }
                return Stream.of( new DatabricksType.DatabricksStructEntry( columnName( property ), databricksType,
-                     !property.isOptional(), Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) );
+                     property.isOptional(), Optional.ofNullable( property.getDescription( config.commentLanguage() ) ) ) );
             } )
             .toList() );
    }
