@@ -15,14 +15,14 @@ package org.eclipse.esmf.aspectmodel.loader.instantiator;
 
 import java.util.List;
 
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.metamodel.characteristic.Trait;
-import org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait;
-import org.eclipse.esmf.metamodel.Characteristic;
-import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.aspectmodel.loader.Instantiator;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
+import org.eclipse.esmf.metamodel.Characteristic;
+import org.eclipse.esmf.metamodel.Constraint;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;

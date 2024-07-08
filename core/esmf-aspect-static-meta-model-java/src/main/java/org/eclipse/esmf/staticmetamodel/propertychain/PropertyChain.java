@@ -22,9 +22,9 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.staticmetamodel.PropertyAccessor;
 import org.eclipse.esmf.staticmetamodel.PropertyTypeInformation;
 import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;

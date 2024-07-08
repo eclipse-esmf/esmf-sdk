@@ -24,14 +24,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.metamodel.characteristic.Collection;
-import org.eclipse.esmf.metamodel.characteristic.TimeSeries;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.HasProperties;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.TimeSeries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

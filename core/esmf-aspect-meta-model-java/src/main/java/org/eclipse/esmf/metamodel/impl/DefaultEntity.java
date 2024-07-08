@@ -17,13 +17,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 public class DefaultEntity extends DefaultComplexType implements Entity {
    public static DefaultEntity createDefaultEntity( final MetaModelBaseAttributes metaModelBaseAttributes,

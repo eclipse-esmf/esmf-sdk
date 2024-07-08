@@ -15,8 +15,8 @@ package org.eclipse.esmf.metamodel;
 
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.VersionNumber;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.VersionNumber;
 
 /**
  * Represents the namespace the model elements are contained in

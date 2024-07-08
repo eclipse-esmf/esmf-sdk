@@ -35,10 +35,10 @@ import org.eclipse.esmf.aspectmodel.generator.I18nLanguageBundle;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.TemplateEngine;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
+import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Scalar;
-import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 
 import com.google.common.io.CharStreams;
 import org.apache.velocity.runtime.RuntimeConstants;

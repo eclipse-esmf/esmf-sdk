@@ -15,8 +15,8 @@ package org.eclipse.esmf.aspectmodel.java;
 
 import java.util.List;
 
-import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
 import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
 
 /**
  * Encapsulates a {@link Property} and, if it uses a {@link StructuredValue} characteristic, the corresponding

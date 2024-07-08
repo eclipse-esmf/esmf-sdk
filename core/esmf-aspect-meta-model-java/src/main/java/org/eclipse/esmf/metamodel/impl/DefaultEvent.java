@@ -16,10 +16,10 @@ package org.eclipse.esmf.metamodel.impl;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.esmf.metamodel.Event;
-import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.Event;
+import org.eclipse.esmf.metamodel.Property;
 
 public class DefaultEvent extends ModelElementImpl implements Event {
    private final List<Property> properties;

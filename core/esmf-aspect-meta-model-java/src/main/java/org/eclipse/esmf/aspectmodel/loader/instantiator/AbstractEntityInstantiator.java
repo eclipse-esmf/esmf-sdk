@@ -16,13 +16,13 @@ package org.eclipse.esmf.aspectmodel.loader.instantiator;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.impl.DefaultAbstractEntity;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
 
 public class AbstractEntityInstantiator extends ComplexTypeInstantiator<AbstractEntity> {
    public AbstractEntityInstantiator( final ModelElementFactory modelElementFactory ) {

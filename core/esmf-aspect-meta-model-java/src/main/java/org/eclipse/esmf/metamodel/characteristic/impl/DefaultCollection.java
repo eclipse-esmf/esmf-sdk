@@ -16,13 +16,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
-import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 
 public class DefaultCollection extends DefaultCharacteristic implements Collection {
 

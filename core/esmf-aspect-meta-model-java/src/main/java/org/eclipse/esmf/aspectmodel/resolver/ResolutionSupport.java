@@ -21,7 +21,8 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
  */
 public interface ResolutionSupport {
    /**
-    * Checks if a given Aspect Model File contains a given element definition
+    * Checks if a given Aspect Model File contains a given element definition.
+    *
     * @param aspectModelFile the file
     * @param urn the element
     * @return true of the file contains the model element definition

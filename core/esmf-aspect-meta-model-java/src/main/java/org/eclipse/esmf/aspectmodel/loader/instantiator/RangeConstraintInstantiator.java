@@ -15,16 +15,16 @@ package org.eclipse.esmf.aspectmodel.loader.instantiator;
 
 import java.util.Optional;
 
-import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
-import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
-import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.BoundDefinition;
-import org.eclipse.esmf.metamodel.impl.DefaultScalar;
-import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.aspectmodel.loader.Instantiator;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.loader.ModelElementFactory;
+import org.eclipse.esmf.metamodel.BoundDefinition;
+import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
+import org.eclipse.esmf.metamodel.impl.DefaultScalar;
+import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;

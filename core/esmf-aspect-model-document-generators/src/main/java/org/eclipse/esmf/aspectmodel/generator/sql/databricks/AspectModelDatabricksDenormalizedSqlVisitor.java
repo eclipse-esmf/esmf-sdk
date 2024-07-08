@@ -22,10 +22,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
-import org.eclipse.esmf.metamodel.vocabulary.SAMM;
-import org.eclipse.esmf.metamodel.characteristic.Collection;
-import org.eclipse.esmf.metamodel.characteristic.Either;
-import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -36,7 +33,10 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.base.CaseFormat;

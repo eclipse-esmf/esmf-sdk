@@ -27,12 +27,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
-import org.eclipse.esmf.metamodel.characteristic.Collection;
-import org.eclipse.esmf.metamodel.characteristic.Either;
-import org.eclipse.esmf.metamodel.characteristic.Enumeration;
-import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
-import org.eclipse.esmf.metamodel.characteristic.State;
-import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -43,8 +38,13 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.characteristic.State;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
 import org.eclipse.esmf.metamodel.datatype.LangString;
-import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;

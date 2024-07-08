@@ -16,12 +16,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
-import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.BoundDefinition;
-import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.BoundDefinition;
+import org.eclipse.esmf.metamodel.ScalarValue;
+import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
+import org.eclipse.esmf.metamodel.impl.DefaultConstraint;
 
 public class DefaultRangeConstraint extends DefaultConstraint implements RangeConstraint {
    private final Optional<ScalarValue> minValue;

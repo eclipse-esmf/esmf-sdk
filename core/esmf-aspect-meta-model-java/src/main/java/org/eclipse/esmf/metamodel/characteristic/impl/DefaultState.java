@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import org.eclipse.esmf.metamodel.characteristic.State;
-import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.Type;
+import org.eclipse.esmf.metamodel.Value;
+import org.eclipse.esmf.metamodel.characteristic.State;
 
 public class DefaultState extends DefaultEnumeration implements State {
    private final Value defaultValue;

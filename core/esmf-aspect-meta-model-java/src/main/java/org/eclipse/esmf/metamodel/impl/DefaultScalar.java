@@ -17,9 +17,8 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.metamodel.Scalar;
 
 public class DefaultScalar implements Scalar {
    private final String urn;
@@ -42,6 +41,7 @@ public class DefaultScalar implements Scalar {
 
    /**
     * Scalars (e.g., xsd:string) are not defined in Aspect Model files, so this returns null.
+    *
     * @return null
     */
    @Override

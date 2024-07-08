@@ -23,12 +23,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import javax.xml.datatype.DatatypeConstants;
 
 import org.eclipse.esmf.metamodel.datatype.Curie;
-import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.datatype.SammType;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import lombok.Value;
 import org.junit.jupiter.api.BeforeAll;

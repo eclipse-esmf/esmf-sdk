@@ -17,6 +17,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
@@ -25,7 +26,6 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.metamodel.datatype.LangString;
-import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import org.apache.jena.rdf.model.Resource;

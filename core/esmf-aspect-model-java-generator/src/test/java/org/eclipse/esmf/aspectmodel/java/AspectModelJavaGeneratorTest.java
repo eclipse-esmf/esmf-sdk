@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -736,9 +735,8 @@ public class AspectModelJavaGeneratorTest extends MetaModelVersions {
       final String expectedJsonAnnotation = "@JsonProperty(value = \"%s\")";
       final ImmutableMap.Builder<String, String> expectedAnnotationBuilder = ImmutableMap.builder();
 
-      expectedFields.keySet().forEach( fieldName -> {
-         expectedAnnotationBuilder.put( fieldName, String.format( expectedJsonAnnotation, fieldName ) );
-      } );
+      expectedFields.keySet().forEach( fieldName ->
+            expectedAnnotationBuilder.put( fieldName, String.format( expectedJsonAnnotation, fieldName ) ) );
       return expectedAnnotationBuilder.build();
    }
 

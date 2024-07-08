@@ -15,10 +15,10 @@ package org.eclipse.esmf.metamodel.constraint;
 
 import java.util.Optional;
 
+import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.BoundDefinition;
 
 /**
  * Restricts the value of a Property to a specific set of possible values.
