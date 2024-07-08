@@ -28,8 +28,8 @@ import io.vavr.control.Try;
 
 public class TestResources {
    public static AspectModel load( final InvalidTestAspect model ) {
-      final String path = String.format( "invalid/%s/%s/%s/%s.ttl", KnownVersion.getLatest().toString().toLowerCase(),
-            model.getUrn().getNamespace(), model.getUrn().getVersion(), model.getName() );
+      final String path = String.format( "invalid/%s/%s/%s.ttl", model.getUrn().getNamespace(), model.getUrn().getVersion(),
+            model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(
             "invalid/" + KnownVersion.getLatest().toString().toLowerCase() );
@@ -37,20 +37,15 @@ public class TestResources {
    }
 
    public static AspectModel load( final TestModel model ) {
-      return load( model, KnownVersion.getLatest() );
-   }
-
-   public static AspectModel load( final TestModel model, final KnownVersion metaModelVersion ) {
-      final String path = String.format( "valid/%s/%s/%s/%s.ttl", metaModelVersion.toString().toLowerCase(),
-            model.getUrn().getNamespace(), model.getUrn().getVersion(), model.getName() );
+      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespace(), model.getUrn().getVersion(),
+            model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
-      final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy( "valid/" + metaModelVersion.toString().toLowerCase() );
+      final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy( "valid" );
       return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream );
    }
 
    public static Try<JsonNode> loadPayload( final TestModel model ) {
-      final String baseDirectory = "payloads/" + (model instanceof InvalidTestAspect ? "invalid" : "valid");
-      final String modelsRoot = baseDirectory + "/" + KnownVersion.getLatest().toString().toLowerCase();
+      final String modelsRoot = "payloads";
       return Try.of( () -> new ObjectMapper().readTree( Resources.getResource( modelsRoot + "/" + model.getName() + ".json" ) ) );
    }
 }

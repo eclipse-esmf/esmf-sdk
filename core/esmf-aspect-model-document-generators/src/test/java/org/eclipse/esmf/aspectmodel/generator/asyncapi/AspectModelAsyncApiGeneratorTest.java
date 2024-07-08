@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Locale;
 
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -15,8 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
-
+class AspectModelAsyncApiGeneratorTest {
    private final AspectModelAsyncApiGenerator asyncApiGenerator = new AspectModelAsyncApiGenerator();
 
    private static final String APPLICATION_ID = "urn:samm:test:test:serve";

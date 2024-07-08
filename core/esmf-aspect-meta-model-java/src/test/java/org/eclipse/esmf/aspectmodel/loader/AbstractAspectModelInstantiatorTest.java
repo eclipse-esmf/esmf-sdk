@@ -20,11 +20,10 @@ import java.util.Locale;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-public abstract class AbstractAspectModelInstantiatorTest extends MetaModelVersions {
+public abstract class AbstractAspectModelInstantiatorTest {
    Aspect loadAspect( final TestAspect aspectName ) {
       return TestResources.load( aspectName ).aspect();
    }

@@ -30,7 +30,6 @@ import org.eclipse.esmf.staticmetamodel.StaticProperty;
 import org.eclipse.esmf.staticmetamodel.StaticUnitProperty;
 import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintContainerProperty;
 import org.eclipse.esmf.staticmetamodel.constraint.StaticConstraintProperty;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.TestSharedAspect;
@@ -39,7 +38,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 
-abstract class StaticMetaModelGeneratorTest extends MetaModelVersions {
+abstract class StaticMetaModelGeneratorTest {
    Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final boolean executeLibraryMacros, final File templateLibFile ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final Aspect aspect = aspectModel.aspect();

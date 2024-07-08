@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -31,8 +30,7 @@ import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class PrettyPrinterTest extends MetaModelVersions {
-
+public class PrettyPrinterTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
          // contains blank nodes which are not referenced from an aspect and therefore not pretty-printed

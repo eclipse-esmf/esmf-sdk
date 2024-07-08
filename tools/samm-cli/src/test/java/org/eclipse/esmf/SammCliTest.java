@@ -36,7 +36,6 @@ import org.eclipse.esmf.aspect.AspectValidateCommand;
 import org.eclipse.esmf.aspectmodel.shacl.violation.InvalidSyntaxViolation;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.InvalidTestAspect;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 
@@ -61,7 +60,7 @@ import org.junit.jupiter.params.provider.EnumSource;
  */
 @ExtendWith( LogExtension.class )
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
-class SammCliTest extends MetaModelVersions {
+class SammCliTest {
    protected ProcessLauncher sammCli;
    private final TestModel testModel = TestAspect.ASPECT_WITH_ENTITY;
    private final String defaultInputFile = inputFile( testModel ).getAbsolutePath();
@@ -1053,12 +1052,10 @@ class SammCliTest extends MetaModelVersions {
     * Returns the File object for a test model file
     */
    private File inputFile( final TestModel testModel ) {
-      final KnownVersion metaModelVersion = KnownVersion.getLatest();
       final boolean isValid = !(testModel instanceof InvalidTestAspect);
       final String resourcePath = String.format(
-            "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
-            System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", metaModelVersion.toString().toLowerCase(),
-            testModel.getName() );
+            "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
+            System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", testModel.getName() );
 
       try {
          return new File( resourcePath ).getCanonicalFile();

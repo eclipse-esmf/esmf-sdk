@@ -29,8 +29,8 @@ import org.eclipse.esmf.metamodel.AspectModel;
 public class DelegatingCommandResolver {
    public static void main( final String[] args ) throws URISyntaxException {
       final Path target = Paths.get( DelegatingCommandResolver.class.getResource( "/" ).toURI() ).getParent();
-      final Path modelsRoot = Paths.get( target.toString(), "classes", "valid", args[0] );
-      final AspectModelUrn urn = AspectModelUrn.fromUrn( args[1] );
+      final Path modelsRoot = Paths.get( target.toString(), "classes", "valid" );
+      final AspectModelUrn urn = AspectModelUrn.fromUrn( args[0] );
       final AspectModel aspectModel = new AspectModelLoader( new FileSystemStrategy( modelsRoot ) ).load( urn );
       aspectModel.mergedModel().write( System.out );
    }

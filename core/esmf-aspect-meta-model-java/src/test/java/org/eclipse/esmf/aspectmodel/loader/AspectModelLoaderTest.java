@@ -22,13 +22,12 @@ import java.util.stream.Collectors;
 
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.ComplexType;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 import org.junit.jupiter.api.Test;
 
-class AspectModelLoaderTest extends MetaModelVersions {
+class AspectModelLoaderTest {
    @Test
    public void testOfAbstractEntityCyclomaticCreation() {
       final Map<String, ComplexType> entities =

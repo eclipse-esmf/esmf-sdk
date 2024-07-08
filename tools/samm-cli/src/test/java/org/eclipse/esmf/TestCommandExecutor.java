@@ -58,7 +58,7 @@ public class TestCommandExecutor {
 
    @Test
    void resolve() throws URISyntaxException {
-      DelegatingCommandResolver.main( new String[] { "samm_2_0_0", "urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" } );
+      DelegatingCommandResolver.main( new String[] { "urn:samm:org.eclipse.esmf.test:1.0.0#AspectWithEntity" } );
    }
 
    @EnabledOnOs( OS.LINUX )

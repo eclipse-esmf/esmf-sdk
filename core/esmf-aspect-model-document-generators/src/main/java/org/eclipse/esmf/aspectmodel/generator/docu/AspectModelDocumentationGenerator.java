@@ -115,8 +115,7 @@ public class AspectModelDocumentationGenerator extends AbstractGenerator {
     * @throws IOException when serialization or deserialization fails
     */
    public void generate( final Function<String, OutputStream> nameMapper, final Map<HtmlGenerationOption, String> generationOptions,
-         final Locale language )
-         throws IOException {
+         final Locale language ) throws IOException {
       final BufferingNameMapper bufferingMapper = new BufferingNameMapper();
       generateHtmlDocu( bufferingMapper, Format.NONE, language );
       generateInternal( nameMapper, generationOptions, bufferingMapper );

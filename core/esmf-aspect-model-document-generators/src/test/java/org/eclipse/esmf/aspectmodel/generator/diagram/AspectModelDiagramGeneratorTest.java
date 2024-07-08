@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -29,7 +28,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class AspectModelDiagramGeneratorTest extends MetaModelVersions {
+public class AspectModelDiagramGeneratorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
    void testGen( final TestAspect testAspect ) {

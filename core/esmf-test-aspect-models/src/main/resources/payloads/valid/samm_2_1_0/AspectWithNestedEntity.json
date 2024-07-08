@@ -1,8 +1,0 @@
-{
-  "entity": {
-    "testString": "This is the test string",
-    "nestedEntity": {
-      "testString": "This is the nested test string"
-    }
-  }
-}

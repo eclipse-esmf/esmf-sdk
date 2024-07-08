@@ -37,7 +37,6 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -63,8 +62,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class AspectModelJavaGeneratorTest extends MetaModelVersions {
-
+public class AspectModelJavaGeneratorTest {
    private Collection<JavaGenerator> getGenerators( final TestAspect testAspect, final String customJavaPackageName ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
