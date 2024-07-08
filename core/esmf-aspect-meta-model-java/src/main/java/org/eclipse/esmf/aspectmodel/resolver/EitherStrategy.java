@@ -41,9 +41,9 @@ public class EitherStrategy implements ResolutionStrategy {
    }
 
    @Override
-   public AspectModelFile apply( final AspectModelUrn input, final ResolutionSupport resolutionSupport ) {
+   public AspectModelFile apply( final AspectModelUrn input, final ResolutionStrategySupport resolutionStrategySupport ) {
       return strategies.stream()
-            .map( strategy -> Try.of( () -> strategy.apply( input, resolutionSupport ) ) )
+            .map( strategy -> Try.of( () -> strategy.apply( input, resolutionStrategySupport ) ) )
             .filter( Try::isSuccess )
             .findFirst()
             .map( Try::get )

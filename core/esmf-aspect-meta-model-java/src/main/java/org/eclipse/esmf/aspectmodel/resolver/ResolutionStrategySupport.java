@@ -19,7 +19,7 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 /**
  * An instance of this interface provides utilies for the implementation of a {@link ResolutionStrategy}.
  */
-public interface ResolutionSupport {
+public interface ResolutionStrategySupport {
    /**
     * Checks if a given Aspect Model File contains a given element definition.
     *

@@ -62,7 +62,7 @@ public interface AspectModel extends ModelElementGroup {
     * @return the model element
     * @throws NoSuchElementException if no element exists with this URN
     */
-   default ModelElement elementByUrn( final AspectModelUrn urn ) {
+   default ModelElement getElementByUrn( final AspectModelUrn urn ) {
       return elements().stream()
             .filter( element -> urn.equals( element.urn() ) )
             .findFirst()

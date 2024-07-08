@@ -149,7 +149,7 @@ public class ClasspathStrategy implements ResolutionStrategy {
    }
 
    @Override
-   public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionSupport resolutionSupport ) {
+   public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
       final String modelsRootTrailingSlash = modelsRoot.isEmpty() ? "" : "/";
       final String directory = String.format( "%s%s%s/%s", modelsRoot, modelsRootTrailingSlash,
             aspectModelUrn.getNamespace(), aspectModelUrn.getVersion() );
@@ -167,7 +167,7 @@ public class ClasspathStrategy implements ResolutionStrategy {
             .map( name -> resourceUrl( directory, name ) )
             .sorted( Comparator.comparing( URL::getPath ) )
             .map( AspectModelFileLoader::load )
-            .filter( aspectModelFile -> resolutionSupport.containsDefinition( aspectModelFile, aspectModelUrn ) )
+            .filter( aspectModelFile -> resolutionStrategySupport.containsDefinition( aspectModelFile, aspectModelUrn ) )
             .findFirst()
             .orElseThrow( () -> new ModelResolutionException(
                   "No model file containing " + aspectModelUrn + " could be found in directory: " + directory ) );

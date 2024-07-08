@@ -27,10 +27,10 @@ public class FromLoadedFileStrategy implements ResolutionStrategy {
    }
 
    @Override
-   public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionSupport resolutionSupport )
+   public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport )
          throws ModelResolutionException {
 
-      if ( resolutionSupport.containsDefinition( aspectModelFile, aspectModelUrn ) ) {
+      if ( resolutionStrategySupport.containsDefinition( aspectModelFile, aspectModelUrn ) ) {
          return aspectModelFile;
       }
       throw new ModelResolutionException( "File " + aspectModelFile + " should contain defintion, but does not: " + aspectModelUrn );
