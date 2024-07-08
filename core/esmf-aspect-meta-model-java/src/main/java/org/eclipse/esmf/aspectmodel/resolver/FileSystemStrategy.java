@@ -77,7 +77,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
     * {@link FileNotFoundException} if no file containing the element was found
     */
    @Override
-   public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionSupport resolutionSupport ) {
+   public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
       final Path directory = modelsRoot.directoryForNamespace( aspectModelUrn );
       final File namedResourceFile = directory.resolve( aspectModelUrn.getName() + ".ttl" ).toFile();
       if ( namedResourceFile.exists() ) {
@@ -100,7 +100,7 @@ public class FileSystemStrategy implements ResolutionStrategy {
             LOG.debug( "Could not load model from {}", file, tryModel.getCause() );
          } else {
             final AspectModelFile model = tryModel.get();
-            if ( resolutionSupport.containsDefinition( model, aspectModelUrn ) ) {
+            if ( resolutionStrategySupport.containsDefinition( model, aspectModelUrn ) ) {
                return model;
             } else {
                LOG.debug( "File {} does not contain {}", file, aspectModelUrn );

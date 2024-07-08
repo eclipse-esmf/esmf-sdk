@@ -27,7 +27,7 @@ public class ExternalResolverStrategy implements ResolutionStrategy {
    }
 
    @Override
-   public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionSupport resolutionSupport ) {
+   public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
       final String commandWithParameters = command + " " + aspectModelUrn.toString();
       final String result = CommandExecutor.executeCommand( commandWithParameters );
       return AspectModelFileLoader.load( result );

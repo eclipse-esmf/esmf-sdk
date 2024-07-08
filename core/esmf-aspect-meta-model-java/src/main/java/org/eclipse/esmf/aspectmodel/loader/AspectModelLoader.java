@@ -37,7 +37,7 @@ import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.ResolutionSupport;
+import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.DefaultAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The core class to load an {@link AspectModel}.
  */
-public class AspectModelLoader implements ResolutionSupport {
+public class AspectModelLoader implements ResolutionStrategySupport {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
 
    public static final Supplier<ResolutionStrategy> DEFAULT_STRATEGY = () -> {
