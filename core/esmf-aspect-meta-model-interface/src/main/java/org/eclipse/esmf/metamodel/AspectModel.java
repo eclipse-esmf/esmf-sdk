@@ -29,10 +29,25 @@ import org.apache.jena.rdf.model.Model;
  * ({@link AspectModelFile}) that make up the model.
  */
 public interface AspectModel extends ModelElementGroup {
+   /**
+    * The merged RDF graph of the all AspectModelFiles of this AspectModel.
+    *
+    * @return the merged RDF graph
+    */
    Model mergedModel();
 
+   /**
+    * The namespaces that make up this AspectModel.
+    *
+    * @return the list of namespaces
+    */
    List<Namespace> namespaces();
 
+   /**
+    * The list of files this AspectModel consists of.
+    *
+    * @return the list of files
+    */
    default List<AspectModelFile> files() {
       return elements().stream()
             .flatMap( element -> Optional.ofNullable( element.getSourceFile() ).stream() )
@@ -40,6 +55,13 @@ public interface AspectModel extends ModelElementGroup {
             .stream().toList();
    }
 
+   /**
+    * Retrieves a given Model Element by URN.
+    *
+    * @param urn the model element URN
+    * @return the model element
+    * @throws NoSuchElementException if no element exists with this URN
+    */
    default ModelElement elementByUrn( final AspectModelUrn urn ) {
       return elements().stream()
             .filter( element -> urn.equals( element.urn() ) )

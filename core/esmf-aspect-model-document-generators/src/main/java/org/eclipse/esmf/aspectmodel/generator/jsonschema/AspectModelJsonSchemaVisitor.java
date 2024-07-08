@@ -160,27 +160,6 @@ public class AspectModelJsonSchemaVisitor implements AspectVisitor<JsonNode, Obj
       typeData = config.useExtendedTypes() ? extendedTypeData : OPEN_API_TYPE_DATA;
    }
 
-   /**
-    * @deprecated Use {@link AspectModelJsonSchemaVisitor#AspectModelJsonSchemaVisitor(JsonSchemaGenerationConfig)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes, final Locale locale ) {
-      this( JsonSchemaGenerationConfigBuilder.builder()
-            .useExtendedTypes( useExtendedTypes )
-            .locale( locale )
-            .build() );
-   }
-
-   /**
-    * @deprecated Use {@link AspectModelJsonSchemaVisitor#AspectModelJsonSchemaVisitor(JsonSchemaGenerationConfig)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public AspectModelJsonSchemaVisitor( final boolean useExtendedTypes ) {
-      this( JsonSchemaGenerationConfigBuilder.builder()
-            .useExtendedTypes( useExtendedTypes )
-            .build() );
-   }
-
    public ObjectNode getRootNode() {
       return rootNode;
    }

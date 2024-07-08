@@ -16,29 +16,23 @@ package org.eclipse.esmf.metamodel;
 import static java.lang.System.identityHashCode;
 import static org.eclipse.esmf.metamodel.Namespace.ANONYMOUS;
 
-import java.util.Optional;
-
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.samm.KnownVersion;
 
 /**
- * The Base interface provides all facilities that all Aspect Model elements have.
+ * The ModelElement interface provides all facilities that all Aspect Model elements have.
  */
 public interface ModelElement extends HasDescription {
+   /**
+    * Returns the URN identifiying this element. If {@link #isAnonymous()} is true, the returned URN is synthetic. In this case, the URN can
+    * be used to identify the object, but it may not be used for display purposes.
+    *
+    * @return the element's URN or an anonymous URN
+    */
    default AspectModelUrn urn() {
       return AspectModelUrn.fromUrn( ANONYMOUS + "x%08X".formatted( identityHashCode( this ) ) );
-   }
-
-   @Deprecated( forRemoval = true )
-   default Optional<AspectModelUrn> getAspectModelUrn() {
-      return Optional.of( urn() );
-   }
-
-   @Deprecated( forRemoval = true )
-   default KnownVersion getMetaModelVersion() {
-      return KnownVersion.getLatest();
    }
 
    @Override
