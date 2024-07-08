@@ -558,8 +558,8 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
                .supplementalSemanticIds( buildGlobalReferenceForSeeReferences( collection ) );
 
-         if ( collection.getAspectModelUrn().isPresent() ) {
-            submodelBuilder.semanticId( buildReferenceForCollection( collection.getAspectModelUrn().get().getUrn().toString() ) );
+         if ( !collection.isAnonymous() ) {
+            submodelBuilder.semanticId( buildReferenceForCollection( collection.urn().getUrn().toString() ) );
          }
 
          return submodelBuilder.build();

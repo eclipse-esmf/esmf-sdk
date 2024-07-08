@@ -22,6 +22,9 @@ import org.eclipse.esmf.aspectmodel.VersionNumber;
  * Represents the namespace the model elements are contained in
  */
 public interface Namespace extends ModelElementGroup, HasDescription {
+   /**
+    * The pseudo namespace URN part that contains anonymously defined model elements
+    */
    String ANONYMOUS = "urn:samm:anonymous.elements:0.0.0#";
 
    /**
@@ -39,6 +42,11 @@ public interface Namespace extends ModelElementGroup, HasDescription {
     */
    VersionNumber version();
 
+   /**
+    * The AspectModelFile that contains a namespace element definition for this namespace.
+    *
+    * @return the source file
+    */
    Optional<AspectModelFile> source();
 
    /**
