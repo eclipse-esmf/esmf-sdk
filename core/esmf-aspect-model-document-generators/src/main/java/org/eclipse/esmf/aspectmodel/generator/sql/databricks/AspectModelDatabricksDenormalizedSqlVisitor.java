@@ -22,21 +22,20 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.Either;
-import org.eclipse.esmf.characteristic.Trait;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.google.common.base.CaseFormat;
@@ -60,7 +59,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
          String prefix,
          Property currentProperty,
          boolean forceOptional,
-         NamedElement forceDescriptionFromElement,
+         ModelElement forceDescriptionFromElement,
          Map<Property, Integer> recursionDepth
    ) {
       public Context {
@@ -183,7 +182,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             columnDeclarations.isEmpty() ? "" : "\n",
             comment,
             AbstractGenerator.SAMM_EXTENSION,
-            aspect.getAspectModelUrn().orElseThrow()
+            aspect.urn()
       );
    }
 
@@ -195,7 +194,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
       }
 
       return property.getCharacteristic().get().accept( this, context.copy()
-            .prefix( (context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER) + columnName( property ) )
+            .prefix( ( context.prefix().isEmpty() ? "" : context.prefix() + LEVEL_DELIMITER ) + columnName( property ) )
             .currentProperty( property )
             .build() );
    }
@@ -212,7 +211,7 @@ public class AspectModelDatabricksDenormalizedSqlVisitor
             .forceOptional( true )
             .forceDescriptionFromElement( either.getRight() )
             .build() );
-      return leftResult + "\n" + (rightResult.startsWith( "  " ) ? "" : "  ") + rightResult;
+      return leftResult + "\n" + ( rightResult.startsWith( "  " ) ? "" : "  " ) + rightResult;
    }
 
    @Override

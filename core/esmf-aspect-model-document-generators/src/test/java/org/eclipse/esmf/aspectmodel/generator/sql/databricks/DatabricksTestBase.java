@@ -13,17 +13,13 @@
 
 package org.eclipse.esmf.aspectmodel.generator.sql.databricks;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
 public class DatabricksTestBase {
    protected String sql( final TestAspect testAspect, final DatabricksSqlGenerationConfig config ) {
-      final VersionedModel versionedModel = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
-      final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
       return aspect.accept( new AspectModelDatabricksDenormalizedSqlVisitor( config ),
             AspectModelDatabricksDenormalizedSqlVisitorContextBuilder.builder().build() );
    }

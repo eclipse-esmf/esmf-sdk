@@ -15,11 +15,11 @@ package org.eclipse.esmf.staticmetamodel;
 
 import java.util.Optional;
 
-import org.eclipse.esmf.characteristic.Quantifiable;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Unit;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
 
 /**
  * Extends the {@link StaticProperty} definition with a {@link Unit}. Only {@link Quantifiable} properties that actually carry a

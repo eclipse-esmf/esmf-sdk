@@ -12,33 +12,6 @@ respective subsection), _or_ you can use the `aspect-model-starter` artifact tha
 
 include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-starter-artifact.adoc[]
 
-The error handling in many APIs is done using the
-`https://javadoc.io/doc/io.vavr/vavr/0.10.3/io/vavr/control/Try.html[Try]` type provided by the Java
-library _Vavr_. This is similar to a `java.lang.Optional` in that a successful result can be
-processed using `.map()` or `.flatMap()`, but if an error occurs, the object can also provide the
-original exception using the `getCause()` method. Compared with throwing exceptions, using a
-`Try<T>` as a return type instead has the advantage of enabling composable error handling. Please
-see the https://www.vavr.io/vavr-docs/[Vavr User Guide] for more information.
-
-You generally have multiple options for handling `Try<T>` results, similar to dealing with `Optional`:
-
-++++
-<details>
-<summary>Show used imports</summary>
-++++
-[source,java,indent=0,subs="+macros,+quotes"]
-----
-include::example$HandlingTry.java[tags=imports]
-----
-++++
-</details>
-++++
-
-[source,java,indent=0,subs="+macros,+quotes"]
-----
-include::example$HandlingTry.java[tags=handlingTry]
-----
-
 [[versioning]]
 == Getting the right version
 
@@ -108,13 +81,13 @@ include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-urn-artifact.adoc[]
 [[loading-and-saving]]
 == Loading and Saving Aspect Models
 
-Aspect models are, like their Meta Model, described using the Resource Description Format (RDF,
-xref:samm-specification:appendix:bibliography.adoc#rdf11[[rdf11\]]) and the Terse RDF Triple Language syntax (TTL,
-xref:samm-specification:appendix:bibliography.adoc#turtle[[turtle\]]). There are two ways of working with Aspect models:
-Either the model is loaded as an RDF model where the abstraction level directly corresponds to the RDF/Turtle
-serialization, or the RDF is parsed into a native Java Aspect model representation where the abstraction level
-corresponds to the SAMM concepts. Both approaches have different use cases and advantages and both are supported by the
-Aspect model Java tooling:
+Aspect models are, like the Semantic Aspect Meta Model, described using the Resource Description Format (RDF,
+xref:samm-specification:appendix:bibliography.adoc#rdf11[[rdf11\]]) and the Terse RDF Triple Language syntax
+(TTL, xref:samm-specification:appendix:bibliography.adoc#turtle[[turtle\]]). When an Aspect Model is loaded,
+there are two ways of working with it: Either on the abstraction level of the underlying RDF/Turtle
+serialization, or on the native Java Aspect Model level, where the model is represented as a Java object
+graph. Both approaches have different use cases and advantages and both are supported by the Aspect Model Java
+tooling:
 
 [width="100%", options="header", cols="50,50"]
 |===
@@ -122,108 +95,38 @@ Aspect model Java tooling:
 a|
 * Low level, focus on power and flexibility
 * Flexibly navigate and filter the model on the RDF statements level
-* Work with models that are valid RDF, but incomplete Aspect models, e.g. in Aspect model editors
-* Use SPARQL xref:samm-specification:appendix:bibliography.adoc#sparql[[sparql\]] to execute complex queries on Aspect models
+* Work with models that are valid RDF, but incomplete Aspect Models, e.g. in Aspect model editors
+* Use SPARQL xref:samm-specification:appendix:bibliography.adoc#sparql[[sparql\]] to execute complex queries on Aspect Models
 a|
 * High level, focus on convenience and type-safety
-* Use Aspect-model specific interfaces for type-safe code
-* Use Java-native data types (e.g. `java.math.BigInteger` for `xsd:integer`)
-* Easily traverse the model on the abstraction level of Aspect model elements
+* Use Aspect Model-specific interfaces for type-safe code
+* Use Java native data types (e.g. `java.math.BigInteger` for `xsd:integer`)
+* Easily traverse the model on the abstraction level of Aspect Model elements
 |===
 
-As a rule of thumb, if your use case mostly consists of _consuming_ Aspect models, you should prefer the Java Aspect
-model, if you _create_ or _edit_ Aspect models, this is better done using the RDF API.
-
-[[understanding-model-resolution]]
-=== Understanding Model Resolution
-
-Loading an Aspect model in either the RDF-based or the Java Aspect model-based APIs does not only comprise parsing the
-Turtle file, but also the resolution of elements on the RDF level:
-
-* An Aspect model refers to meta model elements (everything that starts with `samm:`), and can refer to namespaces of
-  shared elements (`samm-c`, `samm-e` and `unit`)
-* It can also refer to elements from other Aspect models or model elements defined in separate Turtle files
-
-You use the _model resolver_ to load an Aspect model, which takes care of the first point: The used meta model elements
-and elements from shared namespaces are automatically resolved and added to the loaded RDF model. For the second point,
-you need to provide the model resolver with the information on where to find other Aspect models: In memory, in a local
-file system, in a remote model repository etc. This is done using a _resolution strategy_, which is a function from some
-type `T` to a `Try` of a RDF model. Several commonly used resolution strategies are readily available:
-
-* The `FileSystemStrategy` resolves a `java.nio.file.Path` for a file relative
-  to the xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory]
-* The `ClassPathStrategy` resolves a model from resources in the Java class path
-* The `EitherStrategy` can be used to chain two different strategies of different types
-
-To implement custom resolution strategies (e.g., to resolve models against a different blob storage API), you can base
-your implementation on the `AbstractResolutionStrategy`. Using the model resolver requires at least one resolution
-strategy that can resolve `AspectModelUrn`&#8203;s (because references in an Aspect model to external model elements use
-their respective URNs) and can use another resolution strategy, for example for file paths. The following sections show
-examples for the different variants.
-
-[[loading-an-aspect-model-rdf-level]]
-=== Loading an Aspect Model to work on the RDF Level
-
-The following example shows how to use the `AspectModelResolver` to load an Aspect Model
-
-++++
-<details>
-<summary>Show used imports</summary>
-++++
-[source,java,indent=0,subs="+macros,+quotes"]
-----
-include::example$LoadAspectModelRdf.java[tags=imports]
-----
-++++
-</details>
-++++
-
-[source,java,indent=0,subs="+macros,+quotes"]
-----
-include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromFile]
-----
-
-<1> The file must be located in a directory according to the
-xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory] structure.
-<2> You can check if loading succeeded using `versionedModel.isSuccess()` and
-`versionedModel.isFailure()`. If loading fails, `versionedModel.getCause()` provides more
-information.
-<3> The code inside `forEach` is only executed if the model could be loaded successfully.
-<4> List all statements in the RDF model that declare a `samm:Aspect`.
-
-If you want to choose which model resolution strategy is used, you use the `resolveAspectModel()`
-method of the `AspectModelResolver`. In this case, you need to provide the resolution strategy and
-the initial input (`InputStream`, `Model` or a `String` containing RDF/Turtle), or one or more URNs
-of model elements to resolve - have a look at the methods provided by `AspectModelResolver`.
-
-++++
-<details>
-<summary>Show used imports</summary>
-++++
-[source,java,indent=0,subs="+macros,+quotes"]
-----
-include::example$LoadAspectModelRdf.java[tags=imports]
-----
-++++
-</details>
-++++
-
-[source,java,indent=0,subs="+macros,+quotes"]
-----
-include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromUrn]
-----
-
-To include the model resolver artifact, use the following dependencies:
-
-include::esmf-developer-guide:ROOT:partial$esmf-aspect-model-resolver-artifact.adoc[]
+As a rule of thumb, if your use case mostly consists of _consuming_ Aspect models, you should prefer the Java
+Aspect model, if you _create_ or _edit_ Aspect models, or build code interfacing with other RDF vocabularies,
+this is better done using the RDF API.
 
 [[loading-an-aspect-model-java-model-level]]
 === Loading an Aspect Model to work on the Java Aspect Model Level
 
-If you have retrieved a `Try<VersionedModel>` as shown above, you can use the `AspectModelLoader` to
-turn the RDF graph representation of the Aspect Model into a type-safe Java object. You can use the
-`getElements()` method to get all model elements from the Aspect Model, or, if you expect the model
-to contain exactly one Aspect (for example in unit tests), you can use the `getSingleAspect()` method.
+To load an AspectModel, you use the `org.eclipse.esmf.aspectmodel.loader.AspectModelLoader` class. An instance
+of `AspectModelLoader` provides `load()` methods to load an Aspect Model from an InputStream, one or multiple
+Files, or a number of `AspectModelUrn`s (where you can delegate finding out _where_ a model element is defined
+to the AspectModelLoader - details on that are explained in the next section).
+
+The `AspectModelLoader` loads Aspect Models based on the most recent version of the Semantic Aspect Meta Model
+and previous versions: Models based on older meta model versions are automatically translated to models
+corresponding to the latest meta model version.
+
+The resulting `AspectModel` object contains information about the loaded model elements, their namespaces and
+the files they were defined in. Details about the structure of these objects can be found in the [Decision
+Record
+0007](https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0007-model-resolution.md).
+The `AspectModel` provides the methods `elements()`, `files()` and `namespaces()` as well as the convenience
+methods `aspects()` (which returns all Aspect elements in the model) and `aspect()`, which returns the single
+Aspect element if one exists.
 
 ++++
 <details>
@@ -242,16 +145,88 @@ include::example$LoadAspectModelObjects.java[tags=imports]
 include::example$LoadAspectModelObjects.java[tags=loadModel]
 ----
 
-To include the Java Aspect model artifact, use the following dependencies:
+To include the Java Aspect Model artifact, use the following dependency:
 
 include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-java-artifact.adoc[]
+
+[[understanding-model-resolution]]
+=== Understanding Model Resolution
+
+The example in the last section showed how a self-contained Aspect Model file can be loaded (i.e., a file that
+does not refer to model element definitions in other files or namespaces). Whenever models are loaded that
+could contain such references, or you want to load a model element by URN, the AspectModelLoader relies on
+so-called _resolution strategies_. A resolution strategy is a function that takes a model element identifier
+(a model element URN) as an input and returns the content of the file that contains the corresponding model
+element definition. Note that this is not necessarily a file in the local filesystem, but it could also be a
+remote file or even exist only virtually as a collection of statements in an RDF triple store. Several
+`ResolutionStrategy`s are provided that can be instantiated and passed to the `AspectModelLoader` constructor
+to enable it to find model element definitions:
+
+* The `FileSystemStrategy` resolves elements from files in the file system which are either structured in the
+  xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory structure] or exist as flat
+  list of files in one directory (by using `FileSystemStrategy` with a `FlatModelsRoot`).
+* The `ClassPathStrategy` resolves model elements from resources in the Java class path.
+* The `FromLoadedFileStrategy` resolves model elements from an `AspectModelFile` that already resides in
+  memory.
+* The `EitherStrategy` can be used to chain two or more different `ResolutionStrategy`s.
+* The `ExternalResolverStrategy` delegates resolution to an external command such as a script; it is used in
+  the implementation of the `--custom-resolver` option of the xref:tooling-guide:samm-cli.adoc[samm-cli].
+
+In addition, custom resolution strategies can be provided by implementing the `ResolutionStrategy` interface.
+
+The following example demonstrates how to pass a custom instance of a `ResolutionStrategy` and resolve a model
+element by URN:
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadAspectModelRdf.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromUrn]
+----
+
+[[loading-an-aspect-model-rdf-level]]
+=== Loading an Aspect Model to work on the RDF Level
+
+The following example shows how to use the `AspectModelResolver` to load an Aspect Model.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadAspectModelRdf.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromFile]
+----
+
+After loading an `AspectModel` using the `AspectModelLoader`, you can access the `mergedModel()` on the
+`AspectModel`, which represents the merged RDF graph of all source files that were loaded in the model and
+therefore contains all transitively referenced model element definitions. Alternatively, you can also access
+the `sourceModel()` of each Aspect Model file given by `files()`, which will return only the RDF graph of this
+file.
 
 [[serializing-an-aspect-model]]
 === Serializing a Java Aspect Model into a RDF/Turtle Aspect Model
 
-There are two serialization components available: One to turn a Java Aspect model into a Jena RDF model (the reverse
-operation of what the `AspectModelLoader` does) and one to serialize the resulting Jena RDF model in Turtle syntax,
-formatted according to the guidelines described in the SAMM specification.
+The serialize an Aspect into its corresponding RDF/Turtle representation, you can use the `AspectSerializer`,
+as demonstrated in the example below:
 
 ++++
 <details>
@@ -309,9 +284,15 @@ include::example$ValidateAspectModel.java[tags=validate]
 `DetailedViolationFormatter`. Note that those are only intended for text-based interfaces such as
 CLIs.
 <2> Every application dealing with validation results that needs to transform the results into some
-different structure should instead implement the `Violation.Visitor` Interface with a suitable target
+different structure can implement the `Violation.Visitor` Interface with a suitable target
 type `(String` used as an example here) and use the visitor to handle the different types of
 Violations in a type-safe way.
+
+The `AspectModelValidator` also provides the `loadModel(Supplier<AspectModel>)` method that can be used in
+conjunction with `() -> new AspectModeLoader().load(...)` to have exceptions that might be created during the
+Aspect Model loading process, for example due to model resolution failures or syntax errors in the input
+files, be turned into a `List<Violation>` that can be passed to the aforementioned violation formatters. This
+allows for custom structured handling of problems that occur during model loading.
 
 To include the model validator, use the following dependencies:
 
@@ -340,8 +321,8 @@ include::example$AbstractGenerator.java[tags=outputStream]
 [[generating-diagrams]]
 === Generating SVG or PNG Diagrams
 
-Using the `AspectModelDiagramGenerator`, automatically layouted diagrams can be created for Aspect models in the formats
-PNG, SVG and https://www.graphviz.org/[Graphviz/DOT].
+Using the `AspectModelDiagramGenerator`, automatically layouted diagrams can be created for Aspect models in
+the formats PNG and SVG.
 
 ++++
 <details>
@@ -391,10 +372,9 @@ include::example$GenerateHtml.java[tags=imports]
 include::example$GenerateHtml.java[tags=generate]
 ----
 
-<1> Load and select the Aspect from the loaded model for which generation should be generated.
-<2> The HTML generator is initialized with the context consisting of the loaded RDF model and the
+<1> The HTML generator is initialized with the context consisting of the loaded RDF model and the
 selected Aspect.
-<3> HTML generation can be controlled via a map of options; using an empty map implies default values.
+<2> HTML generation can be controlled via a map of options; using an empty map implies default values.
 
 [[generating-sample-json-payload]]
 === Generating Sample JSON Payload
@@ -731,45 +711,12 @@ Example:
 include::example$sample-file-header.vm[]
 ----
 
-[[migrate-meta-model-version]]
-== Programmatically migrate the Meta Model Version
-
-The meta model version migrator provides functionality to automatically migrate an Aspect model that
-uses an older version of the Aspect Meta Model to an Aspect model that uses a newer (usually the
-latest) version of the meta model. Calling this functionality is _only_ required if you intent to
-work with the raw RDF model (i.e., the `VersionedModel`). If you use the `AspectModelLoader` to load
-a model into `ModelElement`&#8203;s or `Aspect`&#8203;s, calling the `MigratorService` is not
-necessary, as it will be done automatically if necessary.
-
-The following sample shows usage of the migration:
-
-++++
-<details>
-<summary>Show used imports</summary>
-++++
-[source,java,indent=0,subs="+macros,+quotes"]
-----
-include::example$MigrateAspectModel.java[tags=imports]
-----
-++++
-</details>
-++++
-
-[source,java,indent=0,subs="+macros,+quotes"]
-----
-include::example$MigrateAspectModel.java[tags=migrate]
-----
-
-To use the meta model version migrator, you need the following dependency:
-
-include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-version-migrator-artifact.adoc[]
-
 [[accessing-samm-programmatically]]
 == Accessing the SAMM programmatically
 
-In order to access the source RDF files that describe the SAMM vocabulary, shared Characteristics and Entities as well
-as Units, you can add a dependency to the `esmf-aspect-meta-model` artifact. Note that this artifact does not contain any
-Java classes.
+In order to access the source RDF files that describe the SAMM vocabulary, shared Characteristics and Entities
+as well as Units, you can add a dependency to the `esmf-aspect-meta-model` artifact. Note that this artifact
+does not provide Java classes that represent the meta model.
 
 include::esmf-developer-guide:ROOT:partial$aspect-meta-model-artifact.adoc[]
 
@@ -801,8 +748,8 @@ structure that is present in the artifact:
         └── units.ttl
 ----
 
-TIP: If you use the artifact `aspect-model-resolver` instead (see section <<loading-and-saving>> for infos on the
-dependency) you can directly refer to the RDF files using a resource URL:
+TIP: You can use the `MetaModelFile` enumeration provided by the `esmf-aspect-meta-model-java` module to
+access object representations of the meta model files, for example:
 
 ++++
 <details>

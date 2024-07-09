@@ -12,6 +12,7 @@
  */
 package org.eclipse.esmf.aspectmodel.java.metamodel;
 
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
@@ -32,6 +33,8 @@ public class StaticMetaModelJavaGenerator extends JavaGenerator {
    @Override
    protected Stream<Artifact<QualifiedName, String>> generateArtifacts() {
       final StaticMetaModelJavaArtifactGenerator<StructureElement> template = new StaticMetaModelJavaArtifactGenerator<>();
-      return applyTemplate( StructureElement.class, template, config );
+      return applyTemplate( StructureElement.class, template, config )
+            .collect( Collectors.toSet() )
+            .stream();
    }
 }

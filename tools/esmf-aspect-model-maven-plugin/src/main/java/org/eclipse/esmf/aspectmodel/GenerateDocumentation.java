@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -32,8 +32,7 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateDocumentation", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateDocumentation extends AspectModelMojo {
-
-   private final Logger logger = LoggerFactory.getLogger( GenerateDocumentation.class );
+   private static final Logger LOG = LoggerFactory.getLogger( GenerateDocumentation.class );
 
    @Parameter
    private final String htmlCustomCssFilePath = "";
@@ -43,9 +42,9 @@ public class GenerateDocumentation extends AspectModelMojo {
       validateParameters();
 
       try {
-         final Set<AspectContext> aspectModels = loadModelsOrFail();
-         for ( final AspectContext context : aspectModels ) {
-            final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( context );
+         final Set<Aspect> aspects = loadAspects();
+         for ( final Aspect model : aspects ) {
+            final AspectModelDocumentationGenerator generator = new AspectModelDocumentationGenerator( model );
             final Map<AspectModelDocumentationGenerator.HtmlGenerationOption, String> generationArgs = new HashMap<>();
             generationArgs.put( AspectModelDocumentationGenerator.HtmlGenerationOption.STYLESHEET, "" );
             //noinspection ConstantValue
@@ -58,6 +57,6 @@ public class GenerateDocumentation extends AspectModelMojo {
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not load custom CSS file.", exception );
       }
-      logger.info( "Successfully generated Aspect model documentation." );
+      LOG.info( "Successfully generated Aspect model documentation." );
    }
 }

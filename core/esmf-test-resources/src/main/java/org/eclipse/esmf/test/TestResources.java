@@ -15,12 +15,10 @@ package org.eclipse.esmf.test;
 
 import java.io.InputStream;
 
-import org.eclipse.esmf.aspectmodel.VersionNumber;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
-import org.eclipse.esmf.aspectmodel.resolver.services.SammAspectMetaModelResourceResolver;
-import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,34 +27,25 @@ import com.google.common.io.Resources;
 import io.vavr.control.Try;
 
 public class TestResources {
-   private TestResources() {
-   }
-
-   public static VersionedModel getModelWithoutResolution( final TestModel model, final KnownVersion knownVersion ) {
-      final String baseDirectory = model instanceof InvalidTestAspect ? "invalid" : "valid";
-      final SammAspectMetaModelResourceResolver metaModelResourceResolver = new SammAspectMetaModelResourceResolver();
-      final String path = String.format( "%s/%s/%s/%s/%s.ttl", baseDirectory, knownVersion.toString().toLowerCase(),
-            model.getUrn().getNamespace(), model.getUrn().getVersion(), model.getName() );
+   public static AspectModel load( final InvalidTestAspect model ) {
+      final String path = String.format( "invalid/%s/%s/%s.ttl", model.getUrn().getNamespace(), model.getUrn().getVersion(),
+            model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
-      return TurtleLoader.loadTurtle( inputStream ).flatMap( rawModel ->
-            metaModelResourceResolver
-                  .mergeMetaModelIntoRawModel( rawModel, VersionNumber.parse( knownVersion.toVersionString() ) ) ).get();
+      final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(
+            "invalid/" + KnownVersion.getLatest().toString().toLowerCase() );
+      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream );
    }
 
-   public static Try<VersionedModel> getModel( final TestModel model, final KnownVersion knownVersion ) {
-      final String baseDirectory = model instanceof InvalidTestAspect ? "invalid" : "valid";
-      final String modelsRoot = baseDirectory + "/" + knownVersion.toString().toLowerCase();
-      return new AspectModelResolver().resolveAspectModel( new ClasspathStrategy( modelsRoot ), model.getUrn() );
+   public static AspectModel load( final TestModel model ) {
+      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespace(), model.getUrn().getVersion(),
+            model.getName() );
+      final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
+      final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy( "valid" );
+      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream );
    }
 
-   public static Try<JsonNode> getPayload( final TestModel model, final KnownVersion knownVersion ) {
-      final String baseDirectory = "payloads/" + ( model instanceof InvalidTestAspect ? "invalid" : "valid" );
-      final String modelsRoot = baseDirectory + "/" + knownVersion.toString().toLowerCase();
+   public static Try<JsonNode> loadPayload( final TestModel model ) {
+      final String modelsRoot = "payloads";
       return Try.of( () -> new ObjectMapper().readTree( Resources.getResource( modelsRoot + "/" + model.getName() + ".json" ) ) );
-   }
-
-   public static Try<VersionedModel> getModel( final TestSharedModel model, final KnownVersion knownVersion ) {
-      final String modelsRoot = "valid/" + knownVersion.toString().toLowerCase();
-      return new AspectModelResolver().resolveAspectModel( new ClasspathStrategy( modelsRoot ), model.getUrn() );
    }
 }

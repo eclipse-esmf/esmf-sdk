@@ -23,7 +23,7 @@ import org.eclipse.esmf.aspectmodel.java.customconstraint.FloatMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.FloatMin;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.IntegerMax;
 import org.eclipse.esmf.aspectmodel.java.customconstraint.IntegerMin;
-import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+import org.eclipse.esmf.metamodel.BoundDefinition;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

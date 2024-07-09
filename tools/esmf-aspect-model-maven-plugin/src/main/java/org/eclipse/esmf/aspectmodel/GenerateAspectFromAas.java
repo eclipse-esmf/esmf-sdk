@@ -48,7 +48,7 @@ public class GenerateAspectFromAas extends AspectModelMojo {
    }
 
    private File getOutputFile( final Aspect aspect ) throws MojoExecutionException {
-      final AspectModelUrn urn = aspect.getAspectModelUrn().orElseThrow();
+      final AspectModelUrn urn = aspect.urn();
       final Path outputPath = Path.of( outputDirectory, urn.getNamespace(), urn.getVersion() );
       try {
          Files.createDirectories( outputPath );

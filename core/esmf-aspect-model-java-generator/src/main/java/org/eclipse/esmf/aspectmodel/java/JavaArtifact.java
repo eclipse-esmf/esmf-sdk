@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.java;
 
+import java.util.Objects;
+
 import org.eclipse.esmf.aspectmodel.generator.Artifact;
 
 /**
@@ -37,5 +39,23 @@ public class JavaArtifact implements Artifact<QualifiedName, String> {
    @Override
    public QualifiedName getId() {
       return new QualifiedName( filename, javaPackageName );
+   }
+
+   @Override
+   public boolean equals( final Object o ) {
+      if ( this == o ) {
+         return true;
+      }
+      if ( o == null || getClass() != o.getClass() ) {
+         return false;
+      }
+      final JavaArtifact that = (JavaArtifact) o;
+      return Objects.equals( content, that.content ) && Objects.equals( filename, that.filename )
+            && Objects.equals( javaPackageName, that.javaPackageName );
+   }
+
+   @Override
+   public int hashCode() {
+      return Objects.hash( content, filename, javaPackageName );
    }
 }

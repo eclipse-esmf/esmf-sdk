@@ -29,13 +29,10 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.UnsupportedVersionException;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
-import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.text.StringEscapeUtils;
@@ -66,8 +63,8 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
 /**
- * Allows to serialize a {@link Model} that contains an Aspect model to RDF/Turtle while following
- * the formatting rules for Aspect models.
+ * Serializes an {@link AspectModelFile} to RDF/Turtle while following the formatting rules for Aspect models.
+ * The model is expected to contain exactly one Aspect.
  */
 public class PrettyPrinter {
    private static final String INDENT = "   ";
@@ -82,86 +79,78 @@ public class PrettyPrinter {
    private final AspectModelUrn rootElementUrn;
    private final PrintWriter writer;
    private final Map<String, String> prefixMap;
-   private final SAMM samm;
+   private final List<String> headerComment;
 
    private final PrintVisitor printVisitor;
 
-   /**
-    * Constructor that takes a raw RDF {@link Model}
-    *
-    * @param model the Aspect Model to write
-    * @param metaModelVersion the meta model version
-    * @param rootElementUrn the URN of the root model element
-    * @param writer the writer to write to
-    */
-   public PrettyPrinter( final Model model, final KnownVersion metaModelVersion, final AspectModelUrn rootElementUrn,
-         final PrintWriter writer ) {
-      this( new VersionedModel( ModelFactory.createDefaultModel(), metaModelVersion, model ), rootElementUrn, writer );
-   }
-
-   /**
-    * Constructor that takes a {@link VersionedModel}
-    *
-    * @param versionedModel the Aspect Model to write
-    * @param rootElementUrn the URN of the root model element
-    * @param writer the writer to write to
-    */
-   public PrettyPrinter( final VersionedModel versionedModel, final AspectModelUrn rootElementUrn, final PrintWriter writer ) {
-      model = versionedModel.getRawModel();
-      final KnownVersion metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() )
-            .orElseThrow( () -> new UnsupportedVersionException( versionedModel.getMetaModelVersion() ) );
+   private PrettyPrinter( final Model model, final AspectModelUrn rootElementUrn, final PrintWriter writer,
+         final List<String> headerComment ) {
       this.writer = writer;
       this.rootElementUrn = rootElementUrn;
-      printVisitor = new PrintVisitor( model );
+      this.model = ModelFactory.createDefaultModel();
+      this.model.add( model );
+      this.headerComment = List.of();
 
-      samm = new SAMM( metaModelVersion );
-      final SAMMC sammc = new SAMMC( metaModelVersion );
-
-      prefixMap = new HashMap<>( Namespace.createPrefixMap( metaModelVersion ) );
-      prefixMap.putAll( versionedModel.getModel().getNsPrefixMap() );
+      prefixMap = new HashMap<>( RdfNamespace.createPrefixMap() );
+      prefixMap.putAll( model.getNsPrefixMap() );
       prefixMap.put( "", rootElementUrn.getUrnPrefix() );
-      model.setNsPrefixes( prefixMap );
+      this.model.setNsPrefixes( prefixMap );
 
-      propertyOrder = createPredefinedPropertyOrder( sammc );
+      propertyOrder = createPredefinedPropertyOrder();
       prefixOrder = createPredefinedPrefixOrder();
+      printVisitor = new PrintVisitor( this.model );
    }
 
-   private Comparator<Property> createPredefinedPropertyOrder( final SAMMC sammc ) {
-      final List<Property> predefinedPropertyOrder = new ArrayList<>();
-      predefinedPropertyOrder.add( samm._extends() );
-      predefinedPropertyOrder.add( samm.preferredName() );
-      predefinedPropertyOrder.add( samm.description() );
-      predefinedPropertyOrder.add( samm.see() );
-      predefinedPropertyOrder.add( samm.characteristic() );
-      predefinedPropertyOrder.add( samm.properties() );
-      predefinedPropertyOrder.add( samm.operations() );
-      predefinedPropertyOrder.add( samm.events() );
-      predefinedPropertyOrder.add( samm.input() );
-      predefinedPropertyOrder.add( samm.output() );
-      predefinedPropertyOrder.add( samm.baseCharacteristic() );
-      predefinedPropertyOrder.add( samm.dataType() );
-      predefinedPropertyOrder.add( samm.exampleValue() );
-      predefinedPropertyOrder.add( samm.value() );
-      predefinedPropertyOrder.add( samm.property() );
-      predefinedPropertyOrder.add( samm.optional() );
+   public PrettyPrinter( final Model model, final AspectModelUrn rootElementUrn, final PrintWriter writer ) {
+      this( model, rootElementUrn, writer, List.of() );
+   }
 
-      predefinedPropertyOrder.add( sammc.languageCode() );
-      predefinedPropertyOrder.add( sammc.localeCode() );
-      predefinedPropertyOrder.add( sammc.left() );
-      predefinedPropertyOrder.add( sammc.right() );
-      predefinedPropertyOrder.add( sammc.minValue() );
-      predefinedPropertyOrder.add( sammc.maxValue() );
-      predefinedPropertyOrder.add( sammc.lowerBoundDefinition() );
-      predefinedPropertyOrder.add( sammc.upperBoundDefinition() );
-      predefinedPropertyOrder.add( sammc.defaultValue() );
-      predefinedPropertyOrder.add( sammc.unit() );
-      predefinedPropertyOrder.add( sammc.left() );
-      predefinedPropertyOrder.add( sammc.right() );
-      predefinedPropertyOrder.add( sammc.deconstructionRule() );
-      predefinedPropertyOrder.add( sammc.elements() );
-      predefinedPropertyOrder.add( sammc.values() );
-      predefinedPropertyOrder.add( sammc.integer() );
-      predefinedPropertyOrder.add( sammc.scale() );
+   /**
+    * Creates a new Pretty Printer for a given Aspect Model File.
+    *
+    * @param modelFile the model file to pretty print
+    * @param writer the writer to write to
+    */
+   public PrettyPrinter( final AspectModelFile modelFile, final PrintWriter writer ) {
+      this( modelFile.sourceModel(), modelFile.aspect().urn(), writer, modelFile.headerComment() );
+   }
+
+   private Comparator<Property> createPredefinedPropertyOrder() {
+      final List<Property> predefinedPropertyOrder = new ArrayList<>();
+      predefinedPropertyOrder.add( SammNs.SAMM._extends() );
+      predefinedPropertyOrder.add( SammNs.SAMM.preferredName() );
+      predefinedPropertyOrder.add( SammNs.SAMM.description() );
+      predefinedPropertyOrder.add( SammNs.SAMM.see() );
+      predefinedPropertyOrder.add( SammNs.SAMM.characteristic() );
+      predefinedPropertyOrder.add( SammNs.SAMM.properties() );
+      predefinedPropertyOrder.add( SammNs.SAMM.operations() );
+      predefinedPropertyOrder.add( SammNs.SAMM.events() );
+      predefinedPropertyOrder.add( SammNs.SAMM.input() );
+      predefinedPropertyOrder.add( SammNs.SAMM.output() );
+      predefinedPropertyOrder.add( SammNs.SAMM.dataType() );
+      predefinedPropertyOrder.add( SammNs.SAMM.exampleValue() );
+      predefinedPropertyOrder.add( SammNs.SAMM.value() );
+      predefinedPropertyOrder.add( SammNs.SAMM.property() );
+      predefinedPropertyOrder.add( SammNs.SAMM.optional() );
+
+      predefinedPropertyOrder.add( SammNs.SAMMC.baseCharacteristic() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.languageCode() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.localeCode() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.left() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.right() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.minValue() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.maxValue() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.lowerBoundDefinition() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.upperBoundDefinition() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.defaultValue() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.unit() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.left() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.right() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.deconstructionRule() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.elements() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.values() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.integer() );
+      predefinedPropertyOrder.add( SammNs.SAMMC.scale() );
 
       return Comparator.<Property> comparingInt( property ->
                   predefinedPropertyOrder.contains( property )
@@ -213,6 +202,13 @@ public class PrettyPrinter {
     * Print to the PrintWriter given in the constructor. This method does not close the PrintWriter.
     */
    public void print() {
+      for ( final String line : headerComment ) {
+         writer.println( line );
+      }
+      if ( headerComment.size() > 1 ) {
+         writer.println();
+      }
+
       showMilestoneBanner();
 
       prefixMap.entrySet().stream().sorted( prefixOrder )

@@ -26,7 +26,7 @@ import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDef
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDefinitionParser;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateSql", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateSql extends AspectModelMojo {
-   private final Logger logger = LoggerFactory.getLogger( GenerateSql.class );
+   private static final Logger LOG = LoggerFactory.getLogger( GenerateSql.class );
 
    @Parameter( defaultValue = "" + DatabricksSqlGenerationConfig.DEFAULT_INCLUDE_TABLE_COMMENT )
    private boolean includeTableComment;
@@ -71,8 +71,8 @@ public class GenerateSql extends AspectModelMojo {
             .map( columnDefintion -> new DatabricksColumnDefinitionParser( columnDefintion ).get() )
             .toList();
 
-      final Set<AspectContext> aspectModels = loadModelsOrFail();
-      for ( final AspectContext context : aspectModels ) {
+      final Set<Aspect> aspectModels = loadAspects();
+      for ( final Aspect aspect : aspectModels ) {
          final DatabricksSqlGenerationConfig generatorConfig =
                DatabricksSqlGenerationConfigBuilder.builder()
                      .commentLanguage( Locale.forLanguageTag( language ) )
@@ -84,14 +84,14 @@ public class GenerateSql extends AspectModelMojo {
                      .build();
          final SqlGenerationConfig sqlConfig = new SqlGenerationConfig( SqlGenerationConfig.Dialect.valueOf( dialect.toUpperCase() ),
                SqlGenerationConfig.MappingStrategy.valueOf( strategy.toUpperCase() ), generatorConfig );
-         final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( context.aspect(), sqlConfig );
+         final SqlArtifact result = AspectModelSqlGenerator.INSTANCE.apply( aspect, sqlConfig );
 
-         try ( final OutputStream out = getOutputStreamForFile( context.aspect().getName() + ".sql", outputDirectory ) ) {
+         try ( final OutputStream out = getOutputStreamForFile( aspect.getName() + ".sql", outputDirectory ) ) {
             out.write( result.getContent().getBytes() );
          } catch ( final IOException exception ) {
             throw new MojoExecutionException( "Could not write SQL file.", exception );
          }
       }
-      logger.info( "Successfully generated SQL script." );
+      LOG.info( "Successfully generated SQL script." );
    }
 }

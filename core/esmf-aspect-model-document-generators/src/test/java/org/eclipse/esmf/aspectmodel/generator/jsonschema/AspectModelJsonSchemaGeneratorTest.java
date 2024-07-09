@@ -24,12 +24,8 @@ import java.util.Map;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.test.MetaModelVersions;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
@@ -52,9 +48,8 @@ import org.assertj.core.data.Percentage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
-public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
+public class AspectModelJsonSchemaGeneratorTest {
    private final ObjectMapper objectMapper = new ObjectMapper();
    final Configuration config = Configuration.defaultConfiguration().addOptions( Option.SUPPRESS_EXCEPTIONS );
 
@@ -77,11 +72,6 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
          fail();
       }
       System.out.println( out );
-   }
-
-   private Aspect loadAspect( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
-      final VersionedModel versionedModel = TestResources.getModel( testAspect, metaModelVersion ).get();
-      return AspectModelLoader.getSingleAspect( versionedModel ).get();
    }
 
    private JsonNode generatePayload( final Aspect aspect ) {
@@ -126,7 +116,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
          showJson( payload );
          System.out.println( "Schema:" );
          showJson( schema );
-         fail();
+         fail( throwable );
       }
    }
 
@@ -146,7 +136,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
          "MODEL_WITH_BROKEN_CYCLES" // contains cycles, but all of them should be "breakable", need to be investigated
    } )
    public void testGeneration( final TestAspect testAspect ) {
-      final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['$schema']" ) )
@@ -155,10 +145,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertPayloadIsValid( schema, aspect );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testSchemaNameClash( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY, KnownVersion.getLatest() );
+   @Test
+   public void testSchemaNameClash() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY ).aspect();
       final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
             .locale( Locale.ENGLISH )
             .reservedSchemaNames( List.of( "TestEntity" ) )
@@ -171,16 +160,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['TestEntity0']['type']" ) ).isEqualTo( "object" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testTypeMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SIMPLE_TYPES, metaModelVersion );
+   @Test
+   public void testTypeMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SIMPLE_TYPES ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
 
-      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
-      final String booleanName = sammc.Boolean().getLocalName();
+      final String booleanName = SammNs.SAMMC.Boolean().getLocalName();
 
       String characteristicReference = context.<String> read( "$['properties']['anyUriProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/AnyUriPropertyCharacteristic" );
@@ -211,14 +198,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "This is a byteProperty characteristic." );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
-      final String unitReference = sammc.UnitReference().getLocalName();
+      final String unitReference = SammNs.SAMMC.UnitReference().getLocalName();
       assertThat( context.<String> read( "$['properties']['curieProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + unitReference );
       assertThat( context.<String> read( "$['components']['schemas']['" + unitReference + "']['type']" ) )
             .isEqualTo( "string" );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + unitReference + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) )
-            .isEqualTo( sammc.UnitReference().getURI() );
+            .isEqualTo( SammNs.SAMMC.UnitReference().getURI() );
 
       characteristicReference = context.<String> read( "$['properties']['dateProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/DatePropertyCharacteristic" );
@@ -226,14 +213,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['format']" ) ).isEqualTo( "date" );
 
-      final String timestamp = sammc.Timestamp().getLocalName();
+      final String timestamp = SammNs.SAMMC.Timestamp().getLocalName();
       assertThat( context.<String> read( "$['properties']['dateTimeProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + timestamp );
       assertThat( context.<String> read( "$['components']['schemas']['" + timestamp + "']['type']" ) )
             .isEqualTo( "string" );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + timestamp + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) )
-            .isEqualTo( sammc.Timestamp().getURI() );
+            .isEqualTo( SammNs.SAMMC.Timestamp().getURI() );
 
       characteristicReference = context.<String> read( "$['properties']['dateTimeStampProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/DateTimeStampPropertyCharacteristic" );
@@ -304,14 +291,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
-      final String multiLanguageText = sammc.MultiLanguageText().getLocalName();
+      final String multiLanguageText = SammNs.SAMMC.MultiLanguageText().getLocalName();
       assertThat( context.<String> read( "$['properties']['langStringProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + multiLanguageText );
       assertThat( context.<String> read( "$['components']['schemas']"
             + "['" + multiLanguageText + "']['type']" ) ).isEqualTo( "object" );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + multiLanguageText + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) )
-            .isEqualTo( sammc.MultiLanguageText().getURI() );
+            .isEqualTo( SammNs.SAMMC.MultiLanguageText().getURI() );
 
       characteristicReference = context.<String> read( "$['properties']['longProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/LongPropertyCharacteristic" );
@@ -343,13 +330,13 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
-      final String text = sammc.Text().getLocalName();
+      final String text = SammNs.SAMMC.Text().getLocalName();
       assertThat( context.<String> read( "$['properties']['stringProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + text );
       assertThat( context.<String> read( "$['components']['schemas']['" + text + "']['type']" ) ).isEqualTo( "string" );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + text + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) )
-            .isEqualTo( sammc.Text().getURI() );
+            .isEqualTo( SammNs.SAMMC.Text().getURI() );
 
       characteristicReference = context.<String> read( "$['properties']['timeProperty']['$ref']" );
       assertThat( characteristicReference ).isEqualTo( "#/components/schemas/TimePropertyCharacteristic" );
@@ -368,7 +355,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
       characteristicReference = context.<String> read( "$['properties']['unsignedLongProperty']['$ref']" );
-      assertThat( characteristicReference ).isEqualTo( "#/components/schemas/UnsignedLongPropertyQuantifiable" );
+      assertThat( characteristicReference ).isEqualTo( "#/components/schemas/UnsignedLongPropertyCharacteristic" );
       characteristicName = characteristicReference.substring( characteristicReference.lastIndexOf( "/" ) + 1 );
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "number" );
 
@@ -383,28 +370,25 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['" + characteristicName + "']['type']" ) ).isEqualTo( "string" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testOptionalPropertyMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY, metaModelVersion );
+   @Test
+   public void testOptionalPropertyMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
-      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
-      final String text = sammc.Text().getLocalName();
+      final String text = SammNs.SAMMC.Text().getLocalName();
 
       assertThat( context.<String> read( "$['components']['schemas']['" + text + "']['type']" ) ).isEqualTo( "string" );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + text + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) )
-            .isEqualTo( sammc.Text().getURI() );
+            .isEqualTo( SammNs.SAMMC.Text().getURI() );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
             .isEqualTo( "#/components/schemas/" + text );
       assertThat( context.<List<String>> read( "$['required']" ) ).isNull();
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testAspectWithRecursivePropertyWithOptional( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL, metaModelVersion );
+   @Test
+   public void testAspectWithRecursivePropertyWithOptional() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
@@ -418,23 +402,20 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<List<String>> read( "$['required']" ).stream().findFirst().get() ).isEqualTo( "testProperty" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testNotInPayloadPropertyMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES,
-            metaModelVersion );
+   @Test
+   public void testNotInPayloadPropertyMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
       assertThat( context.<Map<?, ?>> read( "$['properties']['description']" ) ).isNull();
 
-      assertThat( context.<String> read( "$['components']['schemas']['SystemStateEnumeration']['description']" ) )
+      assertThat( context.<String> read( "$['components']['schemas']['SystemStateCharacteristic']['description']" ) )
             .isEqualTo( "Defines which states the system may have." );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testCollectionWithElementConstraint( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ELEMENT_CONSTRAINT, metaModelVersion );
+   @Test
+   public void testCollectionWithElementConstraint() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION_WITH_ELEMENT_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
 
@@ -455,16 +436,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( false );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testEntityMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY, metaModelVersion );
+   @Test
+   public void testEntityMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
       final DocumentContext context = JsonPath.parse( schema.toString() );
 
-      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
-      final String text = sammc.Text().getLocalName();
+      final String text = SammNs.SAMMC.Text().getLocalName();
 
       assertThat( context.<String> read( "$['type']" ) ).isEqualTo( "object" );
       assertThat( context.<String> read( "$['properties']['testProperty']['description']" ) )
@@ -478,16 +457,15 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/" + text );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + text + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) )
-            .isEqualTo( sammc.Text().getURI() );
+            .isEqualTo( SammNs.SAMMC.Text().getURI() );
       assertThat( context.<List<String>> read( "$['components']['schemas']['TestEntity']['required']" ) )
             .isEqualTo( List.of( "entityProperty" ) );
       assertThat( context.<List<String>> read( "$['required']" ) ).isEqualTo( List.of( "testProperty" ) );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testLengthConstraintForStringMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_LENGTH_CONSTRAINT, metaModelVersion );
+   @Test
+   public void testLengthConstraintForStringMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_LENGTH_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['testProperty']['$ref']" ) )
@@ -505,13 +483,10 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
    /**
     * Verify that the json schema generated from the given aspect model contains descriptions as per the chosen language.
-    *
-    * @param metaModelVersion the used meta model version.
     */
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testMultilingualDescriptions( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENGLISH_AND_GERMAN_DESCRIPTION, metaModelVersion );
+   @Test
+   public void testMultilingualDescriptions() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENGLISH_AND_GERMAN_DESCRIPTION ).aspect();
       final JsonNode schemaEnglish = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspect,
             JsonSchemaGenerationConfigBuilder.builder().locale( Locale.ENGLISH ).build() ).getContent();
 
@@ -528,10 +503,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "Es ist ein Test-String" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testLengthConstraintForListMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_LIST_WITH_LENGTH_CONSTRAINT, metaModelVersion );
+   @Test
+   public void testLengthConstraintForListMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_LIST_WITH_LENGTH_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read(
@@ -560,10 +534,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertPayloadIsValid( schema, payload );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testRangeConstraintMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT, metaModelVersion );
+   @Test
+   public void testRangeConstraintMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -581,11 +554,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isCloseTo( 10.5d, Percentage.withPercentage( 1.0d ) );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testRangeConstraintOnConstrainedNumericType( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_ON_CONSTRAINED_NUMERIC_TYPE,
-            metaModelVersion );
+   @Test
+   public void testRangeConstraintOnConstrainedNumericType() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_RANGE_CONSTRAINT_ON_CONSTRAINED_NUMERIC_TYPE ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -603,10 +574,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( Short.MAX_VALUE );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testRangeConstraintWithBoundsMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_EXCLUSIVE_RANGE_CONSTRAINT, metaModelVersion );
+   @Test
+   public void testRangeConstraintWithBoundsMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_EXCLUSIVE_RANGE_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -679,10 +649,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<Boolean> read( "$['components']['schemas']['IntRange']['exclusiveMinimum']" ) ).isTrue();
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testCollectionMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_LIST, metaModelVersion );
+   @Test
+   public void testCollectionMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_LIST ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
 
@@ -699,7 +668,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
    @Test
    public void testSetMapping() {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SET, KnownVersion.getLatest() );
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SET ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -716,7 +685,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
    @Test
    public void testSortedSetSetMapping() {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SORTED_SET, KnownVersion.getLatest() );
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_SORTED_SET ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -735,14 +704,12 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertThat( context.<String> read( "$['components']['schemas']['TestSortedSet']['items']['type']" ) ).isEqualTo( "string" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testLangStringMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT, metaModelVersion );
+   @Test
+   public void testLangStringMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_MULTI_LANGUAGE_TEXT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
-      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
-      final String multiLanguageText = sammc.MultiLanguageText().getLocalName();
+      final String multiLanguageText = SammNs.SAMMC.MultiLanguageText().getLocalName();
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
       assertThat( context.<String> read( "$['properties']['prop']['$ref']" ) )
@@ -751,14 +718,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "object" );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + multiLanguageText + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) )
-            .isEqualTo( sammc.MultiLanguageText().getURI() );
+            .isEqualTo( SammNs.SAMMC.MultiLanguageText().getURI() );
       assertThat( context.<String> read( "$['components']['schemas']['" + multiLanguageText + "']['description']" ) )
             .isEqualTo( "Describes a Property which contains plain text in multiple "
                   + "languages. This is intended exclusively for human readable strings, not for "
                   + "identifiers, measurement values, etc." );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + multiLanguageText + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) )
-            .isEqualTo( sammc.MultiLanguageText().getURI() );
+            .isEqualTo( SammNs.SAMMC.MultiLanguageText().getURI() );
       assertThat( context.<String> read( "$['components']['schemas']['" + multiLanguageText + "']['patternProperties']"
             + "['^.*$']['type']" ) ).isEqualTo( "string" );
 
@@ -770,10 +737,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertPayloadIsValid( schema, payload );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testEitherMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_EITHER, metaModelVersion );
+   @Test
+   public void testEitherMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_EITHER ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       showJson( schema );
 
@@ -803,10 +769,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
       assertPayloadIsValid( schema, rightPayload );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testEnumScalarMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENUMERATION, metaModelVersion );
+   @Test
+   public void testEnumScalarMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENUMERATION ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -825,10 +790,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .containsExactly( 1, 2, 3 );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testEnumComplexMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES, metaModelVersion );
+   @Test
+   public void testEnumComplexMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENUM_HAVING_NESTED_ENTITIES ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
       final DocumentContext context = JsonPath.parse( schema.toString() );
@@ -857,11 +821,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             + "['properties']['numericCode']['enum'][0]" ) ).isEqualTo( 10 );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testEnumComplexWithNotInPayloadMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY,
-            metaModelVersion );
+   @Test
+   public void testEnumComplexWithNotInPayloadMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_EXTENDED_ENUMS_WITH_NOT_IN_PAYLOAD_PROPERTY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
@@ -884,10 +846,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             + "['enum'][0]" ) ).isNull();
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testEnumWithLangStringMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING, metaModelVersion );
+   @Test
+   public void testEnumWithLangStringMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_LANG_STRING ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
@@ -908,10 +869,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             + "['enum'][0]['en']" ) ).isEqualTo( "This is a test." );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testRegularExpressionConstraintMapping( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_REGULAR_EXPRESSION_CONSTRAINT, metaModelVersion );
+   @Test
+   public void testRegularExpressionConstraintMapping() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_REGULAR_EXPRESSION_CONSTRAINT ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
 
       final DocumentContext context = JsonPath.using( config ).parse( schema.toString() );
@@ -931,10 +891,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "^[0-9]*$" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   public void testComplexEntityCollectionEnum( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM, metaModelVersion );
+   @Test
+   public void testComplexEntityCollectionEnum() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COMPLEX_ENTITY_COLLECTION_ENUM ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
       showJson( schema );
@@ -966,16 +925,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             + "['entityPropertyOne']['items']['enum'][0]['entityPropertyTwo']" ) ).isEqualTo( "foo" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testAspectWithAbstractSingleEntity( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY, metaModelVersion );
+   @Test
+   public void testAspectWithAbstractSingleEntity() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ABSTRACT_SINGLE_ENTITY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
       showJson( schema );
 
-      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
-      final String text = sammc.Text().getLocalName();
+      final String text = SammNs.SAMMC.Text().getLocalName();
 
       assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['allOf'][0]['$ref']" ) )
             .isEqualTo( "#/components/schemas/AbstractTestEntity" );
@@ -986,7 +943,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( TestModel.TEST_NAMESPACE + "ExtendingTestEntity" );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + text + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) )
-            .isEqualTo( sammc.Text().getURI() );
+            .isEqualTo( SammNs.SAMMC.Text().getURI() );
       assertThat( context.<String> read( "$['components']['schemas']['AbstractTestEntity']['description']" ) )
             .isEqualTo( "This is an abstract test entity" );
       assertThat(
@@ -996,16 +953,14 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/EntityCharacteristic" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testAspectWithAbstractEntity( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY, metaModelVersion );
+   @Test
+   public void testAspectWithAbstractEntity() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
       showJson( schema );
 
-      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
-      final String text = sammc.Text().getLocalName();
+      final String text = SammNs.SAMMC.Text().getLocalName();
 
       assertThat( context.<String> read( "$['components']['schemas']['ExtendingTestEntity']['description']" ) )
             .isEqualTo( "This is a test entity" );
@@ -1018,7 +973,7 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/" + text );
       assertThat( context.<String> read(
             "$['components']['schemas']['" + text + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) )
-            .isEqualTo( sammc.Text().getURI() );
+            .isEqualTo( SammNs.SAMMC.Text().getURI() );
       assertThat( context.<String> read( "$['components']['schemas']['AbstractTestEntity']['description']" ) )
             .isEqualTo( "This is a abstract test entity" );
       assertThat(
@@ -1030,16 +985,12 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
 
    /**
     * Test to validate the json schema generated from the given aspect model containing an abstract property.
-    *
-    * @param metaModelVersion the used meta model version.
     */
-   @ParameterizedTest
-   @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testAspectWithAbstractProperty( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ABSTRACT_PROPERTY, metaModelVersion );
+   @Test
+   public void testAspectWithAbstractProperty() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_ABSTRACT_PROPERTY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
-      final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
-      final String text = sammc.Text().getLocalName();
+      final String text = SammNs.SAMMC.Text().getLocalName();
 
       assertThat( schema.at( "/components/schemas/ExtendingTestEntity/description" ).asText() )
             .isEqualTo( "This is a test entity" );
@@ -1049,10 +1000,9 @@ public class AspectModelJsonSchemaGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/" + text );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "versionsStartingWith2_0_0" )
-   public void testAspectWithCollectionWithAbstractEntity( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY, metaModelVersion );
+   @Test
+   public void testAspectWithCollectionWithAbstractEntity() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY ).aspect();
       final JsonNode schema = buildJsonSchema( aspect );
       final DocumentContext context = JsonPath.parse( schema.toString() );
       showJson( schema );

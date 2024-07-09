@@ -16,10 +16,10 @@ package org.eclipse.esmf.metamodel.impl;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
 
 public class DefaultScalarValue implements ScalarValue {
    private final Object value;
@@ -40,9 +40,14 @@ public class DefaultScalarValue implements ScalarValue {
       return type;
    }
 
+   /**
+    * Similar to {@link DefaultScalar#getSourceFile()}, scalar values are not defined in Aspect Model files, so this returns null.
+    *
+    * @return null
+    */
    @Override
-   public KnownVersion getMetaModelVersion() {
-      return type.getMetaModelVersion();
+   public AspectModelFile getSourceFile() {
+      return null;
    }
 
    @Override

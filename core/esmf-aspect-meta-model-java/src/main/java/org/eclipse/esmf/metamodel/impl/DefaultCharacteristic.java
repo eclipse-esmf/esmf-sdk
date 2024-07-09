@@ -12,19 +12,21 @@
  */
 package org.eclipse.esmf.metamodel.impl;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultCharacteristic extends ModelElementImpl implements Characteristic {
    private final Optional<Type> dataType;
 
-   public DefaultCharacteristic( final MetaModelBaseAttributes metaModelBaseAttributes, final Optional<Type> dataType ) {
+   public DefaultCharacteristic(
+         final MetaModelBaseAttributes metaModelBaseAttributes,
+         final Optional<Type> dataType
+   ) {
       super( metaModelBaseAttributes );
       this.dataType = dataType;
    }
@@ -56,21 +58,5 @@ public class DefaultCharacteristic extends ModelElementImpl implements Character
       return new StringJoiner( ", ", DefaultCharacteristic.class.getSimpleName() + "[", "]" )
             .add( "dataType=" + dataType )
             .toString();
-   }
-
-   @Override
-   public boolean equals( final Object o ) {
-      if ( this == o ) {
-         return true;
-      }
-      if ( o == null || getClass() != o.getClass() ) {
-         return false;
-      }
-      return super.equals( o );
-   }
-
-   @Override
-   public int hashCode() {
-      return Objects.hash( super.hashCode() );
    }
 }

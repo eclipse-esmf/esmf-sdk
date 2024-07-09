@@ -90,6 +90,7 @@ public class JavaCompiler {
          };
          return loadOrder.stream().collect( Collectors.toMap( Function.identity(), qualifiedName ->
                defineAndLoad( qualifiedName, classLoader ) ) );
+
       } catch ( final IOException e ) {
          throw new RuntimeException( e );
       }

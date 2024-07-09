@@ -35,62 +35,62 @@ import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.java.pojo.JavaArtifactGenerator;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
-import org.eclipse.esmf.characteristic.Code;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.Duration;
-import org.eclipse.esmf.characteristic.Either;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.characteristic.List;
-import org.eclipse.esmf.characteristic.Measurement;
-import org.eclipse.esmf.characteristic.Quantifiable;
-import org.eclipse.esmf.characteristic.Set;
-import org.eclipse.esmf.characteristic.SingleEntity;
-import org.eclipse.esmf.characteristic.SortedSet;
-import org.eclipse.esmf.characteristic.State;
-import org.eclipse.esmf.characteristic.StructuredValue;
-import org.eclipse.esmf.characteristic.Trait;
-import org.eclipse.esmf.characteristic.impl.DefaultCode;
-import org.eclipse.esmf.characteristic.impl.DefaultCollection;
-import org.eclipse.esmf.characteristic.impl.DefaultDuration;
-import org.eclipse.esmf.characteristic.impl.DefaultEnumeration;
-import org.eclipse.esmf.characteristic.impl.DefaultList;
-import org.eclipse.esmf.characteristic.impl.DefaultMeasurement;
-import org.eclipse.esmf.characteristic.impl.DefaultQuantifiable;
-import org.eclipse.esmf.characteristic.impl.DefaultSet;
-import org.eclipse.esmf.characteristic.impl.DefaultSingleEntity;
-import org.eclipse.esmf.characteristic.impl.DefaultSortedSet;
-import org.eclipse.esmf.characteristic.impl.DefaultState;
-import org.eclipse.esmf.characteristic.impl.DefaultStructuredValue;
-import org.eclipse.esmf.characteristic.impl.DefaultTrait;
-import org.eclipse.esmf.constraint.EncodingConstraint;
-import org.eclipse.esmf.constraint.FixedPointConstraint;
-import org.eclipse.esmf.constraint.LanguageConstraint;
-import org.eclipse.esmf.constraint.LengthConstraint;
-import org.eclipse.esmf.constraint.RangeConstraint;
-import org.eclipse.esmf.constraint.RegularExpressionConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultEncodingConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultFixedPointConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultLanguageConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultLengthConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultRangeConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultRegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.AbstractEntity;
+import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.Units;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+import org.eclipse.esmf.metamodel.characteristic.Code;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Duration;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.List;
+import org.eclipse.esmf.metamodel.characteristic.Measurement;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.characteristic.Set;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.SortedSet;
+import org.eclipse.esmf.metamodel.characteristic.State;
+import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultCode;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultCollection;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultDuration;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultEnumeration;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultMeasurement;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultQuantifiable;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSet;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSortedSet;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultState;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultStructuredValue;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait;
+import org.eclipse.esmf.metamodel.constraint.EncodingConstraint;
+import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
+import org.eclipse.esmf.metamodel.constraint.LanguageConstraint;
+import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
+import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
+import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultEncodingConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultFixedPointConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultLanguageConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultLengthConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultRegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.impl.DefaultAbstractEntity;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultComplexType;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.staticmetamodel.PropertyContainer;
 import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
@@ -133,10 +133,8 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
       importTracker.importExplicit( Locale.class );
 
       final CharMatcher matchHash = CharMatcher.is( '#' );
-      final String modelUrnPrefix = element.getAspectModelUrn().map( AspectModelUrn::getUrnPrefix ).orElseThrow( () -> {
-         throw new CodeGenerationException( "Aspect or Entity may not be declared as an anonymous node" );
-      } );
-      final String characteristicBaseUrn = matchHash.trimTrailingFrom( new SAMMC( element.getMetaModelVersion() ).getNamespace() );
+      final String modelUrnPrefix = element.urn().getUrnPrefix();
+      final String characteristicBaseUrn = matchHash.trimTrailingFrom( SammNs.SAMMC.getNamespace() );
 
       final Map<String, Object> context = ImmutableMap.<String, Object> builder()
             .put( "Arrays", java.util.Arrays.class )
@@ -197,7 +195,7 @@ public class StaticMetaModelJavaArtifactGenerator<E extends StructureElement> im
             .put( "Measurement", Measurement.class )
             .put( "modelUrnPrefix", modelUrnPrefix )
             .put( "modelVisitor", new StaticMetaModelVisitor() )
-            .put( "nonNegativeInteger", new DefaultScalar( XSD.nonNegativeInteger.getURI(), element.getMetaModelVersion() ) )
+            .put( "nonNegativeInteger", new DefaultScalar( XSD.nonNegativeInteger.getURI() ) )
             .put( "Quantifiable", Quantifiable.class )
             .put( "RangeConstraint", RangeConstraint.class )
             .put( "RegularExpressionConstraint", RegularExpressionConstraint.class )

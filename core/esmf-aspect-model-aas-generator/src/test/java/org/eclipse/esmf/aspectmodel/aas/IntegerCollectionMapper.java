@@ -41,9 +41,7 @@ public class IntegerCollectionMapper implements PropertyMapper<SubmodelElementLi
 
    @Override
    public boolean canHandle( final Property property ) {
-      return property.getAspectModelUrn()
-            .map( urn -> urn.equals( AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#testList" ) ) )
-            .orElse( false );
+      return property.urn().equals( AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#testList" ) );
    }
 
    @Override

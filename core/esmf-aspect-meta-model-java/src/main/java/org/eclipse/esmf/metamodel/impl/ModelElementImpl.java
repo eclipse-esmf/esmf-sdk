@@ -12,68 +12,47 @@
  */
 package org.eclipse.esmf.metamodel.impl;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.NamedElement;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 /**
  * The base implemenation of all model elements.
  */
-public abstract class ModelElementImpl implements ModelElement, NamedElement, Comparable<ModelElementImpl> {
-   private final KnownVersion metaModelVersion;
-   private final Optional<AspectModelUrn> urn;
-   private final String name;
-   private final Set<LangString> preferredNames;
-   private final Set<LangString> descriptions;
-   private final List<String> see;
-   private final boolean hasSyntheticName;
+public abstract class ModelElementImpl implements ModelElement, Comparable<ModelElement> {
+   protected final MetaModelBaseAttributes baseAttributes;
 
-   ModelElementImpl( final MetaModelBaseAttributes metaModelBaseAttributes ) {
-      metaModelVersion = metaModelBaseAttributes.getMetaModelVersion();
-      urn = metaModelBaseAttributes.getUrn();
-      name = metaModelBaseAttributes.getName();
-      preferredNames = metaModelBaseAttributes.getPreferredNames();
-      descriptions = metaModelBaseAttributes.getDescriptions();
-      see = metaModelBaseAttributes.getSee();
-      hasSyntheticName = metaModelBaseAttributes.hasSyntheticName();
+   ModelElementImpl( final MetaModelBaseAttributes baseAttributes ) {
+      this.baseAttributes = baseAttributes;
    }
 
-   /**
-    * The URN for the element, if present. Certain elements (such as Constraints) are allowed to not have URNs, which is why the URN is
-    * optional.
-    *
-    * @return the URN.
-    */
    @Override
-   public Optional<AspectModelUrn> getAspectModelUrn() {
-      return urn;
+   public AspectModelUrn urn() {
+      return baseAttributes.isAnonymous() && baseAttributes.urn() == null
+            ? ModelElement.super.urn()
+            : baseAttributes.urn();
    }
 
-   /**
-    * Returns the metamodel version this model element is defined against
-    */
-   @Override
-   public KnownVersion getMetaModelVersion() {
-      return metaModelVersion;
-   }
-
-   /**
-    * The name of the element.
-    *
-    * @return the name.
-    */
    @Override
    public String getName() {
-      return name;
+      return baseAttributes.isAnonymous() && baseAttributes.urn() == null
+            ? urn().getName()
+            : baseAttributes.getName();
+   }
+
+   @Override
+   public boolean isAnonymous() {
+      return baseAttributes.isAnonymous();
+   }
+
+   @Override
+   public AspectModelFile getSourceFile() {
+      return baseAttributes.getSourceFile();
    }
 
    /**
@@ -83,7 +62,7 @@ public abstract class ModelElementImpl implements ModelElement, NamedElement, Co
     */
    @Override
    public Set<LangString> getPreferredNames() {
-      return preferredNames;
+      return baseAttributes.getPreferredNames();
    }
 
    /**
@@ -93,46 +72,33 @@ public abstract class ModelElementImpl implements ModelElement, NamedElement, Co
     */
    @Override
    public Set<LangString> getDescriptions() {
-      return descriptions;
+      return baseAttributes.getDescriptions();
    }
 
    @Override
    public List<String> getSee() {
-      return see;
+      return baseAttributes.getSee();
    }
 
    @Override
-   public boolean hasSyntheticName() {
-      return hasSyntheticName;
+   public int compareTo( final ModelElement o ) {
+      return urn().compareTo( o.urn() );
    }
 
    @Override
-   public boolean equals( final Object o ) {
-      if ( this == o ) {
+   public boolean equals( final Object obj ) {
+      if ( this == obj ) {
          return true;
       }
-      if ( o == null || getClass() != o.getClass() ) {
+      if ( obj == null || getClass() != obj.getClass() ) {
          return false;
       }
-      final ModelElementImpl base = (ModelElementImpl) o;
-      return Objects.equals( urn, base.urn )
-            && Objects.equals( name, base.name );
+      final ModelElementImpl that = (ModelElementImpl) obj;
+      return urn().equals( that.urn() );
    }
 
    @Override
    public int hashCode() {
-      return Objects.hash( urn, name );
-   }
-
-   @Override
-   public int compareTo( final ModelElementImpl o ) {
-      if ( urn.isPresent() && o.urn.isPresent() ) {
-         return urn.get().compareTo( o.urn.get() );
-      }
-      return Comparator
-            .comparing( ModelElementImpl::getMetaModelVersion )
-            .thenComparing( ModelElementImpl::getName )
-            .thenComparing( ModelElementImpl::hasSyntheticName )
-            .compare( this, o );
+      return urn().hashCode();
    }
 }
