@@ -23,8 +23,11 @@ import java.util.Optional;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.ModelElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,23 +64,21 @@ public class AspectSearchCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Aspect aspect = loadAspectOrFail( input, customResolver );
+      final AspectModel aspectModel = loadAspectModelOrFail( input, customResolver );
 
       final Path directory = Paths.get( pathToModels );
-      final File[] files = Arrays.stream( Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} ) )
+      final List<File> files = Arrays.stream( Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} ) )
             .filter( file -> file.isFile() && file.getName().endsWith( ".ttl" ) && !file.getName()
                   .equals( Paths.get( input ).getFileName().toString() ) )
             .sorted()
-            .toArray( File[]::new );
+            .toList();
 
-      if ( files.length == 0 ) {
+      if ( files.isEmpty() ) {
          LOG.info( "No .ttl files found in the directory '{}'", directory );
          return;
       }
 
-      //      final List<AspectModelUrn> modelUrns = AspectModelResolver.getAllUrnsInModel( versionedModel.get().getRawModel() ).stream()
-      //            .map( AspectModelUrn::fromUrn )
-      //            .toList();
+      final List<AspectModelUrn> modelUrns = aspectModel.elements().stream().map( ModelElement::urn ).toList();
 
       String header = String.format( "| %-60s | %-100s | %-50s | %-60s |",
             "URN of the element", "File location", "Model source", "Target element that it is referring to" );
@@ -88,25 +89,23 @@ public class AspectSearchCommand extends AbstractCommand {
       System.out.println( header );
       System.out.println( separator );
 
-      //      for ( final File file : files ) {
-      //         processFile( file, modelUrns );
-      //      }
+      final AspectModelLoader aspectModelLoader = new AspectModelLoader();
+
+      for ( final File file : files ) {
+         processFile( file, modelUrns, aspectModelLoader );
+      }
    }
 
-   private void processFile( File file, List<AspectModelUrn> modelUrns ) {
-      //      final Try<VersionedModel> modelTry = loadAndResolveModel( file, customResolver );
-      //
-      //      if ( modelTry.isFailure() ) {
-      //         LOG.debug( "Could not load model from {}", file, modelTry.getCause() );
-      //         return;
-      //      }
-      //
-      //      final Model model = modelTry.get().getRawModel();
-      //
-      //      for ( final AspectModelUrn modelUrn : modelUrns ) {
-      //         if ( AspectModelResolver.containsDefinition( model, modelUrn ) ) {
-      //            System.out.printf( "| %-60s | %-100s | %-50s | %-60s |%n", modelUrn, file.getPath(), file.getName(), "" );
-      //         }
-      //      }
+   private void processFile( File file, List<AspectModelUrn> modelUrns, AspectModelLoader aspectModelLoader ) {
+      final AspectModel aspectModel = loadAspectModelOrFail( file.getPath(), customResolver );
+
+      for ( final AspectModelUrn modelUrn : modelUrns ) {
+         final List<AspectModelFile> modelFiles = aspectModel.files();
+         for ( final AspectModelFile modelFile : modelFiles ) {
+            if ( aspectModelLoader.containsDefinition( modelFile, modelUrn ) ) {
+               System.out.printf( "| %-60s | %-100s | %-50s | %-60s |%n", modelUrn, file.getPath(), file.getName(), "" );
+            }
+         }
+      }
    }
 }
