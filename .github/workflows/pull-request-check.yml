@@ -17,15 +17,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-     - name: Check code style
-       if: matrix.os == 'ubuntu-20.04'
-       uses: dbelyaev/action-checkstyle@e89baf0f8b488b946345b7de8e975be1e3606387 # v1.5.6
-       with:
-         github_token: ${{ secrets.GITHUB_TOKEN }}
-         reporter: github-pr-review
-         checkstyle_config: esmf-checkstyle.xml
-         level: warning
-         fail_on_error: true
+      - name: Check code style
+        if: matrix.os == 'ubuntu-20.04'
+        uses: dbelyaev/action-checkstyle@e89baf0f8b488b946345b7de8e975be1e3606387 # v1.5.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          checkstyle_config: esmf-checkstyle.xml
+          level: warning
+          fail_on_error: true
 
       - name: Setup JDK
         uses: graalvm/setup-graalvm@2f25c0caae5b220866f732832d5e3e29ff493338 # v1.2.1
