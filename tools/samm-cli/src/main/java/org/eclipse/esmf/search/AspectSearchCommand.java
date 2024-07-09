@@ -23,12 +23,9 @@ import java.util.Optional;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.metamodel.Aspect;
 
-import io.vavr.control.Try;
-import org.apache.jena.rdf.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -64,12 +61,7 @@ public class AspectSearchCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Try<VersionedModel> versionedModel = loadAndResolveModel( new File( input ), customResolver );
-
-      if ( versionedModel.isFailure() || pathToModels.isEmpty() ) {
-         LOG.info( "Provided Aspect Model '{}' can't be loaded or doesn't exist", input );
-         return;
-      }
+      final Aspect aspect = loadAspectOrFail( input, customResolver );
 
       final Path directory = Paths.get( pathToModels );
       final File[] files = Arrays.stream( Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} ) )
@@ -83,9 +75,9 @@ public class AspectSearchCommand extends AbstractCommand {
          return;
       }
 
-      final List<AspectModelUrn> modelUrns = AspectModelResolver.getAllUrnsInModel( versionedModel.get().getRawModel() ).stream()
-            .map( AspectModelUrn::fromUrn )
-            .toList();
+      //      final List<AspectModelUrn> modelUrns = AspectModelResolver.getAllUrnsInModel( versionedModel.get().getRawModel() ).stream()
+      //            .map( AspectModelUrn::fromUrn )
+      //            .toList();
 
       String header = String.format( "| %-60s | %-100s | %-50s | %-60s |",
             "URN of the element", "File location", "Model source", "Target element that it is referring to" );
@@ -96,25 +88,25 @@ public class AspectSearchCommand extends AbstractCommand {
       System.out.println( header );
       System.out.println( separator );
 
-      for ( final File file : files ) {
-         processFile( file, modelUrns );
-      }
+      //      for ( final File file : files ) {
+      //         processFile( file, modelUrns );
+      //      }
    }
 
    private void processFile( File file, List<AspectModelUrn> modelUrns ) {
-      final Try<VersionedModel> modelTry = loadAndResolveModel( file, customResolver );
-
-      if ( modelTry.isFailure() ) {
-         LOG.debug( "Could not load model from {}", file, modelTry.getCause() );
-         return;
-      }
-
-      final Model model = modelTry.get().getRawModel();
-
-      for ( final AspectModelUrn modelUrn : modelUrns ) {
-         if ( AspectModelResolver.containsDefinition( model, modelUrn ) ) {
-            System.out.printf( "| %-60s | %-100s | %-50s | %-60s |%n", modelUrn, file.getPath(), file.getName(), "" );
-         }
-      }
+      //      final Try<VersionedModel> modelTry = loadAndResolveModel( file, customResolver );
+      //
+      //      if ( modelTry.isFailure() ) {
+      //         LOG.debug( "Could not load model from {}", file, modelTry.getCause() );
+      //         return;
+      //      }
+      //
+      //      final Model model = modelTry.get().getRawModel();
+      //
+      //      for ( final AspectModelUrn modelUrn : modelUrns ) {
+      //         if ( AspectModelResolver.containsDefinition( model, modelUrn ) ) {
+      //            System.out.printf( "| %-60s | %-100s | %-50s | %-60s |%n", modelUrn, file.getPath(), file.getName(), "" );
+      //         }
+      //      }
    }
 }
