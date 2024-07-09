@@ -17,15 +17,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.datatypes.Curie;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
+import org.eclipse.esmf.metamodel.datatype.Curie;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.jena.vocabulary.RDF;
@@ -48,7 +48,7 @@ public class ValueToPayloadStructure implements AspectVisitor<Object, Void> {
          return ImmutableMap.of( langString.getLanguageTag().toLanguageTag(), langString.getValue() );
       }
       if ( scalarValue.getValue() instanceof Curie curie ) {
-         return curie.getValue();
+         return curie.value();
       }
       return scalarValue.getValue();
    }

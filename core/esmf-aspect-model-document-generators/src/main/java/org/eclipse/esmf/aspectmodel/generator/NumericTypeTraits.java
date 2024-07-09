@@ -20,9 +20,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaVisitor;
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
@@ -118,13 +117,12 @@ public class NumericTypeTraits {
     * Because not all model types have their native equivalent in Java (for example unsigned types),
     * we need to find out what range constraints apply to the particular model type when calculating the valid range for the (native) type.
     *
-    * @param modelVersion version of the model
     * @param dataType meta model data type
     * @return min value for the given meta model type
     */
-   public static Number getModelMinValue( final KnownVersion modelVersion, final Type dataType ) {
+   public static Number getModelMinValue( final Type dataType ) {
       final Resource dataTypeResource = ResourceFactory.createResource( dataType.getUrn() );
-      final Class<?> nativeType = DataType.getJavaTypeForMetaModelType( dataTypeResource, modelVersion );
+      final Class<?> nativeType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
       return getModelMinValue( dataTypeResource, nativeType );
    }
 
@@ -144,13 +142,12 @@ public class NumericTypeTraits {
     * Because not all model types have their native equivalent in Java (for example unsigned types),
     * we need to find out what range constraints apply to the particular model type when calculating the valid range for the (native) type.
     *
-    * @param modelVersion version of the model
     * @param dataType meta model data type
     * @return max value for the given meta model type
     */
-   public static Number getModelMaxValue( final KnownVersion modelVersion, final Type dataType ) {
+   public static Number getModelMaxValue( final Type dataType ) {
       final Resource dataTypeResource = ResourceFactory.createResource( dataType.getUrn() );
-      final Class<?> nativeType = DataType.getJavaTypeForMetaModelType( dataTypeResource, modelVersion );
+      final Class<?> nativeType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
       return getModelMaxValue( dataTypeResource, nativeType );
    }
 

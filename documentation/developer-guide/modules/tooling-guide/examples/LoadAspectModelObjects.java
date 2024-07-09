@@ -15,28 +15,33 @@ package examples;
 
 // tag::imports[]
 import java.io.File;
-import java.util.List;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.metamodel.NamedElement;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import io.vavr.collection.Stream;
+
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.ModelElement;
 // end::imports[]
+
 import org.junit.jupiter.api.Test;
 
 public class LoadAspectModelObjects {
    @Test
    public void loadModel() {
       // tag::loadModel[]
-      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
-      final List<String> result = AspectModelResolver.loadAndResolveModel( modelFile )
-            .flatMap( AspectModelLoader::getElements )
-            .toStream()
-            .flatMap( Stream::ofAll )
-            .filter( element -> element.is( NamedElement.class ) )
-            .map( element -> element.as( NamedElement.class ) )
-            .map( modelElement -> String.format( "Model element: %s has URN %s%n",
-                  modelElement.getName(), modelElement.getAspectModelUrn() ) )
-            .toJavaList();
+      final AspectModel aspectModel = new AspectModelLoader().load(
+            // a File, InputStream or AspectModelUrn
+            // end::generate[]
+            new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" )
+            // tag::loadModel[]
+      );
+
+      // Do something with the elements
+      for ( final ModelElement element : aspectModel.elements() ) {
+         System.out.printf( "Model element: %s has URN %s%n", element.getName(), element.urn() );
+      }
+
+      // Directly work with the Aspect, if the AspectModel happens to contain
+      // exactly one Aspect. If there are 0 or >1 Aspects, this will throw an exception.
+      System.out.println( "Aspect URN: " + aspectModel.aspect().urn() );
       // end::loadModel[]
    }
 }

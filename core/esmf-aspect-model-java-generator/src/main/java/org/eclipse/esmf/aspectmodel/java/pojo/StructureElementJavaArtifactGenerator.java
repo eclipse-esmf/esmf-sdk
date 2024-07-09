@@ -34,12 +34,12 @@ import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.aspectmodel.java.StructuredValuePropertiesDeconstructor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.characteristic.Trait;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.StructureElement;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.samm.KnownVersion;
@@ -64,7 +64,6 @@ import org.jboss.forge.roaster.Roaster;
  * @param <E> the element type
  */
 public class StructureElementJavaArtifactGenerator<E extends StructureElement> implements JavaArtifactGenerator<E> {
-
    private final Set<ComplexType> extendingEntities;
 
    public StructureElementJavaArtifactGenerator() {
@@ -93,7 +92,7 @@ public class StructureElementJavaArtifactGenerator<E extends StructureElement> i
             .put( "Constraint", Constraint.class )
             .put( "ComplexType", ComplexType.class )
             .put( "currentYear", Year.now() )
-            .put( "DataType", DataType.class )
+            .put( "SammType", SammXsdType.class )
             .put( "DatatypeConfigurationException", DatatypeConfigurationException.class )
             .put( "DatatypeConstants", DatatypeConstants.class )
             .put( "DatatypeFactory", DatatypeFactory.class )

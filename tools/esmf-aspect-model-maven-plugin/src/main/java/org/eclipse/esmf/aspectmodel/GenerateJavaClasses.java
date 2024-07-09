@@ -21,7 +21,6 @@ import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -32,17 +31,15 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateJavaClasses", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateJavaClasses extends CodeGenerationMojo {
-
-   private final Logger logger = LoggerFactory.getLogger( GenerateJavaClasses.class );
+   private static final Logger LOG = LoggerFactory.getLogger( GenerateJavaClasses.class );
 
    @Parameter( defaultValue = "false" )
    private boolean disableJacksonAnnotations;
 
    @Override
    public void execute() throws MojoExecutionException {
-      final Set<AspectContext> aspectModels = loadModelsOrFail();
-      for ( final AspectContext context : aspectModels ) {
-         final Aspect aspect = context.aspect();
+      final Set<Aspect> aspects = loadAspects();
+      for ( final Aspect aspect : aspects ) {
          final File templateLibFile = Path.of( templateFile ).toFile();
          validateParameters( templateLibFile );
          final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
@@ -53,6 +50,6 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
                .build();
          new AspectModelJavaGenerator( aspect, config ).generate( nameMapper );
       }
-      logger.info( "Successfully generated Java classes for Aspect Models." );
+      LOG.info( "Successfully generated Java classes for Aspect Models." );
    }
 }

@@ -19,7 +19,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.samm.KnownVersion;
 
 /**

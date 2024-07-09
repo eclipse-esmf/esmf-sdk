@@ -29,12 +29,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -42,7 +38,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +45,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.google.common.collect.Streams;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
@@ -67,12 +61,12 @@ import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
 
-public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
+public class AspectModelOpenApiGeneratorTest {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
    private static final String TEST_BASE_URL = "https://test-aspect.example.com";
    private static final String TEST_RESOURCE_PATH = "my-test-aspect";
@@ -88,7 +82,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
    void testGeneration( final TestAspect testAspect ) throws IOException {
-      final Aspect aspect = loadAspect( testAspect, KnownVersion.getLatest() );
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( false )
             .baseUrl( TEST_BASE_URL )
@@ -98,8 +92,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       final JsonNode json = result.getContent();
       assertSpecificationIsValid( json, json.toString(), aspect );
       assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo(
-            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       // Check that the map containing separate schema files contains the same information as the
       // all-in-one JSON document
@@ -134,10 +127,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       System.out.println( out );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testUseSemanticVersion( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_PROPERTY, metaModelVersion );
+   @Test
+   void testUseSemanticVersion() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -149,16 +141,14 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
 
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( "v1.0.0" );
       assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo(
-            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+      assertThat( json.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       openApi.getServers().forEach( server -> assertThat( server.getUrl() ).contains( "v1.0.0" ) );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testIncludeQueryApiWithSemanticVersion( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT, metaModelVersion );
+   @Test
+   void testIncludeQueryApiWithSemanticVersion() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -173,10 +163,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .isEqualTo( "https://test-aspect.example.com/query-api/v1.0.0" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testDefaultResourcePath( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testDefaultResourcePath() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -196,10 +185,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testInvalidResourcePath( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testInvalidResourcePath() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -210,10 +198,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( json ).isEmpty();
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testWithValidResourcePath( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testWithValidResourcePath() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -229,10 +216,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             path -> path.equals( "/query-api/v1.0.0/" + TEST_RESOURCE_PATH ) );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testInvalidJsonParameter( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testInvalidJsonParameter() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -244,10 +230,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( json ).isEmpty();
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testValidParameter( final KnownVersion metaModelVersion ) throws IOException {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testValidParameter() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -269,14 +254,13 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       } );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testInValidParameterName( final KnownVersion metaModelVersion ) throws IOException {
+   @Test
+   void testInValidParameterName() throws IOException {
       final ListAppender<ILoggingEvent> logAppender = new ListAppender<>();
       final Logger logger = (Logger) LoggerFactory.getLogger( AspectModelOpenApiGenerator.class );
       logger.addAppender( logAppender );
       logAppender.start();
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -294,10 +278,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( logResults ).contains( "There was an exception during the read of the root or the validation." );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testYamlGenerator( final KnownVersion metaModelVersion ) throws IOException {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testYamlGenerator() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final YAMLMapper yamlMapper = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
       final OpenApiSchemaGenerationConfig yamlConfig = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
@@ -318,10 +301,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( result.getMessages().size() ).isZero();
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testHasQuerySchema( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testHasQuerySchema() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -335,10 +317,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getRequestBodies() ).containsKey( "Filter" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testHasNoQuerySchema( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testHasNoQuerySchema() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -351,10 +332,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getRequestBodies().keySet() ).doesNotContain( "Filter" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testHasPagingWithChosenPaging( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
+   @Test
+   void testHasPagingWithChosenPaging() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -380,10 +360,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .isEqualTo( "#/components/schemas/PagingSchema" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testHasPagingWithoutChosenPaging( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_TIME_SERIES, metaModelVersion );
+   @Test
+   void testHasPagingWithoutChosenPaging() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_TIME_SERIES ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -406,10 +385,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .get( "application/json" ).getSchema().get$ref() ).isEqualTo( "#/components/schemas/PagingSchema" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testHasPagingWitChosenCursorBasedPaging( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
+   @Test
+   void testHasPagingWitChosenCursorBasedPaging() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -440,10 +418,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getSchemas().get( "PagingSchema" ).getProperties() ).containsKey( "_links" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testHasPagingWithWithDefaultChosenPaging( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
+   @Test
+   void testHasPagingWithWithDefaultChosenPaging() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -466,10 +443,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .get( "application/json" ).getSchema().get$ref() ).isEqualTo( "#/components/schemas/PagingSchema" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testHasNoPagination( final KnownVersion metaModelVersion ) throws ProcessingException {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
+   @Test
+   void testHasNoPagination() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -485,10 +461,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .get( "application/json" ).getSchema().get$ref() ).isEqualTo( "#/components/schemas/AspectWithCollection" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testAspectWithOperation( final KnownVersion metaModelVersion ) throws ProcessingException {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_OPERATION, metaModelVersion );
+   @Test
+   void testAspectWithOperation() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_OPERATION ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -508,10 +483,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getComponents().getSchemas().get( "OperationResponse" ).getOneOf() ).hasSize( 2 );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testAspectWithOperationWithSeeAttribute( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_OPERATION_WITH_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testAspectWithOperationWithSeeAttribute() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_OPERATION_WITH_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -528,10 +502,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             .get( 1 )).getProperties() ).doesNotContainKey( "params" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testAspectWithAllCrud( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testAspectWithAllCrud() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -552,10 +525,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testAspectWithPostOperation( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testAspectWithPostOperation() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -576,10 +548,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testAspectWithPutOperation( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testAspectWithPutOperation() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -600,10 +571,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testAspectWithPatchOperation( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testAspectWithPatchOperation() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -624,10 +594,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testAspectWithPatchAndPostOperation( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE, metaModelVersion );
+   @Test
+   void testAspectWithPatchAndPostOperation() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -649,10 +618,9 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
             path -> path.equals( "/query-api/v1.0.0" + apiEndpoint ) );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testAspectWithCommentForSeeAttributes( final KnownVersion metaModelVersion ) {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION, metaModelVersion );
+   @Test
+   void testAspectWithCommentForSeeAttributes() {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_COLLECTION ).aspect();
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( true )
             .baseUrl( TEST_BASE_URL )
@@ -687,13 +655,13 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( context.<Object> read( "$['components']['schemas']['" + aspect.getName() + "']" ) ).isNotNull();
       assertThat( context.<String> read(
             "$['components']['schemas']['" + aspect.getName() + "']['" + AbstractGenerator.SAMM_EXTENSION + "']" ) ).isEqualTo(
-            aspect.getAspectModelUrn().get().toString() );
+            aspect.urn().toString() );
 
       for ( final Property property : aspect.getProperties() ) {
          assertThat( context.<String> read( "$['components']['schemas']"
                + "['" + aspect.getName() + "']['properties']['" + property.getPayloadName() + "']['"
                + AbstractGenerator.SAMM_EXTENSION
-               + "']" ) ).isEqualTo( property.getAspectModelUrn().get().toString() );
+               + "']" ) ).isEqualTo( property.urn().toString() );
       }
 
       // $comment keywords should only be generated on demand, not by default
@@ -706,11 +674,6 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       validateYaml( aspect );
    }
 
-   public static String prettyPrintJson( final String json ) throws JsonProcessingException {
-      final ObjectMapper m = new ObjectMapper();
-      return m.writerWithDefaultPrettyPrinter().writeValueAsString( m.readTree( json ) );
-   }
-
    private void validateOpenApiSpec( final JsonNode node, final OpenAPI openApi, final Aspect aspect ) {
       assertThat( openApi.getSpecVersion() ).isEqualTo( SpecVersion.V30 );
       assertThat( openApi.getInfo().getTitle() ).isEqualTo( aspect.getPreferredName( Locale.ENGLISH ) );
@@ -719,8 +682,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat( openApi.getInfo().getVersion() ).isEqualTo( expectedApiVersion );
 
       assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ) ).isNotNull();
-      assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo(
-            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+      assertThat( node.get( "info" ).get( AbstractGenerator.SAMM_EXTENSION ).asText() ).isEqualTo( aspect.urn().toString() );
 
       assertThat( openApi.getServers() ).hasSize( 1 );
       assertThat( openApi.getServers().get( 0 ).getUrl() ).isEqualTo( TEST_BASE_URL + "/api/" + expectedApiVersion );
@@ -741,8 +703,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
       assertThat(
             openApi.getComponents().getSchemas().get( aspect.getName() ).getExtensions()
                   .get( AbstractGenerator.SAMM_EXTENSION )
-                  .toString() ).contains(
-            aspect.getAspectModelUrn().map( Object::toString ).orElse( "" ) );
+                  .toString() ).contains( aspect.urn().toString() );
 
       validateReferences( node );
    }
@@ -759,7 +720,7 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
    }
 
    private String getExpectedApiVersion( final Aspect aspect ) {
-      final String aspectVersion = aspect.getAspectModelUrn().get().getVersion();
+      final String aspectVersion = aspect.urn().getVersion();
       final int endIndexOfMajorVersion = aspectVersion.indexOf( "." );
       final String majorAspectVersion = aspectVersion.substring( 0, endIndexOfMajorVersion );
       return String.format( "v%s", majorAspectVersion );
@@ -798,11 +759,6 @@ public class AspectModelOpenApiGeneratorTest extends MetaModelVersions {
                .build();
          apiJsonGenerator.apply( aspect, config ).getContentAsYaml();
       } ).doesNotThrowAnyException();
-   }
-
-   private Aspect loadAspect( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
-      final VersionedModel versionedModel = TestResources.getModel( testAspect, metaModelVersion ).get();
-      return AspectModelLoader.getSingleAspect( versionedModel ).get();
    }
 
    private ObjectNode getTestParameter() throws IOException {

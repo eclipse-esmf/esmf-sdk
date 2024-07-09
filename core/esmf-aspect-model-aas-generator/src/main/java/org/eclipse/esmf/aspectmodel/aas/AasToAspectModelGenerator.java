@@ -31,15 +31,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.loader.ValueInstantiator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.impl.DefaultList;
-import org.eclipse.esmf.characteristic.impl.DefaultSingleEntity;
-import org.eclipse.esmf.characteristic.impl.DefaultTrait;
-import org.eclipse.esmf.constraint.RangeConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultRangeConstraint;
 import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.Event;
@@ -48,8 +44,13 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
-import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait;
+import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
@@ -57,9 +58,7 @@ import org.eclipse.esmf.metamodel.impl.DefaultEvent;
 import org.eclipse.esmf.metamodel.impl.DefaultOperation;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.loader.ValueInstantiator;
-import org.eclipse.esmf.samm.KnownVersion;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.base.CaseFormat;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -104,8 +103,7 @@ public class AasToAspectModelGenerator {
    private static final Logger LOG = LoggerFactory.getLogger( AasToAspectModelGenerator.class );
    private final Environment aasEnvironment;
    private final Map<org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement, Property> properties = new HashMap<>();
-   private final SAMMC sammc = new SAMMC( KnownVersion.getLatest() );
-   private final ValueInstantiator valueInstantiator = new ValueInstantiator( KnownVersion.getLatest() );
+   private final ValueInstantiator valueInstantiator = new ValueInstantiator();
    private AspectModelUrn aspectUrn;
 
    private record ElementName( String name, boolean isSynthetic ) {}
@@ -298,12 +296,13 @@ public class AasToAspectModelGenerator {
                   determineAspectModelUrnVersion( submodel ),
                   aspectName.name() ) ) );
 
-      final MetaModelBaseAttributes aspectMetaModelBaseAttributes = new MetaModelBaseAttributes(
-            KnownVersion.getLatest(), aspectUrn, aspectUrn.getName(),
-            langStringSet( submodel.getDisplayName() ),
-            langStringSet( submodel.getDescription() ),
-            seeReferences( submodel ),
-            aspectName.isSynthetic() );
+      final MetaModelBaseAttributes aspectMetaModelBaseAttributes = MetaModelBaseAttributes.builder()
+            .withUrn( aspectUrn )
+            .withPreferredNames( langStringSet( submodel.getDisplayName() ) )
+            .withDescriptions( langStringSet( submodel.getDescription() ) )
+            .withSee( seeReferences( submodel ) )
+            .isAnonymous( aspectName.isSynthetic() )
+            .build();
 
       final List<Property> properties = createProperties( submodel );
       return new DefaultAspect( aspectMetaModelBaseAttributes,
@@ -391,12 +390,13 @@ public class AasToAspectModelGenerator {
          throw new AspectModelGenerationException( "Unknown ElementNamingStrategy" );
       }
 
-      return new MetaModelBaseAttributes( KnownVersion.getLatest(),
-            urn, elementName.name(),
-            langStringSet( element.getDisplayName() ),
-            langStringSet( element.getDescription() ),
-            seeReferences( element ),
-            elementName.isSynthetic() );
+      return MetaModelBaseAttributes.builder()
+            .withUrn( urn )
+            .withPreferredNames( langStringSet( element.getDisplayName() ) )
+            .withDescriptions( langStringSet( element.getDescription() ) )
+            .withSee( seeReferences( element ) )
+            .isAnonymous( elementName.isSynthetic() )
+            .build();
    }
 
    private Property createProperty( final org.eclipse.digitaltwin.aas4j.v3.model.SubmodelElement submodelElement ) {
@@ -406,8 +406,7 @@ public class AasToAspectModelGenerator {
       }
 
       final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElement, new DetermineAutomatically() );
-      final Characteristic characteristic = createCharacteristic( submodelElement, metaModelBaseAttributes.getUrn()
-            .orElseThrow( () -> new AspectModelGenerationException( "Encountered property without URN" ) ) );
+      final Characteristic characteristic = createCharacteristic( submodelElement, metaModelBaseAttributes.urn() );
       final Optional<ScalarValue> exampleValue =
             submodelElement instanceof final org.eclipse.digitaltwin.aas4j.v3.model.Property property
                   ? Optional.ofNullable( property.getValue() )
@@ -461,7 +460,7 @@ public class AasToAspectModelGenerator {
       final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( event, new DetermineAutomatically() );
       // Since an AAS EventElement/BasicEvent does not have Properties but only info about the broker, we can't create anything
       // meaningful here
-      LOG.warn( "Creating event {} with empty list of properties", metaModelBaseAttributes.getName() );
+      LOG.warn( "Creating event {} with empty list of properties", metaModelBaseAttributes.urn().getName() );
       return new DefaultEvent( metaModelBaseAttributes, List.of() );
    }
 
@@ -508,17 +507,17 @@ public class AasToAspectModelGenerator {
             .flatMap( Optional::stream );
       final List<String> seeReferences = Stream.concat( seeReferences( relationshipElement ).stream(), relationShipSeeReferences ).toList();
 
-      final MetaModelBaseAttributes metaModelBaseAttributes = new MetaModelBaseAttributes( KnownVersion.getLatest(),
-            urn, elementName.name(),
-            langStringSet( relationshipElement.getDisplayName() ),
-            Set.of( new LangString( characteristicDescription, Locale.ENGLISH ) ),
-            seeReferences,
-            elementName.isSynthetic() );
+      final MetaModelBaseAttributes metaModelBaseAttributes = MetaModelBaseAttributes.builder()
+            .withUrn( urn )
+            .withPreferredNames( langStringSet( relationshipElement.getDisplayName() ) )
+            .withDescription( Locale.ENGLISH, characteristicDescription )
+            .withSee( seeReferences )
+            .isAnonymous( elementName.isSynthetic() )
+            .build();
 
       // The RelationShipElement Characteristic dataType is pinned to string for now, see discussion
       // here https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/issues/133
-      return new DefaultCharacteristic( metaModelBaseAttributes,
-            Optional.of( new DefaultScalar( XSD.xstring.getURI(), KnownVersion.getLatest() ) ) );
+      return new DefaultCharacteristic( metaModelBaseAttributes, Optional.of( new DefaultScalar( XSD.xstring.getURI() ) ) );
    }
 
    private Characteristic createCharacteristicFromBlob( final Blob blob, final AspectModelUrn propertyUrn ) {
@@ -528,12 +527,12 @@ public class AasToAspectModelGenerator {
 
    private Characteristic createCharacteristicFromFile( final File file ) {
       return createDefaultScalarCharacteristic( file, XSD.anyURI.getURI(),
-            new UseGivenUrn( AspectModelUrn.fromUrn( sammc.ResourcePath().getURI() ) ) );
+            new UseGivenUrn( AspectModelUrn.fromUrn( SammNs.SAMMC.ResourcePath().getURI() ) ) );
    }
 
    private Characteristic createCharacteristicFromMultiLanguageProperty( final MultiLanguageProperty multiLanguageProperty ) {
       return createDefaultScalarCharacteristic( multiLanguageProperty, RDF.langString.getURI(),
-            new UseGivenUrn( AspectModelUrn.fromUrn( sammc.MultiLanguageText().getURI() ) ) );
+            new UseGivenUrn( AspectModelUrn.fromUrn( SammNs.SAMMC.MultiLanguageText().getURI() ) ) );
    }
 
    private Characteristic createCharacteristicFromProperty( final org.eclipse.digitaltwin.aas4j.v3.model.Property property,
@@ -541,9 +540,9 @@ public class AasToAspectModelGenerator {
       final String dataTypeUri = AasDataTypeMapper.mapAasXsdDataTypeToAspectType( property.getValueType() ).getURI();
       final ElementNamingStrategy elementNamingStrategy;
       if ( dataTypeUri.equals( XSD.xboolean.getURI() ) ) {
-         elementNamingStrategy = new UseGivenUrn( AspectModelUrn.fromUrn( sammc.Boolean().getURI() ) );
+         elementNamingStrategy = new UseGivenUrn( AspectModelUrn.fromUrn( SammNs.SAMMC.Boolean().getURI() ) );
       } else if ( dataTypeUri.equals( XSD.dateTime.getURI() ) ) {
-         elementNamingStrategy = new UseGivenUrn( AspectModelUrn.fromUrn( sammc.Timestamp().getURI() ) );
+         elementNamingStrategy = new UseGivenUrn( AspectModelUrn.fromUrn( SammNs.SAMMC.Timestamp().getURI() ) );
       } else {
          elementNamingStrategy = new DetermineAutomatically( propertyUrn.getName() + "Property" );
       }
@@ -557,15 +556,13 @@ public class AasToAspectModelGenerator {
       final Optional<ScalarValue> minValue = Optional.ofNullable( range.getMin() )
             .flatMap( minLexical -> valueInstantiator.buildScalarValue( minLexical, null, dataTypeUri ) );
 
-      final MetaModelBaseAttributes constraintMetaModelBaseAttributes = new MetaModelBaseAttributes( KnownVersion.getLatest(),
-            null, "RangeConstraint" + randomElementName( range ), Set.of(), Set.of(), List.of(), true );
+      final MetaModelBaseAttributes constraintMetaModelBaseAttributes = MetaModelBaseAttributes.builder().isAnonymous().build();
       final RangeConstraint constraint = new DefaultRangeConstraint( constraintMetaModelBaseAttributes, minValue, maxValue,
             BoundDefinition.AT_LEAST, BoundDefinition.AT_MOST );
 
-      final MetaModelBaseAttributes baseCharacteristicBaseAttributes = new MetaModelBaseAttributes( KnownVersion.getLatest(),
-            null, "BaseCharacteristic" + randomElementName( range ), Set.of(), Set.of(), List.of(), true );
+      final MetaModelBaseAttributes baseCharacteristicBaseAttributes = MetaModelBaseAttributes.builder().isAnonymous().build();
       final Characteristic baseCharacteristic = new DefaultCharacteristic( baseCharacteristicBaseAttributes,
-            Optional.of( new DefaultScalar( dataTypeUri, KnownVersion.getLatest() ) ) );
+            Optional.of( new DefaultScalar( dataTypeUri ) ) );
 
       final MetaModelBaseAttributes traitMetaModelBaseAttributes = baseAttributes( range, new DetermineAutomatically(
             propertyUrn.getName() + "Trait" ) );
@@ -633,8 +630,7 @@ public class AasToAspectModelGenerator {
    private Characteristic createDefaultScalarCharacteristic( final SubmodelElement submodelElement, final String dataTypeUri,
          final ElementNamingStrategy elementNamingStrategy ) {
       final MetaModelBaseAttributes metaModelBaseAttributes = baseAttributes( submodelElement, elementNamingStrategy );
-      return new DefaultCharacteristic( metaModelBaseAttributes,
-            Optional.of( new DefaultScalar( dataTypeUri, KnownVersion.getLatest() ) ) );
+      return new DefaultCharacteristic( metaModelBaseAttributes, Optional.of( new DefaultScalar( dataTypeUri ) ) );
    }
 
    private Characteristic createCharacteristic( final SubmodelElement element, final AspectModelUrn propertyUrn ) {

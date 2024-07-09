@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.jackson;
 
 import java.io.IOException;
 
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;

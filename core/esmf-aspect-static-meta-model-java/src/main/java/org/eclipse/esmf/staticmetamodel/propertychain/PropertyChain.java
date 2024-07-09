@@ -22,9 +22,9 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.staticmetamodel.PropertyAccessor;
 import org.eclipse.esmf.staticmetamodel.PropertyTypeInformation;
 import org.eclipse.esmf.staticmetamodel.StaticContainerProperty;
@@ -208,7 +208,7 @@ public class PropertyChain<C, P> extends DefaultProperty implements PropertyType
    public String toString() {
       return new StringJoiner( ", ", getClass().getSimpleName() + "[", "]" )
             .add( getContainingType().getSimpleName() )
-            .add( properties.stream().map( NamedElement::getName ).collect( Collectors.joining( "." ) ) )
+            .add( properties.stream().map( ModelElement::getName ).collect( Collectors.joining( "." ) ) )
             .toString();
    }
 }

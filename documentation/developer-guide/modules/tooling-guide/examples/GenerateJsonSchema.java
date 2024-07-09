@@ -21,31 +21,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfigBuilder;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.metamodel.AspectModel;
+
+// end::imports[]
 import java.io.File;
 import java.io.IOException;
-// end::imports[]
 import org.junit.jupiter.api.Test;
 
 public class GenerateJsonSchema {
    @Test
    public void generate() throws IOException {
-      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
-
       // tag::generate[]
-      // Aspect as created by the AspectModelLoader
-      final Aspect aspect = // ...
+      // AspectModel as returned by the AspectModelLoader
+      final AspectModel aspectModel = // ...
             // end::generate[]
-            // exclude the actual loading from the example to reduce noise
-            AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
+            new AspectModelLoader().load(
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generate[]
 
       final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
             .locale( Locale.ENGLISH )
             .build();
-      final JsonNode jsonSchema = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspect, config ).getContent();
+      final JsonNode jsonSchema = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspectModel.aspect(), config ).getContent();
 
       // If needed, print or pretty print it into a string
       final ByteArrayOutputStream out = new ByteArrayOutputStream();

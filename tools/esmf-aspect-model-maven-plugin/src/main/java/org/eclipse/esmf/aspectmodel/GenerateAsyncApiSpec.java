@@ -15,7 +15,6 @@ import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaArtifact;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,12 +58,11 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
-      final Set<AspectContext> aspectModels = loadModelsOrFail();
+      final Set<Aspect> aspects = loadAspects();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final ApiFormat format = Try.of( () -> ApiFormat.valueOf( outputFormat.toUpperCase() ) )
             .getOrElseThrow( () -> new MojoExecutionException( "Invalid output format." ) );
-      for ( final AspectContext context : aspectModels ) {
-         final Aspect aspect = context.aspect();
+      for ( final Aspect aspect : aspects ) {
          final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
                .useSemanticVersion( useSemanticApiVersion )
                .applicationId( applicationId )

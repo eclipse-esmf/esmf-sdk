@@ -17,12 +17,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultEntityInstance extends ModelElementImpl implements EntityInstance {
    private final Map<Property, Value> assertions;

@@ -63,8 +63,6 @@ The available options and their meaning can also be seen in the help text of the
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
 .2+| [[aspect-prettyprint]] aspect <model> prettyprint | Pretty-print Aspect Model                                           | `samm aspect AspectModel.ttl prettyprint`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
-.2+| [[aspect-migrate]] aspect <model> migrate | Migrate Aspect Model to the latest SAMM version                             | `samm aspect AspectModel.ttl migrate AspectModel.ttl`
-                                   | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl migrate AspectModel.ttl -o c:\Results\MigratedModel.ttl`
 .5+| [[aspect-to-html]] aspect <model> to html | Generate HTML documentation for an Aspect Model                             | `samm aspect AspectModel.ttl to html`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl to html -o c:\Model.html`
                                    | _--css, -c_ : CSS file with custom styles to be included in the generated HTML

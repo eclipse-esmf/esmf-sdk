@@ -18,8 +18,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.File;
 
-import org.eclipse.esmf.aspectmodel.resolver.exceptions.ParserException;
-
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
@@ -39,10 +37,7 @@ public class PrettyPrintTest extends AspectModelMojoTest {
       final Mojo prettyPrint = lookupMojo( "prettyPrint", testPom );
       assertThatCode( prettyPrint::execute )
             .isInstanceOf( MojoExecutionException.class )
-            .hasMessage( "Failed to load Aspect Model InvalidSyntax." )
-            .hasCauseInstanceOf( ParserException.class )
-            .cause()
-            .hasMessageContaining( "Triples not terminated by DOT" );
+            .hasMessageContaining( "Syntax error in line 17, column 2" );
       assertThat( generatedFilePath( "Aspect.ttl" ) ).doesNotExist();
    }
 }

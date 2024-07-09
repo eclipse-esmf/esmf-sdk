@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -28,22 +28,21 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateJsonPayload", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonPayload extends AspectModelMojo {
-
-   private final Logger logger = LoggerFactory.getLogger( GenerateJsonPayload.class );
+   private static final Logger LOG = LoggerFactory.getLogger( GenerateJsonPayload.class );
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
-      final Set<AspectContext> aspectModels = loadModelsOrFail();
+      final Set<Aspect> aspects = loadAspects();
       try {
-         for ( final AspectContext context : aspectModels ) {
+         for ( final Aspect context : aspects ) {
             final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator( context );
             generator.generateJsonPretty( name -> getOutputStreamForFile( name + ".json", outputDirectory ) );
          }
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not generate JSON payload.", exception );
       }
-      logger.info( "Successfully generated example JSON payloads for Aspect Models." );
+      LOG.info( "Successfully generated example JSON payloads for Aspect Models." );
    }
 }

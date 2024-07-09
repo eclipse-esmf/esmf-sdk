@@ -14,40 +14,37 @@
 package examples;
 
 // tag::imports[]
-
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.esmf.aspectmodel.generator.openapi.AspectModelOpenApiGenerator;
 import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.openapi.OpenApiSchemaGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.openapi.PagingOption;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.junit.jupiter.api.Test;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.metamodel.AspectModel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+// end::imports[]
+
+import java.io.File;
+import java.io.IOException;
+import org.junit.jupiter.api.Test;
 
 public class GenerateOpenApi {
    @Test
    public void generateYaml() throws JsonProcessingException {
-      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
-
       // tag::generateYaml[]
-      // Aspect as created by the AspectModelLoader
-      final Aspect aspect = // ...
-            // end::generateYaml[]
-            // exclude the actual loading from the example to reduce noise
-            AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
+      // AspectModel as returned by the AspectModelLoader
+      final AspectModel aspectModel = // ...
+            // end::generate[]
+            new AspectModelLoader().load(
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generateYaml[]
 
-      //language=yaml
       final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
             // Server URL
             .baseUrl( "http://www.example.com" )
@@ -77,19 +74,18 @@ public class GenerateOpenApi {
 
       // Generate pretty-printed YAML
       final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
-      final String yaml = generator.apply( aspect, config ).getContentAsYaml();
+      final String yaml = generator.apply( aspectModel.aspect(), config ).getContentAsYaml();
       // end::generateYaml[]
    }
 
    @Test
    public void generateJson() throws IOException {
-      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
       // tag::generateJson[]
-      // Aspect as created by the AspectModelLoader
-      final Aspect aspect = // ...
-            // end::generateJson[]
-            // exclude the actual loading from the example to reduce noise
-            AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
+      // AspectModel as returned by the AspectModelLoader
+      final AspectModel aspectModel = // ...
+            // end::generate[]
+            new AspectModelLoader().load(
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generateJson[]
 
       final ObjectMapper objectMapper = new ObjectMapper();
@@ -126,7 +122,7 @@ public class GenerateOpenApi {
 
       // Generate the JSON
       final AspectModelOpenApiGenerator generator = new AspectModelOpenApiGenerator();
-      final JsonNode json = generator.apply( aspect, config ).getContent();
+      final JsonNode json = generator.apply( aspectModel.aspect(), config ).getContent();
 
       // If needed, print or pretty print it into a string
       final ByteArrayOutputStream out = new ByteArrayOutputStream();

@@ -13,7 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.shacl;
 
-import org.eclipse.esmf.aspectmodel.vocabulary.Namespace;
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -24,7 +24,7 @@ import org.apache.jena.rdf.model.Resource;
 // Since the class is an RDF vocabulary, naming rules for the class and for several methods (which should be named identically
 // to the corresponding model elements) are suppressed.
 @SuppressWarnings( { "checkstyle:AbbreviationAsWordInName", "NewMethodNamingConvention", "unused" } )
-public class SHACL implements Namespace {
+public class SHACL implements RdfNamespace {
    public static final String NS = "http://www.w3.org/ns/shacl#";
 
    @Override
@@ -35,6 +35,11 @@ public class SHACL implements Namespace {
    @Override
    public String getNamespace() {
       return NS;
+   }
+
+   @Override
+   public String getShortForm() {
+      return "sh";
    }
 
    /**

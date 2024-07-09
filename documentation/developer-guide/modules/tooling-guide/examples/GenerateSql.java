@@ -27,9 +27,8 @@ import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksColumnDef
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksSqlGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.generator.sql.databricks.DatabricksType;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.metamodel.AspectModel;
 // end::imports[]
 
 import org.junit.jupiter.api.Test;
@@ -37,14 +36,12 @@ import org.junit.jupiter.api.Test;
 public class GenerateSql extends AbstractGenerator {
    @Test
    public void generate() throws IOException {
-      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
-
       // tag::generate[]
-      // Aspect as created by the AspectModelLoader
-      final Aspect aspect = // ...
+      // AspectModel as returned by the AspectModelLoader
+      final AspectModel aspectModel = // ...
             // end::generate[]
-            // exclude the actual loading from the example to reduce noise
-            AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
+            new AspectModelLoader().load(
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generate[]
 
       final DatabricksSqlGenerationConfig databricksSqlGenerationConfig =
@@ -67,7 +64,7 @@ public class GenerateSql extends AbstractGenerator {
                   .mappingStrategy( SqlGenerationConfig.MappingStrategy.DENORMALIZED )
                   .dialectSpecificConfig( databricksSqlGenerationConfig )
                   .build();
-      final String result = AspectModelSqlGenerator.INSTANCE.apply( aspect, sqlGenerationConfig ).getContent();
+      final String result = AspectModelSqlGenerator.INSTANCE.apply( aspectModel.aspect(), sqlGenerationConfig ).getContent();
       // end::generate[]
    }
 }

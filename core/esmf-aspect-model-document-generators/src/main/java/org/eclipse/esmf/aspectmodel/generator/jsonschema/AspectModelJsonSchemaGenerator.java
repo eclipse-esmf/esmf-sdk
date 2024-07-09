@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.generator.jsonschema;
 
-import java.util.Locale;
-
 import org.eclipse.esmf.aspectmodel.generator.ArtifactGenerator;
 import org.eclipse.esmf.metamodel.Aspect;
 
@@ -26,37 +24,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class AspectModelJsonSchemaGenerator implements
       ArtifactGenerator<String, JsonNode, Aspect, JsonSchemaGenerationConfig, JsonSchemaArtifact> {
    public static final AspectModelJsonSchemaGenerator INSTANCE = new AspectModelJsonSchemaGenerator();
-
-   /**
-    * @deprecated Use {@link #INSTANCE} instead
-    */
-   @Deprecated( forRemoval = true )
-   public AspectModelJsonSchemaGenerator() {
-   }
-
-   /**
-    * @deprecated Use {@link #apply(Aspect, JsonSchemaGenerationConfig)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public JsonNode apply( final Aspect aspect, final Locale locale ) {
-      final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
-            .locale( locale )
-            .build();
-      return apply( aspect, config ).getContent();
-   }
-
-   /**
-    * @deprecated Use {@link #apply(Aspect, JsonSchemaGenerationConfig)} instead
-    */
-   @Deprecated( forRemoval = true )
-   public JsonNode applyForOpenApi( final Aspect aspect, final Locale locale, final boolean generateCommentForSeeAttributes ) {
-      final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
-            .locale( locale )
-            .generateForOpenApi( true )
-            .generateCommentForSeeAttributes( generateCommentForSeeAttributes )
-            .build();
-      return apply( aspect, config ).getContent();
-   }
 
    @Override
    public JsonSchemaArtifact apply( final Aspect aspect, final JsonSchemaGenerationConfig config ) {

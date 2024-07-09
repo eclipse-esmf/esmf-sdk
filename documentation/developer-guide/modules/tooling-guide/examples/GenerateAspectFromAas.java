@@ -14,23 +14,23 @@
 package examples;
 
 // tag::imports[]
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
 import org.eclipse.esmf.aspectmodel.aas.AasToAspectModelGenerator;
 import org.eclipse.esmf.aspectmodel.aas.AspectModelAasGenerator;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.metamodel.AspectModel;
+// end::imports[]
 
+import java.io.OutputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 
@@ -46,9 +46,9 @@ public class GenerateAspectFromAas extends AbstractGenerator {
    @Test
    public void generate() throws IOException {
       final Path outputDirectory = Files.createTempDirectory( "junit" );
-      new AspectModelAasGenerator().generate( AasFileFormat.AASX,
-            AspectModelResolver.loadAndResolveModel( new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) )
-                  .flatMap( AspectModelLoader::getSingleAspect ).get(),
+      final AspectModel aspectModel = new AspectModelLoader().load(
+            new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
+      new AspectModelAasGenerator().generate( AasFileFormat.AASX, aspectModel.aspect(),
             name -> outputStream( outputDirectory, name ) );
 
       // tag::generate[]

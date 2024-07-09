@@ -60,7 +60,7 @@ static {
 
     @Override
     public KnownVersion getMetaModelVersion() {
-        return KnownVersion.${element.getMetaModelVersion().toString()};
+        return KnownVersion.getLatest();
     }
 
     @Override

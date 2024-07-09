@@ -22,7 +22,7 @@ import java.util.Set;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.AspectModelJsonSchemaGenerator;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfig;
 import org.eclipse.esmf.aspectmodel.generator.jsonschema.JsonSchemaGenerationConfigBuilder;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.Aspect;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateJsonSchema", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateJsonSchema extends AspectModelMojo {
-
-   private final Logger logger = LoggerFactory.getLogger( GenerateJsonSchema.class );
+   private static final Logger LOG = LoggerFactory.getLogger( GenerateJsonSchema.class );
 
    @Parameter( defaultValue = "en" )
    private String language;
@@ -46,15 +45,15 @@ public class GenerateJsonSchema extends AspectModelMojo {
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
-      final Set<AspectContext> aspectModels = loadModelsOrFail();
+      final Set<Aspect> aspects = loadAspects();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       try {
-         for ( final AspectContext context : aspectModels ) {
+         for ( final Aspect aspect : aspects ) {
             final JsonSchemaGenerationConfig config = JsonSchemaGenerationConfigBuilder.builder()
                   .locale( locale )
                   .build();
-            final JsonNode schema = AspectModelJsonSchemaGenerator.INSTANCE.apply( context.aspect(), config ).getContent();
-            final OutputStream out = getOutputStreamForFile( context.aspect().getName() + ".schema.json", outputDirectory );
+            final JsonNode schema = AspectModelJsonSchemaGenerator.INSTANCE.apply( aspect, config ).getContent();
+            final OutputStream out = getOutputStreamForFile( aspect.getName() + ".schema.json", outputDirectory );
             final ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writerWithDefaultPrettyPrinter().writeValue( out, schema );
             out.flush();
@@ -62,6 +61,6 @@ public class GenerateJsonSchema extends AspectModelMojo {
       } catch ( final IOException exception ) {
          throw new MojoExecutionException( "Could not format JSON Schema", exception );
       }
-      logger.info( "Successfully generated JSON Schema for Aspect Models." );
+      LOG.info( "Successfully generated JSON Schema for Aspect Models." );
    }
 }

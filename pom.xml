@@ -51,16 +51,12 @@
    <modules>
       <module>core/esmf-aspect-meta-model-interface</module>
       <module>core/esmf-aspect-meta-model-java</module>
-      <module>core/esmf-aspect-meta-model-resolver</module>
-      <module>core/esmf-aspect-meta-model-types</module>
-      <module>core/esmf-aspect-meta-model-version-migrator</module>
       <module>core/esmf-aspect-model-aas-generator</module>
       <module>core/esmf-aspect-model-document-generators</module>
       <module>core/esmf-aspect-model-generator</module>
       <module>core/esmf-aspect-model-jackson</module>
       <module>core/esmf-aspect-model-java-core</module>
       <module>core/esmf-aspect-model-java-generator</module>
-      <module>core/esmf-aspect-model-resolver</module>
       <module>core/esmf-aspect-model-serializer</module>
       <module>core/esmf-aspect-model-starter</module>
       <module>core/esmf-aspect-model-urn</module>
@@ -92,26 +88,6 @@
          <dependency>
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-meta-model-interface</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-meta-model-resolver</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-model-resolver</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-meta-model-types</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.eclipse.esmf</groupId>
-            <artifactId>esmf-aspect-meta-model-version-migrator</artifactId>
             <version>${project.version}</version>
          </dependency>
          <dependency>

@@ -27,41 +27,9 @@ import org.eclipse.esmf.aspectmodel.java.AspectModelJavaUtil;
 import org.eclipse.esmf.aspectmodel.java.ValueExpressionVisitor;
 import org.eclipse.esmf.aspectmodel.java.ValueInitializer;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
-import org.eclipse.esmf.characteristic.Code;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.Duration;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.characteristic.Measurement;
-import org.eclipse.esmf.characteristic.Quantifiable;
-import org.eclipse.esmf.characteristic.SingleEntity;
-import org.eclipse.esmf.characteristic.State;
-import org.eclipse.esmf.characteristic.StructuredValue;
-import org.eclipse.esmf.characteristic.Trait;
-import org.eclipse.esmf.characteristic.impl.DefaultCode;
-import org.eclipse.esmf.characteristic.impl.DefaultCollection;
-import org.eclipse.esmf.characteristic.impl.DefaultEnumeration;
-import org.eclipse.esmf.characteristic.impl.DefaultList;
-import org.eclipse.esmf.characteristic.impl.DefaultSet;
-import org.eclipse.esmf.characteristic.impl.DefaultSingleEntity;
-import org.eclipse.esmf.characteristic.impl.DefaultSortedSet;
-import org.eclipse.esmf.characteristic.impl.DefaultState;
-import org.eclipse.esmf.characteristic.impl.DefaultStructuredValue;
-import org.eclipse.esmf.characteristic.impl.DefaultTrait;
-import org.eclipse.esmf.constraint.EncodingConstraint;
-import org.eclipse.esmf.constraint.FixedPointConstraint;
-import org.eclipse.esmf.constraint.LanguageConstraint;
-import org.eclipse.esmf.constraint.LengthConstraint;
-import org.eclipse.esmf.constraint.LocaleConstraint;
-import org.eclipse.esmf.constraint.RangeConstraint;
-import org.eclipse.esmf.constraint.RegularExpressionConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultEncodingConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultFixedPointConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultLanguageConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultLengthConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultLocaleConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultRangeConstraint;
-import org.eclipse.esmf.constraint.impl.DefaultRegularExpressionConstraint;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
+import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.ComplexType;
@@ -69,7 +37,6 @@ import org.eclipse.esmf.metamodel.Constraint;
 import org.eclipse.esmf.metamodel.Entity;
 import org.eclipse.esmf.metamodel.EntityInstance;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.NamedElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.QuantityKind;
 import org.eclipse.esmf.metamodel.QuantityKinds;
@@ -79,7 +46,40 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Unit;
 import org.eclipse.esmf.metamodel.Units;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+import org.eclipse.esmf.metamodel.characteristic.Code;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Duration;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.Measurement;
+import org.eclipse.esmf.metamodel.characteristic.Quantifiable;
+import org.eclipse.esmf.metamodel.characteristic.SingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.State;
+import org.eclipse.esmf.metamodel.characteristic.StructuredValue;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultCode;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultCollection;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultEnumeration;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultList;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSet;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSingleEntity;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultSortedSet;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultState;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultStructuredValue;
+import org.eclipse.esmf.metamodel.characteristic.impl.DefaultTrait;
+import org.eclipse.esmf.metamodel.constraint.EncodingConstraint;
+import org.eclipse.esmf.metamodel.constraint.FixedPointConstraint;
+import org.eclipse.esmf.metamodel.constraint.LanguageConstraint;
+import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
+import org.eclipse.esmf.metamodel.constraint.LocaleConstraint;
+import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
+import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultEncodingConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultFixedPointConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultLanguageConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultLengthConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultLocaleConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultRangeConstraint;
+import org.eclipse.esmf.metamodel.constraint.impl.DefaultRegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.impl.DefaultAbstractEntity;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultCollectionValue;
@@ -89,8 +89,6 @@ import org.eclipse.esmf.metamodel.impl.DefaultQuantityKind;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
 import org.eclipse.esmf.metamodel.impl.DefaultUnit;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.jena.rdf.model.Resource;
@@ -376,16 +374,14 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    @Override
    public String visitLengthConstraint( final LengthConstraint lengthConstraint, final StaticCodeGenerationContext context ) {
       context.getCodeGenerationConfig().importTracker().importExplicit( DefaultLengthConstraint.class );
-      final Scalar nonNegativeInteger = new DefaultScalar( XSD.nonNegativeInteger.getURI(), lengthConstraint.getMetaModelVersion() );
+      final Scalar nonNegativeInteger = new DefaultScalar( XSD.nonNegativeInteger.getURI() );
       return "new DefaultLengthConstraint("
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( lengthConstraint, context ) + ","
             // Optional<BigInteger> min
-            + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMinValue(), lengthConstraint.getMetaModelVersion(),
-            context ) + ","
+            + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMinValue(), context ) + ","
             // Optional<BigInteger> max
-            + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMaxValue(), lengthConstraint.getMetaModelVersion(),
-            context ) + ")";
+            + getOptionalStaticDeclarationValue( nonNegativeInteger, lengthConstraint.getMaxValue(), context ) + ")";
    }
 
    @Override
@@ -397,11 +393,9 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
             // MetaModelBaseAttributes
             + getMetaModelBaseAttributes( rangeConstraint, context ) + ","
             // Optional<Object> minValue
-            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMinValue(), rangeConstraint.getMetaModelVersion(),
-            context ) + ","
+            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMinValue(), context ) + ","
             // Optional<Object> maxValue
-            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMaxValue(), rangeConstraint.getMetaModelVersion(),
-            context ) + ","
+            + getOptionalStaticDeclarationValue( characteristicType, rangeConstraint.getMaxValue(), context ) + ","
             // BoundDefinition lowerBoundDefinition
             + "BoundDefinition." + rangeConstraint.getLowerBoundDefinition().name() + ","
             // BoundDefinition upperBoundDefinition
@@ -500,7 +494,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    @Override
    public String visitScalar( final Scalar scalar, final StaticCodeGenerationContext context ) {
       context.getCodeGenerationConfig().importTracker().importExplicit( DefaultScalar.class );
-      return "new DefaultScalar(\"" + scalar.getUrn() + "\", KnownVersion." + scalar.getMetaModelVersion() + ")";
+      return "new DefaultScalar(\"" + scalar.getUrn() + "\" )";
    }
 
    private String extendsComplexType( final ComplexType complexType, final StaticCodeGenerationContext context ) {
@@ -513,8 +507,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
          final Entity entity = type.as( Entity.class );
          context.getCodeGenerationConfig().importTracker().importExplicit( DefaultEntity.class );
          return "Optional.of(DefaultEntity.createDefaultEntity(" + getMetaModelBaseAttributes( complexType, context ) + "," + "Meta"
-               + entity.getName()
-               + ".INSTANCE.getProperties()," + extendsComplexType( entity, context ) + "))";
+               + entity.getName() + ".INSTANCE.getProperties()," + extendsComplexType( entity, context ) + "))";
       }
       // AbstractEntity
       final AbstractEntity abstractEntity = type.as( AbstractEntity.class );
@@ -528,7 +521,6 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
    }
 
    private <T> String getOptionalStaticDeclarationValue( final Type type, final Optional<T> optionalValue,
-         final KnownVersion metaModelVersion,
          final StaticCodeGenerationContext context ) {
       if ( optionalValue.isEmpty() ) {
          return "Optional.empty()";
@@ -549,7 +541,7 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       } else {
          valueExpression = StringEscapeUtils.escapeJava( valueExpression );
       }
-      return "Optional.of(" + valueInitializer.apply( xsdType, valueExpression, metaModelVersion ) + ")";
+      return "Optional.of(" + valueInitializer.apply( xsdType, valueExpression ) + ")";
    }
 
    /*
@@ -559,18 +551,17 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       return getMetaModelBaseAttributes( property, context );
    }
 
-   public <T extends NamedElement & ModelElement> String getMetaModelBaseAttributes( final T element,
-         final StaticCodeGenerationContext context ) {
-      if ( element.getPreferredNames().isEmpty() && element.getDescriptions().isEmpty() && element.getSee().isEmpty() ) {
-         return "MetaModelBaseAttributes.from(" + "KnownVersion." + element.getMetaModelVersion().toString() + ", " + elementUrn( element,
-               context ) + ", "
-               + "\"" + element.getName() + "\" )";
+   public String getMetaModelBaseAttributes( final ModelElement element, final StaticCodeGenerationContext context ) {
+      final StringBuilder builder = new StringBuilder();
+      builder.append( "MetaModelBaseAttributes.builder()" );
+      if ( element.isAnonymous() ) {
+         builder.append( ".isAnonymous()" );
+      } else {
+         builder.append( ".withUrn(" );
+         builder.append( elementUrn( element, context ) );
+         builder.append( ")" );
       }
 
-      final StringBuilder builder = new StringBuilder();
-      builder.append( "MetaModelBaseAttributes.builderFor( \"" ).append( element.getName() ).append( "\" )" );
-      builder.append( ".withMetaModelVersion(KnownVersion." ).append( element.getMetaModelVersion().toString() ).append( ")" );
-      builder.append( ".withUrn(" ).append( elementUrn( element, context ) ).append( ")" );
       element.getPreferredNames().stream().sorted().forEach( preferredName -> {
          builder.append( ".withPreferredName(Locale.forLanguageTag(\"" ).append( preferredName.getLanguageTag().toLanguageTag() )
                .append( "\")," );
@@ -587,16 +578,13 @@ public class StaticMetaModelVisitor implements AspectVisitor<String, StaticCodeG
       return builder.toString();
    }
 
-   public String elementUrn( final NamedElement element, final StaticCodeGenerationContext context ) {
-      if ( element.getAspectModelUrn().isEmpty() ) {
-         return "null";
-      }
-      if ( element.getAspectModelUrn().get().toString().startsWith( context.getModelUrnPrefix() ) ) {
+   public String elementUrn( final ModelElement element, final StaticCodeGenerationContext context ) {
+      if ( element.urn().toString().startsWith( context.getModelUrnPrefix() ) ) {
          return "AspectModelUrn.fromUrn( NAMESPACE + \"" + element.getName() + "\" )";
       }
-      if ( element.getAspectModelUrn().get().toString().startsWith( context.getCharacteristicBaseUrn() ) ) {
+      if ( element.urn().toString().startsWith( context.getCharacteristicBaseUrn() ) ) {
          return "AspectModelUrn.fromUrn( CHARACTERISTIC_NAMESPACE + \"#" + element.getName() + "\" )";
       }
-      return "AspectModelUrn.fromUrn( \"" + element.getAspectModelUrn().get() + "\" )";
+      return "AspectModelUrn.fromUrn( \"" + element.urn() + "\" )";
    }
 }

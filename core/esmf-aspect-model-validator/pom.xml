@@ -41,14 +41,6 @@
          <artifactId>esmf-aspect-model-urn</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-aspect-meta-model-resolver</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-aspect-model-resolver</artifactId>
-      </dependency>
-      <dependency>
          <groupId>org.graalvm.js</groupId>
          <artifactId>js</artifactId>
       </dependency>

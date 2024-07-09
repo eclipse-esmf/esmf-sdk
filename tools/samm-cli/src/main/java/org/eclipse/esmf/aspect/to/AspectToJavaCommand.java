@@ -26,10 +26,7 @@ import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.java.JavaGenerator;
 import org.eclipse.esmf.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
 
 import picocli.CommandLine;
 
@@ -75,10 +72,10 @@ public class AspectToJavaCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final AspectContext context = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
+      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), customResolver );
       final JavaGenerator javaGenerator = generateStaticMetaModelJavaClasses
-            ? getStaticModelGenerator( context )
-            : getModelGenerator( context );
+            ? getStaticModelGenerator( aspect )
+            : getModelGenerator( aspect );
       javaGenerator.generate( artifact -> {
          final String path = artifact.getPackageName();
          final String fileName = artifact.getClassName();
@@ -90,8 +87,7 @@ public class AspectToJavaCommand extends AbstractCommand {
       final File templateLibFile = Path.of( templateLib ).toFile();
       final String pkgName = Optional.ofNullable( packageName )
             .flatMap( pkg -> pkg.isBlank() ? Optional.empty() : Optional.of( pkg ) )
-            .or( () -> aspect.getAspectModelUrn().map( AspectModelUrn::getNamespace ) )
-            .orElseThrow( () -> new CommandException( "Could not determine Aspect's namespace" ) );
+            .orElseGet( () -> aspect.urn().getNamespace() );
       return JavaCodeGenerationConfigBuilder.builder()
             .executeLibraryMacros( executeLibraryMacros )
             .templateLibFile( templateLibFile )
@@ -100,11 +96,11 @@ public class AspectToJavaCommand extends AbstractCommand {
             .build();
    }
 
-   private JavaGenerator getStaticModelGenerator( final AspectContext context ) {
-      return new StaticMetaModelJavaGenerator( context.aspect(), buildConfig( context.aspect() ) );
+   private JavaGenerator getStaticModelGenerator( final Aspect aspect ) {
+      return new StaticMetaModelJavaGenerator( aspect, buildConfig( aspect ) );
    }
 
-   private JavaGenerator getModelGenerator( final AspectContext context ) {
-      return new AspectModelJavaGenerator( context.aspect(), buildConfig( context.aspect() ) );
+   private JavaGenerator getModelGenerator( final Aspect aspect ) {
+      return new AspectModelJavaGenerator( aspect, buildConfig( aspect ) );
    }
 }

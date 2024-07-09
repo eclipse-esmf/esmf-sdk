@@ -34,7 +34,6 @@ import org.eclipse.esmf.aspectmodel.generator.asyncapi.AsyncApiSchemaGenerationC
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.Aspect;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -96,7 +95,7 @@ public class AspectToAsyncapiCommand extends AbstractCommand {
    public void run() {
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
-      final Aspect aspect = loadModelOrFail( parentCommand.parentCommand.getInput(), customResolver ).aspect();
+      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), customResolver );
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( useSemanticApiVersion )
             .applicationId( applicationId )

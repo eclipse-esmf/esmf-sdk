@@ -29,7 +29,7 @@ public class MojoConfigTest extends AspectModelMojoTest {
       final File testPom = getTestFile( "src/test/resources/test-pom-invalid-models-root.xml" );
       final Mojo validate = lookupMojo( "validate", testPom );
       assertThatCode( validate::execute )
-            .isInstanceOf( MojoFailureException.class )
+            .isInstanceOf( MojoExecutionException.class )
             .hasMessageContaining( "Validation failed" );
    }
 

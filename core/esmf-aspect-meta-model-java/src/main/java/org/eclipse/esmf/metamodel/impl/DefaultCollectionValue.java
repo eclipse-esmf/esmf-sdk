@@ -17,19 +17,22 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.CollectionValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
-import org.eclipse.esmf.samm.KnownVersion;
 
 public class DefaultCollectionValue implements CollectionValue {
    private final Collection<Value> values;
    private final CollectionType collectionType;
    private final Type elementType;
 
-   public DefaultCollectionValue( final Collection<Value> values, final CollectionType collectionType,
-         final Type elementType ) {
+   public DefaultCollectionValue(
+         final Collection<Value> values,
+         final CollectionType collectionType,
+         final Type elementType
+   ) {
       this.values = values;
       this.collectionType = collectionType;
       this.elementType = elementType;
@@ -50,9 +53,14 @@ public class DefaultCollectionValue implements CollectionValue {
       return collectionType;
    }
 
+   /**
+    * Similar to {@link DefaultScalarValue#getSourceFile()}, collection values are not defined in Aspect Model files, so this returns null.
+    *
+    * @return null
+    */
    @Override
-   public KnownVersion getMetaModelVersion() {
-      return elementType.getMetaModelVersion();
+   public AspectModelFile getSourceFile() {
+      return null;
    }
 
    @Override
