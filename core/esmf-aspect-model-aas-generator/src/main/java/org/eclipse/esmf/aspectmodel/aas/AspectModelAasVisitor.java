@@ -350,7 +350,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
       final String updatedValue;
       try {
          updatedValue = !value.matches( ALLOWS_ENUMERATION_VALUE_REGEX ) ? transformEnumerationValue( value ) : value;
-      } catch ( NoSuchAlgorithmException e ) {
+      } catch ( final NoSuchAlgorithmException e ) {
          throw new IllegalStateException( e );
       }
       final Key key = new DefaultKey.Builder()
@@ -584,7 +584,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                         context.getRawPropertyValue()
                               .filter( ArrayNode.class::isInstance )
                               .map( ArrayNode.class::cast )
-                              .map( arrayNode -> ( Property property ) -> {
+                              .map( arrayNode -> ( final Property property ) -> {
                                  final List<SubmodelElement> values = getValues( collection, property, context, arrayNode );
                                  return new DefaultSubmodelElementList.Builder()
                                        .idShort( property.getName() )
@@ -755,18 +755,18 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
     * @return the transformed string in the format "_role[8_characters_of_hash]"
     * @throws NoSuchAlgorithmException if the SHA-256 algorithm is not available
     */
-   private String transformEnumerationValue( String enumValue ) throws NoSuchAlgorithmException {
-      String cleanedEnumValue = enumValue.replaceAll( ALLOWS_ENUMERATION_VALUE_REGEX, "" );
+   private String transformEnumerationValue( final String enumValue ) throws NoSuchAlgorithmException {
+      final String cleanedEnumValue = enumValue.replaceAll( ALLOWS_ENUMERATION_VALUE_REGEX, "" );
 
-      MessageDigest digest = MessageDigest.getInstance( "SHA-256" );
-      byte[] hashBytes = digest.digest( cleanedEnumValue.getBytes( StandardCharsets.UTF_8 ) );
+      final MessageDigest digest = MessageDigest.getInstance( "SHA-256" );
+      final byte[] hashBytes = digest.digest( cleanedEnumValue.getBytes( StandardCharsets.UTF_8 ) );
 
-      StringBuilder hexString = new StringBuilder();
-      for ( byte b : hashBytes ) {
+      final StringBuilder hexString = new StringBuilder();
+      for ( final byte b : hashBytes ) {
          hexString.append( String.format( "%02x", b ) );
       }
 
-      String hashPrefix = hexString.substring( 0, 8 );
+      final String hashPrefix = hexString.substring( 0, 8 );
 
       return "_" + cleanedEnumValue + hashPrefix;
    }
