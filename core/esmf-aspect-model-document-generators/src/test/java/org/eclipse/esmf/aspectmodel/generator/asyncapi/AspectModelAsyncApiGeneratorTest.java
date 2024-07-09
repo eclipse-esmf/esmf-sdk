@@ -5,11 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.util.Locale;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -17,21 +13,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
-class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
-
+class AspectModelAsyncApiGeneratorTest {
    private final AspectModelAsyncApiGenerator asyncApiGenerator = new AspectModelAsyncApiGenerator();
 
    private static final String APPLICATION_ID = "urn:samm:test:test:serve";
    private static final String CHANNEL_ADDRESS = "123/456/test/1.0.0/TestAspect";
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-   @ParameterizedTest
-   @MethodSource( value = "allVersions" )
-   void testAsyncApiGeneratorEmptyAspect( final KnownVersion metaModelVersion ) throws IOException {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT, metaModelVersion );
+   @Test
+   void testAsyncApiGeneratorEmptyAspect() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( false )
             .applicationId( APPLICATION_ID )
@@ -79,7 +71,7 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
 
    @Test
    void testAsyncApiGeneratorWithoutApplicationIdDoesNotAddEmptyId() throws JsonProcessingException {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_EVENT, KnownVersion.getLatest() );
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_EVENT ).aspect();
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( false )
             .channelAddress( CHANNEL_ADDRESS )
@@ -93,10 +85,9 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
       assertThat( asyncSpec.getContentAsYaml() ).doesNotContain( "id: \"\"" );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "versionsStartingWith2_0_0" )
-   void testAsyncApiGeneratorAspectWithEvent( final KnownVersion metaModelVersion ) throws IOException {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_EVENT, metaModelVersion );
+   @Test
+   void testAsyncApiGeneratorAspectWithEvent() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_EVENT ).aspect();
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( false )
             .applicationId( APPLICATION_ID )
@@ -161,10 +152,9 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
             expectedComponentsSchemas );
    }
 
-   @ParameterizedTest
-   @MethodSource( value = "versionsStartingWith2_0_0" )
-   void testAsyncApiGeneratorAspectWithOperation( final KnownVersion metaModelVersion ) throws IOException {
-      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_OPERATION, metaModelVersion );
+   @Test
+   void testAsyncApiGeneratorAspectWithOperation() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITH_OPERATION ).aspect();
       final AsyncApiSchemaGenerationConfig config = AsyncApiSchemaGenerationConfigBuilder.builder()
             .useSemanticVersion( false )
             .applicationId( APPLICATION_ID )
@@ -246,10 +236,5 @@ class AspectModelAsyncApiGeneratorTest extends MetaModelVersions {
       assertThat( json.get( "components" ).get( "messages" ).get( "output" ) ).isEqualTo( expectedComponentsMessageOutput );
       assertThat( json.get( "components" ).get( "schemas" ).get( "input" ) ).isEqualTo( expectedComponentsSchemaInput );
       assertThat( json.get( "components" ).get( "schemas" ).get( "output" ) ).isEqualTo( expectedComponentsSchemaOutput );
-   }
-
-   private Aspect loadAspect( final TestAspect testAspect, final KnownVersion metaModelVersion ) {
-      final VersionedModel versionedModel = TestResources.getModel( testAspect, metaModelVersion ).get();
-      return AspectModelLoader.getSingleAspect( versionedModel ).get();
    }
 }

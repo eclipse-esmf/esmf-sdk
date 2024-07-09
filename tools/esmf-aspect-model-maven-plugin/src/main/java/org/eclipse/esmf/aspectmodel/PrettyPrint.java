@@ -13,13 +13,13 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
-import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
+import org.eclipse.esmf.metamodel.Aspect;
+import org.eclipse.esmf.metamodel.AspectModel;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -30,23 +30,23 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "prettyPrint", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class PrettyPrint extends AspectModelMojo {
-   private final Logger logger = LoggerFactory.getLogger( PrettyPrint.class );
+   private static final Logger LOG = LoggerFactory.getLogger( PrettyPrint.class );
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
-      final Map<AspectModelUrn, VersionedModel> aspectModels = loadButNotResolveModels();
-      for ( final Map.Entry<AspectModelUrn, VersionedModel> aspectModelEntry : aspectModels.entrySet() ) {
-         final AspectModelUrn aspectModelUrn = aspectModelEntry.getKey();
-         try ( final PrintWriter printWriter = initializePrintWriter( aspectModelUrn ) ) {
-            final VersionedModel versionedModel = aspectModelEntry.getValue();
-            final PrettyPrinter prettyPrinter = new PrettyPrinter( versionedModel, aspectModelUrn, printWriter );
-            prettyPrinter.print();
+      for ( final AspectModel aspectModel : loadModels() ) {
+         final Aspect aspect = aspectModel.aspect();
+         final String formatted = AspectSerializer.INSTANCE.apply( aspect );
+         final String aspectModelFileName = String.format( "%s.ttl", aspect.getName() );
+         try ( final FileOutputStream streamForFile = getOutputStreamForFile( aspectModelFileName, outputDirectory );
+               final PrintWriter writer = new PrintWriter( streamForFile ) ) {
+            writer.println( formatted );
          } catch ( final IOException exception ) {
-            throw new MojoExecutionException( "Could not write file", exception );
+            throw new MojoExecutionException( "Could not write Aspect", exception );
          }
-         logger.info( "Successfully printed Aspect Model {}.", aspectModelUrn.getName() );
+         LOG.info( "Successfully printed Aspect Model {}.", aspect.getName() );
       }
    }
 }

@@ -15,8 +15,6 @@ package org.eclipse.esmf.substitution;
 
 import java.util.List;
 
-import org.eclipse.esmf.aspectmodel.versionupdate.MigratorServiceLoader;
-
 import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 import org.slf4j.LoggerFactory;
@@ -24,7 +22,7 @@ import org.slf4j.spi.SLF4JServiceProvider;
 
 /**
  * This is a <a href="https://build-native-java-apps.cc/developer-guide/substitution/">GraalVM substitution class</a>
- * for {@link MigratorServiceLoader}.
+ * for {@link LoggerFactory}.
  * Reason: The logger factory displays false positive logger configuration errors (only in native image setup), this silences it.
  */
 @SuppressWarnings( {

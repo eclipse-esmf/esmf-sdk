@@ -15,11 +15,14 @@ package org.eclipse.esmf.aspectmodel.aas;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Type;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.jena.vocabulary.RDF;
 import org.eclipse.digitaltwin.aas4j.v3.model.LangStringTextType;
 import org.eclipse.digitaltwin.aas4j.v3.model.MultiLanguageProperty;
@@ -49,17 +52,16 @@ public class LangStringPropertyMapper implements PropertyMapper<MultiLanguagePro
    }
 
    private List<LangStringTextType> extractLangStrings( final Property property, final Context context ) {
-      return context.getRawPropertyValue()
+      return context.getRawPropertyValue().stream()
+            .flatMap( node -> node.isArray() ? StreamSupport.stream( node.spliterator(), false ) : Stream.of( node ) )
             .filter( JsonNode::isObject )
-            .map( node -> {
+            .map( ObjectNode.class::cast )
+            .flatMap( node -> {
                final Map<String, String> entries = new HashMap<>();
                node.fields().forEachRemaining( field -> entries.put( field.getKey(), field.getValue().asText() ) );
-               return entries;
+               return entries.entrySet().stream();
             } )
-            .map( rawEntries -> rawEntries.entrySet()
-                  .stream()
-                  .map( entry -> LangStringMapper.TEXT.createLangString( entry.getValue(), entry.getKey() ) )
-                  .toList() )
-            .orElseGet( List::of );
+            .map( entry -> LangStringMapper.TEXT.createLangString( entry.getValue(), entry.getKey() ) )
+            .toList();
    }
 }

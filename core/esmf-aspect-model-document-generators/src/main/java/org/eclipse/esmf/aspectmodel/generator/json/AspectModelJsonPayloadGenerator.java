@@ -43,19 +43,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.eclipse.esmf.aspectmodel.generator.AbstractGenerator;
 import org.eclipse.esmf.aspectmodel.generator.NumericTypeTraits;
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
-import org.eclipse.esmf.aspectmodel.resolver.services.DataType;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.characteristic.Collection;
-import org.eclipse.esmf.characteristic.Either;
-import org.eclipse.esmf.characteristic.Enumeration;
-import org.eclipse.esmf.characteristic.State;
-import org.eclipse.esmf.characteristic.Trait;
-import org.eclipse.esmf.constraint.LengthConstraint;
-import org.eclipse.esmf.constraint.RangeConstraint;
-import org.eclipse.esmf.constraint.RegularExpressionConstraint;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.BoundDefinition;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Constraint;
@@ -65,8 +55,16 @@ import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.datatypes.Curie;
-import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+import org.eclipse.esmf.metamodel.characteristic.Collection;
+import org.eclipse.esmf.metamodel.characteristic.Either;
+import org.eclipse.esmf.metamodel.characteristic.Enumeration;
+import org.eclipse.esmf.metamodel.characteristic.State;
+import org.eclipse.esmf.metamodel.characteristic.Trait;
+import org.eclipse.esmf.metamodel.constraint.LengthConstraint;
+import org.eclipse.esmf.metamodel.constraint.RangeConstraint;
+import org.eclipse.esmf.metamodel.constraint.RegularExpressionConstraint;
+import org.eclipse.esmf.metamodel.datatype.Curie;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -98,18 +96,10 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
    private final Aspect aspect;
 
    public AspectModelJsonPayloadGenerator( final Aspect aspect ) {
-      this( aspect, new SAMM( aspect.getMetaModelVersion() ), new Random() );
-   }
-
-   public AspectModelJsonPayloadGenerator( final AspectContext context ) {
-      this( context.aspect() );
+      this( aspect, new Random() );
    }
 
    public AspectModelJsonPayloadGenerator( final Aspect aspect, final Random randomStrategy ) {
-      this( aspect, new SAMM( aspect.getMetaModelVersion() ), randomStrategy );
-   }
-
-   private AspectModelJsonPayloadGenerator( final Aspect aspect, final SAMM samm, final Random randomStrategy ) {
       this.aspect = aspect;
       exampleValueGenerator = new ExampleValueGenerator( randomStrategy );
       objectMapper = AspectModelJsonPayloadGenerator.createObjectMapper();
@@ -314,8 +304,10 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return generateExampleValue( effectiveCharacteristics );
       }
 
-      return property.getExampleValue().map( exampleValue ->
-            exampleValue.as( ScalarValue.class ).getValue() ).orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
+      return property.getExampleValue()
+            .map( exampleValue -> exampleValue.as( ScalarValue.class ).getValue() )
+            .map( value -> value instanceof Curie ? ( (Curie) value ).value() : value )
+            .orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
    }
 
    private Map<String, Object> toMap( final String key, final Object value ) {
@@ -450,7 +442,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
          final Scalar scalar = dataType.as( Scalar.class );
          final Resource dataTypeResource = ResourceFactory.createResource( scalar.getUrn() );
-         final Class<?> exampleValueType = DataType.getJavaTypeForMetaModelType( dataTypeResource, characteristic.getMetaModelVersion() );
+         final Class<?> exampleValueType = SammXsdType.getJavaTypeForMetaModelType( dataTypeResource );
          if ( Curie.class.equals( exampleValueType ) ) {
             return getRandomEntry( ExampleValueGenerator.CURIE_VALUES );
          }

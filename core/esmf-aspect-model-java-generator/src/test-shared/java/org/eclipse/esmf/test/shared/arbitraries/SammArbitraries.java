@@ -20,12 +20,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.ExtendedXsdDataType;
-import org.eclipse.esmf.aspectmodel.resolver.services.SammDataType;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMMC;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMME;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.Characteristic;
 import org.eclipse.esmf.metamodel.Entity;
@@ -36,7 +32,8 @@ import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
+import org.eclipse.esmf.metamodel.datatype.SammXsdType;
 import org.eclipse.esmf.metamodel.impl.DefaultAspect;
 import org.eclipse.esmf.metamodel.impl.DefaultCharacteristic;
 import org.eclipse.esmf.metamodel.impl.DefaultEntity;
@@ -46,7 +43,6 @@ import org.eclipse.esmf.metamodel.impl.DefaultOperation;
 import org.eclipse.esmf.metamodel.impl.DefaultProperty;
 import org.eclipse.esmf.metamodel.impl.DefaultScalar;
 import org.eclipse.esmf.metamodel.impl.DefaultScalarValue;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import net.jqwik.api.Arbitraries;
@@ -61,17 +57,10 @@ import org.apache.jena.datatypes.RDFDatatype;
  * Provides {@link Arbitrary}s for Aspect model elements.
  */
 public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitraries, XsdArbitraries {
-   SAMM samm( KnownVersion metaModelVersion );
-
-   SAMMC sammc( KnownVersion metaModelVersion );
-
-   SAMME samme( KnownVersion metaModelVersion );
-
    @Provide
    default Arbitrary<Scalar> anyScalar() {
-      final Arbitrary<String> uris = Arbitraries.of(
-            ExtendedXsdDataType.SUPPORTED_XSD_TYPES.stream().map( RDFDatatype::getURI ).collect( Collectors.toList() ) );
-      return Combinators.combine( uris, anyMetaModelVersion() ).as( DefaultScalar::new );
+      return Arbitraries.of( SammXsdType.ALL_TYPES.stream().map( RDFDatatype::getURI ).collect( Collectors.toList() ) )
+            .map( DefaultScalar::new );
    }
 
    @Provide
@@ -170,8 +159,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
             .combine( anyMetaModelVersion(), anyCharacteristicUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
                   anyScalar() )
             .as( ( metaModelVersion, characteristicUrn, preferredNames, descriptions, see, dataType ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, characteristicUrn, characteristicUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( characteristicUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultCharacteristic( baseAttributes, Optional.of( dataType ) );
             } );
    }
@@ -182,8 +175,13 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
                   anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyOperation().list().ofMaxSize( 3 ),
                   anyEvent().list().ofMaxSize( 3 ) )
             .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, properties, operations, events ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, aspectUrn, aspectUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( aspectUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
+
                return new DefaultAspect( baseAttributes, properties, operations, events, false );
             } );
    }
@@ -193,8 +191,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
       return Combinators.combine( anyMetaModelVersion(), anyOperationUrn(), anyPreferredNames(), anyDescriptions(),
                   anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ), anyProperty().optional() )
             .as( ( metaModelVersion, operationUrn, preferredNames, descriptions, see, inputs, output ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, operationUrn, operationUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( operationUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultOperation( baseAttributes, inputs, output );
             } );
    }
@@ -204,8 +206,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
       return Combinators.combine( anyMetaModelVersion(), anyEventUrn(), anyPreferredNames(), anyDescriptions(),
                   anySee(), anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ) )
             .as( ( metaModelVersion, eventUrn, preferredNames, descriptions, see, properties ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, eventUrn, eventUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( eventUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultEvent( baseAttributes, properties );
             } );
    }
@@ -215,8 +221,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
       return Combinators.combine( anyMetaModelVersion(), anyPropertyUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
                   anyCharacteristic(), anyPayloadName() )
             .as( ( metaModelVersion, propertyUrn, preferredNames, descriptions, see, characteristic, payloadName ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, propertyUrn, propertyUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( propertyUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultProperty( baseAttributes, Optional.of( characteristic ), Optional.empty(), false, false,
                      Optional.of( payloadName ), false,
                      Optional.empty() );
@@ -228,8 +238,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
       return Combinators.combine( anyMetaModelVersion(), anyEntityUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
                   anyProperty().list().ofMinSize( 1 ).ofMaxSize( 3 ) )
             .as( ( metaModelVersion, entityUrn, preferredNames, descriptions, see, properties ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, entityUrn, entityUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( entityUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultEntity( baseAttributes, properties );
             } );
    }
@@ -247,73 +261,41 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
    default Arbitrary<Value> anyValueForRdfType( final RDFDatatype rdfDatatype, final Scalar type ) {
       final Arbitrary<String> anyString = Arbitraries.strings().ofMinLength( 1 ).ofMaxLength( 25 );
 
-      switch ( rdfDatatype.getURI().split( "#" )[1] ) {
-         case "boolean":
-            return anyBoolean().map( x -> buildScalarValue( x, type ) );
-         case "decimal":
-         case "integer":
-            return Arbitraries.bigIntegers().map( x -> buildScalarValue( x, type ) );
-         case "double":
-            return Arbitraries.doubles().map( x -> buildScalarValue( x, type ) );
-         case "float":
-            return Arbitraries.floats().map( x -> buildScalarValue( x, type ) );
-         case "date":
-            return anyDate().map( x -> buildScalarValue( x, type ) );
-         case "time":
-            return anyTime().map( x -> buildScalarValue( x, type ) );
-         case "anyDateTime":
-            return anyDateTime().map( x -> buildScalarValue( x, type ) );
-         case "anyDateTimeStamp":
-            return anyDateTimeStamp().map( x -> buildScalarValue( x, type ) );
-         case "gYear":
-            return anyGyear().map( x -> buildScalarValue( x, type ) );
-         case "gMonth":
-            return anyGmonth().map( x -> buildScalarValue( x, type ) );
-         case "gDay":
-            return anyGday().map( x -> buildScalarValue( x, type ) );
-         case "gYearMonth":
-            return anyGyearMonth().map( x -> buildScalarValue( x, type ) );
-         case "gMonthDay":
-            return anyGmonthDay().map( x -> buildScalarValue( x, type ) );
-         case "duration":
-            return anyDuration().map( x -> buildScalarValue( x, type ) );
-         case "yearMonthDuation":
-            return anyYearMonthDuration().map( x -> buildScalarValue( x, type ) );
-         case "dayTimeDuration":
-            return anyDayTimeDuration().map( x -> buildScalarValue( x, type ) );
-         case "byte":
-            return Arbitraries.bytes().map( x -> buildScalarValue( x, type ) );
-         case "short":
-            return Arbitraries.shorts().map( x -> buildScalarValue( x, type ) );
-         case "unsignedByte":
-            return anyUnsignedByte().map( x -> buildScalarValue( x, type ) );
-         case "int":
-            return Arbitraries.integers().map( x -> buildScalarValue( x, type ) );
-         case "unsignedShort":
-            return anyUnsignedShort().map( x -> buildScalarValue( x, type ) );
-         case "long":
-            return Arbitraries.longs().map( x -> buildScalarValue( x, type ) );
-         case "unsignedLong":
-            return anyUnsignedLong().map( x -> buildScalarValue( x, type ) );
-         case "positiveInteger":
-            return anyPositiveInteger().map( x -> buildScalarValue( x, type ) );
-         case "nonNegativeInteger":
-            return anyNonNegativeInteger().map( x -> buildScalarValue( x, type ) );
-         case "hexBinary":
-            return anyHexBinary().map( x -> buildScalarValue( x, type ) );
-         case "base64Binary":
-            return anyBase64Binary().map( x -> buildScalarValue( x, type ) );
-         case "anyURI":
-            return anyUri().map( x -> buildScalarValue( x, type ) );
-         case "curie":
-            return anyMetaModelVersion().map( SammDataType::curie ).map( x -> buildScalarValue( x, type ) );
-         case "langString":
-            return Combinators.combine( anyString, anyLocale() )
-                  .as( LangString::new )
-                  .map( x -> buildScalarValue( x, type ) );
-         default:
-            return anyString.map( x -> buildScalarValue( x, type ) );
-      }
+      return switch ( rdfDatatype.getURI().split( "#" )[1] ) {
+         case "boolean" -> anyBoolean().map( x -> buildScalarValue( x, type ) );
+         case "decimal", "integer" -> Arbitraries.bigIntegers().map( x -> buildScalarValue( x, type ) );
+         case "double" -> Arbitraries.doubles().map( x -> buildScalarValue( x, type ) );
+         case "float" -> Arbitraries.floats().map( x -> buildScalarValue( x, type ) );
+         case "date" -> anyDate().map( x -> buildScalarValue( x, type ) );
+         case "time" -> anyTime().map( x -> buildScalarValue( x, type ) );
+         case "anyDateTime" -> anyDateTime().map( x -> buildScalarValue( x, type ) );
+         case "anyDateTimeStamp" -> anyDateTimeStamp().map( x -> buildScalarValue( x, type ) );
+         case "gYear" -> anyGyear().map( x -> buildScalarValue( x, type ) );
+         case "gMonth" -> anyGmonth().map( x -> buildScalarValue( x, type ) );
+         case "gDay" -> anyGday().map( x -> buildScalarValue( x, type ) );
+         case "gYearMonth" -> anyGyearMonth().map( x -> buildScalarValue( x, type ) );
+         case "gMonthDay" -> anyGmonthDay().map( x -> buildScalarValue( x, type ) );
+         case "duration" -> anyDuration().map( x -> buildScalarValue( x, type ) );
+         case "yearMonthDuation" -> anyYearMonthDuration().map( x -> buildScalarValue( x, type ) );
+         case "dayTimeDuration" -> anyDayTimeDuration().map( x -> buildScalarValue( x, type ) );
+         case "byte" -> Arbitraries.bytes().map( x -> buildScalarValue( x, type ) );
+         case "short" -> Arbitraries.shorts().map( x -> buildScalarValue( x, type ) );
+         case "unsignedByte" -> anyUnsignedByte().map( x -> buildScalarValue( x, type ) );
+         case "int" -> Arbitraries.integers().map( x -> buildScalarValue( x, type ) );
+         case "unsignedShort" -> anyUnsignedShort().map( x -> buildScalarValue( x, type ) );
+         case "long" -> Arbitraries.longs().map( x -> buildScalarValue( x, type ) );
+         case "unsignedLong" -> anyUnsignedLong().map( x -> buildScalarValue( x, type ) );
+         case "positiveInteger" -> anyPositiveInteger().map( x -> buildScalarValue( x, type ) );
+         case "nonNegativeInteger" -> anyNonNegativeInteger().map( x -> buildScalarValue( x, type ) );
+         case "hexBinary" -> anyHexBinary().map( x -> buildScalarValue( x, type ) );
+         case "base64Binary" -> anyBase64Binary().map( x -> buildScalarValue( x, type ) );
+         case "anyURI" -> anyUri().map( x -> buildScalarValue( x, type ) );
+         case "curie" -> anyCurie().map( x -> buildScalarValue( x, type ) );
+         case "langString" -> Combinators.combine( anyString, anyLocale() )
+               .as( LangString::new )
+               .map( x -> buildScalarValue( x, type ) );
+         default -> anyString.map( x -> buildScalarValue( x, type ) );
+      };
    }
 
    @Provide
@@ -326,8 +308,12 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
       return Combinators.combine( anyMetaModelVersion(), anyAspectUrn(), anyPreferredNames(), anyDescriptions(), anySee(),
                   entityAssertions )
             .as( ( metaModelVersion, aspectUrn, preferredNames, descriptions, see, assertions ) -> {
-               final MetaModelBaseAttributes baseAttributes = new MetaModelBaseAttributes(
-                     metaModelVersion, aspectUrn, aspectUrn.getName(), preferredNames, descriptions, see );
+               final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
+                     .withUrn( aspectUrn )
+                     .withPreferredNames( preferredNames )
+                     .withDescriptions( descriptions )
+                     .withSee( see )
+                     .build();
                return new DefaultEntityInstance( baseAttributes, assertions, entity );
             } );
    }
@@ -342,8 +328,8 @@ public interface SammArbitraries extends AspectModelUrnArbitraries, UriArbitrari
 
    @Provide
    default Arbitrary<Value> anyValueForScalarType( final Scalar type ) {
-      return ExtendedXsdDataType
-            .SUPPORTED_XSD_TYPES.stream()
+      return SammXsdType
+            .ALL_TYPES.stream()
             .filter( dataType -> dataType.getURI().equals( type.getUrn() ) )
             .map( rdfDatatype -> anyValueForRdfType( rdfDatatype, type ) )
             .findFirst()

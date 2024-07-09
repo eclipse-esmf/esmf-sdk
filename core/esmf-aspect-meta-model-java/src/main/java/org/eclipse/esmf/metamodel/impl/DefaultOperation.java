@@ -17,10 +17,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
+import org.eclipse.esmf.aspectmodel.visitor.AspectVisitor;
 import org.eclipse.esmf.metamodel.Operation;
 import org.eclipse.esmf.metamodel.Property;
-import org.eclipse.esmf.metamodel.loader.MetaModelBaseAttributes;
-import org.eclipse.esmf.metamodel.visitor.AspectVisitor;
 
 public class DefaultOperation extends ModelElementImpl implements Operation {
    private final List<Property> input;

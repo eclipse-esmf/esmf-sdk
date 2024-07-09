@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.jackson;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 

@@ -34,14 +34,6 @@
       </dependency>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-aspect-meta-model-resolver</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-aspect-model-resolver</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-meta-model-java</artifactId>
       </dependency>
       <dependency>

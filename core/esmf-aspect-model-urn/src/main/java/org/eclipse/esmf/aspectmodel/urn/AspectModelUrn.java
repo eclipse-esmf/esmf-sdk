@@ -100,7 +100,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       try {
          return fromUrn( new URI( urn ) );
       } catch ( final URISyntaxException e ) {
-         throw new UrnSyntaxException( UrnSyntaxException.URN_IS_NO_URI );
+         throw new UrnSyntaxException( UrnSyntaxException.URN_IS_NO_URI + ": " + urn );
       }
    }
 

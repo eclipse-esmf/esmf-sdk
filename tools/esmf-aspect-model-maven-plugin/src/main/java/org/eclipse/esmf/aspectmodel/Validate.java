@@ -19,9 +19,8 @@ import java.util.Set;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
-import org.eclipse.esmf.metamodel.AspectContext;
+import org.eclipse.esmf.metamodel.AspectModel;
 
-import io.vavr.control.Try;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -31,21 +30,21 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "validate", defaultPhase = LifecyclePhase.VALIDATE )
 public class Validate extends AspectModelMojo {
-
-   private final Logger logger = LoggerFactory.getLogger( Validate.class );
+   private static final Logger LOG = LoggerFactory.getLogger( Validate.class );
    private final AspectModelValidator validator = new AspectModelValidator();
 
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
-      final Set<Try<AspectContext>> resolvedModels = loadAndResolveModels();
-      for ( final Try<AspectContext> context : resolvedModels ) {
-         final List<Violation> violations = validator.validateModel( context.map( AspectContext::rdfModel ) );
-         if ( !violations.isEmpty() ) {
-            throw new MojoFailureException( new ViolationFormatter().apply( violations ) );
-         }
+      final Set<AspectModel> aspectModels = loadModels();
+      final List<Violation> violations = aspectModels.stream()
+            .flatMap( aspectModel -> validator.validateModel( aspectModel ).stream() ).toList();
+
+      if ( !violations.isEmpty() ) {
+         throw new MojoFailureException( new ViolationFormatter().apply( violations ) );
       }
-      logger.info( "Aspect Models are valid." );
+
+      LOG.info( "Aspect Models are valid." );
    }
 }

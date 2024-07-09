@@ -12,8 +12,7 @@
  */
 package org.eclipse.esmf.aspectmodel.aas;
 
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.NamedElement;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Type;
 
@@ -30,7 +29,7 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultReference;
  *
  * @param <T> the concrete type of {@link SubmodelElement} the implementing mapper produces
  */
-public interface PropertyMapper<T extends SubmodelElement> {
+public interface PropertyMapper<T extends SubmodelElement> extends Comparable<PropertyMapper<T>> {
    static String UNKNOWN_TYPE = "Unknown";
 
    static String UNKNOWN_EXAMPLE = "";
@@ -56,6 +55,26 @@ public interface PropertyMapper<T extends SubmodelElement> {
    }
 
    /**
+    * Returns the ordering value for this property mapper.
+    *
+    * <p>The order is used to determine the correct mapper if multiple matches can occur. By default mappers have
+    * {@link Integer#MAX_VALUE} applied as their order value, meaning they will be sorted to the very end.
+    *
+    * <p>One example for the need of a proper ordering is, if a general mapper for a specific property type is used, but an even more
+    * specific mapper should be used for one exact property, that also has this type.
+    *
+    * @return the order value
+    */
+   default int getOrder() {
+      return Integer.MAX_VALUE;
+   }
+
+   @Override
+   default int compareTo( PropertyMapper<T> otherPropertyMapper ) {
+      return Integer.compare( getOrder(), otherPropertyMapper.getOrder() );
+   }
+
+   /**
     * Builds a concept description reference for the given property.
     *
     * @param property the property to build the reference for
@@ -70,14 +89,12 @@ public interface PropertyMapper<T extends SubmodelElement> {
    }
 
    /**
-    * Determines the identifier for the given {@link NamedElement}.
+    * Determines the identifier for the given {@link ModelElement}.
     *
     * @param element the element to get the identifier for
     * @return the identifier
     */
-   default String determineIdentifierFor( final NamedElement element ) {
-      return element.getAspectModelUrn()
-            .map( AspectModelUrn::toString )
-            .orElseGet( element::getName );
+   default String determineIdentifierFor( final ModelElement element ) {
+      return element.urn().toString();
    }
 }

@@ -27,7 +27,7 @@
          <plugin>
             <artifactId>esmf-aspect-model-maven-plugin</artifactId>
             <configuration>
-               <modelsRootDirectory>${basedir}/../../core/esmf-test-aspect-models/src/main/resources/valid/samm_2_0_0</modelsRootDirectory>
+               <modelsRootDirectory>${basedir}/../../core/esmf-test-aspect-models/src/main/resources/valid</modelsRootDirectory>
                <includes>
                   <include>urn:samm:org.eclipse.esmf.test:1.0.0#Aspect</include>
                </includes>

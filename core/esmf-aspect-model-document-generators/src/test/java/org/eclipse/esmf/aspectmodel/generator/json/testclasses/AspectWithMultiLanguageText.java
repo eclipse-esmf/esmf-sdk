@@ -15,7 +15,7 @@ package org.eclipse.esmf.aspectmodel.generator.json.testclasses;
 
 import java.util.Objects;
 
-import org.eclipse.esmf.metamodel.datatypes.LangString;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

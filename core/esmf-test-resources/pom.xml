@@ -34,7 +34,8 @@
       </dependency>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-aspect-model-resolver</artifactId>
+         <artifactId>esmf-aspect-meta-model-java</artifactId>
+         <optional>true</optional>
       </dependency>
       <dependency>
          <groupId>com.fasterxml.jackson.core</groupId>

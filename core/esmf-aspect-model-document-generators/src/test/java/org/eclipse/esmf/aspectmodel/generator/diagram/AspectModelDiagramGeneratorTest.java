@@ -20,12 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.AspectContext;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
-import org.eclipse.esmf.samm.KnownVersion;
-import org.eclipse.esmf.test.MetaModelVersions;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
@@ -33,14 +28,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class AspectModelDiagramGeneratorTest extends MetaModelVersions {
+public class AspectModelDiagramGeneratorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
    void testGen( final TestAspect testAspect ) {
-      final VersionedModel versionedModel = TestResources.getModel( testAspect, KnownVersion.getLatest() ).get();
-      final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
-      final AspectContext context = new AspectContext( versionedModel, aspect );
-      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( context );
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
+      final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect );
       assertThatCode( () -> {
          final ByteArrayOutputStream out = new ByteArrayOutputStream();
          generator.generateDiagram( AspectModelDiagramGenerator.Format.SVG, Locale.ENGLISH, out );
@@ -53,10 +46,8 @@ public class AspectModelDiagramGeneratorTest extends MetaModelVersions {
       final String platformEncoding = System.getProperty( "file.encoding" );
       try {
          System.setProperty( "file.encoding", encoding );
-         final VersionedModel versionedModel = TestResources.getModel( TestAspect.ASPECT, KnownVersion.getLatest() ).get();
-         final Aspect aspect = AspectModelLoader.getSingleAspect( versionedModel ).getOrElseThrow( () -> new RuntimeException() );
-         final AspectContext context = new AspectContext( versionedModel, aspect );
-         final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( context );
+         final Aspect aspect = TestResources.load( TestAspect.ASPECT ).aspect();
+         final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect );
 
          assertThatCode( () -> {
             final ByteArrayOutputStream out = new ByteArrayOutputStream();

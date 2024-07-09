@@ -17,32 +17,30 @@ package examples;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
 import org.eclipse.esmf.aspectmodel.java.metamodel.StaticMetaModelJavaGenerator;
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.metamodel.Aspect;
-import org.eclipse.esmf.metamodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.metamodel.AspectModel;
+// end::imports[]
+
 import java.io.File;
 import org.apache.commons.io.output.NullOutputStream;
-// end::imports[]
 import org.junit.jupiter.api.Test;
 
 public class GenerateJavaStaticClass {
    @Test
    public void generate() {
-      final File modelFile = new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" );
-
       // tag::generate[]
-      // Aspect as created by the AspectModelLoader
-      final Aspect aspect = // ...
+      // AspectModel as returned by the AspectModelLoader
+      final AspectModel aspectModel = // ...
             // end::generate[]
-            // exclude the actual loading from the example to reduce noise
-            AspectModelResolver.loadAndResolveModel( modelFile ).flatMap( AspectModelLoader::getSingleAspect ).get();
+            new AspectModelLoader().load(
+                  new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::generate[]
 
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( true )
             .packageName( "com.example.mycompany" ) // if left out, package is taken from Aspect's namespace
             .build();
-      final StaticMetaModelJavaGenerator generator = new StaticMetaModelJavaGenerator( aspect, config );
+      final StaticMetaModelJavaGenerator generator = new StaticMetaModelJavaGenerator( aspectModel.aspect(), config );
       generator.generate( qualifiedName -> {
          // Create an output stream for the given qualified Java class name
          // end::generate[]

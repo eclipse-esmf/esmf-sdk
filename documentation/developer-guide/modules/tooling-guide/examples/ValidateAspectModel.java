@@ -14,31 +14,31 @@
 package examples;
 
 // tag::imports[]
+import java.io.File;
 import java.util.List;
 
-import org.eclipse.esmf.aspectmodel.resolver.AspectModelResolver;
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
 import org.eclipse.esmf.aspectmodel.validation.services.ViolationFormatter;
-import io.vavr.control.Try;
-import java.io.File;
+import org.eclipse.esmf.metamodel.AspectModel;
 // end::imports[]
+
 import org.junit.jupiter.api.Test;
 
 public class ValidateAspectModel {
    @Test
    public void validate() {
       // tag::validate[]
-      // Try<VersionedModel> as returned by the AspectModelResolver
-      final Try<VersionedModel> tryModel = // ...
+      // AspectModel as returned by the AspectModelLoader
+      final AspectModel aspectModel = // ...
             // end::validate[]
-            AspectModelResolver.loadAndResolveModel(
+            new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::validate[]
 
-      final List<Violation> violations = new AspectModelValidator().validateModel( tryModel );
+      final List<Violation> violations = new AspectModelValidator().validateModel( aspectModel );
       if ( violations.isEmpty() ) {
          // Aspect Model is valid!
          return;

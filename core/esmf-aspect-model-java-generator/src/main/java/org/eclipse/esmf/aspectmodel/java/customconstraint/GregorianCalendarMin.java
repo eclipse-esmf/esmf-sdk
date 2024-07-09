@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.eclipse.esmf.metamodel.impl.BoundDefinition;
+import org.eclipse.esmf.metamodel.BoundDefinition;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

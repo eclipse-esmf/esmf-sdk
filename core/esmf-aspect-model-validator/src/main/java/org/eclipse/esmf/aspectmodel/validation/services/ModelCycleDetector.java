@@ -18,15 +18,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.eclipse.esmf.aspectmodel.resolver.services.VersionedModel;
 import org.eclipse.esmf.aspectmodel.shacl.violation.ProcessingViolation;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
-import org.eclipse.esmf.aspectmodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.vocabulary.SAMM;
+import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 
 import org.apache.jena.query.Query;
@@ -60,8 +59,8 @@ public class ModelCycleDetector {
                + "json payload.";
 
    private static final String PREFIXES = """
-         prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%s#>
-         prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%s#>
+         prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:%1$s#>
+         prefix samm-c: <urn:samm:org.eclipse.esmf.samm:characteristic:%1$s#>
          prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
          """;
 
@@ -71,21 +70,19 @@ public class ModelCycleDetector {
 
    private Query query;
 
-   private SAMM samm;
+   private final SAMM samm = SammNs.SAMM;
    private Model model;
 
    final List<Violation> cycleDetectionReport = new ArrayList<>();
 
-   public List<Violation> validateModel( final VersionedModel versionedModel ) {
+   public List<Violation> validateModel( final Model rawModel ) {
       discovered.clear();
       discoveredOptionals.clear();
       finished.clear();
       cycleDetectionReport.clear();
 
-      model = versionedModel.getModel();
-      final Optional<KnownVersion> metaModelVersion = KnownVersion.fromVersionString( versionedModel.getMetaModelVersion().toString() );
-      samm = new SAMM( metaModelVersion.get() );
-      initializeQuery( metaModelVersion.get() );
+      model = rawModel;
+      initializeQuery();
 
       // we only want to investigate properties that are directly reachable from an Aspect
       final StmtIterator aspects = model.listStatements( null, RDF.type, samm.Aspect() );
@@ -225,9 +222,8 @@ public class ModelCycleDetector {
    }
 
    @SuppressWarnings( "checkstyle:LineLength" )
-   private void initializeQuery( final KnownVersion metaModelVersion ) {
-      final String currentVersionPrefixes = String.format( PREFIXES, metaModelVersion.toVersionString(),
-            metaModelVersion.toVersionString() );
+   private void initializeQuery() {
+      final String currentVersionPrefixes = PREFIXES.formatted( KnownVersion.getLatest().toVersionString() );
       //noinspection LongLine
       final String queryString = String.format( """
                   %s select ?reachableProperty ?viaEither

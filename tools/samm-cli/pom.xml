@@ -43,6 +43,10 @@
    <dependencies>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-semantic-aspect-meta-model</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-starter</artifactId>
       </dependency>
       <dependency>
@@ -278,9 +282,6 @@
                      </transformers>
                      <artifactSet>
                         <excludes>
-                           <!-- Exclude meta model dependency, because meta model resources are already contained in the
-                                meta model resolver package -->
-                           <exclude>org.eclipse.esmf:esmf-semantic-aspect-meta-model</exclude>
                            <!-- Duplicate annotations that are already contained in javax.annotation-api -->
                            <exclude>javax.annotation:jsr250-api</exclude>
                            <!-- GraalVM SDK classes & friends must not be used at runtime -->
@@ -377,9 +378,6 @@
                      </transformers>
                      <artifactSet>
                         <excludes>
-                           <!-- Exclude meta model dependency, because meta model resources are already contained in the
-                                meta model resolver package -->
-                           <exclude>org.eclipse.esmf:esmf-semantic-aspect-meta-model</exclude>
                            <!-- Duplicate annotations that are already contained in javax.annotation-api -->
                            <exclude>javax.annotation:jsr250-api</exclude>
                         </excludes>

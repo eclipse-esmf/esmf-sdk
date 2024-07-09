@@ -24,7 +24,6 @@ import picocli.CommandLine;
       subcommands = {
             CommandLine.HelpCommand.class,
             AspectToCommand.class,
-            AspectMigrateCommand.class,
             AspectPrettyPrintCommand.class,
             AspectValidateCommand.class
       },
