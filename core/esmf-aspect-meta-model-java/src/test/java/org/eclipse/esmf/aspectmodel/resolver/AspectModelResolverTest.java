@@ -50,7 +50,8 @@ public class AspectModelResolverTest {
          final Resource aspect = createResource( TestModel.TEST_NAMESPACE + "Test" );
          assertThat( result.mergedModel().listStatements( aspect, RDF.type, SammNs.SAMM.Aspect() ).nextOptional() ).isNotEmpty();
          assertThat( result.files().get( 0 ).headerComment() ).isNotNull();
-         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains( "# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
+         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains(
+               "# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
       } ).doesNotThrowAnyException();
    }
 
@@ -85,7 +86,8 @@ public class AspectModelResolverTest {
          final Resource aspect = createResource( "urn:samm:org.eclipse.esmf.test:2.0.0#BammTest" );
          assertThat( result.mergedModel().listStatements( aspect, RDF.type, SammNs.SAMM.Aspect() ).nextOptional() ).isNotEmpty();
          assertThat( result.files().get( 0 ).headerComment() ).isNotNull();
-         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains( "# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
+         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains(
+               "# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
       } ).doesNotThrowAnyException();
    }
 
@@ -133,7 +135,8 @@ public class AspectModelResolverTest {
          final Resource aspect = createResource( testUrn.toString() );
          assertThat( result.mergedModel().listStatements( aspect, RDF.type, SammNs.SAMM.Aspect() ).nextOptional() ).isNotEmpty();
          assertThat( result.files().get( 0 ).headerComment() ).isNotNull();
-         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains( "# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
+         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains(
+               "# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
       } ).doesNotThrowAnyException();
    }
 
@@ -151,7 +154,8 @@ public class AspectModelResolverTest {
          final Resource aspect = createResource( testUrn.toString() );
          assertThat( result.mergedModel().listStatements( aspect, RDF.type, SammNs.SAMM.Aspect() ).nextOptional() ).isNotEmpty();
          assertThat( result.files().get( 0 ).headerComment() ).isNotNull();
-         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains( "# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
+         assertThat( result.files().get( 0 ).headerComment().get( 0 ) ).contains(
+               "# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
 
          final Resource propertyFromReferencedAspect = createResource( TestModel.TEST_NAMESPACE + "foo" );
          assertThat( result.mergedModel().listStatements( propertyFromReferencedAspect, RDF.type, SammNs.SAMM.Property() )

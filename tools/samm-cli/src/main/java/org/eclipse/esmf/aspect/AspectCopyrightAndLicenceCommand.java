@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectCopyrightAndLicenceCommand.COMMAND_NAME,
-      description = "Get copyright and licence of a Model",
+      description = "Get copyright and license of a Model",
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
