@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
@@ -42,7 +43,6 @@ import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.datatype.LangString;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
@@ -251,8 +251,7 @@ public class AspectModelJacksonModuleTest {
    private String loadJsonPayload( final TestAspect model, final String payloadName ) throws IOException {
       final AspectModelUrn modelUrn = model.getUrn();
       final URL jsonUrl = getClass().getResource(
-            String.format( "/%s/%s/%s/%s.json", KnownVersion.getLatest().toString().toLowerCase(),
-                  modelUrn.getNamespace(), modelUrn.getVersion(), payloadName ) );
+            String.format( "/%s/%s/%s.json", modelUrn.getNamespace(), modelUrn.getVersion(), payloadName ) );
       return Resources.toString( jsonUrl, StandardCharsets.UTF_8 );
    }
 
