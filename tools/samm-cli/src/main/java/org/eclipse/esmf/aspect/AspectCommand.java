@@ -25,8 +25,7 @@ import picocli.CommandLine;
             CommandLine.HelpCommand.class,
             AspectToCommand.class,
             AspectPrettyPrintCommand.class,
-            AspectValidateCommand.class,
-            AspectCopyrightAndLicenceCommand.class
+            AspectValidateCommand.class
       },
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",

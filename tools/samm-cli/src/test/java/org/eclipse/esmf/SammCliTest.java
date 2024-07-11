@@ -1048,12 +1048,6 @@ class SammCliTest {
       assertThat( result.stderr() ).isEmpty();
    }
 
-   @Test
-   void testAspectLicenceCommand() {
-      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "licence" );
-      assertThat( result.stdout() ).contains( "# Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH" );
-   }
-
    /**
     * Returns the File object for a test model file
     */
