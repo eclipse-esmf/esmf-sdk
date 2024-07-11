@@ -19,13 +19,16 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -227,7 +230,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          return false;
       }
       final Trait trait = characteristic.as( Trait.class );
-      return trait.getBaseCharacteristic().is( Collection.class ) && ( !trait.getConstraints().isEmpty() );
+      return trait.getBaseCharacteristic().is( Collection.class ) && (!trait.getConstraints().isEmpty());
    }
 
    private Map<String, Object> transformAbstractEntityProperty( final BasicProperty property, final boolean useModelExampleValue ) {
@@ -296,7 +299,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
       Optional<Characteristic> elementCharacteristics = Optional.empty();
       if ( characteristic.is( Collection.class ) ) {
-         elementCharacteristics = ( (Collection) characteristic ).getElementCharacteristic();
+         elementCharacteristics = ((Collection) characteristic).getElementCharacteristic();
       }
       final Characteristic effectiveCharacteristics = elementCharacteristics.orElse( characteristic );
 
@@ -306,7 +309,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
       return property.getExampleValue()
             .map( exampleValue -> exampleValue.as( ScalarValue.class ).getValue() )
-            .map( value -> value instanceof Curie ? ( (Curie) value ).value() : value )
+            .map( value -> value instanceof Curie ? ((Curie) value).value() : value )
             .orElseGet( () -> generateExampleValue( effectiveCharacteristics ) );
    }
 
@@ -432,7 +435,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
       private Object generateExampleValue( final Characteristic characteristic ) {
          final Type dataType = getDataType( characteristic );
 
-         if ( !( dataType.is( Scalar.class ) ) ) {
+         if ( !(dataType.is( Scalar.class )) ) {
             throw new IllegalArgumentException( "Example values can only be generated for scalar types." );
          }
 
@@ -451,6 +454,9 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          }
          if ( Duration.class.equals( exampleValueType ) ) {
             return DatatypeFactory.newDefaultInstance().newDuration( defaultEasyRandom.nextLong() );
+         }
+         if ( byte[].class.equals( exampleValueType ) ) {
+            return getBinaryRandomValue( dataType );
          }
 
          if ( characteristic.is( Trait.class ) ) {
@@ -485,6 +491,13 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
             }
          }
          return Optional.empty();
+      }
+
+      private Object getBinaryRandomValue( final Type dataType ) {
+         final byte[] value = defaultEasyRandom.nextObject( String.class ).getBytes( StandardCharsets.UTF_8 );
+         return dataType.getUrn().equals( XSD.base64Binary.getURI() )
+               ? Base64.getEncoder().encodeToString( value )
+               : HexFormat.of().formatHex( value );
       }
 
       private Object getGregorianRandomValue( final Type dataType ) {
@@ -574,7 +587,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
 
       // narrowing conversion from BigDecimal to double
       private double safelyNarrowDown( final Number bound ) {
-         if ( !( BigDecimal.class.equals( bound.getClass() ) ) ) {
+         if ( !(BigDecimal.class.equals( bound.getClass() )) ) {
             return bound.doubleValue();
          }
 
@@ -583,7 +596,7 @@ public class AspectModelJsonPayloadGenerator extends AbstractGenerator {
          // Example: xsd:unsignedLong has a max. value of 18446744073709551615; when converting it to double
          // it will get represented as 1.8446744073709552E16, thereby exceeding the upper bound.
          // Therefore we need to take care of always rounding down when narrowing to double.
-         final BigDecimal narrowed = ( (BigDecimal) bound ).round( new MathContext( 15, RoundingMode.DOWN ) );
+         final BigDecimal narrowed = ((BigDecimal) bound).round( new MathContext( 15, RoundingMode.DOWN ) );
          return narrowed.doubleValue();
       }
 

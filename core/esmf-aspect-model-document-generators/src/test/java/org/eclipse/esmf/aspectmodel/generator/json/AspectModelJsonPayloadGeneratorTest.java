@@ -13,15 +13,19 @@
 package org.eclipse.esmf.aspectmodel.generator.json;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -32,6 +36,7 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+import java.util.stream.Stream;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -76,6 +81,10 @@ import org.eclipse.esmf.aspectmodel.generator.json.testclasses.Id;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.NestedEntity;
 import org.eclipse.esmf.aspectmodel.generator.json.testclasses.TestEntityWithSimpleTypes;
 import org.eclipse.esmf.aspectmodel.jackson.AspectModelJacksonModule;
+import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
+import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfigBuilder;
+import org.eclipse.esmf.aspectmodel.java.QualifiedName;
+import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -99,7 +108,9 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
+import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -116,9 +127,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class AspectModelJsonPayloadGeneratorTest {
+   private static final String PACKAGE = "org.eclipse.esmf.test.generatedtestclasses";
    private static DatatypeFactory datatypeFactory;
 
    @BeforeAll
@@ -128,6 +141,51 @@ public class AspectModelJsonPayloadGeneratorTest {
       } catch ( final DatatypeConfigurationException exception ) {
          throw new RuntimeException( exception );
       }
+   }
+
+   @ParameterizedTest
+   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
+         "MODEL_WITH_BROKEN_CYCLES"
+   } )
+   public void testDeserializationForGeneratedJson( final TestAspect testAspect ) throws IOException, InterruptedException {
+      final Aspect aspect = TestResources.load( testAspect ).aspect();
+      final JavaCompiler.CompilationResult compilationResult = compile( aspect );
+
+      final Class<?> aspectClass = compilationResult.compilationUnits().entrySet().stream()
+            .filter( entry -> entry.getKey().getClassName().equals( aspect.getName() ) )
+            .map( Map.Entry::getValue )
+            .findFirst()
+            .orElseThrow();
+      assertThatCode( () -> {
+         final String payload = new AspectModelJsonPayloadGenerator( aspect ).generateJson();
+         final ObjectMapper mapper = objectMapper();
+         mapper.setTypeFactory( mapper.getTypeFactory().withClassLoader( compilationResult.classLoader() ) );
+         mapper.readValue( payload, aspectClass );
+      } ).doesNotThrowAnyException();
+   }
+
+   private JavaCompiler.CompilationResult compile( final Aspect aspect ) {
+      final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
+            .packageName( PACKAGE )
+            .enableJacksonAnnotations( true )
+            .executeLibraryMacros( false )
+            .build();
+      final AspectModelJavaGenerator codeGenerator = new AspectModelJavaGenerator( aspect, config );
+      final Map<QualifiedName, ByteArrayOutputStream> outputs = new LinkedHashMap<>();
+      codeGenerator.generate( name -> outputs.computeIfAbsent( name, name2 -> new ByteArrayOutputStream() ) );
+
+      final Map<QualifiedName, String> sources = new LinkedHashMap<>();
+      final List<QualifiedName> loadOrder = new ArrayList<>();
+      for ( final Map.Entry<QualifiedName, ByteArrayOutputStream> entry : outputs.entrySet() ) {
+         loadOrder.add( entry.getKey() );
+         sources.put( entry.getKey(), entry.getValue().toString( StandardCharsets.UTF_8 ) );
+      }
+
+      final List<String> referencedClasses = Stream
+            .concat( codeGenerator.getConfig().importTracker().getUsedImports().stream(),
+                  codeGenerator.getConfig().importTracker().getUsedStaticImports().stream() )
+            .collect( Collectors.toList() );
+      return JavaCompiler.compile( loadOrder, sources, referencedClasses );
    }
 
    @Test
@@ -613,14 +671,19 @@ public class AspectModelJsonPayloadGeneratorTest {
       assertThat( testEntityWithSimpleTypes.getTestString() ).isEqualTo( "Example Value Test" );
    }
 
-   private <T> T parseJson( final String json, final Class<T> targetClass ) throws IOException {
+   private ObjectMapper objectMapper() {
       final ObjectMapper mapper = new ObjectMapper();
       mapper.registerModule( new JavaTimeModule() );
       mapper.registerModule( new Jdk8Module() );
       mapper.registerModule( new AspectModelJacksonModule() );
+      mapper.configure( JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION, true );
       mapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
       mapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
-      return mapper.readValue( json, targetClass );
+      return mapper;
+   }
+
+   private <T> T parseJson( final String json, final Class<T> targetClass ) throws IOException {
+      return objectMapper().readValue( json, targetClass );
    }
 
    // combination of all numeric meta model types with various range types

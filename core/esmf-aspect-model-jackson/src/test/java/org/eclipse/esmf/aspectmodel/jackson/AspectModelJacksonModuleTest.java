@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.esmf.aspectmodel.java.JavaCodeGenerationConfig;
@@ -276,7 +275,7 @@ public class AspectModelJacksonModuleTest {
             .concat( codeGenerator.getConfig().importTracker().getUsedImports().stream(),
                   codeGenerator.getConfig().importTracker().getUsedStaticImports().stream() )
             .collect( Collectors.toList() );
-      final Map<QualifiedName, Class<?>> result = JavaCompiler.compile( loadOrder, sources, referencedClasses );
+      final Map<QualifiedName, Class<?>> result = JavaCompiler.compile( loadOrder, sources, referencedClasses ).compilationUnits();
       return result.get( new QualifiedName( aspect.getName(), codeGenerator.getConfig().packageName() ) );
    }
 
