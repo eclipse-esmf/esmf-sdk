@@ -250,7 +250,7 @@ public class SammXsdType<T> extends XSDDatatype implements SammType<T> {
                G_YEAR, G_MONTH, G_YEAR_MONTH, G_DAY, G_MONTH_DAY, DURATION, YEAR_MONTH_DURATION, DAY_TIME_DURATION,
                BYTE, SHORT, INT, LONG, UNSIGNED_BYTE, UNSIGNED_SHORT, UNSIGNED_INT, UNSIGNED_LONG,
                POSITIVE_INTEGER, NON_NEGATIVE_INTEGER, NEGATIVE_INTEGER, NON_POSITIVE_INTEGER, HEX_BINARY,
-               BASE64_BINARY, ANY_URI, RDFLangString.rdfLangString, new CurieType() );
+               BASE64_BINARY, ANY_URI, RDFLangString.rdfLangString, CurieType.INSTANCE );
 
    public static void setChecking( final boolean checking ) {
       SammXsdType.checking = checking;

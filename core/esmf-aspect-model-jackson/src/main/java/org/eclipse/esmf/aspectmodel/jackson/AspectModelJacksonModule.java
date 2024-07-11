@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel.jackson;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.eclipse.esmf.metamodel.datatype.Curie;
 import org.eclipse.esmf.metamodel.datatype.LangString;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -32,7 +33,9 @@ public class AspectModelJacksonModule extends SimpleModule {
       addDeserializer( byte[].class, HexBinaryDeserializer.INSTANCE );
       addSerializer( byte[].class, Base64BinarySerializer.INSTANCE );
       addDeserializer( byte[].class, Base64BinaryDeserializer.INSTANCE );
-      addDeserializer( LangString.class, LangStringDeserializer.INSTANCE );
       addSerializer( LangString.class, LangStringSerializer.INSTANCE );
+      addDeserializer( LangString.class, LangStringDeserializer.INSTANCE );
+      addSerializer( Curie.class, CurieSerializer.INSTANCE );
+      addDeserializer( Curie.class, CurieDeserializer.INSTANCE );
    }
 }

@@ -1,7 +1,0 @@
-{
-  "dateTimeProperty": "2018-08-08T12:00:00.0000+01:00",
-  "dateProperty": "2019-01-02",
-  "unsignedLongProperty": 42,
-  "base64BinaryProperty": "VGhpcyBpcyBhIHRlc3Q=",
-  "hexBinaryProperty": "5468697320697320612074657374"
-}
