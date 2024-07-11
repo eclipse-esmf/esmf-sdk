@@ -79,7 +79,7 @@ public class TestContext {
                         generator.getConfig().importTracker().getUsedStaticImports().stream() ) )
             .collect( Collectors.toList() );
 
-      return JavaCompiler.compile( loadOrder, sources, referencedClasses );
+      return JavaCompiler.compile( loadOrder, sources, referencedClasses ).compilationUnits();
    }
 
    private static void writeFile( final String className, final byte[] content, final File targetDirectory ) {

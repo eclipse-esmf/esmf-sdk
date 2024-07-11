@@ -937,7 +937,8 @@ public class AspectModelJavaGeneratorTest {
             Collections.emptyList(), Collections.emptyList(), List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
                   "@JsonSubTypes({ @JsonSubTypes.Type(value = ExtendingTestEntity.class, name = \"ExtendingTestEntity\") })" ) );
       result.assertClassDeclaration( "ExtendingTestEntity", Collections.emptyList(),
-            Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(), Collections.emptyList() );
+            Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(),
+            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, defaultImpl = ExtendingTestEntity.class)" ) );
    }
 
    @Test
@@ -979,7 +980,8 @@ public class AspectModelJavaGeneratorTest {
             List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)",
                   "@JsonSubTypes({ @JsonSubTypes.Type(value = ExtendingTestEntity.class, name = \"ExtendingTestEntity\") })" ) );
       result.assertClassDeclaration( "ExtendingTestEntity", Collections.emptyList(),
-            Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(), Collections.emptyList() );
+            Collections.singletonList( "AbstractTestEntity" ), Collections.emptyList(),
+            List.of( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, defaultImpl = ExtendingTestEntity.class)" ) );
    }
 
    @Test
