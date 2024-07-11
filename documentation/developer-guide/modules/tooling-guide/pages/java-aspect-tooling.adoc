@@ -113,20 +113,20 @@ this is better done using the RDF API.
 
 To load an AspectModel, you use the `org.eclipse.esmf.aspectmodel.loader.AspectModelLoader` class. An instance
 of `AspectModelLoader` provides `load()` methods to load an Aspect Model from an InputStream, one or multiple
-Files, or a number of `AspectModelUrn`s (where you can delegate finding out _where_ a model element is defined
+Files, or a number of `AspectModelUrn` (where you can delegate finding out _where_ a model element is defined
 to the AspectModelLoader - details on that are explained in the next section).
 
 The `AspectModelLoader` loads Aspect Models based on the most recent version of the Semantic Aspect Meta Model
 and previous versions: Models based on older meta model versions are automatically translated to models
 corresponding to the latest meta model version.
 
-The resulting `AspectModel` object contains information about the loaded model elements, their namespaces and
-the files they were defined in. Details about the structure of these objects can be found in the [Decision
-Record
-0007](https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0007-model-resolution.md).
-The `AspectModel` provides the methods `elements()`, `files()` and `namespaces()` as well as the convenience
-methods `aspects()` (which returns all Aspect elements in the model) and `aspect()`, which returns the single
-Aspect element if one exists.
+The resulting `AspectModel` object contains information about the loaded model elements, their
+namespaces and the files they were defined in. Details about the structure of these objects can be
+found in the
+https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0007-model-resolution.md[Decision
+Record 0007]. The `AspectModel` provides the methods `elements()`, `files()` and `namespaces()` as
+well as the convenience methods `aspects()` (which returns all Aspect elements in the model) and
+`aspect()`, which returns the single Aspect element if one exists.
 
 ++++
 <details>
