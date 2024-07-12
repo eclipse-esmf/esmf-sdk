@@ -1,6 +1,6 @@
 name: esmf-developer-guide
 title: ESMF SDK Developer Guide
-version: '2.9.0'
+version: '2.9.1'
 start_page: ROOT:index.adoc
 nav:
   - modules/tooling-guide/nav.adoc
