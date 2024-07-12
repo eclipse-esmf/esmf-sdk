@@ -13,14 +13,14 @@
 
 package org.eclipse.esmf.aspectmodel;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
@@ -59,35 +59,37 @@ public abstract class AspectModelMojo extends AbstractMojo {
    }
 
    protected Set<Aspect> loadAspects() throws MojoExecutionException {
-      Set<AspectModel> models = loadModels();
-      return models.stream().map( AspectModel::aspect ).collect( toSet() );
+      return new HashSet<>( loadAspectModels().values() );
    }
 
    protected Set<AspectModel> loadModels() throws MojoExecutionException {
-      try {
-         final Path modelsRoot = Path.of( modelsRootDirectory );
-         final ResolutionStrategy fileSystemStrategy = new FileSystemStrategy( modelsRoot );
-         final Set<AspectModel> result = new HashSet<>();
+      return new HashSet<>( loadAspectModels().keySet() );
+   }
 
-         for ( final String inputUrn : includes ) {
-            final AspectModelUrn urn = AspectModelUrn.fromUrn( inputUrn );
-            final Either<List<Violation>, AspectModel> loadingResult = new AspectModelValidator().loadModel( () ->
-                  new AspectModelLoader( fileSystemStrategy ).load( urn ) );
-            if ( loadingResult.isLeft() ) {
-               final List<Violation> violations = loadingResult.getLeft();
-               final String errorMessage = detailedValidationMessages
-                     ? new DetailedViolationFormatter().apply( violations )
-                     : new ViolationFormatter().apply( violations );
-               throw new MojoExecutionException( errorMessage );
-            }
-            result.add( loadingResult.get() );
+   private Map<AspectModel, Aspect> loadAspectModels() throws MojoExecutionException {
+      final Path modelsRoot = Path.of( modelsRootDirectory );
+      final ResolutionStrategy fileSystemStrategy = new FileSystemStrategy( modelsRoot );
+      final Map<AspectModel, Aspect> result = new HashMap<>();
+
+      for ( final String inputUrn : includes ) {
+         final AspectModelUrn urn = AspectModelUrn.fromUrn( inputUrn );
+         final Either<List<Violation>, AspectModel> loadingResult = new AspectModelValidator().loadModel( () ->
+               new AspectModelLoader( fileSystemStrategy ).load( urn ) );
+         if ( loadingResult.isLeft() ) {
+            final List<Violation> violations = loadingResult.getLeft();
+            final String errorMessage = detailedValidationMessages
+                  ? new DetailedViolationFormatter().apply( violations )
+                  : new ViolationFormatter().apply( violations );
+            throw new MojoExecutionException( errorMessage );
          }
-         return result;
-      } catch ( final MojoExecutionException exception ) {
-         throw exception;
-      } catch ( final Throwable throwable ) {
-         throw new MojoExecutionException( "Processing error while loading Aspects", throwable );
+         final AspectModel aspectModel = loadingResult.get();
+         final Aspect aspect = aspectModel.aspects().stream()
+               .filter( theAspect -> theAspect.urn().equals( urn ) )
+               .findFirst()
+               .orElseThrow( () -> new MojoExecutionException( "Loaded Aspect Model does not contain Aspect " + urn ) );
+         result.put( aspectModel, aspect );
       }
+      return result;
    }
 
    protected FileOutputStream getOutputStreamForFile( final String artifactName, final String outputDirectory ) {
