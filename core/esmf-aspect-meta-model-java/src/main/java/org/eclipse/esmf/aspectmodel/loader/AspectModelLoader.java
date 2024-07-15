@@ -181,8 +181,8 @@ public class AspectModelLoader implements ResolutionStrategySupport {
    public AspectModel loadFromArchive( final String pathToArchive ) {
       File zipFile = new File( pathToArchive );
 
-      if (!zipFile.exists() || !zipFile.isFile()) {
-         throw new RuntimeException(new FileNotFoundException("The specified file does not exist or is not a file."));
+      if ( !zipFile.exists() || !zipFile.isFile() ) {
+         throw new RuntimeException( new FileNotFoundException( "The specified file does not exist or is not a file." ) );
       }
 
       List<AspectModelFile> aspectModelFiles = new ArrayList<>();
