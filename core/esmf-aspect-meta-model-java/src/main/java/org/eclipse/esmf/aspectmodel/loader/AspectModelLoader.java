@@ -16,12 +16,15 @@ package org.eclipse.esmf.aspectmodel.loader;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +33,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
@@ -171,6 +176,38 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       final LoaderContext loaderContext = new LoaderContext();
       resolve( List.of( migratedModel ), loaderContext );
       return buildAspectModel( loaderContext.loadedFiles() );
+   }
+
+   public AspectModel loadFromArchive( final String pathToArchive ) {
+      File zipFile = new File( pathToArchive );
+
+      if (!zipFile.exists() || !zipFile.isFile()) {
+         throw new RuntimeException(new FileNotFoundException("The specified file does not exist or is not a file."));
+      }
+
+      List<AspectModelFile> aspectModelFiles = new ArrayList<>();
+
+      try ( ZipFile zip = new ZipFile( zipFile ) ) {
+         Enumeration<? extends ZipEntry> entries = zip.entries();
+
+         while ( entries.hasMoreElements() ) {
+            ZipEntry entry = entries.nextElement();
+            System.out.println( entry.getName() ); // Consider removing or modifying this debug statement in production.
+
+            if ( entry.getName().endsWith( ".ttl" ) ) {
+               try ( InputStream inputStream = zip.getInputStream( entry ) ) {
+                  AspectModelFile aspectModelFile = AspectModelFileLoader.load( inputStream );
+                  aspectModelFiles.add( aspectModelFile );
+               } catch ( IOException e ) {
+                  System.err.println( "Error reading entry: " + entry.getName() + " - " + e.getMessage() );
+               }
+            }
+         }
+      } catch ( IOException e ) {
+         System.err.println( "Error reading the ZIP file: " + e.getMessage() );
+      }
+
+      return buildAspectModel( aspectModelFiles );
    }
 
    private AspectModelFile migrate( final AspectModelFile file ) {

@@ -44,7 +44,7 @@ public class DefaultNamespace implements Namespace {
     * @param elements the list of elements in the namspace
     */
    public DefaultNamespace( final String uri, final List<ModelElement> elements, final Optional<AspectModelFile> source ) {
-      this( uri.split( ":" )[2], VersionNumber.parse( uri.split( ":" )[3] ), elements, source );
+      this( uri.split( ":" )[2], VersionNumber.parse( uri.split( ":" )[3].replace( "#", "" ) ), elements, source );
    }
 
    //   /**
