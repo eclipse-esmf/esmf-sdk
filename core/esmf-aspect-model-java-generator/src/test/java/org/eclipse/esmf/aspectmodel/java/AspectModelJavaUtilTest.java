@@ -64,7 +64,7 @@ public class AspectModelJavaUtilTest extends PropertyBasedTest {
             Arguments.arguments( "SOME_ENUM", "SOME_ENUM" ),
             Arguments.arguments( "SomeEnum", "SOME_ENUM" ),
             Arguments.arguments( "aB", "A_B" ),
-            Arguments.arguments( "aBc", "A_B_C" ),
+            Arguments.arguments( "aBc", "AB_C" ),
             Arguments.arguments( "a_b_c", "A_B_C" )
       );
    }
