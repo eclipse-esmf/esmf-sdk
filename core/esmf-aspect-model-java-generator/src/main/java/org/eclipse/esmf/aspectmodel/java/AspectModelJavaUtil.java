@@ -26,13 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.commons.text.translate.UnicodeUnescaper;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.XSD;
 import org.eclipse.esmf.aspectmodel.java.exception.CodeGenerationException;
 import org.eclipse.esmf.aspectmodel.visitor.AspectStreamTraversalVisitor;
 import org.eclipse.esmf.metamodel.AbstractEntity;
@@ -58,6 +51,13 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.translate.UnicodeUnescaper;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.XSD;
 
 public class AspectModelJavaUtil {
 
