@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.test.shared.arbitraries.PropertyBasedTest;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
