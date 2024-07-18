@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.java;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -20,7 +22,6 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.test.shared.arbitraries.PropertyBasedTest;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -53,7 +54,7 @@ public class AspectModelJavaUtilTest extends PropertyBasedTest {
    @MethodSource
    void generatedEnumKeysAreExpectedEnumNames( final String enumValueName, final String expectedEnumValueName ) {
       final String result = AspectModelJavaUtil.toConstant( enumValueName );
-      Assertions.assertThat( result ).isEqualTo( expectedEnumValueName );
+      assertThat( result ).isEqualTo( expectedEnumValueName );
    }
 
    static Stream<Arguments> generatedEnumKeysAreExpectedEnumNames() {
