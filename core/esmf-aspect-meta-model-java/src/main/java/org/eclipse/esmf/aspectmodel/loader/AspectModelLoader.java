@@ -192,19 +192,18 @@ public class AspectModelLoader implements ResolutionStrategySupport {
 
          while ( entries.hasMoreElements() ) {
             ZipEntry entry = entries.nextElement();
-            System.out.println( entry.getName() ); // Consider removing or modifying this debug statement in production.
 
             if ( entry.getName().endsWith( ".ttl" ) ) {
                try ( InputStream inputStream = zip.getInputStream( entry ) ) {
                   AspectModelFile aspectModelFile = AspectModelFileLoader.load( inputStream );
                   aspectModelFiles.add( aspectModelFile );
                } catch ( IOException e ) {
-                  System.err.println( "Error reading entry: " + entry.getName() + " - " + e.getMessage() );
+                  LOG.error( String.format( "Error reading entry: %s - %s", entry.getName(), e.getMessage() ) );
                }
             }
          }
       } catch ( IOException e ) {
-         System.err.println( "Error reading the ZIP file: " + e.getMessage() );
+         LOG.error( String.format( "Error reading the ZIP file: %s", e.getMessage() ) );
       }
 
       return buildAspectModel( aspectModelFiles );
