@@ -344,11 +344,18 @@ public class AspectModelJavaUtil {
     * Convert a string given as upper or lower camel case into a constant format. For example {@code someVariable} would become
     * {@code SOME_VARIABLE}.
     *
-    * @param upperOrLowerCamelString the string to convert
+    * @param upperOrLowerCamel the string to convert
     * @return the string formatted as a constant.
     */
-   public static String toConstant( final String upperOrLowerCamelString ) {
-      return TO_CONSTANT.convert( StringUtils.capitalize( upperOrLowerCamelString ) );
+   public static String toConstant( final String upperOrLowerCamel ) {
+      if ( isAllUppercaseWithUnderscore( upperOrLowerCamel ) ) {
+         return upperOrLowerCamel;
+      }
+      return TO_CONSTANT.convert( StringUtils.capitalize( upperOrLowerCamel ) );
+   }
+   
+   public static boolean isAllUppercaseWithUnderscore( final String upperOrLowerCamel ) {
+      return upperOrLowerCamel != null && upperOrLowerCamel.matches( "[A-Z0-9_]+" );
    }
 
    /**
