@@ -34,7 +34,7 @@ public class Validate extends AspectModelMojo {
    private final AspectModelValidator validator = new AspectModelValidator();
 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
       final Set<AspectModel> aspectModels = loadModels();

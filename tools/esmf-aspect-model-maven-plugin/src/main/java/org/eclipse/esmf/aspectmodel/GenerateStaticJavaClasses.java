@@ -33,7 +33,7 @@ public class GenerateStaticJavaClasses extends CodeGenerationMojo {
    private static final Logger LOG = LoggerFactory.getLogger( GenerateStaticJavaClasses.class );
 
    @Override
-   public void execute() throws MojoExecutionException {
+   public void executeGeneration() throws MojoExecutionException {
       final Set<Aspect> aspects = loadAspects();
       for ( final Aspect aspect : aspects ) {
          final File templateLibFile = Path.of( templateFile ).toFile();
