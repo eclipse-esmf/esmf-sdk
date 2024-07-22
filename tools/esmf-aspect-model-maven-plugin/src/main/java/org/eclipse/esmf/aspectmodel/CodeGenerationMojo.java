@@ -25,7 +25,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class CodeGenerationMojo extends AspectModelMojo {
-
+ 
    @Parameter
    protected String packageName = "";
 

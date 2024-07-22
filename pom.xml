@@ -245,31 +245,5 @@
          <version>[4.8.0,)</version>
       </dependency>
    </dependencies>
-
-   <build>
-      <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <executions>
-               <execution>
-                  <id>esmf-enforce-graalvm</id>
-                  <goals>
-                     <goal>enforce</goal>
-                  </goals>
-                  <configuration>
-                     <rules>
-                        <requireProperty>
-                           <property>java.vendor.version</property>
-                           <message>Could not determine JDK vendor version (java.vendor.version property)</message>
-                           <regex>.*GraalVM.*</regex>
-                           <regexMessage>A GraalVM JDK is required to build this project</regexMessage>
-                        </requireProperty>
-                     </rules>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
-      </plugins>
-   </build>
+   
 </project>

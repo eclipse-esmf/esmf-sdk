@@ -56,4 +56,13 @@ public class GenerateJavaClassesTest extends AspectModelMojoTest {
             .isInstanceOf( MojoExecutionException.class )
             .hasMessage( "Missing configuration. Valid path to velocity template library file must be provided." );
    }
+
+   @Test
+   public void testSkipGenerateJavaClassesValidAspectModel() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/skip-generate-java-classes.xml" );
+      final Mojo generateJavaClasses = lookupMojo( "generateJavaClasses", testPom );
+      assertThatCode( generateJavaClasses::execute ).doesNotThrowAnyException();
+      assertThat( generatedFilePath( "org", "eclipse", "esmf", "test", "Aspect.java" ) ).doesNotExist();
+   }
+
 }

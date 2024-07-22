@@ -33,9 +33,9 @@ public class PrettyPrint extends AspectModelMojo {
    private final Logger logger = LoggerFactory.getLogger( PrettyPrint.class );
 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
-
+      
       final Map<AspectModelUrn, VersionedModel> aspectModels = loadButNotResolveModels();
       for ( final Map.Entry<AspectModelUrn, VersionedModel> aspectModelEntry : aspectModels.entrySet() ) {
          final AspectModelUrn aspectModelUrn = aspectModelEntry.getKey();

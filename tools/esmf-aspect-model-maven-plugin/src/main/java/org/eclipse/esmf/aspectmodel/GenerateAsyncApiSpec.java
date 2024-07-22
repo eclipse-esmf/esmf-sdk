@@ -36,11 +36,11 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
    private static final ObjectMapper YAML_MAPPER = new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES );
    private static final Logger LOG = LoggerFactory.getLogger( GenerateAsyncApiSpec.class );
-
+ 
    private final AspectModelAsyncApiGenerator generator = new AspectModelAsyncApiGenerator();
 
    @Parameter( required = true )
-   private String outputFormat = "";
+   private final String outputFormat = "";
 
    @Parameter( defaultValue = "false" )
    private boolean separateFiles;
@@ -58,7 +58,7 @@ public class GenerateAsyncApiSpec extends AspectModelMojo {
    private String language;
 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       final Set<AspectContext> aspectModels = loadModelsOrFail();
       final Locale locale = Optional.ofNullable( language ).map( Locale::forLanguageTag ).orElse( Locale.ENGLISH );
       final ApiFormat format = Try.of( () -> ApiFormat.valueOf( outputFormat.toUpperCase() ) )

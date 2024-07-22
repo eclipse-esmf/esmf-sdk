@@ -43,7 +43,7 @@ public class GenerateJsonSchema extends AspectModelMojo {
    private String language;
 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
       final Set<AspectContext> aspectModels = loadModelsOrFail();

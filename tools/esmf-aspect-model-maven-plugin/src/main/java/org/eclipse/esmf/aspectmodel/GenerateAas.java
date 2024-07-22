@@ -30,9 +30,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 public class GenerateAas extends AspectModelMojo {
    @Parameter( required = true, property = "targetFormat" )
    private String targetFormat;
-
+ 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
       final Set<AspectContext> aspectModels = loadModelsOrFail();
       final AspectModelAasGenerator generator = new AspectModelAasGenerator();

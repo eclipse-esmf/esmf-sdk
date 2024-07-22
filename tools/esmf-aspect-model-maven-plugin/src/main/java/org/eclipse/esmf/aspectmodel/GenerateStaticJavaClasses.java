@@ -31,11 +31,11 @@ import org.slf4j.LoggerFactory;
 
 @Mojo( name = "generateStaticJavaClasses", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateStaticJavaClasses extends CodeGenerationMojo {
-
+ 
    private final Logger logger = LoggerFactory.getLogger( GenerateStaticJavaClasses.class );
 
    @Override
-   public void execute() throws MojoExecutionException {
+   public void executeGeneration() throws MojoExecutionException {
       final Set<AspectContext> aspectModels = loadModelsOrFail();
       for ( final AspectContext context : aspectModels ) {
          final Aspect aspect = context.aspect();

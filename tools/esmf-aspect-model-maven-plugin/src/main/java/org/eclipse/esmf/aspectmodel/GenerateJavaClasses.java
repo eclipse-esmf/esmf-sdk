@@ -39,7 +39,7 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
    private boolean disableJacksonAnnotations;
 
    @Override
-   public void execute() throws MojoExecutionException {
+   public void executeGeneration() throws MojoExecutionException {
       final Set<AspectContext> aspectModels = loadModelsOrFail();
       for ( final AspectContext context : aspectModels ) {
          final Aspect aspect = context.aspect();

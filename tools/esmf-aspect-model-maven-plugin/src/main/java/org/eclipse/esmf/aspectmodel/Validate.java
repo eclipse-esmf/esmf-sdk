@@ -36,9 +36,9 @@ public class Validate extends AspectModelMojo {
    private final AspectModelValidator validator = new AspectModelValidator();
 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
-
+      
       final Set<Try<AspectContext>> resolvedModels = loadAndResolveModels();
       for ( final Try<AspectContext> context : resolvedModels ) {
          final List<Violation> violations = validator.validateModel( context.map( AspectContext::rdfModel ) );

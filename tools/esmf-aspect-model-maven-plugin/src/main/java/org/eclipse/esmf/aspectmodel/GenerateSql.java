@@ -64,7 +64,7 @@ public class GenerateSql extends AspectModelMojo {
    private List<String> customColumns = List.of();
 
    @Override
-   public void execute() throws MojoExecutionException {
+   public void executeGeneration() throws MojoExecutionException {
       validateParameters();
 
       final List<DatabricksColumnDefinition> customColumnDefinitions = customColumns.stream()
