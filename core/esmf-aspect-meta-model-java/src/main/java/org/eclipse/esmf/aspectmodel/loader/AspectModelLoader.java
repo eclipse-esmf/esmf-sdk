@@ -15,7 +15,10 @@ package org.eclipse.esmf.aspectmodel.loader;
 
 import static java.util.stream.Collectors.toSet;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +27,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +36,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
@@ -71,6 +73,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AspectModelLoader implements ResolutionStrategySupport {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
+   private static final String ASPECT_MODELS_FOLDER = "aspect-models";
 
    public static final Supplier<ResolutionStrategy> DEFAULT_STRATEGY = () -> {
       final Path currentDirectory = Path.of( System.getProperty( "user.dir" ) );
@@ -178,35 +181,87 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       return buildAspectModel( loaderContext.loadedFiles() );
    }
 
-   public AspectModel loadFromArchive( final String pathToArchive ) {
-      File zipFile = new File( pathToArchive );
+   @FunctionalInterface
+   public interface InputStreamProvider {
+      InputStream get() throws IOException;
+   }
 
-      if ( !zipFile.exists() || !zipFile.isFile() ) {
+   /**
+    * Load Namespace Package (Archive) an Aspect Model from a File
+    *
+    * @param namespacePackage the archive file
+    * @return the Aspect Model
+    */
+   public AspectModel loadNamespacePackage( final File namespacePackage ) {
+      if ( !namespacePackage.exists() || !namespacePackage.isFile() ) {
          throw new RuntimeException( new FileNotFoundException( "The specified file does not exist or is not a file." ) );
       }
 
+      try ( InputStream inputStream = new FileInputStream( namespacePackage ) ) {
+         return loadNamespacePackage( inputStream );
+      } catch ( IOException e ) {
+         LOG.error( "Error reading the file: {}", namespacePackage.getAbsolutePath(), e );
+         throw new RuntimeException( "Error reading the file: " + namespacePackage.getAbsolutePath(), e );
+      }
+   }
+
+   /**
+    * Load Namespace Package (Archive) an Aspect Model from an InputStream
+    *
+    * @param inputStream the input stream
+    * @return the Aspect Model
+    */
+   public AspectModel loadNamespacePackage( final InputStream inputStream ) {
+      final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      try {
+         inputStream.transferTo( baos );
+      } catch ( IOException e ) {
+         throw new RuntimeException( e );
+      }
+      final boolean hasAspectModelsFolder = containsFolderInNamespacePackage( new ByteArrayInputStream( baos.toByteArray() ) );
+      return loadNamespacePackageFromStream( new ByteArrayInputStream( baos.toByteArray() ), hasAspectModelsFolder );
+   }
+
+   private AspectModel loadNamespacePackageFromStream( final InputStream inputStream, final boolean hasAspectModelsFolder ) {
       List<AspectModelFile> aspectModelFiles = new ArrayList<>();
 
-      try ( ZipFile zip = new ZipFile( zipFile ) ) {
-         Enumeration<? extends ZipEntry> entries = zip.entries();
+      try ( ZipInputStream zis = new ZipInputStream( inputStream ) ) {
+         ZipEntry entry;
 
-         while ( entries.hasMoreElements() ) {
-            ZipEntry entry = entries.nextElement();
+         while ( (entry = zis.getNextEntry()) != null ) {
+            boolean isRelevantEntry =
+                  (hasAspectModelsFolder && entry.getName().startsWith( ASPECT_MODELS_FOLDER ) && entry.getName().endsWith( ".ttl" )) ||
+                        (!hasAspectModelsFolder && entry.getName().endsWith( ".ttl" ));
 
-            if ( entry.getName().endsWith( ".ttl" ) ) {
-               try ( InputStream inputStream = zip.getInputStream( entry ) ) {
-                  AspectModelFile aspectModelFile = AspectModelFileLoader.load( inputStream );
-                  aspectModelFiles.add( aspectModelFile );
-               } catch ( IOException e ) {
-                  LOG.error( String.format( "Error reading entry: %s - %s", entry.getName(), e.getMessage() ) );
-               }
+            if ( isRelevantEntry ) {
+               AspectModelFile aspectModelFile = migrate( AspectModelFileLoader.load( zis ) );
+               aspectModelFiles.add( aspectModelFile );
+            }
+         }
+
+         zis.closeEntry();
+      } catch ( IOException e ) {
+         LOG.error( "Error reading the Archive input stream", e );
+         throw new RuntimeException( "Error reading the Archive input stream", e );
+      }
+
+      LoaderContext loaderContext = new LoaderContext();
+      resolve( aspectModelFiles, loaderContext );
+      return buildAspectModel( aspectModelFiles );
+   }
+
+   private boolean containsFolderInNamespacePackage( final InputStream inputStream ) {
+      try ( ZipInputStream zis = new ZipInputStream( inputStream ) ) {
+         ZipEntry entry;
+         while ( (entry = zis.getNextEntry()) != null ) {
+            if ( entry.isDirectory() && entry.getName().equals( ASPECT_MODELS_FOLDER ) ) {
+               return true;
             }
          }
       } catch ( IOException e ) {
-         LOG.error( String.format( "Error reading the ZIP file: %s", e.getMessage() ) );
+         throw new RuntimeException( e );
       }
-
-      return buildAspectModel( aspectModelFiles );
+      return false;
    }
 
    private AspectModelFile migrate( final AspectModelFile file ) {
