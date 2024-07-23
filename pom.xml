@@ -18,7 +18,7 @@
    <parent>
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-parent</artifactId>
-      <version>13</version>
+      <version>14</version>
    </parent>
 
    <artifactId>esmf-sdk-parent</artifactId>
