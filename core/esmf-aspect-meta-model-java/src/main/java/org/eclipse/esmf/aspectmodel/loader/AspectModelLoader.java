@@ -274,12 +274,12 @@ public class AspectModelLoader implements ResolutionStrategySupport {
 
    private Set<String> getAllUrnsInModel( final Model model ) {
       return Streams.stream( model.listStatements().mapWith( statement -> {
-         final Stream<String> subjectUri = statement.getSubject().isURIResource() ?
-               Stream.of( statement.getSubject().getURI() ) :
+         final Stream<String> subjectUri = statement.getSubject().isURIResource()
+               ? Stream.of( statement.getSubject().getURI() ) :
                Stream.empty();
          final Stream<String> propertyUri = Stream.of( statement.getPredicate().getURI() );
-         final Stream<String> objectUri = statement.getObject().isURIResource() ?
-               Stream.of( statement.getObject().asResource().getURI() ) :
+         final Stream<String> objectUri = statement.getObject().isURIResource()
+               ? Stream.of( statement.getObject().asResource().getURI() ) :
                Stream.empty();
 
          return Stream.of( subjectUri, propertyUri, objectUri ).flatMap( Function.identity() )
