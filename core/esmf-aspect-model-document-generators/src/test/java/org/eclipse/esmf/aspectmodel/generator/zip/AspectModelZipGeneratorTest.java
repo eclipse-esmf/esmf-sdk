@@ -16,9 +16,11 @@ package org.eclipse.esmf.aspectmodel.generator.zip;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -38,15 +40,16 @@ class AspectModelZipGeneratorTest {
    }
 
    @Test
-   void testAspectModelZipGeneration() throws IOException {
+   void testAspectModelArchiveGeneration() throws IOException {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY );
       final String outputFileName = String.format( "%s/%s", outputDirectory.toString(), "/test_zip.zip" );
 
-      AspectModelZipGenerator.generateZipAspectModelArchive( aspectModel, outputFileName );
+      AspectModelNamespacePackageCreator.INSTANCE.accept( aspectModel, new FileOutputStream( Paths.get( outputFileName ).toFile() ),
+            false );
 
       assertThat( new File( outputFileName ) ).exists();
 
-      final AspectModel aspectModelResult = new AspectModelLoader().loadFromArchive( outputFileName );
+      final AspectModel aspectModelResult = new AspectModelLoader().loadNamespacePackage( new File( outputFileName ) );
       assertThat( aspectModelResult.namespaces() ).hasSize( 1 );
       assertThat( aspectModelResult.files() ).hasSize( 1 );
       assertThat( aspectModelResult.files().get( 0 ).aspect() ).isEqualTo( aspectModel.aspect() );
