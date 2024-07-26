@@ -37,7 +37,7 @@ public class GenerateJavaClasses extends CodeGenerationMojo {
    private boolean disableJacksonAnnotations;
 
    @Override
-   public void execute() throws MojoExecutionException {
+   public void executeGeneration() throws MojoExecutionException {
       final Set<Aspect> aspects = loadAspects();
       for ( final Aspect aspect : aspects ) {
          final File templateLibFile = Path.of( templateFile ).toFile();

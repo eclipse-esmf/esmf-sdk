@@ -31,7 +31,7 @@ public class GenerateJsonPayload extends AspectModelMojo {
    private static final Logger LOG = LoggerFactory.getLogger( GenerateJsonPayload.class );
 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
       final Set<Aspect> aspects = loadAspects();
