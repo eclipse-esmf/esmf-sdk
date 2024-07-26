@@ -32,7 +32,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 @Mojo( name = "generateAspectFromAas", defaultPhase = LifecyclePhase.GENERATE_RESOURCES )
 public class GenerateAspectFromAas extends AspectModelMojo {
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
       for ( final String include : includes ) {
          final AasToAspectModelGenerator generator = AasToAspectModelGenerator.fromFile( new File( include ) );
