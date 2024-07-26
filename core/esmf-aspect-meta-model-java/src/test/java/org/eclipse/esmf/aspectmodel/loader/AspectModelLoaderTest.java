@@ -41,16 +41,18 @@ import org.junit.jupiter.api.Test;
 class AspectModelLoaderTest {
    @Test
    void testOfAbstractEntityCyclomaticCreation() {
-      final Map<String, ComplexType> entities = TestResources.load( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND ).elements()
-            .stream().filter( ComplexType.class::isInstance ).map( ComplexType.class::cast )
-            .collect( Collectors.toMap( ComplexType::getName, Function.identity() ) );
+      final Map<String, ComplexType> entities =
+            TestResources.load( TestAspect.ASPECT_WITH_MULTIPLE_ENTITIES_SAME_EXTEND ).elements().stream()
+                  .filter( ComplexType.class::isInstance )
+                  .map( ComplexType.class::cast )
+                  .collect( Collectors.toMap( ComplexType::getName, Function.identity() ) );
 
       assertThat( entities ).extracting( "AbstractTestEntity" ).isInstanceOf( AbstractEntity.class );
       final AbstractEntity abstractEntity = (AbstractEntity) entities.get( "AbstractTestEntity" );
-      assertThat( entities ).extracting( "testEntityOne" ).isInstanceOfSatisfying( ComplexType.class,
-            type -> assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get ).isSameAs( abstractEntity ) );
-      assertThat( entities ).extracting( "testEntityTwo" ).isInstanceOfSatisfying( ComplexType.class,
-            type -> assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get ).isSameAs( abstractEntity ) );
+      assertThat( entities ).extracting( "testEntityOne" ).isInstanceOfSatisfying( ComplexType.class, type ->
+            assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get ).isSameAs( abstractEntity ) );
+      assertThat( entities ).extracting( "testEntityTwo" ).isInstanceOfSatisfying( ComplexType.class, type ->
+            assertThat( type ).extracting( ComplexType::getExtends ).extracting( Optional::get ).isSameAs( abstractEntity ) );
    }
 
    @Test

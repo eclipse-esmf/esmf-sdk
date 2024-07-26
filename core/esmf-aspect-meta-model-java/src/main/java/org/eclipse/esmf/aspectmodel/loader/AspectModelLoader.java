@@ -133,7 +133,10 @@ public class AspectModelLoader implements ResolutionStrategySupport {
     * @return the Aspect Model
     */
    public AspectModel load( final Collection<File> files ) {
-      final List<AspectModelFile> migratedFiles = files.stream().map( AspectModelFileLoader::load ).map( this::migrate ).toList();
+      final List<AspectModelFile> migratedFiles = files.stream()
+            .map( AspectModelFileLoader::load )
+            .map( this::migrate )
+            .toList();
       final LoaderContext loaderContext = new LoaderContext();
       resolve( migratedFiles, loaderContext );
       return buildAspectModel( loaderContext.loadedFiles() );
@@ -287,8 +290,10 @@ public class AspectModelLoader implements ResolutionStrategySupport {
                ? Stream.of( statement.getObject().asResource().getURI() )
                : Stream.empty();
 
-         return Stream.of( subjectUri, propertyUri, objectUri ).flatMap( Function.identity() )
-               .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() ).map( AspectModelUrn::toString );
+         return Stream.of( subjectUri, propertyUri, objectUri )
+               .flatMap( Function.identity() )
+               .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() )
+               .map( AspectModelUrn::toString );
       } ) ).flatMap( Function.identity() ).collect( toSet() );
    }
 
@@ -372,7 +377,7 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       }
    }
 
-   private void resolve( List<AspectModelFile> inputFiles, final LoaderContext context ) {
+   private void resolve( final List<AspectModelFile> inputFiles, final LoaderContext context ) {
       for ( final AspectModelFile aspectModelFile : inputFiles ) {
          context.unresolvedFiles().push( aspectModelFile );
       }
@@ -387,7 +392,8 @@ public class AspectModelLoader implements ResolutionStrategySupport {
          }
 
          while ( !context.unresolvedUrns().isEmpty() ) {
-            applyResolutionStrategy( context.unresolvedUrns().pop() ).map( this::migrate )
+            applyResolutionStrategy( context.unresolvedUrns().pop() )
+                  .map( this::migrate )
                   .ifPresent( resolvedFile -> markModelFileAsLoaded( resolvedFile, context ) );
          }
       }
@@ -407,9 +413,11 @@ public class AspectModelLoader implements ResolutionStrategySupport {
          final Model model = file.sourceModel();
          final ModelElementFactory modelElementFactory = new ModelElementFactory( mergedModel, Map.of(), element -> aspectModelFile );
          final List<ModelElement> fileElements = model.listStatements( null, RDF.type, (RDFNode) null ).toList().stream()
-               .map( Statement::getSubject ).filter( RDFNode::isURIResource )
+               .map( Statement::getSubject )
+               .filter( RDFNode::isURIResource )
                .map( resource -> mergedModel.createResource( resource.getURI() ) )
-               .map( resource -> modelElementFactory.create( ModelElement.class, resource ) ).toList();
+               .map( resource -> modelElementFactory.create( ModelElement.class, resource ) )
+               .toList();
          aspectModelFile.setElements( fileElements );
          elements.addAll( fileElements );
       }
