@@ -227,8 +227,9 @@ public class AspectModelLoader implements ResolutionStrategySupport {
 
          while ( (entry = zis.getNextEntry()) != null ) {
             boolean isRelevantEntry =
-                  (hasAspectModelsFolder && entry.getName().startsWith( ASPECT_MODELS_FOLDER ) && entry.getName().endsWith( ".ttl" )) || (
-                        !hasAspectModelsFolder && entry.getName().endsWith( ".ttl" ));
+                  (hasAspectModelsFolder && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) ) && entry.getName()
+                        .endsWith( ".ttl" ))
+                        || (!hasAspectModelsFolder && entry.getName().endsWith( ".ttl" ));
 
             if ( isRelevantEntry ) {
                AspectModelFile aspectModelFile = migrate( AspectModelFileLoader.load( zis ) );
@@ -244,14 +245,14 @@ public class AspectModelLoader implements ResolutionStrategySupport {
 
       LoaderContext loaderContext = new LoaderContext();
       resolve( aspectModelFiles, loaderContext );
-      return buildAspectModel( aspectModelFiles );
+      return buildAspectModel( loaderContext.loadedFiles() );
    }
 
    private boolean containsFolderInNamespacePackage( final InputStream inputStream ) {
       try ( ZipInputStream zis = new ZipInputStream( inputStream ) ) {
          ZipEntry entry;
          while ( (entry = zis.getNextEntry()) != null ) {
-            if ( entry.isDirectory() && entry.getName().equals( ASPECT_MODELS_FOLDER ) ) {
+            if ( entry.isDirectory() && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) ) ) {
                return true;
             }
          }
@@ -265,8 +266,12 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       return MetaModelVersionMigrator.INSTANCE.apply( file );
    }
 
-   private record LoaderContext( Set<String> resolvedUrns, Set<AspectModelFile> loadedFiles, Deque<String> unresolvedUrns,
-         Deque<AspectModelFile> unresolvedFiles ) {
+   private record LoaderContext(
+         Set<String> resolvedUrns,
+         Set<AspectModelFile> loadedFiles,
+         Deque<String> unresolvedUrns,
+         Deque<AspectModelFile> unresolvedFiles
+   ) {
       private LoaderContext() {
          this( new HashSet<>(), new HashSet<>(), new ArrayDeque<>(), new ArrayDeque<>() );
       }
@@ -275,12 +280,12 @@ public class AspectModelLoader implements ResolutionStrategySupport {
    private Set<String> getAllUrnsInModel( final Model model ) {
       return Streams.stream( model.listStatements().mapWith( statement -> {
          final Stream<String> subjectUri = statement.getSubject().isURIResource()
-               ? Stream.of( statement.getSubject().getURI() ) :
-               Stream.empty();
+               ? Stream.of( statement.getSubject().getURI() )
+               : Stream.empty();
          final Stream<String> propertyUri = Stream.of( statement.getPredicate().getURI() );
          final Stream<String> objectUri = statement.getObject().isURIResource()
-               ? Stream.of( statement.getObject().asResource().getURI() ) :
-               Stream.empty();
+               ? Stream.of( statement.getObject().asResource().getURI() )
+               : Stream.empty();
 
          return Stream.of( subjectUri, propertyUri, objectUri ).flatMap( Function.identity() )
                .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() ).map( AspectModelUrn::toString );
@@ -342,14 +347,21 @@ public class AspectModelLoader implements ResolutionStrategySupport {
    }
 
    private void urnsFromModelNeedResolution( final AspectModelFile modelFile, final LoaderContext context ) {
-      Streams.stream( modelFile.sourceModel().listStatements( null, RDF.type, (RDFNode) null ) ).map( Statement::getSubject )
-            .filter( Resource::isURIResource ).map( Resource::getURI ).filter( uri -> uri.startsWith( "urn:samm:" ) )
+      Streams.stream( modelFile.sourceModel().listStatements( null, RDF.type, (RDFNode) null ) )
+            .map( Statement::getSubject )
+            .filter( Resource::isURIResource )
+            .map( Resource::getURI )
+            .filter( uri -> uri.startsWith( "urn:samm:" ) )
             .forEach( urn -> context.resolvedUrns().add( urn ) );
 
-      getAllUrnsInModel( modelFile.sourceModel() ).stream().filter( urn -> !context.resolvedUrns().contains( urn ) )
-            .filter( urn -> !urn.startsWith( XSD.NS ) ).filter( urn -> !urn.startsWith( RDF.uri ) )
-            .filter( urn -> !urn.startsWith( SammNs.SAMM.getNamespace() ) ).filter( urn -> !urn.startsWith( SammNs.SAMMC.getNamespace() ) )
-            .filter( urn -> !urn.startsWith( SammNs.SAMME.getNamespace() ) ).filter( urn -> !urn.startsWith( SammNs.UNIT.getNamespace() ) )
+      getAllUrnsInModel( modelFile.sourceModel() ).stream()
+            .filter( urn -> !context.resolvedUrns().contains( urn ) )
+            .filter( urn -> !urn.startsWith( XSD.NS ) )
+            .filter( urn -> !urn.startsWith( RDF.uri ) )
+            .filter( urn -> !urn.startsWith( SammNs.SAMM.getNamespace() ) )
+            .filter( urn -> !urn.startsWith( SammNs.SAMMC.getNamespace() ) )
+            .filter( urn -> !urn.startsWith( SammNs.SAMME.getNamespace() ) )
+            .filter( urn -> !urn.startsWith( SammNs.UNIT.getNamespace() ) )
             .forEach( urn -> context.unresolvedUrns().add( urn ) );
    }
 
@@ -360,7 +372,7 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       }
    }
 
-   private void resolve( final List<AspectModelFile> inputFiles, final LoaderContext context ) {
+   private void resolve( List<AspectModelFile> inputFiles, final LoaderContext context ) {
       for ( final AspectModelFile aspectModelFile : inputFiles ) {
          context.unresolvedFiles().push( aspectModelFile );
       }
