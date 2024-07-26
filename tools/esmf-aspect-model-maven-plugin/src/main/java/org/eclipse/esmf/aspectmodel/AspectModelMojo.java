@@ -37,6 +37,7 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import io.vavr.control.Either;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 
 public abstract class AspectModelMojo extends AbstractMojo {
@@ -51,6 +52,12 @@ public abstract class AspectModelMojo extends AbstractMojo {
 
    @Parameter( defaultValue = "false" )
    protected boolean detailedValidationMessages;
+
+   /**
+    * Skip the execution.
+    */
+   @Parameter( name = "skip", property = "gen.skip", defaultValue = "false" )
+   private Boolean skip;
 
    protected void validateParameters() throws MojoExecutionException {
       if ( includes == null || includes.isEmpty() ) {
@@ -101,4 +108,15 @@ public abstract class AspectModelMojo extends AbstractMojo {
          throw new RuntimeException( "Could not write to output " + outputDirectory );
       }
    }
+
+   @Override
+   public void execute() throws MojoExecutionException, MojoFailureException {
+      if ( Boolean.TRUE.equals( skip ) ) {
+         getLog().info( "Generation is skipped." );
+         return;
+      }
+      executeGeneration();
+   }
+
+   abstract void executeGeneration() throws MojoExecutionException, MojoFailureException;
 }

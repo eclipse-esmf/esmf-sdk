@@ -112,7 +112,7 @@ public class GenerateOpenApiSpec extends AspectModelMojo {
    private String templateFilePath;
 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
       final Set<Aspect> aspects = loadAspects();
