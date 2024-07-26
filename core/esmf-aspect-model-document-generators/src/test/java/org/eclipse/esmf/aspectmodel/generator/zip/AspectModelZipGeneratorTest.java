@@ -45,7 +45,7 @@ class AspectModelZipGeneratorTest {
       final String outputFileName = String.format( "%s/%s", outputDirectory.toString(), "/test_zip.zip" );
 
       AspectModelNamespacePackageCreator.INSTANCE.accept( aspectModel, new FileOutputStream( Paths.get( outputFileName ).toFile() ),
-            false );
+            "" );
 
       assertThat( new File( outputFileName ) ).exists();
 
