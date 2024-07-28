@@ -114,7 +114,7 @@ public class AspectModelJavaUtil {
     */
    public static boolean hasContainerType( final Property property ) {
       return property.isOptional()
-            || ( property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ) );
+            || (property.getEffectiveCharacteristic().map( characteristic -> characteristic.is( Collection.class ) ).orElse( false ));
    }
 
    /**
@@ -238,6 +238,12 @@ public class AspectModelJavaUtil {
             }
          }
          classAnnotationBuilder.append( "})" );
+      } else if ( element.getExtends().isPresent() ) {
+         codeGenerationConfig.importTracker().importExplicit( JsonTypeInfo.class );
+         classAnnotationBuilder.append( "@JsonTypeInfo(use = JsonTypeInfo.Id.NAME," );
+         classAnnotationBuilder.append( "              defaultImpl = " );
+         classAnnotationBuilder.append( element.getName() );
+         classAnnotationBuilder.append( ".class)" );
       }
       return classAnnotationBuilder.toString();
    }
@@ -302,7 +308,7 @@ public class AspectModelJavaUtil {
       return dataType.map( type -> {
          final Type actualDataType = dataType.get();
          if ( actualDataType instanceof ComplexType ) {
-            return ( (ComplexType) actualDataType ).getName();
+            return ((ComplexType) actualDataType).getName();
          }
 
          if ( actualDataType instanceof Scalar ) {
@@ -323,7 +329,7 @@ public class AspectModelJavaUtil {
 
    public static Class<?> getDataTypeClass( final Type dataType ) {
       if ( dataType instanceof ComplexType ) {
-         return ( (ComplexType) dataType ).getClass();
+         return ((ComplexType) dataType).getClass();
       }
 
       final Resource typeResource = ResourceFactory.createResource( dataType.getUrn() );
@@ -338,11 +344,18 @@ public class AspectModelJavaUtil {
     * Convert a string given as upper or lower camel case into a constant format. For example {@code someVariable} would become
     * {@code SOME_VARIABLE}.
     *
-    * @param upperOrLowerCamelString the string to convert
+    * @param upperOrLowerCamel the string to convert
     * @return the string formatted as a constant.
     */
-   public static String toConstant( final String upperOrLowerCamelString ) {
-      return TO_CONSTANT.convert( StringUtils.capitalize( upperOrLowerCamelString ) );
+   public static String toConstant( final String upperOrLowerCamel ) {
+      if ( isAllUppercaseWithUnderscore( upperOrLowerCamel ) ) {
+         return upperOrLowerCamel;
+      }
+      return TO_CONSTANT.convert( StringUtils.capitalize( upperOrLowerCamel ) );
+   }
+   
+   public static boolean isAllUppercaseWithUnderscore( final String upperOrLowerCamel ) {
+      return upperOrLowerCamel != null && upperOrLowerCamel.matches( "[A-Z0-9_]+" );
    }
 
    /**
@@ -492,7 +505,7 @@ public class AspectModelJavaUtil {
       if ( object instanceof String ) {
          return createLiteral( object.toString() );
       }
-      return toConstant( ( (Property) object ).getName() );
+      return toConstant( ((Property) object).getName() );
    }
 
    public static boolean isXmlDatatypeFactoryRequired( final StructureElement element ) {
@@ -636,6 +649,6 @@ public class AspectModelJavaUtil {
             .filter( Type::isScalar )
             .map( type -> XSD.xboolean.getURI().equals( type.getUrn() ) )
             .orElse( false );
-      return ( isBooleanType ? "is" : "get" ) + StringUtils.capitalize( property.getPayloadName() );
+      return (isBooleanType ? "is" : "get") + StringUtils.capitalize( property.getPayloadName() );
    }
 }

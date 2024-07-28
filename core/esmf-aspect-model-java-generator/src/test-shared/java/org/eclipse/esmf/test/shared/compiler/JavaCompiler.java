@@ -45,7 +45,13 @@ public class JavaCompiler {
       }
    }
 
-   public static Map<QualifiedName, Class<?>> compile( final List<QualifiedName> loadOrder,
+   public record CompilationResult(
+         Map<QualifiedName, Class<?>> compilationUnits,
+         Map<QualifiedName, String> sources,
+         ClassLoader classLoader
+   ) {}
+
+   public static CompilationResult compile( final List<QualifiedName> loadOrder,
          final Map<QualifiedName, String> sources, final List<String> predefinedClasses ) {
       final javax.tools.JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
       try ( final InMemoryClassFileManager manager = new InMemoryClassFileManager(
@@ -88,9 +94,10 @@ public class JavaCompiler {
                return defineClass( name, classBytes, 0, classBytes.length );
             }
          };
-         return loadOrder.stream().collect( Collectors.toMap( Function.identity(), qualifiedName ->
-               defineAndLoad( qualifiedName, classLoader ) ) );
-
+         final Map<QualifiedName, Class<?>> compilationUnits = loadOrder.stream()
+               .collect( Collectors.toMap( Function.identity(), qualifiedName ->
+                     defineAndLoad( qualifiedName, classLoader ) ) );
+         return new CompilationResult( compilationUnits, sources, classLoader );
       } catch ( final IOException e ) {
          throw new RuntimeException( e );
       }

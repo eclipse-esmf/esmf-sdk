@@ -26,7 +26,11 @@
 	);
     #foreach( $property in $elementProperties )
         #if( !$property.isAbstract() )
-        this.$property.getPayloadName() = $property.getPayloadName();
+            #if ( $property.isOptional() )
+                this.$property.getPayloadName() = $property.getPayloadName() == null ? Optional.empty() : $property.getPayloadName();
+            #else
+                this.$property.getPayloadName() = $property.getPayloadName();
+            #end
         #end
     #end
     #if( $needInitializer )

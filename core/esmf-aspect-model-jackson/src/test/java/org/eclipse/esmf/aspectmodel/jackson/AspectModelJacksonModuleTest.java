@@ -42,7 +42,6 @@ import org.eclipse.esmf.aspectmodel.java.pojo.AspectModelJavaGenerator;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.datatype.LangString;
-import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 import org.eclipse.esmf.test.shared.compiler.JavaCompiler;
@@ -251,8 +250,7 @@ public class AspectModelJacksonModuleTest {
    private String loadJsonPayload( final TestAspect model, final String payloadName ) throws IOException {
       final AspectModelUrn modelUrn = model.getUrn();
       final URL jsonUrl = getClass().getResource(
-            String.format( "/%s/%s/%s/%s.json", KnownVersion.getLatest().toString().toLowerCase(),
-                  modelUrn.getNamespace(), modelUrn.getVersion(), payloadName ) );
+            String.format( "/%s/%s/%s.json", modelUrn.getNamespace(), modelUrn.getVersion(), payloadName ) );
       return Resources.toString( jsonUrl, StandardCharsets.UTF_8 );
    }
 
@@ -277,7 +275,7 @@ public class AspectModelJacksonModuleTest {
             .concat( codeGenerator.getConfig().importTracker().getUsedImports().stream(),
                   codeGenerator.getConfig().importTracker().getUsedStaticImports().stream() )
             .collect( Collectors.toList() );
-      final Map<QualifiedName, Class<?>> result = JavaCompiler.compile( loadOrder, sources, referencedClasses );
+      final Map<QualifiedName, Class<?>> result = JavaCompiler.compile( loadOrder, sources, referencedClasses ).compilationUnits();
       return result.get( new QualifiedName( aspect.getName(), codeGenerator.getConfig().packageName() ) );
    }
 

@@ -66,7 +66,10 @@ public class ValueInitializer {
                   "_datatypeFactory.newXMLGregorianCalendarDate( DatatypeConstants.FIELD_UNDEFINED, Integer.valueOf( " + valueExpression
                         + " )" + ", DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED )" );
       INITIALIZERS.put( XSD.gYearMonth, gregorianCalendar );
-      INITIALIZERS.put( XSD.gMonthDay, gregorianCalendar );
+      INITIALIZERS.put( XSD.gMonthDay,
+            ( type, valueExpression ) -> "_datatypeFactory.newXMLGregorianCalendarDate( "
+                  + "DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED, Integer.valueOf( " + valueExpression + " )"
+                  + ", DatatypeConstants.FIELD_UNDEFINED )" );
       INITIALIZERS.put( XSD.gDay, gregorianCalendar );
       INITIALIZERS.put( XSD.duration, duration );
       INITIALIZERS.put( XSD.yearMonthDuration, duration );

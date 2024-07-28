@@ -32,7 +32,7 @@ public class GenerateAas extends AspectModelMojo {
    private String targetFormat;
 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
       final Set<Aspect> aspects = loadAspects();
       final AspectModelAasGenerator generator = new AspectModelAasGenerator();

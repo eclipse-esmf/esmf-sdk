@@ -38,4 +38,12 @@ public class ValidateTest extends AspectModelMojoTest {
             .isInstanceOf( MojoExecutionException.class )
             .hasMessageContaining( "Syntax error in line 17, column 2" );
    }
+
+   @Test
+   public void testValidateMultipleAspectModels() throws Exception {
+      final File testPom = getTestFile( "src/test/resources/validate-pom-multiple-aspect-models.xml" );
+      final Mojo validate = lookupMojo( "validate", testPom );
+      assertThatCode( validate::execute )
+            .doesNotThrowAnyException();
+   }
 }

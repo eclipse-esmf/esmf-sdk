@@ -113,20 +113,20 @@ this is better done using the RDF API.
 
 To load an AspectModel, you use the `org.eclipse.esmf.aspectmodel.loader.AspectModelLoader` class. An instance
 of `AspectModelLoader` provides `load()` methods to load an Aspect Model from an InputStream, one or multiple
-Files, or a number of `AspectModelUrn`s (where you can delegate finding out _where_ a model element is defined
+Files, or a number of `AspectModelUrn` (where you can delegate finding out _where_ a model element is defined
 to the AspectModelLoader - details on that are explained in the next section).
 
 The `AspectModelLoader` loads Aspect Models based on the most recent version of the Semantic Aspect Meta Model
 and previous versions: Models based on older meta model versions are automatically translated to models
 corresponding to the latest meta model version.
 
-The resulting `AspectModel` object contains information about the loaded model elements, their namespaces and
-the files they were defined in. Details about the structure of these objects can be found in the [Decision
-Record
-0007](https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0007-model-resolution.md).
-The `AspectModel` provides the methods `elements()`, `files()` and `namespaces()` as well as the convenience
-methods `aspects()` (which returns all Aspect elements in the model) and `aspect()`, which returns the single
-Aspect element if one exists.
+The resulting `AspectModel` object contains information about the loaded model elements, their
+namespaces and the files they were defined in. Details about the structure of these objects can be
+found in the
+https://github.com/eclipse-esmf/esmf-semantic-aspect-meta-model/blob/main/documentation/decisions/0007-model-resolution.md[Decision
+Record 0007]. The `AspectModel` provides the methods `elements()`, `files()` and `namespaces()` as
+well as the convenience methods `aspects()` (which returns all Aspect elements in the model) and
+`aspect()`, which returns the single Aspect element if one exists.
 
 ++++
 <details>
@@ -152,15 +152,16 @@ include::esmf-developer-guide:ROOT:partial$esmf-aspect-meta-model-java-artifact.
 [[understanding-model-resolution]]
 === Understanding Model Resolution
 
-The example in the last section showed how a self-contained Aspect Model file can be loaded (i.e., a file that
-does not refer to model element definitions in other files or namespaces). Whenever models are loaded that
-could contain such references, or you want to load a model element by URN, the AspectModelLoader relies on
-so-called _resolution strategies_. A resolution strategy is a function that takes a model element identifier
-(a model element URN) as an input and returns the content of the file that contains the corresponding model
-element definition. Note that this is not necessarily a file in the local filesystem, but it could also be a
-remote file or even exist only virtually as a collection of statements in an RDF triple store. Several
-`ResolutionStrategy`s are provided that can be instantiated and passed to the `AspectModelLoader` constructor
-to enable it to find model element definitions:
+The example in the last section showed how a self-contained Aspect Model file can be loaded (i.e., a
+file that does not refer to model element definitions in other files or namespaces). Whenever models
+are loaded that could contain such references, or you want to load a model element by URN, the
+AspectModelLoader relies on so-called _resolution strategies_. A resolution strategy is a function
+that takes a model element identifier (a model element URN) as an input and returns the content of
+the file that contains the corresponding model element definition. Note that this is not necessarily
+a file in the local filesystem, but it could also be a remote file or even exist only virtually as a
+collection of statements in an RDF triple store. Several `ResolutionStrategy`&#8203;s are provided
+that can be instantiated and passed to the `AspectModelLoader` constructor to enable it to find
+model element definitions:
 
 * The `FileSystemStrategy` resolves elements from files in the file system which are either structured in the
   xref:tooling-guide:samm-cli.adoc#models-directory-structure[models directory structure] or exist as flat
@@ -168,7 +169,7 @@ to enable it to find model element definitions:
 * The `ClassPathStrategy` resolves model elements from resources in the Java class path.
 * The `FromLoadedFileStrategy` resolves model elements from an `AspectModelFile` that already resides in
   memory.
-* The `EitherStrategy` can be used to chain two or more different `ResolutionStrategy`s.
+* The `EitherStrategy` can be used to chain two or more different `ResolutionStrategy`&#8203;s.
 * The `ExternalResolverStrategy` delegates resolution to an external command such as a script; it is used in
   the implementation of the `--custom-resolver` option of the xref:tooling-guide:samm-cli.adoc[samm-cli].
 

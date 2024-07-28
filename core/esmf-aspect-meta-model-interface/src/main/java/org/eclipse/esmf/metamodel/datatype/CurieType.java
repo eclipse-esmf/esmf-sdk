@@ -28,10 +28,14 @@ import org.apache.jena.graph.impl.LiteralLabel;
  * Represents the samm:curie datatype itself. For the class that represents a Curie value, see {@link Curie}.
  */
 public class CurieType implements SammType<Curie> {
+   public static final CurieType INSTANCE = new CurieType();
    public static final String CURIE_REGEX = "[a-zA-Z]*:[a-zA-Z]+";
    private final Function<String, Curie> parser = Curie::new;
    private final Function<Curie, String> unparser = Curie::value;
    private final Predicate<String> lexicalValidator = value -> value.matches( CURIE_REGEX );
+
+   private CurieType() {
+   }
 
    @Override
    public Optional<Curie> parseTyped( final String lexicalForm ) {
