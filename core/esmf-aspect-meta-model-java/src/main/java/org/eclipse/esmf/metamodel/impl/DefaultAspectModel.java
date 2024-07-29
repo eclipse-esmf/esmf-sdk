@@ -24,8 +24,8 @@ import org.eclipse.esmf.metamodel.Namespace;
 import org.apache.jena.rdf.model.Model;
 
 public class DefaultAspectModel implements AspectModel {
-   private final Model mergedModel;
-   private final List<ModelElement> elements;
+   private Model mergedModel;
+   private List<ModelElement> elements;
 
    public DefaultAspectModel( final Model mergedModel, final List<ModelElement> elements ) {
       this.mergedModel = mergedModel;
@@ -51,5 +51,13 @@ public class DefaultAspectModel implements AspectModel {
    @Override
    public Model mergedModel() {
       return mergedModel;
+   }
+
+   public void setMergedModel( final Model mergedModel ) {
+      this.mergedModel = mergedModel;
+   }
+
+   public void setElements( final List<ModelElement> elements ) {
+      this.elements = elements;
    }
 }

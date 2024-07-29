@@ -87,10 +87,6 @@ public final class DefaultAspectModelFile implements AspectModelFile {
 
    @Override
    public String toString() {
-      return "DefaultAspectModelFile["
-            + "sourceModel=" + sourceModel + ", "
-            + "headerComment=" + headerComment + ", "
-            + "sourceLocation=" + sourceLocation + ", "
-            + "elements=" + elements + ']';
+      return sourceLocation().map( URI::toString ).orElse( "(unknown file)" );
    }
 }

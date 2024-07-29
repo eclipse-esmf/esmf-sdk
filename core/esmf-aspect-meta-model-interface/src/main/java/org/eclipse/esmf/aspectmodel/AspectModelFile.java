@@ -35,6 +35,4 @@ public interface AspectModelFile extends ModelElementGroup {
    default List<ModelElement> elements() {
       throw new UnsupportedOperationException( "Uninitialized Aspect Model" );
    }
-
-   //   boolean isAutoMigrated();
 }

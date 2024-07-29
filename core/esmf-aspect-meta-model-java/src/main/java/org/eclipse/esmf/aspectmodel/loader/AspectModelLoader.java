@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
@@ -71,7 +72,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The core class to load an {@link AspectModel}.
  */
-public class AspectModelLoader implements ResolutionStrategySupport {
+public class AspectModelLoader extends AspectModelBuilder implements ResolutionStrategySupport {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
    private static final String ASPECT_MODELS_FOLDER = "aspect-models";
 
@@ -397,31 +398,6 @@ public class AspectModelLoader implements ResolutionStrategySupport {
                   .ifPresent( resolvedFile -> markModelFileAsLoaded( resolvedFile, context ) );
          }
       }
-   }
-
-   private AspectModel buildAspectModel( final Collection<AspectModelFile> inputFiles ) {
-      final Model mergedModel = ModelFactory.createDefaultModel();
-      mergedModel.add( MetaModelFile.metaModelDefinitions() );
-      for ( final AspectModelFile file : inputFiles ) {
-         mergedModel.add( file.sourceModel() );
-      }
-
-      final List<ModelElement> elements = new ArrayList<>();
-      for ( final AspectModelFile file : inputFiles ) {
-         final DefaultAspectModelFile aspectModelFile = new DefaultAspectModelFile( file.sourceModel(), file.headerComment(),
-               file.sourceLocation() );
-         final Model model = file.sourceModel();
-         final ModelElementFactory modelElementFactory = new ModelElementFactory( mergedModel, Map.of(), element -> aspectModelFile );
-         final List<ModelElement> fileElements = model.listStatements( null, RDF.type, (RDFNode) null ).toList().stream()
-               .map( Statement::getSubject )
-               .filter( RDFNode::isURIResource )
-               .map( resource -> mergedModel.createResource( resource.getURI() ) )
-               .map( resource -> modelElementFactory.create( ModelElement.class, resource ) )
-               .toList();
-         aspectModelFile.setElements( fileElements );
-         elements.addAll( fileElements );
-      }
-      return new DefaultAspectModel( mergedModel, elements );
    }
 
    /**
