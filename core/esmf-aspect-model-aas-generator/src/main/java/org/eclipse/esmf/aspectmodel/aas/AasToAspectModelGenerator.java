@@ -335,8 +335,8 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    private List<Property> createProperties( final Submodel submodel ) {
       return submodel.getSubmodelElements().stream()
             .filter( submodelElement ->
-                  !submodelElement.getClass().isAssignableFrom( org.eclipse.digitaltwin.aas4j.v3.model.Operation.class )
-                        && !submodelElement.getClass().isAssignableFrom( EventElement.class ) )
+                  !org.eclipse.digitaltwin.aas4j.v3.model.Operation.class.isAssignableFrom( submodelElement.getClass() )
+                        && !EventElement.class.isAssignableFrom( submodelElement.getClass() ) )
             .map( this::createProperty ).toList();
    }
 
@@ -500,15 +500,30 @@ public class AasToAspectModelGenerator extends Generator<Environment, AspectMode
    }
 
    private Optional<String> validIrdiOrUri( final String input ) {
-      return Irdi.from( input ).map( irdi -> "urn:irdi:" + irdi )
-            .or( () -> {
-               if ( input.startsWith( "http:" ) || input.startsWith( "https:" ) ) {
-                  return Optional.of( input );
-               } else if ( input.startsWith( "www." ) ) {
-                  return Optional.of( "https://" + input );
+      final Optional<String> irdi = Irdi.from( input ).map( i -> "urn:irdi:" + i );
+      final Optional<URI> uri = Optional.of( input )
+            .map( String::trim )
+            .flatMap( inputUri -> {
+               if ( inputUri.startsWith( "http:" ) || inputUri.startsWith( "https:" ) ) {
+                  return Optional.of( inputUri );
+               } else if ( inputUri.startsWith( "www." ) ) {
+                  return Optional.of( "https://" + inputUri );
                }
                return Optional.empty();
+            } )
+            .flatMap( inputUri -> {
+               try {
+                  return Optional.of( URI.create( inputUri ) );
+               } catch ( final IllegalArgumentException exception ) {
+                  return Optional.empty();
+               }
             } );
+
+      final Optional<String> result = irdi.or( () -> uri.map( URI::toString ) );
+      if ( result.isEmpty() ) {
+         LOG.warn( "Neither valid IRDI or valid URI: " + input );
+      }
+      return result;
    }
 
    private Characteristic createCharacteristicFromRelationShipElement( final RelationshipElement relationshipElement,
