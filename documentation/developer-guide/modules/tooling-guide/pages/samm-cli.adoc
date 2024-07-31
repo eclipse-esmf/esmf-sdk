@@ -3,17 +3,8 @@
 [[samm-cli]]
 = SAMM CLI
 
-The SAMM CLI is a command line tool for the validation of Aspect Models and the generation of artifacts, such as documentation or code, from Aspect Models.
+The SAMM CLI is a command line tool for the validation of Aspect Models and the generation of artifacts, such as documentation or code, from Aspect Models. It is available as a native executable for multiple platforms (Windows, Linux) and as an executable jar, see https://github.com/eclipse-esmf/esmf-sdk/releases.
 
-The SAMM CLI is available as a native executable for multiple platforms and as an executable jar:
-
-[TIP]
-.Downloading samm-cli
-====
-* Download executable for Windows (latest): https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-windows-x86_64.zip[samm-cli-{esmf-sdk-version}-windows-x86_64.zip]
-* Download exectuable for Linux (latest): https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}-linux-x86_64.tar.gz[samm-cli-{esmf-sdk-version}-linux-x86_64.tar.gz]
-* Download executable jar for other platforms and architectures (latest): https://github.com/eclipse-esmf/esmf-sdk/releases/download/v{esmf-sdk-version}/samm-cli-{esmf-sdk-version}.jar[samm-cli-{esmf-sdk-version}.jar]. Running this version requires Java 17.
-====
 
 [[samm-cli-getting-started]]
 == Running the SAMM CLI
