@@ -130,7 +130,7 @@ public class AspectModelOpenApiGenerator
          final ObjectNode rootNode = getRootJsonNode( config.generateCommentForSeeAttributes() );
          final String apiVersion = getApiVersion( aspect, config.useSemanticVersion() );
 
-         ((ObjectNode) rootNode.get( "info" ))
+         ( (ObjectNode) rootNode.get( "info" ) )
                .put( "title", aspect.getPreferredName( config.locale() ) )
                .put( "version", apiVersion )
                .put( AbstractGenerator.SAMM_EXTENSION, aspect.urn().toString() );
@@ -243,7 +243,7 @@ public class AspectModelOpenApiGenerator
    private void setResponseBodies( final Aspect aspect, final ObjectNode jsonNode, final boolean includePaging ) {
       final ObjectNode componentsResponseNode = (ObjectNode) jsonNode.get( FIELD_COMPONENTS ).get( FIELD_RESPONSES );
       final ObjectNode referenceNode = FACTORY.objectNode()
-            .put( REF, COMPONENTS_SCHEMAS + (includePaging ? FIELD_PAGING_SCHEMA : aspect.getName()) );
+            .put( REF, COMPONENTS_SCHEMAS + ( includePaging ? FIELD_PAGING_SCHEMA : aspect.getName() ) );
       final ObjectNode contentNode = getApplicationNode( referenceNode );
       componentsResponseNode.set( aspect.getName(), contentNode );
       contentNode.put( FIELD_DESCRIPTION, "The request was successful." );
@@ -497,7 +497,7 @@ public class AspectModelOpenApiGenerator
          final boolean isPut ) {
       final ObjectNode objectNode = FACTORY.objectNode();
       objectNode.set( "tags", FACTORY.arrayNode().add( aspect.getName() ) );
-      objectNode.put( FIELD_OPERATION_ID, (isPut ? FIELD_PUT : FIELD_PATCH) + aspect.getName() );
+      objectNode.put( FIELD_OPERATION_ID, ( isPut ? FIELD_PUT : FIELD_PATCH ) + aspect.getName() );
       objectNode.set( FIELD_PARAMETERS, getRequiredParameters( parameterNode, isEmpty( resourcePath ) ) );
       objectNode.set( FIELD_REQUEST_BODY, FACTORY.objectNode().put( REF, COMPONENTS_REQUESTS + aspect.getName() ) );
       objectNode.set( FIELD_RESPONSES, getResponsesForGet( aspect ) );
@@ -516,8 +516,8 @@ public class AspectModelOpenApiGenerator
       final ObjectNode unauthorized = FACTORY.objectNode().put( REF, COMPONENTS_RESPONSES + UNAUTHORIZED );
       final ObjectNode forbidden = FACTORY.objectNode().put( REF, COMPONENTS_RESPONSES + FORBIDDEN );
       final ObjectNode notFoundError = FACTORY.objectNode().put( REF, COMPONENTS_RESPONSES + NOT_FOUND_ERROR );
-      responses.set( "401", clientError );
-      responses.set( "402", unauthorized );
+      responses.set( "400", clientError );
+      responses.set( "401", unauthorized );
       responses.set( "403", forbidden );
       responses.set( "404", notFoundError );
    }

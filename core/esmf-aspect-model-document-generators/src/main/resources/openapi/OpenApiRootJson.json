@@ -52,13 +52,13 @@
         "description": "The requesting user or client is not authenticated."
       },
       "Forbidden": {
-        "description": "The requesting user or client is not authorized to access resources for the given tenant."
+        "description": "The requesting user or client is not authorized to access resources."
       },
       "NotFoundError": {
-        "description": "The requested Twin has not been found."
+        "description": "The requested resource has not been found."
       },
       "ClientError": {
-        "description": "Payload or user input is invalid. See error details in the payload for more.",
+        "description": "Payload or user input is invalid. See error details in the payload for more information.",
         "content": {
           "application/json": {
             "schema": {
