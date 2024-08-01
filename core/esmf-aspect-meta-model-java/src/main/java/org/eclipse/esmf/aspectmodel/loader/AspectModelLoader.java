@@ -359,7 +359,7 @@ public class AspectModelLoader implements ResolutionStrategySupport {
             .forEach( urn -> context.resolvedUrns().add( urn ) );
 
       getAllUrnsInModel( modelFile.sourceModel() ).stream()
-            .map( urn -> urn.toString())
+            .map( AspectModelUrn::toString )
             .filter( urn -> !context.resolvedUrns().contains( urn ) )
             .filter( urn -> !urn.startsWith( XSD.NS ) )
             .filter( urn -> !urn.startsWith( RDF.uri ) )
