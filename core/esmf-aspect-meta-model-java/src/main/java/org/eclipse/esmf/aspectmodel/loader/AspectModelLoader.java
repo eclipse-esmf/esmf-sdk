@@ -280,7 +280,7 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       }
    }
 
-   private Set<String> getAllUrnsInModel( final Model model ) {
+   public static Set<AspectModelUrn> getAllUrnsInModel( final Model model ) {
       return Streams.stream( model.listStatements().mapWith( statement -> {
          final Stream<String> subjectUri = statement.getSubject().isURIResource()
                ? Stream.of( statement.getSubject().getURI() )
@@ -292,8 +292,7 @@ public class AspectModelLoader implements ResolutionStrategySupport {
 
          return Stream.of( subjectUri, propertyUri, objectUri )
                .flatMap( Function.identity() )
-               .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() )
-               .map( AspectModelUrn::toString );
+               .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() );
       } ) ).flatMap( Function.identity() ).collect( toSet() );
    }
 
@@ -360,6 +359,7 @@ public class AspectModelLoader implements ResolutionStrategySupport {
             .forEach( urn -> context.resolvedUrns().add( urn ) );
 
       getAllUrnsInModel( modelFile.sourceModel() ).stream()
+            .map( urn -> urn.toString())
             .filter( urn -> !context.resolvedUrns().contains( urn ) )
             .filter( urn -> !urn.startsWith( XSD.NS ) )
             .filter( urn -> !urn.startsWith( RDF.uri ) )

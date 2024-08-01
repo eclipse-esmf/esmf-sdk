@@ -14,14 +14,15 @@
 package org.eclipse.esmf;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
+import org.eclipse.esmf.aspectmodel.scanner.AspectModelScanner;
+import org.eclipse.esmf.aspectmodel.scanner.FileSystemScanner;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
@@ -55,30 +56,40 @@ public class AspectSearchCommand extends AbstractCommand {
    @CommandLine.Option( names = { "--models-path", "-msp" }, description = "Path to Models, where have to search" )
    private String pathToModels = "-";
 
+   @CommandLine.Option( names = { "--github", "-gh" }, description = "Use this flag to introduce what has to be scanned" )
+   private boolean searchInGithub = false;
+
+   @CommandLine.Option( names = { "--github-name", "-ghn" }, description = "Provide GitHub name. Example: eclipse-esmf/esmf-sdk." )
+   private String gitHubName = "";
+
+   @CommandLine.Option( names = { "--github-directory", "-ghd" }, description = "Provide GitHub directory for scanning" )
+   private String gitHubDirectory = "";
+
+   @CommandLine.Option( names = { "--github-branch", "-ghb" }, description = "Provide GitHub branch for scanning" )
+   private String gitHubBranch = "";
+
    public String getInput() {
       return input;
    }
 
    @Override
    public void run() {
-      final AspectModel aspectModel = loadAspectModelOrFail( input, customResolver );
+      final AspectModelScanner aspectModelScanner;
+      final List<AspectModelFile> aspectModelFiles;
 
-      final Path directory = Paths.get( pathToModels );
-      final List<File> files = Arrays.stream( Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} ) )
-            .filter( file -> file.isFile() && file.getName().endsWith( ".ttl" ) && !file.getName()
-                  .equals( Paths.get( input ).getFileName().toString() ) )
-            .sorted()
-            .toList();
-
-      if ( files.isEmpty() ) {
-         LOG.info( "No .ttl files found in the directory '{}'", directory );
+      if ( searchInGithub && (gitHubName.isBlank() || gitHubDirectory.isBlank()) ) {
+         System.out.println( "Parameters '--github-url' and '--github-directory' have to be provided!" );
          return;
+      } else if ( !searchInGithub ) {
+         aspectModelScanner = new FileSystemScanner( pathToModels );
+         aspectModelFiles = aspectModelScanner.find( input );
+      } else {
+         aspectModelScanner = new GitHubScanner( gitHubName, gitHubBranch.isBlank() ? "main" : gitHubBranch );
+         aspectModelFiles = aspectModelScanner.find( input );
       }
 
-      final List<AspectModelUrn> modelUrns = aspectModel.elements().stream().map( ModelElement::urn ).toList();
-
-      String header = String.format( "| %-60s | %-100s | %-50s | %-60s |",
-            "URN of the element", "File location", "Model source", "Target element that it is referring to" );
+      String header = String.format( "| %-60s | %-100s | %-50s |",
+            "URN of the element", "File location", "Model source" );
       String separator = new String( new char[header.length()] ).replace( "\0", "-" );
 
       // Print Table header
@@ -86,21 +97,41 @@ public class AspectSearchCommand extends AbstractCommand {
       System.out.println( header );
       System.out.println( separator );
 
-      final AspectModelLoader aspectModelLoader = new AspectModelLoader();
+      final AspectModel aspectModel = new AspectModelLoader().load( new File( input ) );
 
-      for ( final File file : files ) {
-         processFile( file, modelUrns, aspectModelLoader );
+      if ( !aspectModelFiles.isEmpty() ) {
+         for ( final AspectModelFile aspectModelFile : aspectModelFiles ) {
+            processFile( aspectModelFile, aspectModel.elements().stream().map( ModelElement::urn ).toList() );
+         }
       }
    }
 
-   private void processFile( File file, List<AspectModelUrn> modelUrns, AspectModelLoader aspectModelLoader ) {
-      final AspectModel aspectModel = loadAspectModelOrFail( file.getPath(), customResolver );
+   private void processFile( final AspectModelFile aspectModelFile, final List<AspectModelUrn> modelUrns ) {
+      if ( aspectModelFile.sourceLocation().isPresent() ) {
+         final File file = new File( aspectModelFile.sourceLocation().get() );
 
-      for ( final AspectModelUrn modelUrn : modelUrns ) {
-         final List<AspectModelFile> modelFiles = aspectModel.files();
-         for ( final AspectModelFile modelFile : modelFiles ) {
-            if ( aspectModelLoader.containsDefinition( modelFile, modelUrn ) ) {
-               System.out.printf( "| %-60s | %-100s | %-50s | %-60s |%n", modelUrn, file.getPath(), file.getName(), "" );
+         final AspectModelLoader aspectModelLoader;
+         final AspectModel aspectModel;
+
+         if ( searchInGithub ) {
+            final ResolutionStrategy resolutionStrategy = new GitHubStrategy( gitHubName, gitHubDirectory );
+            aspectModelLoader = new AspectModelLoader( resolutionStrategy );
+
+            aspectModel = aspectModelLoader.load( file );
+         } else {
+            final ResolutionStrategy resolutionStrategy = new FileSystemStrategy(
+                  new FlatModelsRoot( file.toPath().getParent() ) );
+            aspectModelLoader = new AspectModelLoader( resolutionStrategy );
+
+            aspectModel = aspectModelLoader.load( file );
+         }
+
+         for ( final AspectModelUrn modelUrn : modelUrns ) {
+            final List<AspectModelFile> modelFiles = aspectModel.files();
+            for ( final AspectModelFile modelFile : modelFiles ) {
+               if ( aspectModelLoader.containsDefinition( modelFile, modelUrn ) ) {
+                  System.out.printf( "| %-60s | %-100s | %-50s |%n", modelUrn, file.getPath(), file.getName(), "" );
+               }
             }
          }
       }

@@ -191,22 +191,4 @@ public class AspectModelResolverTest {
          final AspectModel result = new AspectModelLoader( urnStrategy ).load( testUrn );
       } ).isInstanceOf( ModelResolutionException.class );
    }
-
-   @Test
-   public void testGithubStrategy() throws Throwable {
-      final File aspectModelsRootDirectory = new File(
-            AspectModelResolverTest.class.getClassLoader().getResource( KnownVersion.getLatest().toString().toLowerCase() )
-                  .toURI().getPath() );
-
-      final AspectModelUrn testUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "FailingTest" );
-
-      final ResolutionStrategy gitHubStrategy = new GitHubStrategy(
-            aspectModelsRootDirectory.toPath(),
-            "eclipse-esmf/esmf-sdk",
-            "core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf.test/1.0.0" );
-
-      assertThatThrownBy( () -> {
-         final AspectModel result = new AspectModelLoader( gitHubStrategy ).load( testUrn );
-      } ).isInstanceOf( ModelResolutionException.class );
-   }
 }
