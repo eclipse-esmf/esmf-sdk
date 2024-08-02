@@ -344,7 +344,7 @@ Please consider the following model fragment, with the attention focused on the 
 
 [source,turtle,subs="attributes+,+quotes"]
 ----
-@prefix : <urn:samm:{example-ns}.myapplication:1.0.0#> . # <1>
+@prefix : <urn:samm:{example-ns}.myapplication:2.0.0#> . # <1>
 @prefix samm: <{samm}> .
 
 :Test a samm:Aspect; # <3>
@@ -744,7 +744,7 @@ Please consider the following model fragment, with the attention focused on the 
 
 [source,turtle,subs="attributes+,+quotes"]
 ----
-@prefix : <urn:samm:{example-ns}.myapplication:1.0.0#> . # <1>
+@prefix : <urn:samm:{example-ns}.myapplication:2.0.0#> . # <1>
 @prefix samm: <{samm}> .
 
 :Movement a samm:Aspect ; # <3>
