@@ -13,10 +13,13 @@
 
 package org.eclipse.esmf.aspectmodel.edit;
 
-public interface Change {
-   void fire( ChangeContext changeContext );
+import java.io.Serial;
 
-   Change reverse();
+public class ModelChangeException extends RuntimeException {
+   @Serial
+   private static final long serialVersionUID = 6040601725774787289L;
 
-   ChangeReport report( ChangeContext changeContext );
+   public ModelChangeException( final String message ) {
+      super( message );
+   }
 }

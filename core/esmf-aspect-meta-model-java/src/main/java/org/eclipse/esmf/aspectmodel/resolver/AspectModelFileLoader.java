@@ -81,8 +81,12 @@ public class AspectModelFileLoader {
    }
 
    public static RawAspectModelFile load( final InputStream inputStream ) {
+      return load( inputStream, Optional.empty() );
+   }
+
+   public static RawAspectModelFile load( final InputStream inputStream, final Optional<URI> sourceLocation ) {
       final AspectModelFile fromString = load( content( inputStream ) );
-      return new RawAspectModelFile( fromString.sourceModel(), fromString.headerComment(), Optional.empty() );
+      return new RawAspectModelFile( fromString.sourceModel(), fromString.headerComment(), sourceLocation );
    }
 
    public static RawAspectModelFile load( final Model model ) {

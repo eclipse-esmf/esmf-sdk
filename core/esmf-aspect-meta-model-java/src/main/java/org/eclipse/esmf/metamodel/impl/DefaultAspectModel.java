@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
@@ -26,8 +27,10 @@ import org.apache.jena.rdf.model.Model;
 public class DefaultAspectModel implements AspectModel {
    private Model mergedModel;
    private List<ModelElement> elements;
+   private List<AspectModelFile> files;
 
-   public DefaultAspectModel( final Model mergedModel, final List<ModelElement> elements ) {
+   public DefaultAspectModel( final List<AspectModelFile> files, final Model mergedModel, final List<ModelElement> elements ) {
+      this.files = files;
       this.mergedModel = mergedModel;
       this.elements = elements;
    }
@@ -44,6 +47,11 @@ public class DefaultAspectModel implements AspectModel {
    }
 
    @Override
+   public List<AspectModelFile> files() {
+      return files;
+   }
+
+   @Override
    public List<ModelElement> elements() {
       return elements;
    }
@@ -51,6 +59,10 @@ public class DefaultAspectModel implements AspectModel {
    @Override
    public Model mergedModel() {
       return mergedModel;
+   }
+
+   public void setFiles( final List<AspectModelFile> files ) {
+      this.files = files;
    }
 
    public void setMergedModel( final Model mergedModel ) {

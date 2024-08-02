@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -47,20 +47,15 @@ import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
-import org.eclipse.esmf.aspectmodel.resolver.modelfile.DefaultAspectModelFile;
-import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.aspectmodel.urn.UrnSyntaxException;
 import org.eclipse.esmf.aspectmodel.versionupdate.MetaModelVersionMigrator;
 import org.eclipse.esmf.metamodel.AspectModel;
-import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.Streams;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -72,7 +67,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The core class to load an {@link AspectModel}.
  */
-public class AspectModelLoader extends AspectModelBuilder implements ResolutionStrategySupport {
+public class AspectModelLoader implements ResolutionStrategySupport {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
    private static final String ASPECT_MODELS_FOLDER = "aspect-models";
 
@@ -140,7 +135,7 @@ public class AspectModelLoader extends AspectModelBuilder implements ResolutionS
             .toList();
       final LoaderContext loaderContext = new LoaderContext();
       resolve( migratedFiles, loaderContext );
-      return buildAspectModel( loaderContext.loadedFiles() );
+      return AspectModelBuilder.buildAspectModelFromFiles( loaderContext.loadedFiles() );
    }
 
    /**
@@ -165,7 +160,22 @@ public class AspectModelLoader extends AspectModelBuilder implements ResolutionS
          loaderContext.unresolvedUrns().add( inputUrn.toString() );
       }
       resolve( List.of(), loaderContext );
-      return buildAspectModel( loaderContext.loadedFiles() );
+      return AspectModelBuilder.buildAspectModelFromFiles( loaderContext.loadedFiles() );
+   }
+
+   /**
+    * Load an Aspect Model from an input stream and optionally set the source location for this input
+    *
+    * @param inputStream the input stream
+    * @param sourceLocation the source location for the model
+    * @return the Aspect Model
+    */
+   public AspectModel load( final InputStream inputStream, final Optional<URI> sourceLocation ) {
+      final AspectModelFile rawFile = AspectModelFileLoader.load( inputStream, sourceLocation );
+      final AspectModelFile migratedModel = migrate( rawFile );
+      final LoaderContext loaderContext = new LoaderContext();
+      resolve( List.of( migratedModel ), loaderContext );
+      return AspectModelBuilder.buildAspectModelFromFiles( loaderContext.loadedFiles() );
    }
 
    /**
@@ -175,20 +185,11 @@ public class AspectModelLoader extends AspectModelBuilder implements ResolutionS
     * @return the Aspect Model
     */
    public AspectModel load( final InputStream inputStream ) {
-      final AspectModelFile rawFile = AspectModelFileLoader.load( inputStream );
-      final AspectModelFile migratedModel = migrate( rawFile );
-      final LoaderContext loaderContext = new LoaderContext();
-      resolve( List.of( migratedModel ), loaderContext );
-      return buildAspectModel( loaderContext.loadedFiles() );
-   }
-
-   @FunctionalInterface
-   public interface InputStreamProvider {
-      InputStream get() throws IOException;
+      return load( inputStream, Optional.empty() );
    }
 
    /**
-    * Load Namespace Package (Archive) an Aspect Model from a File
+    * Load a Namespace Package (Archive) from a File
     *
     * @param namespacePackage the archive file
     * @return the Aspect Model
@@ -198,16 +199,16 @@ public class AspectModelLoader extends AspectModelBuilder implements ResolutionS
          throw new RuntimeException( new FileNotFoundException( "The specified file does not exist or is not a file." ) );
       }
 
-      try ( InputStream inputStream = new FileInputStream( namespacePackage ) ) {
+      try ( final InputStream inputStream = new FileInputStream( namespacePackage ) ) {
          return loadNamespacePackage( inputStream );
-      } catch ( IOException e ) {
+      } catch ( final IOException e ) {
          LOG.error( "Error reading the file: {}", namespacePackage.getAbsolutePath(), e );
          throw new RuntimeException( "Error reading the file: " + namespacePackage.getAbsolutePath(), e );
       }
    }
 
    /**
-    * Load Namespace Package (Archive) an Aspect Model from an InputStream
+    * Load a Namespace Package (Archive) from an InputStream
     *
     * @param inputStream the input stream
     * @return the Aspect Model
@@ -216,7 +217,7 @@ public class AspectModelLoader extends AspectModelBuilder implements ResolutionS
       final ByteArrayOutputStream baos = new ByteArrayOutputStream();
       try {
          inputStream.transferTo( baos );
-      } catch ( IOException e ) {
+      } catch ( final IOException e ) {
          throw new RuntimeException( e );
       }
       final boolean hasAspectModelsFolder = containsFolderInNamespacePackage( new ByteArrayInputStream( baos.toByteArray() ) );
@@ -224,43 +225,43 @@ public class AspectModelLoader extends AspectModelBuilder implements ResolutionS
    }
 
    private AspectModel loadNamespacePackageFromStream( final InputStream inputStream, final boolean hasAspectModelsFolder ) {
-      List<AspectModelFile> aspectModelFiles = new ArrayList<>();
+      final List<AspectModelFile> aspectModelFiles = new ArrayList<>();
 
-      try ( ZipInputStream zis = new ZipInputStream( inputStream ) ) {
+      try ( final ZipInputStream zis = new ZipInputStream( inputStream ) ) {
          ZipEntry entry;
 
-         while ( (entry = zis.getNextEntry()) != null ) {
-            boolean isRelevantEntry =
-                  (hasAspectModelsFolder && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) ) && entry.getName()
-                        .endsWith( ".ttl" ))
-                        || (!hasAspectModelsFolder && entry.getName().endsWith( ".ttl" ));
+         while ( ( entry = zis.getNextEntry() ) != null ) {
+            final boolean isRelevantEntry =
+                  ( hasAspectModelsFolder && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) ) && entry.getName()
+                        .endsWith( ".ttl" ) )
+                        || ( !hasAspectModelsFolder && entry.getName().endsWith( ".ttl" ) );
 
             if ( isRelevantEntry ) {
-               AspectModelFile aspectModelFile = migrate( AspectModelFileLoader.load( zis ) );
+               final AspectModelFile aspectModelFile = migrate( AspectModelFileLoader.load( zis ) );
                aspectModelFiles.add( aspectModelFile );
             }
          }
 
          zis.closeEntry();
-      } catch ( IOException e ) {
+      } catch ( final IOException e ) {
          LOG.error( "Error reading the Archive input stream", e );
          throw new RuntimeException( "Error reading the Archive input stream", e );
       }
 
-      LoaderContext loaderContext = new LoaderContext();
+      final LoaderContext loaderContext = new LoaderContext();
       resolve( aspectModelFiles, loaderContext );
-      return buildAspectModel( loaderContext.loadedFiles() );
+      return AspectModelBuilder.buildAspectModelFromFiles( loaderContext.loadedFiles() );
    }
 
    private boolean containsFolderInNamespacePackage( final InputStream inputStream ) {
-      try ( ZipInputStream zis = new ZipInputStream( inputStream ) ) {
+      try ( final ZipInputStream zis = new ZipInputStream( inputStream ) ) {
          ZipEntry entry;
-         while ( (entry = zis.getNextEntry()) != null ) {
+         while ( ( entry = zis.getNextEntry() ) != null ) {
             if ( entry.isDirectory() && entry.getName().contains( String.format( "%s/", ASPECT_MODELS_FOLDER ) ) ) {
                return true;
             }
          }
-      } catch ( IOException e ) {
+      } catch ( final IOException e ) {
          throw new RuntimeException( e );
       }
       return false;

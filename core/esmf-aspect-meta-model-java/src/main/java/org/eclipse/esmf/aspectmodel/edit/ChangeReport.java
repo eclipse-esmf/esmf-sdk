@@ -13,10 +13,16 @@
 
 package org.eclipse.esmf.aspectmodel.edit;
 
-public interface Change {
-   void fire( ChangeContext changeContext );
+import java.util.List;
+import java.util.Map;
 
-   Change reverse();
+public sealed interface ChangeReport {
+   record SimpleEntry( String text ) implements ChangeReport {
+   }
 
-   ChangeReport report( ChangeContext changeContext );
+   record EntryWithDetails( String summary, Map<String, Object> details ) implements ChangeReport {
+   }
+
+   record MultipleEntries( List<ChangeReport> entries ) implements ChangeReport {
+   }
 }

@@ -14,6 +14,8 @@
 package org.eclipse.esmf.test;
 
 import java.io.InputStream;
+import java.net.URI;
+import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
@@ -41,7 +43,7 @@ public class TestResources {
             model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy( "valid" );
-      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream );
+      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, Optional.of( URI.create( "testmodel:" + path ) ) );
    }
 
    public static Try<JsonNode> loadPayload( final TestModel model ) {

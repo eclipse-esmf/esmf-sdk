@@ -13,10 +13,17 @@
 
 package org.eclipse.esmf.aspectmodel.edit;
 
-public interface Change {
-   void fire( ChangeContext changeContext );
+import java.util.List;
 
-   Change reverse();
+import io.soabase.recordbuilder.core.RecordBuilder;
 
-   ChangeReport report( ChangeContext changeContext );
+@RecordBuilder
+public record AspectChangeContextConfig(
+      List<String> defaultFileHeader
+) {
+   public AspectChangeContextConfig {
+      if ( defaultFileHeader == null ) {
+         defaultFileHeader = List.of();
+      }
+   }
 }

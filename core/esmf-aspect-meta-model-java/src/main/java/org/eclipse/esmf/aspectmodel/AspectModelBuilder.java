@@ -31,8 +31,12 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 
-public abstract class AspectModelBuilder {
-   protected AspectModel buildAspectModel( final Collection<AspectModelFile> inputFiles ) {
+public class AspectModelBuilder {
+   public static AspectModel buildEmptyModel() {
+      return new DefaultAspectModel( new ArrayList<>(), ModelFactory.createDefaultModel(), new ArrayList<>() );
+   }
+
+   public static AspectModel buildAspectModelFromFiles( final Collection<AspectModelFile> inputFiles ) {
       final Model mergedModel = ModelFactory.createDefaultModel();
       mergedModel.add( MetaModelFile.metaModelDefinitions() );
       for ( final AspectModelFile file : inputFiles ) {
@@ -40,9 +44,11 @@ public abstract class AspectModelBuilder {
       }
 
       final List<ModelElement> elements = new ArrayList<>();
+      final List<AspectModelFile> files = new ArrayList<>();
       for ( final AspectModelFile file : inputFiles ) {
          final DefaultAspectModelFile aspectModelFile = new DefaultAspectModelFile( file.sourceModel(), file.headerComment(),
                file.sourceLocation() );
+         files.add( aspectModelFile );
          final Model model = file.sourceModel();
          final ModelElementFactory modelElementFactory = new ModelElementFactory( mergedModel, Map.of(), element -> aspectModelFile );
          final List<ModelElement> fileElements = model.listStatements( null, RDF.type, (RDFNode) null ).toList().stream()
@@ -54,6 +60,6 @@ public abstract class AspectModelBuilder {
          aspectModelFile.setElements( fileElements );
          elements.addAll( fileElements );
       }
-      return new DefaultAspectModel( mergedModel, elements );
+      return new DefaultAspectModel( files, mergedModel, elements );
    }
 }

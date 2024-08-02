@@ -13,10 +13,10 @@
 
 package org.eclipse.esmf.aspectmodel.edit;
 
-public interface Change {
-   void fire( ChangeContext changeContext );
+import org.eclipse.esmf.metamodel.AspectModel;
 
-   Change reverse();
+public interface ChangeContext {
+   AspectModel aspectModel();
 
-   ChangeReport report( ChangeContext changeContext );
+   AspectChangeContextConfig config();
 }
