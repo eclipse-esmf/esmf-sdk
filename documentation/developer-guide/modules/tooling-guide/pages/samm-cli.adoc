@@ -344,7 +344,7 @@ Please consider the following model fragment, with the attention focused on the 
 
 [source,turtle,subs="attributes+,+quotes"]
 ----
-@prefix : <urn:samm:{example-ns}.myapplication:2.0.0#> . # <1>
+@prefix : <urn:samm:{example-ns}.myapplication:1.0.0#> . # <1>
 @prefix samm: <{samm}> .
 
 :Test a samm:Aspect; # <3>
@@ -364,7 +364,7 @@ For the generated OpenAPI specification, the following mapping would apply:
   "openapi" : "3.0.3",
   "info" : {
     "title" : "TestAspect", // <2> <3>
-    "version" : "v2" // <1>
+    "version" : "v1" // <1>
   }
 }
 ----
@@ -379,10 +379,10 @@ The version information as described above is also used in the URL definitions o
 ----
 {
  "servers" : [ {
-    "url" : "http://example.com/api/v2", // <1>
+    "url" : "http://example.com/api/v1", // <1>
     "variables" : {
       "api-version" : {
-        "default" : "v2" // <1>
+        "default" : "v1" // <1>
       }
     }
   } ]
@@ -744,7 +744,7 @@ Please consider the following model fragment, with the attention focused on the 
 
 [source,turtle,subs="attributes+,+quotes"]
 ----
-@prefix : <urn:samm:{example-ns}.myapplication:2.0.0#> . # <1>
+@prefix : <urn:samm:{example-ns}.myapplication:1.0.0#> . # <1>
 @prefix samm: <{samm}> .
 
 :Movement a samm:Aspect ; # <3>
@@ -766,7 +766,7 @@ For the generated AsyncAPI specification, the following mapping would apply:
   "asyncapi" : "3.0.0",
   "info" : {
     "title" : "My Movement Aspect MQTT API", // <2>
-    "version" : "v2", // <1>
+    "version" : "v1", // <1>
     "description" : "Aspect for movement information" // <3>
   }
 }
