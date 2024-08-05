@@ -62,15 +62,15 @@ public class AddElementDefinition extends EditAspectModel {
 
          @Override
          public ChangeReport report( final ChangeContext changeContext ) {
-            return new ChangeReport.EntryWithDetails( "Remove definition of " + elementUrn + " in " + targetFile,
-                  Map.of( "removeStatements", definition ) );
+            return new ChangeReport.EntryWithDetails( "Remove definition of " + elementUrn + " in " + show( targetFile ),
+                  Map.of( "model content to remove", definition ) );
          }
       };
    }
 
    @Override
    public ChangeReport report( final ChangeContext changeContext ) {
-      return new ChangeReport.EntryWithDetails( "Add definition of " + elementUrn + " in " + targetFile,
-            Map.of( "addStatements", definition ) );
+      return new ChangeReport.EntryWithDetails( "Add definition of " + elementUrn + " in " + show( targetFile ),
+            Map.of( "model content to add", definition ) );
    }
 }

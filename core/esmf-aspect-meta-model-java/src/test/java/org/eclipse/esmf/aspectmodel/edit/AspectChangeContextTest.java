@@ -267,16 +267,20 @@ public class AspectChangeContextTest {
             ) )
             .build();
       final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceLocation( file2Location ).build();
+
       ctx.applyChange( new ChangeGroup(
             new AddAspectModelFile( file1 ),
             new AddAspectModelFile( file2 )
       ) );
-
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
 
       final AspectModelUrn aspectUrn = aspectModel.aspect().urn();
       final Predicate<AspectModelFile> targetFileLocator = file -> file.sourceLocation().equals( file2Location );
-      ctx.applyChange( new MoveElementToOtherFile( aspectUrn, targetFileLocator ) );
+      final Change move = new MoveElementToOtherFile( aspectUrn, targetFileLocator );
+
+      System.out.println( ChangeReportFormatter.INSTANCE.apply( move.report( ctx ) ) );
+
+      ctx.applyChange( move );
 
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file2Location );
       ctx.undoChange();

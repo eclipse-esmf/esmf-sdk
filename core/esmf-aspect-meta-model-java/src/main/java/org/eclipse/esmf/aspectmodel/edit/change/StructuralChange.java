@@ -22,7 +22,7 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.vocabulary.RDF;
 
-public abstract class StructuralChange implements Change {
+public abstract class StructuralChange extends AbstractChange implements Change {
    protected AspectModelFile sourceFile( final ChangeContext changeContext, final AspectModelUrn elementUrn ) {
       return changeContext.aspectModel().files().stream().filter( aspectModelFile ->
                   aspectModelFile.sourceModel()

@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.loader;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -32,14 +30,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
@@ -282,23 +279,6 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       }
    }
 
-   private Set<String> getAllUrnsInModel( final Model model ) {
-      return Streams.stream( model.listStatements().mapWith( statement -> {
-         final Stream<String> subjectUri = statement.getSubject().isURIResource()
-               ? Stream.of( statement.getSubject().getURI() )
-               : Stream.empty();
-         final Stream<String> propertyUri = Stream.of( statement.getPredicate().getURI() );
-         final Stream<String> objectUri = statement.getObject().isURIResource()
-               ? Stream.of( statement.getObject().asResource().getURI() )
-               : Stream.empty();
-
-         return Stream.of( subjectUri, propertyUri, objectUri )
-               .flatMap( Function.identity() )
-               .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() )
-               .map( AspectModelUrn::toString );
-      } ) ).flatMap( Function.identity() ).collect( toSet() );
-   }
-
    /**
     * Adapter that enables the resolver to handle URNs with the legacy "urn:bamm:" prefix.
     *
@@ -361,7 +341,8 @@ public class AspectModelLoader implements ResolutionStrategySupport {
             .filter( uri -> uri.startsWith( "urn:samm:" ) )
             .forEach( urn -> context.resolvedUrns().add( urn ) );
 
-      getAllUrnsInModel( modelFile.sourceModel() ).stream()
+      RdfUtil.getAllUrnsInModel( modelFile.sourceModel() ).stream()
+            .map( AspectModelUrn::toString )
             .filter( urn -> !context.resolvedUrns().contains( urn ) )
             .filter( urn -> !urn.startsWith( XSD.NS ) )
             .filter( urn -> !urn.startsWith( RDF.uri ) )

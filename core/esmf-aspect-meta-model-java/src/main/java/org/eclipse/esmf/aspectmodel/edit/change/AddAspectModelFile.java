@@ -21,7 +21,7 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 
-public class AddAspectModelFile implements Change {
+public class AddAspectModelFile extends AbstractChange {
    private final AspectModelFile newFile;
 
    public AddAspectModelFile( final AspectModelFile newFile ) {
@@ -56,15 +56,15 @@ public class AddAspectModelFile implements Change {
          @Override
          public ChangeReport report( final ChangeContext changeContext ) {
             final AspectModelFile file = fileToRemove( changeContext );
-            return new ChangeReport.EntryWithDetails( "Remove file " + file.sourceLocation(),
-                  Map.of( "sourceModel", file.sourceModel() ) );
+            return new ChangeReport.EntryWithDetails( "Remove file " + show( file ),
+                  Map.of( "model content to remove", file.sourceModel() ) );
          }
       };
    }
 
    @Override
    public ChangeReport report( final ChangeContext changeContext ) {
-      return new ChangeReport.EntryWithDetails( "Add file " + newFile.sourceLocation(),
-            Map.of( "sourceModel", newFile.sourceModel() ) );
+      return new ChangeReport.EntryWithDetails( "Add file " + show( newFile ),
+            Map.of( "model content to add", newFile.sourceModel() ) );
    }
 }

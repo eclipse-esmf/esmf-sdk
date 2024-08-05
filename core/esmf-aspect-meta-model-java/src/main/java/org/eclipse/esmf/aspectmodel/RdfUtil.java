@@ -11,10 +11,17 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.edit;
+package org.eclipse.esmf.aspectmodel;
 
-import java.io.StringWriter;
+import static java.util.stream.Collectors.toSet;
 
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+
+import com.google.common.collect.Streams;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -46,9 +53,19 @@ public class RdfUtil {
       return result;
    }
 
-   public static String modelToString( final Model model ) {
-      final StringWriter stringWriter = new StringWriter();
-      model.write( stringWriter, "TURTLE" );
-      return stringWriter.toString();
+   public static Set<AspectModelUrn> getAllUrnsInModel( final Model model ) {
+      return Streams.stream( model.listStatements().mapWith( statement -> {
+         final Stream<String> subjectUri = statement.getSubject().isURIResource()
+               ? Stream.of( statement.getSubject().getURI() )
+               : Stream.empty();
+         final Stream<String> propertyUri = Stream.of( statement.getPredicate().getURI() );
+         final Stream<String> objectUri = statement.getObject().isURIResource()
+               ? Stream.of( statement.getObject().asResource().getURI() )
+               : Stream.empty();
+
+         return Stream.of( subjectUri, propertyUri, objectUri )
+               .flatMap( Function.identity() )
+               .flatMap( urn -> AspectModelUrn.from( urn ).toJavaOptional().stream() );
+      } ) ).flatMap( Function.identity() ).collect( toSet() );
    }
 }

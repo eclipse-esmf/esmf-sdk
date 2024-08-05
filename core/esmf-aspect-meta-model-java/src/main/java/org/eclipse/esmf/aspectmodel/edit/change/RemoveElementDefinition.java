@@ -16,10 +16,10 @@ package org.eclipse.esmf.aspectmodel.edit.change;
 import java.util.Map;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
-import org.eclipse.esmf.aspectmodel.edit.RdfUtil;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.apache.jena.rdf.model.Model;
@@ -68,8 +68,9 @@ public class RemoveElementDefinition extends EditAspectModel {
 
          @Override
          public ChangeReport report( final ChangeContext changeContext ) {
-            return new ChangeReport.SimpleEntry(
-                  "Add back definition of " + elementUrn + " to " + fileWithOriginalDefinition.sourceLocation() );
+            return new ChangeReport.EntryWithDetails(
+                  "Add back definition of " + elementUrn + " to " + show( fileWithOriginalDefinition ),
+                  Map.of( "model content to add", definition ) );
          }
       };
    }
@@ -78,7 +79,7 @@ public class RemoveElementDefinition extends EditAspectModel {
    public ChangeReport report( final ChangeContext changeContext ) {
       changesPerFile( changeContext );
       return new ChangeReport.EntryWithDetails(
-            "Remove definition of " + elementUrn + " from " + fileWithOriginalDefinition.sourceLocation(),
-            Map.of( "definition", definition ) );
+            "Remove definition of " + elementUrn + " from " + show( fileWithOriginalDefinition ),
+            Map.of( "model content to remove", definition ) );
    }
 }

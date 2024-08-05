@@ -20,7 +20,7 @@ import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 
-public class RemoveAspectModelFile implements Change {
+public class RemoveAspectModelFile extends AbstractChange {
    private final AspectModelFile fileToRemove;
 
    public RemoveAspectModelFile( final AspectModelFile fileToRemove ) {
@@ -39,7 +39,7 @@ public class RemoveAspectModelFile implements Change {
 
    @Override
    public ChangeReport report( final ChangeContext changeContext ) {
-      return new ChangeReport.EntryWithDetails( "Remove file " + fileToRemove.sourceLocation(),
-            Map.of( "sourceModel", fileToRemove.sourceModel() ) );
+      return new ChangeReport.EntryWithDetails( "Remove file " + show( fileToRemove ),
+            Map.of( "model content", fileToRemove.sourceModel() ) );
    }
 }

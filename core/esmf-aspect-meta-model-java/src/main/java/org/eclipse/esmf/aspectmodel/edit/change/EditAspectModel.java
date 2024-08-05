@@ -24,7 +24,7 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
-public abstract class EditAspectModel implements Change {
+public abstract class EditAspectModel extends AbstractChange implements Change {
    public record ModelChanges( Model add, Model remove ) {
       public static final ModelChanges NONE = new ModelChanges( null, null );
    }
