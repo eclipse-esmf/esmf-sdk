@@ -13,13 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
-import java.util.Map;
-
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.edit.Change;
-import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
-import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.apache.jena.rdf.model.Model;
@@ -48,7 +44,7 @@ public class RemoveElementDefinition extends EditAspectModel {
       fileWithOriginalDefinition = aspectModelFile;
       final Model add = ModelFactory.createDefaultModel();
       definition = RdfUtil.getModelElementDefinition( elementResource );
-      return new ModelChanges( add, definition );
+      return new ModelChanges( add, definition, "Remove definition of " + elementUrn );
    }
 
    @Override
@@ -57,7 +53,8 @@ public class RemoveElementDefinition extends EditAspectModel {
          @Override
          protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
             return aspectModelFile.sourceLocation().equals( fileWithOriginalDefinition.sourceLocation() )
-                  ? new ModelChanges( definition, ModelFactory.createDefaultModel() )
+                  ? new ModelChanges( definition, ModelFactory.createDefaultModel(),
+                  "Add back definition of " + elementUrn )
                   : ModelChanges.NONE;
          }
 
@@ -65,21 +62,6 @@ public class RemoveElementDefinition extends EditAspectModel {
          public Change reverse() {
             return RemoveElementDefinition.this;
          }
-
-         @Override
-         public ChangeReport report( final ChangeContext changeContext ) {
-            return new ChangeReport.EntryWithDetails(
-                  "Add back definition of " + elementUrn + " to " + show( fileWithOriginalDefinition ),
-                  Map.of( "model content to add", definition ) );
-         }
       };
-   }
-
-   @Override
-   public ChangeReport report( final ChangeContext changeContext ) {
-      changesPerFile( changeContext );
-      return new ChangeReport.EntryWithDetails(
-            "Remove definition of " + elementUrn + " from " + show( fileWithOriginalDefinition ),
-            Map.of( "model content to remove", definition ) );
    }
 }

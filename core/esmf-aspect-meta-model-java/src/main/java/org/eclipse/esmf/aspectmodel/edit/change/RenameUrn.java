@@ -15,8 +15,6 @@ package org.eclipse.esmf.aspectmodel.edit.change;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
-import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
-import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.apache.jena.rdf.model.Model;
@@ -49,6 +47,7 @@ public class RenameUrn extends EditAspectModel {
       final Model addModel = ModelFactory.createDefaultModel();
       final Model removeModel = ModelFactory.createDefaultModel();
 
+      int updatedTriples = 0;
       for ( final StmtIterator it = aspectModelFile.sourceModel().listStatements(); it.hasNext(); ) {
          final Statement statement = it.next();
          boolean updateTriple = false;
@@ -93,19 +92,21 @@ public class RenameUrn extends EditAspectModel {
          if ( updateTriple ) {
             addModel.add( addSubject, predicate, addObject );
             removeModel.add( removeSubject, predicate, removeObject );
+            updatedTriples++;
          }
       }
 
-      return new ModelChanges( addModel, removeModel );
+      return updatedTriples > 0
+            ? new ModelChanges( addModel, removeModel, changeDescription() )
+            : ModelChanges.NONE;
+   }
+
+   protected String changeDescription() {
+      return "Rename " + from() + " to " + to();
    }
 
    @Override
    public Change reverse() {
       return new RenameUrn( to, from );
-   }
-
-   @Override
-   public ChangeReport report( final ChangeContext changeContext ) {
-      return new ChangeReport.SimpleEntry( "Rename " + from() + " to " + to() );
    }
 }

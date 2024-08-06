@@ -14,9 +14,7 @@
 package org.eclipse.esmf.aspectmodel.edit;
 
 public interface Change {
-   void fire( ChangeContext changeContext );
+   ChangeReport fire( ChangeContext changeContext );
 
    Change reverse();
-
-   ChangeReport report( ChangeContext changeContext );
 }

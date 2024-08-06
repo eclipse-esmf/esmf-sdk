@@ -17,12 +17,12 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeGroup;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
-import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -39,6 +39,10 @@ public class MoveElementToNewFile extends StructuralChange {
    private final AspectModelUrn elementUrn;
    private ChangeGroup changes = null;
 
+   public MoveElementToNewFile( final ModelElement modelElement, final Optional<URI> sourceLocation ) {
+      this( modelElement, null, sourceLocation );
+   }
+
    public MoveElementToNewFile( final ModelElement modelElement, final List<String> headerComment, final Optional<URI> sourceLocation ) {
       this( modelElement.urn(), headerComment, sourceLocation );
       if ( modelElement.isAnonymous() ) {
@@ -52,14 +56,13 @@ public class MoveElementToNewFile extends StructuralChange {
       this.elementUrn = elementUrn;
    }
 
-   private void prepareChanges( final ChangeContext changeContext ) {
-      if ( changes != null ) {
-         return;
-      }
-
+   protected void prepare( final ChangeContext changeContext ) {
       // Prepare new file
+      final List<String> fileHeader = Optional.ofNullable( headerComment )
+            .or( () -> Optional.ofNullable( changeContext.config().defaultFileHeader() ) )
+            .orElse( List.of() );
       final RawAspectModelFile targetFile = RawAspectModelFileBuilder.builder()
-            .headerComment( headerComment )
+            .headerComment( fileHeader )
             .sourceLocation( sourceLocation )
             .build();
       final Model targetModel = targetFile.sourceModel();
@@ -77,6 +80,7 @@ public class MoveElementToNewFile extends StructuralChange {
 
       // Perform move of element definition
       changes = new ChangeGroup(
+            "Move element " + elementUrn + " to new file " + show( targetFile ),
             new RemoveElementDefinition( elementUrn ),
             new AddAspectModelFile( targetFile ),
             new AddElementDefinition( elementUrn, definition, targetFile )
@@ -84,19 +88,13 @@ public class MoveElementToNewFile extends StructuralChange {
    }
 
    @Override
-   public void fire( final ChangeContext changeContext ) {
-      prepareChanges( changeContext );
-      changes.fire( changeContext );
+   public ChangeReport fire( final ChangeContext changeContext ) {
+      prepare( changeContext );
+      return changes.fire( changeContext );
    }
 
    @Override
    public Change reverse() {
       return changes.reverse();
-   }
-
-   @Override
-   public ChangeReport report( final ChangeContext changeContext ) {
-      prepareChanges( changeContext );
-      return changes.report( changeContext );
    }
 }

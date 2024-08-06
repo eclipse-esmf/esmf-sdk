@@ -14,8 +14,9 @@
 package org.eclipse.esmf.aspectmodel.edit;
 
 import java.io.StringWriter;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
@@ -31,42 +32,73 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
-public class ChangeReportFormatter implements Function<ChangeReport, String> {
+public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectChangeContextConfig, String> {
    public static final ChangeReportFormatter INSTANCE = new ChangeReportFormatter();
 
    private ChangeReportFormatter() {
    }
 
-   private void append( final StringBuilder builder, final ChangeReport report, final int indentation ) {
-      final String indent = " ".repeat( indentation );
+   private void append( final StringBuilder builder, final ChangeReport report, final AspectChangeContextConfig config,
+         final int indentationLevel ) {
+      final String indent = "  ".repeat( indentationLevel );
       if ( report instanceof final ChangeReport.SimpleEntry simpleEntry ) {
+         builder.append( indent );
+         builder.append( "- " );
          builder.append( simpleEntry.text() );
          builder.append( "\n" );
       } else if ( report instanceof final ChangeReport.MultipleEntries multipleEntries ) {
-         for ( final ChangeReport entry : multipleEntries.entries() ) {
-            append( builder, entry, indentation + 2 );
+         if ( multipleEntries.summary() != null ) {
+            builder.append( indent );
+            builder.append( "- " );
+            builder.append( multipleEntries.summary() );
             builder.append( "\n" );
+         }
+         final List<ChangeReport> entries = multipleEntries.entries();
+         for ( int i = 0; i < entries.size(); i++ ) {
+            final ChangeReport entry = entries.get( i );
+            final int entryIndentation = multipleEntries.summary() == null
+                  ? indentationLevel
+                  : indentationLevel + 1;
+            append( builder, entry, config, entryIndentation );
+            if ( i < entries.size() - 1 ) {
+               builder.append( "\n" );
+            }
          }
       } else if ( report instanceof final ChangeReport.EntryWithDetails entryWithDetails ) {
          builder.append( indent );
+         builder.append( "- " );
          builder.append( entryWithDetails.summary() );
          builder.append( "\n" );
          for ( final Map.Entry<String, Object> entry : entryWithDetails.details().entrySet() ) {
-            builder.append( indent );
-            builder.append( indent );
-            builder.append( entry.getKey() );
-            builder.append( ": " );
-            if ( entry.getValue() instanceof final Model model ) {
+            if ( config.detailedChangeReport() && entry.getValue() instanceof final Model model ) {
+               builder.append( indent );
+               builder.append( "  - " );
+               builder.append( entry.getKey() );
+               builder.append( ": " );
                builder.append( "\n" );
                show( model ).lines()
                      .forEach( line -> {
                         builder.append( indent );
-                        builder.append( indent );
-                        builder.append( indent );
+                        builder.append( "    " );
                         builder.append( line );
                         builder.append( "\n" );
                      } );
+            } else if ( !config.detailedChangeReport() && entry.getValue() instanceof final Model model ) {
+               final int numberOfStatements = model.listStatements().toList().size();
+               if ( numberOfStatements > 0 ) {
+                  builder.append( indent );
+                  builder.append( "  - " );
+                  builder.append( entry.getKey() );
+                  builder.append( ": " );
+                  builder.append( numberOfStatements );
+                  builder.append( " RDF statements" );
+                  builder.append( "\n" );
+               }
             } else {
+               builder.append( indent );
+               builder.append( "  - " );
+               builder.append( entry.getKey() );
+               builder.append( ": " );
                builder.append( entry.getValue().toString() );
                builder.append( "\n" );
             }
@@ -106,9 +138,9 @@ public class ChangeReportFormatter implements Function<ChangeReport, String> {
    }
 
    @Override
-   public String apply( final ChangeReport changeReport ) {
+   public String apply( final ChangeReport changeReport, final AspectChangeContextConfig config ) {
       final StringBuilder builder = new StringBuilder();
-      append( builder, changeReport, 0 );
+      append( builder, changeReport, config, 0 );
       return builder.toString();
    }
 }

@@ -13,16 +13,18 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
-import java.io.StringWriter;
 import java.net.URI;
+import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 
-import org.apache.jena.rdf.model.Model;
-
 public abstract class AbstractChange implements Change {
    protected String show( final AspectModelFile aspectModelFile ) {
-      return aspectModelFile.sourceLocation().map( URI::toString ).orElse( "(unknown file)" );
+      return show( aspectModelFile.sourceLocation() );
+   }
+
+   protected String show( final Optional<URI> sourceLocation ) {
+      return sourceLocation.map( URI::toString ).orElse( "(unknown file)" );
    }
 }

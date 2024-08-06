@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
 
@@ -28,6 +29,11 @@ public class DefaultNamespace implements Namespace {
    private final VersionNumber versionNumber;
    private final List<ModelElement> elements;
    private final Optional<AspectModelFile> source;
+
+   public DefaultNamespace( final AspectModelUrn aspectModelUrn, final List<ModelElement> elements,
+         final Optional<AspectModelFile> source ) {
+      this( aspectModelUrn.getNamespace(), VersionNumber.parse( aspectModelUrn.getVersion() ), elements, source );
+   }
 
    public DefaultNamespace( final String packagePart, final VersionNumber versionNumber, final List<ModelElement> elements,
          final Optional<AspectModelFile> source ) {

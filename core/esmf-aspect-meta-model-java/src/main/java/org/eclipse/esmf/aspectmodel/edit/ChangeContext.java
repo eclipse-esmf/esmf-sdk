@@ -13,10 +13,12 @@
 
 package org.eclipse.esmf.aspectmodel.edit;
 
-import org.eclipse.esmf.metamodel.AspectModel;
+import java.util.List;
+
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 
 public interface ChangeContext {
-   AspectModel aspectModel();
+   List<AspectModelFile> aspectModelFiles();
 
    AspectChangeContextConfig config();
 }

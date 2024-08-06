@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeGroup;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
-import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.apache.jena.rdf.model.Model;
@@ -38,12 +38,8 @@ public class MoveElementToOtherFile extends StructuralChange {
       this.targetFileSelector = targetFileSelector;
    }
 
-   private void prepareChanges( final ChangeContext changeContext ) {
-      if ( changes != null ) {
-         return;
-      }
-
-      final List<AspectModelFile> targetFiles = changeContext.aspectModel().files().stream().filter( targetFileSelector ).toList();
+   protected void prepare( final ChangeContext changeContext ) {
+      final List<AspectModelFile> targetFiles = changeContext.aspectModelFiles().stream().filter( targetFileSelector ).toList();
       if ( targetFiles.size() > 1 ) {
          throw new ModelChangeException( "Can not determine target file to move element" );
       }
@@ -62,25 +58,20 @@ public class MoveElementToOtherFile extends StructuralChange {
 
       // Perform move of element definition
       changes = new ChangeGroup(
+            "Move element " + elementUrn + " to file " + show( targetFile ),
             new RemoveElementDefinition( elementUrn ),
             new AddElementDefinition( elementUrn, definition, targetFile )
       );
    }
 
    @Override
-   public void fire( final ChangeContext changeContext ) {
-      prepareChanges( changeContext );
-      changes.fire( changeContext );
+   public ChangeReport fire( final ChangeContext changeContext ) {
+      prepare( changeContext );
+      return changes.fire( changeContext );
    }
 
    @Override
    public Change reverse() {
       return changes.reverse();
-   }
-
-   @Override
-   public ChangeReport report( final ChangeContext changeContext ) {
-      prepareChanges( changeContext );
-      return changes.report( changeContext );
    }
 }

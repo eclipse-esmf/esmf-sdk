@@ -28,18 +28,14 @@ public class RemoveAspectModelFile extends AbstractChange {
    }
 
    @Override
-   public void fire( final ChangeContext changeContext ) {
-      changeContext.aspectModel().files().remove( fileToRemove );
+   public ChangeReport fire( final ChangeContext changeContext ) {
+      changeContext.aspectModelFiles().remove( fileToRemove );
+      return new ChangeReport.EntryWithDetails( "Remove file " + show( fileToRemove ),
+            Map.of( "model content", fileToRemove.sourceModel() ) );
    }
 
    @Override
    public Change reverse() {
       return new AddAspectModelFile( fileToRemove );
-   }
-
-   @Override
-   public ChangeReport report( final ChangeContext changeContext ) {
-      return new ChangeReport.EntryWithDetails( "Remove file " + show( fileToRemove ),
-            Map.of( "model content", fileToRemove.sourceModel() ) );
    }
 }

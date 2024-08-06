@@ -18,19 +18,29 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ChangeGroup implements Change {
+   private final String summary;
    private final List<Change> changes;
 
-   public ChangeGroup( final Change... changes ) {
-      this( Arrays.asList( changes ) );
+   public ChangeGroup( final String summary, final Change... changes ) {
+      this( summary, Arrays.asList( changes ) );
    }
 
-   public ChangeGroup( final List<Change> changes ) {
+   public ChangeGroup( final Change... changes ) {
+      this( null, Arrays.asList( changes ) );
+   }
+
+   public ChangeGroup( final String summary, final List<Change> changes ) {
+      this.summary = summary;
       this.changes = changes;
    }
 
+   public ChangeGroup( final List<Change> changes ) {
+      this( null, changes );
+   }
+
    @Override
-   public void fire( final ChangeContext changeContext ) {
-      changes.forEach( change -> change.fire( changeContext ) );
+   public ChangeReport fire( final ChangeContext changeContext ) {
+      return new ChangeReport.MultipleEntries( summary, changes.stream().map( change -> change.fire( changeContext ) ).toList() );
    }
 
    @Override
@@ -40,10 +50,5 @@ public class ChangeGroup implements Change {
          reversedChanges.add( changes.get( i ).reverse() );
       }
       return new ChangeGroup( reversedChanges );
-   }
-
-   @Override
-   public ChangeReport report( final ChangeContext changeContext ) {
-      return new ChangeReport.MultipleEntries( changes.stream().map( change -> change.report( changeContext ) ).toList() );
    }
 }

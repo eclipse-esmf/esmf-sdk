@@ -15,8 +15,10 @@ package org.eclipse.esmf.aspectmodel.edit;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 
@@ -38,10 +40,11 @@ public class AspectChangeContext implements ChangeContext {
       this( AspectChangeContextConfigBuilder.builder().build(), aspectModel );
    }
 
-   public synchronized void applyChange( final Change change ) {
-      change.fire( this );
+   public synchronized ChangeReport applyChange( final Change change ) {
+      final ChangeReport result = change.fire( this );
       updateAspectModelAfterChange();
       undoStack.offerLast( change.reverse() );
+      return result;
    }
 
    public synchronized void undoChange() {
@@ -72,8 +75,8 @@ public class AspectChangeContext implements ChangeContext {
    }
 
    @Override
-   public AspectModel aspectModel() {
-      return aspectModel;
+   public List<AspectModelFile> aspectModelFiles() {
+      return aspectModel.files();
    }
 
    @Override

@@ -29,6 +29,7 @@ import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.AddElementDefinition;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToNewFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToOtherFile;
+import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToOtherNamespaceNewFile;
 import org.eclipse.esmf.aspectmodel.edit.change.RemoveAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.RenameElement;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
@@ -36,7 +37,9 @@ import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.Namespace;
 import org.eclipse.esmf.metamodel.Property;
+import org.eclipse.esmf.metamodel.impl.DefaultNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
@@ -223,11 +226,10 @@ public class AspectChangeContextTest {
       final URI originalSourceLocation = aspectModel.aspect().getSourceFile().sourceLocation().get();
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
       final URI sourceLocation = URI.create( "file:///temp/test.ttl" );
-      final Change move = new MoveElementToNewFile( aspectModel.aspect(), List.of(), Optional.of( sourceLocation ) );
+      final Change move = new MoveElementToNewFile( aspectModel.aspect(), Optional.of( sourceLocation ) );
 
-      System.out.println( ChangeReportFormatter.INSTANCE.apply( move.report( ctx ) ) );
-
-      ctx.applyChange( move );
+      final ChangeReport changeReport = ctx.applyChange( move );
+      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, AspectChangeContextConfig.DEFAULT ) );
       assertThat( aspectModel.files() ).hasSize( 2 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
@@ -278,13 +280,46 @@ public class AspectChangeContextTest {
       final Predicate<AspectModelFile> targetFileLocator = file -> file.sourceLocation().equals( file2Location );
       final Change move = new MoveElementToOtherFile( aspectUrn, targetFileLocator );
 
-      System.out.println( ChangeReportFormatter.INSTANCE.apply( move.report( ctx ) ) );
-
-      ctx.applyChange( move );
+      final ChangeReport changeReport = ctx.applyChange( move );
+      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, AspectChangeContextConfig.DEFAULT ) );
 
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file2Location );
       ctx.undoChange();
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
+   }
+
+   @Test
+   void testMoveElementToOtherNamespaceNewFile() {
+      final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
+      assertThat( aspectModel.files() ).hasSize( 1 );
+      final URI originalSourceLocation = aspectModel.aspect().getSourceFile().sourceLocation().get();
+      final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
+      final URI sourceLocation = URI.create( "file:///temp/test.ttl" );
+
+      final AspectModelUrn targetUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.example.new:1.0.0#Aspect" );
+      final Namespace targetNamespace = new DefaultNamespace( targetUrn, List.of(), Optional.empty() );
+      final Change move = new MoveElementToOtherNamespaceNewFile( aspectModel.aspect(), targetNamespace, Optional.of( sourceLocation ) );
+
+      final ChangeReport changeReport = ctx.applyChange( move );
+      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, AspectChangeContextConfig.DEFAULT ) );
+
+      assertThat( aspectModel.files() ).hasSize( 2 );
+      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
+            .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
+      assertThat( aspectModel.aspect().urn() ).isEqualTo( targetUrn );
+
+      ctx.undoChange();
+      assertThat( aspectModel.files() ).hasSize( 1 );
+      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( originalSourceLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
+            .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
+
+      ctx.redoChange();
+      assertThat( aspectModel.files() ).hasSize( 2 );
+      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
+            .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
    }
 
    private Model model( final String ttlRepresentation ) {

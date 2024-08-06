@@ -13,12 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
-import java.util.Map;
-
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
-import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
-import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.apache.jena.rdf.model.Model;
@@ -37,11 +33,10 @@ public class AddElementDefinition extends EditAspectModel {
 
    @Override
    protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
-      if ( !aspectModelFile.equals( targetFile ) ) {
-         return ModelChanges.NONE;
-      }
-
-      return new ModelChanges( definition, ModelFactory.createDefaultModel() );
+      return aspectModelFile.equals( targetFile )
+            ? new ModelChanges( definition, ModelFactory.createDefaultModel(),
+            "Add definition of " + elementUrn )
+            : ModelChanges.NONE;
    }
 
    @Override
@@ -49,28 +44,16 @@ public class AddElementDefinition extends EditAspectModel {
       return new EditAspectModel() {
          @Override
          protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
-            if ( aspectModelFile.equals( targetFile ) ) {
-               return new ModelChanges( ModelFactory.createDefaultModel(), definition );
-            }
-            return ModelChanges.NONE;
+            return aspectModelFile.sourceLocation().equals( targetFile.sourceLocation() )
+                  ? new ModelChanges( ModelFactory.createDefaultModel(), definition,
+                  "Remove definition of " + elementUrn )
+                  : ModelChanges.NONE;
          }
 
          @Override
          public Change reverse() {
             return AddElementDefinition.this;
          }
-
-         @Override
-         public ChangeReport report( final ChangeContext changeContext ) {
-            return new ChangeReport.EntryWithDetails( "Remove definition of " + elementUrn + " in " + show( targetFile ),
-                  Map.of( "model content to remove", definition ) );
-         }
       };
-   }
-
-   @Override
-   public ChangeReport report( final ChangeContext changeContext ) {
-      return new ChangeReport.EntryWithDetails( "Add definition of " + elementUrn + " in " + show( targetFile ),
-            Map.of( "model content to add", definition ) );
    }
 }

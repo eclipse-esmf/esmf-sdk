@@ -13,8 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
-import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
-import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
@@ -36,7 +34,7 @@ public class RenameElement extends RenameUrn {
    }
 
    @Override
-   public ChangeReport report( final ChangeContext changeContext ) {
-      return new ChangeReport.SimpleEntry( "Rename " + from() + " to " + to().getName() );
+   protected String changeDescription() {
+      return "Rename " + from() + " to " + to().getName();
    }
 }

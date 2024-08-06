@@ -14,19 +14,22 @@
 package org.eclipse.esmf.aspectmodel.edit.change;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
+import com.google.common.collect.Streams;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 
-public abstract class StructuralChange extends AbstractChange implements Change {
+public abstract class StructuralChange extends AbstractChange {
    protected AspectModelFile sourceFile( final ChangeContext changeContext, final AspectModelUrn elementUrn ) {
-      return changeContext.aspectModel().files().stream().filter( aspectModelFile ->
-                  aspectModelFile.sourceModel()
-                        .contains( aspectModelFile.sourceModel().createResource( elementUrn.toString() ), RDF.type, (RDFNode) null ) )
+      return changeContext.aspectModelFiles().stream().filter( aspectModelFile -> {
+               final Resource elementResource = aspectModelFile.sourceModel().createResource( elementUrn.toString() );
+               return Streams.stream( aspectModelFile.sourceModel().listStatements( elementResource, RDF.type, (RDFNode) null ) )
+                     .count() == 1;
+            } )
             .findFirst()
             .orElseThrow( () -> new ModelChangeException( "Could not locate file containing definition of " + elementUrn ) );
    }

@@ -21,6 +21,9 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+
 public class AddAspectModelFile extends AbstractChange {
    private final AspectModelFile newFile;
 
@@ -29,16 +32,23 @@ public class AddAspectModelFile extends AbstractChange {
    }
 
    @Override
-   public void fire( final ChangeContext changeContext ) {
-      changeContext.aspectModel().files().add( newFile );
+   public ChangeReport fire( final ChangeContext changeContext ) {
+      changeContext.aspectModelFiles().add( newFile );
+      final Model contentToAdd = ModelFactory.createDefaultModel();
+      contentToAdd.add( newFile.sourceModel() );
+      return new ChangeReport.EntryWithDetails( "Add file " + show( newFile ),
+            Map.of( "Model content to add", contentToAdd ) );
    }
 
    @Override
    public Change reverse() {
       return new Change() {
          @Override
-         public void fire( final ChangeContext changeContext ) {
-            changeContext.aspectModel().files().remove( fileToRemove( changeContext ) );
+         public ChangeReport fire( final ChangeContext changeContext ) {
+            final AspectModelFile file = fileToRemove( changeContext );
+            changeContext.aspectModelFiles().remove( file );
+            return new ChangeReport.EntryWithDetails( "Remove file " + show( file ),
+                  Map.of( "model content to remove", file.sourceModel() ) );
          }
 
          @Override
@@ -47,24 +57,11 @@ public class AddAspectModelFile extends AbstractChange {
          }
 
          private AspectModelFile fileToRemove( final ChangeContext changeContext ) {
-            return changeContext.aspectModel().files().stream()
+            return changeContext.aspectModelFiles().stream()
                   .filter( file -> file.sourceLocation().equals( newFile.sourceLocation() ) )
                   .findFirst()
                   .orElseThrow( () -> new ModelChangeException( "Unable to remove Aspect Model File" ) );
          }
-
-         @Override
-         public ChangeReport report( final ChangeContext changeContext ) {
-            final AspectModelFile file = fileToRemove( changeContext );
-            return new ChangeReport.EntryWithDetails( "Remove file " + show( file ),
-                  Map.of( "model content to remove", file.sourceModel() ) );
-         }
       };
-   }
-
-   @Override
-   public ChangeReport report( final ChangeContext changeContext ) {
-      return new ChangeReport.EntryWithDetails( "Add file " + show( newFile ),
-            Map.of( "model content to add", newFile.sourceModel() ) );
    }
 }

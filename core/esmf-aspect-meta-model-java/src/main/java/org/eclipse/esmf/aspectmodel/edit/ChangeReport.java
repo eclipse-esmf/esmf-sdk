@@ -23,6 +23,9 @@ public sealed interface ChangeReport {
    record EntryWithDetails( String summary, Map<String, Object> details ) implements ChangeReport {
    }
 
-   record MultipleEntries( List<ChangeReport> entries ) implements ChangeReport {
+   record MultipleEntries( String summary, List<ChangeReport> entries ) implements ChangeReport {
+      public MultipleEntries( final List<ChangeReport> entries ) {
+         this( null, entries );
+      }
    }
 }
