@@ -17,8 +17,7 @@ import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 
-public interface ChangeContext {
-   List<AspectModelFile> aspectModelFiles();
-
-   AspectChangeContextConfig config();
+public record ChangeContext(
+      List<AspectModelFile> aspectModelFiles,
+      AspectChangeContextConfig config ) {
 }

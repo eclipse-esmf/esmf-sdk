@@ -15,14 +15,12 @@ package org.eclipse.esmf.aspectmodel.edit;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
-import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 
-public class AspectChangeContext implements ChangeContext {
+public class AspectChangeContext {
    private final Deque<Change> undoStack = new ArrayDeque<>();
    private final Deque<Change> redoStack = new ArrayDeque<>();
    private final DefaultAspectModel aspectModel;
@@ -30,10 +28,11 @@ public class AspectChangeContext implements ChangeContext {
 
    public AspectChangeContext( final AspectChangeContextConfig config, final AspectModel aspectModel ) {
       this.config = config;
-      if ( !( aspectModel instanceof DefaultAspectModel ) ) {
-         throw new RuntimeException();
+      if ( aspectModel instanceof final DefaultAspectModel defaultAspectModel ) {
+         this.aspectModel = defaultAspectModel;
+      } else {
+         throw new ModelChangeException( "AspectModel must be an instance of DefaultAspectModel" );
       }
-      this.aspectModel = (DefaultAspectModel) aspectModel;
    }
 
    public AspectChangeContext( final AspectModel aspectModel ) {
@@ -41,7 +40,7 @@ public class AspectChangeContext implements ChangeContext {
    }
 
    public synchronized ChangeReport applyChange( final Change change ) {
-      final ChangeReport result = change.fire( this );
+      final ChangeReport result = change.fire( new ChangeContext( aspectModel.files(), config ) );
       updateAspectModelAfterChange();
       undoStack.offerLast( change.reverse() );
       return result;
@@ -52,7 +51,7 @@ public class AspectChangeContext implements ChangeContext {
          return;
       }
       final Change change = undoStack.pollLast();
-      change.fire( this );
+      change.fire( new ChangeContext( aspectModel.files(), config ) );
       updateAspectModelAfterChange();
       redoStack.offerLast( change.reverse() );
    }
@@ -62,7 +61,7 @@ public class AspectChangeContext implements ChangeContext {
          return;
       }
       final Change change = redoStack.pollLast();
-      change.fire( this );
+      change.fire( new ChangeContext( aspectModel.files(), config ) );
       updateAspectModelAfterChange();
       undoStack.offerLast( change.reverse() );
    }
@@ -72,15 +71,5 @@ public class AspectChangeContext implements ChangeContext {
       aspectModel.setMergedModel( updatedModel.mergedModel() );
       aspectModel.setElements( updatedModel.elements() );
       aspectModel.setFiles( updatedModel.files() );
-   }
-
-   @Override
-   public List<AspectModelFile> aspectModelFiles() {
-      return aspectModel.files();
-   }
-
-   @Override
-   public AspectChangeContextConfig config() {
-      return config;
    }
 }
