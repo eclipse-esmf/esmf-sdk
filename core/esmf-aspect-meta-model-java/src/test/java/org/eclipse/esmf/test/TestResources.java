@@ -26,7 +26,7 @@ import org.eclipse.esmf.samm.KnownVersion;
 public class TestResources {
    public static AspectModel load( final TestAspect model ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
-      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespace(), model.getUrn().getVersion(),
+      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
             model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(

@@ -30,7 +30,7 @@ import io.vavr.control.Try;
 
 public class TestResources {
    public static AspectModel load( final InvalidTestAspect model ) {
-      final String path = String.format( "invalid/%s/%s/%s.ttl", model.getUrn().getNamespace(), model.getUrn().getVersion(),
+      final String path = String.format( "invalid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
             model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(
@@ -39,7 +39,7 @@ public class TestResources {
    }
 
    public static AspectModel load( final TestModel model ) {
-      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespace(), model.getUrn().getVersion(),
+      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
             model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy( "valid" );

@@ -25,6 +25,7 @@ import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ComplexType;
 import org.eclipse.esmf.metamodel.Entity;
+import org.eclipse.esmf.metamodel.Namespace;
 import org.eclipse.esmf.metamodel.Property;
 import org.eclipse.esmf.metamodel.Scalar;
 import org.eclipse.esmf.metamodel.ScalarValue;
@@ -43,12 +44,12 @@ import org.junit.jupiter.params.provider.EnumSource;
 public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiatorTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
-   public void testLoadAspectExpectSuccess( final TestAspect aspect ) {
+   void testLoadAspectExpectSuccess( final TestAspect aspect ) {
       assertThatCode( () -> loadAspect( aspect ) ).doesNotThrowAnyException();
    }
 
    @Test
-   public void testAspectTransformationExpectSuccess() {
+   void testAspectTransformationExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_SEE );
       final AspectModelUrn expectedAspectModelUrn = TestAspect.ASPECT_WITH_SEE.getUrn();
       assertBaseAttributes( aspect, expectedAspectModelUrn, "AspectWithSee", "Test Aspect With See",
@@ -56,7 +57,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testPropertyInstantiationExpectSuccess() {
+   void testPropertyInstantiationExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "testProperty" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_PROPERTY );
 
@@ -75,7 +76,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testOptionalPropertyInstantiationExpectSuccess() {
+   void testOptionalPropertyInstantiationExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "testProperty" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_OPTIONAL_PROPERTY );
 
@@ -94,7 +95,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testNotInPayloadPropertyInstantiationExpectSuccess() {
+   void testNotInPayloadPropertyInstantiationExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "description" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY_ENUMERATION_AND_NOT_IN_PAYLOAD_PROPERTIES );
 
@@ -112,7 +113,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testPropertyWithPayloadNameInstantiationExpectSuccess() {
+   void testPropertyWithPayloadNameInstantiationExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "testProperty" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_PROPERTY_WITH_PAYLOAD_NAME );
 
@@ -131,7 +132,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testEitherCharacteristicInstantiationExpectSuccess() {
+   void testEitherCharacteristicInstantiationExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestEither" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_EITHER );
 
@@ -148,7 +149,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testSingleEntityCharacteristicInstantiationExpectSuccess() {
+   void testSingleEntityCharacteristicInstantiationExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "EntityCharacteristic" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ENTITY );
 
@@ -163,7 +164,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testAbstractEntityInstantiationExpectSuccess() {
+   void testAbstractEntityInstantiationExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "AbstractTestEntity" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_ABSTRACT_ENTITY );
 
@@ -179,7 +180,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testCollectionWithAbstractEntityInstantiationExpectSuccess() {
+   void testCollectionWithAbstractEntityInstantiationExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "AbstractTestEntity" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_COLLECTION_WITH_ABSTRACT_ENTITY );
 
@@ -194,7 +195,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testCodeCharacteristicInstantiationExpectSuccess() {
+   void testCodeCharacteristicInstantiationExpectSuccess() {
       final AspectModelUrn expectedAspectModelUrn = AspectModelUrn.fromUrn( TestModel.TEST_NAMESPACE + "TestCode" );
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_CODE );
 
@@ -210,7 +211,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testCollectionAspectInstantiationExpectSuccess() {
+   void testCollectionAspectInstantiationExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_LIST );
       final AspectModelUrn expectedAspectModelUrn = TestAspect.ASPECT_WITH_LIST.getUrn();
 
@@ -223,7 +224,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testAspectWithTwoCollectionsInstantiationExpectSuccess() {
+   void testAspectWithTwoCollectionsInstantiationExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_TWO_LISTS );
 
       final AspectModelUrn expectedAspectModelUrn = TestAspect.ASPECT_WITH_TWO_LISTS.getUrn();
@@ -237,7 +238,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testAspectWithListAndAdditionalPropertyInstantiationExpectSuccess() {
+   void testAspectWithListAndAdditionalPropertyInstantiationExpectSuccess() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY );
 
       final AspectModelUrn expectedAspectModelUrn = TestAspect.ASPECT_WITH_LIST_AND_ADDITIONAL_PROPERTY.getUrn();
@@ -250,13 +251,13 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testAspectWithRecursivePropertyWithOptional() {
+   void testAspectWithRecursivePropertyWithOptional() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_RECURSIVE_PROPERTY_WITH_OPTIONAL );
       assertThat( aspect.getProperties().size() ).isEqualTo( 1 );
       final Property firstProperty = aspect.getProperties().get( 0 );
-      final Property secondProperty = ((DefaultEntity) firstProperty.getCharacteristic().get().getDataType().get()).getProperties()
+      final Property secondProperty = ( (DefaultEntity) firstProperty.getCharacteristic().get().getDataType().get() ).getProperties()
             .get( 0 );
-      final Property thirdProperty = ((DefaultEntity) secondProperty.getCharacteristic().get().getDataType().get()).getProperties()
+      final Property thirdProperty = ( (DefaultEntity) secondProperty.getCharacteristic().get().getDataType().get() ).getProperties()
             .get( 0 );
       assertThat( firstProperty ).isNotEqualTo( secondProperty );
       assertThat( secondProperty ).isEqualTo( thirdProperty );
@@ -265,7 +266,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testMetaModelBaseAttributesFactoryMethod() {
+   void testMetaModelBaseAttributesFactoryMethod() {
       final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm:1.0.0#TestAspect" );
       final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder().withUrn( urn ).build();
       assertThat( baseAttributes.urn() ).isEqualTo( urn );
@@ -275,7 +276,7 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    }
 
    @Test
-   public void testMetaModelBaseAttributesBuilder() {
+   void testMetaModelBaseAttributesBuilder() {
       final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.samm:1.0.0#TestAspect" );
       final MetaModelBaseAttributes baseAttributes = MetaModelBaseAttributes.builder()
             .withUrn( urn )
@@ -290,5 +291,16 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
       assertThat( baseAttributes.getDescriptions() ).hasSize( 1 )
             .allMatch( description -> description.getLanguageTag().equals( Locale.ENGLISH ) );
       assertThat( baseAttributes.getSee() ).hasSize( 2 ).contains( "see1", "see2" );
+   }
+
+   @Test
+   void testLoadAspectWithNamespaceDescription() {
+      final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_NAMESPACE_DESCRIPTION );
+      final Namespace namespace = aspect.getSourceFile().namespace();
+      assertThat( namespace.packagePart() ).isEqualTo( aspect.urn().getNamespaceMainPart() );
+      assertThat( namespace.version().toString() ).isEqualTo( aspect.urn().getVersion() );
+      assertThat( namespace.getPreferredName( Locale.ENGLISH ) ).isEqualTo( "Test namespace" );
+      assertThat( namespace.getDescription( Locale.ENGLISH ) ).isEqualTo( "Test of the namespace pseudo element" );
+      assertThat( namespace.getSee() ).hasSize( 1 ).contains( "http://example.com/" );
    }
 }

@@ -17,14 +17,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
+import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
+import org.eclipse.esmf.metamodel.datatype.LangString;
 
 public class DefaultNamespace implements Namespace {
+   private final Optional<MetaModelBaseAttributes> baseAttributes;
    private final String packagePart;
    private final VersionNumber versionNumber;
    private final List<ModelElement> elements;
@@ -32,15 +36,21 @@ public class DefaultNamespace implements Namespace {
 
    public DefaultNamespace( final AspectModelUrn aspectModelUrn, final List<ModelElement> elements,
          final Optional<AspectModelFile> source ) {
-      this( aspectModelUrn.getNamespace(), VersionNumber.parse( aspectModelUrn.getVersion() ), elements, source );
+      this( aspectModelUrn, elements, source, Optional.empty() );
+   }
+
+   public DefaultNamespace( final AspectModelUrn aspectModelUrn, final List<ModelElement> elements,
+         final Optional<AspectModelFile> source, final Optional<MetaModelBaseAttributes> baseAttributes ) {
+      this( aspectModelUrn.getNamespaceMainPart(), VersionNumber.parse( aspectModelUrn.getVersion() ), elements, source, baseAttributes );
    }
 
    public DefaultNamespace( final String packagePart, final VersionNumber versionNumber, final List<ModelElement> elements,
-         final Optional<AspectModelFile> source ) {
+         final Optional<AspectModelFile> source, final Optional<MetaModelBaseAttributes> baseAttributes ) {
       this.packagePart = packagePart;
       this.versionNumber = versionNumber;
       this.source = source;
       this.elements = elements;
+      this.baseAttributes = baseAttributes;
    }
 
    /**
@@ -49,8 +59,9 @@ public class DefaultNamespace implements Namespace {
     * @param uri the namespace uri
     * @param elements the list of elements in the namspace
     */
-   public DefaultNamespace( final String uri, final List<ModelElement> elements, final Optional<AspectModelFile> source ) {
-      this( uri.split( ":" )[2], VersionNumber.parse( uri.split( ":" )[3].replace( "#", "" ) ), elements, source );
+   public DefaultNamespace( final String uri, final List<ModelElement> elements, final Optional<AspectModelFile> source,
+         final Optional<MetaModelBaseAttributes> baseAttributes ) {
+      this( uri.split( ":" )[2], VersionNumber.parse( uri.split( ":" )[3].replace( "#", "" ) ), elements, source, baseAttributes );
    }
 
    //   /**
@@ -86,6 +97,21 @@ public class DefaultNamespace implements Namespace {
    @Override
    public String getName() {
       return "urn:samm:%s:%s".formatted( packagePart, versionNumber );
+   }
+
+   @Override
+   public List<String> getSee() {
+      return baseAttributes.map( MetaModelBaseAttributes::getSee ).orElseGet( Namespace.super::getSee );
+   }
+
+   @Override
+   public Set<LangString> getPreferredNames() {
+      return baseAttributes.map( MetaModelBaseAttributes::getPreferredNames ).orElseGet( Namespace.super::getPreferredNames );
+   }
+
+   @Override
+   public Set<LangString> getDescriptions() {
+      return baseAttributes.map( MetaModelBaseAttributes::getDescriptions ).orElseGet( Namespace.super::getDescriptions );
    }
 
    @Override

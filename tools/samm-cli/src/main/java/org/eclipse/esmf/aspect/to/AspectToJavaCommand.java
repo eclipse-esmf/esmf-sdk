@@ -87,7 +87,7 @@ public class AspectToJavaCommand extends AbstractCommand {
       final File templateLibFile = Path.of( templateLib ).toFile();
       final String pkgName = Optional.ofNullable( packageName )
             .flatMap( pkg -> pkg.isBlank() ? Optional.empty() : Optional.of( pkg ) )
-            .orElseGet( () -> aspect.urn().getNamespace() );
+            .orElseGet( () -> aspect.urn().getNamespaceMainPart() );
       return JavaCodeGenerationConfigBuilder.builder()
             .executeLibraryMacros( executeLibraryMacros )
             .templateLibFile( templateLibFile )

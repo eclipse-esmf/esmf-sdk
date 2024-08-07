@@ -351,7 +351,7 @@ class SammCliTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespace() )
+      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() )
             .toFile();
       assertThat( directory ).exists();
@@ -391,7 +391,7 @@ class SammCliTest {
       assertThat( result.stdout() ).isEmpty();
       assertThat( result.stderr() ).isEmpty();
 
-      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespace() )
+      final File directory = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
             .resolve( testModel.getUrn().getVersion() )
             .toFile();
       assertThat( directory ).exists();

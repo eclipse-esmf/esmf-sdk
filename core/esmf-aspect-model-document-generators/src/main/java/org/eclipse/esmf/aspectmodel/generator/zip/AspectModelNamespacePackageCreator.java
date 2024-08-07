@@ -47,7 +47,7 @@ public class AspectModelNamespacePackageCreator implements TriConsumer<AspectMod
       final String aspectString = AspectSerializer.INSTANCE.apply( file.aspect() );
       final String fileName = String.format( "%s/%s/%s/%s.ttl",
             !rootPath.isBlank() ? String.format( "%s/%s", rootPath, BASE_ARCHIVE_FORMAT_PATH ) : BASE_ARCHIVE_FORMAT_PATH,
-            file.aspect().urn().getNamespace(),
+            file.aspect().urn().getNamespaceMainPart(),
             file.aspect().urn().getVersion(),
             file.aspect().getName() );
       final ZipEntry zipEntry = new ZipEntry( fileName );

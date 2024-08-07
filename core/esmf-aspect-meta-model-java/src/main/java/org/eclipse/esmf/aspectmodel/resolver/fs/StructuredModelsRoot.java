@@ -39,7 +39,7 @@ public class StructuredModelsRoot extends ModelsRoot {
 
    @Override
    public Path directoryForNamespace( final AspectModelUrn urn ) {
-      return rootPath().resolve( urn.getNamespace() ).resolve( urn.getVersion() );
+      return rootPath().resolve( urn.getNamespaceMainPart() ).resolve( urn.getVersion() );
    }
 
    @Override

@@ -14,7 +14,6 @@
 package org.eclipse.esmf.metamodel.impl;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -37,13 +36,10 @@ public class DefaultAspectModel implements AspectModel {
 
    @Override
    public List<Namespace> namespaces() {
-      return elements().stream()
-            .filter( element -> !Namespace.ANONYMOUS.equals( element.urn().getUrnPrefix() ) )
-            .collect( Collectors.groupingBy( element -> element.urn().getUrnPrefix() ) )
-            .entrySet()
-            .stream()
-            .<Namespace> map( entry -> new DefaultNamespace( entry.getKey(), entry.getValue(), Optional.empty() ) )
-            .toList();
+      return files().stream()
+            .map( AspectModelFile::namespace )
+            .collect( Collectors.toSet() )
+            .stream().toList();
    }
 
    @Override
