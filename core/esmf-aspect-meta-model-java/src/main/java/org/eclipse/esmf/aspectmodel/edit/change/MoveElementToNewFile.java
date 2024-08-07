@@ -56,7 +56,8 @@ public class MoveElementToNewFile extends StructuralChange {
       this.elementUrn = elementUrn;
    }
 
-   protected void prepare( final ChangeContext changeContext ) {
+   @Override
+   public ChangeReport fire( final ChangeContext changeContext ) {
       // Prepare new file
       final List<String> fileHeader = Optional.ofNullable( headerComment )
             .or( () -> Optional.ofNullable( changeContext.config().defaultFileHeader() ) )
@@ -85,11 +86,6 @@ public class MoveElementToNewFile extends StructuralChange {
             new AddAspectModelFile( targetFile ),
             new AddElementDefinition( elementUrn, definition, targetFile )
       );
-   }
-
-   @Override
-   public ChangeReport fire( final ChangeContext changeContext ) {
-      prepare( changeContext );
       return changes.fire( changeContext );
    }
 

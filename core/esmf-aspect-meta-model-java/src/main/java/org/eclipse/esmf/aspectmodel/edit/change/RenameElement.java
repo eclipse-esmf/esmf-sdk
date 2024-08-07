@@ -29,10 +29,6 @@ public class RenameElement extends RenameUrn {
       super( urn, AspectModelUrn.fromUrn( urn.getUrnPrefix() + newName ) );
    }
 
-   public String name() {
-      return to().getName();
-   }
-
    @Override
    protected String changeDescription() {
       return "Rename " + from() + " to " + to().getName();

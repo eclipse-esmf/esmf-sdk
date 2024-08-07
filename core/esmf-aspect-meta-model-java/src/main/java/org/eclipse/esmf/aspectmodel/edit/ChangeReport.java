@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 public sealed interface ChangeReport {
+   record NoChanges( ) implements ChangeReport {}
+
    record SimpleEntry( String text ) implements ChangeReport {
    }
 

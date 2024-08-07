@@ -59,7 +59,8 @@ public class MoveElementToOtherNamespaceNewFile extends StructuralChange {
       this.sourceLocation = sourceLocation;
    }
 
-   protected void prepare( final ChangeContext changeContext ) {
+   @Override
+   public ChangeReport fire( final ChangeContext changeContext ) {
       final List<String> fileHeader = Optional.ofNullable( headerComment )
             .or( () -> Optional.ofNullable( changeContext.config().defaultFileHeader() ) )
             .orElse( List.of() );
@@ -69,11 +70,6 @@ public class MoveElementToOtherNamespaceNewFile extends StructuralChange {
             new MoveElementToNewFile( elementUrn, fileHeader, sourceLocation ),
             new RenameUrn( elementUrn, AspectModelUrn.fromUrn( targetNamespace.elementUrnPrefix() + elementUrn.getName() ) )
       );
-   }
-
-   @Override
-   public ChangeReport fire( final ChangeContext changeContext ) {
-      prepare( changeContext );
       return changes.fire( changeContext );
    }
 

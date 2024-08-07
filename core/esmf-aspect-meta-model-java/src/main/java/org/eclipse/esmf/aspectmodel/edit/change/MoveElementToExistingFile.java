@@ -13,8 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
-import java.util.List;
-import java.util.function.Predicate;
+import java.net.URI;
+import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
@@ -24,34 +24,39 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeGroup;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
+import org.eclipse.esmf.metamodel.ModelElement;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 
-public class MoveElementToOtherFile extends StructuralChange {
+public class MoveElementToExistingFile extends StructuralChange {
    private final AspectModelUrn elementUrn;
-   private final Predicate<AspectModelFile> targetFileSelector;
+   private final Optional<URI> targetFileLocation;
    private ChangeGroup changes = null;
 
-   public MoveElementToOtherFile( final AspectModelUrn elementUrn, final Predicate<AspectModelFile> targetFileSelector ) {
-      this.elementUrn = elementUrn;
-      this.targetFileSelector = targetFileSelector;
+   public MoveElementToExistingFile( final ModelElement modelElement, final AspectModelFile targetFile ) {
+      this( modelElement.urn(), targetFile );
+      if ( modelElement.isAnonymous() ) {
+         throw new ModelChangeException( "Can not move anonymous model element" );
+      }
    }
 
-   protected void prepare( final ChangeContext changeContext ) {
-      final List<AspectModelFile> targetFiles = changeContext.aspectModelFiles().stream().filter( targetFileSelector ).toList();
-      if ( targetFiles.size() > 1 ) {
-         throw new ModelChangeException( "Can not determine target file to move element" );
-      }
-      if ( targetFiles.isEmpty() ) {
-         return;
-      }
-      final AspectModelFile targetFile = targetFiles.get( 0 );
+   public MoveElementToExistingFile( final AspectModelUrn elementUrn, final AspectModelFile targetFile ) {
+      this.elementUrn = elementUrn;
+      targetFileLocation = targetFile.sourceLocation();
+   }
+
+   @Override
+   public ChangeReport fire( final ChangeContext changeContext ) {
+      final AspectModelFile targetFile = changeContext.aspectModelFiles().stream()
+            .filter( file -> file.sourceLocation().equals( targetFileLocation ) )
+            .findFirst()
+            .orElseThrow( () -> new ModelChangeException( "Can not determine target file to move element" ) );
 
       // Find source file with element definition
       final AspectModelFile sourceFile = sourceFile( changeContext, elementUrn );
       if ( sourceFile == targetFile ) {
-         return;
+         return new ChangeReport.NoChanges();
       }
       final Resource elementResource = sourceFile.sourceModel().createResource( elementUrn.toString() );
       final Model definition = RdfUtil.getModelElementDefinition( elementResource );
@@ -62,11 +67,7 @@ public class MoveElementToOtherFile extends StructuralChange {
             new RemoveElementDefinition( elementUrn ),
             new AddElementDefinition( elementUrn, definition, targetFile )
       );
-   }
 
-   @Override
-   public ChangeReport fire( final ChangeContext changeContext ) {
-      prepare( changeContext );
       return changes.fire( changeContext );
    }
 

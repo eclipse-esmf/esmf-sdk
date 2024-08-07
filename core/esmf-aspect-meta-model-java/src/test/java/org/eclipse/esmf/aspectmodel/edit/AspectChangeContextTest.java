@@ -21,14 +21,14 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.AddElementDefinition;
+import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToExistingFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToNewFile;
-import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToOtherFile;
+import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToOtherNamespaceExistingFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToOtherNamespaceNewFile;
 import org.eclipse.esmf.aspectmodel.edit.change.RemoveAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.RenameElement;
@@ -276,9 +276,7 @@ public class AspectChangeContextTest {
       ) );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
 
-      final AspectModelUrn aspectUrn = aspectModel.aspect().urn();
-      final Predicate<AspectModelFile> targetFileLocator = file -> file.sourceLocation().equals( file2Location );
-      final Change move = new MoveElementToOtherFile( aspectUrn, targetFileLocator );
+      final Change move = new MoveElementToExistingFile( aspectModel.aspect(), file2 );
 
       final ChangeReport changeReport = ctx.applyChange( move );
       System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, AspectChangeContextConfig.DEFAULT ) );
@@ -318,6 +316,52 @@ public class AspectChangeContextTest {
       ctx.redoChange();
       assertThat( aspectModel.files() ).hasSize( 2 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
+      assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
+            .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
+   }
+
+   @Test
+   void testMoveElementToOtherNamespaceExistingFile() {
+      final Optional<URI> file1Location = Optional.of( URI.create( "file:///file1.ttl" ) );
+      final Optional<URI> file2Location = Optional.of( URI.create( "file:///file2.ttl" ) );
+      final AspectModel aspectModel = AspectModelBuilder.buildEmptyModel();
+      final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
+      final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
+            .sourceLocation( file1Location )
+            .sourceModel( model( """
+                  @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
+                  @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+                  @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
+
+                  :Aspect a samm:Aspect ;
+                     samm:description "This is a test description"@en ;
+                     samm:properties ( ) ;
+                     samm:operations ( ) .
+                  """
+            ) )
+            .build();
+      final AspectModelFile file2 = RawAspectModelFileBuilder.builder().sourceLocation( file2Location ).build();
+
+      ctx.applyChange( new ChangeGroup(
+            new AddAspectModelFile( file1 ),
+            new AddAspectModelFile( file2 )
+      ) );
+      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
+
+      final AspectModelUrn targetUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.example.new:1.0.0#Aspect" );
+      final Namespace targetNamespace = new DefaultNamespace( targetUrn, List.of(), Optional.empty() );
+      final Change move = new MoveElementToOtherNamespaceExistingFile( aspectModel.aspect(), file2, targetNamespace );
+
+      final ChangeReport changeReport = ctx.applyChange( move );
+      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, AspectChangeContextConfig.DEFAULT ) );
+
+      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file2Location );
+      assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
+            .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
+      assertThat( aspectModel.aspect().urn() ).isEqualTo( targetUrn );
+
+      ctx.undoChange();
+      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
    }
