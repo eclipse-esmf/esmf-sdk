@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.test.TestAspect;
@@ -36,18 +37,18 @@ public class PrettyPrinterTest {
          // contains blank nodes which are not referenced from an aspect and therefore not pretty-printed
          "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES"
    } )
-   public void testPrettyPrinter( final TestAspect testAspect ) {
+   void testPrettyPrinter( final TestAspect testAspect ) {
       final AspectModel aspectModel = TestResources.load( testAspect );
-      final Model originalModel = aspectModel.files().iterator().next().sourceModel();
+      final AspectModelFile originalFile = aspectModel.files().iterator().next();
 
       final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       final PrintWriter writer = new PrintWriter( buffer, false, StandardCharsets.UTF_8 );
-      new PrettyPrinter( originalModel, testAspect.getUrn(), writer ).print();
+      new PrettyPrinter( originalFile, writer ).print();
       writer.flush();
 
       final InputStream bufferInput = new ByteArrayInputStream( buffer.toByteArray() );
       final Model prettyPrintedModel = TurtleLoader.loadTurtle( buffer.toString( StandardCharsets.UTF_8 ) ).get();
 
-      assertThat( RdfComparison.hash( originalModel ).equals( RdfComparison.hash( prettyPrintedModel ) ) ).isTrue();
+      assertThat( RdfComparison.hash( originalFile.sourceModel() ).equals( RdfComparison.hash( prettyPrintedModel ) ) ).isTrue();
    }
 }
