@@ -16,8 +16,9 @@ package org.eclipse.esmf.aspectmodel.edit;
 import java.util.List;
 import java.util.Map;
 
-public sealed interface ChangeReport {
-   record NoChanges( ) implements ChangeReport {}
+public interface ChangeReport {
+   ChangeReport NoChanges = new ChangeReport() {
+   };
 
    record SimpleEntry( String text ) implements ChangeReport {
    }

@@ -30,6 +30,7 @@ import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToExistingFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToNewFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToOtherNamespaceExistingFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToOtherNamespaceNewFile;
+import org.eclipse.esmf.aspectmodel.edit.change.MoveRenameAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.RemoveAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.RenameElement;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
@@ -364,6 +365,31 @@ public class AspectChangeContextTest {
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
+   }
+
+   @Test
+   void testMoveRenameFile() {
+      final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
+      final Aspect aspect = aspectModel.aspect();
+
+      assertThat( aspectModel.files() ).hasSize( 1 );
+
+      final URI originalLocation = aspect.getSourceFile().sourceLocation().get();
+      final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
+      final URI newLocation = URI.create( "file:///temp/test.ttl" );
+      final Change renameFile = new MoveRenameAspectModelFile( aspect.getSourceFile(), newLocation );
+
+      ctx.applyChange( renameFile );
+      assertThat( aspectModel.files() ).hasSize( 1 );
+      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( newLocation );
+
+      ctx.undoChange();
+      assertThat( aspectModel.files() ).hasSize( 1 );
+      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( originalLocation );
+
+      ctx.redoChange();
+      assertThat( aspectModel.files() ).hasSize( 1 );
+      assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( newLocation );
    }
 
    private Model model( final String ttlRepresentation ) {

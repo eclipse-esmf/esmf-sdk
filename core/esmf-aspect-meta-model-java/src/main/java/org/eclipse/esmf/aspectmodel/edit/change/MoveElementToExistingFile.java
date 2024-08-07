@@ -56,7 +56,7 @@ public class MoveElementToExistingFile extends StructuralChange {
       // Find source file with element definition
       final AspectModelFile sourceFile = sourceFile( changeContext, elementUrn );
       if ( sourceFile == targetFile ) {
-         return new ChangeReport.NoChanges();
+         return ChangeReport.NoChanges;
       }
       final Resource elementResource = sourceFile.sourceModel().createResource( elementUrn.toString() );
       final Model definition = RdfUtil.getModelElementDefinition( elementResource );
