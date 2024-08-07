@@ -146,7 +146,7 @@ class AspectModelAasGeneratorTest {
 
    @Test
    void generateAasxWithAspectDataForCollectionPropertyWithCustomMapper() throws DeserializationException {
-      AspectModelAasGenerator customGenerator = new AspectModelAasGenerator( List.of( new IntegerCollectionMapper() ) );
+      final AspectModelAasGenerator customGenerator = new AspectModelAasGenerator( List.of( new IntegerCollectionMapper() ) );
       final Environment env = getAssetAdministrationShellFromAspectWithData( TestAspect.ASPECT_WITH_COLLECTION_OF_SIMPLE_TYPE,
             customGenerator );
       assertThat( env.getSubmodels() )
@@ -365,17 +365,17 @@ class AspectModelAasGeneratorTest {
    // anonymous enumeration in test has no urn for enum values but is required for Concept
    // Description referencing
    public void testGeneration( final TestAspect testAspect ) throws DeserializationException {
-      final String aspectAsString = aspectToString( testAspect );
-      final byte[] xmlFile = aspectAsString.getBytes();
+      final String aasXmlString = aspectToAasXml( testAspect );
+      final byte[] aasXmlInput = aasXmlString.getBytes();
 
-      final String aasXml = new String( xmlFile );
+      final String aasXml = new String( aasXmlInput );
       assertThat( aasXml ).doesNotContain( "DefaultScalarValue[" );
       assertThat( aasXml ).doesNotContain( "DefaultEntity[" );
       assertThat( aasXml ).doesNotContain( "Optional[" );
 
-      final Environment env = loadAasx( new ByteArrayInputStream( xmlFile ) );
+      final Environment env = loadAasx( new ByteArrayInputStream( aasXmlInput ) );
       assertThat( env.getSubmodels() ).isNotEmpty();
-      validate( new ByteArrayInputStream( xmlFile ) );
+      validate( new ByteArrayInputStream( aasXmlInput ) );
    }
 
    @Test
@@ -464,7 +464,7 @@ class AspectModelAasGeneratorTest {
       return loadAasx( generator.generateAsByteArray( AasFileFormat.XML, aspect, aspectData ) );
    }
 
-   private String aspectToString( final TestAspect testAspect ) {
+   private String aspectToAasXml( final TestAspect testAspect ) {
       final Aspect aspect = TestResources.load( testAspect ).aspect();
       return new String( generator.generateAsByteArray( AasFileFormat.XML, aspect ), StandardCharsets.UTF_8 );
    }

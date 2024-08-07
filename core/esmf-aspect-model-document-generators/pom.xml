@@ -138,6 +138,14 @@
          <scope>test</scope>
       </dependency>
       <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-java-generator</artifactId>
+         <version>${project.version}</version>
+         <classifier>tests</classifier>
+         <type>test-jar</type>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
          <groupId>io.swagger.parser.v3</groupId>
          <artifactId>swagger-parser</artifactId>
          <scope>test</scope>
@@ -151,6 +159,10 @@
          <groupId>ch.qos.logback</groupId>
          <artifactId>logback-core</artifactId>
          <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-serializer</artifactId>
       </dependency>
    </dependencies>
 

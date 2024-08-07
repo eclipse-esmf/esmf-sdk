@@ -33,7 +33,7 @@ public class PrettyPrint extends AspectModelMojo {
    private static final Logger LOG = LoggerFactory.getLogger( PrettyPrint.class );
 
    @Override
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void executeGeneration() throws MojoExecutionException, MojoFailureException {
       validateParameters();
 
       for ( final AspectModel aspectModel : loadModels() ) {

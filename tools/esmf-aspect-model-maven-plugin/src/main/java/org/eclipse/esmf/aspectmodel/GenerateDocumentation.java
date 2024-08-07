@@ -38,7 +38,7 @@ public class GenerateDocumentation extends AspectModelMojo {
    private final String htmlCustomCssFilePath = "";
 
    @Override
-   public void execute() throws MojoExecutionException {
+   public void executeGeneration() throws MojoExecutionException {
       validateParameters();
 
       try {
