@@ -48,8 +48,8 @@ alias samm='java -jar /location/to/samm-cli-{esmf-sdk-version}.jar'
 Successful execution of a command is signaled by returning 0. In case of a logical or other internal error the error code 1 is being returned.
 Missing or wrong command parameters result in error code 2 being returned.
 
-To get help for a certain subcommand, add 'help' before the subcommand name or add `--help` to the end, e.g., `samm help aspect`
-or `samm aspect --help`.
+To get an overview of all commands and subcommands, use `samm help`.
+To get help for a certain subcommand, use `help` before the subcommand name, e.g., `samm help aspect`, `samm help aspect validate` or `samm help aas to aspect`.
 Each subcommand can have its own set of options which allow the user to further fine-tune the execution of the command.
 The available options and their meaning can also be seen in the help text of the individual subcommands.
 
@@ -57,13 +57,14 @@ The available options and their meaning can also be seen in the help text of the
 |===
 | Command | Description/Options | Examples
 | help                             | Get overview of all commands                                                            | `samm help`
-| help <subcommand>                | Get help for a specific subcommand                                                      | `samm help aspect`
-| aspect help <aspect subcommand>  | Get help for `aspect` subcommands                                                       | `samm aspect help validate`
+.3+| [[help]] help <commands...>   | Get help for a list of subcommands                                                      | `samm help aspect`
+                                   |                                                                                         | `samm help aspect to svg`
+                                   |                                                                                         | `samm help aspect validate`
 .2+| [[aspect-validate]] aspect <model> validate | Validate Aspect Model                                                     | `samm aspect AspectModel.ttl validate`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
 .3+| [[aspect-prettyprint]] aspect <model> prettyprint | Pretty-print Aspect Model                                           | `samm aspect AspectModel.ttl prettyprint`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
-                                   | _--overwrite, -w_ : Overwrite the input file                                            | `samm aspect AspectModel.ttl prettyprint -w
+                                   | _--overwrite, -w_ : Overwrite the input file                                            | `samm aspect AspectModel.ttl prettyprint -w`
 .5+| [[aspect-to-html]] aspect <model> to html | Generate HTML documentation for an Aspect Model                             | `samm aspect AspectModel.ttl to html`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl to html -o c:\Model.html`
                                    | _--css, -c_ : CSS file with custom styles to be included in the generated HTML

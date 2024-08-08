@@ -56,8 +56,7 @@ import picocli.CommandLine;
       description = "Generate OpenAPI specification for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectToOpenapiCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "openapi";
@@ -214,7 +213,7 @@ public class AspectToOpenapiCommand extends AbstractCommand {
       }
    }
 
-   private ObjectNode readFile( String file ) throws CommandException {
+   private ObjectNode readFile( final String file ) throws CommandException {
       if ( StringUtils.isBlank( file ) ) {
          return null;
       }

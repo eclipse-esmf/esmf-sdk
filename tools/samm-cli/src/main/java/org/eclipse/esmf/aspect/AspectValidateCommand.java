@@ -34,8 +34,7 @@ import picocli.CommandLine;
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 @SuppressWarnings( "UseOfSystemOutOrSystemErr" )
 public class AspectValidateCommand extends AbstractCommand {

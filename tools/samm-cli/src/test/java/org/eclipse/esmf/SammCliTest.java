@@ -126,6 +126,22 @@ class SammCliTest {
    }
 
    @Test
+   void testSubCommandHelp() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "help", "aspect", "prettyprint" );
+      assertThat( result.stdout() ).contains( "Usage:" );
+      assertThat( result.stdout() ).contains( "--overwrite" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testSubSubCommandHelp() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "help", "aspect", "to", "svg" );
+      assertThat( result.stdout() ).contains( "Usage:" );
+      assertThat( result.stdout() ).contains( "--language" );
+      assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
    void testVerboseOutput() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "validate", "-vvv" );
       assertThat( result.stdout() ).contains( "Input model is valid" );

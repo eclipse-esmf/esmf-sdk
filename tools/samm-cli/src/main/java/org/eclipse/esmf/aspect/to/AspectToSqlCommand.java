@@ -38,8 +38,7 @@ import picocli.CommandLine;
       description = "Generate SQL table creation script for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectToSqlCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "sql";
