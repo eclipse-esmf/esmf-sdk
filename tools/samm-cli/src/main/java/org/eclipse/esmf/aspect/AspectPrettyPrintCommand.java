@@ -20,10 +20,8 @@ import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
-import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 
-import org.apache.commons.io.FilenameUtils;
 import picocli.CommandLine;
 
 @CommandLine.Command( name = AspectPrettyPrintCommand.COMMAND_NAME,
@@ -58,9 +56,6 @@ public class AspectPrettyPrintCommand extends AbstractCommand {
                .stream()
                .filter( file -> file.sourceLocation().map( sourceLocation -> sourceLocation.equals( inputFile.toURI() ) ).orElse( false ) )
                .forEach( sourceModel -> {
-                  if ( sourceModel.aspects().size() != 1 ) {
-                     throw new CommandException( "Can only pretty-print files that contain exactly one aspect" );
-                  }
                   new PrettyPrinter( sourceModel, printWriter ).print();
                   printWriter.flush();
                   printWriter.close();
