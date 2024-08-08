@@ -94,17 +94,20 @@ public class AspectModelBuilder {
          final String namespaceUrn = optionalNamespaceUrn.get();
          MetaModelBaseAttributes namespaceDefinition = null;
          AspectModelFile fileContainingNamespaceDefinition = null;
-         for ( final ModelElement element : elementsGroupedByNamespaceUrn.get( namespaceUrn ) ) {
-            final AspectModelFile elementFile = element.getSourceFile();
-            if ( elementFile.sourceModel().contains( null, RDF.type, SammNs.SAMM.Namespace() ) ) {
-               final Model model = elementFile.sourceModel();
-               final ModelElementFactory modelElementFactory = new ModelElementFactory( model, Map.of(), __ -> null );
-               final Resource namespaceResource = model.listStatements( null, RDF.type, SammNs.SAMM.Namespace() )
-                     .mapWith( Statement::getSubject )
-                     .toList().iterator().next();
-               namespaceDefinition = modelElementFactory.createBaseAttributes( namespaceResource );
-               fileContainingNamespaceDefinition = elementFile;
-               break;
+         final List<ModelElement> elementsForUrn = elementsGroupedByNamespaceUrn.get( namespaceUrn );
+         if ( elementsForUrn != null ) {
+            for ( final ModelElement element : elementsForUrn ) {
+               final AspectModelFile elementFile = element.getSourceFile();
+               if ( elementFile.sourceModel().contains( null, RDF.type, SammNs.SAMM.Namespace() ) ) {
+                  final Model model = elementFile.sourceModel();
+                  final ModelElementFactory modelElementFactory = new ModelElementFactory( model, Map.of(), __ -> null );
+                  final Resource namespaceResource = model.listStatements( null, RDF.type, SammNs.SAMM.Namespace() )
+                        .mapWith( Statement::getSubject )
+                        .toList().iterator().next();
+                  namespaceDefinition = modelElementFactory.createBaseAttributes( namespaceResource );
+                  fileContainingNamespaceDefinition = elementFile;
+                  break;
+               }
             }
          }
 

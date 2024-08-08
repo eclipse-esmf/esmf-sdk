@@ -64,8 +64,8 @@ import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
 /**
- * Serializes an {@link AspectModelFile} to RDF/Turtle while following the formatting rules for Aspect models.
- * The model is expected to contain exactly one Aspect.
+ * Serializes an {@link AspectModelFile} to RDF/Turtle while following the formatting rules for Aspect Models.
+ * Initialize with {@link #PrettyPrinter(AspectModelFile, PrintWriter)}, then run {@link #print()}.
  */
 public class PrettyPrinter {
    private static final String INDENT = "   ";
