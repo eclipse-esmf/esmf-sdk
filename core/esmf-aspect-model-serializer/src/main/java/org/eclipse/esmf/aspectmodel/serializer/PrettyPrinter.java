@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
-import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
@@ -48,6 +47,7 @@ import org.apache.jena.graph.Node_Triple;
 import org.apache.jena.graph.Node_URI;
 import org.apache.jena.graph.Node_Variable;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.graph.UriNode;
 import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -58,6 +58,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.rdf.model.impl.Util;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
@@ -70,6 +71,7 @@ public class PrettyPrinter {
    private static final String INDENT = "   ";
    private static final String TRIPLE_QUOTE = "\"\"\"";
    private static final String LINE_BREAK = "\n";
+   private final Comparator<ModelElement> elementDefinitionOrder;
    private final Comparator<Property> propertyOrder;
    private final Comparator<Map.Entry<String, String>> prefixOrder;
    private final Set<Resource> processedResources = new HashSet<>();
@@ -96,9 +98,32 @@ public class PrettyPrinter {
       model.add( modelFile.sourceModel() );
       RdfUtil.cleanPrefixes( model );
 
+      elementDefinitionOrder = createElementDefinitionOrder();
       propertyOrder = createPredefinedPropertyOrder();
       prefixOrder = createPredefinedPrefixOrder();
       printVisitor = new PrintVisitor( model );
+   }
+
+   private Comparator<ModelElement> createElementDefinitionOrder() {
+      return Comparator.comparingInt( element -> {
+         final Resource resource = element.getSourceFile().sourceModel().createResource( element.urn().toString() );
+         final StmtIterator iterator = resource.getModel().listStatements( resource, RDF.type, (RDFNode) null );
+         if ( iterator.hasNext() ) {
+            final Statement statement = iterator.next();
+            if ( statement.getSubject().asNode() instanceof final UriNode uriNode ) {
+               return uriNode.getToken().line();
+            } else {
+               // This happens when the model was not loaded using the esmf-sdk customized RDF parser, e.g.
+               // for programmatically created models.
+               // Fall back to inherent RDF order (i.e. no order). At least try to keep samm:Aspect on the top.
+               if ( statement.getObject().isURIResource() && statement.getResource().equals( SammNs.SAMM.Aspect() ) ) {
+                  return 0;
+               }
+               return 1;
+            }
+         }
+         return Integer.MAX_VALUE;
+      } );
    }
 
    private Comparator<Property> createPredefinedPropertyOrder() {
@@ -199,16 +224,9 @@ public class PrettyPrinter {
             .forEach( entry -> writer.format( "@prefix %s: <%s> .%n", entry.getKey(), entry.getValue() ) );
       writer.println();
 
-      // Write Aspects first, all other elements afterwards
-      elementsToWrite.stream()
-            .filter( element -> element.is( Aspect.class ) )
-            .filter( element -> !element.isAnonymous() )
-            .map( ModelElement::urn )
-            .map( urn -> ResourceFactory.createResource( urn.toString() ) )
-            .forEach( resourceQueue::add );
       elementsToWrite.stream()
             .filter( element -> !element.isAnonymous() )
-            .filter( element -> !element.is( Aspect.class ) )
+            .sorted( elementDefinitionOrder )
             .map( ModelElement::urn )
             .map( urn -> ResourceFactory.createResource( urn.toString() ) )
             .forEach( resourceQueue::add );
