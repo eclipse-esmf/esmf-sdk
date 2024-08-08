@@ -44,7 +44,7 @@ public class AspectModelNamespacePackageCreator implements TriConsumer<AspectMod
 
    private static void addFileToArchive( final AspectModelFile file, final ZipOutputStream zos, final String rootPath )
          throws IOException {
-      final String aspectString = AspectSerializer.INSTANCE.apply( file.aspect() );
+      final String aspectString = AspectSerializer.INSTANCE.aspectToString( file.aspect() );
       final String fileName = String.format( "%s/%s/%s/%s.ttl",
             !rootPath.isBlank() ? String.format( "%s/%s", rootPath, BASE_ARCHIVE_FORMAT_PATH ) : BASE_ARCHIVE_FORMAT_PATH,
             file.aspect().urn().getNamespaceMainPart(),
