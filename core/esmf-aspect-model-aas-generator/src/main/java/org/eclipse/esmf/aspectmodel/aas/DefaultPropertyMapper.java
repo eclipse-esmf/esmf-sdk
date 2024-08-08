@@ -23,13 +23,17 @@ import org.eclipse.digitaltwin.aas4j.v3.model.impl.DefaultProperty;
 public class DefaultPropertyMapper implements PropertyMapper<Property> {
    @Override
    public Property mapToAasProperty( final Type type, final org.eclipse.esmf.metamodel.Property property, final Context context ) {
-      return new DefaultProperty.Builder()
-            .idShort( context.getPropertyShortId() )
-            .valueType( AasDataTypeMapper.mapAspectTypeToAasXsdDataType( mapType( type ) ) )
-            .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
-            .value( context.getPropertyValue( UNKNOWN_EXAMPLE ) )
-            .semanticId( buildReferenceToGlobalReference( property ) )
-            .build();
+      final DefaultProperty defaultProperty = new DefaultProperty();
+      defaultProperty.setIdShort( context.getPropertyShortId() );
+      defaultProperty.setValueType( AasDataTypeMapper.mapAspectTypeToAasXsdDataType( mapType( type ) ) );
+      defaultProperty.setDisplayName( LangStringMapper.NAME.map( property.getPreferredNames() ) );
+      defaultProperty.setSemanticId( buildPropertyReferenceToGlobalReference( property ) );
+
+      if ( !context.getPropertyValue( UNKNOWN_EXAMPLE ).equals( UNKNOWN_EXAMPLE ) ) {
+         defaultProperty.setValue( context.getPropertyValue( UNKNOWN_EXAMPLE ) );
+      }
+
+      return defaultProperty;
    }
 
    private String mapType( final Type type ) {
