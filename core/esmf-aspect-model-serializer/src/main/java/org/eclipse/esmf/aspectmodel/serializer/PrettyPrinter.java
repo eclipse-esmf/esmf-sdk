@@ -19,7 +19,6 @@ import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +29,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.ModelElement;
-import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableList;
@@ -79,7 +79,6 @@ public class PrettyPrinter {
    private final List<String> headerComment;
    private final Model model;
    private final PrintWriter writer;
-   private final Map<String, String> prefixMap;
 
    private final PrintVisitor printVisitor;
 
@@ -95,11 +94,7 @@ public class PrettyPrinter {
       this.writer = writer;
       model = ModelFactory.createDefaultModel();
       model.add( modelFile.sourceModel() );
-
-      prefixMap = new HashMap<>( RdfNamespace.createPrefixMap() );
-      prefixMap.putAll( model.getNsPrefixMap() );
-      prefixMap.put( "", modelFile.namespace().elementUrnPrefix() );
-      model.setNsPrefixes( prefixMap );
+      RdfUtil.cleanPrefixes( model );
 
       propertyOrder = createPredefinedPropertyOrder();
       prefixOrder = createPredefinedPrefixOrder();
@@ -200,15 +195,24 @@ public class PrettyPrinter {
 
       showMilestoneBanner();
 
-      prefixMap.entrySet().stream().sorted( prefixOrder )
+      model.getNsPrefixMap().entrySet().stream().sorted( prefixOrder )
             .forEach( entry -> writer.format( "@prefix %s: <%s> .%n", entry.getKey(), entry.getValue() ) );
       writer.println();
 
+      // Write Aspects first, all other elements afterwards
       elementsToWrite.stream()
+            .filter( element -> element.is( Aspect.class ) )
             .filter( element -> !element.isAnonymous() )
             .map( ModelElement::urn )
             .map( urn -> ResourceFactory.createResource( urn.toString() ) )
             .forEach( resourceQueue::add );
+      elementsToWrite.stream()
+            .filter( element -> !element.isAnonymous() )
+            .filter( element -> !element.is( Aspect.class ) )
+            .map( ModelElement::urn )
+            .map( urn -> ResourceFactory.createResource( urn.toString() ) )
+            .forEach( resourceQueue::add );
+
       while ( !resourceQueue.isEmpty() ) {
          final Resource resource = resourceQueue.poll();
          writer.print( processElement( resource, 0 ) );
@@ -238,8 +242,28 @@ public class PrettyPrinter {
          return "( )";
       }
 
-      return list.as( RDFList.class ).asJavaList().stream().map( listNode -> serialize( listNode, indentationLevel ) )
-            .collect( Collectors.joining( " ", "( ", " )" ) );
+      final List<RDFNode> listContent = list.as( RDFList.class ).asJavaList();
+      final long anonymousNodesInList = listContent.stream().filter( RDFNode::isAnon ).count();
+      if ( listContent.size() <= 3 && anonymousNodesInList <= 1 ) {
+         return listContent.stream()
+               .map( listNode -> serialize( listNode, indentationLevel ) )
+               .collect( Collectors.joining( " ", "( ", " )" ) );
+      }
+      final StringBuilder builder = new StringBuilder();
+      builder.append( "(\n" );
+      int i = 0;
+      for ( final RDFNode listNode : listContent ) {
+         builder.append( INDENT.repeat( indentationLevel + 2 ) );
+         builder.append( serialize( listNode, indentationLevel + 2 ) );
+         i++;
+         if ( i < listContent.size() ) {
+            builder.append( "\n" );
+         }
+      }
+      builder.append( "\n" );
+      builder.append( INDENT.repeat( indentationLevel + 1 ) );
+      builder.append( ")" );
+      return builder.toString();
    }
 
    private String serialize( final RDFNode rdfNode, final int indentationLevel ) {
@@ -418,7 +442,6 @@ public class PrettyPrinter {
    }
 
    record PrintVisitor( Model model ) implements NodeVisitor {
-
       @Override
       public Object visitAny( final Node_ANY it ) {
          return "*";

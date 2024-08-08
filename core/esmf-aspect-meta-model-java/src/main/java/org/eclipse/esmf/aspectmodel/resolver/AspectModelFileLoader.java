@@ -73,11 +73,14 @@ public class AspectModelFileLoader {
    }
 
    private static List<String> headerComment( final String content ) {
-      return content.lines()
+      final List<String> list = content.lines()
             .dropWhile( String::isBlank )
             .takeWhile( line -> line.startsWith( "#" ) || isBlank( line ) )
             .map( line -> line.startsWith( "#" ) ? line.substring( 1 ).trim() : line )
             .toList();
+      return !list.isEmpty() && list.get( list.size() - 1 ).isEmpty()
+            ? list.subList( 0, list.size() - 1 )
+            : list;
    }
 
    public static RawAspectModelFile load( final InputStream inputStream ) {
