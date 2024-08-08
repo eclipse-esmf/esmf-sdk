@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
@@ -65,17 +66,7 @@ public class RdfModelCreatorVisitorTest {
       final AspectModel aspectModel = TestResources.load( testAspect );
       final Aspect aspect = aspectModel.aspect();
 
-      final RdfNamespace namespace = new RdfNamespace() {
-         @Override
-         public String getShortForm() {
-            return "";
-         }
-
-         @Override
-         public String getUri() {
-            return aspect.urn().getUrnPrefix();
-         }
-      };
+      final RdfNamespace namespace = new SimpleRdfNamespace( "", aspect.urn().getUrnPrefix() );
       final RdfModelCreatorVisitor visitor = new RdfModelCreatorVisitor( namespace );
       final Model serializedModel = visitor.visitAspect( aspect, null ).model();
 

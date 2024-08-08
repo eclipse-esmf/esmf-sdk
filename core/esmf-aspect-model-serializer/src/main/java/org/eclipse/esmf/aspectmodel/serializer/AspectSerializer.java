@@ -25,12 +25,20 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
+import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
+
+import org.apache.jena.rdf.model.Model;
 
 /**
  * Functions to write Aspect Models and Aspect Model files to Strings or their respective source locations
@@ -114,7 +122,20 @@ public class AspectSerializer {
     * @return the String representation in RDF/Turtle
     */
    public String aspectToString( final Aspect aspect ) {
-      return aspectModelFileToString( aspect.getSourceFile() );
+      if ( aspect.getSourceFile() != null ) {
+         return aspectModelFileToString( aspect.getSourceFile() );
+      }
+
+      // The Aspect has no source file, it was probably created programmatically.
+      // Construct a virtual AspectModelFile with an RDF representation that be serialized.
+
+      final RdfNamespace namespace = new SimpleRdfNamespace( "", aspect.urn().getUrnPrefix() );
+      final Model rdfModel = new RdfModelCreatorVisitor( namespace ).visitAspect( aspect, null ).model();
+      RdfUtil.cleanPrefixes( rdfModel );
+      final AspectModel aspectModel = AspectModelBuilder.buildAspectModelFromFiles(
+            List.of( RawAspectModelFileBuilder.builder().sourceModel( rdfModel ).build() ) );
+      final AspectModelFile newSourceFile = aspectModel.aspect().getSourceFile();
+      return aspectModelFileToString( newSourceFile );
    }
 
    /**

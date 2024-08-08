@@ -153,8 +153,8 @@ class SammCliTest {
    @Test
    void testAspectPrettyPrintOverwrite() throws IOException {
       final File targetFile = outputFile( "output.ttl" );
-      assertThat( targetFile ).content().contains( "@prefix xsd:" );
       FileUtils.copyFile( new File( defaultInputFile ), targetFile );
+      assertThat( targetFile ).content().contains( "@prefix xsd:" );
 
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", targetFile.getAbsolutePath(), "prettyprint",
             "--overwrite" );
