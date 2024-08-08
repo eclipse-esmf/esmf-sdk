@@ -61,8 +61,9 @@ The available options and their meaning can also be seen in the help text of the
 | aspect help <aspect subcommand>  | Get help for `aspect` subcommands                                                       | `samm aspect help validate`
 .2+| [[aspect-validate]] aspect <model> validate | Validate Aspect Model                                                     | `samm aspect AspectModel.ttl validate`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
-.2+| [[aspect-prettyprint]] aspect <model> prettyprint | Pretty-print Aspect Model                                           | `samm aspect AspectModel.ttl prettyprint`
+.3+| [[aspect-prettyprint]] aspect <model> prettyprint | Pretty-print Aspect Model                                           | `samm aspect AspectModel.ttl prettyprint`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
+                                   | _--overwrite, -w_ : Overwrite the input file                                            | `samm aspect AspectModel.ttl prettyprint -w
 .5+| [[aspect-to-html]] aspect <model> to html | Generate HTML documentation for an Aspect Model                             | `samm aspect AspectModel.ttl to html`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl to html -o c:\Model.html`
                                    | _--css, -c_ : CSS file with custom styles to be included in the generated HTML

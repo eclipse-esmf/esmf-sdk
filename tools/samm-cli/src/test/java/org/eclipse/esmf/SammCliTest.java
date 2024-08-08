@@ -39,6 +39,7 @@ import org.eclipse.esmf.test.InvalidTestAspect;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -147,6 +148,22 @@ class SammCliTest {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "prettyprint" );
       assertThat( result.stdout() ).contains( "@prefix" );
       assertThat( result.stderr() ).isEmpty();
+   }
+
+   @Test
+   void testAspectPrettyPrintOverwrite() throws IOException {
+      final File targetFile = outputFile( "output.ttl" );
+      assertThat( targetFile ).content().contains( "@prefix xsd:" );
+      FileUtils.copyFile( new File( defaultInputFile ), targetFile );
+
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", targetFile.getAbsolutePath(), "prettyprint",
+            "--overwrite" );
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( targetFile ).exists();
+      assertThat( targetFile ).content().contains( "@prefix" );
+      // The xsd prefix is not actually used in the file, so it is removed by the pretty printer
+      assertThat( targetFile ).content().doesNotContain( "@prefix xsd:" );
    }
 
    @Test
@@ -1052,7 +1069,7 @@ class SammCliTest {
     * Returns the File object for a test model file
     */
    private File inputFile( final TestModel testModel ) {
-      final boolean isValid = !(testModel instanceof InvalidTestAspect);
+      final boolean isValid = !( testModel instanceof InvalidTestAspect );
       final String resourcePath = String.format(
             "%s/../../core/esmf-test-aspect-models/src/main/resources/%s/org.eclipse.esmf.test/1.0.0/%s.ttl",
             System.getProperty( "user.dir" ), isValid ? "valid" : "invalid", testModel.getName() );
@@ -1103,8 +1120,8 @@ class SammCliTest {
       // are not resolved to the file system but to the jar)
       try {
          final String resolverScript = new File(
-               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + (OS.WINDOWS.isCurrentOs()
-                     ? ".bat" : ".sh") ).getCanonicalPath();
+               System.getProperty( "user.dir" ) + "/target/test-classes/model_resolver" + ( OS.WINDOWS.isCurrentOs()
+                     ? ".bat" : ".sh" ) ).getCanonicalPath();
          final String modelsRoot = new File( System.getProperty( "user.dir" ) + "/target/classes/valid" ).getCanonicalPath();
          final String metaModelVersion = KnownVersion.getLatest().toString().toLowerCase();
          return resolverScript + " " + modelsRoot + " " + metaModelVersion;
