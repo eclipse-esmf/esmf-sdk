@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
@@ -125,5 +126,15 @@ public class RdfUtil {
             model.setNsPrefix( prefix, uri );
          }
       } );
+   }
+
+   /**
+    * Convenience method to load an RDF/Turtle model from its String representation
+    *
+    * @param ttlRepresentation the RDF/Turtle representation of the model
+    * @return the parsed model
+    */
+   public static Model createModel( final String ttlRepresentation ) {
+      return TurtleLoader.loadTurtle( ttlRepresentation ).get();
    }
 }

@@ -14,11 +14,9 @@
 package org.eclipse.esmf.aspectmodel.edit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.aspectmodel.RdfUtil.createModel;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +32,6 @@ import org.eclipse.esmf.aspectmodel.edit.change.MoveRenameAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.RemoveAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.RenameElement;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -45,11 +42,6 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
 
@@ -162,7 +154,7 @@ public class AspectChangeContextTest {
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
       final AspectModelFile aspectModelFile = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( "file:///temp/test.ttl" ) ) )
-            .sourceModel( model( """
+            .sourceModel( createModel( """
                   @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
@@ -198,7 +190,7 @@ public class AspectChangeContextTest {
       final Change changes = new ChangeGroup(
             new AddAspectModelFile( aspectModelFile ),
             new AddElementDefinition( AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.test:1.0.0#Aspect" ),
-                  model( """
+                  createModel( """
                         @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
                         @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                         @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
@@ -257,7 +249,7 @@ public class AspectChangeContextTest {
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
-            .sourceModel( model( """
+            .sourceModel( createModel( """
                   @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
@@ -329,7 +321,7 @@ public class AspectChangeContextTest {
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
-            .sourceModel( model( """
+            .sourceModel( createModel( """
                   @prefix samm: <urn:samm:org.eclipse.esmf.samm:meta-model:2.1.0#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
                   @prefix : <urn:samm:org.eclipse.esmf.test:1.0.0#> .
@@ -390,13 +382,5 @@ public class AspectChangeContextTest {
       ctx.redoChange();
       assertThat( aspectModel.files() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( newLocation );
-   }
-
-   private Model model( final String ttlRepresentation ) {
-      final Model model = ModelFactory.createDefaultModel();
-      final InputStream in = new ByteArrayInputStream( ttlRepresentation.getBytes( StandardCharsets.UTF_8 ) );
-      RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRiotTurtle.factory );
-      model.read( in, "", RDFLanguages.strLangTurtle );
-      return model;
    }
 }
