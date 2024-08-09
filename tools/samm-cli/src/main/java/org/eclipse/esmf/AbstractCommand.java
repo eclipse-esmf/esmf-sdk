@@ -46,7 +46,7 @@ import io.vavr.control.Either;
 import org.apache.commons.io.FilenameUtils;
 
 public abstract class AbstractCommand implements Runnable {
-   private Path modelsRootForFile( final File file ) {
+   protected Path modelsRootForFile( final File file ) {
       return file.toPath().getParent().getParent().getParent();
    }
 

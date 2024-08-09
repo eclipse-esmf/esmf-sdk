@@ -72,7 +72,8 @@ public class AspectSerializer {
    }
 
    /**
-    * Serializes all files of an Aspect Model to their respective source locations
+    * Serializes all files of an Aspect Model to their respective source locations.
+    * <b>Attention:</b> This method does not check validity of paths or existance of files and will overwrite without further checks.
     *
     * @param aspectModel the Aspect Model
     */
@@ -81,11 +82,13 @@ public class AspectSerializer {
    }
 
    /**
-    * Writes the content of an Aspect Model file to its defined source location
+    * Returns a URL for the Aspect Model file if it can be determined.
     *
-    * @param aspectModelFile the Aspect Model file
+    * @param aspectModelFile the input Aspect Model file
+    * @return the Aspect Model file's location as URL
+    * @throws SerializationException if the file has no source location or the source location URI is no URL
     */
-   public void write( final AspectModelFile aspectModelFile ) {
+   public URL aspectModelFileUrl( final AspectModelFile aspectModelFile ) {
       if ( aspectModelFile.sourceLocation().isEmpty() ) {
          throw new SerializationException( "Aspect Model file has no source location" );
       }
@@ -98,13 +101,23 @@ public class AspectSerializer {
          throw new SerializationException( "Aspect Model file can only be written to locations given by URLs" );
       }
 
+      return url;
+   }
+
+   /**
+    * Writes the content of an Aspect Model file to its defined source location
+    *
+    * @param aspectModelFile the Aspect Model file
+    */
+   public void write( final AspectModelFile aspectModelFile ) {
+      final URL url = aspectModelFileUrl( aspectModelFile );
       final Function<URI, OutputStream> protocolHandler = protocolHandlers.get( url.getProtocol() );
       if ( protocolHandler == null ) {
          throw new SerializationException( "Don't know how to write " + url.getProtocol() + " URLs: " + url );
       }
 
       final String content = aspectModelFileToString( aspectModelFile );
-      try ( final OutputStream out = protocolHandler.apply( uri ) ) {
+      try ( final OutputStream out = protocolHandler.apply( aspectModelFile.sourceLocation().get() ) ) {
          out.write( content.getBytes( StandardCharsets.UTF_8 ) );
       } catch ( final IOException exception ) {
          throw new SerializationException( exception );

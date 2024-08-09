@@ -19,6 +19,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.AbstractCommand;
@@ -34,7 +35,9 @@ import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReportFormatter;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToExistingFile;
+import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToNewFile;
 import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
+import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.exception.CommandException;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
@@ -111,16 +114,26 @@ public class AspectEditMoveCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final File file = new File( targetFile );
-      if ( file.exists() ) {
-         if ( targetNamespace == null ) {
+      final String input = parentCommand.parentCommand.getInput();
+
+      if ( targetNamespace == null ) {
+         final File targetFileRelativeToInput = getInputFile( input ).toPath().getParent().resolve( targetFile ).toFile();
+         if ( targetFileRelativeToInput.exists() ) {
             moveElementToExistingFile();
          } else {
-            moveElementToOtherNamespaceExistingFile();
+            moveElementToNewFile();
          }
       } else {
-         if ( targetNamespace == null ) {
-            moveElementToNewFile();
+         final File inputFile = getInputFile( input );
+         final AspectModelUrn targetNamespaceUrn = AspectModelUrn.from( targetNamespace )
+               .getOrElseThrow( () -> new CommandException( "Target namespace is invalid: " + targetNamespace ) );
+         final File targetFileInNewNamespace = modelsRootForFile( inputFile )
+               .resolve( targetNamespaceUrn.getNamespaceMainPart() )
+               .resolve( targetNamespaceUrn.getVersion() )
+               .resolve( targetFile )
+               .toFile();
+         if ( targetFileInNewNamespace.exists() ) {
+            moveElementToOtherNamespaceExistingFile();
          } else {
             moveElementToOtherNamespaceNewFile();
          }
@@ -131,7 +144,21 @@ public class AspectEditMoveCommand extends AbstractCommand {
     * Supports the case {@code samm aspect Aspect.ttl edit move :MyAspect newFile.ttl}
     */
    private void moveElementToNewFile() {
-      // TODO
+      final String input = parentCommand.parentCommand.getInput();
+      final AspectModel aspectModel = loadAspectModelOrFail( input, customResolver );
+
+      // Do refactoring
+      final ModelElement modelElement = determineModelElementToMove( aspectModel );
+      final URI targetFileUri = getInputFile( input ).toPath().getParent().resolve( targetFile ).toUri();
+      final List<String> headerCommentForNewFile = copyHeader
+            ? modelElement.getSourceFile().headerComment()
+            : List.of();
+      final Change move = new MoveElementToNewFile( modelElement, headerCommentForNewFile, Optional.of( targetFileUri ) );
+      final AspectChangeContext changeContext = performRefactoring( aspectModel, move );
+
+      // Check & write changes to file system
+      checkFilesystemConsistency( changeContext );
+      performFileSystemWrite( changeContext );
    }
 
    /**
@@ -160,13 +187,27 @@ public class AspectEditMoveCommand extends AbstractCommand {
       final AspectModel aspectModel = AspectModelBuilder.merge( sourceAspectModel, targetAspectModel );
 
       // Find the loaded AspectModelFile that corresponds to the input targetFile
+      final AspectModelFile targetAspectModelFile = determineTargetAspectModelFile( aspectModel );
+
+      // Do refactoring
+      final ModelElement modelElement = determineModelElementToMove( aspectModel );
+      final Change move = new MoveElementToExistingFile( modelElement, targetAspectModelFile );
+      final AspectChangeContext changeContext = performRefactoring( aspectModel, move );
+
+      // Check & write changes to file system
+      checkFilesystemConsistency( changeContext );
+      performFileSystemWrite( changeContext );
+   }
+
+   private AspectModelFile determineTargetAspectModelFile( final AspectModel aspectModel ) {
       final URI targetFileUri = getInputFile( targetFile ).toURI();
-      final AspectModelFile targetAspectModelFile = aspectModel.files().stream()
+      return aspectModel.files().stream()
             .filter( file -> file.sourceLocation().map( uri -> uri.equals( targetFileUri ) ).orElse( false ) )
             .findFirst()
             .orElseThrow( () -> new CommandException( "Could not determine target file" ) );
+   }
 
-      // Determine the URN for the element to move
+   private ModelElement determineModelElementToMove( final AspectModel aspectModel ) {
       final List<ModelElement> potentialElements = aspectModel.elements().stream()
             .filter( element -> !element.isAnonymous() )
             .filter( element -> element.urn().toString().endsWith( elementName ) )
@@ -183,24 +224,22 @@ public class AspectEditMoveCommand extends AbstractCommand {
                + "\nPlease use the element's full URN." );
          System.exit( 1 );
       }
+      return potentialElements.get( 0 );
+   }
 
-      // Perform the refactoring
+   private AspectChangeContext performRefactoring( final AspectModel aspectModel, final Change change ) {
       final AspectChangeContextConfig config = AspectChangeContextConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
       final AspectChangeContext changeContext = new AspectChangeContext( config, aspectModel );
-      final ModelElement modelElement = potentialElements.get( 0 );
-      final Change move = new MoveElementToExistingFile( modelElement, targetAspectModelFile );
-      final ChangeReport changeReport = changeContext.applyChange( move );
+      final ChangeReport changeReport = changeContext.applyChange( change );
       if ( dryRun ) {
          System.out.println( "Changes to be performed" );
          System.out.println( "=======================" );
          System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, config ) );
          System.exit( 0 );
       }
-
-      checkFilesystemConsistency( changeContext );
-      performFileSystemWrite( changeContext );
+      return changeContext;
    }
 
    private void performFileSystemWrite( final AspectChangeContext changeContext ) {
