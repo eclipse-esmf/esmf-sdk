@@ -129,6 +129,12 @@
          <artifactId>tika-core</artifactId>
          <scope>test</scope>
       </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-sdk-github-resolver</artifactId>
+         <version>DEV-SNAPSHOT</version>
+         <scope>compile</scope>
+      </dependency>
    </dependencies>
 
    <build>

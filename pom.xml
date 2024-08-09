@@ -67,6 +67,7 @@
       <module>tools/esmf-aspect-model-maven-plugin</module>
       <module>tools/samm-cli</module>
       <module>documentation</module>
+      <module>esmf-sdk-github-resolver</module>
    </modules>
 
    <properties>
