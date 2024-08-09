@@ -48,7 +48,7 @@ public class MoveElementToExistingFile extends StructuralChange {
 
    @Override
    public ChangeReport fire( final ChangeContext changeContext ) {
-      final AspectModelFile targetFile = changeContext.aspectModelFiles().stream()
+      final AspectModelFile targetFile = changeContext.aspectModelFiles()
             .filter( file -> file.sourceLocation().equals( targetFileLocation ) )
             .findFirst()
             .orElseThrow( () -> new ModelChangeException( "Can not determine target file to move element" ) );

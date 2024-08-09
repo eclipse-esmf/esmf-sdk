@@ -14,10 +14,26 @@
 package org.eclipse.esmf.aspectmodel.edit;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 
-public record ChangeContext(
-      List<AspectModelFile> aspectModelFiles,
-      AspectChangeContextConfig config ) {
+public interface ChangeContext {
+   Stream<AspectModelFile> aspectModelFiles();
+
+   AspectChangeContextConfig config();
+
+   List<AspectModelFile> createdFiles();
+
+   List<AspectModelFile> modifiedFiles();
+
+   List<AspectModelFile> removedFiles();
+
+   void indicateFileIsAdded( AspectModelFile file );
+
+   void indicateFileIsRemoved( AspectModelFile file );
+
+   void indicateFileHasChanged( AspectModelFile file );
+
+   void resetFileStates();
 }

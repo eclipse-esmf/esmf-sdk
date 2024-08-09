@@ -33,7 +33,7 @@ public class AddAspectModelFile extends AbstractChange {
 
    @Override
    public ChangeReport fire( final ChangeContext changeContext ) {
-      changeContext.aspectModelFiles().add( newFile );
+      changeContext.indicateFileIsAdded( newFile );
       final Model contentToAdd = ModelFactory.createDefaultModel();
       contentToAdd.add( newFile.sourceModel() );
       return new ChangeReport.EntryWithDetails( "Add file " + show( newFile ),
@@ -46,7 +46,7 @@ public class AddAspectModelFile extends AbstractChange {
          @Override
          public ChangeReport fire( final ChangeContext changeContext ) {
             final AspectModelFile file = fileToRemove( changeContext );
-            changeContext.aspectModelFiles().remove( file );
+            changeContext.indicateFileIsRemoved( file );
             return new ChangeReport.EntryWithDetails( "Remove file " + show( file ),
                   Map.of( "model content to remove", file.sourceModel() ) );
          }
@@ -57,7 +57,7 @@ public class AddAspectModelFile extends AbstractChange {
          }
 
          private AspectModelFile fileToRemove( final ChangeContext changeContext ) {
-            return changeContext.aspectModelFiles().stream()
+            return changeContext.aspectModelFiles()
                   .filter( file -> file.sourceLocation().equals( newFile.sourceLocation() ) )
                   .findFirst()
                   .orElseThrow( () -> new ModelChangeException( "Unable to remove Aspect Model File" ) );

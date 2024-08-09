@@ -61,10 +61,13 @@ public class AspectChangeContextTest {
       assertThat( aspectModel.aspect().getName() ).isEqualTo( newName );
       assertThat( aspectModel.files().get( 0 ).sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() )
             .nextStatement().getSubject().getURI() ).endsWith( newName );
+      assertThat( ctx.modifiedFiles() ).hasSize( 1 );
 
       ctx.undoChange();
+      assertThat( ctx.modifiedFiles() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getName() ).isEqualTo( originalName );
       ctx.redoChange();
+      assertThat( ctx.modifiedFiles() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getName() ).isEqualTo( newName );
    }
 
@@ -94,9 +97,7 @@ public class AspectChangeContextTest {
       final Aspect aspect = aspectModel.aspect();
 
       final AspectModelUrn aspectUrn = aspect.urn();
-      final String oldAspectName = aspect.getName();
       final Property property = aspect.getProperties().get( 0 );
-      final String oldPropertyName = property.getName();
 
       final String newAspectName = "RenamedAspect";
       final String newPropertyName = "renamedProperty";
@@ -121,10 +122,14 @@ public class AspectChangeContextTest {
             .build();
       final Change addFile = new AddAspectModelFile( aspectModelFile );
       ctx.applyChange( addFile );
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
       ctx.undoChange();
+      assertThat( ctx.createdFiles() ).isEmpty();
+      assertThat( ctx.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).isEmpty();
       ctx.redoChange();
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
    }
 
@@ -138,11 +143,13 @@ public class AspectChangeContextTest {
       assertThat( aspectModel.elements() ).isEmpty();
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
       ctx.applyChange( new RemoveAspectModelFile( aspectModel.files().get( 0 ) ) );
+      assertThat( ctx.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).isEmpty();
-
       ctx.undoChange();
+      assertThat( ctx.removedFiles() ).isEmpty();
       assertThat( aspectModel.files() ).hasSize( 1 );
       ctx.redoChange();
+      assertThat( ctx.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).isEmpty();
    }
 
@@ -168,12 +175,15 @@ public class AspectChangeContextTest {
             .build();
       final Change addFile = new AddAspectModelFile( aspectModelFile );
       ctx.applyChange( addFile );
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
       assertThat( aspectModel.aspects() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getName() ).isEqualTo( "Aspect" );
       ctx.undoChange();
+      assertThat( ctx.createdFiles() ).isEmpty();
       assertThat( aspectModel.files() ).isEmpty();
       ctx.redoChange();
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
    }
 
@@ -203,12 +213,16 @@ public class AspectChangeContextTest {
       );
 
       ctx.applyChange( changes );
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
       assertThat( aspectModel.aspects() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getName() ).isEqualTo( "Aspect" );
       ctx.undoChange();
+      assertThat( ctx.createdFiles() ).isEmpty();
+      assertThat( ctx.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).isEmpty();
       ctx.redoChange();
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
    }
 
@@ -221,20 +235,26 @@ public class AspectChangeContextTest {
       final URI sourceLocation = URI.create( "file:///temp/test.ttl" );
       final Change move = new MoveElementToNewFile( aspectModel.aspect(), Optional.of( sourceLocation ) );
 
-      final ChangeReport changeReport = ctx.applyChange( move );
-      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, AspectChangeContextConfig.DEFAULT ) );
+      ctx.applyChange( move );
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
+      assertThat( ctx.modifiedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 2 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
 
       ctx.undoChange();
+      assertThat( ctx.createdFiles() ).isEmpty();
+      assertThat( ctx.removedFiles() ).hasSize( 1 );
+      assertThat( ctx.modifiedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( originalSourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
 
       ctx.redoChange();
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
+      assertThat( ctx.modifiedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 2 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
@@ -270,12 +290,16 @@ public class AspectChangeContextTest {
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
 
       final Change move = new MoveElementToExistingFile( aspectModel.aspect(), file2 );
-
-      final ChangeReport changeReport = ctx.applyChange( move );
-      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, AspectChangeContextConfig.DEFAULT ) );
+      ctx.applyChange( move );
+      assertThat( ctx.modifiedFiles() ).hasSize( 2 );
+      assertThat( ctx.createdFiles() ).isEmpty();
+      assertThat( ctx.removedFiles() ).isEmpty();
 
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file2Location );
       ctx.undoChange();
+      assertThat( ctx.modifiedFiles() ).hasSize( 2 );
+      assertThat( ctx.createdFiles() ).isEmpty();
+      assertThat( ctx.removedFiles() ).isEmpty();
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
    }
 
@@ -291,9 +315,9 @@ public class AspectChangeContextTest {
       final Namespace targetNamespace = new DefaultNamespace( targetUrn, List.of(), Optional.empty() );
       final Change move = new MoveElementToOtherNamespaceNewFile( aspectModel.aspect(), targetNamespace, Optional.of( sourceLocation ) );
 
-      final ChangeReport changeReport = ctx.applyChange( move );
-      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, AspectChangeContextConfig.DEFAULT ) );
-
+      ctx.applyChange( move );
+      assertThat( ctx.modifiedFiles() ).hasSize( 1 );
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 2 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
@@ -301,12 +325,17 @@ public class AspectChangeContextTest {
       assertThat( aspectModel.aspect().urn() ).isEqualTo( targetUrn );
 
       ctx.undoChange();
+      assertThat( ctx.modifiedFiles() ).hasSize( 1 );
+      assertThat( ctx.removedFiles() ).hasSize( 1 );
+      assertThat( ctx.createdFiles() ).isEmpty();
       assertThat( aspectModel.files() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( originalSourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
 
       ctx.redoChange();
+      assertThat( ctx.modifiedFiles() ).hasSize( 1 );
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 2 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( sourceLocation );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
@@ -339,14 +368,16 @@ public class AspectChangeContextTest {
             new AddAspectModelFile( file1 ),
             new AddAspectModelFile( file2 )
       ) );
+      ctx.resetFileStates();
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
 
       final AspectModelUrn targetUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.example.new:1.0.0#Aspect" );
       final Namespace targetNamespace = new DefaultNamespace( targetUrn, List.of(), Optional.empty() );
       final Change move = new MoveElementToOtherNamespaceExistingFile( aspectModel.aspect(), file2, targetNamespace );
 
-      final ChangeReport changeReport = ctx.applyChange( move );
-      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, AspectChangeContextConfig.DEFAULT ) );
+      ctx.applyChange( move );
+      assertThat( ctx.modifiedFiles() ).hasSize( 2 );
+      assertThat( ctx.createdFiles() ).isEmpty();
 
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file2Location );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
@@ -354,6 +385,8 @@ public class AspectChangeContextTest {
       assertThat( aspectModel.aspect().urn() ).isEqualTo( targetUrn );
 
       ctx.undoChange();
+      assertThat( ctx.modifiedFiles() ).hasSize( 2 );
+      assertThat( ctx.createdFiles() ).isEmpty();
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).isEqualTo( file1Location );
       assertThat( aspectModel.aspect().getSourceFile().sourceModel().listStatements( null, RDF.type, SammNs.SAMM.Aspect() ).nextStatement()
             .getSubject().getURI() ).isEqualTo( aspectModel.aspect().urn().toString() );
@@ -372,14 +405,23 @@ public class AspectChangeContextTest {
       final Change renameFile = new MoveRenameAspectModelFile( aspect.getSourceFile(), newLocation );
 
       ctx.applyChange( renameFile );
+      assertThat( ctx.modifiedFiles() ).isEmpty();
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
+      assertThat( ctx.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( newLocation );
 
       ctx.undoChange();
+      assertThat( ctx.modifiedFiles() ).isEmpty();
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
+      assertThat( ctx.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( originalLocation );
 
       ctx.redoChange();
+      assertThat( ctx.modifiedFiles() ).isEmpty();
+      assertThat( ctx.createdFiles() ).hasSize( 1 );
+      assertThat( ctx.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( newLocation );
    }

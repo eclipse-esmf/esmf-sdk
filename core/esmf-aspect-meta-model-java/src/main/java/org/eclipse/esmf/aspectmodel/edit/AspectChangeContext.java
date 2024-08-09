@@ -13,21 +13,42 @@
 
 package org.eclipse.esmf.aspectmodel.edit;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 
-public class AspectChangeContext {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class AspectChangeContext implements ChangeContext {
+   private static final Logger LOG = LoggerFactory.getLogger( AspectChangeContext.class );
+
    private final Deque<Change> undoStack = new ArrayDeque<>();
    private final Deque<Change> redoStack = new ArrayDeque<>();
    private final DefaultAspectModel aspectModel;
    private final AspectChangeContextConfig config;
+   private final Map<AspectModelFile, FileState> fileState = new HashMap<>();
+   private boolean isUndoOperation = false;
+
+   private enum FileState {
+      CREATED, CHANGED, REMOVED
+   }
 
    public AspectChangeContext( final AspectChangeContextConfig config, final AspectModel aspectModel ) {
       this.config = config;
+      resetFileStates();
       if ( aspectModel instanceof final DefaultAspectModel defaultAspectModel ) {
          this.aspectModel = defaultAspectModel;
       } else {
@@ -40,7 +61,9 @@ public class AspectChangeContext {
    }
 
    public synchronized ChangeReport applyChange( final Change change ) {
-      final ChangeReport result = change.fire( new ChangeContext( aspectModel.files(), config ) );
+      resetFileStates();
+      isUndoOperation = false;
+      final ChangeReport result = change.fire( this );
       updateAspectModelAfterChange();
       undoStack.offerLast( change.reverse() );
       return result;
@@ -50,8 +73,10 @@ public class AspectChangeContext {
       if ( undoStack.isEmpty() ) {
          return;
       }
+      isUndoOperation = true;
+      resetFileStates();
       final Change change = undoStack.pollLast();
-      change.fire( new ChangeContext( aspectModel.files(), config ) );
+      change.fire( this );
       updateAspectModelAfterChange();
       redoStack.offerLast( change.reverse() );
    }
@@ -60,8 +85,10 @@ public class AspectChangeContext {
       if ( redoStack.isEmpty() ) {
          return;
       }
+      resetFileStates();
       final Change change = redoStack.pollLast();
-      change.fire( new ChangeContext( aspectModel.files(), config ) );
+      isUndoOperation = false;
+      change.fire( this );
       updateAspectModelAfterChange();
       undoStack.offerLast( change.reverse() );
    }
@@ -71,5 +98,64 @@ public class AspectChangeContext {
       aspectModel.setMergedModel( updatedModel.mergedModel() );
       aspectModel.setElements( updatedModel.elements() );
       aspectModel.setFiles( updatedModel.files() );
+   }
+
+   @Override
+   public Stream<AspectModelFile> aspectModelFiles() {
+      return aspectModel.files().stream();
+   }
+
+   @Override
+   public AspectChangeContextConfig config() {
+      return config;
+   }
+
+   @Override
+   public List<AspectModelFile> createdFiles() {
+      return fileState.entrySet().stream()
+            .filter( entry -> entry.getValue() == FileState.CREATED )
+            .map( Map.Entry::getKey )
+            .toList();
+   }
+
+   @Override
+   public List<AspectModelFile> modifiedFiles() {
+      return fileState.entrySet().stream()
+            .filter( entry -> entry.getValue() == FileState.CHANGED )
+            .map( Map.Entry::getKey )
+            .toList();
+   }
+
+   @Override
+   public List<AspectModelFile> removedFiles() {
+      return fileState.entrySet().stream()
+            .filter( entry -> entry.getValue() == FileState.REMOVED )
+            .map( Map.Entry::getKey )
+            .toList();
+   }
+
+   @Override
+   public void resetFileStates() {
+      fileState.clear();
+   }
+
+   @Override
+   public void indicateFileIsAdded( final AspectModelFile file ) {
+      fileState.put( file, FileState.CREATED );
+      aspectModel.files().add( file );
+   }
+
+   @Override
+   public void indicateFileIsRemoved( final AspectModelFile file ) {
+      fileState.put( file, FileState.REMOVED );
+      aspectModel.files().remove( file );
+   }
+
+   @Override
+   public void indicateFileHasChanged( final AspectModelFile file ) {
+      // If the file was newly created, keep this state even if we now change the file content
+      if ( fileState.get( file ) != FileState.CREATED ) {
+         fileState.put( file, FileState.CHANGED );
+      }
    }
 }

@@ -28,41 +28,37 @@ public abstract class EditAspectModel extends AbstractChange {
       public static final ModelChanges NONE = new ModelChanges( null, null, "" );
    }
 
-   protected Map<AspectModelFile, ModelChanges> changesPerFile = null;
-
-   synchronized protected void prepare( final ChangeContext changeContext ) {
-      if ( changesPerFile == null ) {
-         changesPerFile = changeContext.aspectModelFiles().stream()
-               .map( file -> new AbstractMap.SimpleEntry<>( file, calculateChangesForFile( file ) ) )
-               .filter( entry -> entry.getValue() != ModelChanges.NONE )
-               .collect( Collectors.toMap( AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue ) );
-      }
-   }
-
    abstract protected ModelChanges calculateChangesForFile( AspectModelFile aspectModelFile );
 
    @Override
    public ChangeReport fire( final ChangeContext changeContext ) {
-      prepare( changeContext );
+      final Map<AspectModelFile, ModelChanges> changesPerFile = changeContext.aspectModelFiles()
+            .map( file -> new AbstractMap.SimpleEntry<>( file, calculateChangesForFile( file ) ) )
+            .filter( entry -> entry.getValue() != ModelChanges.NONE )
+            .collect( Collectors.toMap( AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue ) );
+
       changesPerFile.forEach( ( file, modelChanges ) -> {
-         if ( changeContext.aspectModelFiles().contains( file ) ) {
+         if ( changeContext.aspectModelFiles().anyMatch( file::equals ) ) {
             file.sourceModel().add( modelChanges.add() );
             file.sourceModel().remove( modelChanges.remove() );
+
+            if ( !modelChanges.add().isEmpty() || !modelChanges.remove().isEmpty() ) {
+               changeContext.indicateFileHasChanged( file );
+            }
          }
       } );
 
       return new ChangeReport.MultipleEntries(
             changesPerFile.entrySet().stream().<ChangeReport> map( entry -> {
-                     final AspectModelFile file = entry.getKey();
-                     final ModelChanges modelChanges = entry.getValue();
-                     return new ChangeReport.EntryWithDetails( modelChanges.description(), Map.of(
-                                 "Add content in " + show( file ), modelChanges.add(),
-                                 "Remove content from " + show( file ), modelChanges.remove() )
-                           .entrySet().stream()
-                           .filter( descriptionEntry -> !descriptionEntry.getValue().isEmpty() )
-                           .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) ) );
-                  }
-            ).toList()
+               final AspectModelFile file = entry.getKey();
+               final ModelChanges modelChanges = entry.getValue();
+               return new ChangeReport.EntryWithDetails( modelChanges.description(), Map.of(
+                           "Add content in " + show( file ), modelChanges.add(),
+                           "Remove content from " + show( file ), modelChanges.remove() )
+                     .entrySet().stream()
+                     .filter( descriptionEntry -> !descriptionEntry.getValue().isEmpty() )
+                     .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) ) );
+            } ).toList()
       );
    }
 }
