@@ -255,6 +255,28 @@ public class AspectModelOpenApiGeneratorTest {
    }
 
    @Test
+   void testValidTemplate() throws IOException {
+      final Aspect aspect = TestResources.load( TestAspect.ASPECT_WITHOUT_SEE_ATTRIBUTE ).aspect();
+      final OpenApiSchemaGenerationConfig config = OpenApiSchemaGenerationConfigBuilder.builder()
+            .useSemanticVersion( true )
+            .baseUrl( TEST_BASE_URL )
+            .resourcePath( TEST_RESOURCE_PATH )
+            .template( getTemplateParameter() )
+            .build();
+      final JsonNode json = apiJsonGenerator.apply( aspect, config ).getContent();
+      final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
+      assertThat( result.getMessages() ).isEmpty();
+
+      final OpenAPI openApi = result.getOpenAPI();
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "400" ).get$ref() )
+            .isEqualTo( "./core-api.yaml#/components/responses/ClientError" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "401" ).get$ref() )
+            .isEqualTo( "./core-api.yaml#/components/responses/Unauthorized" );
+      assertThat( openApi.getPaths().values().stream().findFirst().get().getGet().getResponses().get( "403" ).get$ref() )
+            .isEqualTo( "./core-api.yaml#/components/responses/Forbidden" );
+   }
+
+   @Test
    void testInValidParameterName() throws IOException {
       final ListAppender<ILoggingEvent> logAppender = new ListAppender<>();
       final Logger logger = (Logger) LoggerFactory.getLogger( AspectModelOpenApiGenerator.class );
@@ -495,11 +517,11 @@ public class AspectModelOpenApiGeneratorTest {
       final SwaggerParseResult result = new OpenAPIParser().readContents( json.toString(), null, null );
       final OpenAPI openApi = result.getOpenAPI();
       assertThat(
-            ((Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
-                  .get( 1 )).getProperties() ).doesNotContainKey(
+            ( (Schema) openApi.getComponents().getSchemas().get( "testOperation" ).getAllOf()
+                  .get( 1 ) ).getProperties() ).doesNotContainKey(
             "params" );
-      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
-            .get( 1 )).getProperties() ).doesNotContainKey( "params" );
+      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "testOperationTwo" ).getAllOf()
+            .get( 1 ) ).getProperties() ).doesNotContainKey( "params" );
    }
 
    @Test
@@ -635,8 +657,8 @@ public class AspectModelOpenApiGeneratorTest {
       assertThat( openApi.getSpecVersion() ).isEqualTo( SpecVersion.V31 );
       assertThat( openApi.getComponents().getSchemas().get( "AspectWithCollection" ).get$comment() ).isEqualTo(
             "See: http://example.com/" );
-      assertThat( ((Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
-            .get( "testProperty" )).get$comment() )
+      assertThat( ( (Schema) openApi.getComponents().getSchemas().get( "AspectWithCollection" ).getProperties()
+            .get( "testProperty" ) ).get$comment() )
             .isEqualTo( "See: http://example.com/, http://example.com/me" );
       assertThat( openApi.getComponents().getSchemas().get( "TestCollection" ).get$comment() )
             .isEqualTo( "See: http://example.com/" );
@@ -765,5 +787,11 @@ public class AspectModelOpenApiGeneratorTest {
       final InputStream inputStream = getClass().getResourceAsStream( "/openapi/parameter.json" );
       final String inputString = IOUtils.toString( inputStream, StandardCharsets.UTF_8 );
       return (ObjectNode) OBJECT_MAPPER.readTree( inputString );
+   }
+
+   private ObjectNode getTemplateParameter() throws IOException {
+      final InputStream inputStream = getClass().getResourceAsStream( "/openapi/open-api-error-template.yaml" );
+      final String inputString = IOUtils.toString( inputStream, StandardCharsets.UTF_8 );
+      return (ObjectNode) new YAMLMapper().readTree( inputString );
    }
 }
