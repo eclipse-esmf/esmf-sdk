@@ -13,12 +13,14 @@
 
 package org.eclipse.esmf.aspectmodel;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.loader.MetaModelBaseAttributes;
@@ -115,5 +117,16 @@ public class AspectModelBuilder {
                Optional.ofNullable( fileContainingNamespaceDefinition ), Optional.ofNullable( namespaceDefinition ) );
          ( (DefaultAspectModelFile) file ).setNamespace( namespace );
       }
+   }
+
+   public static AspectModel merge( final AspectModel aspectModel1, final AspectModel aspectModel2 ) {
+      final List<AspectModelFile> files = new ArrayList<>( aspectModel1.files() );
+      final Set<URI> locations = aspectModel1.files().stream()
+            .flatMap( f -> f.sourceLocation().stream() )
+            .collect( Collectors.toSet() );
+      for ( final AspectModelFile file : aspectModel2.files() ) {
+         file.sourceLocation().filter( uri -> !locations.contains( uri ) ).ifPresent( uri -> files.add( file ) );
+      }
+      return buildAspectModelFromFiles( files );
    }
 }
