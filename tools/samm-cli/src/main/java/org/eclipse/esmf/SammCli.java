@@ -22,11 +22,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.IntStream;
 
 import org.eclipse.esmf.aas.AasCommand;
 import org.eclipse.esmf.aas.AasToCommand;
 import org.eclipse.esmf.aas.to.AasToAspectCommand;
 import org.eclipse.esmf.aspect.AspectCommand;
+import org.eclipse.esmf.aspect.AspectEditCommand;
 import org.eclipse.esmf.aspect.AspectPrettyPrintCommand;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
@@ -184,20 +186,37 @@ public class SammCli extends AbstractCommand {
       }
 
       final SammCli command = new SammCli();
-      // Explicitly allow 'samm help command subcommand...' also if the subcommand is 'to' (e.g., aspect to, aas to) and
-      // usually receives a mandatory input file as its first parameter, e.g.:
-      // What a user wants to enter:     What we need to provide to picocli
-      // "help aspect to sql"         -> "aspect _ to help sql"
+      final String[] adjustedArgv = adjustCommandLineArguments( argv );
+
+      final int exitCode = command.commandLine.execute( adjustedArgv );
+      if ( !disableColor ) {
+         AnsiConsole.systemUninstall();
+      }
+      System.exit( exitCode );
+   }
+
+   /**
+    * Explicitly allow 'samm help command subcommand...' also if the subcommand is 'to' (e.g., aspect to, aas to) and
+    * usually receives a mandatory input file as its first parameter, e.g.:
+    * What a user wants to enter: "help aspect to sql"
+    * What we need to provide to picocli: "aspect _ to help sql"
+    *
+    * @param argv the original command line arguments
+    * @return the adjusted command line arguments
+    */
+   private static String[] adjustCommandLineArguments( final String[] argv ) {
       final String[] adjustedArgv;
       final List<String> argvList = Arrays.asList( argv );
       final int helpAspectToIndex = Collections.indexOfSubList( argvList,
             List.of( "help", AspectCommand.COMMAND_NAME, AspectToCommand.COMMAND_NAME ) );
       final int helpAasToIndex = Collections.indexOfSubList( argvList,
             List.of( "help", AasCommand.COMMAND_NAME, AasToCommand.COMMAND_NAME ) );
+      final int helpAspectEditIndex = Collections.indexOfSubList( argvList,
+            List.of( "help", AspectCommand.COMMAND_NAME, AspectEditCommand.COMMAND_NAME ) );
       final int helpAspectXIndex = Collections.indexOfSubList( argvList, List.of( "help", AspectCommand.COMMAND_NAME ) );
       final int helpAasXIndex = Collections.indexOfSubList( argvList, List.of( "help", AasCommand.COMMAND_NAME ) );
-      if ( helpAspectToIndex != -1 || helpAasToIndex != -1 ) {
-         final int index = Integer.max( helpAspectToIndex, helpAasToIndex );
+      if ( helpAspectToIndex != -1 || helpAasToIndex != -1 || helpAspectEditIndex != -1 ) {
+         final int index = IntStream.of( helpAspectToIndex, helpAasToIndex, helpAspectEditIndex ).max().getAsInt();
          final List<String> customArgv = new ArrayList<>( argvList.subList( 0, index ) );
          customArgv.add( argvList.get( index + 1 ) );
          customArgv.add( "_" );
@@ -216,12 +235,7 @@ public class SammCli extends AbstractCommand {
       } else {
          adjustedArgv = argv;
       }
-
-      final int exitCode = command.commandLine.execute( adjustedArgv );
-      if ( !disableColor ) {
-         AnsiConsole.systemUninstall();
-      }
-      System.exit( exitCode );
+      return adjustedArgv;
    }
 
    protected String format( final String string ) {

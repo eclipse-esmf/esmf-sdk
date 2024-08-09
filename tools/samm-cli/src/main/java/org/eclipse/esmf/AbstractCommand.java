@@ -54,12 +54,16 @@ public abstract class AbstractCommand implements Runnable {
       return loadAspectModelOrFail( modelFileName, resolverConfig, false );
    }
 
-   protected AspectModel loadAspectModelOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig,
-         final boolean details ) {
+   protected File getInputFile( final String modelFileName ) {
       final File inputFile = new File( modelFileName );
-      final File absoluteFile = inputFile.isAbsolute()
+      return inputFile.isAbsolute()
             ? inputFile
             : Path.of( System.getProperty( "user.dir" ) ).resolve( inputFile.toPath() ).toFile().getAbsoluteFile();
+   }
+
+   protected AspectModel loadAspectModelOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig,
+         final boolean details ) {
+      final File absoluteFile = getInputFile( modelFileName );
 
       final ResolutionStrategy resolveFromWorkspace = new FileSystemStrategy( modelsRootForFile( absoluteFile ) );
       final ResolutionStrategy resolveFromCurrentDirectory = AspectModelLoader.DEFAULT_STRATEGY.get();

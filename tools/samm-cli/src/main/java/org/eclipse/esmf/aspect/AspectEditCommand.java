@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Robert Bosch Manufacturing Solutions GmbH
+ * Copyright (c) 2024 Robert Bosch Manufacturing Solutions GmbH
  *
  * See the AUTHORS file(s) distributed with this work for additional
  * information regarding authorship.
@@ -15,36 +15,30 @@ package org.eclipse.esmf.aspect;
 
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.aspect.edit.AspectEditMoveCommand;
 import org.eclipse.esmf.exception.SubCommandException;
 
 import picocli.CommandLine;
 
-@CommandLine.Command( name = AspectCommand.COMMAND_NAME,
-      description = "Validate and transform Aspect Models",
+@CommandLine.Command( name = AspectEditCommand.COMMAND_NAME,
+      description = "Edit (refactor) an Aspect Model",
       subcommands = {
             CommandLine.HelpCommand.class,
-            AspectToCommand.class,
-            AspectPrettyPrintCommand.class,
-            AspectValidateCommand.class,
-            AspectEditCommand.class
+            AspectEditMoveCommand.class
       },
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n"
 )
-public class AspectCommand extends AbstractCommand {
-   public static final String COMMAND_NAME = "aspect";
+public class AspectEditCommand extends AbstractCommand {
+   public static final String COMMAND_NAME = "edit";
 
    @CommandLine.Mixin
    private LoggingMixin loggingMixin;
 
-   @CommandLine.Parameters( paramLabel = "INPUT", description = "Input file name of the Aspect Model .ttl file", arity = "1", index = "0" )
-   private String input;
-
-   public String getInput() {
-      return input;
-   }
+   @CommandLine.ParentCommand
+   public AspectCommand parentCommand;
 
    @Override
    public void run() {
