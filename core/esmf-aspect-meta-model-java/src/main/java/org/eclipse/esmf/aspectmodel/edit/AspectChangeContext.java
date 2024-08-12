@@ -92,7 +92,7 @@ public class AspectChangeContext implements ChangeContext {
    }
 
    private void updateAspectModelAfterChange() {
-      final AspectModel updatedModel = AspectModelLoader.buildAspectModelFromFiles( aspectModel.files() );
+      final AspectModel updatedModel = new AspectModelLoader().loadAspectModelFiles( aspectModel.files() );
       aspectModel.setMergedModel( updatedModel.mergedModel() );
       aspectModel.setElements( updatedModel.elements() );
       aspectModel.setFiles( updatedModel.files() );

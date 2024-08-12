@@ -24,12 +24,12 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeGroup;
 import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveRenameAspectModelFile;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.test.TestAspect;
@@ -87,7 +87,7 @@ public class AspectSerializerTest {
    @Test
    void testWriteAspectModelToFileSystem() {
       // Construct Aspect Model with two files from scratch
-      final AspectModel aspectModel = AspectModelBuilder.buildEmptyModel();
+      final AspectModel aspectModel = new AspectModelLoader().emptyModel();
       final Path file1Path = outputDirectory.resolve( "Aspect1.ttl" );
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( file1Path.toUri() ) )

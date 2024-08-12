@@ -20,7 +20,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.AddElementDefinition;
@@ -31,6 +30,7 @@ import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToOtherNamespaceNewFi
 import org.eclipse.esmf.aspectmodel.edit.change.MoveRenameAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.RemoveAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.RenameElement;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Aspect;
@@ -113,7 +113,7 @@ public class AspectChangeContextTest {
 
    @Test
    void testCreateFile() {
-      final AspectModel aspectModel = AspectModelBuilder.buildEmptyModel();
+      final AspectModel aspectModel = new AspectModelLoader().emptyModel();
       assertThat( aspectModel.files() ).isEmpty();
       assertThat( aspectModel.elements() ).isEmpty();
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
@@ -138,7 +138,7 @@ public class AspectChangeContextTest {
       final AspectModelFile aspectModelFile = RawAspectModelFileBuilder.builder()
             .sourceLocation( Optional.of( URI.create( "file:///temp/test.ttl" ) ) )
             .build();
-      final AspectModel aspectModel = AspectModelBuilder.buildAspectModelFromFiles( List.of( aspectModelFile ) );
+      final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles( List.of( aspectModelFile ) );
       assertThat( aspectModel.files() ).hasSize( 1 );
       assertThat( aspectModel.elements() ).isEmpty();
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
@@ -155,7 +155,7 @@ public class AspectChangeContextTest {
 
    @Test
    void testCreateFileWithElementDefinition() {
-      final AspectModel aspectModel = AspectModelBuilder.buildEmptyModel();
+      final AspectModel aspectModel = new AspectModelLoader().emptyModel();
       assertThat( aspectModel.files() ).isEmpty();
       assertThat( aspectModel.elements() ).isEmpty();
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
@@ -189,7 +189,7 @@ public class AspectChangeContextTest {
 
    @Test
    void testCreateFileThenAddElementDefinition() {
-      final AspectModel aspectModel = AspectModelBuilder.buildEmptyModel();
+      final AspectModel aspectModel = new AspectModelLoader().emptyModel();
       assertThat( aspectModel.files() ).isEmpty();
       assertThat( aspectModel.elements() ).isEmpty();
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
@@ -265,7 +265,7 @@ public class AspectChangeContextTest {
    void testMoveElementToExistingFile() {
       final Optional<URI> file1Location = Optional.of( URI.create( "file:///file1.ttl" ) );
       final Optional<URI> file2Location = Optional.of( URI.create( "file:///file2.ttl" ) );
-      final AspectModel aspectModel = AspectModelBuilder.buildEmptyModel();
+      final AspectModel aspectModel = new AspectModelLoader().emptyModel();
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )
@@ -346,7 +346,7 @@ public class AspectChangeContextTest {
    void testMoveElementToOtherNamespaceExistingFile() {
       final Optional<URI> file1Location = Optional.of( URI.create( "file:///file1.ttl" ) );
       final Optional<URI> file2Location = Optional.of( URI.create( "file:///file2.ttl" ) );
-      final AspectModel aspectModel = AspectModelBuilder.buildEmptyModel();
+      final AspectModel aspectModel = new AspectModelLoader().emptyModel();
       final AspectChangeContext ctx = new AspectChangeContext( aspectModel );
       final AspectModelFile file1 = RawAspectModelFileBuilder.builder()
             .sourceLocation( file1Location )

@@ -207,7 +207,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
 
       // Create a consistent in-memory representation of both the source and target models.
       // On this Aspect Model we can perform the refactoring operation
-      final AspectModel aspectModel = AspectModelLoader.merge( sourceAspectModel, targetAspectModel );
+      final AspectModel aspectModel = new AspectModelLoader().merge( sourceAspectModel, targetAspectModel );
 
       // Find the loaded AspectModelFile that corresponds to the input targetFile
       final ModelElement modelElement = determineModelElementToMove( aspectModel );
@@ -231,7 +231,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
 
       // Create a consistent in-memory representation of both the source and target models.
       // On this Aspect Model we can perform the refactoring operation
-      final AspectModel aspectModel = AspectModelLoader.merge( sourceAspectModel, targetAspectModel );
+      final AspectModel aspectModel = new AspectModelLoader().merge( sourceAspectModel, targetAspectModel );
 
       // Find the loaded AspectModelFile that corresponds to the input targetFile
       final Namespace namespace = new DefaultNamespace( targetNamespaceUrn, List.of(), Optional.empty() );

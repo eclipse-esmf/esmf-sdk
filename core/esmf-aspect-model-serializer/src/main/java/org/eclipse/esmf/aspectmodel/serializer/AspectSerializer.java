@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
@@ -145,7 +145,7 @@ public class AspectSerializer {
       final RdfNamespace namespace = new SimpleRdfNamespace( "", aspect.urn().getUrnPrefix() );
       final Model rdfModel = new RdfModelCreatorVisitor( namespace ).visitAspect( aspect, null ).model();
       RdfUtil.cleanPrefixes( rdfModel );
-      final AspectModel aspectModel = AspectModelBuilder.buildAspectModelFromFiles(
+      final AspectModel aspectModel = new AspectModelLoader().loadAspectModelFiles(
             List.of( RawAspectModelFileBuilder.builder().sourceModel( rdfModel ).build() ) );
       final AspectModelFile newSourceFile = aspectModel.aspect().getSourceFile();
       return aspectModelFileToString( newSourceFile );

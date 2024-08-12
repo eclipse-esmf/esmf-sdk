@@ -176,6 +176,17 @@ class AspectModelLoaderTest {
             } );
    }
 
+   @Test
+   void testMergeAspectModels() {
+      final AspectModel a1 = TestResources.load( TestAspect.ASPECT );
+      final AspectModel a2 = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY );
+      assertThat( a1.aspects() ).hasSize( 1 );
+      assertThat( a2.aspects() ).hasSize( 1 );
+      final AspectModel merged = new AspectModelLoader().merge( a1, a2 );
+      assertThat( merged.aspects() ).hasSize( 2 );
+      assertThat( merged.elements().size() ).isEqualTo( a1.elements().size() + a2.elements().size() );
+   }
+
    /**
     * Returns the File object for a test model file
     */
