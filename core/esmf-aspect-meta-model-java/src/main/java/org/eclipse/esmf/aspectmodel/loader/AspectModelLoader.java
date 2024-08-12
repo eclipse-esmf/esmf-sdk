@@ -181,6 +181,30 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       return buildAspectModel( loaderContext.loadedFiles() );
    }
 
+   /**
+    * Load an Aspect Model from Aspect Model Files
+    *
+    * @param aspectModelFiles the input Aspect Model Files
+    * @return the Aspect Model
+    */
+   public AspectModel load(final List<AspectModelFile> aspectModelFiles) {
+      final LoaderContext loaderContext = new LoaderContext();
+      resolve( aspectModelFiles, loaderContext );
+      return buildAspectModel( loaderContext.loadedFiles() );
+   }
+
+   /**
+    * Load an Aspect Model from an Aspect Model File
+    *
+    * @param aspectModelFile the input Aspect Model Files
+    * @return the Aspect Model
+    */
+   public AspectModel load(final AspectModelFile aspectModelFile ) {
+      final LoaderContext loaderContext = new LoaderContext();
+      resolve( List.of( aspectModelFile ), loaderContext );
+      return buildAspectModel( loaderContext.loadedFiles() );
+   }
+
    @FunctionalInterface
    public interface InputStreamProvider {
       InputStream get() throws IOException;
