@@ -187,7 +187,7 @@ public class AspectModelLoader implements ResolutionStrategySupport {
     * @param aspectModelFiles the input Aspect Model Files
     * @return the Aspect Model
     */
-   public AspectModel load(final List<AspectModelFile> aspectModelFiles) {
+   public AspectModel load( final List<AspectModelFile> aspectModelFiles ) {
       final LoaderContext loaderContext = new LoaderContext();
       resolve( aspectModelFiles, loaderContext );
       return buildAspectModel( loaderContext.loadedFiles() );
