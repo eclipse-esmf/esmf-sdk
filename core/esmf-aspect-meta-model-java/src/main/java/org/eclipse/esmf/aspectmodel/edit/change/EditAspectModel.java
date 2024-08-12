@@ -33,9 +33,9 @@ public abstract class EditAspectModel extends AbstractChange {
    @Override
    public ChangeReport fire( final ChangeContext changeContext ) {
       final Map<AspectModelFile, ModelChanges> changesPerFile = changeContext.aspectModelFiles()
-            .map( file -> new AbstractMap.SimpleEntry<>( file, calculateChangesForFile( file ) ) )
+            .map( file -> Map.entry( file, calculateChangesForFile( file ) ) )
             .filter( entry -> entry.getValue() != ModelChanges.NONE )
-            .collect( Collectors.toMap( AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue ) );
+            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
 
       changesPerFile.forEach( ( file, modelChanges ) -> {
          if ( changeContext.aspectModelFiles().anyMatch( file::equals ) ) {

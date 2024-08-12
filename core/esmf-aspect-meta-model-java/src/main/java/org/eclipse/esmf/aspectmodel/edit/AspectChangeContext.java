@@ -13,19 +13,17 @@
 
 package org.eclipse.esmf.aspectmodel.edit;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.esmf.aspectmodel.AspectModelBuilder;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 
@@ -94,10 +92,31 @@ public class AspectChangeContext implements ChangeContext {
    }
 
    private void updateAspectModelAfterChange() {
-      final AspectModel updatedModel = AspectModelBuilder.buildAspectModelFromFiles( aspectModel.files() );
+      final AspectModel updatedModel = AspectModelLoader.buildAspectModelFromFiles( aspectModel.files() );
       aspectModel.setMergedModel( updatedModel.mergedModel() );
       aspectModel.setElements( updatedModel.elements() );
       aspectModel.setFiles( updatedModel.files() );
+
+      final Map<AspectModelFile, FileState> updatedFileState = new HashMap<>();
+      for ( final Map.Entry<AspectModelFile, FileState> stateEntry : fileState.entrySet() ) {
+         final AspectModelFile file = stateEntry.getKey();
+         final FileState state = stateEntry.getValue();
+
+         if ( file instanceof final RawAspectModelFile rawFile ) {
+            final Optional<AspectModelFile> updatedAspectModelFile = aspectModel.files().stream()
+                  .filter( f -> f.sourceLocation().isPresent() )
+                  .filter( f -> f.sourceLocation().equals( file.sourceLocation() ) )
+                  .findFirst();
+            if ( updatedAspectModelFile.isEmpty() ) {
+               continue;
+            }
+            updatedFileState.put( updatedAspectModelFile.get(), state );
+         } else {
+            updatedFileState.put( file, state );
+         }
+      }
+      fileState.clear();
+      fileState.putAll( updatedFileState );
    }
 
    @Override

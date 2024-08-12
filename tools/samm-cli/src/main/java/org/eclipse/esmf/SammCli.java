@@ -105,8 +105,7 @@ public class SammCli extends AbstractCommand {
       commandLine = initialCommandLine.setExecutionExceptionHandler( new CommandLine.IExecutionExceptionHandler() {
          @Override
          public int handleExecutionException( final Exception exception, final CommandLine commandLine,
-               final CommandLine.ParseResult parseResult )
-               throws Exception {
+               final CommandLine.ParseResult parseResult ) throws Exception {
             if ( exception.getClass().getName()
                   .equals( String.format( "%s.MainClassProcessLauncher$SystemExitCaptured", SammCli.class.getPackageName() ) ) ) {
                // If the exception we encounter is a SystemExitCaptured, this is part of the security manager in the test suite that
