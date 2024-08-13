@@ -171,6 +171,20 @@ The available options and their meaning can also be seen in the help text of the
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--aspect-data, -a_ : path to a JSON file containing aspect data corresponding to the
                                      Aspect Model                                                                            |
+.5+| [[aspect-edit-move]] aspect <model> edit move <element> [<namespace>] | Move a model element definition from its
+                                     current place to another existing or new file in the same or another namespace.         | `samm aspect AspectModel.ttl edit move
+                                                                                                                                MyAspect otherFile.ttl` or `samm aspect
+                                                                                                                                AspectModel.ttl edit move MyAspect
+                                                                                                                                someFileInOtherNamespace.ttl
+                                                                                                                                urn:samm:org.eclipse.example.myns:1.0.0`
+                                   | _--dry-run_ : Don't write changes to the file system, but print a report of changes
+                                     that would be performed.                                                                |
+                                   | _--details_ : When used with `--dry-run`, include details about model content
+                                     changes in the report .                                                                 |
+                                   | _--copy-file-header_ : When a model element is moved to a new file, copy the file
+                                     header from the source file to the new file                                             |
+                                   | _--force_ : When a new file is to be created but it already exists in the file system,
+                                     the operation will be cancelled, unless `--force` is used.                              |
 .3+| [[aas-to-aspect]] aas <aas file> to aspect | Translate Asset Administration Shell (AAS) Submodel Templates to
                                      Aspect Models                                                                           | `samm aas AssetAdminShell.aasx to aspect`
                                    | _--output-directory, -d_ : output directory to write files to (default:
