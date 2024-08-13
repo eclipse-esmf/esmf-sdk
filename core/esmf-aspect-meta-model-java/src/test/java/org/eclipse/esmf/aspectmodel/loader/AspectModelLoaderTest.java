@@ -32,6 +32,7 @@ import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.metamodel.AbstractEntity;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ComplexType;
+import org.eclipse.esmf.metamodel.HasDescription;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
@@ -61,8 +62,8 @@ class AspectModelLoaderTest {
       final AspectModel aspectModel = new AspectModelLoader().loadNamespacePackage( new File( archivePath.toString() ) );
 
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
-      assertThat( aspectModel.namespaces().get( 0 ).getName() ).contains( "urn:samm:org.eclipse.examples:1.1.0" );
-      assertThat( aspectModel.namespaces().get( 1 ).getName() ).contains( "urn:samm:org.eclipse.examples:1.0.0" );
+      assertThat( aspectModel.namespaces() ).map( HasDescription::getName ).contains( "urn:samm:org.eclipse.examples:1.1.0" );
+      assertThat( aspectModel.namespaces() ).map( HasDescription::getName ).contains( "urn:samm:org.eclipse.examples:1.0.0" );
 
       final List<String> aspectsNames = List.of( "Movement2", "Movement3", "Movement", "SimpleAspect" );
 
@@ -79,8 +80,8 @@ class AspectModelLoaderTest {
       final AspectModel aspectModel = new AspectModelLoader().loadNamespacePackage( new FileInputStream( archivePath.toString() ) );
 
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
-      assertThat( aspectModel.namespaces().get( 0 ).getName() ).contains( "urn:samm:org.eclipse.examples:1.1.0" );
-      assertThat( aspectModel.namespaces().get( 1 ).getName() ).contains( "urn:samm:org.eclipse.examples:1.0.0" );
+      assertThat( aspectModel.namespaces() ).map( HasDescription::getName ).contains( "urn:samm:org.eclipse.examples:1.1.0" );
+      assertThat( aspectModel.namespaces() ).map( HasDescription::getName ).contains( "urn:samm:org.eclipse.examples:1.0.0" );
 
       final List<String> aspectsNames = List.of( "Movement2", "Movement3", "Movement", "SimpleAspect" );
 
@@ -100,8 +101,8 @@ class AspectModelLoaderTest {
       final AspectModel aspectModel = new AspectModelLoader().loadNamespacePackage( new FileInputStream( archivePath.toString() ) );
 
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
-      assertThat( aspectModel.namespaces().get( 0 ).getName() ).contains( "urn:samm:org.eclipse.examples:1.1.0" );
-      assertThat( aspectModel.namespaces().get( 1 ).getName() ).contains( "urn:samm:org.eclipse.examples:1.0.0" );
+      assertThat( aspectModel.namespaces() ).map( HasDescription::getName ).contains( "urn:samm:org.eclipse.examples:1.1.0" );
+      assertThat( aspectModel.namespaces() ).map( HasDescription::getName ).contains( "urn:samm:org.eclipse.examples:1.0.0" );
 
       final List<String> aspectsNames = List.of( "Movement2", "Movement3", "Movement4", "Movement", "SimpleAspect" );
 
@@ -118,8 +119,8 @@ class AspectModelLoaderTest {
       final AspectModel aspectModel = new AspectModelLoader().loadNamespacePackage( new FileInputStream( archivePath.toString() ) );
 
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
-      assertThat( aspectModel.namespaces().get( 0 ).getName() ).contains( "urn:samm:org.eclipse.examples:1.1.0" );
-      assertThat( aspectModel.namespaces().get( 1 ).getName() ).contains( "urn:samm:org.eclipse.examples:1.0.0" );
+      assertThat( aspectModel.namespaces() ).map( HasDescription::getName ).contains( "urn:samm:org.eclipse.examples:1.1.0" );
+      assertThat( aspectModel.namespaces() ).map( HasDescription::getName ).contains( "urn:samm:org.eclipse.examples:1.0.0" );
 
       final List<String> aspectsNames = List.of( "Movement2", "Movement3", "Movement", "SimpleAspect" );
 
@@ -136,8 +137,8 @@ class AspectModelLoaderTest {
       final AspectModel aspectModel = new AspectModelLoader().loadNamespacePackage( new FileInputStream( archivePath.toString() ) );
 
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
-      assertThat( aspectModel.namespaces().get( 0 ).getName() ).contains( "urn:samm:org.eclipse.examples:1.1.0" );
-      assertThat( aspectModel.namespaces().get( 1 ).getName() ).contains( "urn:samm:org.eclipse.examples:1.0.0" );
+      assertThat( aspectModel.namespaces() ).map( HasDescription::getName ).contains( "urn:samm:org.eclipse.examples:1.1.0" );
+      assertThat( aspectModel.namespaces() ).map( HasDescription::getName ).contains( "urn:samm:org.eclipse.examples:1.0.0" );
 
       final List<String> aspectsNames = List.of( "Movement2", "Movement3", "Movement", "SimpleAspect" );
 
