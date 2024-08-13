@@ -15,7 +15,6 @@ package org.eclipse.esmf.aspect.edit;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +26,9 @@ import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectEditCommand;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.edit.AspectChangeContext;
-import org.eclipse.esmf.aspectmodel.edit.AspectChangeContextConfig;
-import org.eclipse.esmf.aspectmodel.edit.AspectChangeContextConfigBuilder;
+import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
+import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
+import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfigBuilder;
 import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReportFormatter;
@@ -275,11 +274,11 @@ public class AspectEditMoveCommand extends AbstractCommand {
       return potentialElements.get( 0 );
    }
 
-   private Optional<AspectChangeContext> performRefactoring( final AspectModel aspectModel, final Change change ) {
-      final AspectChangeContextConfig config = AspectChangeContextConfigBuilder.builder()
+   private Optional<AspectChangeManager> performRefactoring( final AspectModel aspectModel, final Change change ) {
+      final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( details )
             .build();
-      final AspectChangeContext changeContext = new AspectChangeContext( config, aspectModel );
+      final AspectChangeManager changeContext = new AspectChangeManager( config, aspectModel );
       final ChangeReport changeReport = changeContext.applyChange( change );
       if ( dryRun ) {
          System.out.println( "Changes to be performed" );
@@ -290,27 +289,24 @@ public class AspectEditMoveCommand extends AbstractCommand {
       return Optional.of( changeContext );
    }
 
-   private void performFileSystemWrite( final AspectChangeContext changeContext ) {
-      for ( final AspectModelFile fileToRemove : changeContext.removedFiles() ) {
-         final File file = Paths.get( fileToRemove.sourceLocation().orElseThrow() ).toFile();
-         if ( !file.delete() ) {
-            throw new CommandException( "Could not delete file: " + file );
-         }
-      }
-      for ( final AspectModelFile fileToCreate : changeContext.createdFiles() ) {
+   private void performFileSystemWrite( final AspectChangeManager changeContext ) {
+      changeContext.removedFiles()
+            .map( fileToRemove -> Paths.get( fileToRemove.sourceLocation().orElseThrow() ).toFile() )
+            .filter( file -> !file.delete() )
+            .forEach( file -> {
+               throw new CommandException( "Could not delete file: " + file );
+            } );
+      changeContext.createdFiles().forEach( fileToCreate -> {
          final File file = Paths.get( fileToCreate.sourceLocation().orElseThrow() ).toFile();
          file.getParentFile().mkdirs();
          AspectSerializer.INSTANCE.write( fileToCreate );
-      }
-      for ( final AspectModelFile fileToModify : changeContext.modifiedFiles() ) {
-         AspectSerializer.INSTANCE.write( fileToModify );
-      }
+      } );
+      changeContext.modifiedFiles().forEach( AspectSerializer.INSTANCE::write );
    }
 
-   private void checkFilesystemConsistency( final AspectChangeContext changeContext ) {
+   private void checkFilesystemConsistency( final AspectChangeManager changeContext ) {
       final List<String> messages = new ArrayList<>();
-      for ( final AspectModelFile fileToRemove : changeContext.removedFiles() ) {
-         final URL url = AspectSerializer.INSTANCE.aspectModelFileUrl( fileToRemove );
+      changeContext.removedFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
          if ( !url.getProtocol().equals( "file" ) ) {
             messages.add( "File should be removed, but it is not identified by a file: URL: " + url );
          }
@@ -318,10 +314,9 @@ public class AspectEditMoveCommand extends AbstractCommand {
          if ( !file.exists() ) {
             messages.add( "File should be removed, but it does not exist: " + file );
          }
-      }
+      } );
 
-      for ( final AspectModelFile fileToCreate : changeContext.createdFiles() ) {
-         final URL url = AspectSerializer.INSTANCE.aspectModelFileUrl( fileToCreate );
+      changeContext.createdFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
          if ( !url.getProtocol().equals( "file" ) ) {
             messages.add( "New file should be written, but it is not identified by a file: URL: " + url );
          }
@@ -333,10 +328,9 @@ public class AspectEditMoveCommand extends AbstractCommand {
          if ( file.exists() && force && !file.canWrite() ) {
             messages.add( "New file should be written, but it is not writable:" + file );
          }
-      }
+      } );
 
-      for ( final AspectModelFile fileToModify : changeContext.modifiedFiles() ) {
-         final URL url = AspectSerializer.INSTANCE.aspectModelFileUrl( fileToModify );
+      changeContext.modifiedFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
          if ( !url.getProtocol().equals( "file" ) ) {
             messages.add( "File should be modified, but it is not identified by a file: URL: " + url );
          }
@@ -350,7 +344,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
          if ( !file.isFile() ) {
             messages.add( "File should be modified, but it is not a regular file: " + file );
          }
-      }
+      } );
 
       if ( !messages.isEmpty() ) {
          System.out.println( "Encountered problems, canceling writing." );

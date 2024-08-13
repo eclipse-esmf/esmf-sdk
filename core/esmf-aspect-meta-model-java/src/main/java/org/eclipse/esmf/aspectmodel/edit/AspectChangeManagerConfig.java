@@ -18,13 +18,13 @@ import java.util.List;
 import io.soabase.recordbuilder.core.RecordBuilder;
 
 @RecordBuilder
-public record AspectChangeContextConfig(
+public record AspectChangeManagerConfig(
       List<String> defaultFileHeader,
       boolean detailedChangeReport
 ) {
-   public static AspectChangeContextConfig DEFAULT = AspectChangeContextConfigBuilder.builder().build();
+   public static AspectChangeManagerConfig DEFAULT = AspectChangeManagerConfigBuilder.builder().build();
 
-   public AspectChangeContextConfig {
+   public AspectChangeManagerConfig {
       if ( defaultFileHeader == null ) {
          defaultFileHeader = List.of();
       }

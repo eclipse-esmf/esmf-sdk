@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.edit;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -21,13 +20,13 @@ import org.eclipse.esmf.aspectmodel.AspectModelFile;
 public interface ChangeContext {
    Stream<AspectModelFile> aspectModelFiles();
 
-   AspectChangeContextConfig config();
+   AspectChangeManagerConfig config();
 
-   List<AspectModelFile> createdFiles();
+   Stream<AspectModelFile> createdFiles();
 
-   List<AspectModelFile> modifiedFiles();
+   Stream<AspectModelFile> modifiedFiles();
 
-   List<AspectModelFile> removedFiles();
+   Stream<AspectModelFile> removedFiles();
 
    void indicateFileIsAdded( AspectModelFile file );
 

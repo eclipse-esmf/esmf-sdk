@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.edit.AspectChangeContext;
+import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
 import org.eclipse.esmf.aspectmodel.edit.ChangeGroup;
 import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveRenameAspectModelFile;
@@ -73,7 +73,7 @@ public class AspectSerializerTest {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
 
       // Change the loaded test model's source location to a file system location
-      final AspectChangeContext changeContext = new AspectChangeContext( aspectModel );
+      final AspectChangeManager changeContext = new AspectChangeManager( aspectModel );
       final Path filePath = outputDirectory.resolve( "Aspect.ttl" );
       changeContext.applyChange( new MoveRenameAspectModelFile( aspectModel.files().iterator().next(), filePath.toUri() ) );
 
@@ -118,7 +118,7 @@ public class AspectSerializerTest {
                   """
             ) )
             .build();
-      final AspectChangeContext changeContext = new AspectChangeContext( aspectModel );
+      final AspectChangeManager changeContext = new AspectChangeManager( aspectModel );
       changeContext.applyChange( new ChangeGroup(
             new AddAspectModelFile( file1 ),
             new AddAspectModelFile( file2 )

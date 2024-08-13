@@ -16,7 +16,6 @@ package org.eclipse.esmf.aspectmodel.edit;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -30,13 +29,13 @@ import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AspectChangeContext implements ChangeContext {
-   private static final Logger LOG = LoggerFactory.getLogger( AspectChangeContext.class );
+public class AspectChangeManager implements ChangeContext {
+   private static final Logger LOG = LoggerFactory.getLogger( AspectChangeManager.class );
 
    private final Deque<Change> undoStack = new ArrayDeque<>();
    private final Deque<Change> redoStack = new ArrayDeque<>();
    private final DefaultAspectModel aspectModel;
-   private final AspectChangeContextConfig config;
+   private final AspectChangeManagerConfig config;
    private final Map<AspectModelFile, FileState> fileState = new HashMap<>();
    private boolean isUndoOperation = false;
 
@@ -44,7 +43,7 @@ public class AspectChangeContext implements ChangeContext {
       CREATED, CHANGED, REMOVED
    }
 
-   public AspectChangeContext( final AspectChangeContextConfig config, final AspectModel aspectModel ) {
+   public AspectChangeManager( final AspectChangeManagerConfig config, final AspectModel aspectModel ) {
       this.config = config;
       resetFileStates();
       if ( aspectModel instanceof final DefaultAspectModel defaultAspectModel ) {
@@ -54,8 +53,8 @@ public class AspectChangeContext implements ChangeContext {
       }
    }
 
-   public AspectChangeContext( final AspectModel aspectModel ) {
-      this( AspectChangeContextConfigBuilder.builder().build(), aspectModel );
+   public AspectChangeManager( final AspectModel aspectModel ) {
+      this( AspectChangeManagerConfigBuilder.builder().build(), aspectModel );
    }
 
    public synchronized ChangeReport applyChange( final Change change ) {
@@ -125,32 +124,29 @@ public class AspectChangeContext implements ChangeContext {
    }
 
    @Override
-   public AspectChangeContextConfig config() {
+   public AspectChangeManagerConfig config() {
       return config;
    }
 
    @Override
-   public List<AspectModelFile> createdFiles() {
+   public Stream<AspectModelFile> createdFiles() {
       return fileState.entrySet().stream()
             .filter( entry -> entry.getValue() == FileState.CREATED )
-            .map( Map.Entry::getKey )
-            .toList();
+            .map( Map.Entry::getKey );
    }
 
    @Override
-   public List<AspectModelFile> modifiedFiles() {
+   public Stream<AspectModelFile> modifiedFiles() {
       return fileState.entrySet().stream()
             .filter( entry -> entry.getValue() == FileState.CHANGED )
-            .map( Map.Entry::getKey )
-            .toList();
+            .map( Map.Entry::getKey );
    }
 
    @Override
-   public List<AspectModelFile> removedFiles() {
+   public Stream<AspectModelFile> removedFiles() {
       return fileState.entrySet().stream()
             .filter( entry -> entry.getValue() == FileState.REMOVED )
-            .map( Map.Entry::getKey )
-            .toList();
+            .map( Map.Entry::getKey );
    }
 
    @Override

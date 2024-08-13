@@ -23,7 +23,7 @@ import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
-public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectChangeContextConfig, String> {
+public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectChangeManagerConfig, String> {
    public static final ChangeReportFormatter INSTANCE = new ChangeReportFormatter();
 
    private ChangeReportFormatter() {
@@ -37,7 +37,7 @@ public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectCha
    }
 
    private void handleMultipleEntries( final StringBuilder builder, final ChangeReport.MultipleEntries multipleEntries, final String indent,
-         final int indentationLevel, final AspectChangeContextConfig config ) {
+         final int indentationLevel, final AspectChangeManagerConfig config ) {
       if ( multipleEntries.summary() != null ) {
          builder.append( indent );
          builder.append( "- " );
@@ -58,7 +58,7 @@ public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectCha
    }
 
    private void handleEntryWithDetails( final StringBuilder builder, final ChangeReport.EntryWithDetails entryWithDetails,
-         final String indent, final AspectChangeContextConfig config ) {
+         final String indent, final AspectChangeManagerConfig config ) {
       builder.append( indent );
       builder.append( "- " );
       builder.append( entryWithDetails.summary() );
@@ -99,7 +99,7 @@ public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectCha
       }
    }
 
-   private void append( final StringBuilder builder, final ChangeReport report, final AspectChangeContextConfig config,
+   private void append( final StringBuilder builder, final ChangeReport report, final AspectChangeManagerConfig config,
          final int indentationLevel ) {
       final String indent = "  ".repeat( indentationLevel );
       if ( report instanceof final ChangeReport.SimpleEntry simpleEntry ) {
@@ -123,7 +123,7 @@ public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectCha
    }
 
    @Override
-   public String apply( final ChangeReport changeReport, final AspectChangeContextConfig config ) {
+   public String apply( final ChangeReport changeReport, final AspectChangeManagerConfig config ) {
       final StringBuilder builder = new StringBuilder();
       append( builder, changeReport, config, 0 );
       return builder.toString();
