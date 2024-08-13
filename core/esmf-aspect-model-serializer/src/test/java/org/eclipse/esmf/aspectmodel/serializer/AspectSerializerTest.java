@@ -15,6 +15,7 @@ package org.eclipse.esmf.aspectmodel.serializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.esmf.aspectmodel.RdfUtil.createModel;
+import static org.eclipse.esmf.aspectmodel.serializer.RdfComparison.modelToString;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,13 +32,18 @@ import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveRenameAspectModelFile;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
+import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestResources;
 
+import io.vavr.control.Try;
+import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 public class AspectSerializerTest {
    Path outputDirectory = null;
@@ -65,6 +71,28 @@ public class AspectSerializerTest {
                throw new RuntimeException( e );
             }
          }
+      }
+   }
+
+   @ParameterizedTest
+   @EnumSource( value = TestAspect.class,
+         mode = EnumSource.Mode.EXCLUDE,
+         names = { "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES" } )
+   void testSerializeAspectModelFile( final TestAspect testAspect ) {
+      final AspectModel aspectModel = TestResources.load( testAspect );
+      for ( final AspectModelFile file : aspectModel.files() ) {
+         final Model originalModel = file.sourceModel();
+
+         final String modelString = AspectSerializer.INSTANCE.aspectModelFileToString( file );
+         final Try<Model> tryModel = TurtleLoader.loadTurtle( modelString );
+         final Model serializedModel = tryModel.getOrElseThrow( () -> new RuntimeException( tryModel.getCause() ) );
+
+         serializedModel.clearNsPrefixMap();
+         originalModel.getNsPrefixMap().forEach( serializedModel::setNsPrefix );
+
+         final String serializedModelString = modelToString( serializedModel );
+         final String originalModelString = modelToString( originalModel );
+         assertThat( serializedModelString ).isEqualToIgnoringWhitespace( originalModelString );
       }
    }
 

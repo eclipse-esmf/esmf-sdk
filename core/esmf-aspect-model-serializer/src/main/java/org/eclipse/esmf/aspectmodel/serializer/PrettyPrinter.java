@@ -77,8 +77,7 @@ public class PrettyPrinter {
    private final Set<Resource> processedResources = new HashSet<>();
    private final Queue<Resource> resourceQueue = new ArrayDeque<>();
 
-   private final List<ModelElement> elementsToWrite;
-   private final List<String> headerComment;
+   private final AspectModelFile modelFile;
    private final Model model;
    private final PrintWriter writer;
 
@@ -91,8 +90,7 @@ public class PrettyPrinter {
     * @param writer the writer to write to
     */
    public PrettyPrinter( final AspectModelFile modelFile, final PrintWriter writer ) {
-      elementsToWrite = modelFile.elements();
-      headerComment = modelFile.headerComment();
+      this.modelFile = modelFile;
       this.writer = writer;
       model = ModelFactory.createDefaultModel();
       model.add( modelFile.sourceModel() );
@@ -211,10 +209,10 @@ public class PrettyPrinter {
     * Print to the PrintWriter given in the constructor. This method does not close the PrintWriter.
     */
    public void print() {
-      for ( final String line : headerComment ) {
+      for ( final String line : modelFile.headerComment() ) {
          writer.println( "# " + line );
       }
-      if ( headerComment.size() > 1 ) {
+      if ( modelFile.headerComment().size() > 1 ) {
          writer.println();
       }
 
@@ -224,7 +222,7 @@ public class PrettyPrinter {
             .forEach( entry -> writer.format( "@prefix %s: <%s> .%n", entry.getKey(), entry.getValue() ) );
       writer.println();
 
-      elementsToWrite.stream()
+      modelFile.elements().stream()
             .filter( element -> !element.isAnonymous() )
             .sorted( elementDefinitionOrder )
             .map( ModelElement::urn )

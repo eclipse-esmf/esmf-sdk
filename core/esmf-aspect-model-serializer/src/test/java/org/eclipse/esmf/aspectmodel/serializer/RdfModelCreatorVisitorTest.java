@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.serializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.aspectmodel.serializer.RdfComparison.modelToString;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,7 +60,8 @@ public class RdfModelCreatorVisitorTest {
          "ASPECT_WITH_UMLAUT_DESCRIPTION",
          "MODEL_WITH_BROKEN_CYCLES",
          "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES",
-         "ASPECT_WITH_TIME_SERIES"
+         "ASPECT_WITH_TIME_SERIES",
+         "ASPECT_WITH_NAMESPACE_DESCRIPTION"
    } )
    public void testRdfModelCreatorVisitor( final TestAspect testAspect ) {
       final KnownVersion knownVersion = KnownVersion.getLatest();
@@ -90,30 +92,5 @@ public class RdfModelCreatorVisitorTest {
       assertThat( serializedModelString ).isEqualToIgnoringWhitespace( originalModelString );
    }
 
-   private String modelToString( final Model model ) {
-      return Arrays.stream( TestModel.modelToString( model )
-                  .replaceAll( ";", "" )
-                  .replaceAll( "\\.", "" )
-                  .replaceAll( " +", "" )
-                  .split( "\\n" ) )
-            .filter( line -> !line.contains( "samm-c:values" ) )
-            .filter( line -> !line.contains( "samm:see" ) )
-            .map( this::sortLineWithRdfListOrLangString )
-            .sorted()
-            .collect( Collectors.joining() )
-            .replaceAll( " +", " " );
-   }
 
-   /**
-    * In some test models, lines with RDF lists appear, e.g.:
-    * :property ( "foo" "bar" )
-    * However, for some serialized models, the order of elements is non-deterministic since the underlying collection is a Set.
-    * In order to check that the line is present in the two models, we simply tokenize and sort both lines, so we can compare them.
-    */
-   private String sortLineWithRdfListOrLangString( final String line ) {
-      if ( line.contains( " ( " ) || line.contains( "@" ) ) {
-         return Arrays.stream( line.split( "[ ,\"]" ) ).sorted().collect( Collectors.joining() );
-      }
-      return line;
-   }
 }

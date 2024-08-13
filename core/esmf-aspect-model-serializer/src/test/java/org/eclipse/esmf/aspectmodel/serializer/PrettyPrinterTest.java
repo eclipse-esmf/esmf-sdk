@@ -50,7 +50,6 @@ public class PrettyPrinterTest {
 
       final InputStream bufferInput = new ByteArrayInputStream( buffer.toByteArray() );
       final String formattedModel = buffer.toString( StandardCharsets.UTF_8 );
-      System.out.println( formattedModel );
       final Model prettyPrintedModel = TurtleLoader.loadTurtle( formattedModel ).get();
 
       assertThat( RdfComparison.hash( originalFile.sourceModel() ).equals( RdfComparison.hash( prettyPrintedModel ) ) ).isTrue();
