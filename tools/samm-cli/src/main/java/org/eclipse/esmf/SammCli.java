@@ -212,8 +212,8 @@ public class SammCli extends AbstractCommand {
             List.of( "help", AasCommand.COMMAND_NAME, AasToCommand.COMMAND_NAME ) );
       final int helpAspectEditIndex = Collections.indexOfSubList( argvList,
             List.of( "help", AspectCommand.COMMAND_NAME, AspectEditCommand.COMMAND_NAME ) );
-      final int helpAspectXIndex = Collections.indexOfSubList( argvList, List.of( "help", AspectCommand.COMMAND_NAME ) );
-      final int helpAasXIndex = Collections.indexOfSubList( argvList, List.of( "help", AasCommand.COMMAND_NAME ) );
+      final int helpAspectSomeIndex = Collections.indexOfSubList( argvList, List.of( "help", AspectCommand.COMMAND_NAME ) );
+      final int helpAasSomeIndex = Collections.indexOfSubList( argvList, List.of( "help", AasCommand.COMMAND_NAME ) );
       if ( helpAspectToIndex != -1 || helpAasToIndex != -1 || helpAspectEditIndex != -1 ) {
          final int index = IntStream.of( helpAspectToIndex, helpAasToIndex, helpAspectEditIndex ).max().getAsInt();
          final List<String> customArgv = new ArrayList<>( argvList.subList( 0, index ) );
@@ -223,9 +223,9 @@ public class SammCli extends AbstractCommand {
          customArgv.add( "help" );
          customArgv.addAll( argvList.subList( index + 3, argvList.size() ) );
          adjustedArgv = customArgv.toArray( new String[] {} );
-      } else if ( helpAspectXIndex != -1 || helpAasXIndex != -1 ) {
+      } else if ( helpAspectSomeIndex != -1 || helpAasSomeIndex != -1 ) {
          // "help aspect prettyprint" -> "aspect help prettyprint"
-         final int index = Integer.max( helpAspectXIndex, helpAasXIndex );
+         final int index = Integer.max( helpAspectSomeIndex, helpAasSomeIndex );
          final List<String> customArgv = new ArrayList<>( argvList.subList( 0, index ) );
          customArgv.add( argvList.get( index + 1 ) );
          customArgv.add( "help" );

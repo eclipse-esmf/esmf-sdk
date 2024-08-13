@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 public class RdfUtilTest {
    @ParameterizedTest
    @EnumSource( value = TestAspect.class )
-   void testEveryElementDefinitionContainsATypeAssertion( final TestAspect aspect ) {
+   void testEveryElementDefinitionContainsTypeAssertion( final TestAspect aspect ) {
       final AspectModel aspectModel = TestResources.load( aspect );
       aspectModel.elements().stream()
             .filter( element -> !element.isAnonymous() )

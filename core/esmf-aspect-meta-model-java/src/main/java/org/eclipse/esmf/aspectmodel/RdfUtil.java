@@ -88,6 +88,9 @@ public class RdfUtil {
             case CHARACTERISTIC -> model.setNsPrefix( SammNs.SAMMC.getShortForm(), SammNs.SAMMC.getNamespace() );
             case ENTITY -> model.setNsPrefix( SammNs.SAMME.getShortForm(), SammNs.SAMME.getNamespace() );
             case UNIT -> model.setNsPrefix( SammNs.UNIT.getShortForm(), SammNs.UNIT.getNamespace() );
+            default -> {
+               // nothing to do
+            }
          }
       } );
       // XSD
@@ -104,7 +107,7 @@ public class RdfUtil {
                         .map( Resource::getURI )
                         .filter( type -> type.startsWith( XSD.NS ) ) )
             .findAny()
-            .ifPresent( __ -> model.setNsPrefix( "xsd", XSD.NS ) );
+            .ifPresent( resource -> model.setNsPrefix( "xsd", XSD.NS ) );
       // Empty (namespace) prefix
       Streams.stream( model.listStatements( null, RDF.type, (RDFNode) null ) )
             .map( Statement::getSubject )

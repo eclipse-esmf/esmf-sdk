@@ -25,7 +25,8 @@ import org.apache.jena.vocabulary.RDF;
 
 public abstract class StructuralChange extends AbstractChange {
    protected AspectModelFile sourceFile( final ChangeContext changeContext, final AspectModelUrn elementUrn ) {
-      return changeContext.aspectModelFiles().filter( aspectModelFile -> {
+      return changeContext.aspectModelFiles()
+            .filter( aspectModelFile -> {
                final Resource elementResource = aspectModelFile.sourceModel().createResource( elementUrn.toString() );
                return Streams.stream( aspectModelFile.sourceModel().listStatements( elementResource, RDF.type, (RDFNode) null ) )
                      .count() == 1;

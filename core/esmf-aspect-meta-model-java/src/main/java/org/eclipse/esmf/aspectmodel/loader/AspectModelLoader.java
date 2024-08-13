@@ -491,7 +491,7 @@ public class AspectModelLoader implements ResolutionStrategySupport {
                final AspectModelFile elementFile = element.getSourceFile();
                if ( elementFile.sourceModel().contains( null, RDF.type, SammNs.SAMM.Namespace() ) ) {
                   final Model model = elementFile.sourceModel();
-                  final ModelElementFactory modelElementFactory = new ModelElementFactory( model, Map.of(), __ -> null );
+                  final ModelElementFactory modelElementFactory = new ModelElementFactory( model, Map.of(), r -> null );
                   final Resource namespaceResource = model.listStatements( null, RDF.type, SammNs.SAMM.Namespace() )
                         .mapWith( Statement::getSubject )
                         .toList().iterator().next();

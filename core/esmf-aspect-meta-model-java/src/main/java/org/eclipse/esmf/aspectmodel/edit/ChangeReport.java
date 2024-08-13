@@ -20,7 +20,7 @@ import java.util.Map;
  * A structured representation of a number of {@link Change}s
  */
 public interface ChangeReport {
-   ChangeReport NoChanges = new ChangeReport() {
+   ChangeReport NO_CHANGES = new ChangeReport() {
    };
 
    record SimpleEntry( String text ) implements ChangeReport {

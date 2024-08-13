@@ -43,7 +43,7 @@ public abstract class EditAspectModel extends AbstractChange {
     * @param aspectModelFile the AspectModelFile to change
     * @return the set of changes
     */
-   abstract protected ModelChanges calculateChangesForFile( AspectModelFile aspectModelFile );
+   protected abstract ModelChanges calculateChangesForFile( AspectModelFile aspectModelFile );
 
    @Override
    public ChangeReport fire( final ChangeContext changeContext ) {
