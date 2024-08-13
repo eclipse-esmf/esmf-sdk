@@ -29,6 +29,22 @@ import org.eclipse.esmf.metamodel.impl.DefaultAspectModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The AspectChangeManager is the central place to to changes/edits/refactorings of an {@link AspectModel}. The AspectChangeManager
+ * wraps an AspectModel and allows applying instances of the {@link Change} class using the {@link #applyChange(Change)} method.
+ * Calling this method returns a {@link ChangeReport} that describes the performed changes in a structured way. Use the
+ * {@link ChangeReportFormatter} to render the ChangeReport to a structured string representation.
+ * <br/>
+ * Note the following points:
+ * <ul>
+ *    <li>Only one AspectChangeManager must wrap a given AspectModel at any time</li>
+ *    <li>All changes are done <i>in-memory</i>. In order to write them to the file system, use the
+ *    {@link org.eclipse.esmf.aspectmodel.serializer.AspectSerializer}</li>
+ *    <li>After performing an {@link #applyChange(Change)}, {@link #undoChange()} or {@link #redoChange()} operation, and until the
+ *    next call of one of them, the methods {@link #modifiedFiles()}, {@link #createdFiles()} and {@link #removedFiles()} indicate
+ *    corresponding changes in the AspectModel's files.
+ * </ul>
+ */
 public class AspectChangeManager implements ChangeContext {
    private static final Logger LOG = LoggerFactory.getLogger( AspectChangeManager.class );
 
@@ -37,7 +53,6 @@ public class AspectChangeManager implements ChangeContext {
    private final DefaultAspectModel aspectModel;
    private final AspectChangeManagerConfig config;
    private final Map<AspectModelFile, FileState> fileState = new HashMap<>();
-   private boolean isUndoOperation = false;
 
    private enum FileState {
       CREATED, CHANGED, REMOVED
@@ -59,7 +74,6 @@ public class AspectChangeManager implements ChangeContext {
 
    public synchronized ChangeReport applyChange( final Change change ) {
       resetFileStates();
-      isUndoOperation = false;
       final ChangeReport result = change.fire( this );
       updateAspectModelAfterChange();
       undoStack.offerLast( change.reverse() );
@@ -70,7 +84,6 @@ public class AspectChangeManager implements ChangeContext {
       if ( undoStack.isEmpty() ) {
          return;
       }
-      isUndoOperation = true;
       resetFileStates();
       final Change change = undoStack.pollLast();
       change.fire( this );
@@ -84,7 +97,6 @@ public class AspectChangeManager implements ChangeContext {
       }
       resetFileStates();
       final Change change = redoStack.pollLast();
-      isUndoOperation = false;
       change.fire( this );
       updateAspectModelAfterChange();
       undoStack.offerLast( change.reverse() );

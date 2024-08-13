@@ -48,6 +48,7 @@ import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.DefaultAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.MetaModelFile;
+import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.aspectmodel.urn.UrnSyntaxException;
@@ -412,10 +413,22 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       return result;
    }
 
+   /**
+    * Creates a new empty Aspect Model.
+    *
+    * @return A new empty Aspect Model
+    */
    public AspectModel emptyModel() {
       return new DefaultAspectModel( new ArrayList<>(), ModelFactory.createDefaultModel(), new ArrayList<>() );
    }
 
+   /**
+    * Creates a new Aspect Model from a collection of {@link AspectModelFile}s. The AspectModelFiles can be {@link RawAspectModelFile}
+    * (i.e., not contain {@link ModelElement} instances yet); this method takes care of instantiating the model elements.
+    *
+    * @param inputFiles the list of input files
+    * @return the Aspect Model
+    */
    public AspectModel loadAspectModelFiles( final Collection<AspectModelFile> inputFiles ) {
       final Model mergedModel = ModelFactory.createDefaultModel();
       mergedModel.add( MetaModelFile.metaModelDefinitions() );
@@ -447,7 +460,13 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       return new DefaultAspectModel( files, mergedModel, elements );
    }
 
-   private static void setNamespaces( final Collection<AspectModelFile> files, final Collection<ModelElement> elements ) {
+   /**
+    * Sets up the namespace references in the collection of newly created AspectModelFiles
+    *
+    * @param files the files
+    * @param elements the collection of all model elements across all files
+    */
+   private void setNamespaces( final Collection<AspectModelFile> files, final Collection<ModelElement> elements ) {
       final Map<String, List<ModelElement>> elementsGroupedByNamespaceUrn = elements.stream()
             .filter( element -> !element.isAnonymous() )
             .collect( Collectors.groupingBy( element -> element.urn().getNamespaceIdentifier() ) );
@@ -489,6 +508,13 @@ public class AspectModelLoader implements ResolutionStrategySupport {
       }
    }
 
+   /**
+    * Creates a new Aspect Model that contains the closure of two input Aspect Models
+    *
+    * @param aspectModel1 the first input Aspect Model
+    * @param aspectModel2 the second input Aspect Model
+    * @return the merged Aspect Model
+    */
    public AspectModel merge( final AspectModel aspectModel1, final AspectModel aspectModel2 ) {
       final List<AspectModelFile> files = new ArrayList<>( aspectModel1.files() );
       final Set<URI> locations = aspectModel1.files().stream()

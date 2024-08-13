@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A Change that groups other changes
+ */
 public class ChangeGroup implements Change {
    private final String summary;
    private final List<Change> changes;

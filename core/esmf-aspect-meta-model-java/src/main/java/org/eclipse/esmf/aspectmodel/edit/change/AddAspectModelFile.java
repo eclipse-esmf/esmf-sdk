@@ -24,6 +24,9 @@ import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
+/**
+ * Represents the operation of adding an {@link AspectModelFile} to an AspectModel
+ */
 public class AddAspectModelFile extends AbstractChange {
    private final AspectModelFile newFile;
 

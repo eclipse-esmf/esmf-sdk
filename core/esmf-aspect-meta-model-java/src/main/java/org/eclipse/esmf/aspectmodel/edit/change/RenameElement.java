@@ -17,6 +17,9 @@ import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
 
+/**
+ * Refactoring operation: Renames a model element, i.e., its local name but not its namespace
+ */
 public class RenameElement extends RenameUrn {
    public RenameElement( final ModelElement modelElement, final String newName ) {
       this( modelElement.urn(), newName );

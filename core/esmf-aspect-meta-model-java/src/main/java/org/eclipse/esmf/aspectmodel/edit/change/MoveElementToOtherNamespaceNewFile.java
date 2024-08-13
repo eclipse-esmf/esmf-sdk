@@ -26,6 +26,9 @@ import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.Namespace;
 
+/**
+ * Refactoring operation: Moves a model element to a new file in another namespace.
+ */
 public class MoveElementToOtherNamespaceNewFile extends StructuralChange {
    private final List<String> headerComment;
    private final Optional<URI> sourceLocation;

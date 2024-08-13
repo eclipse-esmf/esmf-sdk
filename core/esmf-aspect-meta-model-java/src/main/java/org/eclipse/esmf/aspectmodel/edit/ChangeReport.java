@@ -16,6 +16,9 @@ package org.eclipse.esmf.aspectmodel.edit;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A structured representation of a number of {@link Change}s
+ */
 public interface ChangeReport {
    ChangeReport NoChanges = new ChangeReport() {
    };

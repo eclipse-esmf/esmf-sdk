@@ -33,6 +33,9 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.XSD;
 
+/**
+ * Refactoring operation: Moves a model element to a new file in the same namespace.
+ */
 public class MoveElementToNewFile extends StructuralChange {
    private final List<String> headerComment;
    private final Optional<URI> sourceLocation;

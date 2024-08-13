@@ -25,6 +25,10 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
+/**
+ * RDF-level refactoring operation: Renames all occurances of a URN to something else. For model-level refactoring, instead of this class,
+ * please use {@link RenameElement}, {@link MoveElementToOtherNamespaceExistingFile} or {@link MoveElementToOtherNamespaceNewFile}.
+ */
 public class RenameUrn extends EditAspectModel {
    private final AspectModelUrn from;
    private final AspectModelUrn to;

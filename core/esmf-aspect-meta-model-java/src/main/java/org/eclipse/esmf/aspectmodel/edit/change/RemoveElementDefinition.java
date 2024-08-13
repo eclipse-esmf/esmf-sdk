@@ -24,6 +24,9 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 
+/**
+ * Removes the definition of a model element from an AspectModelFile. The definition is given as a set of RDF statements (a {@link Model}).
+ */
 public class RemoveElementDefinition extends EditAspectModel {
    private final AspectModelUrn elementUrn;
    private AspectModelFile fileWithOriginalDefinition;

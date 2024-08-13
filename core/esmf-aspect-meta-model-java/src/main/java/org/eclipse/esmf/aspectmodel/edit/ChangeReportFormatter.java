@@ -23,6 +23,9 @@ import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
+/**
+ * Takes a {@link ChangeReport} as an input and renders it as a string
+ */
 public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectChangeManagerConfig, String> {
    public static final ChangeReportFormatter INSTANCE = new ChangeReportFormatter();
 

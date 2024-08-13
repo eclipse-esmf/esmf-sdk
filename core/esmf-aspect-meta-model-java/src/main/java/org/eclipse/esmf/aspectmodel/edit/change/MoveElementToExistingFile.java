@@ -29,6 +29,9 @@ import org.eclipse.esmf.metamodel.ModelElement;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 
+/**
+ * Refactoring operation: Moves a model element to another, existing file in the same namespace.
+ */
 public class MoveElementToExistingFile extends StructuralChange {
    private final AspectModelUrn elementUrn;
    private final Optional<URI> targetFileLocation;

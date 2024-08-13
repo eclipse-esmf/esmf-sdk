@@ -13,7 +13,6 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
-import java.util.AbstractMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -23,11 +22,27 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 
 import org.apache.jena.rdf.model.Model;
 
+/**
+ * Abstract base class for all Changes that change the content (i.e., the underlying RDF) of an Aspect Model file.
+ */
 public abstract class EditAspectModel extends AbstractChange {
+   /**
+    * Represents the changes to perform on the RDF model
+    *
+    * @param add the set of statements to add
+    * @param remove the set of statements to remove
+    * @param description the description of this change set (used in the {@link ChangeReport})
+    */
    protected record ModelChanges( Model add, Model remove, String description ) {
       public static final ModelChanges NONE = new ModelChanges( null, null, "" );
    }
 
+   /**
+    * Each AspectModelFile is changed separately, so extending classes need to calculate changes for a given file.
+    *
+    * @param aspectModelFile the AspectModelFile to change
+    * @return the set of changes
+    */
    abstract protected ModelChanges calculateChangesForFile( AspectModelFile aspectModelFile );
 
    @Override

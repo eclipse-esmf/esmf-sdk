@@ -24,6 +24,9 @@ import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder;
 
+/**
+ * Refactoring operation: Renames/moves a file. This is done by changing its source location.
+ */
 public class MoveRenameAspectModelFile extends StructuralChange {
    private final AspectModelFile file;
    private final Optional<URI> newLocation;

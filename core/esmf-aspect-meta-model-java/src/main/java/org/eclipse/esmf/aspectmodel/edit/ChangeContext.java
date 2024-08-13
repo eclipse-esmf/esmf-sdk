@@ -17,6 +17,10 @@ import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 
+/**
+ * The ChangeContext encapsulates the functionality provided to {@link Change} implementations to access the current set of
+ * Aspect Model Files and indicate changes.
+ */
 public interface ChangeContext {
    Stream<AspectModelFile> aspectModelFiles();
 
