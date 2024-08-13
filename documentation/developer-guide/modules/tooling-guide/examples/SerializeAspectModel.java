@@ -31,7 +31,7 @@ public class SerializeAspectModel {
       // tag::serialize[]
       // AspectModel as returned by the AspectModelLoader
       final AspectModel aspectModel = // ...
-            // end::generate[]
+            // end::serialize[]
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::serialize[]
