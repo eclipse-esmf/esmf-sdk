@@ -53,6 +53,7 @@ To get help for a certain subcommand, use `help` before the subcommand name, e.g
 Each subcommand can have its own set of options which allow the user to further fine-tune the execution of the command.
 The available options and their meaning can also be seen in the help text of the individual subcommands.
 
+=== List of commands
 [width="100%",options="header",cols="20,50,30"]
 |===
 | Command | Description/Options | Examples
