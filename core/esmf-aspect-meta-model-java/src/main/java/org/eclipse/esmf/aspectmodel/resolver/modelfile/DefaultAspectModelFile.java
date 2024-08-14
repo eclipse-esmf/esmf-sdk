@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.metamodel.ModelElement;
+import org.eclipse.esmf.metamodel.Namespace;
 
 import org.apache.jena.rdf.model.Model;
 
@@ -28,6 +29,7 @@ public final class DefaultAspectModelFile implements AspectModelFile {
    private final List<String> headerComment;
    private final Optional<URI> sourceLocation;
    private List<ModelElement> elements;
+   private Namespace namespace = null;
 
    public DefaultAspectModelFile( final Model sourceModel, final List<String> headerComment, final Optional<URI> sourceLocation ) {
       this.sourceModel = sourceModel;
@@ -61,8 +63,17 @@ public final class DefaultAspectModelFile implements AspectModelFile {
       return elements;
    }
 
+   @Override
+   public Namespace namespace() {
+      return namespace;
+   }
+
    public void setElements( final List<ModelElement> elements ) {
       this.elements = elements;
+   }
+
+   public void setNamespace( final Namespace namespace ) {
+      this.namespace = namespace;
    }
 
    @Override
@@ -87,10 +98,6 @@ public final class DefaultAspectModelFile implements AspectModelFile {
 
    @Override
    public String toString() {
-      return "DefaultAspectModelFile["
-            + "sourceModel=" + sourceModel + ", "
-            + "headerComment=" + headerComment + ", "
-            + "sourceLocation=" + sourceLocation + ", "
-            + "elements=" + elements + ']';
+      return sourceLocation().map( URI::toString ).orElse( "(unknown file)" );
    }
 }

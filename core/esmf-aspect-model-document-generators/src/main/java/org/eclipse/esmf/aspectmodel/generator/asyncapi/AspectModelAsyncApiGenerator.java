@@ -207,11 +207,11 @@ public class AspectModelAsyncApiGenerator
 
       channelNode.put( "address", StringUtils.isNotBlank( config.channelAddress() )
             ? config.channelAddress() :
-            String.format( "/%s/%s/%s", aspectModelUrn.getNamespace(), aspectModelUrn.getVersion(), aspect.getName() ) );
+            String.format( "/%s/%s/%s", aspectModelUrn.getNamespaceMainPart(), aspectModelUrn.getVersion(), aspect.getName() ) );
       channelNode.put( DESCRIPTION_FIELD, "This channel for updating " + aspect.getName() + " Aspect." );
 
       final ObjectNode parametersNode = FACTORY.objectNode();
-      parametersNode.put( "namespace", aspectModelUrn.getNamespace() );
+      parametersNode.put( "namespace", aspectModelUrn.getNamespaceMainPart() );
       parametersNode.put( "version", aspectModelUrn.getVersion() );
       parametersNode.put( "aspect-name", aspect.getName() );
 

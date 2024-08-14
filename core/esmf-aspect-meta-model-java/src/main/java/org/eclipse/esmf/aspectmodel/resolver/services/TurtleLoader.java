@@ -78,7 +78,7 @@ public final class TurtleLoader {
    }
 
    /**
-    * Loads a Turtle model from an input stream
+    * Loads a Turtle model from a String containing RDF/Turtle
     *
     * @param modelContent The model content
     * @return The model on success, a corresponding exception otherwise

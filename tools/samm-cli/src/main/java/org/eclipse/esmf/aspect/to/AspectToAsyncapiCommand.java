@@ -46,8 +46,7 @@ import picocli.CommandLine;
       description = "Generate AsyncAPI specification for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectToAsyncapiCommand extends AbstractCommand {
 

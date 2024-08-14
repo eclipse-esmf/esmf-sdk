@@ -35,8 +35,8 @@ import picocli.CommandLine;
       description = "Generate Asset Administration Shell (AAS) submodel template for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true )
+      optionListHeading = "%n@|bold Options|@:%n"
+)
 public class AspectToAasCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "aas";
    private static final Logger LOG = LoggerFactory.getLogger( AspectToAasCommand.class );

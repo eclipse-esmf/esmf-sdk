@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.ModelElementGroup;
+import org.eclipse.esmf.metamodel.Namespace;
 
 import org.apache.jena.rdf.model.Model;
 
@@ -31,10 +32,12 @@ public interface AspectModelFile extends ModelElementGroup {
 
    Optional<URI> sourceLocation();
 
+   default Namespace namespace() {
+      throw new UnsupportedOperationException( "Uninitialized Aspect Model" );
+   }
+
    @Override
    default List<ModelElement> elements() {
       throw new UnsupportedOperationException( "Uninitialized Aspect Model" );
    }
-
-   //   boolean isAutoMigrated();
 }
