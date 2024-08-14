@@ -48,21 +48,24 @@ alias samm='java -jar /location/to/samm-cli-{esmf-sdk-version}.jar'
 Successful execution of a command is signaled by returning 0. In case of a logical or other internal error the error code 1 is being returned.
 Missing or wrong command parameters result in error code 2 being returned.
 
-To get help for a certain subcommand, add 'help' before the subcommand name or add `--help` to the end, e.g., `samm help aspect`
-or `samm aspect --help`.
+To get an overview of all commands and subcommands, use `samm help`.
+To get help for a certain subcommand, use `help` before the subcommand name, e.g., `samm help aspect`, `samm help aspect validate` or `samm help aas to aspect`.
 Each subcommand can have its own set of options which allow the user to further fine-tune the execution of the command.
 The available options and their meaning can also be seen in the help text of the individual subcommands.
 
+=== List of commands
 [width="100%",options="header",cols="20,50,30"]
 |===
 | Command | Description/Options | Examples
 | help                             | Get overview of all commands                                                            | `samm help`
-| help <subcommand>                | Get help for a specific subcommand                                                      | `samm help aspect`
-| aspect help <aspect subcommand>  | Get help for `aspect` subcommands                                                       | `samm aspect help validate`
+.3+| [[help]] help <commands...>   | Get help for a list of subcommands                                                      | `samm help aspect`
+                                   |                                                                                         | `samm help aspect to svg`
+                                   |                                                                                         | `samm help aspect validate`
 .2+| [[aspect-validate]] aspect <model> validate | Validate Aspect Model                                                     | `samm aspect AspectModel.ttl validate`
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements | `samm aspect AspectModel.ttl validate --custom-resolver myresolver.sh`
-.2+| [[aspect-prettyprint]] aspect <model> prettyprint | Pretty-print Aspect Model                                           | `samm aspect AspectModel.ttl prettyprint`
+.3+| [[aspect-prettyprint]] aspect <model> prettyprint | Pretty-print Aspect Model                                           | `samm aspect AspectModel.ttl prettyprint`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl prettyprint -o c:\Results\PrettyPrinted.ttl`
+                                   | _--overwrite, -w_ : Overwrite the input file                                            | `samm aspect AspectModel.ttl prettyprint -w`
 .5+| [[aspect-to-html]] aspect <model> to html | Generate HTML documentation for an Aspect Model                             | `samm aspect AspectModel.ttl to html`
                                    | _--output, -o_ : the output will be saved to the given file                             | `samm aspect AspectModel.ttl to html -o c:\Model.html`
                                    | _--css, -c_ : CSS file with custom styles to be included in the generated HTML
@@ -169,6 +172,20 @@ The available options and their meaning can also be seen in the help text of the
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--aspect-data, -a_ : path to a JSON file containing aspect data corresponding to the
                                      Aspect Model                                                                            |
+.5+| [[aspect-edit-move]] aspect <model> edit move <element> [<namespace>] | Move a model element definition from its
+                                     current place to another existing or new file in the same or another namespace.         | `samm aspect AspectModel.ttl edit move
+                                                                                                                                MyAspect otherFile.ttl` or `samm aspect
+                                                                                                                                AspectModel.ttl edit move MyAspect
+                                                                                                                                someFileInOtherNamespace.ttl
+                                                                                                                                urn:samm:org.eclipse.example.myns:1.0.0`
+                                   | _--dry-run_ : Don't write changes to the file system, but print a report of changes
+                                     that would be performed.                                                                |
+                                   | _--details_ : When used with `--dry-run`, include details about model content
+                                     changes in the report .                                                                 |
+                                   | _--copy-file-header_ : When a model element is moved to a new file, copy the file
+                                     header from the source file to the new file                                             |
+                                   | _--force_ : When a new file is to be created but it already exists in the file system,
+                                     the operation will be cancelled, unless `--force` is used.                              |
 .3+| [[aas-to-aspect]] aas <aas file> to aspect | Translate Asset Administration Shell (AAS) Submodel Templates to
                                      Aspect Models                                                                           | `samm aas AssetAdminShell.aasx to aspect`
                                    | _--output-directory, -d_ : output directory to write files to (default:
@@ -364,7 +381,7 @@ For the generated OpenAPI specification, the following mapping would apply:
   "openapi" : "3.0.3",
   "info" : {
     "title" : "TestAspect", // <2> <3>
-    "version" : "v2" // <1>
+    "version" : "v1" // <1>
   }
 }
 ----
@@ -379,10 +396,10 @@ The version information as described above is also used in the URL definitions o
 ----
 {
  "servers" : [ {
-    "url" : "http://example.com/api/v2", // <1>
+    "url" : "http://example.com/api/v1", // <1>
     "variables" : {
       "api-version" : {
-        "default" : "v2" // <1>
+        "default" : "v1" // <1>
       }
     }
   } ]
@@ -766,7 +783,7 @@ For the generated AsyncAPI specification, the following mapping would apply:
   "asyncapi" : "3.0.0",
   "info" : {
     "title" : "My Movement Aspect MQTT API", // <2>
-    "version" : "v2", // <1>
+    "version" : "v1", // <1>
     "description" : "Aspect for movement information" // <3>
   }
 }

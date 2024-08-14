@@ -28,8 +28,7 @@ import picocli.CommandLine;
       description = "Generate SVG diagram for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectToSvgCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "svg";

@@ -34,8 +34,7 @@ import picocli.CommandLine;
       description = "Generate Java domain classes for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectToJavaCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "java";
@@ -87,7 +86,7 @@ public class AspectToJavaCommand extends AbstractCommand {
       final File templateLibFile = Path.of( templateLib ).toFile();
       final String pkgName = Optional.ofNullable( packageName )
             .flatMap( pkg -> pkg.isBlank() ? Optional.empty() : Optional.of( pkg ) )
-            .orElseGet( () -> aspect.urn().getNamespace() );
+            .orElseGet( () -> aspect.urn().getNamespaceMainPart() );
       return JavaCodeGenerationConfigBuilder.builder()
             .executeLibraryMacros( executeLibraryMacros )
             .templateLibFile( templateLibFile )

@@ -14,6 +14,8 @@
 package org.eclipse.esmf.test;
 
 import java.io.InputStream;
+import java.net.URI;
+import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.ClasspathStrategy;
@@ -24,11 +26,11 @@ import org.eclipse.esmf.samm.KnownVersion;
 public class TestResources {
    public static AspectModel load( final TestAspect model ) {
       final KnownVersion metaModelVersion = KnownVersion.getLatest();
-      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespace(), model.getUrn().getVersion(),
+      final String path = String.format( "valid/%s/%s/%s.ttl", model.getUrn().getNamespaceMainPart(), model.getUrn().getVersion(),
             model.getName() );
       final InputStream inputStream = TestResources.class.getClassLoader().getResourceAsStream( path );
       final ResolutionStrategy testModelsResolutionStrategy = new ClasspathStrategy(
             "valid/" + metaModelVersion.toString().toLowerCase() );
-      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream );
+      return new AspectModelLoader( testModelsResolutionStrategy ).load( inputStream, Optional.of( URI.create( "testmodel:" + path ) ) );
    }
 }

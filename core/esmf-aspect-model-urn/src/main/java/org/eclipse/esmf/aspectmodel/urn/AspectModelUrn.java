@@ -70,18 +70,18 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
 
    private final String name;
    private final String version;
-   private final String namespace;
+   private final String namespaceMainPart;
    private final ElementType elementType;
    private final boolean isSammUrn;
 
    @JsonValue
    private final URI urn;
 
-   private AspectModelUrn( final URI urn, final String name, final String namespace, final ElementType elementType,
+   private AspectModelUrn( final URI urn, final String name, final String namespaceMainPart, final ElementType elementType,
          final String version, final boolean isSammUrn ) {
       this.urn = urn;
       this.name = name;
-      this.namespace = namespace;
+      this.namespaceMainPart = namespaceMainPart;
       this.elementType = elementType;
       this.version = version;
       this.isSammUrn = isSammUrn;
@@ -114,7 +114,19 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    public static AspectModelUrn fromUrn( final URI urn ) {
       checkNotEmpty( urn );
 
-      final List<String> urnParts = ImmutableList.copyOf( urn.toString().split( "[:|#]" ) );
+      final List<String> urnParts;
+      if ( urn.toString().contains( "#" ) ) {
+         urnParts = ImmutableList.copyOf( urn.toString().split( "[:|#]" ) );
+      } else {
+         final String[] parts = urn.toString().split( ":" );
+         final ImmutableList.Builder<String> builder = ImmutableList.builder();
+         for ( final String part : parts ) {
+            builder.add( part );
+         }
+         builder.add( "" );
+         urnParts = builder.build();
+      }
+
       final int numberOfUrnParts = urnParts.size();
       checkUrn( numberOfUrnParts >= 5, UrnSyntaxException.URN_IS_MISSING_SECTIONS_MESSAGE );
 
@@ -264,7 +276,7 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
       }
 
       final String modelElementName = urnParts.get( ASPECT_NAME_INDEX );
-      checkElementName( modelElementName, "aspect" );
+      checkElementName( modelElementName, "model element" );
       return modelElementName;
    }
 
@@ -284,6 +296,9 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
    }
 
    private static void checkElementName( final String modelElementName, final String elementTypeForErrorMessage ) {
+      if ( modelElementName.isEmpty() ) {
+         return;
+      }
       checkUrn( modelElementName.matches( MODEL_ELEMENT_NAME_REGEX ),
             UrnSyntaxException.URN_INVALID_ELEMENT_NAME_MESSAGE, elementTypeForErrorMessage,
             MODEL_ELEMENT_NAME_REGEX, modelElementName );
@@ -329,19 +344,40 @@ public class AspectModelUrn implements Comparable<AspectModelUrn> {
     * Returns the namespace part of the URN, e.g. com.example.foo
     *
     * @return the namespace part of the URN
+    * @deprecated Use {@link #getNamespaceMainPart()} instead
     */
+   @Deprecated( forRemoval = true )
    public String getNamespace() {
-      return namespace;
+      return namespaceMainPart;
    }
 
    /**
-    * Returns prefix part of the URN, i.e. the part up to and including the # but not including the local name,
+    * Returns the namespace part of the URN, e.g. com.example.foo
+    *
+    * @return the namespace part of the URN
+    */
+   public String getNamespaceMainPart() {
+      return namespaceMainPart;
+   }
+
+   /**
+    * Returns the namespace identifier, i.e. the part of the URN before the # symbol
+    * e.g. urn:samm:com.foo.example:1.0.0
+    *
+    * @return the prefix part of the URN
+    */
+   public String getNamespaceIdentifier() {
+      return urn.toString().split( "#" )[0];
+   }
+
+   /**
+    * Returns the RDF prefix part of the URN, i.e. the part up to and including the # but not including the local name,
     * e.g. urn:samm:com.foo.example:1.0.0#
     *
     * @return the prefix part of the URN
     */
    public String getUrnPrefix() {
-      return urn.toString().split( "#" )[0] + "#";
+      return getNamespaceIdentifier() + "#";
    }
 
    public ElementType getElementType() {

@@ -31,14 +31,14 @@ public class SerializeAspectModel {
       // tag::serialize[]
       // AspectModel as returned by the AspectModelLoader
       final AspectModel aspectModel = // ...
-            // end::generate[]
+            // end::serialize[]
             new AspectModelLoader().load(
                   new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" ) );
       // tag::serialize[]
 
       // A String that contains the pretty printed Aspect Model
       final String aspectString =
-          AspectSerializer.INSTANCE.apply( aspectModel.aspect() );
+          AspectSerializer.INSTANCE.aspectToString( aspectModel.aspect() );
       // end::serialize[]
       assertThat( aspectString ).contains( ":Movement a samm:Aspect" );
       assertThat( aspectString ).contains( ":isMoving a samm:Property" );

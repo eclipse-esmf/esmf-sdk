@@ -69,7 +69,7 @@ public class AasToAspectCommand extends AbstractCommand {
                   .toList();
 
       for ( final Aspect aspect : filteredAspects ) {
-         final String aspectString = AspectSerializer.INSTANCE.apply( aspect );
+         final String aspectString = AspectSerializer.INSTANCE.aspectToString( aspect );
          final File targetFile = modelsRoot.determineAspectModelFile( aspect.urn() );
          LOG.info( "Writing {}", targetFile.getAbsolutePath() );
          final File directory = targetFile.getParentFile();

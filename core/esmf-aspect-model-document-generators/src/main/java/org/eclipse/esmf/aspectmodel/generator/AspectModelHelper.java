@@ -105,7 +105,7 @@ public class AspectModelHelper {
    private String namespaceAnchorPart( final ModelElement modelElement ) {
       return Optional.ofNullable( modelElement )
             .map( ModelElement::urn )
-            .map( urn -> urn.getNamespace().replace( ".", "-" ) ).orElse( "" );
+            .map( urn -> urn.getNamespaceMainPart().replace( ".", "-" ) ).orElse( "" );
    }
 
    public String buildAnchor( final ModelElement modelElement, final ModelElement parentElement, final String suffix ) {

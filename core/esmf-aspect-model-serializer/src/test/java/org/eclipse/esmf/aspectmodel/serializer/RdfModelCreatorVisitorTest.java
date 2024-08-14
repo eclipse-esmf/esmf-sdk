@@ -14,6 +14,7 @@
 package org.eclipse.esmf.aspectmodel.serializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.aspectmodel.serializer.RdfComparison.modelToString;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.metamodel.Aspect;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.metamodel.vocabulary.SimpleRdfNamespace;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestAspect;
 import org.eclipse.esmf.test.TestModel;
@@ -58,24 +60,15 @@ public class RdfModelCreatorVisitorTest {
          "ASPECT_WITH_UMLAUT_DESCRIPTION",
          "MODEL_WITH_BROKEN_CYCLES",
          "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES",
-         "ASPECT_WITH_TIME_SERIES"
+         "ASPECT_WITH_TIME_SERIES",
+         "ASPECT_WITH_NAMESPACE_DESCRIPTION"
    } )
    public void testRdfModelCreatorVisitor( final TestAspect testAspect ) {
       final KnownVersion knownVersion = KnownVersion.getLatest();
       final AspectModel aspectModel = TestResources.load( testAspect );
       final Aspect aspect = aspectModel.aspect();
 
-      final RdfNamespace namespace = new RdfNamespace() {
-         @Override
-         public String getShortForm() {
-            return "";
-         }
-
-         @Override
-         public String getUri() {
-            return aspect.urn().getUrnPrefix();
-         }
-      };
+      final RdfNamespace namespace = new SimpleRdfNamespace( "", aspect.urn().getUrnPrefix() );
       final RdfModelCreatorVisitor visitor = new RdfModelCreatorVisitor( namespace );
       final Model serializedModel = visitor.visitAspect( aspect, null ).model();
 
@@ -99,30 +92,5 @@ public class RdfModelCreatorVisitorTest {
       assertThat( serializedModelString ).isEqualToIgnoringWhitespace( originalModelString );
    }
 
-   private String modelToString( final Model model ) {
-      return Arrays.stream( TestModel.modelToString( model )
-                  .replaceAll( ";", "" )
-                  .replaceAll( "\\.", "" )
-                  .replaceAll( " +", "" )
-                  .split( "\\n" ) )
-            .filter( line -> !line.contains( "samm-c:values" ) )
-            .filter( line -> !line.contains( "samm:see" ) )
-            .map( this::sortLineWithRdfListOrLangString )
-            .sorted()
-            .collect( Collectors.joining() )
-            .replaceAll( " +", " " );
-   }
 
-   /**
-    * In some test models, lines with RDF lists appear, e.g.:
-    * :property ( "foo" "bar" )
-    * However, for some serialized models, the order of elements is non-deterministic since the underlying collection is a Set.
-    * In order to check that the line is present in the two models, we simply tokenize and sort both lines, so we can compare them.
-    */
-   private String sortLineWithRdfListOrLangString( final String line ) {
-      if ( line.contains( " ( " ) || line.contains( "@" ) ) {
-         return Arrays.stream( line.split( "[ ,\"]" ) ).sorted().collect( Collectors.joining() );
-      }
-      return line;
-   }
 }
