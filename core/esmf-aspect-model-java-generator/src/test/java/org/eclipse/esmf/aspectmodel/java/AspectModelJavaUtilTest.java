@@ -22,12 +22,12 @@ import org.eclipse.esmf.metamodel.Type;
 import org.eclipse.esmf.metamodel.Value;
 import org.eclipse.esmf.test.shared.arbitraries.PropertyBasedTest;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.Tuple;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class AspectModelJavaUtilTest extends PropertyBasedTest {
    private boolean isValidJavaIdentifier( final String value ) {

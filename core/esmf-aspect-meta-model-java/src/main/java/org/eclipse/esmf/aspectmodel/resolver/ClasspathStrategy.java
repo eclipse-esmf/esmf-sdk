@@ -152,7 +152,7 @@ public class ClasspathStrategy implements ResolutionStrategy {
    public AspectModelFile apply( final AspectModelUrn aspectModelUrn, final ResolutionStrategySupport resolutionStrategySupport ) {
       final String modelsRootTrailingSlash = modelsRoot.isEmpty() ? "" : "/";
       final String directory = String.format( "%s%s%s/%s", modelsRoot, modelsRootTrailingSlash,
-            aspectModelUrn.getNamespace(), aspectModelUrn.getVersion() );
+            aspectModelUrn.getNamespaceMainPart(), aspectModelUrn.getVersion() );
       final URL namedResourceFile = resourceUrl( directory, aspectModelUrn.getName() + ".ttl" );
 
       if ( namedResourceFile != null ) {

@@ -39,7 +39,7 @@ public class GenerateAspectFromAas extends AspectModelMojo {
 
          for ( final Aspect aspect : generator.generateAspects() ) {
             try ( final FileOutputStream outputStreamForFile = new FileOutputStream( getOutputFile( aspect ) ) ) {
-               outputStreamForFile.write( AspectSerializer.INSTANCE.apply( aspect ).getBytes() );
+               outputStreamForFile.write( AspectSerializer.INSTANCE.aspectToString( aspect ).getBytes() );
             } catch ( final IOException exception ) {
                throw new MojoExecutionException( "Could not write file", exception );
             }
@@ -49,7 +49,7 @@ public class GenerateAspectFromAas extends AspectModelMojo {
 
    private File getOutputFile( final Aspect aspect ) throws MojoExecutionException {
       final AspectModelUrn urn = aspect.urn();
-      final Path outputPath = Path.of( outputDirectory, urn.getNamespace(), urn.getVersion() );
+      final Path outputPath = Path.of( outputDirectory, urn.getNamespaceMainPart(), urn.getVersion() );
       try {
          Files.createDirectories( outputPath );
       } catch ( final IOException exception ) {

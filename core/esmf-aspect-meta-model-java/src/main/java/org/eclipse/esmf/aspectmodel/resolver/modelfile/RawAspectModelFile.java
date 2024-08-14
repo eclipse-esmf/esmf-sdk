@@ -19,12 +19,31 @@ import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 
+import io.soabase.recordbuilder.core.RecordBuilder;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 @SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
+@RecordBuilder
 public record RawAspectModelFile(
       Model sourceModel,
       List<String> headerComment,
       Optional<URI> sourceLocation )
       implements AspectModelFile {
+   public RawAspectModelFile {
+      if ( sourceModel == null ) {
+         sourceModel = ModelFactory.createDefaultModel();
+      }
+      if ( headerComment == null ) {
+         headerComment = List.of();
+      }
+      if ( sourceLocation == null ) {
+         sourceLocation = Optional.empty();
+      }
+   }
+
+   @Override
+   public String toString() {
+      return sourceLocation().map( URI::toString ).orElse( "(unknown file)" );
+   }
 }

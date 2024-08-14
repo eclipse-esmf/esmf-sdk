@@ -25,13 +25,13 @@ import picocli.CommandLine;
             CommandLine.HelpCommand.class,
             AspectToCommand.class,
             AspectPrettyPrintCommand.class,
-            AspectValidateCommand.class
+            AspectValidateCommand.class,
+            AspectEditCommand.class
       },
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "aspect";

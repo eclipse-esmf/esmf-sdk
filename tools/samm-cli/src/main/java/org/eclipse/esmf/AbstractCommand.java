@@ -46,7 +46,7 @@ import io.vavr.control.Either;
 import org.apache.commons.io.FilenameUtils;
 
 public abstract class AbstractCommand implements Runnable {
-   private Path modelsRootForFile( final File file ) {
+   protected Path modelsRootForFile( final File file ) {
       return file.toPath().getParent().getParent().getParent();
    }
 
@@ -54,13 +54,16 @@ public abstract class AbstractCommand implements Runnable {
       return loadAspectModelOrFail( modelFileName, resolverConfig, false );
    }
 
-   protected AspectModel loadAspectModelOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig,
-         final boolean details ) {
+   protected File getInputFile( final String modelFileName ) {
       final File inputFile = new File( modelFileName );
-      final File absoluteFile = inputFile.isAbsolute()
+      return inputFile.isAbsolute()
             ? inputFile
             : Path.of( System.getProperty( "user.dir" ) ).resolve( inputFile.toPath() ).toFile().getAbsoluteFile();
+   }
 
+   protected AspectModel loadAspectModelOrFail( final File modelFile, final ExternalResolverMixin resolverConfig,
+         final boolean details ) {
+      final File absoluteFile = modelFile.getAbsoluteFile();
       final ResolutionStrategy resolveFromWorkspace = new FileSystemStrategy( modelsRootForFile( absoluteFile ) );
       final ResolutionStrategy resolveFromCurrentDirectory = AspectModelLoader.DEFAULT_STRATEGY.get();
       final ResolutionStrategy resolutionStrategy = resolverConfig.commandLine.isBlank()
@@ -81,6 +84,11 @@ public abstract class AbstractCommand implements Runnable {
       }
 
       return validModelOrViolations.get();
+   }
+
+   protected AspectModel loadAspectModelOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig,
+         final boolean details ) {
+      return loadAspectModelOrFail( getInputFile( modelFileName ), resolverConfig, details );
    }
 
    protected Aspect loadAspectOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig ) {
