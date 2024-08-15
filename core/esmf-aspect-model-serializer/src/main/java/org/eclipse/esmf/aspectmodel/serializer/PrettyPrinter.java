@@ -19,7 +19,6 @@ import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +29,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.metamodel.vocabulary.RdfNamespace;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
+import org.eclipse.esmf.metamodel.ModelElement;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.ImmutableList;
@@ -48,6 +47,7 @@ import org.apache.jena.graph.Node_Triple;
 import org.apache.jena.graph.Node_URI;
 import org.apache.jena.graph.Node_Variable;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.graph.UriNode;
 import org.apache.jena.graph.impl.LiteralLabel;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -58,52 +58,30 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.rdf.model.impl.Util;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.XSD;
 
 /**
- * Serializes an {@link AspectModelFile} to RDF/Turtle while following the formatting rules for Aspect models.
- * The model is expected to contain exactly one Aspect.
+ * Serializes an {@link AspectModelFile} to RDF/Turtle while following the formatting rules for Aspect Models.
+ * Initialize with {@link #PrettyPrinter(AspectModelFile, PrintWriter)}, then run {@link #print()}.
  */
 public class PrettyPrinter {
    private static final String INDENT = "   ";
    private static final String TRIPLE_QUOTE = "\"\"\"";
    private static final String LINE_BREAK = "\n";
+   private final Comparator<ModelElement> elementDefinitionOrder;
    private final Comparator<Property> propertyOrder;
    private final Comparator<Map.Entry<String, String>> prefixOrder;
    private final Set<Resource> processedResources = new HashSet<>();
    private final Queue<Resource> resourceQueue = new ArrayDeque<>();
 
+   private final AspectModelFile modelFile;
    private final Model model;
-   private final AspectModelUrn rootElementUrn;
    private final PrintWriter writer;
-   private final Map<String, String> prefixMap;
-   private final List<String> headerComment;
 
    private final PrintVisitor printVisitor;
-
-   private PrettyPrinter( final Model model, final AspectModelUrn rootElementUrn, final PrintWriter writer,
-         final List<String> headerComment ) {
-      this.writer = writer;
-      this.rootElementUrn = rootElementUrn;
-      this.model = ModelFactory.createDefaultModel();
-      this.model.add( model );
-      this.headerComment = List.of();
-
-      prefixMap = new HashMap<>( RdfNamespace.createPrefixMap() );
-      prefixMap.putAll( model.getNsPrefixMap() );
-      prefixMap.put( "", rootElementUrn.getUrnPrefix() );
-      this.model.setNsPrefixes( prefixMap );
-
-      propertyOrder = createPredefinedPropertyOrder();
-      prefixOrder = createPredefinedPrefixOrder();
-      printVisitor = new PrintVisitor( this.model );
-   }
-
-   public PrettyPrinter( final Model model, final AspectModelUrn rootElementUrn, final PrintWriter writer ) {
-      this( model, rootElementUrn, writer, List.of() );
-   }
 
    /**
     * Creates a new Pretty Printer for a given Aspect Model File.
@@ -112,7 +90,38 @@ public class PrettyPrinter {
     * @param writer the writer to write to
     */
    public PrettyPrinter( final AspectModelFile modelFile, final PrintWriter writer ) {
-      this( modelFile.sourceModel(), modelFile.aspect().urn(), writer, modelFile.headerComment() );
+      this.modelFile = modelFile;
+      this.writer = writer;
+      model = ModelFactory.createDefaultModel();
+      model.add( modelFile.sourceModel() );
+      RdfUtil.cleanPrefixes( model );
+
+      elementDefinitionOrder = createElementDefinitionOrder();
+      propertyOrder = createPredefinedPropertyOrder();
+      prefixOrder = createPredefinedPrefixOrder();
+      printVisitor = new PrintVisitor( model );
+   }
+
+   private Comparator<ModelElement> createElementDefinitionOrder() {
+      return Comparator.comparingInt( element -> {
+         final Resource resource = element.getSourceFile().sourceModel().createResource( element.urn().toString() );
+         final StmtIterator iterator = resource.getModel().listStatements( resource, RDF.type, (RDFNode) null );
+         if ( iterator.hasNext() ) {
+            final Statement statement = iterator.next();
+            if ( statement.getSubject().asNode() instanceof final UriNode uriNode ) {
+               return uriNode.getToken().line();
+            } else {
+               // This happens when the model was not loaded using the esmf-sdk customized RDF parser, e.g.
+               // for programmatically created models.
+               // Fall back to inherent RDF order (i.e. no order). At least try to keep samm:Aspect on the top.
+               if ( statement.getObject().isURIResource() && statement.getResource().equals( SammNs.SAMM.Aspect() ) ) {
+                  return 0;
+               }
+               return 1;
+            }
+         }
+         return Integer.MAX_VALUE;
+      } );
    }
 
    private Comparator<Property> createPredefinedPropertyOrder() {
@@ -177,21 +186,19 @@ public class PrettyPrinter {
             .thenComparing( Map.Entry::getKey );
    }
 
-   private Properties loadProperties( final String filename ) {
+   private void showMilestoneBanner() {
       final Properties properties = new Properties();
-      final InputStream propertiesResource = PrettyPrinter.class.getClassLoader().getResourceAsStream( filename );
+      final InputStream propertiesResource = PrettyPrinter.class.getClassLoader().getResourceAsStream( "pom.properties" );
+      if ( propertiesResource == null ) {
+         return;
+      }
       try {
          properties.load( propertiesResource );
       } catch ( final IOException exception ) {
-         throw new RuntimeException( "Failed to load Properties: " + filename );
+         return;
       }
-      return properties;
-   }
 
-   private void showMilestoneBanner() {
-      // property file generated by properties-maven-plugin at build time
-      final Properties applicationProperties = loadProperties( "pom.properties" );
-      final String version = applicationProperties.get( "aspect-meta-model-version" ).toString();
+      final String version = properties.get( "aspect-meta-model-version" ).toString();
       if ( version.contains( "-M" ) ) {
          writer.println( "# This model was created using SAMM version " + version + " and is not intended for productive usage." );
          writer.println();
@@ -202,21 +209,26 @@ public class PrettyPrinter {
     * Print to the PrintWriter given in the constructor. This method does not close the PrintWriter.
     */
    public void print() {
-      for ( final String line : headerComment ) {
-         writer.println( line );
+      for ( final String line : modelFile.headerComment() ) {
+         writer.println( "# " + line );
       }
-      if ( headerComment.size() > 1 ) {
+      if ( modelFile.headerComment().size() > 1 ) {
          writer.println();
       }
 
       showMilestoneBanner();
 
-      prefixMap.entrySet().stream().sorted( prefixOrder )
+      model.getNsPrefixMap().entrySet().stream().sorted( prefixOrder )
             .forEach( entry -> writer.format( "@prefix %s: <%s> .%n", entry.getKey(), entry.getValue() ) );
       writer.println();
 
-      final Resource rootElementResource = ResourceFactory.createResource( rootElementUrn.toString() );
-      resourceQueue.add( rootElementResource );
+      modelFile.elements().stream()
+            .filter( element -> !element.isAnonymous() )
+            .sorted( elementDefinitionOrder )
+            .map( ModelElement::urn )
+            .map( urn -> ResourceFactory.createResource( urn.toString() ) )
+            .forEach( resourceQueue::add );
+
       while ( !resourceQueue.isEmpty() ) {
          final Resource resource = resourceQueue.poll();
          writer.print( processElement( resource, 0 ) );
@@ -246,8 +258,28 @@ public class PrettyPrinter {
          return "( )";
       }
 
-      return list.as( RDFList.class ).asJavaList().stream().map( listNode -> serialize( listNode, indentationLevel ) )
-            .collect( Collectors.joining( " ", "( ", " )" ) );
+      final List<RDFNode> listContent = list.as( RDFList.class ).asJavaList();
+      final long anonymousNodesInList = listContent.stream().filter( RDFNode::isAnon ).count();
+      if ( listContent.size() <= 3 && anonymousNodesInList <= 1 ) {
+         return listContent.stream()
+               .map( listNode -> serialize( listNode, indentationLevel ) )
+               .collect( Collectors.joining( " ", "( ", " )" ) );
+      }
+      final StringBuilder builder = new StringBuilder();
+      builder.append( "(\n" );
+      int i = 0;
+      for ( final RDFNode listNode : listContent ) {
+         builder.append( INDENT.repeat( indentationLevel + 2 ) );
+         builder.append( serialize( listNode, indentationLevel + 2 ) );
+         i++;
+         if ( i < listContent.size() ) {
+            builder.append( "\n" );
+         }
+      }
+      builder.append( "\n" );
+      builder.append( INDENT.repeat( indentationLevel + 1 ) );
+      builder.append( ")" );
+      return builder.toString();
    }
 
    private String serialize( final RDFNode rdfNode, final int indentationLevel ) {
@@ -300,9 +332,9 @@ public class PrettyPrinter {
       int index = 0;
       while ( index < chars.length ) {
          final boolean indexAtUnicodeEscapeSequence = chars[index] == '\\'
-               && (index + 1) < chars.length
+               && ( index + 1 ) < chars.length
                && chars[index + 1] == 'u'
-               && (index + 5) <= (chars.length - 1);
+               && ( index + 5 ) <= ( chars.length - 1 );
          if ( indexAtUnicodeEscapeSequence ) {
             final long codepoint = Long.parseLong( new String( chars, index + 2, 4 ), 16 );
             builder.append( (char) codepoint );
@@ -357,7 +389,7 @@ public class PrettyPrinter {
          return print( resource );
       }
 
-      if ( (resource.isURIResource() && resource.getURI().equals( RDF.nil.getURI() ))
+      if ( ( resource.isURIResource() && resource.getURI().equals( RDF.nil.getURI() ) )
             || statements( resource, RDF.first, null ).iterator().hasNext() ) {
          return serializeList( resource, indentationLevel );
       }
@@ -401,9 +433,9 @@ public class PrettyPrinter {
             .map( statement -> String.format( "%s%s %s", INDENT.repeat( indentationLevel + 1 ),
                   serialize( statement.getPredicate(), indentationLevel ),
                   serialize( statement.getObject(), indentationLevel ) ) )
-            .collect( Collectors.joining( String.format( " ;%n" ), "", (element.isAnon()
+            .collect( Collectors.joining( String.format( " ;%n" ), "", ( element.isAnon()
                   ? String.format( " %n%s]", INDENT.repeat( indentationLevel ) )
-                  : "") ) );
+                  : "" ) ) );
       if ( body.isEmpty() ) {
          return String.format( "%s .%n%n", firstLine );
       } else {
@@ -414,7 +446,7 @@ public class PrettyPrinter {
          if ( body.endsWith( "]" ) && indentationLevel >= 1 ) {
             return firstPart;
          }
-         return String.format( (indentationLevel >= 1 ? "%s ;%n" : "%s .%n%n"), firstPart );
+         return String.format( ( indentationLevel >= 1 ? "%s ;%n" : "%s .%n%n" ), firstPart );
       }
    }
 
@@ -426,7 +458,6 @@ public class PrettyPrinter {
    }
 
    record PrintVisitor( Model model ) implements NodeVisitor {
-
       @Override
       public Object visitAny( final Node_ANY it ) {
          return "*";
@@ -445,7 +476,7 @@ public class PrettyPrinter {
             lf = lf.replace( singleQuote, "\\'" );
          }
          // RDF 1.1 : Print xsd:string without ^^xsd:string
-         return singleQuote + lf + singleQuote + (Util.isSimpleString( it ) ? "" : "^^" + it.getLiteralDatatypeURI());
+         return singleQuote + lf + singleQuote + ( Util.isSimpleString( it ) ? "" : "^^" + it.getLiteralDatatypeURI() );
       }
 
       @Override

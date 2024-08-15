@@ -38,7 +38,7 @@ public class PrettyPrint extends AspectModelMojo {
 
       for ( final AspectModel aspectModel : loadModels() ) {
          final Aspect aspect = aspectModel.aspect();
-         final String formatted = AspectSerializer.INSTANCE.apply( aspect );
+         final String formatted = AspectSerializer.INSTANCE.aspectToString( aspect );
          final String aspectModelFileName = String.format( "%s.ttl", aspect.getName() );
          try ( final FileOutputStream streamForFile = getOutputStreamForFile( aspectModelFileName, outputDirectory );
                final PrintWriter writer = new PrintWriter( streamForFile ) ) {

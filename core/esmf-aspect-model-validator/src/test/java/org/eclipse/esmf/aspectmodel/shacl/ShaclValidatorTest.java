@@ -14,14 +14,11 @@
 package org.eclipse.esmf.aspectmodel.shacl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.esmf.aspectmodel.RdfUtil.createModel;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.DatatypeConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.MinCountConstraint;
 import org.eclipse.esmf.aspectmodel.shacl.constraint.NodeKindConstraint;
@@ -60,13 +57,9 @@ import org.eclipse.esmf.aspectmodel.validation.services.ViolationRustLikeFormatt
 import org.apache.jena.graph.Node_URI;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.RDFParserRegistry;
 import org.apache.jena.vocabulary.XSD;
 import org.junit.jupiter.api.Test;
 
@@ -80,7 +73,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testLoadingCustomShape() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -122,7 +115,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testClassConstraintEvaluation() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -138,7 +131,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -179,7 +172,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testDatatypeConstraintEvaluation() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -195,7 +188,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
@@ -228,7 +221,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testNodeKindConstraintEvaluation() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -244,7 +237,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
@@ -276,7 +269,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testMinCountConstraintEvaluation() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -291,7 +284,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass .
             """ );
@@ -319,7 +312,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testMaxCountEvaluation() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -334,7 +327,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "foo" ;
@@ -364,7 +357,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testMinExclusiveConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -379,7 +372,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty 42 .
@@ -410,7 +403,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testMinInclusiveConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -425,7 +418,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty 41 .
@@ -457,7 +450,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testMaxExclusiveConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -472,7 +465,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty 42 .
@@ -503,7 +496,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testMaxInclusiveConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -518,7 +511,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty 43 .
@@ -550,7 +543,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testMinLengthConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -565,7 +558,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "abc" .
@@ -597,7 +590,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testMaxLengthConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -612,7 +605,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "abcabc" .
@@ -644,7 +637,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testPatternConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -660,7 +653,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "y" .
@@ -695,7 +688,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testAllowedLanguageConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -710,7 +703,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "non valide"@fr .
@@ -745,7 +738,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testEqualsConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -760,7 +753,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "some value" ;
@@ -798,7 +791,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testDisjointConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -813,7 +806,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "some value" ;
@@ -849,7 +842,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testLessThanConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -864,7 +857,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty 10 ;
@@ -901,7 +894,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testLessThanOrEqualsConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -916,7 +909,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty 10 ;
@@ -954,7 +947,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testUniqueLangConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -969,7 +962,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "hello"@en ;
@@ -1004,7 +997,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testHasValueConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1019,7 +1012,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "hello" .
@@ -1053,7 +1046,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testAllowedValuesEvaluation() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1068,7 +1061,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "baz" .
@@ -1101,7 +1094,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testNodeConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1123,7 +1116,7 @@ public class ShaclValidatorTest {
               ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty :Bar .
@@ -1157,7 +1150,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testMultipleNodeConstraints() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1187,7 +1180,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :myProperty :element .
@@ -1214,7 +1207,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testClosedConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
@@ -1231,7 +1224,7 @@ public class ShaclValidatorTest {
                sh:ignoredProperties ( rdf:type ) .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "bar" ;
@@ -1264,7 +1257,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testSparqlConstraintEvaluation() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -1301,7 +1294,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
@@ -1333,7 +1326,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testBooleanJsConstraintEvaluation() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -1360,7 +1353,7 @@ public class ShaclValidatorTest {
             """.replace( "$RESOURCE_URL", getClass().getClassLoader()
             .getResource( "JsConstraintTest.js" ).toString() ) );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
@@ -1389,7 +1382,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testMessageObjectJsConstraintEvaluation() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -1416,7 +1409,7 @@ public class ShaclValidatorTest {
             """.replace( "$RESOURCE_URL", getClass().getClassLoader()
             .getResource( "JsConstraintTest.js" ).toString() ) );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
@@ -1449,7 +1442,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testSequencePath() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1464,7 +1457,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :prop1 [
@@ -1497,7 +1490,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testAlternativePath() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1512,7 +1505,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :prop1 42 ;
@@ -1544,7 +1537,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testInversePath() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1559,7 +1552,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty :Bar ;
@@ -1591,7 +1584,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testZeroOrMorePath() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1606,7 +1599,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty [
@@ -1641,7 +1634,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testOneOrMorePath() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1656,7 +1649,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty [
@@ -1691,7 +1684,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testZeroOrOnePath() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1706,7 +1699,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty [
@@ -1739,7 +1732,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testNotConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix : <http://example.com#> .
 
@@ -1756,7 +1749,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty [
@@ -1790,7 +1783,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testAndConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -1809,7 +1802,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty [
@@ -1827,7 +1820,7 @@ public class ShaclValidatorTest {
       final NodeKindViolation violation = (NodeKindViolation) finding;
       assertThat( violation.context().parentContext().map( EvaluationContext::element ) ).contains( element );
       assertThat( violation.context().parentContext().get().shape().attributes().uri() ).hasValue( namespace + "MyShape" );
-      assertThat( ((PredicatePath) violation.context().parentContext().get().propertyShape().get().path()).predicate().getURI() )
+      assertThat( ( (PredicatePath) violation.context().parentContext().get().propertyShape().get().path() ).predicate().getURI() )
             .endsWith( "testProperty" );
       assertThat( violation.context().parentElementName() ).isEqualTo( ":Foo" );
       assertThat( violation.allowedNodeKind() ).isEqualTo( Shape.NodeKind.IRI );
@@ -1843,7 +1836,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testOrConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -1862,7 +1855,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty 42 .
@@ -1880,7 +1873,7 @@ public class ShaclValidatorTest {
                assertThat( violation.context().propertyName() ).isEqualTo( ":testProperty" );
                assertThat( violation.context().elementName() ).isEqualTo( ":Foo" );
                assertThat( violation ).isInstanceOf( OrViolation.class );
-               assertThat( ((OrViolation) violation).violations() )
+               assertThat( ( (OrViolation) violation ).violations() )
                      .hasSize( 2 )
                      .anySatisfy( subviolation ->
                            assertThat( subviolation ).isInstanceOfSatisfying( InvalidValueViolation.class, invalidValueViolation -> {
@@ -1901,7 +1894,7 @@ public class ShaclValidatorTest {
 
    @Test
    public void testXoneConstraintInPropertyShape() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -1919,7 +1912,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty 42 .
@@ -1953,7 +1946,7 @@ public class ShaclValidatorTest {
 
    @Test
    void testXoneConstraintInPropertyShapeWithNoSubViolations() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -1980,7 +1973,7 @@ public class ShaclValidatorTest {
               sh:hasValue 42 .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty 42 .
@@ -2005,7 +1998,7 @@ public class ShaclValidatorTest {
 
    @Test
    void testXoneConstraintInNodeShapeExpectSuccess() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -2031,7 +2024,7 @@ public class ShaclValidatorTest {
               sh:minCount 1 .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :foo 1 .
@@ -2046,7 +2039,7 @@ public class ShaclValidatorTest {
 
    @Test
    void testXoneConstraintInNodeShapeExpectFailure() {
-      final Model shapesModel = model(
+      final Model shapesModel = createModel(
             """
                   @prefix sh: <http://www.w3.org/ns/shacl#> .
                   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -2074,7 +2067,7 @@ public class ShaclValidatorTest {
                   """
       );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty 42 .
@@ -2113,7 +2106,7 @@ public class ShaclValidatorTest {
 
    @Test
    void testSparqlTargetWithGenericConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -2144,7 +2137,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             :Foo a :TestClass ;
               :testProperty "abc" .
@@ -2161,7 +2154,7 @@ public class ShaclValidatorTest {
 
    @Test
    void testSparqlTargetWithShapeSparqlConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -2206,7 +2199,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
@@ -2227,7 +2220,7 @@ public class ShaclValidatorTest {
 
    @Test
    void testSparqlTargetWithPropertySparqlConstraint() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -2272,7 +2265,7 @@ public class ShaclValidatorTest {
             """ );
 
       // important detail: ':testProperty' is missing on ':Foo', the SPARQLConstraint must run anyway
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass.
@@ -2292,7 +2285,7 @@ public class ShaclValidatorTest {
 
    @Test
    void testMultiElementValidation() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix : <http://example.com#> .
@@ -2337,7 +2330,7 @@ public class ShaclValidatorTest {
                ] .
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
@@ -2359,7 +2352,7 @@ public class ShaclValidatorTest {
 
    @Test
    void testTargetObjectsOf() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -2376,7 +2369,7 @@ public class ShaclValidatorTest {
                ] ;
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
@@ -2398,7 +2391,7 @@ public class ShaclValidatorTest {
 
    @Test
    void testNodeTargets() {
-      final Model shapesModel = model( """
+      final Model shapesModel = createModel( """
             @prefix sh: <http://www.w3.org/ns/shacl#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -2415,7 +2408,7 @@ public class ShaclValidatorTest {
                ] ;
             """ );
 
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
             @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
             :Foo a :TestClass ;
@@ -2432,13 +2425,5 @@ public class ShaclValidatorTest {
 
       assertThat( violations.size() ).isEqualTo( 1 );
       assertThat( violations.get( 0 ) ).isInstanceOf( DatatypeViolation.class );
-   }
-
-   private Model model( final String ttlRepresentation ) {
-      final Model model = ModelFactory.createDefaultModel();
-      final InputStream in = new ByteArrayInputStream( ttlRepresentation.getBytes( StandardCharsets.UTF_8 ) );
-      RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRiotTurtle.factory );
-      model.read( in, "", RDFLanguages.strLangTurtle );
-      return model;
    }
 }

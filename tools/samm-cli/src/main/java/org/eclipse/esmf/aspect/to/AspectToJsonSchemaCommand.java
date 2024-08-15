@@ -35,8 +35,7 @@ import picocli.CommandLine;
       description = "Generate JSON schema for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectToJsonSchemaCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "schema";

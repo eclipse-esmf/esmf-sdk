@@ -12,13 +12,26 @@
  */
 package org.eclipse.esmf;
 
+import static picocli.CommandLine.Model.UsageMessageSpec.SECTION_KEY_COMMAND_LIST;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.IntStream;
 
 import org.eclipse.esmf.aas.AasCommand;
+import org.eclipse.esmf.aas.AasToCommand;
+import org.eclipse.esmf.aas.to.AasToAspectCommand;
 import org.eclipse.esmf.aspect.AspectCommand;
+import org.eclipse.esmf.aspect.AspectEditCommand;
+import org.eclipse.esmf.aspect.AspectPrettyPrintCommand;
+import org.eclipse.esmf.aspect.AspectToCommand;
+import org.eclipse.esmf.aspect.to.AspectToSvgCommand;
 import org.eclipse.esmf.substitution.IsWindows;
 
 import org.fusesource.jansi.AnsiConsole;
@@ -31,7 +44,13 @@ import picocli.CommandLine;
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n",
-      footer = "%nRun @|bold " + SammCli.COMMAND_NAME + " help <command>|@ to display its help."
+      footer = "%nRun @|bold " + SammCli.COMMAND_NAME + " help <command>|@ to display its help, e.g.:%n"
+            + "   @|bold " + SammCli.COMMAND_NAME + " help "
+            + AspectCommand.COMMAND_NAME + " " + AspectToCommand.COMMAND_NAME + " " + AspectToSvgCommand.COMMAND_NAME + "|@%n"
+            + "or @|bold " + SammCli.COMMAND_NAME + " help "
+            + AspectCommand.COMMAND_NAME + " " + AspectPrettyPrintCommand.COMMAND_NAME + "|@%n"
+            + "or @|bold " + SammCli.COMMAND_NAME + " help "
+            + AasCommand.COMMAND_NAME + " " + AasToCommand.COMMAND_NAME + " " + AasToAspectCommand.COMMAND_NAME + "|@%n"
             + "%nDocumentation: https://eclipse-esmf.github.io/esmf-documentation/index.html"
 )
 @SuppressWarnings( "squid:S1147" ) // System.exit is really required here, this is a CLI tool
@@ -40,6 +59,41 @@ public class SammCli extends AbstractCommand {
 
    private final CommandLine commandLine;
 
+   static class CustomCommandListRenderer implements CommandLine.IHelpSectionRenderer {
+      @Override
+      public String render( final CommandLine.Help help ) {
+         final CommandLine.Model.CommandSpec spec = help.commandSpec();
+         if ( spec.subcommands().isEmpty() ) {
+            return "";
+         }
+
+         final CommandLine.Help.TextTable textTable = CommandLine.Help.TextTable.forColumns( help.colorScheme(),
+               new CommandLine.Help.Column( 15, 2, CommandLine.Help.Column.Overflow.SPAN ),
+               new CommandLine.Help.Column( spec.usageMessage().width() - 15, 2, CommandLine.Help.Column.Overflow.WRAP ) );
+         textTable.setAdjustLineBreaksForWideCJKCharacters( spec.usageMessage().adjustLineBreaksForWideCJKCharacters() );
+         spec.subcommands().values().forEach( subcommand -> addHierarchy( subcommand, textTable, "" ) );
+         return textTable.toString();
+      }
+
+      private void addHierarchy( final CommandLine cmd, final CommandLine.Help.TextTable textTable, final String indent ) {
+         final String names = cmd.getCommandSpec().names().toString();
+         final String formattedNames = names.substring( 1, names.length() - 1 );
+         final String description = description( cmd.getCommandSpec().usageMessage() );
+         textTable.addRowValues( indent + formattedNames, description );
+         cmd.getSubcommands().values().forEach( sub -> addHierarchy( sub, textTable, indent + "  " ) );
+      }
+
+      private String description( final CommandLine.Model.UsageMessageSpec usageMessage ) {
+         if ( usageMessage.header().length > 0 ) {
+            return usageMessage.header()[0];
+         }
+         if ( usageMessage.description().length > 0 ) {
+            return usageMessage.description()[0];
+         }
+         return "";
+      }
+   }
+
    public SammCli() {
       final CommandLine initialCommandLine = new CommandLine( this )
             .addSubcommand( new AspectCommand() )
@@ -47,12 +101,12 @@ public class SammCli extends AbstractCommand {
             .addSubcommand( new AspectSearchCommand() )
             .setCaseInsensitiveEnumValuesAllowed( true )
             .setExecutionStrategy( LoggingMixin::executionStrategy );
+      initialCommandLine.getHelpSectionMap().put( SECTION_KEY_COMMAND_LIST, new CustomCommandListRenderer() );
       final CommandLine.IExecutionExceptionHandler defaultExecutionExceptionHandler = initialCommandLine.getExecutionExceptionHandler();
       commandLine = initialCommandLine.setExecutionExceptionHandler( new CommandLine.IExecutionExceptionHandler() {
          @Override
          public int handleExecutionException( final Exception exception, final CommandLine commandLine,
-               final CommandLine.ParseResult parseResult )
-               throws Exception {
+               final CommandLine.ParseResult parseResult ) throws Exception {
             if ( exception.getClass().getName()
                   .equals( String.format( "%s.MainClassProcessLauncher$SystemExitCaptured", SammCli.class.getPackageName() ) ) ) {
                // If the exception we encounter is a SystemExitCaptured, this is part of the security manager in the test suite that
@@ -132,11 +186,56 @@ public class SammCli extends AbstractCommand {
       }
 
       final SammCli command = new SammCli();
-      final int exitCode = command.commandLine.execute( argv );
+      final String[] adjustedArgv = adjustCommandLineArguments( argv );
+
+      final int exitCode = command.commandLine.execute( adjustedArgv );
       if ( !disableColor ) {
          AnsiConsole.systemUninstall();
       }
       System.exit( exitCode );
+   }
+
+   /**
+    * Explicitly allow 'samm help command subcommand...' also if the subcommand is 'to' (e.g., aspect to, aas to) and
+    * usually receives a mandatory input file as its first parameter, e.g.:
+    * What a user wants to enter: "help aspect to sql"
+    * What we need to provide to picocli: "aspect _ to help sql"
+    *
+    * @param argv the original command line arguments
+    * @return the adjusted command line arguments
+    */
+   private static String[] adjustCommandLineArguments( final String[] argv ) {
+      final String[] adjustedArgv;
+      final List<String> argvList = Arrays.asList( argv );
+      final int helpAspectToIndex = Collections.indexOfSubList( argvList,
+            List.of( "help", AspectCommand.COMMAND_NAME, AspectToCommand.COMMAND_NAME ) );
+      final int helpAasToIndex = Collections.indexOfSubList( argvList,
+            List.of( "help", AasCommand.COMMAND_NAME, AasToCommand.COMMAND_NAME ) );
+      final int helpAspectEditIndex = Collections.indexOfSubList( argvList,
+            List.of( "help", AspectCommand.COMMAND_NAME, AspectEditCommand.COMMAND_NAME ) );
+      final int helpAspectSomeIndex = Collections.indexOfSubList( argvList, List.of( "help", AspectCommand.COMMAND_NAME ) );
+      final int helpAasSomeIndex = Collections.indexOfSubList( argvList, List.of( "help", AasCommand.COMMAND_NAME ) );
+      if ( helpAspectToIndex != -1 || helpAasToIndex != -1 || helpAspectEditIndex != -1 ) {
+         final int index = IntStream.of( helpAspectToIndex, helpAasToIndex, helpAspectEditIndex ).max().getAsInt();
+         final List<String> customArgv = new ArrayList<>( argvList.subList( 0, index ) );
+         customArgv.add( argvList.get( index + 1 ) );
+         customArgv.add( "_" );
+         customArgv.add( argvList.get( index + 2 ) );
+         customArgv.add( "help" );
+         customArgv.addAll( argvList.subList( index + 3, argvList.size() ) );
+         adjustedArgv = customArgv.toArray( new String[] {} );
+      } else if ( helpAspectSomeIndex != -1 || helpAasSomeIndex != -1 ) {
+         // "help aspect prettyprint" -> "aspect help prettyprint"
+         final int index = Integer.max( helpAspectSomeIndex, helpAasSomeIndex );
+         final List<String> customArgv = new ArrayList<>( argvList.subList( 0, index ) );
+         customArgv.add( argvList.get( index + 1 ) );
+         customArgv.add( "help" );
+         customArgv.addAll( argvList.subList( index + 2, argvList.size() ) );
+         adjustedArgv = customArgv.toArray( new String[] {} );
+      } else {
+         adjustedArgv = argv;
+      }
+      return adjustedArgv;
    }
 
    protected String format( final String string ) {
@@ -167,6 +266,8 @@ public class SammCli extends AbstractCommand {
          System.exit( 0 );
       }
       System.out.println( commandLine.getHelp().fullSynopsis() );
-      System.out.println( format( "Run @|bold " + commandLine.getCommandName() + " help|@ for help." ) );
+      System.out.println( format( "Run @|bold " + commandLine.getCommandName() + " help|@ for help, e.g.:" ) );
+      System.out.println( format( "    @|bold " + commandLine.getCommandName() + " help "
+            + AspectCommand.COMMAND_NAME + " " + AspectToCommand.COMMAND_NAME + " " + AspectToSvgCommand.COMMAND_NAME + "|@" ) );
    }
 }

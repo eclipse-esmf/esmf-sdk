@@ -144,7 +144,7 @@ public class RdfModelCreatorVisitor implements AspectVisitor<RdfModelCreatorVisi
 
    private Model serializeDescriptions( final Resource elementResource, final ModelElement element ) {
       final Model model = ModelFactory.createDefaultModel();
-      element.getSee().forEach( seeValue -> model.add( elementResource, SammNs.SAMM.see(), ResourceFactory.createResource( seeValue ) ) );
+      element.getSee().forEach( seeValue -> model.add( elementResource, SammNs.SAMM.see(), createResource( seeValue ) ) );
       element.getPreferredNames().stream().map( this::serializeLocalizedString ).forEach( preferredName ->
             model.add( elementResource, SammNs.SAMM.preferredName(), preferredName ) );
       element.getDescriptions().stream().map( this::serializeLocalizedString ).forEach( description ->

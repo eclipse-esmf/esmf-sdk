@@ -33,8 +33,7 @@ import picocli.CommandLine;
       description = "Generate HTML documentation for an Aspect Model",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
-      optionListHeading = "%n@|bold Options|@:%n",
-      mixinStandardHelpOptions = true
+      optionListHeading = "%n@|bold Options|@:%n"
 )
 public class AspectToHtmlCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "html";

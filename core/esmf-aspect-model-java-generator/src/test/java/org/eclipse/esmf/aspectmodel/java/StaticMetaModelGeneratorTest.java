@@ -46,7 +46,7 @@ abstract class StaticMetaModelGeneratorTest {
             .enableJacksonAnnotations( false )
             .executeLibraryMacros( executeLibraryMacros )
             .templateLibFile( templateLibFile )
-            .packageName( aspect.urn().getNamespace() )
+            .packageName( aspect.urn().getNamespaceMainPart() )
             .build();
       final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( aspect, config );
       final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( aspect, config );
@@ -59,7 +59,7 @@ abstract class StaticMetaModelGeneratorTest {
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( false )
             .executeLibraryMacros( false )
-            .packageName( aspect.urn().getNamespace() )
+            .packageName( aspect.urn().getNamespaceMainPart() )
             .build();
       final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( aspect, config );
       final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( aspect, config );
@@ -72,7 +72,7 @@ abstract class StaticMetaModelGeneratorTest {
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( false )
             .executeLibraryMacros( false )
-            .packageName( aspect.urn().getNamespace() )
+            .packageName( aspect.urn().getNamespaceMainPart() )
             .build();
       final JavaGenerator pojoGenerator = new AspectModelJavaGenerator( aspect, config );
       final JavaGenerator staticGenerator = new StaticMetaModelJavaGenerator( aspect, config );
