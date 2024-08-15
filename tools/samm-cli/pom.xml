@@ -131,9 +131,7 @@
       </dependency>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-sdk-github-resolver</artifactId>
-         <version>DEV-SNAPSHOT</version>
-         <scope>compile</scope>
+         <artifactId>esmf-aspect-model-github-resolver</artifactId>
       </dependency>
    </dependencies>
 

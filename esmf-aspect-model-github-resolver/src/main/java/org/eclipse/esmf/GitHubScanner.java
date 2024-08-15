@@ -26,6 +26,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
@@ -59,7 +61,7 @@ public class GitHubScanner implements AspectModelScanner {
 
    private static final String GITHUB_ZIP_URL = GITHUB_BASE + "/%s/archive/refs/heads/%s.zip";
 
-   private static final String DOWNLOADED_ZIP_NAME = "%s.zip";
+   private static final String DOWNLOADED_ZIP_NAME = "%s/%s.zip";
    protected final String repositoryName;
 
    protected final String branchName;
@@ -104,20 +106,21 @@ public class GitHubScanner implements AspectModelScanner {
             final AspectModel searchAspectModel = aspectModelLoader.load( new URL( contentOfSearchFile.getDownloadUrl() ).openStream() );
 
             final String githubUrl = String.format( GITHUB_ZIP_URL, repositoryName, branchName );
-            final String downloadedPackageName = String.format( DOWNLOADED_ZIP_NAME, branchName );
+            final String downloadedPackageName = String.format( DOWNLOADED_ZIP_NAME, Files.createTempDirectory( "temporally" ).toString(),
+                  branchName );
             final File downloadedPackage = downloadFile( new URL( githubUrl ), downloadedPackageName );
 
             final List<AspectModelFile> filesInPackage = processPackage( new FileInputStream( downloadedPackage ) );
 
             final boolean packageIsDeleted = downloadedPackage.delete();
             if ( packageIsDeleted ) {
-               LOG.info( String.format( "Package %s was deleted!", downloadedPackage.getName() ) );
+               LOG.debug( String.format( "Package %s was deleted", downloadedPackage.getName() ) );
             }
 
             final List<AspectModelUrn> searchAspectUrns = searchAspectModel.elements().stream().map( ModelElement::urn ).toList();
 
             for ( final AspectModelFile aspectModelFile : filesInPackage ) {
-               final Set<AspectModelUrn> urnsAspectModelFile = AspectModelLoader.getAllUrnsInModel( aspectModelFile.sourceModel() );
+               final Set<AspectModelUrn> urnsAspectModelFile = RdfUtil.getAllUrnsInModel( aspectModelFile.sourceModel() );
 
                for ( final AspectModelUrn aspectModelUrn : searchAspectUrns ) {
                   if ( urnsAspectModelFile.contains( aspectModelUrn ) ) {
@@ -138,13 +141,12 @@ public class GitHubScanner implements AspectModelScanner {
          final GHContent content = repository.getFileContent( aspectModelFileUrl, branchName );
          return content != null;
       } catch ( IOException e ) {
-         throw new RuntimeException(
-               new IOException( String.format( "File %s can't found in %s repository.", aspectModelFileUrl, repository.getUrl() ) ) );
+         throw new FileNotFoundInRepositoryException(
+               String.format( "File %s can't be found in repository %s.", aspectModelFileUrl, repository.getUrl() ) );
       }
    }
 
    private File downloadFile( final URL repositoryUrl, final String outputFileName ) throws IOException {
-      LOG.info( String.format( "Downloading %s repository to local...", repositoryUrl.getPath() ) );
 
       ReadableByteChannel rbc;
       File outputFile = new File( outputFileName );

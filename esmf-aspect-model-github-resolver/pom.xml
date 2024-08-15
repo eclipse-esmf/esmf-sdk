@@ -9,7 +9,8 @@
       <version>DEV-SNAPSHOT</version>
    </parent>
 
-   <artifactId>esmf-sdk-github-resolver</artifactId>
+   <artifactId>esmf-aspect-model-github-resolver</artifactId>
+   <name>ESMF Aspect Model GitHub Resolver</name>
 
    <properties>
       <maven.compiler.source>17</maven.compiler.source>
@@ -20,12 +21,6 @@
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-meta-model-java</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>org.kohsuke</groupId>
-         <artifactId>github-api</artifactId>
-         <version>1.123</version>
       </dependency>
 
       <!-- Test dependencies -->
@@ -47,6 +42,10 @@
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-model-validator</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.kohsuke</groupId>
+         <artifactId>github-api</artifactId>
       </dependency>
    </dependencies>
 

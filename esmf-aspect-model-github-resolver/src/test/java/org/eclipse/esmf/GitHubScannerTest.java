@@ -53,8 +53,8 @@ class GitHubScannerTest {
       } );
 
       assertEquals(
-            "java.io.IOException: File core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf.test/1.0.0/test-test-test"
-                  + ".ttl can't found in https://api.github.com/repos/eclipse-esmf/esmf-sdk repository.",
+            "File core/esmf-test-aspect-models/src/main/resources/valid/org.eclipse.esmf.test/1.0.0/test-test-test.ttl can't be found in "
+                  + "repository https://api.github.com/repos/eclipse-esmf/esmf-sdk.",
             exception.getMessage() );
    }
 

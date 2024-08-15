@@ -67,7 +67,6 @@
       <module>tools/esmf-aspect-model-maven-plugin</module>
       <module>tools/samm-cli</module>
       <module>documentation</module>
-      <module>esmf-sdk-github-resolver</module>
    </modules>
 
    <properties>
@@ -76,6 +75,7 @@
 
       <!-- Dependency version overrides -->
       <log4j-version>2.22.1</log4j-version>
+      <github-api-version>1.123</github-api-version>
    </properties>
 
    <dependencyManagement>
@@ -160,6 +160,16 @@
             <groupId>org.eclipse.esmf</groupId>
             <artifactId>esmf-aspect-model-aas-generator</artifactId>
             <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.esmf</groupId>
+            <artifactId>esmf-aspect-model-github-resolver</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>github-api</artifactId>
+            <version>${github-api-version}</version>
          </dependency>
 
          <!-- Third party dependencies -->

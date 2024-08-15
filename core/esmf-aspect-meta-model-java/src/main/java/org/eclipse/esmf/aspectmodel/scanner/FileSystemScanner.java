@@ -23,8 +23,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
+import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
+import org.eclipse.esmf.aspectmodel.resolver.fs.ModelsRoot;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.ModelElement;
@@ -36,10 +38,10 @@ public class FileSystemScanner implements AspectModelScanner {
 
    private static final Logger LOG = LoggerFactory.getLogger( FileSystemScanner.class );
 
-   protected final String searchDirectory;
+   protected final ModelsRoot modelsRoot;
 
-   public FileSystemScanner( final String searchDirectory ) {
-      this.searchDirectory = searchDirectory;
+   public FileSystemScanner( final ModelsRoot modelsRoot ) {
+      this.modelsRoot = modelsRoot;
    }
 
    @Override
@@ -48,7 +50,7 @@ public class FileSystemScanner implements AspectModelScanner {
 
       final AspectModel searchAspectModel = new AspectModelLoader().load( new File( aspectModelFileName ) );
 
-      final Path directory = Paths.get( searchDirectory );
+      final Path directory = modelsRoot.rootPath();
       final List<File> files = Arrays.stream( Optional.ofNullable( directory.toFile().listFiles() ).orElse( new File[] {} ) )
             .filter( file -> file.isFile() && file.getName().endsWith( ".ttl" ) && !file.getName()
                   .equals( Paths.get( aspectModelFileName ).getFileName().toString() ) )
@@ -77,7 +79,7 @@ public class FileSystemScanner implements AspectModelScanner {
 
       final AspectModelFile aspectModelFile = AspectModelFileLoader.load( absoluteFile );
 
-      final Set<AspectModelUrn> urnsAspectModelFile = AspectModelLoader.getAllUrnsInModel( aspectModelFile.sourceModel() );
+      final Set<AspectModelUrn> urnsAspectModelFile = RdfUtil.getAllUrnsInModel( aspectModelFile.sourceModel() );
 
       for ( final AspectModelUrn aspectModelUrn : modelUrns ) {
          if ( urnsAspectModelFile.contains( aspectModelUrn ) ) {
