@@ -29,11 +29,9 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 /**
- * RDF-level refactoring operation: Renames all occurences of a model element URN to something else. For model-level refactoring,
- * instead of this class, please use {@link RenameElement}, {@link MoveElementToOtherNamespaceExistingFile} or
- * {@link MoveElementToOtherNamespaceNewFile}.
+ * RDF-level refactoring operation: Renames all occurences of a namespace in model element URNs to something else.
  */
-public class RenameUrn extends EditAspectModel {
+public class RenameNamespace extends EditAspectModel {
    private final AspectModelUrn from;
    private final AspectModelUrn to;
    private final URI targetLocation;
@@ -45,13 +43,13 @@ public class RenameUrn extends EditAspectModel {
     * @param from the URN to change
     * @param to the URN to change it into
     */
-   public RenameUrn( final URI targetLocation, final AspectModelUrn from, final AspectModelUrn to ) {
+   public RenameNamespace( final URI targetLocation, final AspectModelUrn from, final AspectModelUrn to ) {
+      if ( !from.getName().isEmpty() || !to.getName().isEmpty() ) {
+         throw new ModelChangeException( "Source and target URNs must not contain element names" );
+      }
       this.from = from;
       this.to = to;
       this.targetLocation = targetLocation;
-      if ( from.getName().isEmpty() || to.getName().isEmpty() ) {
-         throw new ModelChangeException( "Source and target URNs must contain element names" );
-      }
    }
 
    /**
@@ -60,7 +58,7 @@ public class RenameUrn extends EditAspectModel {
     * @param from the URN to change
     * @param to the URN to change it into
     */
-   public RenameUrn( final AspectModelUrn from, final AspectModelUrn to ) {
+   public RenameNamespace( final AspectModelUrn from, final AspectModelUrn to ) {
       this( (URI) null, from, to );
    }
 
@@ -71,7 +69,7 @@ public class RenameUrn extends EditAspectModel {
     * @param from the URN to change
     * @param to the URN to change it into
     */
-   public RenameUrn( final AspectModelFile targetFile, final AspectModelUrn from, final AspectModelUrn to ) {
+   public RenameNamespace( final AspectModelFile targetFile, final AspectModelUrn from, final AspectModelUrn to ) {
       this( targetFile.sourceLocation().orElseThrow(), from, to );
    }
 
@@ -101,12 +99,12 @@ public class RenameUrn extends EditAspectModel {
          final Property predicate;
          final RDFNode addObject;
          final RDFNode removeObject;
-
          // Handle subject
          if ( statement.getSubject().isURIResource() ) {
-            if ( statement.getSubject().getURI().equals( from.toString() ) ) {
-               addSubject = addModel.createResource( to.toString() );
-               removeSubject = removeModel.createResource( from.toString() );
+            final String subjectUri = statement.getSubject().getURI();
+            if ( subjectUri.startsWith( from.toString() + "#" ) ) {
+               addSubject = addModel.createResource( to.toString() + subjectUri.substring( from.toString().length() ) );
+               removeSubject = removeModel.createResource( subjectUri );
                updateTriple = true;
             } else {
                addSubject = statement.getSubject();
@@ -118,26 +116,30 @@ public class RenameUrn extends EditAspectModel {
          }
 
          // Handle predicate
-         if ( statement.getPredicate().getURI().equals( from.toString() ) ) {
-            predicate = addModel.createProperty( to.toString() );
+         final String predicateUri = statement.getPredicate().getURI();
+         if ( predicateUri.startsWith( from.toString() + "#" ) ) {
+            predicate = addModel.createProperty( to.toString() + predicateUri.substring( from.toString().length() ) );
             updateTriple = true;
          } else {
             predicate = statement.getPredicate();
          }
 
          // Handle object
-         if ( statement.getObject().isURIResource() && statement.getObject().asResource().getURI().equals( from.toString() ) ) {
-            addObject = addModel.createResource( to.toString() );
-            removeObject = removeModel.createResource( from.toString() );
-            updateTriple = true;
-         } else {
-            if ( statement.getObject().isAnon() ) {
-               addObject = addModel.createResource( statement.getObject().asResource().getId() );
-               removeObject = removeModel.createResource( statement.getObject().asResource().getId() );
+         if ( statement.getObject().isURIResource() ) {
+            final String objectUri = statement.getObject().asResource().getURI();
+            if ( objectUri.startsWith( from.toString() + "#" ) ) {
+               addObject = addModel.createResource( to.toString() + objectUri.substring( from.toString().length() ) );
+               removeObject = addModel.createResource( objectUri );
             } else {
                addObject = statement.getObject();
                removeObject = statement.getObject();
             }
+         } else if ( statement.getObject().isAnon() ) {
+            addObject = addModel.createResource( statement.getObject().asResource().getId() );
+            removeObject = removeModel.createResource( statement.getObject().asResource().getId() );
+         } else {
+            addObject = statement.getObject();
+            removeObject = statement.getObject();
          }
 
          // Write new triple
@@ -159,6 +161,6 @@ public class RenameUrn extends EditAspectModel {
 
    @Override
    public Change reverse() {
-      return new RenameUrn( targetLocation, to, from );
+      return new RenameNamespace( targetLocation, to, from );
    }
 }

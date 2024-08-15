@@ -297,10 +297,11 @@ public class AspectModelInstantiatorTest extends AbstractAspectModelInstantiator
    void testLoadAspectWithNamespaceDescription() {
       final Aspect aspect = loadAspect( TestAspect.ASPECT_WITH_NAMESPACE_DESCRIPTION );
       final Namespace namespace = aspect.getSourceFile().namespace();
-      assertThat( namespace.packagePart() ).isEqualTo( aspect.urn().getNamespaceMainPart() );
+      assertThat( namespace.namespaceMainPart() ).isEqualTo( aspect.urn().getNamespaceMainPart() );
       assertThat( namespace.version().toString() ).isEqualTo( aspect.urn().getVersion() );
       assertThat( namespace.getPreferredName( Locale.ENGLISH ) ).isEqualTo( "Test namespace" );
       assertThat( namespace.getDescription( Locale.ENGLISH ) ).isEqualTo( "Test of the namespace pseudo element" );
       assertThat( namespace.getSee() ).hasSize( 1 ).contains( "http://example.com/" );
+      assertThat( namespace.elements() ).containsAll( List.of( aspect, aspect.getProperties().get( 0 ) ) );
    }
 }

@@ -162,7 +162,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
       final List<String> headerCommentForNewFile = copyHeader
             ? modelElement.getSourceFile().headerComment()
             : List.of();
-      final Change move = new MoveElementToNewFile( modelElement, headerCommentForNewFile, Optional.of( targetFileUri ) );
+      final Change move = new MoveElementToNewFile( modelElement, headerCommentForNewFile, targetFileUri );
       performRefactoring( aspectModel, move ).ifPresent( changeContext -> {
          // Check & write changes to file system
          checkFilesystemConsistency( changeContext );
@@ -189,7 +189,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
             : List.of();
 
       final Change move = new MoveElementToOtherNamespaceNewFile( modelElement, namespace, headerCommentForNewFile,
-            Optional.of( targetFileInNewNamespace.toURI() ) );
+            targetFileInNewNamespace.toURI() );
       performRefactoring( aspectModel, move ).ifPresent( changeContext -> {
          // Check & write changes to file system
          checkFilesystemConsistency( changeContext );

@@ -82,13 +82,16 @@ public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectCha
                   } );
          } else if ( !config.detailedChangeReport() && entry.getValue() instanceof final Model model ) {
             final int numberOfStatements = model.listStatements().toList().size();
+            final int numberOfPrefixes = model.getNsPrefixMap().size();
             if ( numberOfStatements > 0 ) {
                builder.append( indent );
                builder.append( "  - " );
                builder.append( entry.getKey() );
                builder.append( ": " );
                builder.append( numberOfStatements );
-               builder.append( " RDF statements" );
+               builder.append( " RDF statements and " );
+               builder.append( numberOfPrefixes );
+               builder.append( " prefixes" );
                builder.append( "\n" );
             }
          } else {
@@ -117,7 +120,9 @@ public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectCha
    private String show( final Model model ) {
       final Model copy = ModelFactory.createDefaultModel();
       copy.add( model );
-      RdfUtil.cleanPrefixes( copy );
+      if ( !copy.listStatements().toList().isEmpty() ) {
+         RdfUtil.cleanPrefixes( copy );
+      }
       final StringWriter stringWriter = new StringWriter();
       stringWriter.append( "--------------------\n" );
       copy.write( stringWriter, "TURTLE" );

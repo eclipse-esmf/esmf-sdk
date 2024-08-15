@@ -24,7 +24,11 @@ public abstract class AbstractChange implements Change {
       return show( aspectModelFile.sourceLocation() );
    }
 
+   protected String show( final URI sourceLocation ) {
+      return sourceLocation.toString();
+   }
+
    protected String show( final Optional<URI> sourceLocation ) {
-      return sourceLocation.map( URI::toString ).orElse( "(unknown file)" );
+      return sourceLocation.map( this::show ).orElse( "(unknown file)" );
    }
 }

@@ -23,6 +23,7 @@ import java.util.Optional;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.AddElementDefinition;
+import org.eclipse.esmf.aspectmodel.edit.change.CopyNamespaceWithIncreasedVersion;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToExistingFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToNewFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToOtherNamespaceExistingFile;
@@ -233,7 +234,7 @@ public class AspectChangeManagerTest {
       final URI originalSourceLocation = aspectModel.aspect().getSourceFile().sourceLocation().get();
       final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
       final URI sourceLocation = URI.create( "file:///temp/test.ttl" );
-      final Change move = new MoveElementToNewFile( aspectModel.aspect(), Optional.of( sourceLocation ) );
+      final Change move = new MoveElementToNewFile( aspectModel.aspect(), sourceLocation );
 
       changeManager.applyChange( move );
       assertThat( changeManager.createdFiles() ).hasSize( 1 );
@@ -313,7 +314,7 @@ public class AspectChangeManagerTest {
 
       final AspectModelUrn targetUrn = AspectModelUrn.fromUrn( "urn:samm:org.eclipse.esmf.example.new:1.0.0#Aspect" );
       final Namespace targetNamespace = new DefaultNamespace( targetUrn, List.of(), Optional.empty() );
-      final Change move = new MoveElementToOtherNamespaceNewFile( aspectModel.aspect(), targetNamespace, Optional.of( sourceLocation ) );
+      final Change move = new MoveElementToOtherNamespaceNewFile( aspectModel.aspect(), targetNamespace, sourceLocation );
 
       changeManager.applyChange( move );
       assertThat( changeManager.modifiedFiles() ).hasSize( 1 );
@@ -375,7 +376,8 @@ public class AspectChangeManagerTest {
       final Namespace targetNamespace = new DefaultNamespace( targetUrn, List.of(), Optional.empty() );
       final Change move = new MoveElementToOtherNamespaceExistingFile( aspectModel.aspect(), file2, targetNamespace );
 
-      changeManager.applyChange( move );
+      final ChangeReport changeReport = changeManager.applyChange( move );
+      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, AspectChangeManagerConfig.DEFAULT ) );
       assertThat( changeManager.modifiedFiles() ).hasSize( 2 );
       assertThat( changeManager.createdFiles() ).isEmpty();
 
@@ -424,5 +426,37 @@ public class AspectChangeManagerTest {
       assertThat( changeManager.removedFiles() ).hasSize( 1 );
       assertThat( aspectModel.files() ).hasSize( 1 );
       assertThat( aspectModel.aspect().getSourceFile().sourceLocation() ).contains( newLocation );
+   }
+
+   @Test
+   void testCopyNamespaceWithIncreasedVersion() {
+      final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
+      final Namespace namespace = aspectModel.files().get( 0 ).namespace();
+      final Change copyNamespaceWithIncreasedVersion = new CopyNamespaceWithIncreasedVersion( namespace,
+            CopyNamespaceWithIncreasedVersion.IncreaseVersion.MAJOR );
+
+      final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
+            .detailedChangeReport( true )
+            .build();
+      final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
+
+      assertThat( aspectModel.namespaces() ).hasSize( 1 );
+      assertThat( aspectModel.namespaces().get( 0 ).version().getMajor() ).isEqualTo( 1 );
+      assertThat( aspectModel.aspects() ).hasSize( 1 );
+      assertThat( aspectModel.aspect().urn().getVersion() ).isEqualTo( "1.0.0" );
+      assertThat( aspectModel.files() ).hasSize( 1 );
+      assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
+
+      final ChangeReport changeReport = changeManager.applyChange( copyNamespaceWithIncreasedVersion );
+      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport,
+            AspectChangeManagerConfigBuilder.builder().detailedChangeReport( true ).build() ) );
+      assertThat( aspectModel.namespaces() ).hasSize( 2 );
+      assertThat( aspectModel.namespaces() ).map( ns -> ns.version().getMajor() ).containsExactlyInAnyOrder( 1, 2 );
+      assertThat( aspectModel.aspects() ).hasSize( 2 );
+      assertThat( aspectModel.aspects() ).map( aspect -> aspect.urn().getVersion() ).containsExactlyInAnyOrder( "1.0.0", "2.0.0" );
+      assertThat( aspectModel.files() ).hasSize( 2 );
+      assertThat( aspectModel.files() ).map( file -> file.sourceLocation().get().toString() )
+            .anyMatch( location -> location.contains( "1.0.0" ) )
+            .anyMatch( location -> location.contains( "2.0.0" ) );
    }
 }

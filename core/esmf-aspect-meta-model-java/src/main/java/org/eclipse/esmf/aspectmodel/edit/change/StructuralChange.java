@@ -13,6 +13,8 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
+import java.net.URI;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
@@ -33,5 +35,12 @@ public abstract class StructuralChange extends AbstractChange {
             } )
             .findFirst()
             .orElseThrow( () -> new ModelChangeException( "Could not locate file containing definition of " + elementUrn ) );
+   }
+
+   protected AspectModelFile sourceFile( final ChangeContext changeContext, final URI fileLocation ) {
+      return changeContext.aspectModelFiles()
+            .filter( file -> file.sourceLocation().map( location -> location.equals( fileLocation ) ).orElse( false ) )
+            .findFirst()
+            .orElseThrow( () -> new ModelChangeException( "Could not locate file with location " + fileLocation ) );
    }
 }
