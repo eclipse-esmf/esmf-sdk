@@ -11,6 +11,7 @@
 
    <artifactId>esmf-aspect-model-github-resolver</artifactId>
    <name>ESMF Aspect Model GitHub Resolver</name>
+   <packaging>jar</packaging>
 
    <properties>
       <maven.compiler.source>17</maven.compiler.source>
