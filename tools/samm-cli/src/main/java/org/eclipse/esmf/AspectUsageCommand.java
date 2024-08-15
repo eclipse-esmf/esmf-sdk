@@ -61,7 +61,8 @@ public class AspectUsageCommand extends AbstractCommand {
    @CommandLine.Option( names = { "--github", "-gh" }, description = "Enable loading Aspect Models from GitHub" )
    private boolean searchInGithub = false;
 
-   @CommandLine.Option( names = { "--github-name", "-ghn" }, description = "Set the GitHub repository name. Example: eclipse-esmf/esmf-sdk." )
+   @CommandLine.Option( names = { "--github-name",
+         "-ghn" }, description = "Set the GitHub repository name. Example: eclipse-esmf/esmf-sdk." )
    private String gitHubName = "";
 
    @CommandLine.Option( names = { "--github-directory", "-ghd" }, description = "Set the GitHub directory" )
