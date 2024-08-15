@@ -26,63 +26,61 @@ import org.apache.jena.rdf.model.ModelFactory;
 /**
  * Takes a {@link ChangeReport} as an input and renders it as a string
  */
-public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectChangeManagerConfig, String> {
+public class ChangeReportFormatter implements ChangeReport.Visitor<String, ChangeReportFormatter.Context>,
+      BiFunction<ChangeReport, AspectChangeManagerConfig, String> {
    public static final ChangeReportFormatter INSTANCE = new ChangeReportFormatter();
 
    private ChangeReportFormatter() {
    }
 
-   private void handleSimpleEntry( final StringBuilder builder, final ChangeReport.SimpleEntry simpleEntry, final String indent ) {
-      builder.append( indent );
-      builder.append( "- " );
-      builder.append( simpleEntry.text() );
-      builder.append( "\n" );
-   }
-
-   private void handleMultipleEntries( final StringBuilder builder, final ChangeReport.MultipleEntries multipleEntries, final String indent,
-         final int indentationLevel, final AspectChangeManagerConfig config ) {
-      if ( multipleEntries.summary() != null ) {
-         builder.append( indent );
-         builder.append( "- " );
-         builder.append( multipleEntries.summary() );
-         builder.append( "\n" );
-      }
-      final List<ChangeReport> entries = multipleEntries.entries();
-      for ( int i = 0; i < entries.size(); i++ ) {
-         final ChangeReport entry = entries.get( i );
-         final int entryIndentation = multipleEntries.summary() == null
-               ? indentationLevel
-               : indentationLevel + 1;
-         append( builder, entry, config, entryIndentation );
-         if ( i < entries.size() - 1 ) {
-            builder.append( "\n" );
-         }
+   public record Context( int indentationLevel, AspectChangeManagerConfig config ) {
+      public Context indent() {
+         return new Context( indentationLevel() + 1, config() );
       }
    }
 
-   private void handleEntryWithDetails( final StringBuilder builder, final ChangeReport.EntryWithDetails entryWithDetails,
-         final String indent, final AspectChangeManagerConfig config ) {
+   @Override
+   public String apply( final ChangeReport changeReport, final AspectChangeManagerConfig aspectChangeManagerConfig ) {
+      return changeReport.accept( this, new Context( 0, aspectChangeManagerConfig ) );
+   }
+
+   @Override
+   public String visitNoChanges( final ChangeReport.NoChanges noChanges, final Context context ) {
+      return "";
+   }
+
+   @Override
+   public String visitSimpleEntry( final ChangeReport.SimpleEntry simpleEntry, final Context context ) {
+      return simpleEntry.text();
+   }
+
+   @Override
+   public String visitEntryWithDetails( final ChangeReport.EntryWithDetails entryWithDetails, final Context context ) {
+      final String indent = "  ".repeat( context.indentationLevel() );
+      final StringBuilder builder = new StringBuilder();
+
       builder.append( indent );
       builder.append( "- " );
       builder.append( entryWithDetails.summary() );
       builder.append( "\n" );
-      for ( final Map.Entry<String, Object> entry : entryWithDetails.details().entrySet() ) {
-         if ( config.detailedChangeReport() && entry.getValue() instanceof final Model model ) {
+
+      for ( final Map.Entry<String, Model> entry : entryWithDetails.details().entrySet() ) {
+         if ( context.config().detailedChangeReport() ) {
             builder.append( indent );
             builder.append( "  - " );
             builder.append( entry.getKey() );
             builder.append( ": " );
             builder.append( "\n" );
-            show( model ).lines()
+            show( entry.getValue() ).lines()
                   .forEach( line -> {
                      builder.append( indent );
                      builder.append( "    " );
                      builder.append( line );
                      builder.append( "\n" );
                   } );
-         } else if ( !config.detailedChangeReport() && entry.getValue() instanceof final Model model ) {
-            final int numberOfStatements = model.listStatements().toList().size();
-            final int numberOfPrefixes = model.getNsPrefixMap().size();
+         } else {
+            final int numberOfStatements = entry.getValue().listStatements().toList().size();
+            final int numberOfPrefixes = entry.getValue().getNsPrefixMap().size();
             if ( numberOfStatements > 0 ) {
                builder.append( indent );
                builder.append( "  - " );
@@ -94,27 +92,32 @@ public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectCha
                builder.append( " prefixes" );
                builder.append( "\n" );
             }
-         } else {
-            builder.append( indent );
-            builder.append( "  - " );
-            builder.append( entry.getKey() );
-            builder.append( ": " );
-            builder.append( entry.getValue().toString() );
+         }
+      }
+
+      return builder.toString();
+   }
+
+   @Override
+   public String visitMultipleEntries( final ChangeReport.MultipleEntries multipleEntries, final Context context ) {
+      final String indent = "  ".repeat( context.indentationLevel() );
+      final StringBuilder builder = new StringBuilder();
+      if ( multipleEntries.summary() != null ) {
+         builder.append( indent );
+         builder.append( "- " );
+         builder.append( multipleEntries.summary() );
+         builder.append( "\n" );
+      }
+      final List<ChangeReport> entries = multipleEntries.entries();
+      for ( int i = 0; i < entries.size(); i++ ) {
+         final ChangeReport entry = entries.get( i );
+         final Context nestedContext = multipleEntries.summary() == null ? context : context.indent();
+         builder.append( entry.accept( this, nestedContext ) );
+         if ( i < entries.size() - 1 ) {
             builder.append( "\n" );
          }
       }
-   }
-
-   private void append( final StringBuilder builder, final ChangeReport report, final AspectChangeManagerConfig config,
-         final int indentationLevel ) {
-      final String indent = "  ".repeat( indentationLevel );
-      if ( report instanceof final ChangeReport.SimpleEntry simpleEntry ) {
-         handleSimpleEntry( builder, simpleEntry, indent );
-      } else if ( report instanceof final ChangeReport.MultipleEntries multipleEntries ) {
-         handleMultipleEntries( builder, multipleEntries, indent, indentationLevel, config );
-      } else if ( report instanceof final ChangeReport.EntryWithDetails entryWithDetails ) {
-         handleEntryWithDetails( builder, entryWithDetails, indent, config );
-      }
+      return builder.toString();
    }
 
    private String show( final Model model ) {
@@ -128,12 +131,5 @@ public class ChangeReportFormatter implements BiFunction<ChangeReport, AspectCha
       copy.write( stringWriter, "TURTLE" );
       stringWriter.append( "--------------------\n" );
       return stringWriter.toString();
-   }
-
-   @Override
-   public String apply( final ChangeReport changeReport, final AspectChangeManagerConfig config ) {
-      final StringBuilder builder = new StringBuilder();
-      append( builder, changeReport, config, 0 );
-      return builder.toString();
    }
 }
