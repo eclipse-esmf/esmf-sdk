@@ -198,7 +198,7 @@ include::example$LoadAspectModelRdf.java[tags=loadAndResolveFromUrn]
 [[loading-an-aspect-model-rdf-level]]
 === Loading an Aspect Model to work on the RDF Level
 
-The following example shows how to use the `AspectModelResolver` to load an Aspect Model.
+The following example shows how to use the `AspectModelLoad` to load an Aspect Model.
 
 ++++
 <details>
@@ -244,6 +244,13 @@ include::example$SerializeAspectModel.java[tags=imports]
 [source,java,indent=0,subs="+macros,+quotes"]
 ----
 include::example$SerializeAspectModel.java[tags=serialize]
+----
+
+Alternatively, you can also serialize a complete `AspectModelFile`:
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$SerializeAspectModel.java[tags=serializeFile]
 ----
 
 To include the serializer artifact, use the following dependencies:
