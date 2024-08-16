@@ -16,7 +16,6 @@ package org.eclipse.esmf;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
@@ -33,16 +32,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GitHubStrategy implements ResolutionStrategy {
-
    private static final Logger LOG = LoggerFactory.getLogger( GitHubStrategy.class );
 
    protected final String repositoryUrl;
-
    protected final String searchDirectory;
 
    public GitHubStrategy( final String repositoryUrl, final String searchDirectory ) {
       this.repositoryUrl = repositoryUrl;
-      this.searchDirectory = searchDirectory; // "."
+      this.searchDirectory = searchDirectory;
    }
 
    @Override
@@ -50,16 +47,12 @@ public class GitHubStrategy implements ResolutionStrategy {
          throws ModelResolutionException {
 
       try {
-         GitHub github = GitHub.connectAnonymously();
+         final GitHub github = GitHub.connectAnonymously();
+         final GHRepository repository = github.getRepository( repositoryUrl );
 
-         GHRepository repository = github.getRepository( repositoryUrl );
-
-         final List<GHContent> contents = repository.getDirectoryContent( searchDirectory );
-         for ( GHContent content : contents ) {
+         for ( final GHContent content : repository.getDirectoryContent( searchDirectory ) ) {
             if ( content.isFile() && content.getName().endsWith( ".ttl" ) ) {
-
                final File file = new File( content.getDownloadUrl() );
-
                final Try<AspectModelFile> tryModel = Try.of(
                      () -> AspectModelFileLoader.load( new URL( content.getDownloadUrl() ).openStream() ) );
 
@@ -75,10 +68,11 @@ public class GitHubStrategy implements ResolutionStrategy {
                }
             }
          }
-      } catch ( IOException e ) {
-         e.printStackTrace();
+      } catch ( final IOException exception ) {
+         throw new ModelResolutionException( "Error while reading GitHub", exception );
       }
 
-      return null;
+      throw new ModelResolutionException( "No model file containing " + aspectModelUrn + " could be found in GitHub repository "
+            + repositoryUrl + " in directory: " + searchDirectory );
    }
 }

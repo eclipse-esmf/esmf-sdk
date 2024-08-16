@@ -7,21 +7,24 @@
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-sdk-parent</artifactId>
       <version>DEV-SNAPSHOT</version>
-      <relativePath>../pom.xml</relativePath>
+      <relativePath>../../pom.xml</relativePath>
    </parent>
 
    <artifactId>esmf-aspect-model-github-resolver</artifactId>
    <name>ESMF Aspect Model GitHub Resolver</name>
 
-   <properties>
-      <maven.compiler.source>17</maven.compiler.source>
-      <maven.compiler.target>17</maven.compiler.target>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-   </properties>
    <dependencies>
       <dependency>
          <groupId>org.eclipse.esmf</groupId>
          <artifactId>esmf-aspect-meta-model-java</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-validator</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.kohsuke</groupId>
+         <artifactId>github-api</artifactId>
       </dependency>
 
       <!-- Test dependencies -->
@@ -40,14 +43,5 @@
          <artifactId>esmf-test-aspect-models</artifactId>
          <scope>test</scope>
       </dependency>
-      <dependency>
-         <groupId>org.eclipse.esmf</groupId>
-         <artifactId>esmf-aspect-model-validator</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.kohsuke</groupId>
-         <artifactId>github-api</artifactId>
-      </dependency>
    </dependencies>
-
 </project>
