@@ -98,6 +98,7 @@ public class SammCli extends AbstractCommand {
       final CommandLine initialCommandLine = new CommandLine( this )
             .addSubcommand( new AspectCommand() )
             .addSubcommand( new AasCommand() )
+            .addSubcommand( new AspectUsageCommand() )
             .setCaseInsensitiveEnumValuesAllowed( true )
             .setExecutionStrategy( LoggingMixin::executionStrategy );
       initialCommandLine.getHelpSectionMap().put( SECTION_KEY_COMMAND_LIST, new CustomCommandListRenderer() );

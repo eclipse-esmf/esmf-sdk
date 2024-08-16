@@ -50,6 +50,10 @@
          <artifactId>esmf-aspect-model-starter</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.eclipse.esmf</groupId>
+         <artifactId>esmf-aspect-model-github-resolver</artifactId>
+      </dependency>
+      <dependency>
          <groupId>com.fasterxml.jackson.core</groupId>
          <artifactId>jackson-databind</artifactId>
       </dependency>
