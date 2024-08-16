@@ -64,6 +64,7 @@
       <module>core/esmf-aspect-static-meta-model-java</module>
       <module>core/esmf-test-aspect-models</module>
       <module>core/esmf-test-resources</module>
+      <module>esmf-aspect-model-github-resolver</module>
       <module>tools/esmf-aspect-model-maven-plugin</module>
       <module>tools/samm-cli</module>
       <module>documentation</module>
