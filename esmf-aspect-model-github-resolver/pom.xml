@@ -7,11 +7,11 @@
       <groupId>org.eclipse.esmf</groupId>
       <artifactId>esmf-sdk-parent</artifactId>
       <version>DEV-SNAPSHOT</version>
+      <relativePath>../pom.xml</relativePath>
    </parent>
 
    <artifactId>esmf-aspect-model-github-resolver</artifactId>
    <name>ESMF Aspect Model GitHub Resolver</name>
-   <packaging>jar</packaging>
 
    <properties>
       <maven.compiler.source>17</maven.compiler.source>
