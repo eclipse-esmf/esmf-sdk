@@ -23,7 +23,9 @@ import java.util.Optional;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.AddAspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.change.AddElementDefinition;
+import org.eclipse.esmf.aspectmodel.edit.change.CopyFileWithIncreasedNamespaceVersion;
 import org.eclipse.esmf.aspectmodel.edit.change.CopyNamespaceWithIncreasedVersion;
+import org.eclipse.esmf.aspectmodel.edit.change.IncreaseVersion;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToExistingFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToNewFile;
 import org.eclipse.esmf.aspectmodel.edit.change.MoveElementToOtherNamespaceExistingFile;
@@ -433,7 +435,7 @@ public class AspectChangeManagerTest {
       final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
       final Namespace namespace = aspectModel.files().get( 0 ).namespace();
       final Change copyNamespaceWithIncreasedVersion = new CopyNamespaceWithIncreasedVersion( namespace,
-            CopyNamespaceWithIncreasedVersion.IncreaseVersion.MAJOR );
+            IncreaseVersion.MAJOR );
 
       final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
             .detailedChangeReport( true )
@@ -448,8 +450,37 @@ public class AspectChangeManagerTest {
       assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
 
       final ChangeReport changeReport = changeManager.applyChange( copyNamespaceWithIncreasedVersion );
-      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport,
-            AspectChangeManagerConfigBuilder.builder().detailedChangeReport( true ).build() ) );
+      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, config ) );
+      assertThat( aspectModel.namespaces() ).hasSize( 2 );
+      assertThat( aspectModel.namespaces() ).map( ns -> ns.version().getMajor() ).containsExactlyInAnyOrder( 1, 2 );
+      assertThat( aspectModel.aspects() ).hasSize( 2 );
+      assertThat( aspectModel.aspects() ).map( aspect -> aspect.urn().getVersion() ).containsExactlyInAnyOrder( "1.0.0", "2.0.0" );
+      assertThat( aspectModel.files() ).hasSize( 2 );
+      assertThat( aspectModel.files() ).map( file -> file.sourceLocation().get().toString() )
+            .anyMatch( location -> location.contains( "1.0.0" ) )
+            .anyMatch( location -> location.contains( "2.0.0" ) );
+   }
+
+   @Test
+   void testCopyFileWithIncreasedVersion() {
+      final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT );
+      final Change copyFileWithIncreasedNamespaceVersion = new CopyFileWithIncreasedNamespaceVersion( aspectModel.files().get( 0 ),
+            IncreaseVersion.MAJOR );
+
+      final AspectChangeManagerConfig config = AspectChangeManagerConfigBuilder.builder()
+            .detailedChangeReport( true )
+            .build();
+      final AspectChangeManager changeManager = new AspectChangeManager( aspectModel );
+
+      assertThat( aspectModel.namespaces() ).hasSize( 1 );
+      assertThat( aspectModel.namespaces().get( 0 ).version().getMajor() ).isEqualTo( 1 );
+      assertThat( aspectModel.aspects() ).hasSize( 1 );
+      assertThat( aspectModel.aspect().urn().getVersion() ).isEqualTo( "1.0.0" );
+      assertThat( aspectModel.files() ).hasSize( 1 );
+      assertThat( aspectModel.files().get( 0 ).sourceLocation().get().toString() ).contains( "1.0.0" );
+
+      final ChangeReport changeReport = changeManager.applyChange( copyFileWithIncreasedNamespaceVersion );
+      System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, config ) );
       assertThat( aspectModel.namespaces() ).hasSize( 2 );
       assertThat( aspectModel.namespaces() ).map( ns -> ns.version().getMajor() ).containsExactlyInAnyOrder( 1, 2 );
       assertThat( aspectModel.aspects() ).hasSize( 2 );

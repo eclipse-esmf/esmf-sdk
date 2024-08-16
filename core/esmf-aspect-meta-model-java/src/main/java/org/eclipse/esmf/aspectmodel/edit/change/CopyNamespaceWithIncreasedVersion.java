@@ -13,10 +13,7 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.VersionNumber;
@@ -24,8 +21,6 @@ import org.eclipse.esmf.aspectmodel.edit.Change;
 import org.eclipse.esmf.aspectmodel.edit.ChangeContext;
 import org.eclipse.esmf.aspectmodel.edit.ChangeGroup;
 import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
-import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
-import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 import org.eclipse.esmf.metamodel.Namespace;
 
 /**
@@ -33,12 +28,6 @@ import org.eclipse.esmf.metamodel.Namespace;
  */
 public class CopyNamespaceWithIncreasedVersion extends StructuralChange {
    private Change changes;
-
-   public enum IncreaseVersion {
-      MAJOR,
-      MINOR,
-      MICRO
-   }
 
    private final IncreaseVersion increaseVersion;
    private final Namespace namespace;
@@ -55,45 +44,12 @@ public class CopyNamespaceWithIncreasedVersion extends StructuralChange {
             .toList();
 
       final VersionNumber currentVersion = namespace.version();
-      final VersionNumber nextVersion = increaseVersion( currentVersion );
-
+      final VersionNumber nextVersion = increaseVersion.apply( currentVersion );
       final List<Change> fileChanges = namespaceFiles.stream()
-            .flatMap( file -> {
-               if ( file.sourceLocation().isEmpty() ) {
-                  throw new ModelChangeException(
-                        "Namespace version can only be increased for namespaces with files that have source locations." );
-               }
-               final String sourceLocation = file.sourceLocation().get().toString();
-               final String locationPart = namespace.namespaceMainPart() + "/" + namespace.version().toString();
-               final int locationIndex = sourceLocation.lastIndexOf( locationPart );
-               if ( locationIndex == -1 ) {
-                  throw new ModelChangeException( "Don't know how to update Aspect Model file location: " + sourceLocation );
-               }
-               // Build new file location URI with the version replaced with the new one
-               final URI newLocation = URI.create(
-                     sourceLocation.substring( 0, locationIndex )
-                           + namespace.namespaceMainPart() + "/" + nextVersion.toString()
-                           + sourceLocation.substring( locationIndex + locationPart.length() ) );
-
-               final AspectModelUrn newUrn = AspectModelUrn.fromUrn(
-                     String.format( "urn:samm:%s:%s", namespace.namespaceMainPart(), nextVersion ) );
-               return Stream.<Change> of(
-                     new CopyAspectModelFile( file, newLocation ),
-                     new RenameNamespace( newLocation, namespace.urn(), newUrn ),
-                     new ChangeRdfPrefixes( newLocation, Map.of( "", newUrn.getUrnPrefix() ) )
-               );
-            } ).toList();
-
+            .<Change> map( file -> new CopyFileWithIncreasedNamespaceVersion( file, increaseVersion ) )
+            .toList();
       changes = new ChangeGroup( "Copy namespace " + namespace.urn() + " to new version " + nextVersion, fileChanges );
       return changes.fire( changeContext );
-   }
-
-   private VersionNumber increaseVersion( final VersionNumber previous ) {
-      return switch ( increaseVersion ) {
-         case MAJOR -> previous.nextMajor();
-         case MINOR -> previous.nextMinor();
-         case MICRO -> previous.nextMicro();
-      };
    }
 
    @Override
