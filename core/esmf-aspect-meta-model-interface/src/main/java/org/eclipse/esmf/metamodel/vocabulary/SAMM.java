@@ -50,6 +50,11 @@ public class SAMM implements RdfNamespace {
       return getUri() + "#";
    }
 
+   @SuppressWarnings( "checkstyle:MethodName" )
+   public Resource Namespace() {
+      return resource( "Namespace" );
+   }
+
    public Property listType() {
       return property( "listType" );
    }

@@ -14,20 +14,11 @@
 package org.eclipse.esmf.aspectmodel.shacl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
-import org.eclipse.esmf.aspectmodel.resolver.parser.ReaderRiotTurtle;
+import static org.eclipse.esmf.aspectmodel.RdfUtil.createModel;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFLanguages;
-import org.apache.jena.riot.RDFParserRegistry;
 import org.junit.jupiter.api.Test;
 
 public class RustLikeFormatterTest {
@@ -38,7 +29,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testMiddleStatement() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -54,7 +45,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testLastStatement() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -70,7 +61,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testMultipleStatementsSameLine() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -85,7 +76,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testMultiSubjectSameLine() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ; :property 1 . :Bar a :TestClass ; :property 2 .
@@ -99,7 +90,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testAnonymousNodes() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -114,7 +105,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testMultilineAnonymousNode() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -131,7 +122,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testMultilineAnonymousNodeMiddlePart() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -148,7 +139,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testEmptyList() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -163,7 +154,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testList() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -178,7 +169,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testMultilineListStarted() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -194,7 +185,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testMultilineListFinished() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -210,7 +201,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testListWithAnonymousNodes() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass ;
@@ -225,7 +216,7 @@ public class RustLikeFormatterTest {
 
    @Test
    void testDenseFormatting() {
-      final Model dataModel = model( """
+      final Model dataModel = createModel( """
             @prefix : <http://example.com#> .
 
             :Foo a :TestClass;:property 1.:Bar a :TestClass;:property 2.
@@ -241,13 +232,5 @@ public class RustLikeFormatterTest {
       final String lineWithSourceText = messageText.lines().toList().get( 2 );
       final String reconstructedLine = lineWithSourceText.substring( lineWithSourceText.indexOf( '|' ) + 1 );
       assertThat( expectedLine ).isEqualTo( reconstructedLine.trim() );
-   }
-
-   private Model model( final String ttlRepresentation ) {
-      final Model model = ModelFactory.createDefaultModel();
-      final InputStream in = new ByteArrayInputStream( ttlRepresentation.getBytes( StandardCharsets.UTF_8 ) );
-      RDFParserRegistry.registerLangTriples( Lang.TURTLE, ReaderRiotTurtle.factory );
-      model.read( in, "", RDFLanguages.strLangTurtle );
-      return model;
    }
 }

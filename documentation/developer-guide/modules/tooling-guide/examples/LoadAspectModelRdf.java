@@ -33,19 +33,19 @@ import org.junit.jupiter.api.Test;
 public class LoadAspectModelRdf {
    @Test
    public void loadAndResolveFromFile() {
-      // tag::loadModel[]
+      // tag::loadAndResolveFromFile[]
       final AspectModel aspectModel = new AspectModelLoader().load(
             // a File, InputStream or AspectModelUrn
-            // end::generate[]
+            // end::loadAndResolveFromFile[]
             new File( "aspect-models/org.eclipse.esmf.examples.movement/1.0.0/Movement.ttl" )
-            // tag::loadModel[]
+            // tag::loadAndResolveFromFile[]
       );
 
       // Do something with the Aspect Model on the RDF level.
       // Example: List the URNs of all samm:Entitys
       aspectModel.mergedModel().listStatements( null, RDF.type, SammNs.SAMM.Entity() )
             .forEachRemaining( statement -> System.out.println( statement.getSubject().getURI() ) );
-      // end::loadModel[]
+      // end::loadAndResolveFromFile[]
    }
 
    @Test

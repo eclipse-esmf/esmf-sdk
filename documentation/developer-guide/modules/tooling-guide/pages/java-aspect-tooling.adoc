@@ -712,6 +712,32 @@ Example:
 include::example$sample-file-header.vm[]
 ----
 
+[[modifying-and-creating-aspect-models]]
+== Modifying and creating Aspect Models
+
+You can use the `AspectChangeManager` to modify an Aspect Model. Each modifying operation performed
+on an Aspect Model is called a _change_. Instances of classes that implement the `Change` interface
+can be passed to the `AspectChangeManager` `applyChange()` method. Available `Change`&#8203;s
+include renaming Aspect Model files or Model elements, adding and removing Aspect Model files and
+moving Aspect Model elements to other or new files in the same or another namespace.
+
+++++
+<details>
+<summary>Show used imports</summary>
+++++
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$EditAspectModel.java[tags=imports]
+----
+++++
+</details>
+++++
+
+[source,java,indent=0,subs="+macros,+quotes"]
+----
+include::example$EditAspectModel.java[tags=editModel]
+----
+
 [[accessing-samm-programmatically]]
 == Accessing the SAMM programmatically
 

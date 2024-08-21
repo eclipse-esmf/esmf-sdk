@@ -13,8 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel.serializer;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.eclipse.esmf.test.TestModel;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFList;
@@ -57,5 +60,32 @@ public class RdfComparison {
             .map( statement -> hash( statement.getPredicate() ) + hash( statement.getObject() ) )
             .sorted()
             .collect( Collectors.joining() );
+   }
+
+   static String modelToString( final Model model ) {
+      return Arrays.stream( TestModel.modelToString( model )
+                  .replaceAll( ";", "" )
+                  .replaceAll( "\\.", "" )
+                  .replaceAll( " +", "" )
+                  .split( "\\n" ) )
+            .filter( line -> !line.contains( "samm-c:values" ) )
+            .filter( line -> !line.contains( "samm:see" ) )
+            .map( RdfComparison::sortLineWithRdfListOrLangString )
+            .sorted()
+            .collect( Collectors.joining() )
+            .replaceAll( " +", " " );
+   }
+
+   /**
+    * In some test models, lines with RDF lists appear, e.g.:
+    * :property ( "foo" "bar" )
+    * However, for some serialized models, the order of elements is non-deterministic since the underlying collection is a Set.
+    * In order to check that the line is present in the two models, we simply tokenize and sort both lines, so we can compare them.
+    */
+   static String sortLineWithRdfListOrLangString( final String line ) {
+      if ( line.contains( " ( " ) || line.contains( "@" ) ) {
+         return Arrays.stream( line.split( "[ ,\"]" ) ).sorted().collect( Collectors.joining() );
+      }
+      return line;
    }
 }

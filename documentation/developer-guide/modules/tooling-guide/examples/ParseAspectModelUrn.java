@@ -22,7 +22,7 @@ public class ParseAspectModelUrn {
    public void parseAspectModelUrn() {
       // tag::parseAspectModelUrn[]
       final AspectModelUrn urn = AspectModelUrn.fromUrn( "urn:samm:com.example:1.0.0#Example" );
-      final String namespace = urn.getNamespace(); // com.example
+      final String namespace = urn.getNamespaceMainPart(); // com.example
       final String name = urn.getName();           // Example
       final String version = urn.getVersion();     // 1.0.0
       final String urnPrefix = urn.getUrnPrefix(); // urn:samm:com.example:1.0.0#

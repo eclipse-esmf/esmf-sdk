@@ -617,6 +617,8 @@ public class AspectModelOpenApiGenerator
                   node.set( key, mergeObjectNode( (ObjectNode) resultValue, (ObjectNode) value ) );
                } else if ( resultValue.isArray() && value.isArray() ) {
                   node.set( key, mergeArrayNode( (ArrayNode) resultValue, (ArrayNode) value ) );
+               } else {
+                  node.set( key, value );
                }
             } else {
                node.set( key, value );

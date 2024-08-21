@@ -250,7 +250,7 @@ public class AspectModelJacksonModuleTest {
    private String loadJsonPayload( final TestAspect model, final String payloadName ) throws IOException {
       final AspectModelUrn modelUrn = model.getUrn();
       final URL jsonUrl = getClass().getResource(
-            String.format( "/%s/%s/%s.json", modelUrn.getNamespace(), modelUrn.getVersion(), payloadName ) );
+            String.format( "/%s/%s/%s.json", modelUrn.getNamespaceMainPart(), modelUrn.getVersion(), payloadName ) );
       return Resources.toString( jsonUrl, StandardCharsets.UTF_8 );
    }
 

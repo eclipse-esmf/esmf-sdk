@@ -20,34 +20,46 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
+import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestModel;
+import org.eclipse.esmf.test.TestProperty;
 import org.eclipse.esmf.test.TestResources;
 
 import org.apache.jena.rdf.model.Model;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class PrettyPrinterTest {
    @ParameterizedTest
-   @EnumSource( value = TestAspect.class, mode = EnumSource.Mode.EXCLUDE, names = {
-         // contains blank nodes which are not referenced from an aspect and therefore not pretty-printed
-         "MODEL_WITH_BLANK_AND_ADDITIONAL_NODES"
-   } )
-   public void testPrettyPrinter( final TestAspect testAspect ) {
-      final AspectModel aspectModel = TestResources.load( testAspect );
-      final Model originalModel = aspectModel.files().iterator().next().sourceModel();
+   @MethodSource( value = "testModels" )
+   void testPrettyPrinter( final TestModel testModel ) {
+      final AspectModel aspectModel = TestResources.load( testModel );
+      final AspectModelFile originalFile = aspectModel.files().iterator().next();
 
       final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       final PrintWriter writer = new PrintWriter( buffer, false, StandardCharsets.UTF_8 );
-      new PrettyPrinter( originalModel, testAspect.getUrn(), writer ).print();
+      new PrettyPrinter( originalFile, writer ).print();
       writer.flush();
 
       final InputStream bufferInput = new ByteArrayInputStream( buffer.toByteArray() );
-      final Model prettyPrintedModel = TurtleLoader.loadTurtle( buffer.toString( StandardCharsets.UTF_8 ) ).get();
+      final String formattedModel = buffer.toString( StandardCharsets.UTF_8 );
+      final Model prettyPrintedModel = TurtleLoader.loadTurtle( formattedModel ).get();
 
-      assertThat( RdfComparison.hash( originalModel ).equals( RdfComparison.hash( prettyPrintedModel ) ) ).isTrue();
+      assertThat( RdfComparison.hash( originalFile.sourceModel() ).equals( RdfComparison.hash( prettyPrintedModel ) ) ).isTrue();
+   }
+
+   static Stream<Arguments> testModels() {
+      return Stream.concat( Arrays.stream( TestAspect.values() ), Arrays.stream( TestProperty.values() )
+            ).filter( testModel ->
+                  // contains blank nodes which are not referenced from an aspect and therefore not pretty-printed
+                  testModel != TestAspect.MODEL_WITH_BLANK_AND_ADDITIONAL_NODES )
+            .map( Arguments::arguments );
    }
 }

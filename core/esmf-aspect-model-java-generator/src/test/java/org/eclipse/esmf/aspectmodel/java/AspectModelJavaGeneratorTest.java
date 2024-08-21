@@ -80,7 +80,7 @@ public class AspectModelJavaGeneratorTest {
             .enableJacksonAnnotations( enableJacksonAnnotations )
             .executeLibraryMacros( executeLibraryMacros )
             .templateLibFile( templateLibPath )
-            .packageName( aspect.urn().getNamespace() )
+            .packageName( aspect.urn().getNamespaceMainPart() )
             .build();
       return List.of( new AspectModelJavaGenerator( aspect, config ) );
    }
@@ -93,7 +93,7 @@ public class AspectModelJavaGeneratorTest {
       final JavaCodeGenerationConfig config = JavaCodeGenerationConfigBuilder.builder()
             .enableJacksonAnnotations( true )
             .executeLibraryMacros( false )
-            .packageName( aspectModel.aspect().urn().getNamespace() )
+            .packageName( aspectModel.aspect().urn().getNamespaceMainPart() )
             .build();
       return List.of( new AspectModelJavaGenerator( aspectModel.aspect(), config ) );
    }
