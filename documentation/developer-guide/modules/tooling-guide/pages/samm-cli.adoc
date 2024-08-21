@@ -187,6 +187,19 @@ The available options and their meaning can also be seen in the help text of the
                                      header from the source file to the new file                                             |
                                    | _--force_ : When a new file is to be created but it already exists in the file system,
                                      the operation will be cancelled, unless `--force` is used.                              |
+.7+| [[aspect-edit-newversion]] aspect <model> edit newversion [--major \| --minor \| --micro] | Create a new version of an existing file or a complete
+                                     namespace. `model` can be an Aspect Model file or a namespace URN. If `model` is a URN,
+                                     at least one `--models-root` must also be specified.                                    | `samm aspect AspectModel.ttl edit
+                                                                                                                                newversion --major`
+                                   | _--major_ : Update the major version                                                    |
+                                   | _--minor_ : Update the minor version                                                    |
+                                   | _--micro_ : Update the micro version                                                    |
+                                   | _--dry-run_ : Don't write changes to the file system, but print a report of changes
+                                     that would be performed.                                                                |
+                                   | _--details_ : When used with `--dry-run`, include details about model content
+                                     changes in the report .                                                                 |
+                                   | _--force_ : When a new file is to be created but it already exists in the file system,
+                                     the operation will be cancelled, unless `--force` is used.                              |
 .1+| [[aspect-usage]] aspect <model> usage | Shows where model elements are used in an Aspect. `model` can be an Aspect Model
                                      file or an element URN. If `model` is a URN, at least one `--models-root` must also be
                                      specified.                                                                              | `samm aspect AspectModelFile.ttl usage`
