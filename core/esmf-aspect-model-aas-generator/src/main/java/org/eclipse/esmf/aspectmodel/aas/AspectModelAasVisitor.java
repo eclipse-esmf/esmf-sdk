@@ -591,7 +591,7 @@ public class AspectModelAasVisitor implements AspectVisitor<Environment, Context
                                        .displayName( LangStringMapper.NAME.map( property.getPreferredNames() ) )
                                        .description( LangStringMapper.TEXT.map( property.getDescriptions() ) )
                                        .value( values )
-                                       .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT_COLLECTION )
+                                       .typeValueListElement( AasSubmodelElements.SUBMODEL_ELEMENT )
                                        .orderRelevant( false )
                                        .build();
                               } ) )
