@@ -18,7 +18,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +30,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
+import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
+import org.eclipse.esmf.aspectmodel.edit.Change;
+import org.eclipse.esmf.aspectmodel.edit.ChangeReport;
+import org.eclipse.esmf.aspectmodel.edit.ChangeReportFormatter;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
@@ -37,6 +44,7 @@ import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
 import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
+import org.eclipse.esmf.aspectmodel.serializer.AspectSerializer;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
@@ -48,6 +56,7 @@ import org.eclipse.esmf.metamodel.AspectModel;
 import io.vavr.control.Either;
 import org.apache.commons.io.FilenameUtils;
 
+@SuppressWarnings( "UseOfSystemOutOrSystemErr" )
 public abstract class AbstractCommand implements Runnable {
    protected Path modelsRootForFile( final File file ) {
       return file.toPath().getParent().getParent().getParent();
@@ -127,7 +136,7 @@ public abstract class AbstractCommand implements Runnable {
             .findFirst()
             .orElseThrow( () -> new ModelResolutionException(
                   "Found multiple Aspects in the file " + inputFile.getAbsolutePath() + ", but none is called '"
-                  + expectedAspectName + "': " + aspects.stream().map( Aspect::getName )
+                        + expectedAspectName + "': " + aspects.stream().map( Aspect::getName )
                         .collect( Collectors.joining( ", " ) ) ) );
    }
 
@@ -193,5 +202,82 @@ public abstract class AbstractCommand implements Runnable {
 
    private String getParentDirectory( final String filePath ) {
       return new File( filePath ).getParent();
+   }
+
+   protected Optional<AspectChangeManager> performRefactoring( final AspectModel aspectModel, final Change change,
+         final AspectChangeManagerConfig config, final boolean dryRun ) {
+      final AspectChangeManager changeContext = new AspectChangeManager( config, aspectModel );
+      final ChangeReport changeReport = changeContext.applyChange( change );
+      if ( dryRun ) {
+         System.out.println( "Changes to be performed" );
+         System.out.println( "=======================" );
+         System.out.println( ChangeReportFormatter.INSTANCE.apply( changeReport, config ) );
+         return Optional.empty();
+      }
+      return Optional.of( changeContext );
+   }
+
+   protected void performFileSystemWrite( final AspectChangeManager changeContext ) {
+      changeContext.removedFiles()
+            .map( fileToRemove -> Paths.get( fileToRemove.sourceLocation().orElseThrow() ).toFile() )
+            .filter( file -> !file.delete() )
+            .forEach( file -> {
+               throw new CommandException( "Could not delete file: " + file );
+            } );
+      changeContext.createdFiles().forEach( fileToCreate -> {
+         final File file = Paths.get( fileToCreate.sourceLocation().orElseThrow() ).toFile();
+         file.getParentFile().mkdirs();
+         AspectSerializer.INSTANCE.write( fileToCreate );
+      } );
+      changeContext.modifiedFiles().forEach( AspectSerializer.INSTANCE::write );
+   }
+
+   protected void checkFilesystemConsistency( final AspectChangeManager changeContext, final boolean force ) {
+      final List<String> messages = new ArrayList<>();
+      changeContext.removedFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
+         if ( !url.getProtocol().equals( "file" ) ) {
+            messages.add( "File should be removed, but it is not identified by a file: URL: " + url );
+         }
+         final File file = new File( URI.create( url.toString() ) );
+         if ( !file.exists() ) {
+            messages.add( "File should be removed, but it does not exist: " + file );
+         }
+      } );
+
+      changeContext.createdFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
+         if ( !url.getProtocol().equals( "file" ) ) {
+            messages.add( "New file should be written, but it is not identified by a file: URL: " + url );
+         }
+         final File file = new File( URI.create( url.toString() ) );
+         if ( file.exists() && !force ) {
+            messages.add(
+                  "New file should be written, but it already exists: " + file + ". Use the --force flag to force overwriting." );
+         }
+         if ( file.exists() && force && !file.canWrite() ) {
+            messages.add( "New file should be written, but it is not writable:" + file );
+         }
+      } );
+
+      changeContext.modifiedFiles().map( AspectSerializer.INSTANCE::aspectModelFileUrl ).forEach( url -> {
+         if ( !url.getProtocol().equals( "file" ) ) {
+            messages.add( "File should be modified, but it is not identified by a file: URL: " + url );
+         }
+         final File file = new File( URI.create( url.toString() ) );
+         if ( !file.exists() ) {
+            messages.add( "File should be modified, but it does not exist: " + file );
+         }
+         if ( !file.canWrite() ) {
+            messages.add( "File should be modified, but it is not writable: " + file );
+         }
+         if ( !file.isFile() ) {
+            messages.add( "File should be modified, but it is not a regular file: " + file );
+         }
+      } );
+
+      if ( !messages.isEmpty() ) {
+         System.out.println( "Encountered problems, canceling writing." );
+         messages.forEach( message -> System.out.println( "- " + message ) );
+         System.exit( 1 );
+      }
    }
 }

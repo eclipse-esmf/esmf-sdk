@@ -1296,6 +1296,47 @@ class SammCliTest {
    }
 
    @Test
+   void testAspectEditNewVersionForFile() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocation.toFile().mkdirs();
+      final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "newversion", "--major" );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      final File newlyCreatedFile = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( "2.0.0" ).resolve( "AspectWithEntity.ttl" ).toFile();
+      assertThat( newlyCreatedFile ).exists();
+      assertThat( newlyCreatedFile ).content().contains( "@prefix : <urn:samm:org.eclipse.esmf.test:2.0.0#>" );
+   }
+
+   @Test
+   void testAspectEditNewVersionForNamespace() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocation.toFile().mkdirs();
+      final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+
+      final String namespaceUrn = TestModel.TEST_NAMESPACE.replace( "#", "" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", namespaceUrn,
+            "edit", "newversion", "--major", "--models-root", outputDirectory.toFile().getAbsolutePath() );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      final File newlyCreatedFile = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( "2.0.0" ).resolve( "AspectWithEntity.ttl" ).toFile();
+      assertThat( newlyCreatedFile ).exists();
+      assertThat( newlyCreatedFile ).content().contains( "@prefix : <urn:samm:org.eclipse.esmf.test:2.0.0#>" );
+   }
+
+   @Test
    void testAspectUsageFromFile() {
       final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "usage" );
       assertThat( result.stderr() ).isEmpty();
