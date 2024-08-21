@@ -29,8 +29,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.fasterxml.jackson.dataformat.yaml.util.StringQuotingChecker;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
 import io.vavr.control.Try;
@@ -138,10 +140,24 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> implements Arti
 
    protected String jsonToYaml( final JsonNode json ) {
       try {
-         return new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES ).writeValueAsString( json );
+         final YAMLFactory yamlFactory = YAMLFactory.builder()
+               .stringQuotingChecker( new OpenApiStringQuotingChecker() ).build();
+         return new YAMLMapper( yamlFactory ).enable( YAMLGenerator.Feature.MINIMIZE_QUOTES )
+               .writeValueAsString( json );
       } catch ( final JsonProcessingException exception ) {
          LOG.error( "JSON could not be converted to YAML", exception );
          return json.toString();
+      }
+   }
+
+   public static class OpenApiStringQuotingChecker extends StringQuotingChecker.Default {
+
+      @Override
+      protected boolean valueHasQuotableChar( final String inputStr ) {
+         if ( inputStr.contains( "#" ) ) {
+            return true;
+         }
+         return super.valueHasQuotableChar( inputStr );
       }
    }
 }
