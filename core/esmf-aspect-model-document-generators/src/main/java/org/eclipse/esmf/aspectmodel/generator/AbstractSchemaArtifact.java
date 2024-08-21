@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Streams;
@@ -138,7 +137,7 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> implements Arti
 
    protected String jsonToYaml( final JsonNode json ) {
       try {
-         return new YAMLMapper().enable( YAMLGenerator.Feature.MINIMIZE_QUOTES ).writeValueAsString( json );
+         return new YAMLMapper().writeValueAsString( json );
       } catch ( final JsonProcessingException exception ) {
          LOG.error( "JSON could not be converted to YAML", exception );
          return json.toString();
