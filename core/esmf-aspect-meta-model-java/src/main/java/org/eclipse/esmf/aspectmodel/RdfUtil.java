@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspectmodel;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -27,6 +28,9 @@ import org.eclipse.esmf.aspectmodel.urn.ElementType;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 
 import com.google.common.collect.Streams;
+import org.apache.jena.query.ParameterizedSparqlString;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -139,5 +143,26 @@ public class RdfUtil {
     */
    public static Model createModel( final String ttlRepresentation ) {
       return TurtleLoader.loadTurtle( ttlRepresentation ).get();
+   }
+
+   /**
+    * Returns the List of named resources that transitively point to a given node. Transtively here means that the given node
+    * is reachable from the named resource via any number of anonymous nodes inbetween.
+    *
+    * @param node the target node
+    * @return the list of resources that point to the node
+    */
+   public static List<Resource> getNamedElementsReferringTo( final RDFNode node ) {
+      final ParameterizedSparqlString sparqlString = new ParameterizedSparqlString();
+      sparqlString.setCommandText( "select ?s where { ?s (<>|!<>)* ?node . }" );
+      sparqlString.setParam( "node", node );
+      try ( final QueryExecution queryExecution = QueryExecutionFactory.create( sparqlString.asQuery(), node.getModel() ) ) {
+         return Streams.stream( queryExecution.execSelect() ).flatMap( querySolution -> {
+            final RDFNode subject = querySolution.get( "s" );
+            return subject.isURIResource() && !subject.equals( node )
+                  ? Stream.of( subject.asResource() )
+                  : Stream.empty();
+         } ).toList();
+      }
    }
 }

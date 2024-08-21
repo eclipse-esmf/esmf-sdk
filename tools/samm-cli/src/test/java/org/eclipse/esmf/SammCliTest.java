@@ -1295,6 +1295,36 @@ class SammCliTest {
       assertThat( targetFile ).doesNotExist();
    }
 
+   @Test
+   void testAspectUsageFromFile() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "usage" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
+   }
+
+   @Test
+   void testAspectUsageFromUrn() {
+      final String modelsRoot = inputFile( testModel ).getParentFile().getParentFile().getParentFile().getAbsolutePath();
+      final String urnToCheck = TestModel.TEST_NAMESPACE + "testProperty";
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", urnToCheck, "usage",
+            "--models-root", modelsRoot );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
+   }
+
+   // Running this test from within the regular JUnit test harness yields a java.lang.SecurityException for
+   // java.net.URLPermission, therefore it is executed only in the native build
+   @Test
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
+   void testAspectUsageWithGitHubResolution() {
+      final String remoteModelsDirectory = "core/esmf-test-aspect-models/src/main/resources/valid";
+      final String urnToCheck = TestModel.TEST_NAMESPACE + "testProperty";
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", urnToCheck, "usage",
+            "--github", "--github-name", "eclipse-esmf/esmf-sdk", "--github-directory", remoteModelsDirectory );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
+   }
+
    /**
     * Returns the File object for a test model file
     */

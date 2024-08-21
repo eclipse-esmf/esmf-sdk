@@ -19,9 +19,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -29,11 +31,12 @@ import java.util.stream.Collectors;
 import org.eclipse.esmf.aspectmodel.generator.LanguageCollector;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
-import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ExternalResolverStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
+import org.eclipse.esmf.aspectmodel.resolver.fs.StructuredModelsRoot;
+import org.eclipse.esmf.aspectmodel.resolver.github.GitHubStrategy;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
 import org.eclipse.esmf.aspectmodel.validation.services.AspectModelValidator;
 import org.eclipse.esmf.aspectmodel.validation.services.DetailedViolationFormatter;
@@ -50,8 +53,8 @@ public abstract class AbstractCommand implements Runnable {
       return file.toPath().getParent().getParent().getParent();
    }
 
-   protected AspectModel loadAspectModelOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig ) {
-      return loadAspectModelOrFail( modelFileName, resolverConfig, false );
+   protected AspectModel loadAspectModelOrFail( final String input, final ResolverConfigurationMixin resolverConfig ) {
+      return loadAspectModelOrFail( input, resolverConfig, false );
    }
 
    protected File getInputFile( final String modelFileName ) {
@@ -61,17 +64,34 @@ public abstract class AbstractCommand implements Runnable {
             : Path.of( System.getProperty( "user.dir" ) ).resolve( inputFile.toPath() ).toFile().getAbsoluteFile();
    }
 
-   protected AspectModel loadAspectModelOrFail( final File modelFile, final ExternalResolverMixin resolverConfig,
+   protected AspectModelLoader getAspectModelLoader( final Optional<File> modelFile, final ResolverConfigurationMixin resolverConfig ) {
+      final List<ResolutionStrategy> strategies = new ArrayList<>();
+      if ( modelFile.isPresent() ) {
+         strategies.add( new FileSystemStrategy( modelsRootForFile( modelFile.get().getAbsoluteFile() ) ) );
+      } else {
+         strategies.add( AspectModelLoader.DEFAULT_STRATEGY.get() );
+      }
+      for ( final String modelsRoot : resolverConfig.modelsRoots ) {
+         strategies.add( new FileSystemStrategy( new StructuredModelsRoot( Path.of( modelsRoot ) ) ) );
+      }
+      if ( !resolverConfig.commandLine.isBlank() ) {
+         strategies.add( new ExternalResolverStrategy( resolverConfig.commandLine ) );
+      }
+      if ( resolverConfig.gitHubResolutionOptions != null && resolverConfig.gitHubResolutionOptions.enableGitHubResolution ) {
+         strategies.add( new GitHubStrategy(
+               resolverConfig.gitHubResolutionOptions.gitHubName,
+               resolverConfig.gitHubResolutionOptions.gitHubBranch,
+               resolverConfig.gitHubResolutionOptions.gitHubDirectory ) );
+      }
+      return new AspectModelLoader( strategies );
+   }
+
+   protected AspectModel loadAspectModelOrFail( final File modelFile, final ResolverConfigurationMixin resolverConfig,
          final boolean details ) {
       final File absoluteFile = modelFile.getAbsoluteFile();
-      final ResolutionStrategy resolveFromWorkspace = new FileSystemStrategy( modelsRootForFile( absoluteFile ) );
-      final ResolutionStrategy resolveFromCurrentDirectory = AspectModelLoader.DEFAULT_STRATEGY.get();
-      final ResolutionStrategy resolutionStrategy = resolverConfig.commandLine.isBlank()
-            ? new EitherStrategy( resolveFromWorkspace, resolveFromCurrentDirectory )
-            : new ExternalResolverStrategy( resolverConfig.commandLine );
 
       final Either<List<Violation>, AspectModel> validModelOrViolations = new AspectModelValidator().loadModel( () ->
-            new AspectModelLoader( resolutionStrategy ).load( absoluteFile ) );
+            getAspectModelLoader( Optional.of( modelFile ), resolverConfig ).load( absoluteFile ) );
       if ( validModelOrViolations.isLeft() ) {
          final List<Violation> violations = validModelOrViolations.getLeft();
          if ( details ) {
@@ -86,12 +106,12 @@ public abstract class AbstractCommand implements Runnable {
       return validModelOrViolations.get();
    }
 
-   protected AspectModel loadAspectModelOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig,
+   protected AspectModel loadAspectModelOrFail( final String modelFileName, final ResolverConfigurationMixin resolverConfig,
          final boolean details ) {
       return loadAspectModelOrFail( getInputFile( modelFileName ), resolverConfig, details );
    }
 
-   protected Aspect loadAspectOrFail( final String modelFileName, final ExternalResolverMixin resolverConfig ) {
+   protected Aspect loadAspectOrFail( final String modelFileName, final ResolverConfigurationMixin resolverConfig ) {
       final File inputFile = new File( modelFileName );
       final AspectModel aspectModel = loadAspectModelOrFail( modelFileName, resolverConfig );
       final List<Aspect> aspects = aspectModel.aspects();
@@ -107,13 +127,13 @@ public abstract class AbstractCommand implements Runnable {
             .findFirst()
             .orElseThrow( () -> new ModelResolutionException(
                   "Found multiple Aspects in the file " + inputFile.getAbsolutePath() + ", but none is called '"
-                        + expectedAspectName + "': " + aspects.stream().map( Aspect::getName )
+                  + expectedAspectName + "': " + aspects.stream().map( Aspect::getName )
                         .collect( Collectors.joining( ", " ) ) ) );
    }
 
    protected void generateDiagram( final String inputFileName, final AspectModelDiagramGenerator.Format targetFormat,
          final String outputFileName,
-         final String languageTag, final ExternalResolverMixin resolverConfig ) throws IOException {
+         final String languageTag, final ResolverConfigurationMixin resolverConfig ) throws IOException {
       final Aspect aspect = loadAspectOrFail( inputFileName, resolverConfig );
       final AspectModelDiagramGenerator generator = new AspectModelDiagramGenerator( aspect );
       final Set<AspectModelDiagramGenerator.Format> targetFormats = new HashSet<>();

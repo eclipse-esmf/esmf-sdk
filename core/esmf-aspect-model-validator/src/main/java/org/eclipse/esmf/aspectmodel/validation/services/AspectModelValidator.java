@@ -71,7 +71,7 @@ public class AspectModelValidator {
     * (syntax errors, resolution errors), no exception is thrown and a {@link Violation} is created instead.
     *
     * @param aspectModelSupplier the Aspect Model supplier
-    * @return An {@link Either.Right} with the model if there are now violations, or an {@link Either.Left} with a list of
+    * @return An {@link Either.Right} with the model if there are no violations, or an {@link Either.Left} with a list of
     * {@link Violation}s.
     */
    public Either<List<Violation>, AspectModel> loadModel( final Supplier<AspectModel> aspectModelSupplier ) {

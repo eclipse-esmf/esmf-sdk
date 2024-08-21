@@ -11,15 +11,17 @@
  * SPDX-License-Identifier: MPL-2.0
  */
 
-package org.eclipse.esmf.aspectmodel.resolver;
+package org.eclipse.esmf.aspectmodel.stats;
 
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
-import org.eclipse.esmf.functions.ThrowingBiFunction;
 
-/**
- * Represents one way to load and resolve an Aspect Model File from a given source.
- */
-public interface ResolutionStrategy
-      extends ThrowingBiFunction<AspectModelUrn, ResolutionStrategySupport, AspectModelFile, ModelResolutionException>, ModelSource {
-}
+import io.soabase.recordbuilder.core.RecordBuilder;
+
+@RecordBuilder
+public record Reference(
+      AspectModelUrn pointer,
+      AspectModelFile pointerSource,
+      AspectModelUrn pointee,
+      AspectModelFile pointeeSource
+) {}

@@ -16,7 +16,7 @@ package org.eclipse.esmf.aspect.to;
 import java.io.IOException;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ExternalResolverMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.diagram.AspectModelDiagramGenerator;
@@ -49,13 +49,13 @@ public class AspectToPngCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
-   private ExternalResolverMixin customResolver;
+   private ResolverConfigurationMixin resolverConfiguration;
 
    @Override
    public void run() {
       try {
          generateDiagram( parentCommand.parentCommand.getInput(), AspectModelDiagramGenerator.Format.PNG, outputFilePath, language,
-               customResolver );
+               resolverConfiguration );
       } catch ( final IOException e ) {
          throw new CommandException( e );
       }

@@ -17,7 +17,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ExternalResolverMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.aas.AasFileFormat;
@@ -62,7 +62,7 @@ public class AspectToAasCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
-   private ExternalResolverMixin customResolver;
+   private ResolverConfigurationMixin resolverConfiguration;
 
    private JsonNode loadAspectData() {
       if ( aspectData == null ) {
@@ -80,7 +80,7 @@ public class AspectToAasCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), customResolver );
+      final Aspect aspect = loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
       final JsonNode loadedAspectData = loadAspectData();
       // we intentionally override the name of the generated artifact here to the name explicitly
       // desired by the user (outputFilePath), as opposed to what the model thinks it should be

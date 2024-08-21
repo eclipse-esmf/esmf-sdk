@@ -16,7 +16,7 @@ package org.eclipse.esmf.aspect.to;
 import java.io.IOException;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ExternalResolverMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.json.AspectModelJsonPayloadGenerator;
@@ -43,12 +43,12 @@ public class AspectToJsonCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
-   private ExternalResolverMixin customResolver;
+   private ResolverConfigurationMixin resolverConfiguration;
 
    @Override
    public void run() {
       final AspectModelJsonPayloadGenerator generator = new AspectModelJsonPayloadGenerator(
-            loadAspectOrFail( parentCommand.parentCommand.getInput(), customResolver ) );
+            loadAspectOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration ) );
       try {
          // we intentionally override the name of the generated artifact here to the name explicitly desired by the user (outputFilePath),
          // as opposed to what the model thinks it should be called (name)

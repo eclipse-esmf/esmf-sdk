@@ -16,7 +16,7 @@ package org.eclipse.esmf.aspect;
 import java.util.List;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ExternalResolverMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.JansiRdfSyntaxHighlighter;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspectmodel.shacl.violation.Violation;
@@ -48,7 +48,7 @@ public class AspectValidateCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
-   private ExternalResolverMixin customResolver;
+   private ResolverConfigurationMixin resolverConfiguration;
 
    @SuppressWarnings( "FieldCanBeLocal" )
    @CommandLine.Option( names = { "--details", "-d" }, description = "Print detailed reports about violations" )
@@ -56,7 +56,7 @@ public class AspectValidateCommand extends AbstractCommand {
 
    @Override
    public void run() {
-      final AspectModel aspectModel = loadAspectModelOrFail( parentCommand.getInput(), customResolver, details );
+      final AspectModel aspectModel = loadAspectModelOrFail( parentCommand.getInput(), resolverConfiguration, details );
       final AspectModelValidator validator = new AspectModelValidator();
 
       final List<Violation> violations = validator.validateModel( aspectModel );

@@ -13,7 +13,15 @@
 
 package org.eclipse.esmf.aspectmodel.resolver.fs;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
@@ -33,5 +41,26 @@ public class FlatModelsRoot extends ModelsRoot {
    @Override
    public String toString() {
       return "FlatModelsRoot(rootPath=" + rootPath() + ")";
+   }
+
+   @Override
+   public Stream<URI> contents() {
+      return Arrays.stream( Optional.ofNullable( rootPath().toFile().listFiles() ).orElse( new File[] {} ) )
+            .filter( file -> file.getName().endsWith( ".ttl" ) )
+            .sorted( Comparator.comparing( File::getName ) )
+            .map( File::toURI );
+   }
+
+   @Override
+   public Stream<URI> namespaceContents( final AspectModelUrn namespace ) {
+      return paths().filter( path -> {
+               try ( final Stream<String> lines = Files.lines( path ) ) {
+                  return lines.takeWhile( line -> line.startsWith( "@prefix" ) )
+                        .anyMatch( line -> line.startsWith( "@prefix : " ) && line.endsWith( "<" + namespace.getUrnPrefix() + "> ." ) );
+               } catch ( final IOException e ) {
+                  return false;
+               }
+            } )
+            .map( Path::toUri );
    }
 }

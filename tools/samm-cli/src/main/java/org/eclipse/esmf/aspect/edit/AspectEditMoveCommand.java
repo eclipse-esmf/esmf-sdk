@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ExternalResolverMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.AspectEditCommand;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
@@ -47,13 +47,13 @@ import org.eclipse.esmf.metamodel.impl.DefaultNamespace;
 
 import picocli.CommandLine;
 
-@SuppressWarnings( "UseOfSystemOutOrSystemErr" )
 @CommandLine.Command( name = AspectEditMoveCommand.COMMAND_NAME,
       description = "Move elements to other files or namespaces",
       descriptionHeading = "%n@|bold Description|@:%n%n",
       parameterListHeading = "%n@|bold Parameters|@:%n",
       optionListHeading = "%n@|bold Options|@:%n"
 )
+@SuppressWarnings( "UseOfSystemOutOrSystemErr" )
 public class AspectEditMoveCommand extends AbstractCommand {
    public static final String COMMAND_NAME = "move";
 
@@ -64,7 +64,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
-   private ExternalResolverMixin customResolver;
+   private ResolverConfigurationMixin resolverConfiguration;
 
    @CommandLine.Parameters(
          paramLabel = "ELEMENT",
@@ -151,7 +151,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
     */
    private void moveElementToNewFile() {
       final String input = parentCommand.parentCommand.getInput();
-      final AspectModel aspectModel = loadAspectModelOrFail( input, customResolver );
+      final AspectModel aspectModel = loadAspectModelOrFail( input, resolverConfiguration );
 
       // Do refactoring
       final ModelElement modelElement = determineModelElementToMove( aspectModel );
@@ -175,7 +175,7 @@ public class AspectEditMoveCommand extends AbstractCommand {
     */
    private void moveElementToOtherNamespaceNewFile( final AspectModelUrn targetNamespaceUrn, final File targetFileInNewNamespace ) {
       final String input = parentCommand.parentCommand.getInput();
-      final AspectModel aspectModel = loadAspectModelOrFail( input, customResolver );
+      final AspectModel aspectModel = loadAspectModelOrFail( input, resolverConfiguration );
 
       // Do refactoring
       final ModelElement modelElement = determineModelElementToMove( aspectModel );
@@ -201,8 +201,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
     * Support the case {@code samm aspect Aspect.ttl edit move MyAspect existingFile.ttl}
     */
    private void moveElementToExistingFile( final File targetFileRelativeToInput ) {
-      final AspectModel sourceAspectModel = loadAspectModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
-      final AspectModel targetAspectModel = loadAspectModelOrFail( targetFileRelativeToInput, customResolver, false );
+      final AspectModel sourceAspectModel = loadAspectModelOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
+      final AspectModel targetAspectModel = loadAspectModelOrFail( targetFileRelativeToInput, resolverConfiguration, false );
 
       // Create a consistent in-memory representation of both the source and target models.
       // On this Aspect Model we can perform the refactoring operation
@@ -225,8 +225,8 @@ public class AspectEditMoveCommand extends AbstractCommand {
     * Supports the case {@code samm aspect Aspect.ttl edit move MyAspect existingFile.ttl urn:samm:com.example.othernamespace:1.0.0}
     */
    private void moveElementToOtherNamespaceExistingFile( final AspectModelUrn targetNamespaceUrn, final File targetFileInOtherNamespace ) {
-      final AspectModel sourceAspectModel = loadAspectModelOrFail( parentCommand.parentCommand.getInput(), customResolver );
-      final AspectModel targetAspectModel = loadAspectModelOrFail( targetFileInOtherNamespace, customResolver, false );
+      final AspectModel sourceAspectModel = loadAspectModelOrFail( parentCommand.parentCommand.getInput(), resolverConfiguration );
+      final AspectModel targetAspectModel = loadAspectModelOrFail( targetFileInOtherNamespace, resolverConfiguration, false );
 
       // Create a consistent in-memory representation of both the source and target models.
       // On this Aspect Model we can perform the refactoring operation

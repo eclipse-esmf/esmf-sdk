@@ -16,6 +16,9 @@ package org.eclipse.esmf.aspectmodel.resolver;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
@@ -171,5 +175,67 @@ public class ClasspathStrategy implements ResolutionStrategy {
             .findFirst()
             .orElseThrow( () -> new ModelResolutionException(
                   "No model file containing " + aspectModelUrn + " could be found in directory: " + directory ) );
+   }
+
+   private URL toUrl( final URI uri ) {
+      try {
+         return uri.toURL();
+      } catch ( final MalformedURLException e ) {
+         throw new ModelResolutionException( "Could not translate URI to URL: " + uri );
+      }
+   }
+
+   private URI toUri( final URL url ) {
+      try {
+         return url.toURI();
+      } catch ( final URISyntaxException e ) {
+         throw new ModelResolutionException( "Could not translate URL to URI: " + url );
+      }
+   }
+
+   @Override
+   public Stream<URI> listContents() {
+      return listContents(
+            namespaceMainPart -> namespaceMainPart.matches( AspectModelUrn.NAMESPACE_REGEX_PART ),
+            versionPart -> versionPart.matches( AspectModelUrn.VERSION_REGEX ) );
+   }
+
+   @Override
+   public Stream<URI> listContentsForNamespace( final AspectModelUrn namespace ) {
+      return listContents(
+            namespaceMainPart -> namespaceMainPart.equals( namespace.getNamespaceMainPart() ),
+            versionPart -> versionPart.equals( namespace.getVersion() ) );
+   }
+
+   private Stream<URI> listContents( final Predicate<String> namespaceMainPartPredicate, final Predicate<String> versionPredicate ) {
+      return filesInDirectory( modelsRoot )
+            .filter( namespaceMainPartPredicate )
+            .flatMap( namespace -> {
+               final String namespaceDirectory = modelsRoot + "/" + namespace;
+               return filesInDirectory( namespaceDirectory )
+                     .filter( versionPredicate )
+                     .flatMap( version -> {
+                        final String versionDirectory = namespaceDirectory + "/" + version;
+                        return filesInDirectory( versionDirectory )
+                              .filter( file -> file.endsWith( ".ttl" ) )
+                              .map( file -> resourceUrl( versionDirectory, file ) )
+                              .map( this::toUri );
+                     } );
+            } )
+            .sorted( Comparator.comparing( URI::toString ) );
+   }
+
+   @Override
+   public Stream<AspectModelFile> loadContents() {
+      return listContents()
+            .map( this::toUrl )
+            .map( AspectModelFileLoader::load );
+   }
+
+   @Override
+   public Stream<AspectModelFile> loadContentsForNamespace( final AspectModelUrn namespace ) {
+      return listContentsForNamespace( namespace )
+            .map( this::toUrl )
+            .map( AspectModelFileLoader::load );
    }
 }

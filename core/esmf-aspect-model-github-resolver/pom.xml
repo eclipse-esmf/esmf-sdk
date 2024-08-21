@@ -23,8 +23,9 @@
          <artifactId>esmf-aspect-model-validator</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.kohsuke</groupId>
-         <artifactId>github-api</artifactId>
+         <groupId>io.soabase.record-builder</groupId>
+         <artifactId>record-builder-processor</artifactId>
+         <scope>provided</scope>
       </dependency>
 
       <!-- Test dependencies -->
@@ -44,4 +45,22 @@
          <scope>test</scope>
       </dependency>
    </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+               <annotationProcessorPaths>
+                  <path>
+                     <groupId>io.soabase.record-builder</groupId>
+                     <artifactId>record-builder-processor</artifactId>
+                     <version>${record-builder-version}</version>
+                  </path>
+               </annotationProcessorPaths>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
 </project>
