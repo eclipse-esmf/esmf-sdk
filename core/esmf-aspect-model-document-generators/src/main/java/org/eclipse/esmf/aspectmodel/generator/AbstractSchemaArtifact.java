@@ -150,7 +150,7 @@ public abstract class AbstractSchemaArtifact<T extends JsonNode> implements Arti
       }
    }
 
-   private static class OpenApiStringQuotingChecker extends StringQuotingChecker.Default {
+   public static class OpenApiStringQuotingChecker extends StringQuotingChecker.Default {
 
       @Override
       protected boolean valueHasQuotableChar( final String inputStr ) {
