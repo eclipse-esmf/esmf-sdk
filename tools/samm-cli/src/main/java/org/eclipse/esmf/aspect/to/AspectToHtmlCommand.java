@@ -19,8 +19,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspect.AspectToCommand;
 import org.eclipse.esmf.aspectmodel.generator.docu.AspectModelDocumentationGenerator;
 import org.eclipse.esmf.exception.CommandException;

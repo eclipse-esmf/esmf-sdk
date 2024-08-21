@@ -56,7 +56,8 @@ public class Usage {
    }
 
    private AspectModelFile fileThatContainsDefinition( final AspectModelUrn targetElement, final List<AspectModelFile> contents ) {
-      return contents.stream().filter( file -> {
+      return contents.stream()
+            .filter( file -> {
                final Resource targetResource = file.sourceModel().createResource( targetElement.toString() );
                return Streams.stream( file.sourceModel().listStatements( targetResource, RDF.type, (RDFNode) null ) )
                      .map( Statement::getSubject )

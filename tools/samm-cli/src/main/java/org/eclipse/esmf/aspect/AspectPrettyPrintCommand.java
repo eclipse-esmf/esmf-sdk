@@ -21,8 +21,8 @@ import java.io.PrintWriter;
 import java.net.URI;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
 import org.eclipse.esmf.exception.CommandException;

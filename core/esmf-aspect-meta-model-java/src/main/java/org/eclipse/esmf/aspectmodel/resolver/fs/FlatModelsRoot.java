@@ -53,7 +53,8 @@ public class FlatModelsRoot extends ModelsRoot {
 
    @Override
    public Stream<URI> namespaceContents( final AspectModelUrn namespace ) {
-      return paths().filter( path -> {
+      return paths()
+            .filter( path -> {
                try ( final Stream<String> lines = Files.lines( path ) ) {
                   return lines.takeWhile( line -> line.startsWith( "@prefix" ) )
                         .anyMatch( line -> line.startsWith( "@prefix : " ) && line.endsWith( "<" + namespace.getUrnPrefix() + "> ." ) );
