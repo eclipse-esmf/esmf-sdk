@@ -209,18 +209,34 @@ public class ClasspathStrategy implements ResolutionStrategy {
 
    private Stream<URI> listContents( final Predicate<String> namespaceMainPartPredicate, final Predicate<String> versionPredicate ) {
       return filesInDirectory( modelsRoot )
-            .filter( namespaceMainPartPredicate )
             .flatMap( namespace -> {
-               final String namespaceDirectory = modelsRoot + "/" + namespace;
-               return filesInDirectory( namespaceDirectory )
-                     .filter( versionPredicate )
-                     .flatMap( version -> {
-                        final String versionDirectory = namespaceDirectory + "/" + version;
-                        return filesInDirectory( versionDirectory )
-                              .filter( file -> file.endsWith( ".ttl" ) )
-                              .map( file -> resourceUrl( versionDirectory, file ) )
-                              .map( this::toUri );
-                     } );
+               if ( namespace.contains( "/" ) ) {
+                  // Files from jar
+                  final String filePath = namespace;
+                  if ( !filePath.endsWith( ".ttl" ) ) {
+                     return Stream.empty();
+                  }
+                  // filePath should now look like org.eclipse.esmf.example/1.0.0/File.ttl
+                  final String[] parts = filePath.split( "/" );
+                  if ( parts.length != 3 || AspectModelUrn.from( "urn:samm:" + parts[0] + ":" + parts[1] ).isFailure() ) {
+                     return Stream.empty();
+                  }
+                  return Stream.of( resourceUrl( modelsRoot + "/" + parts[0] + "/" + parts[1], parts[2] ) ).map( this::toUri );
+               } else {
+                  if ( !namespaceMainPartPredicate.test( namespace ) ) {
+                     return Stream.empty();
+                  }
+                  final String namespaceDirectory = modelsRoot + "/" + namespace;
+                  return filesInDirectory( namespaceDirectory )
+                        .filter( versionPredicate )
+                        .flatMap( version -> {
+                           final String versionDirectory = namespaceDirectory + "/" + version;
+                           return filesInDirectory( versionDirectory )
+                                 .filter( file -> file.endsWith( ".ttl" ) )
+                                 .map( file -> resourceUrl( versionDirectory, file ) )
+                                 .map( this::toUri );
+                        } );
+               }
             } )
             .sorted( Comparator.comparing( URI::toString ) );
    }
