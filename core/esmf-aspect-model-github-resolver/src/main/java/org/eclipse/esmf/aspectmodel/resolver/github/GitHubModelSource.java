@@ -107,11 +107,14 @@ public class GitHubModelSource implements ModelSource {
          }
       }
 
-      return GitHubModelSourceConfigBuilder.builder()
-            .proxy( ProxySelector.of(
-                  new InetSocketAddress( System.getProperty( "http.proxyHost" ),
-                        Integer.parseInt( System.getProperty( "http.proxyPort" ) ) ) ) )
-            .build();
+      final String host = System.getProperty( "http.proxyHost" );
+      final String port = System.getProperty( "http.proxyPort" );
+      if ( host != null && port != null ) {
+         return GitHubModelSourceConfigBuilder.builder()
+               .proxy( ProxySelector.of( new InetSocketAddress( host, Integer.parseInt( port ) ) ) )
+               .build();
+      }
+      return GitHubModelSourceConfigBuilder.builder().build();
    }
 
    @RecordBuilder
