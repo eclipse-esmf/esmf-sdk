@@ -64,7 +64,7 @@ public class AspectUsageCommand extends AbstractCommand {
       final Try<AspectModelUrn> inputAspectModelUrn = AspectModelUrn.from( input );
       final List<Reference> references = inputAspectModelUrn.map( usage::referencesTo )
             .getOrElse( () -> {
-               final URI targetUri = inputFile.map( File::toURI ).orElse( URI.create( input ) );
+               final URI targetUri = inputFile.map( File::toURI ).orElse( URI.create( input.replace( "\\", "/" ) ) );
                final AspectModelFile fileToCheck = aspectModelLoader.loadContents()
                      .filter( file -> file.sourceLocation().map( targetUri::equals ).orElse( false ) )
                      .findFirst()
