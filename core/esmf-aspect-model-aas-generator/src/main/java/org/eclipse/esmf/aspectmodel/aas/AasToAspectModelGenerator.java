@@ -172,7 +172,11 @@ public class AasToAspectModelGenerator {
             .collect( Collectors.toList() );
    }
 
-   protected String escapeUrnNamespacePart( final String namespacePart ) {
+   protected String escapeUrnNamespacePart( String namespacePart ) {
+      if ( namespacePart.contains( "-" ) ) {
+         namespacePart = namespacePart.replaceAll( "-", "." );
+         return namespacePart;
+      }
       if ( namespacePart.matches( AspectModelUrn.NAMESPACE_REGEX_PART ) ) {
          return namespacePart;
       }
@@ -186,14 +190,34 @@ public class AasToAspectModelGenerator {
       } );
    }
 
+//      private String iriToReversedHostNameNotation( final IRI iri ) {
+//         final URI uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
+//         return Stream.concat(
+//                     Arrays.stream( uri.getHost().split( "\\." ) ).collect( reverseOrder() ).stream(),
+//                     Arrays.stream( uri.getPath().split( "/" ) ) )
+//               .filter( StringUtils::isNotBlank )
+//               .map( this::escapeUrnNamespacePart )
+//               .collect( Collectors.joining( "." ) );
+//      }
+
    private String iriToReversedHostNameNotation( final IRI iri ) {
       final URI uri = URI.create( iri.toString().contains( "://" ) ? iri.toString() : "https://" + iri );
-      return Stream.concat(
-                  Arrays.stream( uri.getHost().split( "\\." ) ).collect( reverseOrder() ).stream(),
-                  Arrays.stream( uri.getPath().split( "/" ) ) )
-            .filter( StringUtils::isNotBlank )
-            .map( this::escapeUrnNamespacePart )
+
+      String[] hostParts = uri.getHost().split( "\\." );
+      String[] pathParts = uri.getPath().split( "/" );
+
+      String reversedHost = Arrays.stream( hostParts )
+            .collect( reverseOrder() )
+            .stream()
+            .map( part -> part.replaceAll( "-", "." ) )
             .collect( Collectors.joining( "." ) );
+
+      String path = Arrays.stream( pathParts )
+            .filter( StringUtils::isNotBlank )
+            .limit( pathParts.length - 2 )
+            .collect( Collectors.joining( "." ) );
+
+      return reversedHost + "." + path;
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
