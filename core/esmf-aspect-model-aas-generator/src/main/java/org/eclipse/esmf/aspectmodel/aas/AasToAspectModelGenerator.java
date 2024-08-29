@@ -200,10 +200,9 @@ public class AasToAspectModelGenerator {
       final String[] pathParts = uri.getPath().split( "/" );
       final String path = Arrays.stream( pathParts )
             .filter( StringUtils::isNotBlank )
-            .limit( Math.max( 0, pathParts.length - 2 ) )
             .collect( Collectors.joining( "." ) );
 
-      return reversedHost + ( path.isEmpty() ? "" : "." + path );
+      return reversedHost + "." + path;
    }
 
    private Optional<IRI> iri( final String lexicalRepresentation ) {
