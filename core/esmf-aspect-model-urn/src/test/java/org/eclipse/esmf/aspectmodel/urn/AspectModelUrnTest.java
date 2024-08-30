@@ -342,4 +342,17 @@ class AspectModelUrnTest {
       assertThat( elementUrnWithDash.getNamespaceMainPart() ).isNotEmpty();
       assertThat( elementUrnWithDash.getNamespaceMainPart() ).isEqualTo( "org.eclipse.esmf-test" );
    }
+
+   @Test
+   void invalidModelElementNameTest() throws URISyntaxException {
+      final URI invalidRootModelElementName = new URI( sammBaseUri + "aspect-model:Er?ors:1.1.0#TestAspect" );
+      assertThatExceptionOfType( UrnSyntaxException.class )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( invalidRootModelElementName ) )
+            .withMessage( "The model element name must match \\p{Alpha}\\p{Alnum}*: Er?ors" );
+
+      final URI invalidModelElementName = new URI( sammBaseUri + "aspect-model:Er?ors:1.1.0:dummy#TestAspect" );
+      assertThatExceptionOfType( UrnSyntaxException.class )
+            .isThrownBy( () -> AspectModelUrn.fromUrn( invalidModelElementName ) )
+            .withMessage( "The model element name must match \\p{Alpha}\\p{Alnum}*: Er?ors" );
+   }
 }
