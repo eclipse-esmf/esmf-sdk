@@ -19,7 +19,12 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import org.eclipse.esmf.aspectmodel.loader.AspectModelLoader;
 import org.eclipse.esmf.aspectmodel.resolver.services.TurtleLoader;
@@ -29,6 +34,7 @@ import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.samm.KnownVersion;
 import org.eclipse.esmf.test.TestModel;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
@@ -36,7 +42,7 @@ import org.junit.jupiter.api.Test;
 
 public class AspectModelResolverTest {
    @Test
-   public void testLoadDataModelExpectSuccess() throws URISyntaxException {
+   void testLoadDataModelExpectSuccess() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( KnownVersion.getLatest().toString().toLowerCase() )
@@ -56,7 +62,7 @@ public class AspectModelResolverTest {
    }
 
    @Test
-   public void testLoadLegacyBammModelWithoutPrefixesExpectSuccess() throws URISyntaxException {
+   void testLoadLegacyBammModelWithoutPrefixesExpectSuccess() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( KnownVersion.getLatest().toString().toLowerCase() )
@@ -72,7 +78,7 @@ public class AspectModelResolverTest {
    }
 
    @Test
-   public void testLoadLegacyBammModelExpectSuccess() throws URISyntaxException {
+   void testLoadLegacyBammModelExpectSuccess() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( KnownVersion.getLatest().toString().toLowerCase() )
@@ -92,7 +98,7 @@ public class AspectModelResolverTest {
    }
 
    @Test
-   public void testLoadModelWithVersionEqualToUnsupportedMetaModelVersionExpectSuccess() throws URISyntaxException {
+   void testLoadModelWithVersionEqualToUnsupportedMetaModelVersionExpectSuccess() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( KnownVersion.getLatest().toString().toLowerCase() )
@@ -109,7 +115,7 @@ public class AspectModelResolverTest {
    }
 
    @Test
-   public void testResolveReferencedModelFromMemoryExpectSuccess() throws URISyntaxException {
+   void testResolveReferencedModelFromMemoryExpectSuccess() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( KnownVersion.getLatest().toString().toLowerCase() )
                   .toURI().getPath() );
@@ -141,7 +147,7 @@ public class AspectModelResolverTest {
    }
 
    @Test
-   public void testResolveReferencedModelExpectSuccess() throws URISyntaxException {
+   void testResolveReferencedModelExpectSuccess() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( KnownVersion.getLatest().toString().toLowerCase() )
                   .toURI().getPath() );
@@ -164,7 +170,7 @@ public class AspectModelResolverTest {
    }
 
    @Test
-   public void testResolutionMissingAspectExpectFailure() throws URISyntaxException {
+   void testResolutionMissingAspectExpectFailure() throws URISyntaxException {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader()
                   .getResource( KnownVersion.getLatest().toString().toLowerCase() )
@@ -179,7 +185,7 @@ public class AspectModelResolverTest {
    }
 
    @Test
-   public void testResolutionMissingModelElementExpectFailure() throws Throwable {
+   void testResolutionMissingModelElementExpectFailure() throws Throwable {
       final File aspectModelsRootDirectory = new File(
             AspectModelResolverTest.class.getClassLoader().getResource( KnownVersion.getLatest().toString().toLowerCase() )
                   .toURI().getPath() );

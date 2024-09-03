@@ -13,8 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
+import java.net.URI;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
+import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.apache.jena.rdf.model.Model;
@@ -26,16 +29,50 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 
 /**
- * RDF-level refactoring operation: Renames all occurances of a URN to something else. For model-level refactoring, instead of this class,
- * please use {@link RenameElement}, {@link MoveElementToOtherNamespaceExistingFile} or {@link MoveElementToOtherNamespaceNewFile}.
+ * RDF-level refactoring operation: Renames all occurences of a model element URN to something else. For model-level refactoring,
+ * instead of this class, please use {@link RenameElement}, {@link MoveElementToOtherNamespaceExistingFile} or
+ * {@link MoveElementToOtherNamespaceNewFile}.
  */
 public class RenameUrn extends EditAspectModel {
    private final AspectModelUrn from;
    private final AspectModelUrn to;
+   private final URI targetLocation;
 
-   public RenameUrn( final AspectModelUrn from, final AspectModelUrn to ) {
+   /**
+    * Using this constructor implies the change should be applied only to the identified file
+    *
+    * @param targetLocation the location of the file to change
+    * @param from the URN to change
+    * @param to the URN to change it into
+    */
+   public RenameUrn( final URI targetLocation, final AspectModelUrn from, final AspectModelUrn to ) {
       this.from = from;
       this.to = to;
+      this.targetLocation = targetLocation;
+      if ( from.getName().isEmpty() || to.getName().isEmpty() ) {
+         throw new ModelChangeException( "Source and target URNs must contain element names" );
+      }
+   }
+
+   /**
+    * Using this constructor implies the Change should be applied to all files.
+    *
+    * @param from the URN to change
+    * @param to the URN to change it into
+    */
+   public RenameUrn( final AspectModelUrn from, final AspectModelUrn to ) {
+      this( (URI) null, from, to );
+   }
+
+   /**
+    * Using this constructor implies the change should be applied only to the given file.
+    *
+    * @param targetFile the target Aspect Model file
+    * @param from the URN to change
+    * @param to the URN to change it into
+    */
+   public RenameUrn( final AspectModelFile targetFile, final AspectModelUrn from, final AspectModelUrn to ) {
+      this( targetFile.sourceLocation().orElseThrow(), from, to );
    }
 
    public AspectModelUrn from() {
@@ -48,6 +85,10 @@ public class RenameUrn extends EditAspectModel {
 
    @Override
    protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
+      if ( targetLocation != null && !aspectModelFile.sourceLocation().map( targetLocation::equals ).orElse( false ) ) {
+         return ModelChanges.NONE;
+      }
+
       final Model addModel = ModelFactory.createDefaultModel();
       final Model removeModel = ModelFactory.createDefaultModel();
 
@@ -60,6 +101,8 @@ public class RenameUrn extends EditAspectModel {
          final Property predicate;
          final RDFNode addObject;
          final RDFNode removeObject;
+
+         // Handle subject
          if ( statement.getSubject().isURIResource() ) {
             if ( statement.getSubject().getURI().equals( from.toString() ) ) {
                addSubject = addModel.createResource( to.toString() );
@@ -74,12 +117,15 @@ public class RenameUrn extends EditAspectModel {
             removeSubject = removeModel.createResource( statement.getSubject().getId() );
          }
 
+         // Handle predicate
          if ( statement.getPredicate().getURI().equals( from.toString() ) ) {
             predicate = addModel.createProperty( to.toString() );
             updateTriple = true;
          } else {
             predicate = statement.getPredicate();
          }
+
+         // Handle object
          if ( statement.getObject().isURIResource() && statement.getObject().asResource().getURI().equals( from.toString() ) ) {
             addObject = addModel.createResource( to.toString() );
             removeObject = removeModel.createResource( from.toString() );
@@ -93,6 +139,8 @@ public class RenameUrn extends EditAspectModel {
                removeObject = statement.getObject();
             }
          }
+
+         // Write new triple
          if ( updateTriple ) {
             addModel.add( addSubject, predicate, addObject );
             removeModel.add( removeSubject, predicate, removeObject );
@@ -101,7 +149,7 @@ public class RenameUrn extends EditAspectModel {
       }
 
       return updatedTriples > 0
-            ? new ModelChanges( addModel, removeModel, changeDescription() )
+            ? new ModelChanges( changeDescription(), addModel, removeModel )
             : ModelChanges.NONE;
    }
 
@@ -111,6 +159,6 @@ public class RenameUrn extends EditAspectModel {
 
    @Override
    public Change reverse() {
-      return new RenameUrn( to, from );
+      return new RenameUrn( targetLocation, to, from );
    }
 }

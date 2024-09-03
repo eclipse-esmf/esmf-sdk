@@ -15,10 +15,10 @@ package examples;
 
 // tag::imports[]
 import java.io.File;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManager;
 import org.eclipse.esmf.aspectmodel.edit.AspectChangeManagerConfig;
@@ -64,9 +64,9 @@ public class EditAspectModel {
             new MoveElementToNewFile(
                   // The element to move.
                   aspectModel.aspect().getProperties().get( 0 ),
-                  // If you intend writing the model to the file system, set the location
-                  // for the newly created file here.
-                  Optional.empty() )
+                  // If you intend to write the model to the file system, set the location
+                  // for the newly created file to some sensible location  here.
+                  URI.create( "file:///temp/out.ttl" ) )
       ) );
 
       // Apply the changes and get a report that summerizes the changes.

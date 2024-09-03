@@ -1295,6 +1295,77 @@ class SammCliTest {
       assertThat( targetFile ).doesNotExist();
    }
 
+   @Test
+   void testAspectEditNewVersionForFile() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocation.toFile().mkdirs();
+      final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", inputFile.getAbsolutePath(),
+            "edit", "newversion", "--major" );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      final File newlyCreatedFile = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( "2.0.0" ).resolve( "AspectWithEntity.ttl" ).toFile();
+      assertThat( newlyCreatedFile ).exists();
+      assertThat( newlyCreatedFile ).content().contains( "@prefix : <urn:samm:org.eclipse.esmf.test:2.0.0#>" );
+   }
+
+   @Test
+   void testAspectEditNewVersionForNamespace() throws IOException {
+      // Set up file system structure of writable files
+      final Path modelLocation = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( testModel.getUrn().getVersion() );
+      modelLocation.toFile().mkdirs();
+      final File inputFile = modelLocation.resolve( "AspectWithEntity.ttl" ).toFile();
+      FileUtils.copyFile( inputFile( testModel ).getAbsoluteFile(), inputFile );
+
+      final String namespaceUrn = TestModel.TEST_NAMESPACE.replace( "#", "" );
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", namespaceUrn,
+            "edit", "newversion", "--major", "--models-root", outputDirectory.toFile().getAbsolutePath() );
+
+      assertThat( result.stdout() ).isEmpty();
+      assertThat( result.stderr() ).isEmpty();
+      final File newlyCreatedFile = outputDirectory.resolve( testModel.getUrn().getNamespaceMainPart() )
+            .resolve( "2.0.0" ).resolve( "AspectWithEntity.ttl" ).toFile();
+      assertThat( newlyCreatedFile ).exists();
+      assertThat( newlyCreatedFile ).content().contains( "@prefix : <urn:samm:org.eclipse.esmf.test:2.0.0#>" );
+   }
+
+   @Test
+   void testAspectUsageFromFile() {
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", defaultInputFile, "usage" );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
+   }
+
+   @Test
+   void testAspectUsageFromUrn() {
+      final String modelsRoot = inputFile( testModel ).getParentFile().getParentFile().getParentFile().getAbsolutePath();
+      final String urnToCheck = TestModel.TEST_NAMESPACE + "testProperty";
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", urnToCheck, "usage",
+            "--models-root", modelsRoot );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
+   }
+
+   // Running this test from within the regular JUnit test harness yields a java.lang.SecurityException for
+   // java.net.URLPermission, therefore it is executed only in the native build
+   @Test
+   @EnabledIfSystemProperty( named = "packaging-type", matches = "native" )
+   void testAspectUsageWithGitHubResolution() {
+      final String remoteModelsDirectory = "core/esmf-test-aspect-models/src/main/resources/valid";
+      final String urnToCheck = TestModel.TEST_NAMESPACE + "testProperty";
+      final ExecutionResult result = sammCli.runAndExpectSuccess( "--disable-color", "aspect", urnToCheck, "usage",
+            "--github", "--github-name", "eclipse-esmf/esmf-sdk", "--github-directory", remoteModelsDirectory );
+      assertThat( result.stderr() ).isEmpty();
+      assertThat( result.stdout() ).contains( TestModel.TEST_NAMESPACE + "testProperty" );
+   }
+
    /**
     * Returns the File object for a test model file
     */
