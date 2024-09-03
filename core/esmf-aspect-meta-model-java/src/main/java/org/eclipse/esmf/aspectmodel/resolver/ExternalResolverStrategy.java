@@ -13,6 +13,9 @@
 
 package org.eclipse.esmf.aspectmodel.resolver;
 
+import java.net.URI;
+import java.util.stream.Stream;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
@@ -31,5 +34,25 @@ public class ExternalResolverStrategy implements ResolutionStrategy {
       final String commandWithParameters = command + " " + aspectModelUrn.toString();
       final String result = CommandExecutor.executeCommand( commandWithParameters );
       return AspectModelFileLoader.load( result );
+   }
+
+   @Override
+   public Stream<URI> listContents() {
+      return Stream.empty();
+   }
+
+   @Override
+   public Stream<URI> listContentsForNamespace( final AspectModelUrn namespace ) {
+      return Stream.empty();
+   }
+
+   @Override
+   public Stream<AspectModelFile> loadContents() {
+      return Stream.empty();
+   }
+
+   @Override
+   public Stream<AspectModelFile> loadContentsForNamespace( final AspectModelUrn namespace ) {
+      return Stream.empty();
    }
 }

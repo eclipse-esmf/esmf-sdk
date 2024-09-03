@@ -13,8 +13,11 @@
 
 package org.eclipse.esmf.aspectmodel.edit.change;
 
+import java.net.URI;
+
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.edit.Change;
+import org.eclipse.esmf.aspectmodel.edit.ModelChangeException;
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
 import org.apache.jena.rdf.model.Model;
@@ -26,20 +29,40 @@ import org.apache.jena.rdf.model.ModelFactory;
 public class AddElementDefinition extends EditAspectModel {
    private final AspectModelUrn elementUrn;
    private final Model definition;
-   private final AspectModelFile targetFile;
+   private final URI targetLocation;
 
+   /**
+    * Adds an element definition in a given file
+    *
+    * @param elementUrn the element to be defined
+    * @param definition the definition for the element
+    * @param targetFile the target file
+    */
    public AddElementDefinition( final AspectModelUrn elementUrn, final Model definition, final AspectModelFile targetFile ) {
+      this( elementUrn, definition, targetFile.sourceLocation().orElseThrow( () ->
+            new ModelChangeException( "Can add definition only to named file" ) ) );
+   }
+
+   /**
+    * Adds an element definition in a given file
+    *
+    * @param elementUrn the element to be defined
+    * @param definition the definition for the element
+    * @param targetLocation the location of the target file
+    */
+   public AddElementDefinition( final AspectModelUrn elementUrn, final Model definition, final URI targetLocation ) {
       this.elementUrn = elementUrn;
       this.definition = definition;
-      this.targetFile = targetFile;
+      this.targetLocation = targetLocation;
    }
 
    @Override
    protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
-      return aspectModelFile.equals( targetFile )
-            ? new ModelChanges( definition, ModelFactory.createDefaultModel(),
-            "Add definition of " + elementUrn )
-            : ModelChanges.NONE;
+      return aspectModelFile.sourceLocation()
+            .filter( location -> location.equals( targetLocation ) )
+            .map( location -> new ModelChanges( "Add definition of " + elementUrn + " in " + location,
+                  definition, ModelFactory.createDefaultModel() ) )
+            .orElse( ModelChanges.NONE );
    }
 
    @Override
@@ -47,10 +70,11 @@ public class AddElementDefinition extends EditAspectModel {
       return new EditAspectModel() {
          @Override
          protected ModelChanges calculateChangesForFile( final AspectModelFile aspectModelFile ) {
-            return aspectModelFile.sourceLocation().equals( targetFile.sourceLocation() )
-                  ? new ModelChanges( ModelFactory.createDefaultModel(), definition,
-                  "Remove definition of " + elementUrn )
-                  : ModelChanges.NONE;
+            return aspectModelFile.sourceLocation()
+                  .filter( location -> location.equals( targetLocation ) )
+                  .map( location -> new ModelChanges( "Remove definition of " + elementUrn,
+                        ModelFactory.createDefaultModel(), definition ) )
+                  .orElse( ModelChanges.NONE );
          }
 
          @Override

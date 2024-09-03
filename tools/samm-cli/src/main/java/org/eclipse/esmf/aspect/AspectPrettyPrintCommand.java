@@ -21,8 +21,8 @@ import java.io.PrintWriter;
 import java.net.URI;
 
 import org.eclipse.esmf.AbstractCommand;
-import org.eclipse.esmf.ExternalResolverMixin;
 import org.eclipse.esmf.LoggingMixin;
+import org.eclipse.esmf.ResolverConfigurationMixin;
 import org.eclipse.esmf.aspectmodel.AspectModelFile;
 import org.eclipse.esmf.aspectmodel.serializer.PrettyPrinter;
 import org.eclipse.esmf.exception.CommandException;
@@ -44,7 +44,7 @@ public class AspectPrettyPrintCommand extends AbstractCommand {
    private LoggingMixin loggingMixin;
 
    @CommandLine.Mixin
-   private ExternalResolverMixin customResolver;
+   private ResolverConfigurationMixin resolverConfiguration;
 
    @CommandLine.Option( names = { "--output", "-o" }, description = "Output file path (default: stdout)" )
    String outputFilePath = "-";
@@ -58,7 +58,7 @@ public class AspectPrettyPrintCommand extends AbstractCommand {
    @Override
    public void run() {
       final File inputFile = new File( parentCommand.getInput() ).getAbsoluteFile();
-      final AspectModel aspectModel = loadAspectModelOrFail( parentCommand.getInput(), customResolver );
+      final AspectModel aspectModel = loadAspectModelOrFail( parentCommand.getInput(), resolverConfiguration );
 
       for ( final AspectModelFile sourceFile : aspectModel.files() ) {
          if ( !sourceFile.sourceLocation().map( uri -> uri.equals( inputFile.toURI() ) ).orElse( false ) ) {

@@ -16,6 +16,7 @@ package org.eclipse.esmf.aspect;
 import org.eclipse.esmf.AbstractCommand;
 import org.eclipse.esmf.LoggingMixin;
 import org.eclipse.esmf.aspect.edit.AspectEditMoveCommand;
+import org.eclipse.esmf.aspect.edit.AspectEditNewVersionCommand;
 import org.eclipse.esmf.exception.SubCommandException;
 
 import picocli.CommandLine;
@@ -24,7 +25,8 @@ import picocli.CommandLine;
       description = "Edit (refactor) an Aspect Model",
       subcommands = {
             CommandLine.HelpCommand.class,
-            AspectEditMoveCommand.class
+            AspectEditMoveCommand.class,
+            AspectEditNewVersionCommand.class
       },
       headerHeading = "@|bold Usage|@:%n%n",
       descriptionHeading = "%n@|bold Description|@:%n%n",

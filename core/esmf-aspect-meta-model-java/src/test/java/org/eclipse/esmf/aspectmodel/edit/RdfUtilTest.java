@@ -21,9 +21,11 @@ import org.eclipse.esmf.aspectmodel.RdfUtil;
 import org.eclipse.esmf.metamodel.AspectModel;
 import org.eclipse.esmf.metamodel.vocabulary.SammNs;
 import org.eclipse.esmf.test.TestAspect;
+import org.eclipse.esmf.test.TestModel;
 import org.eclipse.esmf.test.TestResources;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFList;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
@@ -80,5 +82,16 @@ public class RdfUtilTest {
             .asResource();
       assertThat( constraint.getProperty( RDF.type ).getObject().asResource() ).isEqualTo( SammNs.SAMMC.RegularExpressionConstraint() );
       assertThat( constraint.getProperty( SammNs.SAMM.value() ).getObject().asLiteral().getLexicalForm() ).contains( "a-z" );
+   }
+
+   @Test
+   void testGetNamedElementsReferringTo() {
+      final AspectModel aspectModel = TestResources.load( TestAspect.ASPECT_WITH_PROPERTY );
+      final Model sourceModel = aspectModel.aspect().getSourceFile().sourceModel();
+
+      final Property testProperty = sourceModel.createProperty( TestModel.TEST_NAMESPACE + "testProperty" );
+      final List<Resource> namedElementsReferringToProperty = RdfUtil.getNamedElementsReferringTo( testProperty );
+      assertThat( namedElementsReferringToProperty ).map( Resource::getURI )
+            .containsExactly( TestModel.TEST_NAMESPACE + "AspectWithProperty" );
    }
 }
