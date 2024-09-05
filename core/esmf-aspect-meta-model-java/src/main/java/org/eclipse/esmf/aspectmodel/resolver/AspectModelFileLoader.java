@@ -105,8 +105,8 @@ public class AspectModelFileLoader {
          }
       }
       try {
-         return load( url.openStream() );
-      } catch ( final IOException exception ) {
+         return load( url.openStream(), Optional.of( url.toURI() ) );
+      } catch ( final IOException | URISyntaxException exception ) {
          throw new ModelResolutionException( "Can not load model from URL", exception );
       }
    }

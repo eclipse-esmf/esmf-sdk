@@ -28,33 +28,30 @@ import org.eclipse.esmf.aspectmodel.resolver.modelfile.RawAspectModelFileBuilder
  * Refactoring operation: Renames/moves a file. This is done by changing its source location.
  */
 public class MoveRenameAspectModelFile extends StructuralChange {
-   private final AspectModelFile file;
-   private final Optional<URI> newLocation;
+   private final URI sourceLocation;
+   private final URI newLocation;
    private ChangeGroup changes = null;
 
-   public MoveRenameAspectModelFile( final AspectModelFile file, final URI newLocation ) {
-      this( file, Optional.of( newLocation ) );
+   public MoveRenameAspectModelFile( final URI sourceLocation, final URI newLocation ) {
+      this.sourceLocation = sourceLocation;
+      this.newLocation = newLocation;
    }
 
-   public MoveRenameAspectModelFile( final AspectModelFile file, final Optional<URI> newLocation ) {
-      this.file = file;
-      this.newLocation = newLocation;
+   public MoveRenameAspectModelFile( final AspectModelFile file, final URI newLocation ) {
+      this( file.sourceLocation().orElseThrow( () ->
+            new ModelChangeException( "Can rename only a named file" ) ), newLocation );
    }
 
    @Override
    public ChangeReport fire( final ChangeContext changeContext ) {
-      final AspectModelFile targetFile = changeContext.aspectModelFiles()
-            .filter( file -> file.sourceLocation().equals( file.sourceLocation() ) )
-            .findFirst()
-            .orElseThrow( () -> new ModelChangeException( "Can not find file to move/rename" ) );
-
+      final AspectModelFile sourceFile = sourceFile( changeContext, sourceLocation );
       final AspectModelFile replacementFile = RawAspectModelFileBuilder.builder()
-            .sourceLocation( newLocation )
-            .headerComment( targetFile.headerComment() )
-            .sourceModel( targetFile.sourceModel() )
+            .sourceLocation( Optional.of( newLocation ) )
+            .headerComment( sourceFile.headerComment() )
+            .sourceModel( sourceFile.sourceModel() )
             .build();
       changes = new ChangeGroup(
-            new RemoveAspectModelFile( targetFile ),
+            new RemoveAspectModelFile( sourceFile ),
             new AddAspectModelFile( replacementFile )
       );
       return changes.fire( changeContext );

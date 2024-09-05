@@ -31,35 +31,63 @@ import org.eclipse.esmf.metamodel.Namespace;
  */
 public class MoveElementToOtherNamespaceNewFile extends StructuralChange {
    private final List<String> headerComment;
-   private final Optional<URI> sourceLocation;
+   private final URI targetLocation;
    private final AspectModelUrn elementUrn;
    private final Namespace targetNamespace;
    private ChangeGroup changes = null;
 
-   public MoveElementToOtherNamespaceNewFile( final ModelElement modelElement, final Namespace targetNamespace,
-         final Optional<URI> sourceLocation ) {
-      this( modelElement, targetNamespace, null, sourceLocation );
+   /**
+    * Move a model element to a new file with a given location in another namespace
+    *
+    * @param modelElement the model element
+    * @param targetNamespace the target namespace
+    * @param targetLocation the location for the new file
+    */
+   public MoveElementToOtherNamespaceNewFile( final ModelElement modelElement, final Namespace targetNamespace, final URI targetLocation ) {
+      this( modelElement, targetNamespace, null, targetLocation );
    }
 
+   /**
+    * Move a model element to a new file with a given location in another namespace
+    *
+    * @param modelElement the model element
+    * @param targetNamespace the target namespace
+    * @param headerComment the header comment to insert at the top of the file
+    * @param targetLocation the location for the new file
+    */
    public MoveElementToOtherNamespaceNewFile( final ModelElement modelElement, final Namespace targetNamespace,
-         final List<String> headerComment, final Optional<URI> sourceLocation ) {
-      this( modelElement.urn(), targetNamespace, headerComment, sourceLocation );
+         final List<String> headerComment, final URI targetLocation ) {
+      this( modelElement.urn(), targetNamespace, headerComment, targetLocation );
       if ( modelElement.isAnonymous() ) {
          throw new ModelChangeException( "Can not move anonymous model element" );
       }
    }
 
-   public MoveElementToOtherNamespaceNewFile( final AspectModelUrn elementUrn, final Namespace targetNamespace,
-         final Optional<URI> sourceLocation ) {
-      this( elementUrn, targetNamespace, null, sourceLocation );
+   /**
+    * Move a model element to a new file with a given location in another namespace
+    *
+    * @param elementUrn the URN of the element to move
+    * @param targetNamespace the target namespace
+    * @param targetLocation the location for the new file
+    */
+   public MoveElementToOtherNamespaceNewFile( final AspectModelUrn elementUrn, final Namespace targetNamespace, final URI targetLocation ) {
+      this( elementUrn, targetNamespace, null, targetLocation );
    }
 
+   /**
+    * Move a model element to a new file with a given location in another namespace
+    *
+    * @param elementUrn the URN of the element to move
+    * @param targetNamespace the target namespace
+    * @param headerComment the header comment to insert at the top of the file
+    * @param targetLocation the location for the new file
+    */
    public MoveElementToOtherNamespaceNewFile( final AspectModelUrn elementUrn, final Namespace targetNamespace,
-         final List<String> headerComment, final Optional<URI> sourceLocation ) {
+         final List<String> headerComment, final URI targetLocation ) {
       this.elementUrn = elementUrn;
       this.targetNamespace = targetNamespace;
       this.headerComment = headerComment;
-      this.sourceLocation = sourceLocation;
+      this.targetLocation = targetLocation;
    }
 
    @Override
@@ -68,9 +96,9 @@ public class MoveElementToOtherNamespaceNewFile extends StructuralChange {
             .or( () -> Optional.ofNullable( changeContext.config().defaultFileHeader() ) )
             .orElse( List.of() );
       changes = new ChangeGroup(
-            "Move element " + elementUrn + " to new file " + show( sourceLocation )
+            "Move element " + elementUrn + " to new file " + show( targetLocation )
                   + " in namespace " + targetNamespace.elementUrnPrefix(),
-            new MoveElementToNewFile( elementUrn, fileHeader, sourceLocation ),
+            new MoveElementToNewFile( elementUrn, fileHeader, targetLocation ),
             new RenameUrn( elementUrn, AspectModelUrn.fromUrn( targetNamespace.elementUrnPrefix() + elementUrn.getName() ) )
       );
       return changes.fire( changeContext );

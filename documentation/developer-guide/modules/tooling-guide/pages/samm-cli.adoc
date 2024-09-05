@@ -3,7 +3,8 @@
 [[samm-cli]]
 = SAMM CLI
 
-The SAMM CLI is a command line tool for the validation of Aspect Models and the generation of artifacts, such as documentation or code, from Aspect Models.
+The SAMM CLI is a command line tool for the validation of Aspect Models and the generation of
+artifacts, such as documentation or code, from Aspect Models.
 
 The SAMM CLI is available as a native executable for multiple platforms and as an executable jar:
 
@@ -168,7 +169,7 @@ The available options and their meaning can also be seen in the help text of the
 .5+| [[aspect-to-aas]] aspect <model> to aas | Generate an Asset Administration Shell (AAS) submodel template from an
                                      Aspect Model                                                                            | `samm aspect AspectModel.ttl to aas`
                                    | _--output, -o_ : output file path (default: stdout)                                     |
-                                   | _--format, -f_ : output file format (xml, json, or aasx, default: xml)                  |
+                                   | _--format, -f_ : output file format (XML, JSON, or AASX, default: XML)                  |
                                    | _--custom-resolver_ : use an external resolver for the resolution of the model elements |
                                    | _--aspect-data, -a_ : path to a JSON file containing aspect data corresponding to the
                                      Aspect Model                                                                            |
@@ -186,6 +187,22 @@ The available options and their meaning can also be seen in the help text of the
                                      header from the source file to the new file                                             |
                                    | _--force_ : When a new file is to be created but it already exists in the file system,
                                      the operation will be cancelled, unless `--force` is used.                              |
+.7+| [[aspect-edit-newversion]] aspect <model> edit newversion [--major \| --minor \| --micro] | Create a new version of an existing file or a complete
+                                     namespace. `model` can be an Aspect Model file or a namespace URN. If `model` is a URN,
+                                     at least one `--models-root` must also be specified.                                    | `samm aspect AspectModel.ttl edit
+                                                                                                                                newversion --major`
+                                   | _--major_ : Update the major version                                                    |
+                                   | _--minor_ : Update the minor version                                                    |
+                                   | _--micro_ : Update the micro version                                                    |
+                                   | _--dry-run_ : Don't write changes to the file system, but print a report of changes
+                                     that would be performed.                                                                |
+                                   | _--details_ : When used with `--dry-run`, include details about model content
+                                     changes in the report .                                                                 |
+                                   | _--force_ : When a new file is to be created but it already exists in the file system,
+                                     the operation will be cancelled, unless `--force` is used.                              |
+.1+| [[aspect-usage]] aspect <model> usage | Shows where model elements are used in an Aspect. `model` can be an Aspect Model
+                                     file or an element URN. If `model` is a URN, at least one `--models-root` must also be
+                                     specified.                                                                              | `samm aspect AspectModelFile.ttl usage`
 .3+| [[aas-to-aspect]] aas <aas file> to aspect | Translate Asset Administration Shell (AAS) Submodel Templates to
                                      Aspect Models                                                                           | `samm aas AssetAdminShell.aasx to aspect`
                                    | _--output-directory, -d_ : output directory to write files to (default:
@@ -197,15 +214,29 @@ The available options and their meaning can also be seen in the help text of the
 
 |===
 
-=== Custom model resolver
+=== Configuration of model resolution
 
-To allow the users to provide their own custom implementations of a model resolver, `--custom-resolver` command-line switch can be used.
-The value of the switch can be any command which is directly executable by the underlying operating system (such as a batch script on Windows or a shell script on Linux/Unix).
-When a model element needs to be resolved, this command is executed with the URN of the element to resolve passed as the last parameter.
-The command can provide other parameters as well, the element URN will be added automatically as the last one by samm-cli.
-The resolved model definition is expected to be output to the stdout in Turtle format.
-From there, it is read by the samm-cli and passed on to the internal processing pipeline.
-In this way the extension can be flexibly done in any programming language/script language, including complex logic if necessary.
+When a loaded file refers to model elements defined elsewhere, the model resolver looks up the files
+to load. You can configure where such lookup should be done:
+
+* Using the `--models-root` switch, you can provide a directory that follows the models
+  xref:models-directory-structure[directory structure]. This switch can be repeated to provide
+  multiple models root directories.
+
+* Using the `--custom-resolver` switch, you can provide a custom resolver implementation. The value
+  of the switch can be any command which is directly executable by the underlying operating system
+  (such as a batch script on Windows or a shell script on Linux/Unix). When a model element needs to
+  be resolved, this command is executed with the URN of the element to resolve passed as the last
+  parameter. The command can provide other parameters as well, the element URN will be added
+  automatically as the last one by samm-cli. The resolved model definition is expected to be output
+  to the stdout in Turtle format. In this way the extension can be flexibly done in any programming
+  language/script language, including complex logic if necessary.
+
+* Using the `--github` switch, you can configure a location in a remote GitHub repository as models
+  root. Using the switch requires the additional switch `--github-name` to set the remote
+  repository (e.g., `eclipse-esmf/esmf-sdk`). Optionally, you can also provide `--github-directory`
+  to set the remote directory and `--github-branch` to set the branch name.
+
 
 [[using-the-cli-to-create-a-json-openapi-specification]]
 == Using the CLI to create a JSON OpenAPI Specification

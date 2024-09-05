@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -43,6 +44,7 @@ import org.eclipse.esmf.aspectmodel.resolver.AspectModelFileLoader;
 import org.eclipse.esmf.aspectmodel.resolver.EitherStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.FileSystemStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ModelResolutionException;
+import org.eclipse.esmf.aspectmodel.resolver.ModelSource;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategy;
 import org.eclipse.esmf.aspectmodel.resolver.ResolutionStrategySupport;
 import org.eclipse.esmf.aspectmodel.resolver.fs.FlatModelsRoot;
@@ -72,9 +74,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The core class to load an {@link AspectModel}.
+ * The core class to load an {@link AspectModel}. The AspectModelLoader is also a {@link ModelSource} and allows to list the
+ * contents of its configured {@link ResolutionStrategy}s.
  */
-public class AspectModelLoader implements ResolutionStrategySupport {
+public class AspectModelLoader implements ModelSource, ResolutionStrategySupport {
    private static final Logger LOG = LoggerFactory.getLogger( AspectModelLoader.class );
    private static final String ASPECT_MODELS_FOLDER = "aspect-models";
 
@@ -524,5 +527,47 @@ public class AspectModelLoader implements ResolutionStrategySupport {
          file.sourceLocation().filter( uri -> !locations.contains( uri ) ).ifPresent( uri -> files.add( file ) );
       }
       return loadAspectModelFiles( files );
+   }
+
+   /**
+    * Lists the URIs of all Aspect Model files for all configured resolution strategies
+    *
+    * @return the URIs
+    */
+   @Override
+   public Stream<URI> listContents() {
+      return resolutionStrategy.listContents();
+   }
+
+   /**
+    * Lists the URIs of all Aspect Model files for a given namespace for all configured resolution strategies
+    *
+    * @param namespace the namespace
+    * @return the URIs
+    */
+   @Override
+   public Stream<URI> listContentsForNamespace( final AspectModelUrn namespace ) {
+      return resolutionStrategy.listContentsForNamespace( namespace );
+   }
+
+   /**
+    * Returns all loadable Aspect Model files from all configured resolution strategies
+    *
+    * @return the Aspect Model files
+    */
+   @Override
+   public Stream<AspectModelFile> loadContents() {
+      return resolutionStrategy.loadContents();
+   }
+
+   /**
+    * Returns all loadable Aspect Model files for a given namespace from all configured resolution strategies
+    *
+    * @param namespace the namespace
+    * @return the Aspect Model files
+    */
+   @Override
+   public Stream<AspectModelFile> loadContentsForNamespace( final AspectModelUrn namespace ) {
+      return resolutionStrategy.loadContentsForNamespace( namespace );
    }
 }

@@ -64,18 +64,8 @@ public class DefaultNamespace implements Namespace {
       this( uri.split( ":" )[2], VersionNumber.parse( uri.split( ":" )[3].replace( "#", "" ) ), elements, source, baseAttributes );
    }
 
-   //   /**
-   //    * Accepts a namespace URI such as 'urn:samm:com.example:1.0.0'
-   //    *
-   //    * @param uri the namspace uri
-   //    * @return the model namespace
-   //    */
-   //   public static Namespace from( final String uri ) {
-   //      return from( uri, List.of(), Optional.empty() );
-   //   }
-
    @Override
-   public String packagePart() {
+   public String namespaceMainPart() {
       return packagePart;
    }
 

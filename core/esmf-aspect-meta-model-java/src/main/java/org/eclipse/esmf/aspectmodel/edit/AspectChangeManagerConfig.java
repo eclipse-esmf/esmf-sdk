@@ -22,6 +22,8 @@ public record AspectChangeManagerConfig(
       List<String> defaultFileHeader,
       boolean detailedChangeReport
 ) {
+   public static final AspectChangeManagerConfig DEFAULT = AspectChangeManagerConfigBuilder.builder().build();
+
    public AspectChangeManagerConfig {
       if ( defaultFileHeader == null ) {
          defaultFileHeader = List.of();

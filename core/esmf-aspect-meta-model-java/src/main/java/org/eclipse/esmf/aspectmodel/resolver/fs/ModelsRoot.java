@@ -14,7 +14,10 @@
 package org.eclipse.esmf.aspectmodel.resolver.fs;
 
 import java.io.File;
+import java.net.URI;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import org.eclipse.esmf.aspectmodel.urn.AspectModelUrn;
 
@@ -28,6 +31,14 @@ public abstract class ModelsRoot {
    public Path rootPath() {
       return root;
    }
+
+   public Stream<Path> paths() {
+      return contents().map( Paths::get );
+   }
+
+   public abstract Stream<URI> contents();
+
+   public abstract Stream<URI> namespaceContents( AspectModelUrn namespace );
 
    public abstract Path directoryForNamespace( final AspectModelUrn urn );
 
